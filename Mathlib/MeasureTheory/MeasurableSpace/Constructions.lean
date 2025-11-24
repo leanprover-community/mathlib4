@@ -1011,10 +1011,9 @@ theorem Measurable.eq {m : MeasurableSpace α} [MeasurableSpace β] [MeasurableE
     {f g : α → β} (hf : Measurable f) (hg : Measurable g) : Measurable fun x => f x = g x :=
   measurableSet_setOf.mp (measurableSet_eq_fun hf hg)
 
-attribute [-simp] setOf_eq_eq_singleton in
 instance [MeasurableSpace α] [MeasurableEq α] : MeasurableSingletonClass α := by
   constructor
-  simp_rw [← setOf_eq_eq_singleton]
+  simp_rw [← setOf_eq_eq_singleton, measurableSet_setOf]
   measurability
 
 instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] : MeasurableEq α := by
