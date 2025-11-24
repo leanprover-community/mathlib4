@@ -18,6 +18,8 @@ countable set by an increasing sequence of finite sets. Given a countable set `s
 
 @[expose] public section
 
+open Set
+
 /-- A `FiniteExhaustion` of a set `s` is a monotonically increasing sequence
 of finite sets such that their union is `s`. -/
 structure FiniteExhaustion {α : Type*} (s : Set α) where
@@ -40,18 +42,18 @@ instance {α : Type*} {s : Set α} : RelHomClass (FiniteExhaustion s) LE.le HasS
   map_rel K _ _ h := monotone_nat_of_le_succ (fun n ↦ K.subset_succ' n) h
 
 instance {α : Type*} {s : Set α} {K : FiniteExhaustion s} {n : ℕ} : Finite (K n) :=
-  K.Finite' n
+  K.finite' n
 
 variable {α : Type*} {s : Set α} (K : FiniteExhaustion s)
 
 @[simp]
 theorem toFun_eq_coe : K.toFun = K := rfl
 
-protected theorem Finite (n : ℕ) : (K n).Finite := K.Finite' n
+protected theorem finite (n : ℕ) : (K n).Finite := K.finite' n
 
 theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset_succ' n
 
-protected theorem subset {m n : ℕ} (h : m ≤ n) : K m ⊆ K n :=
+protected theorem subset_mono {m n : ℕ} (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 
 theorem iUnion_eq : ⋃ n, K n = s :=
@@ -63,13 +65,13 @@ noncomputable def choice (s : Set α) [Countable s] : FiniteExhaustion s := by
     by_cases h : Nonempty s
     · obtain ⟨f, hf⟩ := exists_surjective_nat s
       refine ⟨fun n ↦ (Subtype.val ∘ f) '' {i | i ≤ n}, ?_, ?_, ?_⟩
-      · exact fun n ↦ Set.Finite.image _ (Set.finite_le_nat n)
+      · exact fun n ↦ Finite.image _ (finite_le_nat n)
       · intro n
         simp only [Function.comp_apply]
         gcongr
         simp
-      · simp [← Set.image_image, ← Set.image_iUnion, Set.iUnion_le_nat, Set.range_eq_univ.mpr hf]
-    · refine ⟨fun _ ↦ ∅, by simp [Set.Finite.to_subtype], fun n ↦ by simp, ?_⟩
+      · simp [← image_image, ← image_iUnion, iUnion_le_nat, range_eq_univ.mpr hf]
+    · refine ⟨fun _ ↦ ∅, by simp [Finite.to_subtype], fun n ↦ by simp, ?_⟩
       simp [Set.not_nonempty_iff_eq_empty'.mp h]
 
 noncomputable instance [Countable s] :
@@ -85,8 +87,9 @@ is the finite exhaustion on `s ×ˢ t` given by the pointwise set product of the
 protected def prod :
     FiniteExhaustion (s ×ˢ t) :=
   { toFun n := K n ×ˢ K' n
-    Finite' n := (K.Finite n).prod (K'.Finite n)
+    finite' n := (K.finite n).prod (K'.finite n)
     subset_succ' := fun n ↦ Set.prod_mono (K.subset_succ n) (K'.subset_succ n)
+    iUnion_eq' := by
       rw [Set.iUnion_prod_of_monotone (OrderHomClass.mono K) (OrderHomClass.mono K'),
           K.iUnion_eq, K'.iUnion_eq] }
 
