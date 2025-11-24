@@ -216,48 +216,9 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
 /-- In a compact space, the type of closed subsets is compact. -/
 instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
   ⟨by
-    /- by completeness, it suffices to show that it is totally bounded,
-        i.e., for all ε>0, there is a finite set which is ε-dense.
-        start from a set `s` which is ε-dense in α. Then the subsets of `s`
-        are finitely many, and ε-dense for the Hausdorff distance. -/
-    refine
-      (EMetric.totallyBounded_iff.2 fun ε εpos => ?_).isCompact_of_isClosed isClosed_univ
-    rcases exists_between εpos with ⟨δ, δpos, δlt⟩
-    obtain ⟨s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ y ∈ s, ball y δ⟩ :=
-      EMetric.totallyBounded_iff.1
-        (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos
-    -- we first show that any set is well approximated by a subset of `s`.
-    have main : ∀ u : Set α, ∃ v ⊆ s, hausdorffEdist u v ≤ δ := by
-      intro u
-      let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
-      exists v, (fun x hx => hx.1 : v ⊆ s)
-      refine hausdorffEdist_le_of_mem_edist ?_ ?_
-      · intro x hx
-        have : x ∈ ⋃ y ∈ s, ball y δ := hs (by simp)
-        rcases mem_iUnion₂.1 this with ⟨y, ys, dy⟩
-        have : edist y x < δ := by simpa [edist_comm]
-        exact ⟨y, ⟨ys, ⟨x, hx, this⟩⟩, le_of_lt dy⟩
-      · rintro x ⟨_, ⟨y, yu, hy⟩⟩
-        exact ⟨y, yu, le_of_lt hy⟩
-    -- introduce the set F of all subsets of `s` (seen as members of `Closeds α`).
-    let F := { f : Closeds α | (f : Set α) ⊆ s }
-    refine ⟨F, ?_, fun u _ => ?_⟩
-    -- `F` is finite
-    · apply @Finite.of_finite_image _ _ F _
-      · apply fs.finite_subsets.subset fun b => _
-        · exact fun s => (s : Set α)
-        simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
-        intro _ x hx hx'
-        rwa [hx'] at hx
-      · exact SetLike.coe_injective.injOn
-    -- `F` is ε-dense
-    · obtain ⟨t0, t0s, Dut0⟩ := main u
-      have : IsClosed t0 := (fs.subset t0s).isCompact.isClosed
-      let t : Closeds α := ⟨t0, this⟩
-      have : t ∈ F := t0s
-      have : edist u t < ε := lt_of_le_of_lt Dut0 δlt
-      apply mem_iUnion₂.2
-      exact ⟨t, ‹t ∈ F›, this⟩⟩
+    have := Closeds.totallyBounded_subsets_of_totallyBounded (α := α) isCompact_univ.totallyBounded
+    simp_rw [subset_univ, setOf_true] at this
+    exact this.isCompact_of_isClosed isClosed_univ⟩
 
 theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
   fun _ _ => hausdorffEdist_singleton
