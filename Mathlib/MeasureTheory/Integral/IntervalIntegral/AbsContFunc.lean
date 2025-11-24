@@ -14,7 +14,9 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.Order.Interval.Lex
 
+-- import Mathlib.Order.Monotone.Nat
 /-!
 # Fundamental Theorem of Calculus and Integration by Parts for Absolutely Continuous Functions
 
@@ -42,7 +44,7 @@ open scoped Topology ENNReal Interval NNReal
 
 /-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
 absolute continuous on `uIcc a b`. -/
-theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → ℝ} {a b c : ℝ}
+theorem IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral {f : ℝ → ℝ} {a b c : ℝ}
     (h : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ ∫ v in c..x, f v) a b := by
   let s := fun E : ℕ × (ℕ → ℝ × ℝ) ↦ ⋃ i ∈ Finset.range E.1, uIoc (E.2 i).1 (E.2 i).2
@@ -51,7 +53,7 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
     rw [(hasBasis_totalLengthFilter.inf_principal _).tendsto_iff ENNReal.nhds_zero_basis_Iic]
     intro ε hε
     by_cases hε_top : ε = ⊤
-    · exact ⟨1, by simp, by simp[hε_top]⟩
+    · exact ⟨1, by simp, by simp [hε_top]⟩
     replace hε := ENNReal.toReal_pos (hε.ne.symm) hε_top
     refine ⟨ε.toReal, hε, fun (n, I) hnI ↦ ?_⟩
     rw [mem_inter_iff] at hnI
@@ -103,35 +105,45 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
     rw [MeasureTheory.Measure.restrict_restrict_of_subset h_subset]
     exact MeasureTheory.IntegrableOn.mono_set h.def'.norm h_subset |>.integrable
 
-/-- If `f` has derivative 0 a.e. on `[d, b]`, then there is a coultable Vitali cover of `[d, b]`
-a.e., consisting of closed intervals, where each has small variations wrt `f`. -/
-lemma ae_deriv_zero_ctb_cover {f : ℝ → ℝ} {d b η : ℝ}
-    (hf : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x) (hη : 0 < η) :
-    let t := {(x, h) : ℝ × ℝ | d < x ∧ 0 < h ∧ x + h < b ∧ |f (x + h) - f x| < h * η};
-    let B : ℝ × ℝ → Set ℝ := fun (x, h) ↦ Icc x (x + h);
-    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ volume (Ioo d b \ ⋃ a ∈ u, B a) = 0 := by
-  intro t B
-  replace hf : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f 0 x := by
+/-- If `f` has derivative `f'` a.e. on `[d, b]` and `η` is positive, then there is a countable
+collection of pairwise disjoint closed subinterval of `[a, b]` of total length `b - a` where the
+slope of `f` on each subinterval `[x, y]` differs from `f' x` by at most `η`. -/
+lemma ae_hasDerivAt_exists_countable_pairwiseDisjoint_tsum_sub_eq_sub {f f' : ℝ → ℝ} {d b η : ℝ}
+    (hdb : d ≤ b)
+    (hf : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f (f' x) x) (hη : 0 < η) :
+    ∃ u : Set (ℝ × ℝ),
+      (∀ z ∈ u, (d < z.1 ∧ z.1 < z.2 ∧ z.2 < b) ∧ dist (slope f z.1 z.2) (f' z.1) < η) ∧
+      u.PairwiseDisjoint (fun z ↦ Icc z.1 z.2) ∧
+      HasSum (fun (z : u) ↦ z.val.2 - z.val.1) (b - d) := by
+  by_cases hdb : d = b
+  · use ∅
+    simp [hdb]
+  replace hdb : d < b := by grind
+  replace hf : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f (f' x) x := by
     filter_upwards [hf] with x hx1 hx2
     exact hx1 (Ioo_subset_Icc_self hx2)
-  let s := {x : ℝ | x ∈ Ioo d b ∧ HasDerivAt f 0 x}
-  have : ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ volume (s \ ⋃ a ∈ u, B a) = 0 := by
-    apply Vitali.exists_disjoint_covering_ae' volume s t 6 (Prod.snd) (Prod.fst) B
-    · simp only [Icc, Metric.closedBall, Real.dist_eq, abs_le', tsub_le_iff_right, neg_sub,
-      setOf_subset_setOf, and_imp, Prod.forall, B]
+  let t := {z : ℝ × ℝ | (d < z.1 ∧ z.1 < z.2 ∧ z.2 < b) ∧ dist (slope f z.1 z.2) (f' z.1) < η}
+  let s := {x : ℝ | x ∈ Ioo d b ∧ HasDerivAt f (f' x) x}
+  have : ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint (fun z ↦ Icc z.1 z.2) ∧
+      volume (s \ ⋃ z ∈ u, Icc z.1 z.2) = 0 := by
+    apply Vitali.exists_disjoint_covering_ae' volume s t 6 (Prod.snd - Prod.fst) Prod.fst
+      (fun z ↦ Icc z.1 z.2)
+    · simp only [Icc, Metric.closedBall, Real.dist_eq, Pi.sub_apply, abs_le', tsub_le_iff_right,
+      sub_add_cancel, neg_sub, setOf_subset_setOf, and_imp, Prod.forall]
       intros; constructor <;> linarith
     · intro A hA
-      simp only [Real.volume_closedBall, ENNReal.coe_ofNat, Real.volume_Icc, add_sub_cancel_left, B]
+      simp only [Pi.sub_apply, Real.volume_closedBall, ENNReal.coe_ofNat, Real.volume_Icc]
       rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul (by norm_num),
           ENNReal.ofReal_le_ofReal_iff (by simp only [mem_setOf_eq, t] at hA; linarith)]
       linarith
-    · simp +contextual [B, t]
-    · simp [B, isClosed_Icc]
+    · simp +contextual [t]
+    · simp [isClosed_Icc]
     · intro x hx
       apply Filter.Eventually.frequently
-      have := hasDerivAt_iff_tendsto.mp hx.right
-      simp only [Real.norm_eq_abs, smul_eq_mul, mul_zero, sub_zero] at this
-      obtain ⟨δ, hδ₁, hδ₂⟩ := (Metric.tendsto_nhds_nhds).mp (hasDerivAt_iff_tendsto.mp hx.2) η hη
+      have := hasDerivAt_iff_tendsto_slope.mp hx.right
+      simp only at this
+      obtain ⟨δ, hδ₁, hδ₂⟩ := (Metric.tendsto_nhdsWithin_nhds).mp
+        (hasDerivAt_iff_tendsto_slope.mp hx.right) η hη
       have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by
         rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
         refine ⟨Ioo (-α) α, by grind, isOpen_Ioo, by grind⟩
@@ -140,399 +152,336 @@ lemma ae_deriv_zero_ctb_cover {f : ℝ → ℝ} {d b η : ℝ}
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       @evn_bound ((b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄
-      use (x, ε)
+      use (x, x + ε)
       repeat' constructor
       · exact hx.left.left
-      · exact hε₁
       · linarith
-      · specialize @hδ₂ (x := x + ε) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
-        simp only [add_sub_cancel_left, Real.norm_eq_abs, smul_eq_mul, mul_zero, sub_zero,
-          dist_zero_right, norm_mul, norm_inv, abs_abs] at hδ₂
-        rw [abs_eq_self.mpr hε₁.le, ← mul_lt_mul_iff_right₀ hε₁] at hδ₂
-        convert hδ₂ using 1
-        field_simp
+      · linarith
+      · apply hδ₂
+        · grind
+        · simp [abs_eq_self.mpr hε₁.le, hε₃]
+      · simp
   obtain ⟨u, ⟨hu₁, hu₂, hu₃, hu₄⟩⟩ := this
-  refine ⟨u, ⟨hu₁, hu₂, hu₃, ?_⟩⟩
-  rw [MeasureTheory.measure_eq_zero_iff_ae_notMem] at hu₄ ⊢
-  filter_upwards [hf, hu₄] with x hx₁ hx₂
+  simp only [t, Set.subset_def, mem_setOf_eq] at hu₁
+  refine ⟨u, ⟨hu₁, hu₃, ?_⟩⟩
+  have : Countable u := by simp [hu₂]
+  have : Pairwise (Disjoint on fun (z : u) ↦ Icc z.val.1 z.val.2) :=
+    fun z₁ z₂ hz₁z₂ ↦ hu₃ z₁.prop z₂.prop (Subtype.coe_ne_coe.mpr hz₁z₂)
+  replace hu₄ : volume (Ioo d b \ ⋃ z ∈ u, Icc z.1 z.2) = 0 := by
+    rw [measure_eq_zero_iff_ae_notMem] at hu₄ ⊢
+    filter_upwards [hf, hu₄] with x hx₁ hx₂
+    grind
+  have vol_sum : volume (⋃ z : u, Icc z.val.1 z.val.2) = ENNReal.ofReal (b - d) := by
+    convert Real.volume_Ioo ▸
+      measure_eq_measure_of_null_diff (by simp only [iUnion_subset_iff]; grind) hu₄
+      using 2
+    simp
+  rw [measure_iUnion (this) (by simp)] at vol_sum
+  simp_rw [Real.volume_Icc] at vol_sum
+  apply_fun fun x ↦ x.toReal at vol_sum
+  rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith)] at vol_sum
+  rw [← Summable.hasSum_iff (by rw [tsum_def] at vol_sum; grind)] at vol_sum
+  convert vol_sum with z
+  rw [ENNReal.toReal_ofReal]
+  linarith [hu₁ z.val z.prop]
+
+
+section IntervalGapsWithin
+
+namespace Finset
+
+variable (F : Finset (ℝ × ℝ)) (a b : ℝ) {i : ℕ}
+
+noncomputable def intervalGapsWithin (i : ℕ) : ℝ × ℝ := (fst, snd) where
+  fst := match i with
+    | 0 => a
+    | i + 1 => if hi : i < F.card then F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl ⟨i, hi⟩ |>.2 else a
+  snd := if hi : i < F.card then F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl ⟨i, hi⟩ |>.1 else b
+
+@[simp]
+theorem intervalGapsWithin_zero_fst : (F.intervalGapsWithin a b 0).1 = a := by
+  simp [intervalGapsWithin, intervalGapsWithin.fst]
+
+@[simp]
+theorem intervalGapsWithin_fst_of_card_lt (hi : F.card < i) :
+    (F.intervalGapsWithin a b i).1 = a := by
+  simp only [intervalGapsWithin, intervalGapsWithin.fst]
   grind
 
-/-- If `f` has derivative 0 a.e. on `[d, b]`, then there is a finite Vitali cover of `[d, b]`
-except for measure at most `δ`, consisting of closed intervals, where each has small variations
-wrt `f`. -/
-lemma ae_deriv_zero_fin_cover {f : ℝ → ℝ} {d b η δ : ℝ}
-    (hf : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x)
-    (hη : 0 < η) (hδ : 0 < δ) :
-    let t := {(x, h) : ℝ × ℝ | d < x ∧ 0 < h ∧ x + h < b ∧ |f (x + h) - f x| < h * η};
-    let B : ℝ × ℝ → Set ℝ := fun (x, h) ↦ Icc x (x + h);
-    ∃ n : ℕ, ∃ v : ℕ → ℝ × ℝ,
-      Set.image v (Finset.range n) ⊆ t ∧
-      Set.PairwiseDisjoint (Finset.range n) (fun i ↦ B (v i)) ∧
-      volume (Ioo d b \ ⋃ i ∈ Finset.range n, B (v i)) < ENNReal.ofReal δ := by
-  intro t B
-  obtain ⟨u, hu1, hu2, hu3, hu4⟩ := ae_deriv_zero_ctb_cover hf hη
-  obtain ⟨e, he⟩ := Set.countable_iff_exists_injOn.mp hu2
-  have : Ioo d b \ ⋃ a ∈ u, B a = ⋂ (i : ℕ), (Ioo d b \ ⋃ a ∈ {x ∈ u | e x < i}, B a) := by
-    ext x; simp only [mem_diff, mem_iUnion, exists_prop, not_exists, not_and,
-      mem_setOf_eq, mem_iInter, and_imp]
-    exact ⟨fun ⟨h1, h2⟩ i ↦ by constructor <;> simp +contextual [h1, h2],
-           fun h ↦ ⟨(h 0).left, fun x hx ↦ (h (e x + 1)).right x hx (by omega)⟩⟩
-  rw [this] at hu4
-  rw [MeasureTheory.measure_iInter_eq_iInf_measure_iInter_le] at hu4
-  · clear this
-    replace hu4 := hu4.symm ▸
-      (show @OfNat.ofNat ℝ≥0∞ 0 Zero.toOfNat0 < ENNReal.ofReal δ by simp [hδ])
-    obtain ⟨n, hn⟩ := iInf_lt_iff.mp hu4
-    classical
-    let enum := (Finset.equivFin {j ∈ Finset.range n | ∃ x ∈ u, e x = j}).symm
-    set n' := Finset.card ({j ∈ Finset.range n | ∃ x ∈ u, e x = j})
-    have hvi {i : ℕ} (hi : i < n') : ∃ x ∈ u, e x = enum ⟨i, hi⟩ := by
-      have := (enum ⟨i, hi⟩).property
-      simp only [Finset.mem_filter, Finset.mem_range] at this
-      tauto
-    let v (i : ℕ) : ℝ × ℝ := if hi : i < n' then Classical.choose (hvi hi) else (0, 0)
-    have v_prop {i : ℕ} (hi : i < n') : v i ∈ u ∧ e (v i) = enum ⟨i, hi⟩ := by
-      simp only [hi, ↓reduceDIte, v]
-      exact Classical.choose_spec (hvi hi)
-    refine ⟨n', v, ?_, ?_, ?_⟩
-    · intro z hz
-      simp only [Finset.coe_range, mem_image, mem_Iio] at hz
-      obtain ⟨i, hi1, hi2⟩ := hz
-      exact hi2 ▸ hu1 (v_prop hi1).left
-    · intro i hi j hj hij
-      have hi1 := v_prop (Finset.mem_range.mp hi)
-      have hj1 := v_prop (Finset.mem_range.mp hj)
-      apply hu3 hi1.left hj1.left
-      intro hC
-      have := Fin.mk.inj_iff.mp <| Equiv.injective enum <| Subtype.eq <| hj1.right ▸ hC ▸ hi1.right
-      tauto
-    · convert hn
-      ext x
-      simp only [Finset.mem_range, mem_diff, mem_iUnion, exists_prop, not_exists, not_and,
-        mem_setOf_eq, mem_iInter, and_imp]
-      constructor
-      · intro ⟨hx1, hx2⟩ j hj
-        refine ⟨by assumption, fun y hy1 hy2 ↦ ?_⟩
-        have hy : e y ∈ {j ∈ Finset.range n | ∃ x ∈ u, e x = j} := by
-          simp only [Finset.mem_filter, Finset.mem_range]
-          exact ⟨by omega, by use y⟩
-        let i := enum.symm ⟨e y, hy⟩
-        have hi : i < n' := i.isLt
-        have : y = v i := by
-          have : e y = enum i := by simp [i]
-          exact he hy1 (v_prop hi).left (this ▸ (v_prop hi).right.symm)
-        exact this.symm ▸ hx2 i hi
-      · intro hx
-        refine ⟨hx 0 (by omega) |>.left, fun i hi ↦ ?_⟩
-        have := v_prop hi
-        apply hx n (by omega) |>.right (v i)
-        · tauto
-        · rw [this.right]
-          set j := enum ⟨i, hi⟩
-          have := j.property
-          simp only [Finset.mem_filter, Finset.mem_range] at this
-          exact this.left
-  · intro i
-    dsimp only [B]
-    apply NullMeasurableSet.diff (by measurability)
-    exact NullMeasurableSet.biUnion (hu2.mono (by simp)) (by measurability)
-  · use 0
-    have : volume (Ioo d b) ≠ ∞ := by simp
-    intro hC
-    apply measure_mono_top (s₂ := Ioo d b) (by simp) at hC
-    tauto
+@[simp]
+theorem intervalGapsWithin_card_snd : (F.intervalGapsWithin a b F.card).2 = b := by
+  simp [intervalGapsWithin, intervalGapsWithin.snd]
 
-/-- If `f` has derivative 0 a.e. on `[d, b]`, then there is a finite Vitali cover of `[d, b]`
-except for measure at most `δ`, consisting of closed intervals, where each has small variations
-wrt `f`. Additionally, The finite cover is already ordered. -/
-lemma ae_deriv_zero_fin_ordered_cover {f : ℝ → ℝ} {d b η δ : ℝ}
-    (hf : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x)
-    (hη : 0 < η) (hδ1 : 0 < δ) :
-    ∃ n : ℕ, ∃ v : ℕ → ℝ × ℝ,
-      (∀ i ∈ Finset.range n, d < (v i).1 ∧ 0 < (v i).2 ∧ (v i).1 + (v i).2 < b ∧
-        |f ((v i).1 + (v i).2) - f (v i).1| < (v i).2 * η) ∧
-      (∀ i ∈ Finset.range n, ∀ j ∈ Finset.range n, i < j → (v i).1 + (v i).2 < (v j).1) ∧
-      (b - d) - (∑ i ∈ Finset.range n, (v i).2) < δ := by
-  obtain ⟨n, v, hv1, hv2, hv3⟩ := ae_deriv_zero_fin_cover hf hη hδ1
-  replace hv1 : ∀ i ∈ Finset.range n, d < (v i).1 ∧ 0 < (v i).2 ∧ (v i).1 + (v i).2 < b ∧
-      |f ((v i).1 + (v i).2) - f (v i).1| < (v i).2 * η := by
-    intro i hi
-    have : v i ∈ {(x, h) : ℝ × ℝ | d < x ∧ h > 0 ∧ x + h < b ∧ |f (x + h) - f x| < h * η} := by
-      apply @hv1 (v i)
-      simp only [Finset.coe_range, mem_image, mem_Iio]
-      exact ⟨i, List.mem_range.mp hi, rfl⟩
-    simpa using this
-  let r_list := @Finset.sort (Finset.range n) (fun (i j) ↦ (v i).1 ≤ (v j).1) _
-    { trans := by intros; linarith }
-    { antisymm := by
-        intro i j h1 h2
-        have hij: (v i).1 = (v j).1 := by linarith
-        have := hv2 i.property j.property
-        contrapose this
-        push_neg
-        refine ⟨Subtype.coe_ne_coe.mpr this, ?_⟩
-        simp only [not_disjoint_iff, mem_Icc]
-        exact ⟨(v i).1, ⟨by simp, by linarith [hv1 i.val i.property]⟩,
-               ⟨by assumption, by linarith [hv1 j.val j.property]⟩⟩ }
-    { total := by intros; exact LinearOrder.le_total _ _ }
-    Finset.univ
-  have r_list_len : r_list.length = n := by simp [r_list]
-  let r (i : ℕ) : ℕ :=
-    if hi : i ∈ Finset.range n then r_list.get ⟨i, r_list_len.symm ▸ Finset.mem_range.mp hi⟩
-    else i
-  have r_mem {i : ℕ} (hi : i ∈ Finset.range n) : r i ∈ Finset.range n := by
-    simp [r, Finset.mem_range.mp hi]
-  have r_mono {i j : ℕ} (hi : i ∈ Finset.range n) (hj : j ∈ Finset.range n) (hij : i ≤ j) :
-      (v (r i)).1 ≤ (v (r j)).1 := by
-    have : List.Sorted (fun (i j : Finset.range n) ↦ (v i).1 ≤ (v j).1) r_list := by simp [r_list]
-    simp only [hi, hj, r, ↓reduceDIte]
-    apply @List.Sorted.rel_get_of_le _ _ {refl := by simp +contextual} _ this
-    simpa
-  have r_inj {i j : ℕ} (hi : i ∈ Finset.range n) (hj : j ∈ Finset.range n) (hij : i ≠ j) :
-      r i ≠ r j := by
-    have nodup : r_list.Nodup := by simp [r_list]
-    have := List.Nodup.getElem_inj_iff (h := nodup)
-      (hi := r_list_len.symm ▸ (List.mem_range.mp hi))
-      (hj := r_list_len.symm ▸ (List.mem_range.mp hj))
-    simp only [hi, hj, r, ↓reduceDIte]
-    intro hC
-    have := this.mp (Subtype.eq hC)
-    contradiction
-  have r_surj {k : ℕ} (hk : k ∈ Finset.range n) : ∃ i ∈ Finset.range n, r i = k := by
-    have : ⟨k, hk⟩ ∈ r_list := by simp [r_list]
-    obtain ⟨i, hi, h⟩ := List.mem_iff_getElem.mp this
-    rw [r_list_len] at hi
-    exact ⟨i, by rwa [Finset.mem_range], by simp [r, hi, h]⟩
-  let v' (i : ℕ) : (ℝ × ℝ) := v (r i)
-  refine ⟨n, v', ?_, ?_, ?_⟩
-  · intro i hi
-    simp only [v']
-    exact hv1 _ (r_mem hi)
-  · intro i hi j hj hij
-    have hi1 : i + 1 ∈ Finset.range n := by rw [Finset.mem_range] at hj ⊢; omega
-    simp only [v']
-    suffices (v (r i)).1 + (v (r i)).2 < (v (r (i + 1))).1 by
-      have : (v (r (i + 1))).1 ≤ (v (r j)).1 := by apply r_mono <;> assumption
-      exact lt_of_lt_of_le (by assumption) this
-    have hL: (v (r i)).1 ≤ (v (r (i + 1))).1 := by apply r_mono <;> (first | assumption | omega)
-    have disj := hv2 (r_mem hi) (r_mem hi1) (by apply r_inj <;> (first | assumption | omega))
-    simp only [Disjoint, le_eq_subset, bot_eq_empty, subset_empty_iff] at disj
-    specialize @disj {(v (r (i + 1))).1}
-    by_contra hC
-    have : (v (r (i + 1))).1 ≤ (v (r i)).1 + (v (r i)).2 := by linarith
-    simp only [singleton_subset_iff, mem_Icc, hL, this, and_self, le_refl,
-      le_add_iff_nonneg_right, true_and, singleton_ne_empty, imp_false, not_le,
-      forall_const] at disj
-    linarith [hv1 _ (r_mem hi1)]
-  · rw [MeasureTheory.measure_diff, MeasureTheory.measure_biUnion_finset] at hv3
-    · simp only [Real.volume_Icc, Real.volume_Ioo, add_sub_cancel_left] at hv3
-      have : ∑ i ∈ Finset.range n, (v' i).2 = ∑ x ∈ Finset.range n, (v x).2 := by
-        dsimp only [v']
-        symm
-        have : Finset.range n = Finset.image r (Finset.range n) := by
-          ext k; simp only [Finset.mem_image]
-          exact ⟨fun hk ↦ r_surj hk, fun ⟨_, hi1, hi2⟩ ↦ hi2 ▸ r_mem hi1⟩
-        nth_rw 1 [this]
-        apply Finset.sum_image (g := r)
-        dsimp only [InjOn]
-        intro i hi j hj; contrapose!; exact r_inj hi hj
-      rw [this]
-      have : ∀ i ∈ Finset.range n, 0 ≤ (v i).2 := by intro i hi; linarith [hv1 i hi]
-      rw [← ENNReal.ofReal_sum_of_nonneg this,
-          ← ENNReal.ofReal_sub (hq := Finset.sum_nonneg this)] at hv3
-      exact (ENNReal.ofReal_lt_ofReal_iff hδ1).mp hv3
-    · assumption
-    · simp +contextual
-    · intro x hx
-      simp only [Finset.mem_range, mem_iUnion, exists_prop] at hx
-      obtain ⟨i, hi1, hi2⟩ := hx
-      simp only [mem_Icc] at hi2
-      rw [mem_Ioo]
-      constructor <;> linarith [hv1 i (List.mem_range.mpr hi1)]
-    · measurability
-    · have : ∑ i ∈ Finset.range n, volume (Icc (v i).1 ((v i).1 + (v i).2)) ≠ ⊤ := by simp
-      exact ne_top_of_le_ne_top this <| measure_biUnion_finset_le (Finset.range n)
-        fun i ↦ Icc (v i).1 ((v i).1 + (v i).2)
+@[simp]
+theorem intervalGapsWithin_snd_of_card_le (hi : F.card ≤ i) :
+    (F.intervalGapsWithin a b i).2 = b := by
+  simp only [intervalGapsWithin, intervalGapsWithin.snd]
+  grind
 
-lemma split_sum_even_odd (n : ℕ) (f : ℕ → ℝ) : ∑ i ∈ Finset.range (2 * n + 1), f i =
-    ∑ i ∈ Finset.range (n + 1), f (2 * i) + ∑ i ∈ Finset.range n, f (2 * i + 1) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    have : 2 * (n + 1) = 2 * n + 1 + 1 := by ring
-    rw [this, Finset.sum_range_succ, Finset.sum_range_succ, ih]
-    nth_rw 2 [Finset.sum_range_succ]
-    nth_rw 3 [Finset.sum_range_succ]
-    rw [this]
-    abel
+@[simp]
+theorem intervalGapsWithin_snd_of_card_eq (hi : F.card = i) :
+    (F.intervalGapsWithin a b i).2 = b :=
+  intervalGapsWithin_snd_of_card_le F a b hi.le
+
+theorem intervalGapsWithin_succ_fst_of_lt_card (hi : i < F.card) :
+    (F.intervalGapsWithin a b (i + 1)).1 = (F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl ⟨i, hi⟩).2 := by
+  simp [intervalGapsWithin, intervalGapsWithin.fst, hi]
+
+theorem intervalGapsWithin_fst_of_zero_lt_le_card (hi₀ : 0 < i) (hi : i ≤ F.card) :
+    (F.intervalGapsWithin a b i).1 =
+      (F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl ⟨i - 1, Nat.sub_one_lt_of_le hi₀ hi⟩).2 := by
+  convert F.intervalGapsWithin_succ_fst_of_lt_card a b (i := i - 1) (by omega)
+  omega
+
+theorem intervalGapsWithin_snd_of_lt_card (hi : i < F.card) :
+    (F.intervalGapsWithin a b i).2 = (F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl ⟨i, hi⟩).1 := by
+  simp [intervalGapsWithin, intervalGapsWithin.snd, hi]
+
+theorem intervalGapsWithin_mapsTo :
+    (Set.Iio F.card).MapsTo
+      (fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1)) F := by
+  intro i hi
+  rw [Set.mem_Iio] at hi
+  simp only [hi, intervalGapsWithin_snd_of_lt_card, intervalGapsWithin_succ_fst_of_lt_card]
+  convert F.orderEmbOfFin_mem rfl ⟨i, hi⟩ using 1
+
+theorem intervalGapsWithin_injOn :
+    (Set.Iio F.card).InjOn
+      (fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1)) := by
+  intro i hi j hj
+  rw [Set.mem_Iio] at hi hj
+  simp only [hi, hj, intervalGapsWithin_snd_of_lt_card, intervalGapsWithin_succ_fst_of_lt_card]
+  exact fun hij ↦ Fin.ext_iff.mp (F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl |>.injective hij)
+
+theorem intervalGapsWithin_surjOn :
+    (Set.Iio F.card).SurjOn
+      (fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1)) F := by
+  intro z hz
+  rw [← F.range_orderEmbOfFin rfl (α := ℝ ×ₗ ℝ)] at hz
+  obtain ⟨i, hi⟩ := hz
+  use i.val, i.prop
+  simp [i.prop, intervalGapsWithin_snd_of_lt_card, intervalGapsWithin_succ_fst_of_lt_card, hi]
+
+theorem intervalGapsWithin_le_fst {a b : ℝ} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
+    (i : ℕ) :
+    a ≤ (F.intervalGapsWithin a b i).1 := by
+  by_cases hi : i = 0 ∨ F.card < i
+  · rcases hi with hi | hi <;> simp [hi]
+  · have := hFab (F.intervalGapsWithin_mapsTo a b (x := i - 1) (by grind))
+    grind
+
+theorem intervalGapsWithin_snd_le {a b : ℝ} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
+    (i : ℕ) :
+    (F.intervalGapsWithin a b i).2 ≤ b := by
+  by_cases hi : F.card ≤ i
+  · simp [hi]
+  · have := hFab (F.intervalGapsWithin_mapsTo a b (x := i) (by grind))
+    grind
+
+theorem intervalGapsWithin_fst_le_snd {a b : ℝ} (hab : a ≤ b)
+    (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
+    (hF : F.toSet.PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) (i : ℕ) :
+    (F.intervalGapsWithin a b i).1 ≤ (F.intervalGapsWithin a b i).2 := by
+  by_cases hi : i ≤ F.card
+  swap
+  · rwa [intervalGapsWithin_fst_of_card_lt _ _ _ (by omega),
+      intervalGapsWithin_snd_of_card_le _ _ _ (by omega)]
+  by_cases hi₁ : i = 0
+  · simp only [hi₁, intervalGapsWithin_zero_fst]
+    by_cases hi₂ : F.card = 0
+    · simp [hi₂, hab]
+    · exact hFab (F.intervalGapsWithin_mapsTo a b (by grind)) |>.left
+  · by_cases hi₂ : F.card = i
+    · simp only [hi₂.le, intervalGapsWithin_snd_of_card_le]
+      convert hFab (F.intervalGapsWithin_mapsTo a b (x := i - 1) (by grind)) |>.right.right using 1
+      simp only
+      congr
+      omega
+    · replace hi₂ : i < F.card := by omega
+      replace hi₁ : 0 < i := Nat.zero_lt_of_ne_zero hi₁
+      simp only [hi₂, hi₁, hi, intervalGapsWithin_snd_of_lt_card,
+        intervalGapsWithin_fst_of_zero_lt_le_card]
+      set G := F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl
+      have hi' : (⟨i - 1, by omega⟩ : Fin F.card) < ⟨i, hi₂⟩ := Fin.mk_lt_mk.mpr (by omega)
+      have hG : (G ⟨i - 1, by omega⟩).1 ≤ (G ⟨i, hi₂⟩).1 :=
+        Prod.Lex.le_iff'.mp (G.monotone hi'.le) |>.left
+      have := hF (by simp [G, F.orderEmbOfFin_mem (α := ℝ ×ₗ ℝ)])
+        (by simp [G, F.orderEmbOfFin_mem (α := ℝ ×ₗ ℝ)]) (G.injective.ne hi'.ne)
+      contrapose! this
+      simp only [Set.not_disjoint_iff, Set.mem_Icc]
+      use (G ⟨i, hi₂⟩).1
+      have hFabi := hFab (z := G ⟨i, hi₂⟩) (by simp [G, F.orderEmbOfFin_mem (α := ℝ ×ₗ ℝ)])
+      simp [hFabi, this.le, hG]
+
+theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : ℝ}
+    (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
+    (Set.Iio (F.card + 1)).PairwiseDisjoint
+      (fun i ↦ Set.Ioc (F.intervalGapsWithin a b i).1 (F.intervalGapsWithin a b i).2) := by
+  intro i hi j hj hij
+  wlog hij' : i < j generalizing i j
+  · exact (this hj hi hij.symm (by omega)).symm
+  · rw [onFun, Set.disjoint_iff_inter_eq_empty]
+    suffices (F.intervalGapsWithin a b i).2 ≤ (F.intervalGapsWithin a b j).1 by grind
+    have hi : i < F.card := by grind
+    have hj : j - 1 < F.card := by grind
+    have hij'' : (⟨i, hi⟩ : Fin F.card) ≤ ⟨j - 1, hj⟩ := Fin.mk_le_mk.mpr (by omega)
+    trans (F.intervalGapsWithin a b (j - 1)).2
+    · simp only [hi, hj, intervalGapsWithin_snd_of_lt_card]
+      exact Prod.Lex.le_iff'.mp (F.orderEmbOfFin (α := ℝ ×ₗ ℝ) rfl |>.monotone hij'') |>.left
+    · have := hFab (intervalGapsWithin_mapsTo F a b (x := j - 1) (by grind))
+      grind
+
+end Finset
+
+end IntervalGapsWithin
+
+
+theorem split_gap_sum (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
+    ∑ i ∈ Finset.range (F.card + 1),
+      (g (F.intervalGapsWithin a b i).2 - g (F.intervalGapsWithin a b i).1) +
+    ∑ z ∈ F, (g z.2 - g z.1) = g b - g a := by
+  let p := F.intervalGapsWithin a b
+  have := Finset.sum_bij (s := Finset.range F.card) (t := F) (g := fun z ↦ g z.2 - g z.1)
+    (f := fun i ↦ (g (p (i + 1)).1 - g (p i).2))
+    (fun i hi ↦ ((p i).2, (p (i + 1)).1))
+    (fun i hi ↦ F.intervalGapsWithin_mapsTo a b (x := i) (by grind))
+    (fun i hi j hj hij ↦ F.intervalGapsWithin_injOn a b (by grind) (by grind) hij)
+    (fun z hz ↦ by
+      obtain ⟨i, hi₁, hi₂⟩ := F.intervalGapsWithin_surjOn a b hz
+      exact ⟨i, by grind, hi₂⟩)
+    (by simp)
+  rw [← this, add_comm, Finset.sum_range_succ, ← add_assoc,
+      ← Finset.sum_add_distrib,
+      Finset.sum_congr rfl (fun _ _ ↦ sub_add_sub_cancel _ _ _),
+      Finset.sum_range_sub (fun i ↦ g (F.intervalGapsWithin a b i).1)]
+  simp
+
+theorem split_gap_sum' (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
+    ∑ i ∈ Finset.range (F.card + 1),
+      (g (F.intervalGapsWithin a b i).2 - g (F.intervalGapsWithin a b i).1) =
+    g b - g a - ∑ z ∈ F, (g z.2 - g z.1) :=
+  eq_sub_iff_add_eq.mpr (split_gap_sum F g)
+
+lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ → ℝ}
+    {d b y : ℝ}
+    (hdb : d ≤ b) (hf : AbsolutelyContinuousOnInterval f d b)
+    {u : Set (ℝ × ℝ)}
+    (hu₁ : ∀ z ∈ u, d < z.1 ∧ z.1 < z.2 ∧ z.2 < b)
+    (hu₂ : u.PairwiseDisjoint (fun z ↦ Icc z.1 z.2))
+    (hu₃ : HasSum (fun (z : u) ↦ z.val.2 - z.val.1) (b - d))
+    (hu₄ : HasSum (fun (z : u) ↦ dist (f z.val.1) (f z.val.2)) y) :
+    dist (f d) (f b) ≤ y := by
+  let u_coe (s : Finset u) : Finset (ℝ × ℝ) := s.image Subtype.val
+  replace hu₁ (s : Finset u) : ∀ ⦃z : ℝ × ℝ⦄, z ∈ u_coe s → d ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b := by
+    intro z hz
+    have := hu₁ z (by grind)
+    grind
+  replace hu₂ (s : Finset u) : (u_coe s).toSet.PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
+    hu₂.subset (by grind)
+  let T (s : Finset u) := ((u_coe s).card + 1, (u_coe s).intervalGapsWithin d b)
+  have hT₁ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_le_fst (hu₁ s) i
+  have hT₂ (s : Finset u) (i : ℕ) :=
+    (u_coe s).intervalGapsWithin_fst_le_snd hdb (hu₁ s) (hu₂ s) i
+  have hT₃ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_snd_le (hu₁ s) i
+  have hT₄ (s : Finset u) := (u_coe s).intervalGapsWithin_pairwiseDisjoint_Ioc (hu₁ s)
+  have hT : univ.MapsTo T (disjWithin d b) := by
+    intro s _
+    simp only [disjWithin, Finset.mem_range, Finset.coe_range, mem_setOf_eq, T]
+    constructor
+    · simp only [uIcc_of_le hdb, mem_Icc]
+      grind
+    · convert hT₄ s using 2 with i
+      exact uIoc_of_le (hT₂ s i)
+  have u_coe_sum (s : Finset u) (g : ℝ → ℝ → ℝ) :
+      ∑ b ∈ s, (g b.val.1 b.val.2) = ∑ z ∈ u_coe s, (g z.1 z.2) :=
+    Finset.sum_nbij Subtype.val (by simp [u_coe]) (by simp)
+      (by simp only [Finset.coe_image, u_coe]; tauto) (by simp)
+  replace hu₃ : Tendsto T atTop (totalLengthFilter ⊓ 𝓟 (disjWithin d b)) := by
+    refine tendsto_inf.mpr ⟨?_, hT.tendsto.mono_left (by simp)⟩
+    simp only [totalLengthFilter, tendsto_comap_iff]
+    convert hu₃.const_sub (b - d) with s
+    · simp only [comp_apply]
+      rw [Finset.sum_congr rfl (g := fun i ↦ ((T s).2 i).2 - ((T s).2 i).1)
+            (fun i hi ↦ by rw [dist_comm, Real.dist_eq, abs_of_nonneg (by grind)])]
+      convert split_gap_sum' (u_coe s) id
+      exact u_coe_sum s fun x y ↦ y - x
+    · abel
+  rw [HasSum] at hu₄
+  simp_rw [u_coe_sum _ fun x y ↦ dist (f x) (f y)] at hu₄
+  have sum_tendsto := hf.comp hu₃ |>.add hu₄
+  simp only [comp_apply, zero_add] at sum_tendsto
+  have dist_le_sum (s : Finset u) :
+      dist (f d) (f b) ≤
+      ∑ i ∈ Finset.range (T s).1, dist (f ((T s).2 i).1) (f ((T s).2 i).2) +
+      (∑ b ∈ u_coe s, dist (f b.1) (f b.2)) := by
+    rw [dist_comm, Finset.sum_congr rfl fun i hi ↦ dist_comm (f ((T s).2 i).1) _,
+        Finset.sum_congr rfl fun (b : ℝ × ℝ) hb ↦ dist_comm (f b.1) _]
+    simp_rw [Real.dist_eq]
+    rw [← split_gap_sum (u_coe s)]
+    grw [abs_add_le, Finset.abs_sum_le_sum_abs, Finset.abs_sum_le_sum_abs]
+  exact le_of_tendsto_of_tendsto' (by simp) sum_tendsto dist_le_sum
+
+theorem Real.tsum_le_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
+    (h : ∀ u : Finset ι, ∑ x ∈ u, f x ≤ c) : ∑' x, f x ≤ c :=
+  (summable_of_sum_le hf h).tsum_le_of_sum_le h
 
 /-- If `f` is absolutely continuous on `uIcc a b` and `f' x = 0` for a.e. `x ∈ uIcc a b`, then `f`
-is constant on `uIcc a b`. -/
+-- is constant on `uIcc a b`. -/
 theorem AbsolutelyContinuousOnInterval.ae_deriv_zero_const {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b)
-    (hf1 : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt f 0 x) :
+    (hf₀ : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt f 0 x) :
     ∃ C, ∀ x ∈ uIcc a b, f x = C := by
   wlog hab : a ≤ b
-  · exact uIcc_comm b a ▸ @this f b a hf.symm (uIcc_comm a b ▸ hf1) (by linarith)
+  · exact uIcc_comm b a ▸ @this f b a hf.symm (uIcc_comm a b ▸ hf₀) (by linarith)
   suffices ∀ x ∈ uIcc a b, f x = f b by use f b
-  by_contra hC
-  push_neg at hC
-  obtain ⟨d, hd1, hd2⟩ := hC
-  rw [uIcc_of_le hab, mem_Icc] at hd1
+  rw [uIcc_of_le hab] at hf₀ ⊢
+  intro d hd
+  suffices ∀ r > 0, dist (f d) (f b) ≤ r by
+    contrapose! this
+    exact exists_between (dist_pos.mpr this)
+  intro r hr
+  rw [mem_Icc] at hd
   have had : a ≤ d := by linarith
-  have hdb : d < b := lt_of_le_of_ne hd1.right fun hC ↦ hd2 (congrArg f hC)
-  rw [absolutelyContinuousOnInterval_iff] at hf
-  have hfdb: 0 < |f d - f b| / 2 := by
-    simp only [Nat.ofNat_pos, div_pos_iff_of_pos_right, abs_pos, ne_eq]
-    rwa [sub_eq_zero]
-  obtain ⟨δ, hδ1, hδ2⟩ := hf (|f d - f b| / 2) hfdb
-  simp only [AbsolutelyContinuousOnInterval.disjWithin, mem_setOf_eq] at hδ2
-  simp_rw [uIcc_of_le hab] at hf1 hδ2 ⊢
-  replace hf1 : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x := by
-    filter_upwards [hf1] with x hx1 hx2
+  by_cases hdb₀ : d = b
+  · simp [hdb₀, hr.le]
+  have hdb : d < b := by grind
+  replace hf₀ : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x := by
+    filter_upwards [hf₀] with x hx1 hx2
     apply hx1
     suffices Icc d b ⊆ Icc a b from this hx2
     gcongr
-  have hfdb': 0 < |f d - f b| / (2 * (b - d)) := by apply div_pos <;> linarith
-  obtain ⟨n, v, hv1, hv2, hv3⟩ := ae_deriv_zero_fin_ordered_cover hf1 hfdb' hδ1
-  let I (i : ℕ) :=
-    if i < n then
-      if i = 0 then (d, (v i).1) else ((v (i - 1)).1 + (v (i - 1)).2, (v i).1)
-    else
-      if i = n ∧ 0 < n then ((v (i - 1)).1 + (v (i - 1)).2, b) else (d, b)
-  have hI1 : (I 0).1 = d := by
-    dsimp only [I]
-    split_ifs
-    any_goals omega
-    all_goals simp
-  have hI2 : (I n).2 = b := by
-    dsimp only [I]
-    split_ifs
-    any_goals omega
-    all_goals simp
-  have hI3 {i : ℕ} (hi : i ∈ Finset.range n) : (I (i + 1)).1 = (v i).1 + (v i).2 := by
-    have := Finset.mem_range.mp hi
-    dsimp only [I]
-    split_ifs
-    any_goals omega
-    any_goals contradiction
-    all_goals simp
-  have hI4 {i : ℕ} (hi : i ∈ Finset.range n) : (I i).2 = (v i).1 := by
-    have := Finset.mem_range.mp hi
-    dsimp only [I]
-    split_ifs
-    all_goals simp
-  have hI5 {i : ℕ} (hi : i ∈ Finset.range (n + 1)) : a ≤ (I i).1 ∧ (I i).1 ≤ (I i).2 ∧ (I i).2 ≤ b
-      := by
-    by_cases hi1 : i < n
-    · simp only [hi1, ↓reduceIte, I]
-      · by_cases hi0 : i = 0
-        · simp only [hi0, ↓reduceIte, true_and, had]
-          constructor <;> linarith [hv1 0 (by rw [Finset.mem_range]; omega)]
-        · simp only [hi0, ↓reduceIte]
-          have := hv1 (i - 1) (by rw [Finset.mem_range]; omega)
-          have := hv1 i (by rw [Finset.mem_range]; omega)
-          have := hv2 (i - 1) (by rw [Finset.mem_range]; omega) i
-            (by rw [Finset.mem_range]; omega) (by omega)
-          exact ⟨by linarith, by linarith, by linarith⟩
-    · simp only [hi1, ↓reduceIte, I]
-      · by_cases hn : i = n ∧ 0 < n
-        · simp only [hn, and_self, ↓reduceIte, le_refl, and_true]
-          constructor <;> linarith [hv1 (n - 1) (by rw [Finset.mem_range]; omega)]
-        · simp only [hn, ↓reduceIte, le_refl, and_true, had, hd1.right]
-  have hI6 {i : ℕ} (hi : i ∈ Finset.range (n + 1)) : (I i).1 ∈ Icc a b ∧ (I i).2 ∈ Icc a b := by
-    simp only [mem_Icc]
-    repeat' constructor
-    all_goals linarith [hI5 hi]
-  have hI7 {i j : ℕ} (hi : i ∈ Finset.range (n + 1)) (hj : j ∈ Finset.range (n + 1))
-      (hij : i < j) : (I i).2 ≤ (I j).1:= by
-    have hv2' {i j : ℕ} (hi : i ∈ Finset.range n) (hj : j ∈ Finset.range n) (hij : i ≤ j) :
-      (v i).1 ≤ (v j).1 := by
-      by_cases hij0 : i = j
-      · rw [hij0]
-      · linarith [hv2 i hi j hj (by omega), hv1 i hi]
-    have hjn : j < n + 1 := Finset.mem_range.mp hj
-    have hin : i < n + 1 := Finset.mem_range.mp hi
-    replace hin : i < n := by omega
-    simp only [hin, ↓reduceIte, I]
-    have (a : ℝ) (ha : 0 < a) : 0 ≤ a := le_of_lt ha
-    split_ifs <;> (simp only; try omega)
-    all_goals try apply le_add_of_le_of_nonneg
-    all_goals try refine le_of_lt (hv1 _ ?_).right.left
-    all_goals try refine hv2' ?_ ?_ ?_
-    all_goals try rw [Finset.mem_range]
-    all_goals omega
-  let r (i : ℕ) : ℝ := if Even i then (I (i / 2)).1 else (I (i / 2)).2
-  have hr1 (i : ℕ) : r (2 * i) = (I i).1 := by simp [r]
-  have hr2 (i : ℕ) : r (2 * i + 1) = (I i).2 := by
-    simp only [Nat.not_even_bit1, ↓reduceIte, r]
-    congr; omega
-  have hrd : d = r 0 := by rw [show 0 = 2 * 0 by rfl, hr1, hI1]
-  have hrb : b = r (2 * n + 1) := by rw [hr2, hI2]
-  have h_dist_sum : ∑ i ∈ Finset.range (n + 1), dist (I i).1 (I i).2 =
-      b - d - ∑ i ∈ Finset.range n, (v i).2 := by
-    rw [fun a b c ↦ show a = b - c ↔ b = a + c by grind]
-    calc
-    _ = r (2 * n + 1) - r 0 := by rw [hrd, hrb]
-    _ = ∑ k ∈ Finset.range (2 * n + 1), (r (k + 1) - r k) := by rw [← Finset.sum_range_sub]
-    _ = ∑ i ∈ Finset.range (n + 1), (r (2 * i + 1) - r (2 * i)) +
-        ∑ i ∈ Finset.range n, (r (2 * i + 1 + 1) - r (2 * i + 1)) := by rw [split_sum_even_odd]
-    _ = ∑ i ∈ Finset.range (n + 1), dist (I i).1 (I i).2 + ∑ i ∈ Finset.range n, (v i).2 := by
-      congr 1 <;> apply Finset.sum_congr rfl
-      · intro i hi
-        rw [hr1, hr2, Real.dist_eq, abs_eq_neg_self.mpr]
-        · abel
-        · linarith [hI5 hi]
-      · intro i hi
-        rw [show 2 * i + 1 + 1 = 2 * (i + 1) by ring, hr1, hr2, hI3, hI4] <;> try assumption
-        abel
-  have : ∑ i ∈ Finset.range (n + 1), dist (f (I i).1) (f (I i).2) < |f d - f b| / 2 := by
-    refine hδ2 ((n + 1), I) ⟨@hI6, ?_⟩ (by convert hv3 using 1)
-    intro i hi j hj hij
-    simp only [onFun, uIoc_of_le (hI5 hi).right.left, uIoc_of_le (hI5 hj).right.left]
-    by_cases hij1 : i < j
-    · exact Ioc_disjoint_Ioc_of_le (hI7 hi hj hij1)
-    · exact Ioc_disjoint_Ioc_of_le (hI7 hj hi (by omega)) |>.symm
-  suffices |f d - f b| < |f d - f b| by linarith
-  calc
-  _ = |f (r 0) - f (r (2 * n + 1))| := by rw [hrd, hrb]
-  _ = |(f ∘ r) 0 - (f ∘ r) (2 * n + 1)| := by simp
-  _ = |∑ k ∈ Finset.range (2 * n + 1), ((f ∘ r) k - (f ∘ r) (k + 1))| := by
-    rw [← Finset.sum_range_sub']
-  _ = |∑ k ∈ Finset.range (2 * n + 1), (f (r k) - f (r (k + 1)))| := by simp
-  _ ≤ ∑ k ∈ Finset.range (2 * n + 1), |f (r k) - f (r (k + 1))| := by
-    apply Finset.abs_sum_le_sum_abs
-  _ = ∑ i ∈ Finset.range (n + 1), |f (r (2 * i)) - f (r (2 * i + 1))| +
-      ∑ i ∈ Finset.range n, |f (r (2 * i + 1)) - f (r (2 * i + 1 + 1))| := by
-    rw [split_sum_even_odd]
-  _ = ∑ i ∈ Finset.range (n + 1), dist (f (I i).1) (f (I i).2) +
-      ∑ i ∈ Finset.range n, |f ((v i).1 + (v i).2) - f ((v i).1)| := by
-    congr 1 <;> apply Finset.sum_congr rfl
-    · intro i hi
-      rw [hr1, hr2, Real.dist_eq]
-    · intro i hi
-      rw [show 2 * i + 1 + 1 = 2 * (i + 1) by ring, hr1, hr2, hI3, hI4] <;> try assumption
-      nth_rw 1 [← abs_neg]; congr 1; abel
-  _ < |f d - f b| / 2 + ∑ i ∈ Finset.range n, |f ((v i).1 + (v i).2) - f ((v i).1)| := by
-    gcongr 1
-  _ ≤ |f d - f b| / 2 + ∑ i ∈ Finset.range n, (v i).2 * (|f d - f b| / (2 * (b - d))) := by
-    gcongr with i hi
-    linarith [hv1 i hi]
-  _ = |f d - f b| / 2 + (∑ i ∈ Finset.range n, (v i).2) * (|f d - f b| / (2 * (b - d))) := by
-    rw [Finset.sum_mul]
-  _ ≤ |f d - f b| / 2 + (b - d) * (|f d - f b| / (2 * (b - d))) := by
-    gcongr
-    suffices 0 ≤ (b - d) - ∑ i ∈ Finset.range n, (v i).2 by linarith
-    rw [← h_dist_sum]
-    apply Finset.sum_nonneg; simp
-  _ = |f d - f b| := by field_simp [show b - d ≠ 0 by linarith]; ring
+  have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
+  have ⟨u, hu₁, hu₂, hu₃⟩ :=
+    ae_hasDerivAt_exists_countable_pairwiseDisjoint_tsum_sub_eq_sub hd.right hf₀ hfdb'
+  let g := fun (z : u) ↦ dist (f z.val.1) (f z.val.2)
+  have g_nonneg : 0 ≤ g := by intro; simp [g]
+  have g_finsum_bound (s : Finset u) : ∑ z ∈ s, g z ≤ r := by
+    have (z : u) (hz : z ∈ s) : g z ≤ r / (b - d) * (z.val.2 - z.val.1) := by
+      have slope_bound := hu₁ z (by simp) |>.right |>.le
+      have : 0 < z.val.2 - z.val.1 := by linarith [hu₁ z (by simp)]
+      simp only [Real.dist_eq, slope, vsub_eq_sub, smul_eq_mul, sub_zero, abs_mul,
+        abs_inv] at slope_bound
+      rwa [inv_mul_le_iff₀' (abs_pos_of_pos this), abs_of_pos this, abs_sub_comm] at slope_bound
+    grw [Finset.sum_le_sum this]
+    rw [← Finset.mul_sum]
+    have : ∑ z ∈ s, (z.val.2 - z.val.1) ≤ b - d :=
+      hu₃.tsum_eq ▸ Summable.sum_le_tsum _ (by grind) hu₃.summable
+    grw [this]
+    field_simp
+    grind
+  have hu₄ := summable_of_sum_le g_nonneg g_finsum_bound |>.hasSum
+  have g_sum_bound := Real.tsum_le_of_sum_le g_nonneg g_finsum_bound
+  have := (hf.mono (by grind [uIcc_of_le])).dist_le_of_pairwiseDisjoint_hasSum hd.right
+    (fun s hs ↦ hu₁ s hs |>.left) hu₂ hu₃ hu₄
+  grind
 
 /-- *Fundamental Theorem of Calculus* for absolutely continuous functions: if `f` is absolutely
 continuous on `uIcc a b`, then `∫ (x : ℝ) in a..b, deriv f x = f b - f a`. -/
 theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) :
     ∫ (x : ℝ) in a..b, deriv f x = f b - f a := by
-  have f_deriv_integral_ac := hf.deriv_intervalIntegrable.integral_absolutelyContinuousOnInterval
+  have f_deriv_integral_ac :=
+    hf.deriv_intervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral
     (c := a) (by simp)
   let g (x : ℝ) := f x - ∫ (t : ℝ) in a..x, deriv f t
   have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub (f_deriv_integral_ac)
