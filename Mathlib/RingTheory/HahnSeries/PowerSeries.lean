@@ -235,4 +235,64 @@ theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
 
 end Algebra
 
+section meval
+
+variable [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+
+/-- Monomial evaluation of a power series by substitution of `X` into a Hahn series single of
+strictly positive order. -/
+def meval [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* HahnSeries Γ R :=
+  ((embDomainRingHom (multiplesHom Γ g) (StrictMono.injective (nsmul_left_strictMono hg))
+      (fun _ _ => StrictMono.le_iff_le (nsmul_left_strictMono hg))).comp
+      (toPowerSeries (R := R)).symm).comp (PowerSeries.rescale r)
+
+theorem meval_apply_coeff [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
+    (n : ℕ) : (meval hg r a).coeff (n • g) = r ^ n * PowerSeries.coeff n a := by
+  let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
+      (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
+  rw [meval, RingHom.comp_apply, RingHom.comp_apply, embDomainRingHom_apply,
+    show n • g = f n by rfl, embDomain_coeff]
+  simp
+
+theorem meval_notin_range [CommSemiring R] {g g' : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
+    (hg' : g' ∉ Set.range (multiplesHom Γ g)) : (meval hg r a).coeff g' = 0 := by
+  rw [meval, RingHom.comp_apply, RingHom.comp_apply, embDomainRingHom_apply]
+  exact embDomain_notin_range hg'
+
+theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
+    meval hg r PowerSeries.X = single g r := by
+  ext g'
+  by_cases h : g' ∈ Set.range (multiplesHom Γ g)
+  · obtain ⟨n, hn⟩ := h
+    rw [@multiplesHom_apply] at hn
+    rw [← hn, meval_apply_coeff]
+    by_cases h1 : n = 1; · simp [h1]
+    have hng : ¬ n • g = g := by
+      nth_rw 2 [← one_nsmul g]
+      exact fun hn1 => h1 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
+    simp [PowerSeries.coeff_X, h1, hng]
+  · rw [meval_notin_range hg r _ h, coeff_single_of_ne
+      fun hgg' => h (Exists.intro 1 (by simp [hgg']))]
+
+theorem meval_X_npow [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (n : ℕ) :
+    meval hg r (PowerSeries.X ^ n) = single (n • g) (r ^ n) := by
+  rw [RingHom.map_pow (meval hg r) _ n, meval_X, single_pow g n r]
+
+theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
+    meval hg r (PowerSeries.C s) = C s := by
+  ext g'
+  by_cases h : g' ∈ Set.range (multiplesHom Γ g)
+  · obtain ⟨n, hn⟩ := h
+    rw [@multiplesHom_apply] at hn
+    rw [← hn, meval_apply_coeff]
+    by_cases h0 : n = 0; · simp [h0]
+    have hng : ¬ n • g = 0 • g :=
+      fun hn1 => h0 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
+    simp only [zero_nsmul] at hng
+    simp [PowerSeries.coeff_C, h0, coeff_single_of_ne hng]
+  · rw [meval_notin_range hg r _ h, C_apply, coeff_single_of_ne
+      fun hgg' => h (Exists.intro 0 (by simp [hgg']))]
+
+end meval
+
 end HahnSeries

@@ -33,8 +33,9 @@ namespace Set
 @[to_additive]
 theorem IsPWO.smul [Preorder G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
-  rw [← @image_smul_prod]
-  exact (hs.prod ht).image_of_monotone (monotone_fst.smul monotone_snd)
+  rw [← image_smul_prod]
+  exact (hs.prod ht).image_of_monotone <| monotone_prod_iff.mpr
+    ⟨fun a ↦ Covariant.monotone_of_const a, fun b ↦ Monotone.smul (fun ⦃a b⦄ a ↦ a) monotone_const⟩
 
 @[to_additive]
 theorem IsWF.smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedSMul G P] {s : Set G}
@@ -118,7 +119,7 @@ theorem smulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
     obtain rfl :=
       (hs.min_le hns has).eq_of_not_lt fun hlt =>
         (SMul.smul_lt_smul_of_lt_of_le hlt <| ht.min_le hnt hat).ne' hst
-    exact ⟨rfl, IsCancelSMul.left_cancel _ _ _ hst⟩
+    exact ⟨rfl, IsLeftCancelSMul.left_cancel _ _ _ hst⟩
   · rintro ⟨rfl, rfl⟩
     exact ⟨hs.min_mem _, ht.min_mem _, rfl⟩
 
