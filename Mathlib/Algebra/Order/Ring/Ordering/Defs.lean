@@ -188,6 +188,6 @@ An ordering `O` on a ring `R` is a preordering such that
 1. `O` contains either `x` or `-x` for each `x` in `R` and
 2. the support of `O` is a prime ideal.
 -/
-class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P, P.support.IsPrime
+class IsOrdering (P : RingPreordering R) extends HasMemOrNegMem P, P.support.IsCompletelyPrime
 
 end RingPreordering

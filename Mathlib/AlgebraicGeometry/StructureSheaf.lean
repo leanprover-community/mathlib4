@@ -847,6 +847,7 @@ instance IsLocalization.to_stalk (p : PrimeSpectrum R) :
   convert (IsLocalization.isLocalization_iff_of_ringEquiv (S := Localization.AtPrime p.asIdeal) _
           (stalkIso R p).symm.commRingCatIsoToRingEquiv).mp
       Localization.isLocalization
+  on_goal 2 => infer_instance
   apply Algebra.algebra_ext
   intro
   rw [stalkAlgebra_map]
