@@ -53,7 +53,7 @@ protected theorem finite (n : ℕ) : (K n).Finite := K.finite' n
 
 theorem subset_succ (n : ℕ) : K n ⊆ K (n + 1) := K.subset_succ' n
 
-protected theorem subset_mono {m n : ℕ} (h : m ≤ n) : K m ⊆ K n :=
+protected theorem mono {m n : ℕ} (h : m ≤ n) : K m ⊆ K n :=
   OrderHomClass.mono K h
 
 theorem iUnion_eq : ⋃ n, K n = s :=
