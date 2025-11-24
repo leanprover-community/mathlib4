@@ -2203,7 +2203,6 @@ public import Mathlib.CategoryTheory.Adjunction.Parametrized
 public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Adjunction.Quadruple
 public import Mathlib.CategoryTheory.Adjunction.Reflective
-public import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
 public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Adjunction.Triple
 public import Mathlib.CategoryTheory.Adjunction.Unique
@@ -2879,10 +2878,7 @@ public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.Basic
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
-<<<<<<< HEAD
 public import Mathlib.CategoryTheory.Presentable.Continuous
-=======
->>>>>>> origin/accessible-essentially-small
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.EssentiallyLarge
 public import Mathlib.CategoryTheory.Presentable.Finite
