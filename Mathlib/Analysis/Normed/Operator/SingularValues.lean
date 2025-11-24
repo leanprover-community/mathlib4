@@ -219,29 +219,25 @@ public theorem ContinuousLinearMap.isCompactOperator_of_iInf_singularValue_eq_ze
     := Classical.choose_spec (hT n)
 
   have hl₁ : Filter.Tendsto T.singularValue Filter.atTop (𝓝 0) := h ▸ T.tendsto_atTop_singularValue
-  --have hl₂ : Filter.Tendsto (fun (n : ℕ) ↦ 1/((n : ℝ≥0) + 1)) Filter.atTop (𝓝 0) := by
-  --  exact tendsto_one_div_add_atTop_nhds_zero_nat
-  have hl₂ : Filter.Tendsto (fun n ↦ T.singularValue n + 1/((n : ℝ≥0) + 1)) Filter.atTop (𝓝 0) := by
+  rw [←NNReal.tendsto_coe] at hl₁
+  have hl₂ : Filter.Tendsto (fun n : ℕ ↦ ↑(T.singularValue n) + 1/((n : ℝ) + 1))
+    Filter.atTop (𝓝 0) := by
     simpa using Filter.Tendsto.add hl₁ (tendsto_one_div_add_atTop_nhds_zero_nat)
-
-  have := Filter.Tendsto.squeeze (f := fun n : ℕ ↦ ‖T - R n‖₊) (g := fun _ ↦ 0)
-    tendsto_const_nhds hl₂ sorry sorry
 
   -- It suffices to show that `R n` converges to `T` and that all but finitely many `R n` are finite
   -- rank (in fact, they are all finite rank).
   apply isCompactOperator_of_tendsto (F := R) (l := Filter.atTop)
-  · -- tendsto_zero_iff_norm_tendsto_zero
-    -- tendsto_iff_norm_sub_tendsto_zero
-    -- Or `squeeze_zero_norm` -> Doesn't work because
-    rw [tendsto_iff_norm_sub_tendsto_zero]
+  · rw [tendsto_iff_norm_sub_tendsto_zero]
     simp_rw [norm_sub_rev]
-    apply this
-
-    sorry
+    apply Filter.Tendsto.squeeze (f := fun n : ℕ ↦ ‖T - R n‖) (g := fun _ ↦ 0)
+      tendsto_const_nhds hl₂
+    · intro _
+      positivity
+    · intro n
+      exact (hR n).right.le
   · apply Filter.Eventually.of_forall
     intro n
     sorry
-    --exact (hR n).left
 
 end banach_space
 
