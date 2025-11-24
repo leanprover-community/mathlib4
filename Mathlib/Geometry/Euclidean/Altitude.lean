@@ -81,7 +81,8 @@ lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (
     (s.map f.toAffineMap f.injective).altitude i = (s.altitude i).map f.toAffineMap := by
   rw [eq_iff_direction_eq_of_mem ((s.map f.toAffineMap f.injective).mem_altitude i)
     (mem_map_of_mem f.toAffineMap (s.mem_altitude i)), map_direction, direction_altitude,
-    direction_altitude, Submodule.map_inf f.linear f.linearIsometry.injective, map_vectorSpan]
+    direction_altitude, Submodule.map_inf f.linear f.linearIsometry.injective,
+    AffineMap.vectorSpan_image_eq_submodule_map]
   ext v
   simp only [map_points, AffineIsometry.coe_toAffineMap, Function.comp_apply, Set.range_comp,
     Submodule.mem_inf, Submodule.mem_orthogonal, AffineIsometry.linear_eq_linearIsometry,
@@ -90,19 +91,20 @@ lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (
   rw [h, Set.image_comp]
   intro hv
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← AffineIsometry.coe_toAffineMap, ← map_vectorSpan, Submodule.mem_map] at hv
+  · rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.vectorSpan_image_eq_submodule_map,
+      Submodule.mem_map] at hv
     rcases hv with ⟨v, hv, rfl⟩
     refine ⟨v, ?_⟩
     simp only [AffineIsometry.linear_eq_linearIsometry, LinearIsometry.coe_toLinearMap, and_true]
     intro u hu
-    rw [← AffineIsometry.coe_toAffineMap, ← map_vectorSpan] at h
+    rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.vectorSpan_image_eq_submodule_map] at h
     replace h := h (f.linear u)
     rw [Submodule.mem_map] at h
     replace h := h ⟨u, hu, rfl⟩
     rwa [AffineIsometry.linear_eq_linearIsometry, LinearIsometry.coe_toLinearMap,
       LinearIsometry.inner_map_map] at h
   · rcases h with ⟨v, h, rfl⟩
-    rw [← AffineIsometry.coe_toAffineMap, ← map_vectorSpan]
+    rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.vectorSpan_image_eq_submodule_map]
     intro u hu
     rw [Submodule.mem_map] at hu
     rcases hu with ⟨u, hu, rfl⟩
