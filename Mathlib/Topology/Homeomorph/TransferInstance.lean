@@ -31,7 +31,8 @@ def homeomorph (e : α ≃ β) [TopologicalSpace β] :
   { e with
     continuous_toFun := continuous_induced_dom
     continuous_invFun := by
-      -- was: convert continuous_coinduced_rng; exact e.coinduced_symm.symm, TODO fix!
-      sorry }
+      simp only [Equiv.invFun_as_coe]
+      convert continuous_coinduced_rng
+      rw [e.coinduced_symm] }
 
 end Equiv
