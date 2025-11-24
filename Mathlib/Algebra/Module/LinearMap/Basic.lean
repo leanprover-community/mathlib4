@@ -35,8 +35,8 @@ variable {R M N A : Type*} [Semiring R] [Semiring A]
   [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N] [SMulCommClass R A N]
 
 variable (R M N A) in
-/-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` is an
-`(R, A)`-bimodule. -/
+/-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` has
+commuting `R`-module and `A`-module structures. -/
 def ltoFun : (M →ₗ[R] N) →ₗ[A] (M → N) where
   toFun f := f.toFun
   map_add' _ _ := rfl
