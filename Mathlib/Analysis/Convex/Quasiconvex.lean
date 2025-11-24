@@ -114,25 +114,23 @@ theorem QuasiconvexOn.monotone_comp
       exact ⟨hf.1, le_trans (hg hf.2) hx.2⟩
 
 theorem QuasiconvexOn.antitone_comp (hg : Antitone g) (hf : QuasiconvexOn 𝕜 s f) :
-  QuasiconcaveOn 𝕜 s (g ∘ f) :=
+    QuasiconcaveOn 𝕜 s (g ∘ f) :=
   hf.monotone_comp (γ := γᵒᵈ) hg
 
 theorem QuasiconcaveOn.monotone_comp (hg : Monotone g) (hf : QuasiconcaveOn 𝕜 s f) :
-  QuasiconcaveOn 𝕜 s (g ∘ f) := by
-  apply QuasiconvexOn.monotone_comp (β := βᵒᵈ) (γ := γᵒᵈ) (f := f) _ hf
-  rw [← monotone_dual_iff]; exact hg
+    QuasiconcaveOn 𝕜 s (g ∘ f) :=
+  QuasiconvexOn.monotone_comp hg.dual hf
 
 theorem QuasiconcaveOn.antitone_comp (hg : Antitone g) (hf : QuasiconcaveOn 𝕜 s f) :
-  QuasiconvexOn 𝕜 s (g ∘ f) := by
-  apply QuasiconvexOn.antitone_comp (β := βᵒᵈ) (γ := γᵒᵈ) (f := f) _ hf
-  rw [← antitone_dual_iff]; exact hg
+    QuasiconvexOn 𝕜 s (g ∘ f) :=
+  QuasiconvexOn.antitone_comp hg.dual hf
 
 theorem QuasilinearOn.monotone_comp (hg : Monotone g) (hf : QuasilinearOn 𝕜 s f) :
-  QuasilinearOn 𝕜 s (g ∘ f) :=
+    QuasilinearOn 𝕜 s (g ∘ f) :=
   ⟨hf.1.monotone_comp hg, hf.2.monotone_comp hg⟩
 
 theorem QuasilinearOn.antitone_comp (hg : Antitone g) (hf : QuasilinearOn 𝕜 s f) :
-  QuasilinearOn 𝕜 s (g ∘ f) :=
+    QuasilinearOn 𝕜 s (g ∘ f) :=
   ⟨hf.2.antitone_comp hg, hf.1.antitone_comp hg⟩
 
 end Composition
@@ -144,16 +142,16 @@ variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
 variable {β : Type*} [Preorder β]
 variable {s : Set E} {f : E → β}
 
-theorem Convex.quasiconvexOn_restrict {t : Set E} (hf : QuasiconvexOn 𝕜 s f) (hst : t ⊆ s)
-    (ht : Convex 𝕜 t) : QuasiconvexOn 𝕜 t f :=
-  by
+theorem QuasiconvexOn.mono {t : Set E}
+    (hf : QuasiconvexOn 𝕜 s f) (hst : t ⊆ s) (ht : Convex 𝕜 t) :
+    QuasiconvexOn 𝕜 t f := by
   intro b
   rw [Set.sep_of_subset hst]
   exact Convex.inter ht (hf b)
 
-theorem Convex.quasiconcaveOn_restrict {t : Set E} (hf : QuasiconcaveOn 𝕜 s f) (hst : t ⊆ s)
-    (ht : Convex 𝕜 t) : QuasiconcaveOn 𝕜 t f :=
-  by
+theorem QuasiconcaveOn.mono {t : Set E}
+    (hf : QuasiconcaveOn 𝕜 s f) (hst : t ⊆ s) (ht : Convex 𝕜 t) :
+    QuasiconcaveOn 𝕜 t f := by
   intro b
   rw [Set.sep_of_subset hst]
   exact Convex.inter ht (hf b)
@@ -167,23 +165,24 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 variable {β : Type*} [Preorder β] {f : E → β}
 
+open scoped Set.Notation
+
 theorem QuasiconcaveOn.isPreconnected_preimage {s : Set E} {t : β}
     (hfc : QuasiconcaveOn ℝ s f) :
-    IsPreconnected (f ∘ (fun x ↦ ↑x) ⁻¹' Ici t : Set s) := by
-  rw [preimage_comp,
-    ← Topology.IsInducing.subtypeVal.isPreconnected_image,
+    IsPreconnected (s ↓∩ f ⁻¹' Ici t) := by
+  rw [← Topology.IsInducing.subtypeVal.isPreconnected_image,
     image_preimage_eq_inter_range,
     Subtype.range_coe, inter_comm]
   exact (hfc t).isPreconnected
 
 theorem QuasiconvexOn.isPreconnected_preimage {s : Set E} {t : β}
     (hfc : QuasiconvexOn ℝ s f) :
-    IsPreconnected (f ∘ (fun x ↦ ↑x) ⁻¹' Iic t : Set s) := by
-  exact QuasiconcaveOn.isPreconnected_preimage (β := βᵒᵈ) hfc
+    IsPreconnected (s ↓∩ f ⁻¹' Iic t) :=
+  QuasiconcaveOn.isPreconnected_preimage (β := βᵒᵈ) hfc
 
 theorem QuasilinearOn.isPreconnected_preimage {s : Set E} {t : β}
     (hfc : QuasilinearOn ℝ s f) :
-    IsPreconnected (f ∘ (fun x ↦ ↑x) ⁻¹' Iic t : Set s) :=
+    IsPreconnected (s ↓∩ f ⁻¹' Iic t) :=
   hfc.left.isPreconnected_preimage
 
 end Preconnected
