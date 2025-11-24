@@ -100,19 +100,6 @@ lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     disjWithin c d ⊆ disjWithin a b := by
   grind [disjWithin]
 
-lemma subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b)
-      {i : ℕ} (hi : i < n) : uIoc (I i).1 (I i).2 ⊆ uIoc a b := by
-    simp only [disjWithin, Finset.mem_range, mem_setOf_eq, uIcc, mem_Icc] at hnI
-    have := hnI.left i hi
-    dsimp only [uIoc]; gcongr 1
-    · simp only [le_inf_iff]; tauto
-    · simp only [sup_le_iff]; tauto
-
-lemma union_subset_of_disjWithin {a b : ℝ} {n : ℕ} {I : ℕ → ℝ × ℝ} (hnI : (n, I) ∈ disjWithin a b) :
-    (⋃ i ∈ Finset.range n, uIoc (I i).1 (I i).2) ⊆ uIoc a b := by
-  simp only [iUnion_subset_iff, Finset.mem_range]
-  exact fun i hi ↦ subset_of_disjWithin hnI hi
-
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
 `∑ i ∈ Finset.range n, dist (f (a i)) (f (b i))` tendsto `𝓝 0` wrt `totalLengthFilter` restricted
