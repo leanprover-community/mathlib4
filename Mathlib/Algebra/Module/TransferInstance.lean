@@ -3,14 +3,19 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
-import Mathlib.Algebra.Module.Equiv.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Transfer algebraic structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra
 
@@ -19,6 +24,16 @@ variable {R α β : Type*} [Semiring R]
 
 namespace Equiv
 variable (e : α ≃ β)
+
+variable (R : Type*) [Zero R] in
+/-- Transfer `NoZeroSMulDivisors` across an `Equiv` -/
+protected lemma noZeroSMulDivisors [Zero β] [SMul R β] [NoZeroSMulDivisors R β] :
+    let := e.zero
+    let := e.smul R
+    NoZeroSMulDivisors R α := by
+  extract_lets
+  refine ⟨fun {r} m ↦ ?_⟩
+  simpa [smul_def, zero_def, Equiv.eq_symm_apply] using eq_zero_or_eq_zero_of_smul_eq_zero
 
 variable (R) in
 /-- Transfer `Module` across an `Equiv` -/

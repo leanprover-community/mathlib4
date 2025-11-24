@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Multivariate polynomials
@@ -38,6 +40,8 @@ In the definitions below, we use the following notation:
   of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -558,11 +562,15 @@ theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (al
   rfl
 
 @[simp]
-lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPolynomial.eval f :=
+lemma coe_aeval_eq_eval :
+    RingHomClass.toRingHom (aeval f : MvPolynomial σ S₁ →ₐ[S₁] S₁) = eval f :=
   rfl
 
 @[simp]
-theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
+lemma aeval_eq_eval : (aeval f : MvPolynomial σ S₁ → S₁) = eval f := rfl
+
+@[simp]
+theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial σ R) = f s :=
   eval₂_X _ _ _
 
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=

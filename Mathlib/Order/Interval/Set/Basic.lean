@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Intervals
@@ -34,6 +36,8 @@ theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
 ```
 Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -89,57 +93,33 @@ theorem right_mem_Iic : a ∈ Iic a := by simp
 theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
   rfl
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Ici := Ici_toDual
-
 @[simp]
 theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
   rfl
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Iic := Iic_toDual
 
 @[simp]
 theorem Ioi_toDual : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
   rfl
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Ioi := Ioi_toDual
-
 @[simp]
 theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
   rfl
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Iio := Iio_toDual
 
 @[simp]
 theorem Icc_toDual : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
   Set.ext fun _ => and_comm
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Icc := Icc_toDual
-
 @[simp]
 theorem Ioc_toDual : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
   Set.ext fun _ => and_comm
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Ioc := Ioc_toDual
 
 @[simp]
 theorem Ico_toDual : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
   Set.ext fun _ => and_comm
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Ico := Ico_toDual
-
 @[simp]
 theorem Ioo_toDual : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
   Set.ext fun _ => and_comm
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Ioo := Ioo_toDual
 
 @[simp]
 theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=

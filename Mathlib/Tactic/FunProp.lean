@@ -3,15 +3,17 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.FunProp.Core
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Elab
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.Theorems
-import Mathlib.Tactic.FunProp.ToBatteries
-import Mathlib.Tactic.FunProp.Types
+module
+
+public meta import Mathlib.Tactic.FunProp.Attr
+public meta import Mathlib.Tactic.FunProp.Core
+public meta import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.FunProp.Elab
+public meta import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Tactic.FunProp.Mor
+public meta import Mathlib.Tactic.FunProp.Theorems
+public meta import Mathlib.Tactic.FunProp.ToBatteries
+public meta import Mathlib.Tactic.FunProp.Types
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
@@ -277,7 +279,7 @@ There are four types of theorems that are used a bit differently.
 
     In fact, not only `DFunLike.coe` but any function coercion is treated this way. Such function
     coercion has to be registered with `Lean.Meta.registerCoercion` with coercion type `.coeFun`.
-    Here is an example of custom structure `MyFunLike` that that should be considered as bundled
+    Here is an example of custom structure `MyFunLike` that should be considered as bundled
     morphism by `fun_prop`:
     ```lean
     structure MyFunLike (α β : Type) where
@@ -342,3 +344,5 @@ There are four types of theorems that are used a bit differently.
     is used together with `aesop` to discharge the `2 ≤ ∞` subgoal.
 
 -/
+
+public meta section

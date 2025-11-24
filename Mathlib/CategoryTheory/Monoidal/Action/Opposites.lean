@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
-import Mathlib.CategoryTheory.Monoidal.Opposite
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
 
@@ -12,9 +14,9 @@ import Mathlib.CategoryTheory.Monoidal.Opposite
 
 In this file, given a monoidal category `C` and a category `D`,
 we construct a left `C`-action on `D` out of the data of a right `Cᴹᵒᵖ`-action
-on `D`. We also construct a right `C`-action on `D`from the data of a left
+on `D`. We also construct a right `C`-action on `D` from the data of a left
 `Cᴹᵒᵖ`-action on `D`. Conversely, given left/right `C`-actions on `D`,
-we construct a`Cᴹᵒᵖ` actions with the conjugate variance.
+we construct a `Cᴹᵒᵖ` action with the conjugate variance.
 
 We construct similar actions for `Cᵒᵖ`, namely, left/right `Cᵒᵖ`-actions
 on `Dᵒᵖ` from left/right-actions of `C` on `D`, and vice-versa.
@@ -23,6 +25,8 @@ These constructions are not made instances in order to avoid instance loops,
 you should bring them as local instances if you intend to use them.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.MonoidalCategory
 

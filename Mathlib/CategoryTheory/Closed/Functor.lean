@@ -3,15 +3,17 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
-# Cartesian-closed functors
+# Cartesian closed functors
 
 Define the exponential comparison morphisms for a functor which preserves binary products, and use
-them to define a Cartesian-closed functor: one which (naturally) preserves exponentials.
+them to define a Cartesian closed functor: one which (naturally) preserves exponentials.
 
 Define the Frobenius morphism, and show it is an isomorphism iff the exponential comparison is an
 isomorphism.
@@ -25,9 +27,11 @@ https://ncatlab.org/nlab/show/cartesian+closed+functor
 https://ncatlab.org/nlab/show/Frobenius+reciprocity
 
 ## Tags
-Frobenius reciprocity, Cartesian-closed functor
+Frobenius reciprocity, Cartesian closed functor
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -51,7 +55,7 @@ natural in `B`, where the first morphism is the product comparison and the latte
 of the adjunction.
 
 We will show that if `C` and `D` are Cartesian closed, then this morphism is an isomorphism for all
-`A` iff `F` is a Cartesian-closed functor, i.e. it preserves exponentials.
+`A` iff `F` is a Cartesian closed functor, i.e. it preserves exponentials.
 -/
 def frobeniusMorphism (h : L ⊣ F) (A : C) : TwoSquare (tensorLeft (F.obj A)) L L (tensorLeft A) :=
   prodComparisonNatTrans L (F.obj A) ≫
@@ -71,7 +75,7 @@ variable [CartesianClosed C] [CartesianClosed D]
 variable [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) F]
 
 /-- The exponential comparison map.
-`F` is a Cartesian-closed functor if this is an iso for all `A`.
+`F` is a Cartesian closed functor if this is an iso for all `A`.
 -/
 def expComparison (A : C) : TwoSquare (exp A) F F (exp (F.obj A)) :=
   mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
