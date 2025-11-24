@@ -39,7 +39,7 @@ variable (R) in
 where the `R`-module structure on `α` is
 the one obtained by transporting an `R`-module structure on `β` back along `e`.
 -/
-def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : --by
+def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] :
     letI := Equiv.addCommMonoid e
     letI := Equiv.module R e
     α ≃ₗ[R] β :=
