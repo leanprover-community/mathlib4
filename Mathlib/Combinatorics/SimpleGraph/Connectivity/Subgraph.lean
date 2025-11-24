@@ -621,10 +621,10 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
 
 protected lemma Reachable.coe_subgraphMap {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
-    (G''.map f).coe.Reachable ⟨f u, Set.mem_image_of_mem _ u.2⟩
-      ⟨f v, Set.mem_image_of_mem _ v.2⟩ :=
+    (G''.map f).coe.Reachable ⟨f u, Set.mem_image_of_mem _ u.prop⟩
+      ⟨f v, Set.mem_image_of_mem _ v.prop⟩ :=
   hreachable.map {
-    toFun v : (G''.map f).verts := ⟨f v.val, by aesop⟩
+    toFun v := (G''.map f).vert _ (Set.mem_image_of_mem f v.prop)
     map_rel' r := Relation.map_apply.mpr (by tauto)
   }
 
