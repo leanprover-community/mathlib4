@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+module
+
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # Complex trigonometric functions
@@ -16,6 +18,8 @@ Several facts about the real trigonometric functions have the proofs deferred he
 as they are most easily proved by appealing to the corresponding fact for complex trigonometric
 functions, or require additional imports which are not available in that file.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -158,10 +162,9 @@ theorem tan_sub' {x y : ℂ}
   tan_sub (Or.inl h)
 
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
-  by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
+  by_cases! h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
   · rw [two_mul, two_mul, sq, tan_add (Or.inl ⟨h, h⟩)]
-  · rw [not_forall_not] at h
-    rw [two_mul, two_mul, sq, tan_add (Or.inr ⟨h, h⟩)]
+  · rw [two_mul, two_mul, sq, tan_add (Or.inr ⟨h, h⟩)]
 
 theorem tan_add_mul_I {x y : ℂ}
     (h :
@@ -178,6 +181,35 @@ theorem tan_eq {z : ℂ}
           ∃ l : ℤ, (z.im : ℂ) * I = (2 * l + 1) * π / 2) :
     tan z = (tan z.re + tanh z.im * I) / (1 - tan z.re * tanh z.im * I) := by
   convert tan_add_mul_I h; exact (re_add_im z).symm
+
+/-- `tan x` takes the junk value `0` when `cos x = 0` -/
+lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
+  obtain ⟨k, hxk⟩ := cos_eq_zero_iff.mp h
+  exact tan_eq_zero_iff.mpr ⟨2 * k + 1, by simp [hxk]⟩
+
+-- tangent half-angle substitution formulas
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠ -1) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
+  conv_lhs => rw [← mul_div_cancel₀ x two_ne_zero, cos_two_mul']
+  have : cos (x / 2) ≠ 0 := by grind [cos_ne_zero_iff, cos_eq_neg_one_iff]
+  rw [div_eq_mul_inv (1 - tan (x / 2) ^ 2) (1 + tan (x / 2) ^ 2), inv_one_add_tan_sq this,
+    ← tan_mul_cos this]
+  ring
+
+/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
+theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
+    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) := by
+  conv_lhs => rw [← mul_div_cancel₀ x two_ne_zero, sin_two_mul]
+  by_cases h : cos (x / 2) = 0
+  · simp [h, tan_eq_zero_of_cos_eq_zero]
+  · rw [div_eq_mul_inv (2 * tan (x / 2)) (1 + tan (x / 2) ^ 2), inv_one_add_tan_sq h,
+      ← tan_mul_cos h]
+    ring
+
+theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℂ) :
+    tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) := by
+  conv_lhs => rw [← mul_div_cancel₀ x two_ne_zero, tan_two_mul]
 
 open scoped Topology
 
@@ -257,5 +289,24 @@ theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k 
 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
   mod_cast @Complex.tan_ne_zero_iff θ
+
+/-- `tan x` takes the junk value `0` when `cos x = 0` -/
+lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 :=
+  mod_cast @Complex.tan_eq_zero_of_cos_eq_zero x (mod_cast h)
+
+-- tangent half-angle substitution formulas
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℝ) (h : cos x ≠ -1) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq x (mod_cast h)
+
+/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
+theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℝ) :
+    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.sin_eq_two_mul_tan_half_div_one_add_tan_half_sq x
+
+theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℝ) :
+    tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) :=
+  mod_cast @Complex.tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq x
 
 end Real

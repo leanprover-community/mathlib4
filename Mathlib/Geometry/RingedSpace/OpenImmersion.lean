@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 # Open immersions of structured spaces
@@ -50,6 +52,8 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace CategoryTheory Opposite Topology
@@ -487,7 +491,8 @@ def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 
 @[simp, reassoc]
 theorem lift_fac (H : Set.range g.base ⊆ Set.range f.base) : lift f g H ≫ f = g := by
-  erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
+  simp [AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift,
+    CategoryTheory.Limits.pullback.condition]
 
 theorem lift_uniq (H : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H := by rw [← cancel_mono f, hl, lift_fac]
@@ -1107,7 +1112,7 @@ def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 
 @[simp, reassoc]
 theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g := by
-  erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
+  simp [lift, pullback.condition]
 
 theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' := by rw [← cancel_mono f, hl, lift_fac]

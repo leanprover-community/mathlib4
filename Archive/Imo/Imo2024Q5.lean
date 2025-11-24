@@ -387,7 +387,7 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
   rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1)),
     List.isChain_append] at valid_move_seq
   have ha := valid_move_seq.2.2
-  simp only [List.head?_eq_head hd', List.getLast?_eq_getLast ht, Option.mem_def,
+  simp only [List.head?_eq_some_head hd', List.getLast?_eq_some_getLast ht, Option.mem_def,
     Option.some.injEq, forall_eq'] at ha
   nth_rw 1 [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1))]
   refine List.mem_append_left _ ?_
