@@ -896,6 +896,20 @@ protected noncomputable def taylorComp
     FormalMultilinearSeries 𝕜 E G :=
   fun n ↦ ∑ c : OrderedFinpartition n, q.compAlongOrderedFinpartition p c
 
+/-- An upper estimate (in terms of `Asymptotics.IsBigO`)
+on the difference between two compositions of Taylor series.
+
+Let `p₁`, `p₂`, `q₁`, `q₂` be four families of formal multilinear series
+depending on a parameter `a`.
+Suppose that the norms of `(p₁ · k)`, `(q₁ · k)`, and `(q₂ · k)` are bounded along a filter `l`
+for all `k ≤ n`.
+Also, suppose that $p₁(a, k) - p₂(a, k) = O(f(a))$, $q₁(a, k) - q₂(a, k) = O(f(a))$
+along `l` for all `k ≤ n`.
+Then the difference between `n`th terms of `(p₁ a).taylorComp (q₁ a)` and `(p₂ a).taylorComp (q₂ a)`
+is `O(f(a))` too.
+
+This lemma can be used, e.g., to show that the composition of two $C^{k+α}$ functions
+is a $C^{k+α}$ function. -/
 theorem taylorComp_sub_taylorComp_isBigO
     {α H : Type*} [NormedAddCommGroup H] {l : Filter α} {p₁ p₂ : α → FormalMultilinearSeries 𝕜 F G}
     {q₁ q₂ : α → FormalMultilinearSeries 𝕜 E F} {f : α → H} {n : ℕ}
@@ -925,6 +939,18 @@ theorem taylorComp_sub_taylorComp_isBigO
       (hq₂_bdd _ <| c.partSize_le i).isBigO_one ℝ
     simpa using H₁.norm_norm.mul <| .finsetProd fun i _ ↦ (H₂ i).norm_left
 
+/-- An upper estimate (in terms of `Asymptotics.IsLittleO`)
+on the difference between two compositions of Taylor series.
+
+Let `p₁`, `p₂`, `q₁`, `q₂` be four families of formal multilinear series
+depending on a parameter `a`.
+Suppose that the norms of `(p₁ · k)`, `(q₁ · k)`, and `(q₂ · k)` are bounded along a filter `l`
+for all `k ≤ n`.
+Also, suppose that $p₁(a, k) - p₂(a, k) = o(f(a))$, $q₁(a, k) - q₂(a, k) = o(f(a))$
+along `l` for all `k ≤ n`.
+Then the difference between `n`th terms of `(p₁ a).taylorComp (q₁ a)` and `(p₂ a).taylorComp (q₂ a)`
+is `o(f(a))` too.
+-/
 theorem taylorComp_sub_taylorComp_isLittleO
     {α H : Type*} [NormedAddCommGroup H] {l : Filter α} {p₁ p₂ : α → FormalMultilinearSeries 𝕜 F G}
     {q₁ q₂ : α → FormalMultilinearSeries 𝕜 E F} {f : α → H} {n : ℕ}
