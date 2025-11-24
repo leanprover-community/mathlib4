@@ -62,7 +62,7 @@ section IsDomain
 
 variable [CommSemiring R] [IsDomain R]
 
-theorem span_notMem_kaplanskiSet {a : R} (ha : a ≠ 0)
+theorem span_notMem_kaplanskySet {a : R} (ha : a ≠ 0)
       (H : ∀ I ≠ (⊥ : Ideal R), I.IsPrime → ∃ x ∈ I, Prime x) :
     span {a} ∉ kaplanskySet (closure {r : R | Prime r}).toSubsemigroup := by
   have hzero : 0 ∉ closure {r : R | Prime r} := fun h ↦ by
