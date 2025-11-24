@@ -17,8 +17,9 @@ import Mathlib.LinearAlgebra.Matrix.Notation
 /-!
 # Presburger definability and semilinear sets
 
-This file formalizes the equivalence between Presburger definable sets and semilinear sets. As an
-application of this result, we show that the graph of multiplication is not Presburger definable.
+This file formalizes the classical result that Presburger definable sets are the same as semilinear
+sets. As an application of this result, we show that the graph of multiplication is not Presburger
+definable.
 
 ## Main Results
 
