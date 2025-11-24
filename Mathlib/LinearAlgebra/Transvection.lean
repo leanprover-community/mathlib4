@@ -8,9 +8,12 @@ module
 
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
+public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 /-!
 # Transvections in a module
@@ -215,13 +218,13 @@ variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
-    ibc.endomHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
+    ibc.endHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, endomHom_comp_apply, toDualHom_comp_apply]
+  | tmul x => simp [transvection.apply, endHom_comp_apply, toDualHom_comp_apply]
 
 end LinearMap.transvection
 
@@ -464,9 +467,10 @@ theorem det [Module.Free R V] [Module.Finite R V]
     rw [RingHom.algebraMap_toAlgebra]
     simp only [vM, γ, Function.comp_apply]
     apply MvPolynomial.aeval_X
-  rw [← hf, ← hv, ← IsBaseChange.transvection, det_endomHom, det_ofDomain]
+  rw [← hf, ← hv, ← IsBaseChange.transvection, det_endHom, det_ofDomain]
   rw [map_add, map_one, add_right_inj, toDualHom_comp_apply]
 
+variable {f : Module.Dual R V} {v : V} (hfv : f v = 0)
 /-- Determinant of a transvection.
 
 It is not necessary to assume that the module is finite and free
@@ -482,8 +486,125 @@ theorem _root_.LinearEquiv.det_eq_one
   apply h
   rw [LinearMap.transvection.det, hfv, add_zero]
 
+/-- Transvections in the special linear group. -/
+def _root_.SpecialLinearGroup.transvection :
+    SpecialLinearGroup R V :=
+  ⟨LinearEquiv.transvection hfv, LinearEquiv.det_eq_one hfv⟩
+
+theorem _root_.SpecialLinearGroup.coe_transvection :
+    (SpecialLinearGroup.transvection hfv : V ≃ₗ[R] V) = .transvection hfv :=
+  rfl
+
+variable (R V) in
+/-- The set of transvections in the special linear group -/
+abbrev _root_.SpecialLinearGroup.transvections : Set (SpecialLinearGroup R V) :=
+  { e | ∃ (f : Module.Dual R V) (v : V) (hfv : f v = 0),
+      e = SpecialLinearGroup.transvection hfv }
+
 end transvection
 
 end LinearMap
 
 end determinant
+
+namespace SpecialLinearGroup
+
+section action
+
+instance : SMul (SpecialLinearGroup R V) V where
+  smul e v := e v
+
+@[simp] theorem smul_def (e : SpecialLinearGroup R V) (v : V) :
+    e • v = (e : V ≃ₗ[R] V) v :=
+  rfl
+
+instance : MulAction (SpecialLinearGroup R V) V where
+  smul e v := e v
+  one_smul v := by simp
+  mul_smul e f v := by simp
+
+end action
+
+section generation
+
+open Module.End Module
+
+variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+  [Module.Finite K V]
+
+theorem exists_mem_transvections_apply_eq_of_indep
+    (u v : V) (h : LinearIndepOn K id {u, v}) :
+    ∃ t ∈ transvections K V, v = t • u := by
+  have : ∃ f : Dual K V, f (v - u) = 0 ∧ f u = 1 := by
+    suffices ∃ f : Dual K V, f (v - u) = 0 ∧ f u ≠ 0 by
+      obtain ⟨f, hf, hu⟩ := this
+      use (f u)⁻¹ • f
+      simp [hf, hu]
+    set ι := LinearIndepOn.extend h (Set.subset_univ _) with hι
+    set b := Module.Basis.extend h with hb
+    have hu : u ∈ ι := Module.Basis.subset_extend h (by simp)
+    have hv : v ∈ ι := Module.Basis.subset_extend h (by simp)
+    use b.coord ⟨u, hu⟩ + b.coord ⟨v, hv⟩
+    sorry
+  obtain ⟨f, hvu, hx⟩ := this
+  refine ⟨SpecialLinearGroup.transvection hvu, ⟨f, v - u, hvu, rfl⟩, ?_⟩
+  simp [transvection, LinearMap.transvection.apply, hx]
+
+example : MulAction.IsPretransitive (Subgroup.closure (transvections K V)) V where
+  exists_smul_eq x y := sorry
+theorem closure_transvection :
+    Subgroup.closure (transvections K V) = ⊤ := by
+  rw [eq_top_iff]
+  suffices ∀ (n : ℕ) (e : SpecialLinearGroup K V)
+    (hn : n = finrank K (eigenspace (e : End K V) (1 : K))),
+      e ∈ Subgroup.closure (transvections K V) by
+    intro e _
+    apply this _ e rfl
+  intro n
+  induction n using Nat.strong_decreasing_induction with
+  | base =>
+    use finrank K V
+    intro m hm e he
+    rw [gt_iff_lt, he, ← not_le] at hm
+    exact hm.elim (Submodule.finrank_le _)
+  | step n hind=>
+    intro e he
+    set W := eigenspace (e : End K V) (1 : K) with hW
+    by_cases H : W = ⊤
+    · suffices e = 1 by
+        rw [this]; exact one_mem _
+      ext v
+      change (e : End K V) v = v
+      conv_rhs => rw [← one_smul K v]
+      rw [← mem_eigenspace_iff, ← hW, H]
+      exact Submodule.mem_top
+    · obtain ⟨v, hv⟩ := SetLike.exists_not_mem_of_ne_top W H rfl
+      have hv' := hv
+      rw [hW, mem_eigenspace_iff, one_smul] at hv'
+      have H' : finrank K W < finrank K V - 1 := sorry
+      -- e' = t f u ∘ e
+      -- f = 0 sur W, f u = 0
+      -- e' v = (t f u) (e v) = e v + f (e v) • u = v
+      -- u = v - e v, f (e v) = f (v) = 1
+      set W' := W ⊔ Submodule.span K {(e : End K V) v - v} with hW'
+      have hv' : v ∉ W' := fun h ↦ by
+        rw [hW', Submodule.mem_sup] at h
+        obtain ⟨w, hw, z, hz, hwz⟩ := h
+        simp [Submodule.mem_span_singleton] at hz
+        obtain ⟨a, rfl⟩ := hz
+        have ha : a ≠ 0 := fun h ↦ by
+          apply hv
+          rwa [← hwz, h, zero_smul, add_zero]
+
+
+
+
+
+
+
+
+      sorry
+
+end SpecialLinearGroup
+
+end generation
