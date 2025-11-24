@@ -565,6 +565,7 @@ public import Mathlib.Algebra.Homology.Embedding.TruncLE
 public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 public import Mathlib.Algebra.Homology.ExactSequence
 public import Mathlib.Algebra.Homology.Factorizations.Basic
+public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.Functor
 public import Mathlib.Algebra.Homology.GrothendieckAbelian
 public import Mathlib.Algebra.Homology.HasNoLoop
@@ -2271,6 +2272,7 @@ public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Center.Linear
 public import Mathlib.CategoryTheory.Center.Localization
+public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.ChosenFiniteProducts
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
@@ -2828,6 +2830,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.Small
@@ -2899,6 +2902,7 @@ public import Mathlib.CategoryTheory.Shift.ShiftSequence
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
+public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Sigma.Basic
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.SingleObj
@@ -3030,10 +3034,12 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+public import Mathlib.CategoryTheory.Triangulated.Orthogonal
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 public import Mathlib.CategoryTheory.Triangulated.Rotate
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.Yoneda
