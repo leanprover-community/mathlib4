@@ -154,8 +154,8 @@ lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
   gcongr
 
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
-theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.codiscreteWithin U) :
-    IsDiscrete ((sᶜ ∩ U) : Set X) := by
+theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codiscreteWithin U) :
+    IsDiscrete (s ∩ U) := by
   rw [(by simp : ((sᶜ ∩ U) : Set X) = ((s ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [mem_codiscreteWithin, Filter.disjoint_principal_right] at h
   intro x hx
@@ -245,7 +245,7 @@ lemma mem_codiscrete_accPt {S : Set X} :
   simp only [mem_codiscrete, disjoint_iff, AccPt, not_neBot]
 
 lemma mem_codiscrete' {S : Set X} :
-    S ∈ codiscrete X ↔ IsOpen S ∧ IsDiscrete ↑Sᶜ := by
+    S ∈ codiscrete X ↔ IsOpen S ∧ IsDiscrete Sᶜ := by
   rw [mem_codiscrete, ← isClosed_compl_iff, isClosed_and_discrete_iff]
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
