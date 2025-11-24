@@ -39,9 +39,10 @@ protected abbrev normedAddCommGroup [NormedAddCommGroup β] (e : α ≃ β) : No
     with toPseudoMetricSpace := e.pseudometricSpace }
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
-protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜] (e : α ≃ β) [SeminormedAddCommGroup β] :
+protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜]
+    [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
     letI := Equiv.seminormedAddCommGroup e
-    ∀ [NormedSpace 𝕜 β], NormedSpace 𝕜 α :=
+    NormedSpace 𝕜 α :=
   letI := e.seminormedAddCommGroup
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)
