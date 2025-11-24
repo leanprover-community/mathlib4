@@ -434,21 +434,6 @@ instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Se
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
 
-namespace LinearMap
-
-variable (R)
-
--- TODO: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
-a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
-  toFun f := f.toFun
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end LinearMap
-
 end IsScalarTower
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
