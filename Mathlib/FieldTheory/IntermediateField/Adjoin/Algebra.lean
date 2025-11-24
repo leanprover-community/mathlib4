@@ -89,7 +89,8 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
-@[deprecated (since = "2025-11-24")] alias adjoin_algebraic_toSubalgebra := adjoin_toSubalgebra_of_isAlgebraic
+@[deprecated (since := "2025-11-24")] alias adjoin_algebraic_toSubalgebra :=
+  adjoin_toSubalgebra_of_isAlgebraic
 
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
     F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
