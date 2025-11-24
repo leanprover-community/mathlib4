@@ -3,13 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # `Equiv.Perm.viaEmbedding`, a noncomputable analogue of `Equiv.Perm.viaFintypeEmbedding`.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

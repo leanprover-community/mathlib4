@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 
 /-!
 # Integrals of characteristic functions
@@ -28,6 +30,8 @@ relating the measure of some sets to integrals of characteristic functions.
   `μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖`
 
 -/
+
+@[expose] public section
 
 open RealInnerProductSpace Real Complex NormedSpace
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.
@@ -14,6 +16,8 @@ saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 
@@ -711,7 +715,7 @@ theorem one_or_eq_of_le_of_prime {p m : Associates M} (hp : Prime p) (hle : m �
     m = 1 ∨ m = p := by
   rcases mk_surjective p with ⟨p, rfl⟩
   rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm, -Quotient.eq]
+  simpa [mk_eq_mk_iff_associated, Associated.comm]
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 
 theorem dvdNotUnit_iff_lt {a b : Associates M} : DvdNotUnit a b ↔ a < b :=
@@ -739,7 +743,7 @@ section CancelCommMonoidWithZero
 theorem isUnit_of_associated_mul [CancelCommMonoidWithZero M] {p b : M} (h : Associated (p * b) p)
     (hp : p ≠ 0) : IsUnit b := by
   obtain ⟨a, ha⟩ := h
-  refine isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp ?_)
+  refine .of_mul_eq_one a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 
 theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) :

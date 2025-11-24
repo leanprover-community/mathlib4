@@ -3,7 +3,9 @@ Copyright (c) 2021 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.NatIso
+module
+
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Bicategories
@@ -36,6 +38,8 @@ between 1-morphisms `f g : a ⟶ b` and a 1-morphism `f : b ⟶ c`, there is a 2
 `whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ`,
 which is required as an axiom in the definition here.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

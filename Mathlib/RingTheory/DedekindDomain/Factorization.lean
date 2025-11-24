@@ -3,8 +3,10 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -47,6 +49,8 @@ Since we are only interested in the factorization of nonzero fractional ideals, 
 ## Tags
 dedekind domain, fractional ideal, ideal, factorization
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -400,10 +404,7 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
   | succ n h =>
     classical rw [pow_succ, count_mul']
     by_cases hI : I = 0
-    · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by
-        rw [not_and', not_not, ne_eq]
-        intro h
-        exact absurd hI h
+    · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by order
       rw [if_neg h_neg, hI, count_zero, mul_zero]
     · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
         Nat.cast_one]
@@ -444,7 +445,7 @@ theorem count_inv (I : FractionalIdeal R⁰ K) :
 theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
   obtain n | n := n
-  · rw [ofNat_eq_coe, zpow_natCast]
+  · rw [ofNat_eq_natCast, zpow_natCast]
     exact count_pow K v n I
   · rw [negSucc_eq, count_neg_zpow, ← Int.natCast_succ, zpow_natCast, count_pow]
     ring
@@ -531,7 +532,7 @@ theorem count_coe_nonneg (J : Ideal R) : 0 ≤ count K v J := by
 theorem count_mono {I J} (hI : I ≠ 0) (h : I ≤ J) : count K v J ≤ count K v I := by
   by_cases hJ : J = 0
   · exact (hI (FractionalIdeal.le_zero_iff.mp (h.trans hJ.le))).elim
-  have := mul_le_mul_left' h J⁻¹
+  have := mul_le_mul_right h J⁻¹
   rw [inv_mul_cancel₀ hJ, FractionalIdeal.le_one_iff_exists_coeIdeal] at this
   obtain ⟨J', hJ'⟩ := this
   rw [← mul_inv_cancel_left₀ hJ I, ← hJ', count_mul K v hJ, le_add_iff_nonneg_right]
@@ -715,7 +716,7 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option maxHeartbeats 210000 in
+set_option maxHeartbeats 212000 in
 -- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals (i.e. `I * J' = I' * J`),
