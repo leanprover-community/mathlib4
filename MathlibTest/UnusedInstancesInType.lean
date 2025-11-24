@@ -4,6 +4,8 @@ section decidable
 
 section unused
 
+set_option trace.debug true
+
 /--
 warning: `foo` has the hypothesis:
   • [DecidableEq α] (#2)
@@ -37,8 +39,8 @@ theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [N
 -- TODO: why the newline + indentation in the pretty-printing of the forall?
 /--
 warning: `foo₃` has the hypotheses:
+  • parameter #3
   • [(α : Type) → Decidable (Nonempty α)] (#2)
-  • [DecidableEq β] (#3)
 which are not used in the remainder of the type.
 
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).

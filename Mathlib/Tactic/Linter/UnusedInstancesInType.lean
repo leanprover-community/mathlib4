@@ -60,6 +60,69 @@ instance : ToMessageData Parameter where
     else
       m!"parameter #{param.idx + 1}"
 
+/-- Check if a given declaration assumes some hypothesis `[Type p]`, but doesn't use this
+assumption in the type. `typesToAvoid` the list of such types.
+This is the main logic underlying the linters below. -/
+def checkUnusedAssumptionInType (declInfo : ConstantVal) (avoid : Name → Bool) :
+    MetaM (Array Nat) := do
+  -- We omit inductive types and their constructors, to reduce false positives.
+  -- We also omit partial declarations (via the `opaque` definitions they generate):
+  -- these are less useful for theorem proving, hence the linter is less useful there.
+  -- if declInfo.isInductive || declInfo.isCtor ||
+  --     (declInfo matches .opaqueInfo ..) then return #[]
+  let type := declInfo.type
+  -- Early return: none of the constants to avoid appear.
+  unless type.containsConst avoid do
+    return #[]
+  forallTelescopeReducing type fun args ty ↦ do
+    -- Compute whether the given argument is used by the body of the definition outside of proofs.
+    -- let usedIdxs : Array Bool ← do
+    --   if ← pure declInfo.hasValue <&&> not <$> isProp type then
+    --     lambdaTelescope declInfo.value! fun args' e ↦ do
+    --       let mut usedIdxs := args.map (fun _ => false)
+    --       let e ← e.eraseProofs
+    --       let st := collectFVars {} e
+    --       for i in [0:args'.size] do
+    --         usedIdxs := usedIdxs.set! i (st.fvarSet.contains args'[i]!.fvarId!)
+    --       pure usedIdxs
+    --   else
+    --     pure #[]
+    -- -- Early return: every argument is used.
+    -- if usedIdxs.size == args.size && usedIdxs.all id then
+    --   return none
+    -- Compute an array of error messages for each superfluous argument
+    -- let ty ← ty.eraseProofs
+    let mut impossibleArgs := #[]
+    let mut usedFVars : CollectFVars.State := collectFVars {} ty
+    for i' in [0:args.size] do
+      let i := args.size - i' - 1
+      let arg := args[i]!
+      let t := (← inferType arg).cleanupAnnotations
+      if t.isAppOrForallOfConstP avoid then
+        if /- usedIdxs[i]? != some true && -/ !usedFVars.fvarSet.contains arg.fvarId! then
+          impossibleArgs := impossibleArgs.push i
+            -- (← addMessageContextFull m!"argument {i+1} {arg} : {t}")
+      usedFVars := collectFVars usedFVars t
+    return impossibleArgs
+
+
+
+
+-- /--
+-- Linter that checks for theorems that assume `[Decidable p]`
+-- but don't use this assumption in the type.
+-- -/
+-- @[env_linter] def decidableClassical : Linter where
+--   noErrorsFound := "No uses of `Decidable` arguments should be replaced with `classical`"
+--   errorsFound := "USES OF `Decidable` SHOULD BE REPLACED WITH `classical` IN THE PROOF."
+--   test declName := do
+--     if (← isAutoDecl declName) then return none
+--     else if Name.isPrefixOf `Decidable declName then return none
+--     let names := #[`Decidable, `DecidableEq, `DecidablePred]
+--     let _ ← checkUnusedAssumptionInType (← getConstInfo declName) names
+--     return none
+
+
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
@@ -96,9 +159,9 @@ optimization. However, the `Parameter`s are created in a telescope, and their fi
 have loose bound variables.
 -/
 private def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
-    (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) : CommandElabM Unit := do
-  let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
-  if let some maxIdx := unusedInstances.back? then liftTermElabM do
+    (avoid : Name → Bool) (logOnUnused : Array Parameter → TermElabM Unit) : TermElabM Unit := do
+  let unusedInstances ← checkUnusedAssumptionInType decl avoid
+  if let some maxIdx := unusedInstances.back? then
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
         (cleanupAnnotations := true) fun fvars _ => do
@@ -143,13 +206,13 @@ pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
 def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
-    (instanceTypeFilter : Expr → Bool)
+    (avoid : Name → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
     (declFilter : ConstantVal → Bool := fun _ => true) : CommandElabM Unit := do
   for t in ← getInfoTrees do
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
-    for thm in thms do
-      thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
+    for thm in thms do liftTermElabM do
+      thm.onUnusedInstancesWhere avoid fun unusedParams =>
         -- TODO: restore in order to log on type signature
         -- t.withDeclSigRef cmd thm.name do
         log t thm unusedParams
@@ -168,8 +231,7 @@ Checks if `type` is an application of (or forall with return type which is an ap
 
 Ignores metadata and cleans up annotations.
 -/
-def isDecidableVariant (type : Expr) : Bool :=
-  type.isAppOrForallOfConstP fun n =>
+def isDecidableVariant (n : Name) : Bool :=
     n == ``Decidable     ||
     n == ``DecidablePred ||
     n == ``DecidableRel  ||
