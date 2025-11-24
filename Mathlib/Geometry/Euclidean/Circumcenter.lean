@@ -341,7 +341,7 @@ theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
     (s.map f.toAffineMap f.injective).circumcenter = f s.circumcenter := by
   rw [eq_comm]
   refine (s.map f.toAffineMap f.injective).eq_circumcenter_of_dist_eq (r := s.circumradius) ?_
-    fun i ↦ (by simp)
+    fun i ↦ by simp
   rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
   exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
 
