@@ -33,7 +33,6 @@ def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
   let ⟨(y : Q(ℝ)), pf2, _⟩ ← r.im.toSimpResult
   let pf1' : Q(Complex.re $a = $x) := pf1.getD q(rfl : $x = _)
   let pf2' : Q(Complex.im $a = $y) := pf2.getD q(rfl : $y = _)
-  trace[debug] "NormNumI.eqeq: re = {x}, im = {y}"
   return ⟨x, y, q(Complex.ext (by simpa using $pf1') (by simpa using $pf2'))⟩
 
 
@@ -92,32 +91,26 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
       q(inferInstance))).neg q(inferInstance))
     q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
     q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
+
 -- theorem IsComplex.scientific (m exp : ℕ) (x : Bool) :
---     IsComplex (OfScientific.ofScientific m x exp : ℂ)
+--     ResultI (OfScientific.ofScientific m x exp : ℂ)
 --     (OfScientific.ofScientific m x exp : ℝ) 0 :=
 --   ⟨RCLike.nnratCast_re _, RCLike.nnratCast_im _⟩
 
+theorem eq_of_eq_of_eq_of_eq {z w : ℂ}
+    (ha : (RCLike.re z = RCLike.re w) = True)
+    (hb : (RCLike.im z = RCLike.im w) = True) : z = w := by
+  apply RCLike.ext <;> simp_all
 
--- theorem eq_of_eq_of_eq_of_eq {z w : ℂ} {az bz aw bw : ℝ}
---     (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
---     (ha : az = aw) (hb : bz = bw) : z = w := by
---   obtain ⟨rfl, rfl⟩ := hz
---   obtain ⟨rfl, rfl⟩ := hw
---   apply RCLike.ext <;> assumption
+theorem ne_of_re_ne {z w : ℂ} (h : (RCLike.re z = RCLike.re w) = False) :
+    z ≠ w := by
+  rintro rfl
+  simp_all
 
--- theorem ne_of_re_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw) :
---     az ≠ aw → z ≠ w := (mt · ·) <| by
---   rintro rfl
---   obtain ⟨rfl, rfl⟩ := hz
---   obtain ⟨rfl, rfl⟩ := hw
---   rfl
-
--- theorem ne_of_im_ne {z w : ℂ} {az bz aw bw : ℝ} (hz : IsComplex z az bz) (hw : IsComplex w aw bw) :
---     bz ≠ bw → z ≠ w := (mt · ·) <| by
---   rintro rfl
---   obtain ⟨rfl, rfl⟩ := hz
---   obtain ⟨rfl, rfl⟩ := hw
---   rfl
+theorem ne_of_im_ne {z w : ℂ} (h : (RCLike.im z = RCLike.im w) = False) :
+    z ≠ w := by
+  rintro rfl
+  simp_all
 
 -- theorem IsComplex.of_pow_negSucc {w : ℂ} {a b : ℝ} {n : ℕ} {k' : ℤ}
 --     (hk : NormNum.IsInt k' (Int.negSucc n)) (hz : IsComplex (w ^ (n + 1))⁻¹ a b) :
@@ -160,6 +153,8 @@ def NormNum.Resultn (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ)
   let e : Q(ℝ) := q(OfNat.ofNat (α := ℝ) $n)
   let ⟨_, (pa : Q($n = $e))⟩ ← NormNum.mkOfNat q(ℝ) q(inferInstance) n
   return NormNum.Result.isNat (α := q(ℝ)) q(inferInstance) n q(NormNum.isNat_ofNat ℝ $pa)
+
+-- def NormNum.OfScientific
 
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
@@ -206,45 +201,25 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   --     return ⟨a, b, q(.of_pow_negSucc $hm $pf)⟩
   | ~q(Complex.I) =>
       -- a bit tricky because `I.im` could be either `1` or `0`
-  return ResultI.mk (← NormNum.Resultn (nat_lit 0)) (← NormNum.Resultn (nat_lit 1))
+  return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 1)
   | ~q(0) =>
-  return ResultI.mk (← NormNum.Resultn (nat_lit 0)) (← NormNum.Resultn (nat_lit 0))
+  return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 0)
   | ~q(1) =>
-  return ResultI.mk (← NormNum.Resultn (nat_lit 1)) (← NormNum.Resultn (nat_lit 0))
+  return ResultI.mk (← NormNum.Resultn 1) (← NormNum.Resultn 0)
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
   let some n := en.rawNatLit? | failure
-  return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn (nat_lit 0)) --q(sorry) q(rfl)
-  -- | ~q(OfScientific.ofScientific $m $x $exp) =>
+  return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn 0) --q(sorry) q(rfl)
+  | ~q(OfScientific.ofScientific $m $x $exp) =>
+  return sorry
   --   return ⟨_, _, q(.scientific _ _ _)⟩
   | _ => throwError "found the atom {z} which is not a numeral"
-
--- /-- Using `norm_num` to normalise expressions -/
--- def normalize (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
---   let r ← parse q($z)
---   trace[debug] "successfully parsed "
---   -- let ra ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.re $z)
---   -- let rb ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.im $z)
---   -- let { expr := (a' : Q(ℝ)), proof? := (pf_a ) } ← ra.toSimpResult | unreachable!
---   -- let { expr := (b' : Q(ℝ)), proof? := (pf_b ) } ← rb.toSimpResult | unreachable!
---   -- return ⟨a', b', q(eq_eq $pf $pf_a $pf_b)⟩
---   return ResultI.mk' r.re r.im q(rfl) q(rfl)
-  -- sorry
-
--- TODO: change to use `x + y*I` so that it's fine for `ℝ` too.
--- theorem ResultI.out {z : ℂ} {re im : ℝ} (h : IsComplex z re im) : z = ⟨re, im⟩ := by
---   obtain ⟨rfl, rfl⟩ := h
---   rfl
-
 
 /-- Create the `NormNumI` tactic in `conv` mode. -/
 elab "norm_numI" : conv => do
   let z ← Conv.getLhs
   let ⟨1, ~q(ℂ), z⟩ ← inferTypeQ z | throwError "{z} is not a complex number"
   let r1 ← parse z
-  trace[debug] "successfully parsed "
-  let ⟨x, y, pf⟩ ← r1.eqeq
-  trace[debug] "NormNumI: parsed {z} as {x} + {y} * I"
-  trace[debug] "NormNumI: {z} = {x} + {y} * I"
+  let ⟨_, _, pf⟩ ← r1.eqeq
   let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf))
   Conv.applySimpResult r
 
@@ -252,25 +227,28 @@ end NormNumI
 
 namespace NormNum
 
-#exit
 /-- The `norm_num` extension which identifies expressions of the form `(z : ℂ) = (w : ℂ)`,
 such that `norm_num` successfully recognises both the real and imaginary parts of both `z` and `w`.
 -/
 @[norm_num (_ : ℂ) = _] def evalComplexEq : NormNumExt where eval {v β} e := do
+  trace[debug] "trigger norm_num instance for {e}"
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let ~q(($z : ℂ) = $w) := e | failure
   haveI' : $e =Q ($z = $w) := ⟨⟩
-  let ⟨az, bz⟩ ← NormNumI.parse z
-  let ⟨aw, bw⟩ ← NormNumI.parse w
-
-  let ⟨ba, ra⟩ ← deriveBool q($az = $aw)
-  match ba with
-  | true =>
-    let ⟨bb, rb⟩ ← deriveBool q($bz = $bw)
-    match bb with
-    | true => return Result'.isBool true q(NormNumI.eq_of_eq_of_eq_of_eq $pfz $pfw $ra $rb)
-    | false => return Result'.isBool false q(NormNumI.ne_of_im_ne $pfz $pfw $rb)
-  | false => return Result'.isBool false q(NormNumI.ne_of_re_ne $pfz $pfw $ra)
+  let ⟨z1, z2⟩ ← NormNumI.parse z
+  let ⟨w1, w2⟩ ← NormNumI.parse w
+  let ⟨e, some pf, _⟩ := ← (← Result.eq z1 w1).toSimpResult | failure
+  if ← isDefEq e q(True) then
+    let ⟨e', some pf', _⟩ := ← (← Result.eq z2 w2).toSimpResult | failure
+    if ← isDefEq e' q(True) then
+      let pfn ← mkAppM ``NormNumI.eq_of_eq_of_eq_of_eq #[pf, pf']
+      return Result'.isBool true pfn
+    else
+      let pfn ← mkAppM ``NormNumI.ne_of_im_ne #[pf']
+      return Result'.isBool false pfn
+  else
+    let pfn ← mkAppM ``NormNumI.ne_of_re_ne #[pf]
+    return Result'.isBool false pfn
 
 /-- The `norm_num` extension which identifies expressions of the form `Complex.re (z : ℂ)`,
 such that `norm_num` successfully recognises the real part of `z`.
@@ -278,9 +256,7 @@ such that `norm_num` successfully recognises the real part of `z`.
 @[norm_num Complex.re _] def evalRe : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q ℝ := ⟨⟩
   let ~q(Complex.re $z) := e | failure
-  let ⟨a, _, pf⟩ ← NormNumI.parse z
-  let r ← derive q($a)
-  return r.eqTrans q(($pf).re_eq)
+  return (← NormNumI.parse z).re
 
 /-- The `norm_num` extension which identifies expressions of the form `Complex.im (z : ℂ)`,
 such that `norm_num` successfully recognises the imaginary part of `z`.
@@ -288,9 +264,7 @@ such that `norm_num` successfully recognises the imaginary part of `z`.
 @[norm_num Complex.im _] def evalIm : NormNumExt where eval {v β} e := do
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q ℝ := ⟨⟩
   let ~q(Complex.im $z) := e | failure
-  let ⟨_, b, pf⟩ ← NormNumI.parse z
-  let r ← derive q($b)
-  return r.eqTrans q(($pf).im_eq)
+  return (← NormNumI.parse z).im
 
 end NormNum
 
