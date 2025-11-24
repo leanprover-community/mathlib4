@@ -609,7 +609,7 @@ end induced_subgraphs
 protected lemma Reachable.coe_toSubgraph {H : SimpleGraph V} {u v : V} (h : H ≤ G)
     (hreachable : H.Reachable u v) :
     (toSubgraph H h).coe.Reachable ⟨u, trivial⟩ ⟨v, trivial⟩ :=
-  hreachable.map ⟨((toSubgraph H h).vert · _), by simp⟩
+  hreachable.map ⟨((toSubgraph H h).vert · _), (·)⟩
 
 protected lemma Preconnected.toSubgraph {H : SimpleGraph V} (h : H ≤ G)
     (hpreconn : H.Preconnected) : (toSubgraph H h).Preconnected :=
@@ -624,7 +624,7 @@ protected lemma Reachable.coe_subgraphMap {G' : G.Subgraph} {G'' : G'.coe.Subgra
     (G''.map f).coe.Reachable ⟨f u, Set.mem_image_of_mem _ u.2⟩
       ⟨f v, Set.mem_image_of_mem _ v.2⟩ :=
   hreachable.map {
-    toFun v : (G''.map f).verts := ⟨⇑f v.val, by aesop⟩
+    toFun v : (G''.map f).verts := ⟨f v.val, by aesop⟩
     map_rel' r := Relation.map_apply.mpr (by tauto)
   }
 
@@ -632,7 +632,7 @@ protected lemma Reachable.coe_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgra
     {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
     (Subgraph.coeSubgraph G'').coe.Reachable (Subgraph.vert _ u (by simp_all))
       (Subgraph.vert _ v (by simp_all)) :=
-  Reachable.coe_subgraphMap G'.hom hreachable
+  hreachable.coe_subgraphMap G'.hom
 
 namespace Subgraph
 
