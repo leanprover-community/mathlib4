@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.EqToHom
 
 /-!
 
@@ -37,6 +38,8 @@ associated prefunctors between the hom types are all functors. In other words, i
 corresponding hom types.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

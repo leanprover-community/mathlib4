@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Normed.Module.RCLike.Extend
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Normed.Module.RCLike.Extend
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Extension Hahn-Banach theorem
@@ -26,6 +28,8 @@ In this setting, `exists_dual_vector` states that, for any nonzero `x`, there ex
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
 of `𝕜`).
 -/
+
+@[expose] public section
 
 
 universe u v

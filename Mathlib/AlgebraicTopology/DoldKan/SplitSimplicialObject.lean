@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
-import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
 
@@ -18,6 +20,8 @@ when `C` is a preadditive category with finite coproducts, and get an isomorphis
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category CategoryTheory.Preadditive

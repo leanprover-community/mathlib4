@@ -3,10 +3,12 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.RamificationInertia.Unramified
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.FractionalIdeal.Extended
-import Mathlib.RingTheory.Trace.Quotient
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Unramified
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.FractionalIdeal.Extended
+public import Mathlib.RingTheory.Trace.Quotient
 
 /-!
 # The different ideal
@@ -30,6 +32,8 @@ import Mathlib.RingTheory.Trace.Quotient
 ## TODO
 - Show properties of the different ideal
 -/
+
+@[expose] public section
 
 open Module
 
@@ -767,10 +771,10 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [Ideal.dvd_iff_le]
   intro H
-  replace H := (mul_le_mul_right' H Q).trans_eq hP
+  replace H := (mul_le_mul_left H Q).trans_eq hP
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
-  replace H := mul_le_mul_left' H (FractionalIdeal.dual A K 1)
+  replace H := mul_le_mul_right H (FractionalIdeal.dual A K 1)
   simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
     mul_inv_cancel_left₀] at H
   apply hx
