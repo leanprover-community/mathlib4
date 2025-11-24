@@ -9145,6 +9145,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Span
+public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Analysis.Normed.Operator.Asymptotics
@@ -13928,6 +13929,7 @@ public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.Module.Star
 public import Mathlib.Topology.Algebra.Module.StrongDual
 public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.Module.WeakBilin
 public import Mathlib.Topology.Algebra.Module.WeakDual
@@ -14276,6 +14278,7 @@ public import Mathlib.Topology.MetricSpace.ShrinkingLemma
 public import Mathlib.Topology.MetricSpace.Similarity
 public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 public import Mathlib.Topology.MetricSpace.Thickening
+public import Mathlib.Topology.MetricSpace.TransferInstance
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 public import Mathlib.Topology.MetricSpace.Ultra.Pi
