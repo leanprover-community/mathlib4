@@ -116,6 +116,10 @@ theorem mabs_div_mabs_le_mabs_div (a b : G) : |a|ₘ / |b|ₘ ≤ |a / b|ₘ :=
       _ ≤ |a / b|ₘ * |b|ₘ := mabs_mul_le _ _
 
 @[to_additive]
+theorem mabs_div_mabs_le_mabs_mul (a b : G) : |a|ₘ / |b|ₘ ≤ |a * b|ₘ :=
+  mabs_inv b ▸ div_inv_eq_mul a b ▸ mabs_div_mabs_le_mabs_div a b⁻¹
+
+@[to_additive]
 theorem mabs_mabs_div_mabs_le_mabs_div (a b : G) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :=
   mabs_div_le_iff.2
     ⟨mabs_div_mabs_le_mabs_div _ _, by rw [mabs_div_comm]; apply mabs_div_mabs_le_mabs_div⟩
