@@ -138,6 +138,7 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
       tauto
   rw [this]
   apply isDiscrete_of_codiscreteWithin
+  rw [compl_compl]
   apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
   exact D.supportLocallyFiniteWithinDomain
 
