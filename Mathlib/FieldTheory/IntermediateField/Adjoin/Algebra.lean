@@ -84,42 +84,44 @@ theorem AdjoinSimple.isIntegral_gen : IsIntegral F (AdjoinSimple.gen F α) ↔ I
 
 variable {F} {α}
 
-theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
+theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
+@[deprecated (since = "2025-11-24")] alias adjoin_algebraic_toSubalgebra := adjoin_toSubalgebra_of_isAlgebraic
+
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
     F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
-  adjoin_algebraic_toSubalgebra <| by simpa
+  adjoin_toSubalgebra_of_isAlgebraic <| by simpa
 
 @[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
     F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
-  adjoin_algebraic_toSubalgebra <| by simpa [isAlgebraic_iff_isIntegral]
+  adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
-  adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x
+  adjoin_toSubalgebra_of_isAlgebraic fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x
 
 theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     adjoin F S = ⊤ ↔ Algebra.adjoin F S = ⊤ := by
-  rw [← IntermediateField.adjoin_algebraic_toSubalgebra hS,
+  rw [← IntermediateField.adjoin_toSubalgebra_of_isAlgebraic hS,
       ← IntermediateField.toSubalgebra_inj,
       IntermediateField.top_toSubalgebra]
 
-alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_algebraic_eq_top_iff
+alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_top_iff_of_isAlgebraic
 
 theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
-    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_algebraic_eq_top_iff (by simp [hx])
+    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ := adjoin_simple_eq_top_iff
 
 @[simp]
 theorem adjoin_eq_top_iff [Algebra.IsAlgebraic F E] {S : Set E} :
     adjoin F S = ⊤ ↔ Algebra.adjoin F S = ⊤ :=
-  adjoin_algebraic_eq_top_iff (fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x)
+  adjoin_eq_top_iff_of_isAlgebraic (fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x)
 
 lemma finite_of_fg_of_isAlgebraic
     (h : FG (⊤ : IntermediateField F E)) [Algebra.IsAlgebraic F E] :
@@ -139,7 +141,7 @@ theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2
 
 theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
-  have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ := adjoin_algebraic_toSubalgebra fun x h ↦
+  have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ := adjoin_toSubalgebra_of_isAlgebraic fun x h ↦
     IsAlgebraic.tower_top _ (isAlgebraic_iff.mp (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
