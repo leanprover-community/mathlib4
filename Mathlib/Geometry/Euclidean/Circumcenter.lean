@@ -359,14 +359,16 @@ theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).circumcenter = s.circumcenter := by
   rw [eq_comm]
-  convert (s.restrict S hS).circumcenter_map S.subtypeₐᵢ
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumcenter_map S.subtypeₐᵢ
 
 @[simp] lemma circumradius_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).circumradius = s.circumradius := by
   rw [eq_comm]
-  convert (s.restrict S hS).circumradius_map S.subtypeₐᵢ
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumradius_map S.subtypeₐᵢ
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)
