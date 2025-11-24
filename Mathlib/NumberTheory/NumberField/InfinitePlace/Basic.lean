@@ -534,6 +534,11 @@ theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
+@[simp]
+theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
+  rcases v with ⟨_, _⟩
+  aesop (add simp [coe_apply])
+
 /-- If `v` and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`. -/
 theorem eq_one_of_rpow_eq {t : ℝ} (h : (w ·) ^ t = v) : t = 1 := by
   obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
