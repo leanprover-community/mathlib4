@@ -7285,6 +7285,7 @@ public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.ModEq
 public import Mathlib.Algebra.BigOperators.Module
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
 public import Mathlib.Algebra.BigOperators.Option
