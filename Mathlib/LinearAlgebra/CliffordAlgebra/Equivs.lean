@@ -296,14 +296,7 @@ theorem ofQuaternion_mk (a₁ a₂ a₃ a₄ : R) :
 @[simp]
 theorem ofQuaternion_comp_toQuaternion :
     ofQuaternion.comp toQuaternion = AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
-  ext : 1
-  dsimp -- before we end up with two goals and have to do this twice
-  ext
-  all_goals
-    dsimp
-    rw [toQuaternion_ι]
-    dsimp
-    simp only [zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
+  ext : 2 <;> (ext; simp)
 
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :
