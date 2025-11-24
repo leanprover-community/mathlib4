@@ -191,7 +191,7 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
   simp only [map_add]
   rw [integral_add (by fun_prop) (by fun_prop)]
   congr
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, ofReal_add]
+  simp only [integral_const, probReal_univ, smul_eq_mul, one_mul, ofReal_add]
   ring
 
 instance (c : E) : IsGaussian (μ.map (fun x ↦ c + x)) := by simp_rw [add_comm c]; infer_instance

@@ -468,7 +468,7 @@ lemma incenter_ne_point (i : Fin (n + 1)) :
 variable {s} in
 lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i j : Fin (n + 1)) :
-    s.excenter signs ∉ affineSpan ℝ {s.points i, s.points j} := by
+    s.excenter signs ∉ line[ℝ, s.points i, s.points j] := by
   by_cases hij : i = j
   · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
       AffineSubspace.mem_affineSpan_singleton]
@@ -478,7 +478,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
     simp [Set.image_insert_eq]
 
 lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
-    s.incenter ∉ affineSpan ℝ {s.points i, s.points j} :=
+    s.incenter ∉ line[ℝ, s.points i, s.points j] :=
   s.excenterExists_empty.excenter_notMem_affineSpan_pair i j
 
 variable {s} in
