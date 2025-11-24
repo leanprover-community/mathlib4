@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Existence of limits deduced from adjunctions
@@ -18,6 +20,8 @@ If `F : C ⥤ D` is fully faithful (i.e. `F` is coreflective),
 then limits of shape `J` exist in `C` if they exist in `D`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Adjunction
 

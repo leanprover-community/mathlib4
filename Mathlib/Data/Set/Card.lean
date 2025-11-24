@@ -3,8 +3,10 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Set.Finite.Powerset
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -54,6 +56,8 @@ in the context of the theorem, in which case we only include the ones that are n
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
 finiteness arguments; they are true by coincidence due to junk values.
 -/
+
+@[expose] public section
 
 namespace Set
 

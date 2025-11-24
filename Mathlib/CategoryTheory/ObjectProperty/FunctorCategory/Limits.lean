@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Functors which preserves limits
 
 -/
+
+@[expose] public section
 
 universe v₀ u₀ v v' u u'
 

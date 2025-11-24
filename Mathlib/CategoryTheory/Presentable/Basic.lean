@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -27,6 +29,8 @@ Similar as for accessible functors, we define a type class `IsAccessible`.
 -/
 
 universe t w w' v₁ v₂ v₃ u₁ u₂ u₃
+
+@[expose] public section
 
 namespace CategoryTheory
 

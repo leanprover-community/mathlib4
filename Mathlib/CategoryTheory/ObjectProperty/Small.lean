@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-import Mathlib.CategoryTheory.ObjectProperty.Equivalence
-import Mathlib.CategoryTheory.ObjectProperty.Opposite
-import Mathlib.CategoryTheory.EssentiallySmall
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
@@ -17,6 +19,8 @@ In this file, given `P : ObjectProperty C`, we define
 -/
 
 universe w' w t v v' u u'
+
+@[expose] public section
 
 namespace CategoryTheory.ObjectProperty
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
+module
+
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
 
 /-!
 # Presentable objects and adjunctions
@@ -19,6 +21,8 @@ In particular, if `e : C ≌ D` is an equivalence of categories and
 `C` is locally presentable (resp. accessible), then so is `D`.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 

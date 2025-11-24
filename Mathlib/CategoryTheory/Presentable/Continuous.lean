@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
-import Mathlib.CategoryTheory.Presentable.Presheaf
-import Mathlib.CategoryTheory.Presentable.Type
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
+public import Mathlib.CategoryTheory.Presentable.Presheaf
+public import Mathlib.CategoryTheory.Presentable.Type
 
 /-!
 # `κ`-continuous functors
@@ -28,6 +30,8 @@ respect to a suitable `w`-small family of morphisms.
 a category of `κ`-continuous presheaves.
 
 -/
+
+@[expose] public section
 
 universe w v v' v'' u u' u''
 
