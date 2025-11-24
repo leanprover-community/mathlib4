@@ -65,6 +65,29 @@ instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianR
     simp only [left_eq_sup]
     positivity
 
+/-- A Gaussian measure over `ℝ` is some `gaussianReal`. -/
+lemma IsGaussian.eq_gaussianReal (μ : Measure ℝ) (h : IsGaussian μ) :
+    μ = gaussianReal μ[id] Var[id; μ].toNNReal := calc
+  μ = μ.map (ContinuousLinearMap.id ℝ ℝ) := by simp
+  _ = gaussianReal μ[id] Var[id; μ].toNNReal := by rw [h.map_eq_gaussianReal]; simp
+
+lemma isGaussian_of_isGaussian_map {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
+    (h : ∀ L : E →L[ℝ] ℝ, IsGaussian (μ.map L)) : IsGaussian μ := by
+  refine ⟨fun L ↦ ?_⟩
+  rw [(h L).eq_gaussianReal, integral_map, variance_map]
+  · rfl
+  all_goals fun_prop
+
+lemma isGaussian_of_map_eq_gaussianReal {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
+    (h : ∀ L : E →L[ℝ] ℝ, ∃ (m : ℝ) (v : ℝ≥0), μ.map L = gaussianReal m v) :
+    IsGaussian μ := by
+  refine isGaussian_of_isGaussian_map fun L ↦ ?_
+  obtain ⟨m, v, h⟩ := h L
+  rw [h]
+  infer_instance
+
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   {μ : Measure E} [IsGaussian μ]
