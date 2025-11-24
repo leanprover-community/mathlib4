@@ -108,3 +108,7 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
+
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
+    IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
+  Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)

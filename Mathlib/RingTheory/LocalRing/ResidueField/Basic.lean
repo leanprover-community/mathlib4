@@ -178,7 +178,7 @@ variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
   ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
 
-noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
+instance : Algebra (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.algebraOfLiesOver _ _
 
 @[simp] lemma algebraMap_residue (x : R) :
