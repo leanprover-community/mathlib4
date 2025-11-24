@@ -90,6 +90,18 @@ theorem vsub_mem_vectorSpan {s : Set P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s) (hp
     p₁ -ᵥ p₂ ∈ vectorSpan k s :=
   vsub_set_subset_vectorSpan k s (vsub_mem_vsub hp₁ hp₂)
 
+lemma vectorSpan_of_subsingleton {s : Set P} (h : s.Subsingleton) : vectorSpan k s = ⊥ := by
+  rcases h.eq_empty_or_singleton with rfl | ⟨p, rfl⟩ <;> simp
+
+@[simp]
+lemma vectorSpan_eq_bot_iff_subsingleton {s : Set P} : vectorSpan k s = ⊥ ↔ s.Subsingleton := by
+  refine ⟨fun h ↦ ?_, vectorSpan_of_subsingleton _⟩
+  by_contra hns
+  rw [Set.not_subsingleton_iff] at hns
+  obtain ⟨p, hp, q, hq, hpq⟩ := hns
+  have hpq' := vsub_mem_vectorSpan k hp hq
+  simp_all
+
 /-- The points in the affine span of a (possibly empty) set of points. Use `affineSpan` instead to
 get an `AffineSubspace k P`. -/
 def spanPoints (s : Set P) : Set P :=
