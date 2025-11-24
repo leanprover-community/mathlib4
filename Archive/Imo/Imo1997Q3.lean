@@ -18,7 +18,7 @@ $|x_1 + x_2 + \cdots + x_n| = 1$ and $|x_i| ≤ \frac{n+1}2$ for $i = 1, 2, \dot
 Show that there exists a permutation $y_1, y_2, \dots, y_n$ of $x_1, x_2, \dots, x_n$ such that
 $|y_1 + 2y_2 + \cdots + ny_n| ≤ \frac{n+1}2$.
 
-# Solution
+## Solution
 
 For a permutation $π$ let $S(π) = \sum_{i=1}^n i x_{π(i)}$. We wish to show that there exists $π$
 with $|S(π)| ≤ \frac{n+1}2$.

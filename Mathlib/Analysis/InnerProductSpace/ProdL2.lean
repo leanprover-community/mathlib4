@@ -29,7 +29,7 @@ noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜
   norm_sq_eq_re_inner x := by
-    simp [prod_norm_sq_eq_of_L2, ← norm_sq_eq_re_inner]
+    simp [prod_norm_sq_eq_of_L2]
   conj_inner_symm x y := by
     simp
   add_left x y z := by

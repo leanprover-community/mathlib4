@@ -25,7 +25,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `H.relIndex K` : the relative index of `H : Subgroup G` in `K : Subgroup G` as a natural number,
   and returns 0 if the relative index is infinite.
 
-# Main results
+## Main results
 
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
 - `index_mul_card` : `H.index * Nat.card H = Nat.card G`

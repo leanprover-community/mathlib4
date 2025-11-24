@@ -24,6 +24,8 @@ open CategoryTheory
 
 /-- The category of seminormed abelian groups and bounded group homomorphisms. -/
 structure SemiNormedGrp : Type (u + 1) where
+  /-- Construct a bundled `SemiNormedGrp` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
   [str : SeminormedAddCommGroup carrier]
@@ -34,10 +36,6 @@ namespace SemiNormedGrp
 
 instance : CoeSort SemiNormedGrp Type* where
   coe X := X.carrier
-
-/-- Construct a bundled `SemiNormedGrp` from the underlying type and typeclass. -/
-abbrev of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp where
-  carrier := M
 
 /-- The type of morphisms in `SemiNormedGrp` -/
 @[ext]
@@ -209,6 +207,8 @@ end SemiNormedGrp
 which we shall equip with the category structure consisting only of the norm non-increasing maps.
 -/
 structure SemiNormedGrp₁ : Type (u + 1) where
+  /-- Construct a bundled `SemiNormedGrp₁` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
   [str : SeminormedAddCommGroup carrier]
@@ -219,10 +219,6 @@ namespace SemiNormedGrp₁
 
 instance : CoeSort SemiNormedGrp₁ Type* where
   coe X := X.carrier
-
-/-- Construct a bundled `SemiNormedGrp₁` from the underlying type and typeclass. -/
-abbrev of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp₁ where
-  carrier := M
 
 /-- The type of morphisms in `SemiNormedGrp₁` -/
 @[ext]

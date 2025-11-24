@@ -702,9 +702,9 @@ end Semiring
 
 section Module
 
-variable {v : ι → M}
 variable [Ring R] [AddCommGroup M] [AddCommGroup M']
 variable [Module R M] [Module R M']
+variable {v : ι → M} {i : ι}
 
 theorem linearIndependent_iff_ker :
     LinearIndependent R v ↔ LinearMap.ker (Finsupp.linearCombination R v) = ⊥ :=
@@ -855,6 +855,29 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
             hj ((mem_diff _).2 ⟨mem_univ _, fun h => hij (eq_of_mem_singleton h)⟩)
         simp [hij]
       · simp [hl]⟩
+
+/-- Version of `LinearIndependent.of_subsingleton` that works for the zero ring. -/
+lemma LinearIndependent.of_subsingleton' [Subsingleton ι] (i : ι)
+    (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndependent R v := by
+  let := uniqueOfSubsingleton i
+  simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
+    Unique.forall_iff] using fun _ ↦ hi _
+
+/-- Version of `LinearIndepOn.singleton` that works for the zero ring. -/
+@[simp]
+lemma LinearIndepOn.singleton' (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndepOn R v {i} :=
+  LinearIndependent.of_subsingleton' ⟨i, rfl⟩ hi
+
+variable [NoZeroSMulDivisors R M]
+
+lemma LinearIndependent.of_subsingleton [Subsingleton ι] (i : ι) (hi : v i ≠ 0) :
+    LinearIndependent R v := .of_subsingleton' i (by simp [hi])
+
+lemma LinearIndepOn.singleton (hi : v i ≠ 0) : LinearIndepOn R v {i} := by simp [hi]
+
+variable (R) in
+@[deprecated LinearIndepOn.singleton (since := "2025-11-11")]
+lemma LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} := .singleton hx
 
 end Module
 

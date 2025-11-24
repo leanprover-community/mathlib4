@@ -19,7 +19,7 @@ In a field extension `K/k`
 * `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
   finite `s : Set K` to `k`.
 
-# TODO
+## TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 

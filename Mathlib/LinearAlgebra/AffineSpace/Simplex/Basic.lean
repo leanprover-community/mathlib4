@@ -69,6 +69,13 @@ instance [Inhabited P] : Inhabited (Simplex k P 0) :=
 instance nonempty : Nonempty (Simplex k P 0) :=
   ⟨mkOfPoint k <| AddTorsor.nonempty.some⟩
 
+-- Although `simp` can prove this, it is still useful as a `simp` lemma, since the `simp`-generated
+-- proof uses `range_eq_singleton_iff`, which does not apply when the LHS of this lemma appears
+-- as part of a more complicated expression.
+/-- The set of points in a simplex constructed with `mkOfPoint`. -/
+@[simp] lemma range_mkOfPoint_points (p : P) : Set.range (mkOfPoint k p).points = {p} := by
+  simp
+
 variable {k}
 
 /-- Two simplices are equal if they have the same points. -/

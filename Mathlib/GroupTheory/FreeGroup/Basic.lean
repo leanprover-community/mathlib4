@@ -58,7 +58,7 @@ variable {α : Type u}
 attribute [local simp] List.append_eq_has_append
 
 /- Ensure that `@[to_additive]` uses the right namespace before the definition of `FreeGroup`. -/
-run_meta ToAdditive.insertTranslation `FreeGroup `FreeAddGroup
+insert_to_additive_translation FreeGroup FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop

@@ -271,12 +271,9 @@ section
 
 /-!
 
-# Continuous MulEquiv
+### Continuous MulEquiv
 
 This section defines the space of continuous isomorphisms between two topological groups.
-
-## Main definitions
-
 -/
 
 universe u v

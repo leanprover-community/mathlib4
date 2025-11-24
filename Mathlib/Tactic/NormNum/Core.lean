@@ -307,4 +307,4 @@ end Mathlib.Tactic
 We register `norm_num` with the `hint` tactic.
 -/
 
-register_hint norm_num
+register_hint 1000 norm_num

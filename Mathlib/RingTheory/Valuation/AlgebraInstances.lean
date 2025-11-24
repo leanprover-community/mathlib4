@@ -12,11 +12,11 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 This file contains several `Algebra` and `IsScalarTower` instances related to extensions
 of a field with a valuation, as well as their unit balls.
 
-# Main Definitions
+## Main definitions
 * `ValuationSubring.algebra` : Given an algebra between two field extensions `L` and `E` of a
   field `K` with a valuation, create an algebra between their two rings of integers.
 
-# Main Results
+## Main statements
 
 * `integralClosure_algebraMap_injective` : the unit ball of a field `K` with respect to a
   valuation injects into its integral closure in a field extension `L` of `K`.

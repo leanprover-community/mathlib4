@@ -38,6 +38,10 @@ theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd,
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
   convert hasProd_one
 
+@[to_additive (attr := nontriviality)]
+theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
+  convert hasProd_one
+
 @[to_additive]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
@@ -45,6 +49,10 @@ theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
 @[to_additive]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
+
+@[to_additive (attr := nontriviality)]
+theorem Multipliable.of_subsingleton_cod [Subsingleton α] : Multipliable f L :=
+  HasProd.of_subsingleton_cod.multipliable
 
 /-- See `multipliable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/

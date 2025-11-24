@@ -19,6 +19,8 @@ open CategoryTheory
 
 /-- The category of complete lattices. -/
 structure CompleteLat where
+  /-- Construct a bundled `CompleteLat` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying lattice. -/
   (carrier : Type*)
   [str : CompleteLattice carrier]
@@ -33,9 +35,6 @@ instance : CoeSort CompleteLat (Type _) :=
   ⟨CompleteLat.carrier⟩
 
 attribute [coe] CompleteLat.carrier
-
-/-- Construct a bundled `CompleteLat` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [CompleteLattice X] : CompleteLat := ⟨X⟩
 
 theorem coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
   rfl

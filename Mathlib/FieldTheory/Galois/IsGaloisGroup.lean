@@ -3,7 +3,7 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Galois.Infinite
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Invariant.Basic
 
@@ -145,11 +145,11 @@ theorem isGalois [Finite G] [IsGaloisGroup G K L] : IsGalois K L := by
   rw [← isGalois_iff_isGalois_bot, ← fixedPoints_eq_bot G]
   exact IsGalois.of_fixed_field L G
 
-/-- If `L/K` is a finite Galois extension, then `Gal(L/K)` is a Galois group for `L/K`. -/
-instance of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup Gal(L/K) K L where
+/-- If `L/K` is a Galois extension, then `Gal(L/K)` is a Galois group for `L/K`. -/
+instance of_isGalois [IsGalois K L] : IsGaloisGroup Gal(L/K) K L where
   faithful := inferInstance
   commutes := inferInstance
-  isInvariant := ⟨fun x ↦ (IsGalois.mem_bot_iff_fixed x).mpr⟩
+  isInvariant := ⟨fun x ↦ (InfiniteGalois.mem_bot_iff_fixed x).mpr⟩
 
 theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
   rcases fintypeOrInfinite G with _ | hG

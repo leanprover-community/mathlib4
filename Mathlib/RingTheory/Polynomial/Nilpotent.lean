@@ -132,7 +132,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
-  · refine isUnit_of_mul_eq_one _ (Q.coeff 0) ?_
+  · refine .of_mul_eq_one (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
   · intro n hn

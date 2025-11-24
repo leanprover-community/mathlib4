@@ -21,7 +21,7 @@ ambient vector space. Similarly for the definition of dependence.
 - A family of elements is dependent if and only if it is not independent.
 - Two elements are dependent if and only if they are equal.
 
-# Future Work
+## Future Work
 
 - Define collinearity in projective space.
 - Prove the axioms of a projective geometry are satisfied by the dependence relation.

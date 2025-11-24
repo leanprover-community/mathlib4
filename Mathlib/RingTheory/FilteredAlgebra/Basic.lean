@@ -4,16 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 /-!
 # The filtration on abelian groups and rings
 
 In this file, we define the concept of filtration for abelian groups, rings, and modules.
 
-# Main definitions
+## Main definitions
 
 * `IsFiltration` : For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a
   filtration if there is another series `F_lt` in `σ` equal to the

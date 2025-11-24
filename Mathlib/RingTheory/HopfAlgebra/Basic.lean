@@ -12,7 +12,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toHopfAlgebra`
 
-# Main definitions
+## Main definitions
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : The `R`-linear map `A →ₗ[R] A`.

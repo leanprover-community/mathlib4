@@ -25,6 +25,8 @@ open CategoryTheory
 
 /-- An object in the category of uniform spaces. -/
 structure UniformSpaceCat : Type (u + 1) where
+  /-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
+  of ::
   /-- The underlying uniform space. -/
   carrier : Type u
   [str : UniformSpace carrier]
@@ -35,10 +37,6 @@ namespace UniformSpaceCat
 
 instance : CoeSort UniformSpaceCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
-abbrev of (α : Type u) [UniformSpace α] : UniformSpaceCat where
-  carrier := α
 
 /-- A bundled uniform continuous map. -/
 @[ext]

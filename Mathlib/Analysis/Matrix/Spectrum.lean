@@ -3,6 +3,7 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
+import Mathlib.Algebra.Star.UnitaryStarAlgAut
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
@@ -113,31 +114,32 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
   rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, Unitary.coe_star_mul_self, one_mulVec]
 
+open Unitary
+
 /-- Unitary diagonalization of a Hermitian matrix. -/
-theorem star_mul_self_mul_eq_diagonal :
-    (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
-      = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
-  apply Matrix.toEuclideanLin.injective
-  apply (EuclideanSpace.basisFun n 𝕜).toBasis.ext
-  intro i
-  simp only [toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
-    EuclideanSpace.ofLp_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
-    mulVec_eigenvectorBasis, Matrix.diagonal_mulVec_single, mulVec_smul,
-    star_eigenvectorUnitary_mulVec, RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul,
-    EuclideanSpace.toLp_single, Function.comp_apply, mul_one]
-  apply PiLp.ext
-  intro j
+theorem conjStarAlgAut_star_eigenvectorUnitary :
+    conjStarAlgAut 𝕜 _ (star hA.eigenvectorUnitary) A =
+      diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
+  apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
+  simp only [conjStarAlgAut_star_apply, toEuclideanLin_apply, OrthonormalBasis.coe_toBasis,
+    EuclideanSpace.basisFun_apply, EuclideanSpace.ofLp_single, ← mulVec_mulVec,
+    eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
+    Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, EuclideanSpace.toLp_single,
+    Function.comp_apply, mul_one]
+  apply PiLp.ext fun j ↦ ?_
   simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+
+@[deprecated (since := "2025-11-06")] alias star_mul_self_mul_eq_diagonal :=
+  conjStarAlgAut_star_eigenvectorUnitary
 
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A Hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
-    A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
-      * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
-  rw [← star_mul_self_mul_eq_diagonal, mul_assoc, mul_assoc,
-    (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
-    ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
+    A = conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ hA.eigenvalues)) := by
+  rw [← conjStarAlgAut_star_eigenvectorUnitary, ← conjStarAlgAut_mul_apply]
+  simp
 
 theorem eigenvalues_eq (i : n) :
     (hA.eigenvalues i) = RCLike.re (dotProduct (star ⇑(hA.eigenvectorBasis i))
@@ -149,7 +151,7 @@ theorem eigenvalues_eq (i : n) :
 
 open Polynomial in
 lemma charpoly_eq : A.charpoly = ∏ i, (X - C (hA.eigenvalues i : 𝕜)) := by
-  conv_lhs => rw [hA.spectral_theorem, charpoly_mul_comm, ← mul_assoc]
+  conv_lhs => rw [hA.spectral_theorem, conjStarAlgAut_apply, charpoly_mul_comm, ← mul_assoc]
   simp [charpoly_diagonal]
 
 lemma roots_charpoly_eq_eigenvalues :
@@ -186,9 +188,9 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   simp [det_eq_prod_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
-lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem, ← Unitary.coe_star]
-  simp [-isUnit_iff_ne_zero, -Unitary.coe_star, rank_diagonal]
+lemma rank_eq_rank_diagonal : A.rank = (diagonal hA.eigenvalues).rank := by
+  conv_lhs => rw [hA.spectral_theorem, conjStarAlgAut_apply, ← coe_star]
+  simp [-isUnit_iff_ne_zero, -coe_star, rank_diagonal]
 
 /-- rank of a Hermitian matrix is the number of nonzero eigenvalues of the Hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
@@ -215,7 +217,7 @@ theorem eigenvalues_eq_zero_iff :
     hA.eigenvalues = 0 ↔ A = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by ext; simp [h, eigenvalues_eq]⟩
   rw [hA.spectral_theorem, h, Pi.comp_zero, RCLike.ofReal_zero, Function.const_zero,
-    Pi.zero_def, diagonal_zero, mul_zero, zero_mul]
+    Pi.zero_def, diagonal_zero, map_zero]
 
 end DecidableEq
 
@@ -227,7 +229,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     contrapose! h_ne
     have := hA.spectral_theorem
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
-      diagonal_zero, mul_zero, zero_mul] at this
+      diagonal_zero, map_zero] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
   exact ⟨_, _, hi, (ofLp_eq_zero 2).ne.2 <| hA.eigenvectorBasis.orthonormal.ne_zero i,
     hA.mulVec_eigenvectorBasis i⟩

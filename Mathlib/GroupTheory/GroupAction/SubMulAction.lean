@@ -214,14 +214,49 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
   SetLike.coe_injective hs
 
 @[to_additive]
-instance : Bot (SubMulAction R M) where
-  bot :=
-    { carrier := ∅
-      smul_mem' := fun _c h => Set.notMem_empty h }
+instance : Bot (SubMulAction R M) :=
+  ⟨⟨∅, by simp⟩⟩
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
   ⟨⊥⟩
+
+@[to_additive]
+instance : Top (SubMulAction R M) :=
+  ⟨⟨Set.univ, by simp⟩⟩
+
+@[to_additive]
+instance : Max (SubMulAction R M) :=
+  ⟨fun s t => ⟨s ∪ t, by aesop⟩⟩
+
+@[to_additive]
+instance : Min (SubMulAction R M) :=
+  ⟨fun s t => ⟨s ∩ t, by aesop⟩⟩
+
+@[to_additive]
+instance : SupSet (SubMulAction R M) :=
+  ⟨fun S => ⟨⋃ s ∈ S, s, by aesop⟩⟩
+
+@[to_additive]
+instance : InfSet (SubMulAction R M) :=
+  ⟨fun S => ⟨⋂ s ∈ S, ↑s, by aesop⟩⟩
+
+@[to_additive]
+instance : CompleteLattice (SubMulAction R M) :=
+  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ => rfl) rfl rfl
+
+@[to_additive (attr := simp)]
+theorem mem_iSup {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
+    x ∈ ⨆ i, p i ↔ ∃ i, x ∈ p i := by
+  change x ∈ ⋃ s ∈ Set.range p, s ↔ _
+  simp
+
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
+    x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
+  change x ∈ ⋂ s ∈ Set.range p, s ↔ _
+  simp
 
 end SubMulAction
 

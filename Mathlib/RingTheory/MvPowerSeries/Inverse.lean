@@ -151,7 +151,7 @@ instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
     intro φ
     obtain ⟨u, h⟩ | ⟨u, h⟩ := IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff φ) <;>
         [left; right] <;>
-      · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
+      · refine .of_mul_eq_one _ (mul_invOfUnit _ u ?_)
         simpa using h.symm
 
 -- TODO(jmc): once adic topology lands, show that this is complete
@@ -174,7 +174,7 @@ theorem map.isLocalHom : IsLocalHom (map (σ := σ) f) :=
     have : IsUnit (constantCoeff ψ.val) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
-    exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
+    exact .of_mul_eq_one (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
 
 end IsLocalRing
 

@@ -726,6 +726,22 @@ protected theorem uniformContinuous_restrict (h : s ∈ 𝔖) :
   simp only [UniformOnFun.uniformSpace, map_le_iff_le_comap, iInf_uniformity]
   exact iInf₂_le s h
 
+theorem isUniformEmbedding_toFun_finite :
+    IsUniformEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) := by
+  refine ⟨⟨?_⟩, Function.injective_id⟩
+  simp_rw [Pi.uniformity, comap_iInf, comap_comap]
+  refine HasBasis.ext (HasBasis.iInf' fun i ↦ (basis_sets _).comap _)
+    (UniformOnFun.hasBasis_uniformity α β _ ⟨∅, finite_empty⟩
+      (directedOn_of_sup_mem fun _ _ ↦ .union))
+    (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, ⋂ x ∈ S, U x⟩, ⟨⟨hS, biInter_mem hS |>.mpr hU⟩,
+      fun f hf ↦ mem_iInter₂.mpr fun x hx ↦ mem_iInter₂.mp (hf x hx) x hx⟩⟩)
+    (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, fun _ ↦ U⟩, ⟨hS, fun _ _ ↦ hU⟩, fun f hf x hx ↦
+      mem_iInter₂.mp hf x hx⟩)
+
+theorem isEmbedding_toFun_finite :
+    IsEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) :=
+  (isUniformEmbedding_toFun_finite α β).isEmbedding
+
 variable {α}
 
 /-- A version of `UniformOnFun.hasBasis_uniformity_of_basis`

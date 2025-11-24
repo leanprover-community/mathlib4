@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Classes for probability measures
@@ -83,6 +84,19 @@ theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
+
+instance isProbabilityMeasure_dite {p : Prop} [Decidable p] {μ : p → Measure α}
+    {ν : ¬ p → Measure α} [∀ h, IsProbabilityMeasure (μ h)] [∀ h, IsProbabilityMeasure (ν h)] :
+    IsProbabilityMeasure (dite p μ ν) := by split <;> infer_instance
+
+instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    IsProbabilityMeasure (ite p μ ν) := by split <;> infer_instance
+
+open unitInterval in
+instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
+    IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
+  measure_univ := by simp [← add_smul]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 

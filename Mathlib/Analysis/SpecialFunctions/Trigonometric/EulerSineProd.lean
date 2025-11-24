@@ -72,7 +72,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
       cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
       ← integral_neg, ← integral_const_mul]
     refine integral_congr fun x _ => ?_
-    field
+    ring
   · apply Continuous.intervalIntegrable
     exact
       (continuous_const.mul (Complex.continuous_ofReal.comp continuous_sin)).mul
@@ -207,7 +207,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
-      (by push_cast; field_simp : 2 * z * ↑(π / 2) = π * z)]
+      (by push_cast; ring : 2 * z * ↑(π / 2) = π * z)]
     simp [field]
   | succ n hn =>
     rw [hn, Finset.prod_range_succ]

@@ -15,7 +15,7 @@ open subgroups and normal subgroups. We first verify that `IntermediateField.fix
 `IntermediateField.fixedField` are inverses of each other between intermediate fields and
 closed subgroups of the Galois group.
 
-# Main definitions and results
+## Main definitions and results
 
 In `K/k`, for any intermediate field `L` :
 
@@ -100,6 +100,10 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
 lemma fixedField_bot [IsGalois k K] :
     IntermediateField.fixedField (⊤ : Subgroup Gal(K/k)) = ⊥ := by
   rw [← IntermediateField.fixingSubgroup_bot, fixedField_fixingSubgroup]
+
+theorem mem_bot_iff_fixed [IsGalois k K] (x : K) :
+    x ∈ (⊥ : IntermediateField k K) ↔ ∀ (f : Gal(K/k)), f x = x := by
+  simp [← fixedField_bot, IntermediateField.mem_fixedField_iff]
 
 open IntermediateField in
 /-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to

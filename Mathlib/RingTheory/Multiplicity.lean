@@ -652,7 +652,7 @@ theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
     nth_rw 1 [← mul_one a] at hv
     simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
     obtain hv | rfl := hv
-    · have : IsUnit a := isUnit_of_mul_eq_one a v hv.symm
+    · have : IsUnit a := .of_mul_eq_one v hv.symm
       simpa [this] using ha.not_unit
     · simpa using ha.ne_zero
   · simp [ha]

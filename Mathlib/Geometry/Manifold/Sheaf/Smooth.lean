@@ -36,7 +36,7 @@ functions from `M` to `𝕜` is a sheaf of commutative rings, the *structure she
   abelian Lie groups `A`, `A'`, the 'postcomposition-by-`φ`' morphism of sheaves from
   `smoothSheafCommGroup IM I M A` to `smoothSheafCommGroup IM I' M A'`
 
-# Main results
+## Main results
 
 * `smoothSheaf.eval_surjective`: `smoothSheaf.eval` is surjective.
 * `smoothSheafCommRing.eval_surjective`: `smoothSheafCommRing.eval` is surjective.

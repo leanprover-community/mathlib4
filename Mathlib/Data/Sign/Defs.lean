@@ -97,7 +97,6 @@ private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_ : b ≤ c) : a ≤ c 
   cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
-  le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm

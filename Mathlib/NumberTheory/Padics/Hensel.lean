@@ -306,7 +306,7 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.aeval a‖ * T 
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) (T_lt_one hnorm))
-        (Nat.tendsto_pow_atTop_atTop_of_one_lt (by simp)))
+        (tendsto_pow_atTop_atTop_of_one_lt (by simp)))
 
 private theorem bound :
     ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.aeval a‖ * T ^ 2 ^ n < ε := fun hε ↦
