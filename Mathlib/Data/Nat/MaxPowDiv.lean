@@ -28,69 +28,54 @@ namespace Nat
 /--
 Find largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`, as well as the ratio `n / p ^ k`.
 
-This function is written using "fuel recursion" so that it is 
+TODO: implementation notes.
 -/
 def maxPowDvdDiv (p n : ℕ) : ℕ × ℕ :=
   if 1 < p ∧ 0 < n then
-    go p 0 n n
+    go p n
   else
     (0, n)
   where
   /-- Auxiliary definition for `Nat.maxPowDvdDiv`. -/
-  go
-  | _, res, n, 0 => (res, n)
-  | p, res, n, fuel + 1 =>
+  go : ℕ → ℕ → ℕ × ℕ
+  | _, 0 => (0, n)
+  | p, fuel + 1 =>
     if n % p = 0 then
-      go p (res + 1) (n / p) fuel
+      let (e, q) := go (p * p) fuel
+      if q % p = 0 then (2 * e + 1, q / p) else (2 * e, q)
     else
-      (res, n)
-
-/--
-Tail recursive function which returns the largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`.
-`padicValNat_eq_maxPowDvd` allows the code generator to use this definition for `padicValNat`
--/
-def maxPowDvd (p n : ℕ) : ℕ := (maxPowDvdDiv p n).1
-
-@[deprecated (since := "2025-09-27")]
-alias maxPowDiv := maxPowDvd
+      (0, n)
 
 namespace maxPowDvdDiv
 
-theorem go_spec {p res n fuel : ℕ} (hp : 1 < p) (hn : 0 < n) (hfuel : n ≤ fuel) :
-    p ^ (go p res n fuel).1 * (go p res n fuel).2 = p ^ res * n ∧ ¬p ∣ (go p res n fuel).2 := by
-  induction fuel generalizing res n with
-  | zero => exact absurd hn hfuel.not_gt
+theorem go_spec {n p fuel : ℕ} (hp : 1 < p) (hn : 0 < n) (hfuel : n < p ^ fuel) :
+    (go n p fuel).2 * p ^ (go n p fuel).1 = n ∧ ¬p ∣ (go n p fuel).2 := by
+  induction fuel generalizing p with
+  | zero => simp_all
   | succ fuel ih =>
     by_cases hnp : n % p = 0
-    case pos =>
-      rw [← Nat.dvd_iff_mod_eq_zero] at hnp
-      rcases hnp with ⟨m, rfl⟩
-      specialize @ih (res + 1) m (by grind) ?_
-      · rw [← Nat.lt_add_one_iff]
-        refine lt_of_lt_of_le ?_ hfuel
-        rwa [Nat.lt_mul_iff_one_lt_left (by grind)]
-      · simp [go, one_pos.trans hp, ih, pow_succ, mul_assoc]
-    case neg =>
-      simp [go, hnp, Nat.dvd_iff_mod_eq_zero]
-
-theorem go_unique {p k l n fuel : ℕ} (hp : 0 < p) (hdvd : ¬p ∣ n) (hfuel : l ≤ fuel) :
-    go p k (p ^ l * n) fuel = (k + l, n) := by
-  induction fuel generalizing k l with
-  | zero => simp_all [go]
-  | succ fuel ih =>
-    cases l with
-    | zero => simp [go, ← Nat.dvd_iff_mod_eq_zero, hdvd]
-    | succ l => simp_all [go, pow_succ, mul_right_comm _ p, add_assoc, add_comm 1 l]
+    · obtain ⟨ih₁, ih₂⟩ := by
+        refine @ih (p * p) (Nat.one_mul 1 ▸ Nat.mul_lt_mul_of_lt_of_lt hp hp) ?_
+        cases fuel with
+        | zero =>
+          refine absurd hfuel <| Nat.not_lt_of_le <| Nat.le_of_dvd hn ?_
+          simpa [dvd_iff_mod_eq_zero]
+        | succ fuel =>
+          rw [← Nat.pow_two, ← Nat.pow_mul]
+          refine Nat.lt_of_lt_of_le hfuel <| Nat.pow_le_pow_right (Nat.zero_lt_of_lt hp) (by cutsat)
+      simp only [go, if_pos hnp]
+      split <;> simp_all [← dvd_iff_mod_eq_zero, @Nat.pow_add_one' _ (2 * _), ← Nat.mul_assoc,
+        Nat.div_mul_cancel, ← Nat.pow_two, ← Nat.pow_mul]
+    · simp_all [go, dvd_iff_mod_eq_zero]
 
 @[simp]
-theorem pow_mul_eq (p n : ℕ) : p ^ (maxPowDvdDiv p n).1 * (maxPowDvdDiv p n).2 = n := by
-  unfold maxPowDvdDiv
-  split_ifs with h
-  · simp [go_spec, h]
-  · simp
-    
+theorem mul_pow_eq (p n : ℕ) : (maxPowDvdDiv p n).2 * p ^ (maxPowDvdDiv p n).1 = n := by
+  fun_cases maxPowDvdDiv with
+  | case1 h => exact go_spec h.1 h.2 (Nat.lt_pow_self h.1) |>.1
+  | case2 h => simp
+
 theorem not_dvd_snd {p n : ℕ} (hp : 1 < p) (hn : 0 < n) : ¬p ∣ (maxPowDvdDiv p n).2 := by
-  simp [maxPowDvdDiv, go_spec, *]
+  simp [maxPowDvdDiv, Nat.lt_pow_self, go_spec, *]
 
 theorem of_base_le_one {p : ℕ} (hp : p ≤ 1) (n : ℕ) : maxPowDvdDiv p n = (0, n) := by
   simp [maxPowDvdDiv, hp.not_gt]
@@ -110,9 +95,40 @@ theorem of_not_dvd {p n : ℕ} (h : ¬p ∣ n) : maxPowDvdDiv p n = (0, n) := by
 theorem one_right (p : ℕ) : maxPowDvdDiv p 1 = (0, 1) := by
   rcases eq_or_ne p 1 with rfl | hp <;> simp [of_not_dvd, *]
 
+/-- If `p > 1`, `n > 0`, then the first component of `maxPowDvdDiv` is the maximal power of `p`
+that divides `n`. -/
+theorem pow_dvd_iff_le_fst {p k n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+    p ^ k ∣ n ↔ k ≤ (p.maxPowDvdDiv n).1 := by
+  have H := go_spec hp hn (Nat.lt_pow_self hp)
+  conv_lhs => rw [← H.1]
+  rw [maxPowDvdDiv, if_pos ⟨hp, hn⟩]
+  cases Nat.lt_or_ge (go n p n).1 k with
+  | inl hlt =>
+    refine iff_of_false (fun hdvd ↦ ?_) (Nat.not_le_of_lt hlt)
+    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_lt hlt
+    rw [Nat.add_assoc, Nat.pow_add',
+      Nat.mul_dvd_mul_iff_right (Nat.pow_pos (Nat.zero_lt_of_lt hp))] at hdvd
+    exact H.2 <| Nat.dvd_of_pow_dvd (Nat.le_add_left 1 l) hdvd
+  | inr hle =>
+    refine iff_of_true (Nat.dvd_mul_left_of_dvd ?_ _) hle
+    exact Nat.pow_dvd_pow p hle
+
+theorem base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (k : ℕ) :
+    p.maxPowDvdDiv (p ^ k * n) = ((p.maxPowDvdDiv n).1 + k, (p.maxPowDvdDiv n).2) := by
+  have H₁ : (p.maxPowDvdDiv (p ^ k * n)).1 = (p.maxPowDvdDiv n).1 + k := by
+    refine eq_of_forall_le_iff fun c ↦ ?_
+    rw [← pow_dvd_iff_le_fst hp, ← Nat.sub_le_iff_le_add, ← pow_dvd_iff_le_fst hp hn]
+
+
 theorem base_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
     p.maxPowDvdDiv (p * n) = ((p.maxPowDvdDiv n).1 + 1, (p.maxPowDvdDiv n).2) := by
-  rw [maxPowDvdDiv, if_pos (by simp [*, hp.pos])]
+  have hp₀ := Nat.zero_lt_of_lt hp
+  have H₁ : (p.maxPowDvdDiv (p * n)).1 = (p.maxPowDvdDiv n).1 + 1 := by
+    refine eq_of_forall_le_iff fun c ↦ ?_
+    rw [← pow_dvd_iff_le_fst hp (Nat.mul_pos hp₀ hn), ← Nat.sub_le_iff_le_add,
+      ← pow_dvd_iff_le_fst hp hn]
+
+
   conv in p * n => rw [← pow_mul_eq p n, ← mul_assoc, ← pow_add_one']
   rw [go_unique hp.pos (not_dvd_snd hp hn), zero_add]
   rw [add_one_le_iff]
@@ -122,11 +138,6 @@ theorem base_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
       apply le_mul_of_le_of_one_le (by simp)
     _ < p * n := by
       rw [pow_mul_eq]
-
-theorem base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (k : ℕ) :
-    p.maxPowDvdDiv (p ^ k * n) = ((p.maxPowDvdDiv n).1 + k, (p.maxPowDvdDiv n).2) := by
-  induction k <;>
-    simp [*, pow_succ', mul_assoc, base_mul hp (Nat.mul_pos (Nat.pow_pos hp.pos) _), add_assoc]
 
 @[simp]
 theorem base_pow {p : ℕ} (hp : 1 < p) (k : ℕ) : p.maxPowDvdDiv (p ^ k) = (k, 1) := by
