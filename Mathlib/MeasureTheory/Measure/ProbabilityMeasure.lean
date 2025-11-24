@@ -3,9 +3,11 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.FiniteMeasure
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Measure.FiniteMeasure
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Probability measures
@@ -71,6 +73,8 @@ composition `ENNReal.toNNReal` and the coercion to function of `MeasureTheory.Me
 convergence in distribution, convergence in law, weak convergence of measures, probability measure
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -309,14 +313,14 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
-  injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
+  injective _μ _ν h := Subtype.ext <| congr_arg FiniteMeasure.toMeasure h
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ₀) ↔ Tendsto (toFiniteMeasure ∘ μs) F (𝓝 μ₀.toFiniteMeasure) :=
   (toFiniteMeasure_isEmbedding Ω).tendsto_nhds_iff
 
-/-- A characterization of weak convergence of probability measures by the condition that the
+/-- The characterization of weak convergence of probability measures by the condition that the
 integrals of every continuous bounded nonnegative function converge to the integral of the function
 against the limit measure. -/
 theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ}
@@ -346,13 +350,26 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
   simp [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds,
     FiniteMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜]
 
+/-- The characterization of weak convergence of probability measures by the condition that the
+integrals of every bounded nonnegative continuous function are continuous. -/
+theorem continuous_iff_forall_continuous_lintegral {X : Type*} [TopologicalSpace X]
+    {μs : X → ProbabilityMeasure Ω} :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
+    forall_swap (α := X)]
+
+/-- The characterization of weak convergence of probability measures by the usual (defining)
+condition that the integrals of every bounded continuous function are continuous. -/
+theorem continuous_iff_forall_continuous_integral {X : Type*} [TopologicalSpace X]
+    {μs : X → ProbabilityMeasure Ω} :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
+    forall_swap (α := X)]
+
 lemma continuous_integral_boundedContinuousFunction
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
-    Continuous fun μ : ProbabilityMeasure α ↦ ∫ x, f x ∂μ := by
-  rw [continuous_iff_continuousAt]
-  intro μ
-  exact continuousAt_of_tendsto_nhds
-    (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
+    Continuous fun μ : ProbabilityMeasure α ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuous_integral.1 continuous_id _
 
 end convergence_in_distribution -- section
 
@@ -551,9 +568,7 @@ namespace ProbabilityMeasure
 /-- The push-forward of a probability measure by a measurable function. -/
 noncomputable def map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν) :
     ProbabilityMeasure Ω' :=
-  ⟨(ν : Measure Ω).map f,
-   ⟨by simp only [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ,
-                  preimage_univ, measure_univ]⟩⟩
+  ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isProbabilityMeasure_map f_aemble⟩
 
 @[simp] lemma toMeasure_map (ν : ProbabilityMeasure Ω) {f : Ω → Ω'} (hf : AEMeasurable f ν) :
     (ν.map hf).toMeasure = ν.toMeasure.map f := rfl

@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Basic
+module
+
+public import Mathlib.RingTheory.WittVector.Basic
 
 /-!
 # Teichmüller lifts
@@ -24,6 +26,8 @@ This file defines `WittVector.teichmuller`, a monoid hom `R →* 𝕎 R`, which 
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 namespace WittVector

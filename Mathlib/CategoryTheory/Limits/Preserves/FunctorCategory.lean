@@ -3,12 +3,14 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -22,11 +24,13 @@ import Mathlib.CategoryTheory.Limits.Yoneda
 * Show that `F : C ⥤ D` preserves limits of a certain shape
   if `Lan F.op : Cᵒᵖ ⥤ Type*` preserves such limits.
 
-# References
+## References
 
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
 
 -/
+
+@[expose] public section
 
 
 universe w w' v v₁ v₂ v₃ u u₁ u₂ u₃
@@ -107,6 +111,14 @@ instance whiskeringLeft_preservesLimits [HasLimitsOfSize.{w, w'} D] (F : C ⥤ E
 instance whiskeringLeft_preservesColimit [HasColimitsOfSize.{w, w'} D] (F : C ⥤ E) :
     PreservesColimitsOfSize.{w, w'} ((whiskeringLeft C E D).obj F) :=
   ⟨fun {J} _ => whiskeringLeft_preservesColimitsOfShape J F⟩
+
+instance (F : C ⥤ D) [HasFiniteLimits E] :
+    PreservesFiniteLimits ((Functor.whiskeringLeft C D E).obj F) where
+  preservesFiniteLimits _ _ _ := inferInstance
+
+instance (F : C ⥤ D) [HasFiniteColimits E] :
+    PreservesFiniteColimits ((Functor.whiskeringLeft C D E).obj F) where
+  preservesFiniteColimits _ _ _ := inferInstance
 
 instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]

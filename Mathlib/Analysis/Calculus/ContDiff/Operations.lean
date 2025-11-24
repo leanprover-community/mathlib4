@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Inverse
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
 
 /-!
 # Higher differentiability of usual operations
@@ -23,6 +25,8 @@ In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : 
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
+
+@[expose] public section
 
 open scoped NNReal Nat ContDiff
 
@@ -179,7 +183,7 @@ theorem ContDiffAt.add {f g : E → F} (hf : ContDiffAt 𝕜 n f x) (hg : ContDi
     ContDiffAt 𝕜 n (fun x => f x + g x) x := by
   rw [← contDiffWithinAt_univ] at *; exact hf.add hg
 
-/-- The sum of two `C^n`functions is `C^n`. -/
+/-- The sum of two `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.add {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x + g x :=
@@ -233,6 +237,10 @@ theorem iteratedFDeriv_add_apply' {i : ℕ} {f g : E → F} (hf : ContDiffAt �
     iteratedFDeriv 𝕜 i (fun x => f x + g x) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x :=
   iteratedFDeriv_add_apply hf hg
 
+theorem iteratedFDeriv_add {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f) (hg : ContDiff 𝕜 i g) :
+    iteratedFDeriv 𝕜 i (f + g) = iteratedFDeriv 𝕜 i f + iteratedFDeriv 𝕜 i g :=
+  funext fun _ ↦ iteratedFDeriv_add_apply (ContDiff.contDiffAt hf) (ContDiff.contDiffAt hg)
+
 end Add
 
 /-! ### Negative -/
@@ -256,7 +264,7 @@ theorem ContDiffWithinAt.neg {s : Set E} {f : E → F} (hf : ContDiffWithinAt �
 theorem ContDiffAt.neg {f : E → F} (hf : ContDiffAt 𝕜 n f x) :
     ContDiffAt 𝕜 n (fun x => -f x) x := by rw [← contDiffWithinAt_univ] at *; exact hf.neg
 
-/-- The negative of a `C^n`function is `C^n`. -/
+/-- The negative of a `C^n` function is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.neg {f : E → F} (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => -f x :=
   contDiff_neg.comp hf
@@ -291,6 +299,10 @@ theorem iteratedFDeriv_neg_apply {i : ℕ} {f : E → F} :
     iteratedFDeriv 𝕜 i (-f) x = -iteratedFDeriv 𝕜 i f x := by
   simp_rw [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_neg_apply uniqueDiffOn_univ (Set.mem_univ _)
+
+theorem iteratedFDeriv_neg {i : ℕ} {f : E → F} :
+    iteratedFDeriv 𝕜 i (-f) = -iteratedFDeriv 𝕜 i f :=
+  funext fun _ ↦ iteratedFDeriv_neg_apply
 
 end Neg
 
@@ -397,7 +409,7 @@ nonrec theorem ContDiffAt.mul {f g : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (h
 theorem ContDiffOn.mul {f g : E → 𝔸} (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
     ContDiffOn 𝕜 n (fun x => f x * g x) s := fun x hx => (hf x hx).mul (hg x hx)
 
-/-- The product of two `C^n`functions is `C^n`. -/
+/-- The product of two `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x => f x * g x :=
@@ -597,17 +609,11 @@ theorem ContDiffWithinAt.prodMap' {s : Set E} {t : Set E'} {f : E → F} {g : E'
   (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp p contDiffWithinAt_snd (prod_subset_preimage_snd _ _))
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffWithinAt.prod_map' := ContDiffWithinAt.prodMap'
-
 @[fun_prop]
 theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {x : E} {y : E'}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g t y) :
     ContDiffWithinAt 𝕜 n (Prod.map f g) (s ×ˢ t) (x, y) :=
   ContDiffWithinAt.prodMap' hf hg
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiffWithinAt.prod_map := ContDiffWithinAt.prodMap
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
 @[fun_prop]
@@ -617,9 +623,6 @@ theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace �
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffOn.prod_map := ContDiffOn.prodMap
-
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
 @[fun_prop]
@@ -628,18 +631,12 @@ theorem ContDiffAt.prodMap {f : E → F} {g : E' → F'} {x : E} {y : E'} (hf : 
   rw [ContDiffAt] at *
   simpa only [univ_prod_univ] using hf.prodMap hg
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffAt.prod_map := ContDiffAt.prodMap
-
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
 @[fun_prop]
 theorem ContDiffAt.prodMap' {f : E → F} {g : E' → F'} {p : E × E'} (hf : ContDiffAt 𝕜 n f p.1)
     (hg : ContDiffAt 𝕜 n g p.2) : ContDiffAt 𝕜 n (Prod.map f g) p :=
   hf.prodMap hg
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiffAt.prod_map' := ContDiffAt.prodMap'
 
 /-- The product map of two `C^n` functions is `C^n`. -/
 @[fun_prop]
@@ -648,22 +645,13 @@ theorem ContDiff.prodMap {f : E → F} {g : E' → F'} (hf : ContDiff 𝕜 n f) 
   rw [contDiff_iff_contDiffAt] at *
   exact fun ⟨x, y⟩ => (hf x).prodMap (hg y)
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiff.prod_map := ContDiff.prodMap
-
 @[fun_prop]
 theorem contDiff_prodMk_left (f₀ : F) : ContDiff 𝕜 n fun e : E => (e, f₀) :=
   contDiff_id.prodMk contDiff_const
 
-@[deprecated (since := "2025-03-09")]
-alias contDiff_prod_mk_left := contDiff_prodMk_left
-
 @[fun_prop]
 theorem contDiff_prodMk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, f) :=
   contDiff_const.prodMk contDiff_id
-
-@[deprecated (since := "2025-03-09")]
-alias contDiff_prod_mk_right := contDiff_prodMk_right
 
 end prodMap
 

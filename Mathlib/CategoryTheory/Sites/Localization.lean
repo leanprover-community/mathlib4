@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # The sheaf category as a localized category
@@ -14,6 +16,8 @@ of the category `Presheaf J A` with respect to the class `J.W` of morphisms
 of presheaves which become isomorphisms after applying the sheafification functor.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -25,11 +29,11 @@ namespace GrothendieckTopology
 
 /-- The class of morphisms of presheaves which become isomorphisms after sheafification.
 (See `GrothendieckTopology.W_iff`.) -/
-abbrev W : MorphismProperty (Cᵒᵖ ⥤ A) := LeftBousfield.W (Presheaf.IsSheaf J)
+abbrev W : MorphismProperty (Cᵒᵖ ⥤ A) := ObjectProperty.isLocal (Presheaf.IsSheaf J)
 
 variable (A) in
-lemma W_eq_W_range_sheafToPresheaf_obj :
-    J.W = LeftBousfield.W (· ∈ Set.range (sheafToPresheaf J A).obj) := by
+lemma W_eq_isLocal_range_sheafToPresheaf_obj :
+    J.W = ObjectProperty.isLocal (· ∈ Set.range (sheafToPresheaf J A).obj) := by
   apply congr_arg
   ext P
   constructor
@@ -38,10 +42,13 @@ lemma W_eq_W_range_sheafToPresheaf_obj :
   · rintro ⟨F, rfl⟩
     exact F.cond
 
+@[deprecated (since := "2025-11-20")] alias W_eq_W_range_sheafToPresheaf_obj :=
+  W_eq_isLocal_range_sheafToPresheaf_obj
+
 lemma W_sheafToPresheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂) :
     J.W ((sheafToPresheaf J A).map φ) ↔ IsIso φ := by
-  rw [W_eq_W_range_sheafToPresheaf_obj, LeftBousfield.W_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩,
-    isIso_iff_of_reflects_iso]
+  rw [W_eq_isLocal_range_sheafToPresheaf_obj,
+    ObjectProperty.isLocal_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩, isIso_iff_of_reflects_iso]
 
 @[deprecated (since := "2025-07-27")]
 alias W_sheafToPreheaf_map_iff_isIso := W_sheafToPresheaf_map_iff_isIso
@@ -51,19 +58,19 @@ section Adjunction
 variable {G : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A}
 
 lemma W_adj_unit_app (adj : G ⊣ sheafToPresheaf J A) (P : Cᵒᵖ ⥤ A) : J.W (adj.unit.app P) := by
-  rw [W_eq_W_range_sheafToPresheaf_obj]
-  exact LeftBousfield.W_adj_unit_app adj P
+  rw [W_eq_isLocal_range_sheafToPresheaf_obj]
+  exact ObjectProperty.isLocal_adj_unit_app adj P
 
 lemma W_iff_isIso_map_of_adjunction (adj : G ⊣ sheafToPresheaf J A)
     {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) :
     J.W f ↔ IsIso (G.map f) := by
-  rw [W_eq_W_range_sheafToPresheaf_obj]
-  exact LeftBousfield.W_iff_isIso_map adj f
+  rw [W_eq_isLocal_range_sheafToPresheaf_obj]
+  exact ObjectProperty.isLocal_iff_isIso_map adj f
 
 lemma W_eq_inverseImage_isomorphisms_of_adjunction (adj : G ⊣ sheafToPresheaf J A) :
     J.W = (MorphismProperty.isomorphisms _).inverseImage G := by
-  rw [W_eq_W_range_sheafToPresheaf_obj,
-    LeftBousfield.W_eq_inverseImage_isomorphisms adj]
+  rw [W_eq_isLocal_range_sheafToPresheaf_obj,
+    ObjectProperty.isLocal_eq_inverseImage_isomorphisms adj]
 
 end Adjunction
 

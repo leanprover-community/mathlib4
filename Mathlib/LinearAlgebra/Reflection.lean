@@ -3,15 +3,17 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FiniteSpan
-import Mathlib.RingTheory.Polynomial.Chebyshev
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FiniteSpan
+public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Reflections in linear algebra
@@ -47,6 +49,8 @@ definitions, which require an ambient `InnerProductSpace` structure, are `reflec
 should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
+
+@[expose] public section
 
 open Function Set
 open Module hiding Finite
@@ -412,13 +416,13 @@ lemma reflection_reflection_iterate
       map_nsmul, map_smul, smul_neg, hz, add_smul]
     abel
 
-lemma infinite_range_reflection_reflection_iterate_iff [NoZeroSMulDivisors ℤ M]
+lemma infinite_range_reflection_reflection_iterate_iff [IsAddTorsionFree M]
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) :
     (range <| fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
     f y • x ≠ (2 : R) • y := by
   simp only [reflection_reflection_iterate hfx hgy hgxfy, infinite_range_add_nsmul_iff, sub_ne_zero]
 
-lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
+lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
     (hxfΦ : MapsTo (preReflection x f) Φ Φ)
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
@@ -437,7 +441,7 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (bijOn_reflection_of_mapsTo hgy hygΦ)).image_eq n]
   exact mem_image_of_mem _ hyΦ
 
-lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
+lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
     {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)
     (h_two : ∀ i, c i (r i) = 2)
     (h_mapsTo : ∀ i, MapsTo (preReflection (r i) (c i)) (range r) (range r)) :

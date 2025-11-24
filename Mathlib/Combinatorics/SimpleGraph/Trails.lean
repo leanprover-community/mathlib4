@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Combinatorics.SimpleGraph.Paths
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 
@@ -34,6 +36,8 @@ Eulerian trails
 
 -/
 
+@[expose] public section
+
 
 namespace SimpleGraph
 
@@ -52,7 +56,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
   induction p with
   | nil => simp
   | cons huv p ih =>
-    rw [cons_isTrail_iff] at ht
+    rw [isTrail_cons] at ht
     specialize ih ht.1
     simp only [List.countP_cons, Ne, edges_cons, Sym2.mem_iff]
     split_ifs with h
@@ -89,7 +93,7 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
   ⟨fun h => p.edges_subset_edgeSet h,
-   fun he => by simpa [Nat.succ_le] using (h e he).ge⟩
+   fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :

@@ -3,10 +3,12 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Traversable.Lemmas
-import Lean.Elab.Match
-import Lean.Elab.Deriving.Basic
-import Lean.Elab.PreDefinition.Main
+module
+
+public meta import Mathlib.Control.Traversable.Lemmas
+public meta import Lean.Elab.Match
+public meta import Lean.Elab.Deriving.Basic
+public meta import Lean.Elab.PreDefinition.Main
 
 /-!
 # Deriving handler for `Traversable` instances
@@ -15,6 +17,8 @@ This module gives deriving handlers for `Functor`, `LawfulFunctor`, `Traversable
 `LawfulTraversable`. These deriving handlers automatically derive their dependencies, for
 example `deriving LawfulTraversable` all by itself gives all four.
 -/
+
+public meta section
 
 namespace Mathlib.Deriving.Traversable
 
@@ -287,7 +291,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, x], mim) ← mim.introN 2 | failure
   let (some mim, _) ← dsimpGoal mim (← rules [] [``Functor.map] false) | failure
   let xs ← mim.induction x (mkRecName n)
-  xs.forM fun ⟨mim, _, _⟩ =>
+  xs.forM fun { mvarId := mim, .. } =>
     mim.withContext do
       if let (some (_, mim), _) ←
           simpGoal mim (← rules [(``Functor.map_id, false)] [.mkStr n "map"] true) then
@@ -295,7 +299,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let (#[_, _, _, _, _, x], mcm) ← mcm.introN 6 | failure
   let (some mcm, _) ← dsimpGoal mcm (← rules [] [``Functor.map] false) | failure
   let xs ← mcm.induction x (mkRecName n)
-  xs.forM fun ⟨mcm, _, _⟩ =>
+  xs.forM fun { mvarId := mcm, .. } =>
     mcm.withContext do
       if let (some (_, mcm), _) ←
           simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [.mkStr n "map"] true) then

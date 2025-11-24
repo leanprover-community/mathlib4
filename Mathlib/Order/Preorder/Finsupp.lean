@@ -3,13 +3,17 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
 -/
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Pointwise order on finitely supported functions
 
 This file lifts order structures on `M` to `ι →₀ M`.
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 
@@ -35,6 +39,11 @@ def orderEmbeddingToFun : (ι →₀ M) ↪o (ι → M) where
   toFun f := f
   inj' := DFunLike.coe_injective
   map_rel_iff' := coe_le_coe
+
+/-- `equivFunOnFinite` as an order isomorphism. -/
+def orderIsoFunOnFinite [Finite ι] : (ι →₀ M) ≃o (ι → M) where
+  toEquiv := equivFunOnFinite
+  map_rel_iff' := Iff.rfl
 
 end LE
 

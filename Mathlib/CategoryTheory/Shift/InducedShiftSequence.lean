@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Shift.ShiftSequence
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
 
 /-! # Induced shift sequences
 
@@ -25,6 +27,8 @@ will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Functor
 

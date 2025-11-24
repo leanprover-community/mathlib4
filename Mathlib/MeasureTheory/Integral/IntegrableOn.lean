@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-! # Functions integrable on a set and at a filter
 
@@ -17,6 +19,8 @@ at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` 
 at `l`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -237,7 +241,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
-  rw [← s.toSet.biUnion_of_singleton]
+  rw [← (s : Set α).biUnion_of_singleton]
   simp [integrableOn_finset_iUnion, measure_lt_top]
 
 lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
@@ -310,10 +314,21 @@ theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : Measur
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 
+theorem IntegrableOn.integrable_indicator₀ (h : IntegrableOn f s μ) (hs : NullMeasurableSet s μ) :
+    Integrable (indicator s f) μ :=
+  (h.congr_set_ae hs.toMeasurable_ae_eq).integrable_indicator
+    (measurableSet_toMeasurable μ s) |>.congr
+    (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq)
+
 @[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
+
+@[fun_prop]
+theorem Integrable.indicator₀ (h : Integrable f μ) (hs : NullMeasurableSet s μ) :
+    Integrable (s.indicator f) μ :=
+  h.integrableOn.integrable_indicator₀ hs
 
 theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
     IntegrableOn (indicator t f) s μ :=

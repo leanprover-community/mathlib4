@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 
@@ -26,6 +28,8 @@ we show that the cocone obtained by sheafifying the cocone point is a colimit co
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -170,9 +174,12 @@ instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
 instance hasLimitsOfSize [HasLimitsOfSize.{u₁, u₂} D] : HasLimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
-variable {D : Type w} [Category.{max v u} D]
+instance [HasFiniteLimits D] :
+    PreservesFiniteLimits (sheafToPresheaf J D) where
+  preservesFiniteLimits _ _ _ := inferInstance
 
-example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
+example {D : Type w} [Category.{max v u} D] [HasLimits D] :
+    HasLimits (Sheaf J D) := inferInstance
 
 end
 
@@ -190,6 +197,19 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
   (Cocones.precompose
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
+
+@[reassoc]
+lemma sheafifyCocone_ι_app_val
+    {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)) (k : K) :
+    ((Sheaf.sheafifyCocone E).ι.app k).val =
+      E.ι.app k ≫ CategoryTheory.toSheafify J E.pt := by
+  rw [← cancel_epi ((sheafToPresheaf _ _).map
+    ((sheafificationAdjunction J D).counit.app (F.obj k)))]
+  dsimp [sheafifyCocone]
+  rw [← comp_val_assoc, ← NatTrans.comp_app, IsIso.hom_inv_id, NatTrans.id_app]
+  dsimp
+  rw [Category.id_comp, toSheafify_naturality, sheafificationAdjunction_counit_app_val,
+    sheafifyLift_id_toSheafify_assoc]
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafifyCocone E` is a colimit cocone. -/

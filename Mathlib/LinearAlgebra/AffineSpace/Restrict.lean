@@ -3,7 +3,9 @@ Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-!
 # Affine map restrictions
@@ -22,6 +24,8 @@ This file defines restrictions of affine maps.
 * The restriction is injective if the original map is injective.
 * The restriction in surjective if the codomain is the image of the domain.
 -/
+
+@[expose] public section
 
 
 variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]

@@ -3,11 +3,13 @@ Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Hanneke Wiersema, Andrew Yang
 -/
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
-import Mathlib.FieldTheory.KrullTopology
+module
+
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
+public import Mathlib.FieldTheory.KrullTopology
 
 /-!
 
@@ -62,6 +64,8 @@ where `d` is the number of `n`th roots of unity in `L`.
 
 cyclotomic character
 -/
+
+@[expose] public section
 
 universe u
 variable {L : Type u} [CommRing L] [IsDomain L]
@@ -236,7 +240,7 @@ variable {L}
 `modularCyclotomicCharacter`. Note that `IsPrimitiveRoot.autToPow`
 needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
 lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n]
-    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
+    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : Gal(L/R)) :
     hμ.autToPow R g = modularCyclotomicCharacter L hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective
@@ -331,7 +335,7 @@ theorem cyclotomicCharacter.toZModPow (p : ℕ) [Fact p.Prime] {n : ℕ}
 open IntermediateField in
 lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    Continuous ((cyclotomicCharacter L p).comp (MulSemiringAction.toRingAut (L ≃ₐ[K] L) L)) := by
+    Continuous ((cyclotomicCharacter L p).comp (MulSemiringAction.toRingAut Gal(L/K) L)) := by
   by_cases H : ∀ (i : ℕ), ∃ ζ : L, IsPrimitiveRoot ζ (p ^ i); swap
   · simp only [cyclotomicCharacter, cyclotomicCharacter.toFun, dif_neg H, MonoidHom.coe_comp]
     exact continuous_const (y := 1)

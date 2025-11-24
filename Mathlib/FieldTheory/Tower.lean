@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Finiteness of `IsScalarTower`
@@ -21,6 +23,8 @@ The formulas for the dimensions are given elsewhere by `Module.finrank_mul_finra
 tower law
 
 -/
+
+@[expose] public section
 
 
 universe u v w u₁ v₁ w₁

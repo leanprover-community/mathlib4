@@ -3,14 +3,16 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-import Mathlib.Analysis.Complex.Isometry
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.LinearAlgebra.Complex.Module
+module
+
+public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+public import Mathlib.Analysis.Complex.Isometry
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -52,6 +54,8 @@ this file.
   throughout or antiholomorphic throughout.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -75,7 +79,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     nth_rw 1 [this]
     rw [LinearMap.coe_restrictScalars]
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
-    field_simp
+    field
   · ext1
     simp [minor₁]
 

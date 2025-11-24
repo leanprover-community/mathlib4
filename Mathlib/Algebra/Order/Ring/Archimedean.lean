@@ -3,11 +3,13 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Group.DenselyOrdered
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Group.DenselyOrdered
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Archimedean classes of a linearly ordered ring
@@ -35,6 +37,8 @@ reasons:
 * The order we defined on `ArchimedeanClass R` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
@@ -104,7 +108,7 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
     induction y with | mk y
     induction z with | mk z
     rw [← mk_mul, ← mk_mul]
-    exact mk_mul_le_of_le le_rfl h
+    exact mk_mul_le_of_le h le_rfl
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]

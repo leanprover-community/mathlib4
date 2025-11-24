@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # The argument of a complex number.
@@ -13,6 +15,8 @@ We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
 -/
+
+@[expose] public section
 
 open Filter Metric Set
 open scoped ComplexConjugate Real Topology
@@ -38,15 +42,15 @@ theorem cos_arg {x : ℂ} (hx : x ≠ 0) : Real.cos (arg x) = x.re / ‖x‖ := 
   · rw [Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_sq, (norm_pos_iff.mpr hx).le, *]
-    field_simp
+    field
   · rw [Real.cos_add_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
   · rw [Real.cos_sub_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
 
 @[simp]
 theorem norm_mul_exp_arg_mul_I (x : ℂ) : ‖x‖ * exp (arg x * I) = x := by

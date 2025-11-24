@@ -3,12 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # fintype instances for sigma types
 -/
+
+@[expose] public section
 
 
 open Function

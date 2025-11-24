@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Congruence.Defs
-import Mathlib.RingTheory.Ideal.Defs
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Congruence.Defs
+public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # Ideal quotients
@@ -23,6 +25,8 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 - `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
 - `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -107,6 +111,9 @@ theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
 
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
+
+lemma mk_eq_one_iff_sub_mem (x : R) : mk I x = 1 ↔ x - 1 ∈ I := by
+  rw [← mk_eq_mk_iff_sub_mem, map_one]
 
 @[simp]
 theorem mk_out (x : R ⧸ I) : Ideal.Quotient.mk I (Quotient.out x) = x :=
@@ -214,5 +221,8 @@ theorem quotEquivOfEq_mk (h : I = J) (x : R) :
 @[simp]
 theorem quotEquivOfEq_symm (h : I = J) :
     (Ideal.quotEquivOfEq h).symm = Ideal.quotEquivOfEq h.symm := by ext; rfl
+
+theorem quotEquivOfEq_eq_factor (h : I = J) (x : R ⧸ I) :
+    Ideal.quotEquivOfEq h x = Ideal.Quotient.factor (h ▸ le_refl I) x := rfl
 
 end Ideal

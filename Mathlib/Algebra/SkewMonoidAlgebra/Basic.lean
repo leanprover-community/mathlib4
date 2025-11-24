@@ -3,8 +3,10 @@ Copyright (c) 2024 María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Algebra.NonUnitalHom
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.Algebra.Algebra.NonUnitalHom
 
 /-!
 # Skew Monoid Algebras
@@ -25,9 +27,9 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
-## TODO
-- lifting lemmas (see #10541)
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -140,8 +142,7 @@ section Support
 
 /-- For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that
 `f.coeff a ≠ 0`. -/
-def support : SkewMonoidAlgebra k G → Finset G
-  | ⟨p⟩ => p.support
+def support (p : SkewMonoidAlgebra k G) : Finset G := p.toFinsupp.support
 
 @[simp]
 theorem support_ofFinsupp (p) : support (⟨p⟩ : SkewMonoidAlgebra k G) = p.support := by
@@ -157,6 +158,11 @@ theorem support_zero : (0 : SkewMonoidAlgebra k G).support = ∅ := rfl
 theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) = 0 := by
   rcases p
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
+
+lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
+    (p + q).support ⊆ p.support ∪ q.support := by
+  simp [support]
+  exact Finsupp.support_add
 
 end Support
 

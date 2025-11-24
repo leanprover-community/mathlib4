@@ -3,10 +3,12 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Antichain
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Well quasi-orders
@@ -24,6 +26,8 @@ with no infinite antichains.
 
 wqo, pwo, well quasi-order, partial well order, dickson order
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
@@ -78,6 +82,37 @@ theorem WellQuasiOrdered.prod [IsPreorder α r] (hr : WellQuasiOrdered r) (hs : 
   obtain ⟨m, n, h, hf⟩ := hs (Prod.snd ∘ f ∘ g)
   exact ⟨g m, g n, g.strictMono h, h₁ _ _ h.le, hf⟩
 
+/-- A version of **Dickson's lemma**: the Pi type `∀ i : ι, α i` is well-quasi-ordered when `ι` is
+finite and each `σ i` is well-quasi-ordered. See `Set.PartiallyWellOrderedOn.pi` for the finite
+product of well-quasi-ordered sets and `Pi.wellQuasiOrderedLE` when the relation is `≤`. -/
+theorem WellQuasiOrdered.pi {ι : Type*} {α : ι → Type*} [Finite ι] {r : ∀ i, (α i → α i → Prop)}
+    [∀ i, IsPreorder (α i) (r i)] (hr : ∀ i, WellQuasiOrdered (r i)) :
+    WellQuasiOrdered fun a b : ∀ i, α i => ∀ i, r i (a i) (b i) := by
+  haveI := Fintype.ofFinite ι
+  haveI : IsPreorder (∀ i, α i) (fun a b : ∀ i, α i => ∀ i, r i (a i) (b i)) :=
+    { refl a i := refl (a i)
+      trans a b c hab hbc i := _root_.trans (hab i) (hbc i) }
+  suffices ∀ (s : Finset ι) (f : ℕ → ∀ i, α i),
+    ∃ g : ℕ ↪o ℕ, ∀ ⦃a b : ℕ⦄, a ≤ b → ∀ i, i ∈ s → r i ((f ∘ g) a i) ((f ∘ g) b i) by
+    rw [wellQuasiOrdered_iff_exists_monotone_subseq]
+    intro f
+    simpa only [Finset.mem_univ, true_imp_iff] using this Finset.univ f
+  refine Finset.cons_induction ?_ ?_
+  · intro f
+    exists RelEmbedding.refl (· ≤ ·)
+    simp only [IsEmpty.forall_iff, imp_true_iff, Finset.notMem_empty]
+  · intro i s hi ih f
+    obtain ⟨g, hg⟩ := (hr i).exists_monotone_subseq (f · i)
+    obtain ⟨g', hg'⟩ := ih (f ∘ g)
+    refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
+    exact ⟨hg _ _ (OrderHomClass.mono g' hab), hg' hab⟩
+
+theorem RelIso.wellQuasiOrdered_iff {α β} {r : α → α → Prop} {s : β → β → Prop} (f : r ≃r s) :
+    WellQuasiOrdered r ↔ WellQuasiOrdered s := by
+  apply (Equiv.arrowCongr (.refl ℕ) f).forall_congr
+  congr! with g a b
+  simp [f.map_rel_iff]
+
 /-- A typeclass for an order with a well-quasi-ordered `≤` relation.
 
 Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
@@ -87,6 +122,10 @@ class WellQuasiOrderedLE (α : Type*) [LE α] where
 
 theorem wellQuasiOrdered_le [LE α] [h : WellQuasiOrderedLE α] : @WellQuasiOrdered α (· ≤ ·) :=
   h.wqo
+
+theorem OrderIso.wellQuasiOrderedLE_iff {α β} [LE α] [LE β] (f : α ≃o β) :
+    WellQuasiOrderedLE α ↔ WellQuasiOrderedLE β := by
+  simpa [wellQuasiOrderedLE_def] using f.wellQuasiOrdered_iff
 
 section Preorder
 variable [Preorder α]
@@ -149,4 +188,13 @@ theorem wellQuasiOrderedLE_iff_wellFoundedLT : WellQuasiOrderedLE α ↔ WellFou
   rw [wellQuasiOrderedLE_iff, and_iff_left_iff_imp]
   exact fun _ s hs ↦ hs.subsingleton.finite
 
+instance [h : WellFoundedLT α] : WellQuasiOrderedLE α :=
+  wellQuasiOrderedLE_iff_wellFoundedLT.mpr h
+
 end LinearOrder
+
+/-- A version of **Dickson's lemma**. See `Set.IsPWO.pi` for the finite product of
+well-quasi-ordered sets. -/
+instance Pi.wellQuasiOrderedLE {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
+    [h : ∀ i, WellQuasiOrderedLE (α i)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) :=
+  ⟨WellQuasiOrdered.pi fun i => (h i).wqo⟩

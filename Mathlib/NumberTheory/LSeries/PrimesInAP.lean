@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.ZMod.Coprime
-import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-import Mathlib.NumberTheory.LSeries.Linearity
-import Mathlib.NumberTheory.LSeries.Nonvanishing
+module
+
+public import Mathlib.Data.ZMod.Coprime
+public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
+public import Mathlib.NumberTheory.LSeries.Linearity
+public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
@@ -56,7 +58,7 @@ The main steps of the proof are as follows.
 ## Main Result
 
 We give two versions of **Dirichlet's Theorem**:
-* `Nat.setOf_prime_and_eq_mod_infinite` states that the set of primes `p`
+* `Nat.infinite_setOf_prime_and_eq_mod` states that the set of primes `p`
   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`
   there is a prime `p > n` such that `(p : ZMod q) = a`.
@@ -65,6 +67,8 @@ We give two versions of **Dirichlet's Theorem**:
 
 prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
+
+@[expose] public section
 
 /-!
 ### Auxiliary statements
@@ -199,8 +203,7 @@ private lemma summable_F'' : Summable F'' := by
   suffices Summable fun (pk : Nat.Primes × ℕ) ↦ (pk.1 : ℝ)⁻¹ ^ (pk.2 + 3 / 2 : ℝ) by
     refine (Summable.mul_left 2 this).of_nonneg_of_le (fun pk ↦ ?_) (fun pk ↦ F''_le pk.1 pk.2)
     simp only [F'', Function.comp_apply, F', F₀, Prod.map_fst, id_eq, Prod.map_snd, Nat.cast_pow]
-    have := vonMangoldt_nonneg (n := (pk.1 : ℕ) ^ (pk.2 + 2))
-    positivity
+    positivity [vonMangoldt_nonneg (n := (pk.1 : ℕ) ^ (pk.2 + 2))]
   conv => enter [1, pk]; rw [Real.rpow_add <| hp₀ pk.1, Real.rpow_natCast]
   refine (summable_prod_of_nonneg (fun _ ↦ by positivity)).mpr ⟨(fun p ↦ ?_), ?_⟩
   · dsimp only -- otherwise the `exact` below times out
@@ -209,8 +212,7 @@ private lemma summable_F'' : Summable F'' := by
     conv => enter [1, p]; rw [tsum_mul_right, tsum_geometric_of_lt_one (hp₀ p).le (hp₁ p)]
     refine (summable_rpow.mpr (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 2
       |>.of_nonneg_of_le (fun p ↦ ?_) (fun p ↦ ?_)
-    · have := sub_pos.mpr (hp₁ p)
-      positivity
+    · positivity [sub_pos.mpr (hp₁ p)]
     · rw [Real.inv_rpow p.val.cast_nonneg, Real.rpow_neg p.val.cast_nonneg]
       gcongr
       rw [inv_le_comm₀ (sub_pos.mpr (hp₁ p)) zero_lt_two, le_sub_comm,
@@ -223,8 +225,7 @@ on primes in an arithmetic progression. -/
 lemma summable_residueClass_non_primes_div :
     Summable fun n : ℕ ↦ (if n.Prime then 0 else residueClass a n) / n := by
   have h₀ (n : ℕ) : 0 ≤ (if n.Prime then 0 else residueClass a n) / n := by
-    have := residueClass_nonneg a n
-    positivity
+    positivity [residueClass_nonneg a n]
   have hleF₀ (n : ℕ) : (if n.Prime then 0 else residueClass a n) / n ≤ F₀ n := by
     refine div_le_div_of_nonneg_right ?_ n.cast_nonneg
     split_ifs; exacts [le_rfl, residueClass_le a n]
@@ -472,31 +473,54 @@ variable {q : ℕ} [NeZero q] {a : ZMod q}
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
-theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
+theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra H
   rw [Set.not_infinite] at H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 
+@[deprecated (since := "2025-11-01")]
+alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
+
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
     ∃ p > n, p.Prime ∧ (p : ZMod q) = a := by
-  obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (setOf_prime_and_eq_mod_infinite ha) n
+  obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (infinite_setOf_prime_and_eq_mod ha) n
   exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
-integer and `a : ℤ` is coürime to `q`, then there are infinitely many prime numbers `p`
+integer and `a : ℤ` is coprime to `q`, then there are infinitely many prime numbers `p`
 such that `p ≡ a mod q`. -/
-theorem forall_exists_prime_gt_and_modEq (n : ℕ) {a : ℤ} (h : IsCoprime a q) :
+theorem forall_exists_prime_gt_and_zmodEq (n : ℕ) {q : ℕ} {a : ℤ} (hq : q ≠ 0) (h : IsCoprime a q) :
     ∃ p > n, p.Prime ∧ p ≡ a [ZMOD q] := by
+  have : NeZero q := ⟨hq⟩
   have : IsUnit (a : ZMod q) := by
     rwa [ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
   obtain ⟨p, hpn, hpp, heq⟩ := forall_exists_prime_gt_and_eq_mod this n
   refine ⟨p, hpn, hpp, ?_⟩
   simpa [← ZMod.intCast_eq_intCast_iff] using heq
+
+/-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
+integer and `a : ℕ` is coprime to `q`, then there are infinitely many prime numbers `p`
+such that `p ≡ a mod q`. -/
+theorem forall_exists_prime_gt_and_modEq (n : ℕ) {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+    ∃ p > n, p.Prime ∧ p ≡ a [MOD q] := by
+  simpa using forall_exists_prime_gt_and_zmodEq n (q := q) (a := a) hq (by simpa)
+
+open Filter in
+lemma frequently_atTop_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+    ∃ᶠ p in atTop, p.Prime ∧ p ≡ a [MOD q] := by
+  rw [frequently_atTop]
+  intro n
+  obtain ⟨p, hn, hp, ha⟩ := forall_exists_prime_gt_and_modEq n hq h
+  exact ⟨p, hn.le, hp, ha⟩
+
+lemma infinite_setOf_prime_and_modEq {q a : ℕ} (hq : q ≠ 0) (h : a.Coprime q) :
+    Set.Infinite {p : ℕ | p.Prime ∧ p ≡ a [MOD q]} :=
+  frequently_atTop_iff_infinite.1 (frequently_atTop_prime_and_modEq hq h)
 
 end Nat
 

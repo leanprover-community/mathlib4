@@ -3,10 +3,11 @@ Copyright (c) 2024 Pieter Cuijpers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pieter Cuijpers
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Tactic.Variable
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Tactic.Variable
 
 /-!
 # Theory of quantales
@@ -56,6 +57,8 @@ integral, and involutive quantales easier to add on later.
 <https://ncatlab.org/nlab/show/quantale>
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -176,7 +179,7 @@ instance : MulRightMono α where
 @[to_additive]
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
   mp h1 := by
-    apply le_trans (mul_le_mul_right' h1 _)
+    grw [h1]
     simp_all only [leftMulResiduation, sSup_mul_distrib, Set.mem_setOf_eq,
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
@@ -184,7 +187,7 @@ theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z wher
 @[to_additive]
 theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z where
   mp h1 := by
-    apply le_trans (mul_le_mul_left' h1 _)
+    grw [h1]
     simp_all only [rightMulResiduation, mul_sSup_distrib, Set.mem_setOf_eq,
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1

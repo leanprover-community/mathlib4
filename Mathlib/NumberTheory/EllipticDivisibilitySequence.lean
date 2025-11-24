@@ -3,9 +3,12 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Data.Nat.EvenOddRec
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.Nat.EvenOddRec
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.LinearCombination
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Elliptic divisibility sequences
@@ -64,6 +67,8 @@ M Ward, *Memoir on Elliptic Divisibility Sequences*
 
 elliptic, divisibility, sequence
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -127,8 +132,8 @@ def preNormEDS' : ℕ → R
       preNormEDS' (m + 4) * preNormEDS' (m + 2) ^ 3 * (if Even m then b else 1) -
         preNormEDS' (m + 1) * preNormEDS' (m + 3) ^ 3 * (if Even m then 1 else b)
     else
-      have : m + 5 < n + 5 :=
-        add_lt_add_right (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 5
+      have : m + 5 < n + 5 := by
+        gcongr; exact Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two
       preNormEDS' (m + 2) ^ 2 * preNormEDS' (m + 3) * preNormEDS' (m + 5) -
         preNormEDS' (m + 1) * preNormEDS' (m + 3) * preNormEDS' (m + 4) ^ 2
 
@@ -401,7 +406,7 @@ def complEDS' : ℕ → R
   | (n + 2) => let m := n / 2 + 1
     if hn : Even n then complEDS' m * complEDS₂ b c d (m * k) else
       have : m + 1 < n + 2 :=
-        add_lt_add_right (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 2
+        add_lt_add_left (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 2
       complEDS' m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
         complEDS' (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1)
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
+module
+
+public import Mathlib.Algebra.Lie.Submodule
 
 /-!
 # Lie Ideals
@@ -25,6 +27,8 @@ on Lie submodules.
 
 Lie algebra, ideal, submodule, Lie submodule
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -397,7 +401,7 @@ theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := 
   erw [LieSubmodule.mem_sup] at hy₁
   obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁
   rw [← hy]
-  rw [f.coe_toLinearMap, f.map_add, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
+  rw [map_add, f.coe_toLinearMap, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 
 @[simp]
 theorem map_sup_ker_eq_map' :

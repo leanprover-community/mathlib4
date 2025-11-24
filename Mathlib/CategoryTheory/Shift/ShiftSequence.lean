@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Sequences of functors from a category equipped with a shift
 
@@ -24,6 +26,8 @@ for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category ZeroObject Limits
 

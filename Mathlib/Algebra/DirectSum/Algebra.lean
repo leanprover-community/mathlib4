@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.DirectSum.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.DirectSum.Ring
 
 /-! # Additively-graded algebra structures on `⨁ i, A i`
 
@@ -23,6 +25,8 @@ where all `A i` are `R`-modules. This is the extra structure needed to promote `
 * `DirectSum.toAlgebra` extends `DirectSum.toSemiring` to produce an `AlgHom`.
 
 -/
+
+@[expose] public section
 
 
 universe uι uR uA uB

@@ -3,13 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Basic
-import Batteries.WF
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Push
+public import Batteries.WF
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
+
+@[expose] public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
@@ -163,10 +167,10 @@ def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
 
 variable {P Q : ℕ → Prop} [DecidablePred P] {n : ℕ}
 
-@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := rfl
+@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := (rfl)
 
 lemma findGreatest_succ (n : ℕ) :
-    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := rfl
+    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := (rfl)
 
 @[simp] lemma findGreatest_eq : ∀ {n}, P n → Nat.findGreatest P n = n
   | 0, _ => rfl
@@ -194,16 +198,7 @@ lemma findGreatest_eq_iff :
         rcases Decidable.lt_or_eq_of_le hle with hlt | rfl
         exacts [(hm hlt (le_refl _) hk).elim, rfl]
     · rw [findGreatest_of_not hk, ihk]
-      constructor
-      · rintro ⟨hle, hP, hm⟩
-        refine ⟨le_trans hle k.le_succ, hP, fun n hlt hle ↦ ?_⟩
-        rcases Decidable.lt_or_eq_of_le hle with hlt' | rfl
-        exacts [hm hlt <| Nat.lt_succ_iff.1 hlt', hk]
-      · rintro ⟨hle, hP, hm⟩
-        refine ⟨Nat.lt_succ_iff.1 (lt_of_le_of_ne hle ?_), hP,
-          fun n hlt hle ↦ hm hlt (le_trans hle k.le_succ)⟩
-        rintro rfl
-        exact hk (hP k.succ_ne_zero)
+      grind
 
 lemma findGreatest_eq_zero_iff : Nat.findGreatest P k = 0 ↔ ∀ ⦃n⦄, 0 < n → n ≤ k → ¬P n := by
   simp [findGreatest_eq_iff]

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Compactness.SigmaCompact
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Topology.Compactness.SigmaCompact
+public import Mathlib.Topology.Irreducible
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # T₂ and T₂.₅ spaces.
@@ -64,6 +66,8 @@ If the space is also compact:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -437,7 +441,7 @@ instance : T2Space (T2Quotient X) := by
   rw [t2Space_iff]
   rintro ⟨x⟩ ⟨y⟩ (h : ¬ T2Quotient.mk x = T2Quotient.mk y)
   obtain ⟨s, hs, hsxy⟩ : ∃ s, T2Space (Quotient s) ∧ Quotient.mk s x ≠ Quotient.mk s y := by
-    simpa [T2Quotient.mk_eq] using h
+    simpa [T2Quotient.mk_eq, Quotient.eq] using h
   exact separated_by_continuous (continuous_map_sInf (by exact hs)) hsxy
 
 lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
@@ -445,7 +449,7 @@ lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spac
     ∀ (a b : X), a ≈ b → f a = f b := by
   change t2Setoid X ≤ Setoid.ker f
   exact sInf_le <| .of_injective_continuous
-    (Setoid.ker_lift_injective _) (hf.quotient_lift fun _ _ ↦ id)
+    (Setoid.kerLift_injective _) (hf.quotient_lift fun _ _ ↦ id)
 
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
 map from `X` to a T2 space `Y` uniquely factors through `T2Quotient X`. This declaration builds the

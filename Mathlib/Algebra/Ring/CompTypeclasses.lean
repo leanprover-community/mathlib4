@@ -3,7 +3,9 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Propositional typeclasses on several ring homs
@@ -39,6 +41,8 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 
 `RingHomCompTriple`, `RingHomInvPair`, `RingHomSurjective`
 -/
+
+@[expose] public section
 
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}

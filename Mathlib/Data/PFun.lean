@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
-import Batteries.WF
-import Mathlib.Data.Part
-import Mathlib.Data.Rel
-import Mathlib.Tactic.GeneralizeProofs
+module
+
+public import Batteries.WF
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Data.Part
+public import Mathlib.Data.Rel
 
 /-!
 # Partial functions
@@ -40,8 +42,8 @@ Partial functions can be considered as relations, so we specialize some `Rel` de
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
 * `PFun.core`: Core of a set under a partial function.
-* `PFun.graph`: Graph of a partial function `a →. β`as a `Set (α × β)`.
-* `PFun.graph'`: Graph of a partial function `a →. β`as a `Rel α β`.
+* `PFun.graph`: Graph of a partial function `a →. β` as a `Set (α × β)`.
+* `PFun.graph'`: Graph of a partial function `a →. β` as a `Rel α β`.
 
 ### `PFun α` as a monad
 
@@ -50,6 +52,8 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
+
+@[expose] public section
 
 open Function
 

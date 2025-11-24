@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.Prime.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Prime numbers
@@ -14,6 +16,8 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 `p` and `1`.
 
 -/
+
+@[expose] public section
 
 namespace Nat
 variable {n : ℕ}
@@ -124,7 +128,7 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 
 /-- If `0 < m < minFac n`, then `n` and `m` are coprime. -/
-lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m  := by
+lemma coprime_of_lt_minFac {n m : ℕ} (h₀ : m ≠ 0) (h : m < minFac n) : Coprime n m := by
   rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]
   push_neg
   exact fun p hp hn hm ↦

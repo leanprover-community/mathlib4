@@ -3,8 +3,10 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.Order.MonotoneContinuity
+module
+
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # Square root of a real number
@@ -29,6 +31,8 @@ Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`.
 
 square root
 -/
+
+@[expose] public section
 
 open Set Filter
 open scoped Filter NNReal Topology
@@ -59,7 +63,6 @@ lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x = y ^ 2 := sqrt.toEquiv.apply_eq_iff_
 lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnection _ _
 
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
-
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 
@@ -103,7 +106,7 @@ namespace Real
 /-- The square root of a real number. This returns 0 for negative inputs.
 
 This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
-noncomputable def sqrt (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 
 -- TODO: replace this with a typeclass
@@ -117,12 +120,15 @@ theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
   rw [Real.sqrt, Real.toNNReal_coe]
 
 @[continuity]
-theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
-  NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
+theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by
+  unfold sqrt
+  exact NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
-@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := NNReal.coe_nonneg _
+@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := by
+  unfold sqrt
+  exact NNReal.coe_nonneg _
 
 @[simp]
 theorem mul_self_sqrt (h : 0 ≤ x) : √x * √x = x := by
@@ -184,11 +190,12 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : √x < √y ↔ x < y :=
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 
-@[gcongr, bound]
+@[bound]
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
+@[gcongr]
 theorem sqrt_monotone : Monotone Real.sqrt :=
   fun _ _ ↦ sqrt_le_sqrt
 
@@ -287,7 +294,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
     let ra ← core  q(inferInstance) q(inferInstance) a
@@ -300,7 +307,7 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
     let ra ← catchNone <| core q(inferInstance) q(inferInstance) a

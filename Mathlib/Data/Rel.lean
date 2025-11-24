@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Prod
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Relations as sets of pairs
@@ -67,6 +69,8 @@ This extra level of indirection guides automation correctly and prevents (some k
 Simultaneously, uniform spaces need a theory of relations on a type `α` as elements of
 `Set (α × α)`, and the new definition of `SetRel` fulfills this role quite well.
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*}
 
@@ -219,8 +223,14 @@ def preimage : Set α := {a | ∃ b ∈ t, a ~[R] b}
 @[gcongr] lemma image_subset_image (hs : s₁ ⊆ s₂) : image R s₁ ⊆ image R s₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, hs ha, hab⟩
 
+@[gcongr] lemma image_subset_image_left (hR : R₁ ⊆ R₂) : image R₁ s ⊆ image R₂ s :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ha, hR hab⟩
+
 @[gcongr] lemma preimage_subset_preimage (ht : t₁ ⊆ t₂) : preimage R t₁ ⊆ preimage R t₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ht ha, hab⟩
+
+@[gcongr] lemma preimage_subset_preimage_left (hR : R₁ ⊆ R₂) : preimage R₁ t ⊆ preimage R₂ t :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ha, hR hab⟩
 
 variable (R t) in
 @[simp] lemma image_inv : R.inv.image t = preimage R t := rfl
@@ -381,6 +391,12 @@ lemma subset_iterate_comp [R.IsRefl] {S : SetRel α β} : ∀ {n}, S ⊆ (R ○ 
   | 0 => .rfl
   | _n + 1 => right_subset_comp.trans subset_iterate_comp
 
+lemma self_subset_image [R.IsRefl] (s : Set α) : s ⊆ R.image s :=
+  fun x hx => ⟨x, hx, R.rfl⟩
+
+lemma self_subset_preimage [R.IsRefl] (s : Set α) : s ⊆ R.preimage s :=
+  fun x hx => ⟨x, hx, R.rfl⟩
+
 lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty)
     (hst : s ×ˢ t ⊆ SetRel.id) : ∃ x, s = {x} ∧ t = {x} := by
   obtain ⟨a, ha⟩ := hs
@@ -429,12 +445,23 @@ instance isSymm_id : (SetRel.id : SetRel α α).IsSymm where symm _ _ := .symm
 instance isSymm_preimage {f : β → α} [R.IsSymm] : SetRel.IsSymm (Prod.map f f ⁻¹' R) where
   symm _ _ := R.symm
 
+instance isSymm_image {f : α → β} [R.IsSymm] : SetRel.IsSymm (Prod.map f f '' R) where
+  symm := by
+    simp only [Set.mem_image, Prod.exists, Prod.map_apply, Prod.mk.injEq, forall_exists_index,
+      and_imp]
+    rintro _ _ a₁ a₂ ha rfl rfl
+    exact ⟨_, _, R.symm ha, rfl, rfl⟩
+
 instance isSymm_comp_inv : (R ○ R.inv).IsSymm where
   symm a c := by rintro ⟨b, hab, hbc⟩; exact ⟨b, hbc, hab⟩
 
 instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
 
 instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
+
+lemma prod_subset_comm [R.IsSymm] : s₁ ×ˢ s₂ ⊆ R ↔ s₂ ×ˢ s₁ ⊆ R := by
+  rw [← R.inv_eq_self, SetRel.inv, ← Set.image_subset_iff, Set.image_swap_prod, ← SetRel.inv,
+    R.inv_eq_self]
 
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/

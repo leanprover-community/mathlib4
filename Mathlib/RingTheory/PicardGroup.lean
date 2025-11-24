@@ -3,17 +3,19 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.CategoryTheory.Monoidal.Skeleton
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.LocalRing.Module
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.CategoryTheory.Monoidal.Skeleton
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # The Picard group of a commutative ring
@@ -47,7 +49,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 
 Show:
 - The Picard group of a commutative domain is isomorphic to its ideal class group.
-- All commutative semi-local rings, in particular Artinian rings, have trivial Picard group.
 - All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
@@ -58,6 +59,8 @@ Show:
   constant finite rank to locally free sheaves on `Spec R`.
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -246,13 +249,13 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
 The ≥ direction fails in general but holds for domains and Noetherian rings without embedded
 components, see https://math.stackexchange.com/q/5089900. -/
-theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
+protected theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
   cases subsingleton_or_nontrivial R
   · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
   · rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, finrank_self]
 
 theorem rank_eq_one [StrongRankCondition R] [Free R M] : Module.rank R M = 1 :=
-  rank_eq_one_iff_finrank_eq_one.mpr (finrank_eq_one R M)
+  rank_eq_one_iff_finrank_eq_one.mpr (Invertible.finrank_eq_one R M)
 
 open TensorProduct (comm lid) in
 theorem toModuleEnd_bijective : Function.Bijective (toModuleEnd R (S := R) M) := by
@@ -281,11 +284,85 @@ theorem bijective_of_surjective [Module.Invertible R N] {f : M →ₗ[R] N}
   simpa [lTensor_bijective_iff] using bijective_self_of_surjective
     (f.lTensor _ ∘ₗ (linearEquiv R M).symm.toLinearMap) (by simpa [lTensor_surjective_iff] using hf)
 
+section LinearEquiv
+variable {R M N} [Module.Invertible R N] {f : M →ₗ[R] N} {g : N →ₗ[R] M}
+
+theorem rightInverse_of_leftInverse (hfg : Function.LeftInverse f g) :
+    Function.RightInverse f g :=
+  Function.rightInverse_of_injective_of_leftInverse
+    (bijective_of_surjective hfg.surjective).injective hfg
+
+theorem leftInverse_of_rightInverse (hfg : Function.RightInverse f g) :
+    Function.LeftInverse f g :=
+  rightInverse_of_leftInverse hfg
+
+variable (f g) in
+theorem leftInverse_iff_rightInverse :
+    Function.LeftInverse f g ↔ Function.RightInverse f g :=
+  ⟨rightInverse_of_leftInverse, leftInverse_of_rightInverse⟩
+
+/-- If `f : M →ₗ[R] N` and `g : N →ₗ[R] M` where `M` and `N` are invertible `R`-modules, and `f` is
+a left inverse of `g`, then in fact `f` is also the right inverse of `g`, and we promote this to
+an `R`-module isomorphism. -/
+def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
+  .ofLinear f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
+
+@[simp] lemma linearEquivOfLeftInverse_apply (hfg : Function.LeftInverse f g) (x : M) :
+    linearEquivOfLeftInverse hfg x = f x := rfl
+
+@[simp] lemma linearEquivOfLeftInverse_symm_apply (hfg : Function.LeftInverse f g) (x : N) :
+    (linearEquivOfLeftInverse hfg).symm x = g x := rfl
+
+/-- If `f : M →ₗ[R] N` and `g : N →ₗ[R] M` where `M` and `N` are invertible `R`-modules, and `f` is
+a right inverse of `g`, then in fact `f` is also the left inverse of `g`, and we promote this to
+an `R`-module isomorphism. -/
+def linearEquivOfRightInverse (hfg : Function.RightInverse f g) : M ≃ₗ[R] N :=
+  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
+
+@[simp] lemma linearEquivOfRightInverse_apply (hfg : Function.RightInverse f g) (x : M) :
+    linearEquivOfRightInverse hfg x = f x := rfl
+
+@[simp] lemma linearEquivOfRightInverse_symm_apply (hfg : Function.RightInverse f g) (x : N) :
+    (linearEquivOfRightInverse hfg).symm x = g x := rfl
+
+end LinearEquiv
+
 section Algebra
+
+section algEquivOfRing
+variable (A : Type*) [Semiring A] [Algebra R A] [Module.Invertible R A]
+
+/-- If an `R`-algebra `A` is also an invertible `R`-module, then it is in fact isomorphic to the
+base ring `R`. The algebra structure gives us a map `A ⊗ A → A`, which after tensoring by `Aᵛ`
+becomes a map `A → R`, which is the inverse map we seek. -/
+noncomputable def algEquivOfRing : R ≃ₐ[R] A :=
+  let inv : A →ₗ[R] R :=
+    linearEquiv R A ∘ₗ
+      (LinearMap.mul' R A).lTensor (Dual R A) ∘ₗ
+      (leftCancelEquiv A (linearEquiv R A)).symm
+  have right : inv ∘ₗ Algebra.linearMap R A = LinearMap.id :=
+    let ⟨s, hs⟩ := exists_finset ((linearEquiv R A).symm 1)
+    LinearMap.ext_ring <| by simp [inv, hs, sum_tmul, map_sum, ← (LinearEquiv.symm_apply_eq _).1 hs]
+  { linearEquivOfRightInverse (f := Algebra.linearMap R A) (g := inv) (LinearMap.ext_iff.1 right),
+    Algebra.ofId R A with }
+
+variable {A} in
+@[simp] lemma algEquivOfRing_apply (x : R) : algEquivOfRing R A x = algebraMap R A x := rfl
+
+end algEquivOfRing
 
 instance : Module.Invertible A (A ⊗[R] M) :=
   .right (M := A ⊗[R] Dual R M) <| (AlgebraTensorModule.distribBaseChange ..).symm ≪≫ₗ
     AlgebraTensorModule.congr (.refl A A) (linearEquiv R M) ≪≫ₗ AlgebraTensorModule.rid ..
+
+variable {R M N A} in
+theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
+    (f : M →ₗ[R] N) [IsLocalizedModule S f] [Module A N] [IsScalarTower R A N] :
+    Module.Invertible A N :=
+  .congr (IsLocalizedModule.isBaseChange S A f).equiv
+
+instance (S : Submonoid R) : Module.Invertible (Localization S) (LocalizedModule S M) :=
+  of_isLocalization S (LocalizedModule.mkLinearMap S M)
 
 instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
@@ -316,22 +393,28 @@ section PicardGroup
 
 open CategoryTheory Module
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [CommSemiring R]
 
-instance (M : (Skeleton <| ModuleCat.{u} R)ˣ) : Module.Invertible R M :=
+instance (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) : Module.Invertible R M :=
+  .right (Quotient.eq.mp M.inv_mul).some.toLinearEquivₛ
+
+instance (R : Type u) [CommRing R] (M : (Skeleton <| ModuleCat.{u} R)ˣ) : Module.Invertible R M :=
   .right (Quotient.eq.mp M.inv_mul).some.toLinearEquiv
 
-instance : Small.{u} (Skeleton <| ModuleCat.{u} R)ˣ :=
-  let sf := Σ n, Submodule R (Fin n → R)
-  have {M N : sf} : M = N → (_ ⧸ M.2) ≃ₗ[R] _ ⧸ N.2 := by rintro rfl; exact .refl ..
-  let f (M : (Skeleton <| ModuleCat.{u} R)ˣ) : sf := ⟨_, Finite.kerRepr R M⟩
+instance : Small.{u} (Skeleton <| SemimoduleCat.{u} R)ˣ :=
+  let sf := Σ n, ModuleCon R (Fin n → R)
+  have {c₁ c₂ : sf} : c₁ = c₂ → c₁.2.Quotient ≃ₗ[R] c₂.2.Quotient := by rintro rfl; exact .refl ..
+  let f (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) : sf := ⟨_, Finite.kerReprₛ R M⟩
   small_of_injective (f := f) fun M N eq ↦ Units.ext <| Quotient.out_equiv_out.mp
-    ⟨((Finite.reprEquiv R M).symm ≪≫ₗ this eq ≪≫ₗ Finite.reprEquiv R N).toModuleIso⟩
+    ⟨((Finite.reprEquivₛ R M).symm ≪≫ₗ this eq ≪≫ₗ Finite.reprEquivₛ R N).toModuleIsoₛ⟩
 
-/-- The Picard group of a commutative ring R consists of the invertible R-modules,
+instance (R : Type u) [CommRing R] : Small.{u} (Skeleton <| ModuleCat.{u} R)ˣ :=
+  small_map (Units.mapEquiv <| Skeleton.mulEquiv ModuleCat.equivalenceSemimoduleCat).toEquiv
+
+/-- The Picard group of a commutative semiring R consists of the invertible R-modules,
 up to isomorphism. -/
-def CommRing.Pic (R : Type u) [CommRing R] : Type u :=
-  Shrink (Skeleton <| ModuleCat.{u} R)ˣ
+def CommRing.Pic (R : Type u) [CommSemiring R] : Type u :=
+  Shrink (Skeleton <| SemimoduleCat.{u} R)ˣ
 
 open CommRing (Pic)
 
@@ -339,10 +422,10 @@ noncomputable instance : CommGroup (Pic R) := (equivShrink _).symm.commGroup
 
 section CommRing
 
-variable (M N : Type*) [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (M N : Type*) [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
   [Module.Invertible R M] [Module.Invertible R N]
 
-instance : Module.Invertible R (Finite.repr R M) := .congr (Finite.reprEquiv R M).symm
+instance : Module.Invertible R (Finite.reprₛ R M) := .congr (Finite.reprEquivₛ R M).symm
 
 namespace CommRing.Pic
 
@@ -352,29 +435,32 @@ abbrev AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
 
 noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 
-private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| ModuleCat.{u} R)ˣ) :
+noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
+  Module.addCommMonoidToAddCommGroup R
+
+private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) :
     (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
-  have {M N : Skeleton (ModuleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
+  have {M N : Skeleton (SemimoduleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
   this (by simp)
 
 /-- The class of an invertible module in the Picard group. -/
 protected noncomputable def mk : Pic R := equivShrink _ <|
-  letI M' := Finite.repr R M
+  letI M' := Finite.reprₛ R M
   .mkOfMulEqOne ⟦.of R M'⟧ ⟦.of R (Dual R M')⟧ <| by
     rw [← toSkeleton, ← toSkeleton, mul_comm, ← Skeleton.toSkeleton_tensorObj]
-    exact Quotient.sound ⟨(Invertible.linearEquiv R _).toModuleIso⟩
+    exact Quotient.sound ⟨(Invertible.linearEquiv R _).toModuleIsoₛ⟩
 
 /-- `mk R M` is indeed the class of `M`. -/
 noncomputable def mk.linearEquiv : Pic.mk R M ≃ₗ[R] M :=
   equivShrinkLinearEquiv R _ ≪≫ₗ (Quotient.mk_out (s := isIsomorphicSetoid _)
-    (ModuleCat.of R (Finite.repr R M))).some.toLinearEquiv ≪≫ₗ Finite.reprEquiv R M
+    (SemimoduleCat.of R (Finite.reprₛ R M))).some.toLinearEquivₛ ≪≫ₗ Finite.reprEquivₛ R M
 
 variable {R M N}
 
 theorem mk_eq_iff {N : Pic R} : Pic.mk R M = N ↔ Nonempty (M ≃ₗ[R] N) where
   mp := (· ▸ ⟨(mk.linearEquiv R M).symm⟩)
   mpr := fun ⟨e⟩ ↦ ((equivShrink _).apply_eq_iff_eq_symm_apply).mpr <|
-    Units.ext <| Quotient.mk_eq_iff_out.mpr ⟨(Finite.reprEquiv R M ≪≫ₗ e).toModuleIso⟩
+    Units.ext <| Quotient.mk_eq_iff_out.mpr ⟨(Finite.reprEquivₛ R M ≪≫ₗ e).toModuleIsoₛ⟩
 
 theorem mk_eq_self {M : Pic R} : Pic.mk R M = M := mk_eq_iff.mpr ⟨.refl ..⟩
 
@@ -386,7 +472,7 @@ theorem mk_eq_mk_iff : Pic.mk R M = Pic.mk R N ↔ Nonempty (M ≃ₗ[R] N) :=
   mk_eq_iff.trans ⟨fun ⟨e⟩ ↦ ⟨e ≪≫ₗ eN⟩, fun ⟨e⟩ ↦ ⟨e ≪≫ₗ eN.symm⟩⟩
 
 theorem mk_self : Pic.mk R R = 1 :=
-  congr_arg (equivShrink _) <| Units.ext <| Quotient.sound ⟨(Finite.reprEquiv R R).toModuleIso⟩
+  congr_arg (equivShrink _) <| Units.ext <| Quotient.sound ⟨(Finite.reprEquivₛ R R).toModuleIsoₛ⟩
 
 theorem mk_eq_one_iff : Pic.mk R M = 1 ↔ Nonempty (M ≃ₗ[R] R) := by
   rw [← mk_self, mk_eq_mk_iff]
@@ -398,13 +484,13 @@ theorem mk_tensor : Pic.mk R (M ⊗[R] N) = Pic.mk R M * Pic.mk R N :=
   congr_arg (equivShrink _) <| Units.ext <| by
     simp_rw [Pic.mk, Equiv.symm_apply_apply]
     refine (Quotient.sound ?_).trans (Skeleton.toSkeleton_tensorObj ..)
-    exact ⟨(Finite.reprEquiv R _ ≪≫ₗ TensorProduct.congr
-      (Finite.reprEquiv R M).symm (Finite.reprEquiv R N).symm).toModuleIso⟩
+    exact ⟨(Finite.reprEquivₛ R _ ≪≫ₗ TensorProduct.congr
+      (Finite.reprEquivₛ R M).symm (Finite.reprEquivₛ R N).symm).toModuleIsoₛ⟩
 
 theorem mk_dual : Pic.mk R (Dual R M) = (Pic.mk R M)⁻¹ :=
   congr_arg (equivShrink _) <| Units.ext <| by
     rw [Pic.mk, Equiv.symm_apply_apply]
-    exact Quotient.sound ⟨(Finite.reprEquiv R _ ≪≫ₗ (Finite.reprEquiv R _).dualMap).toModuleIso⟩
+    exact Quotient.sound ⟨(Finite.reprEquivₛ R _ ≪≫ₗ (Finite.reprEquivₛ R _).dualMap).toModuleIsoₛ⟩
 
 theorem inv_eq_dual (M : Pic R) : M⁻¹ = Pic.mk R (Dual R M) := by
   rw [mk_dual, mk_eq_self]
@@ -412,27 +498,65 @@ theorem inv_eq_dual (M : Pic R) : M⁻¹ = Pic.mk R (Dual R M) := by
 theorem mul_eq_tensor (M N : Pic R) : M * N = Pic.mk R (M ⊗[R] N) := by
   rw [mk_tensor, mk_eq_self, mk_eq_self]
 
-theorem subsingleton_iff : Subsingleton (Pic R) ↔
-    ∀ (M : Type u) [AddCommGroup M] [Module R M], Module.Invertible R M → Free R M :=
+theorem subsingleton_iffₛ : Subsingleton (Pic R) ↔
+    ∀ (M : Type u) [AddCommMonoid M] [Module R M], Module.Invertible R M → Free R M :=
   .trans ⟨fun _ M _ _ _ ↦ Subsingleton.elim ..,
       fun h ↦ ⟨fun M N ↦ by rw [← mk_eq_self (M := M), ← mk_eq_self (M := N), h, h]⟩⟩ <|
     forall₄_congr fun _ _ _ _ ↦ mk_eq_one_iff.trans Invertible.free_iff_linearEquiv.symm
 
+theorem subsingleton_iff {R : Type u} [CommRing R] : Subsingleton (Pic R) ↔
+    ∀ (M : Type u) [AddCommGroup M] [Module R M], Module.Invertible R M → Free R M :=
+  subsingleton_iffₛ.trans
+    ⟨fun h M ↦ h M, fun h M ↦ let _ := @Module.addCommMonoidToAddCommGroup R; h M⟩
+
 instance [Subsingleton (Pic R)] : Free R M :=
-  have := subsingleton_iff.mp ‹_› (Finite.repr R M) inferInstance
-  .of_equiv (Finite.reprEquiv R M)
+  have := subsingleton_iffₛ.mp ‹_› (Finite.reprₛ R M) inferInstance
+  .of_equiv (Finite.reprEquivₛ R M)
 
 /- TODO: it's still true that an invertible module over a (commutative) local semiring is free;
   in fact invertible modules over a semiring are Zariski-locally free.
   See [BorgerJun2024], Theorem 11.7. -/
-instance [IsLocalRing R] : Subsingleton (Pic R) :=
+instance (R) [CommRing R] [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
+
+/-- The Picard group of a semilocal ring is trivial. -/
+instance (R) [CommRing R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
+  subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
+    fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
 
 end CommRing.Pic
 
 end CommRing
 
 end PicardGroup
+
+namespace Module.Invertible
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+
+-- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
+theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
+  let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
+  let ff (P : Ideal R) [P.IsMaximal] := TensorProduct.map (f P) (f P)
+  refine LinearEquiv.toLinearMap_injective <| LinearMap.eq_of_localization_maximal _ ff _ ff _ _
+    fun P _ ↦ .trans (b := (TensorProduct.comm ..).toLinearMap) ?_ ?_
+  · apply IsLocalizedModule.linearMap_ext P.primeCompl (ff P) (ff P)
+    ext; dsimp
+    apply IsLocalizedModule.map_apply
+  let Rp := Localization P.primeCompl
+  have ⟨e⟩ := free_iff_linearEquiv.mp (inferInstance : Free Rp (LocalizedModule P.primeCompl M))
+  have e := e.restrictScalars R
+  ext x y
+  refine (congr e e ≪≫ₗ equivOfCompatibleSMul Rp ..).injective ?_
+  suffices e y ⊗ₜ[Rp] e x = e x ⊗ₜ e y by simpa [equivOfCompatibleSMul]
+  conv_lhs => rw [← mul_one (e y), ← smul_eq_mul, smul_tmul, smul_eq_mul,
+    mul_comm, ← smul_eq_mul, ← smul_tmul, smul_eq_mul, mul_one]
+
+variable {R M} in
+theorem tmul_comm {m₁ m₂ : M} : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
+  DFunLike.congr_fun (tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁)
+
+end Module.Invertible
 
 namespace Submodule
 

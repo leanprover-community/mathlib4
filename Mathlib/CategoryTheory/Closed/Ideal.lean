@@ -3,20 +3,22 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Subterminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Subterminal
 
 /-!
 # Exponential ideals
 
-An exponential ideal of a Cartesian-closed category `C` is a subcategory `D ⊆ C` such that for any
+An exponential ideal of a Cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
 `B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring-theoretic ideals. We
 define the notion here for inclusion functors `i : D ⥤ C` rather than explicit subcategories to
 preserve the principle of equivalence.
@@ -26,6 +28,8 @@ following are equivalent.
 * The left adjoint to `i` preserves binary (equivalently, finite) products.
 * `i` is an exponential ideal.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

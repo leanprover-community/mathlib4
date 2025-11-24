@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Associator
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Sums.Associator
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Functors out of sums of categories.
@@ -16,9 +18,13 @@ the product side.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Functor
+
+open scoped Prod
 
 universe v u
 
@@ -32,13 +38,13 @@ namespace Sum
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
     { obj F := ⟨inl_ A A' ⋙ F, inr_ A A' ⋙ F⟩
-      map η := ⟨whiskerLeft (inl_ A A') η, whiskerLeft (inr_ A A') η⟩ }
+      map η := whiskerLeft (inl_ A A') η ×ₘ whiskerLeft (inr_ A A') η }
   inverse :=
     { obj F := Functor.sum' F.1 F.2
       map η := NatTrans.sum' η.1 η.2 }
   unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
-  counitIso := NatIso.ofComponents <| fun F ↦
-    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F
+  counitIso := NatIso.ofComponents (fun F ↦
+    (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
 
 variable {A A' B}
 
@@ -158,8 +164,8 @@ def associativityFunctorEquivNaturalityFunctorIso :
     ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
       Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
         (Sum.functorEquiv (A ⊕ A') T B).trans
-          ((Sum.functorEquiv A A' B).prod Equivalence.refl)|>.trans
-            (prod.associativity _ _ _)|>.functor :=
+          ((Sum.functorEquiv A A' B).prod Equivalence.refl) |>.trans
+            (prod.associativity _ _ _) |>.functor :=
   NatIso.ofComponents (fun E ↦ Iso.prod
     ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (sum.inlCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ _)

@@ -3,8 +3,10 @@ import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
 import Counterexamples.CharPZeroNeCharZero
 import Counterexamples.CliffordAlgebraNotInjective
 import Counterexamples.Cyclotomic105
+import Counterexamples.DimensionPolynomial
 import Counterexamples.DirectSumIsInternal
 import Counterexamples.DiscreteTopologyNonDiscreteUniformity
+import Counterexamples.EulerSumOfPowers
 import Counterexamples.GameMultiplication
 import Counterexamples.Girard
 import Counterexamples.HomogeneousPrimeNotPrime
@@ -14,6 +16,7 @@ import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin
 import Counterexamples.OrderedCancelAddCommMonoidWithBounds
+import Counterexamples.PeanoCurve
 import Counterexamples.Phillips
 import Counterexamples.PolynomialIsDomain
 import Counterexamples.Pseudoelement

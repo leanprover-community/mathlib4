@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Maps on modules and ideals
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Ideal.Operations
 Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.annihilator`
 and `Submodule.annihilator`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
@@ -565,7 +569,7 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
   invFun I := map f I.1
   left_inv J := map_comap_of_surjective f hf J
   right_inv I :=
-    Subtype.eq <|
+    Subtype.ext <|
       show comap f (map f I.1) = I.1 from
         (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.2) le_sup_left
   map_rel_iff' {I1 I2} :=
@@ -608,11 +612,9 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
           rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
-    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
-        Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
-          Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <| by
+      rintro _ ⟨_, ⟨r, hri, rfl⟩, _, ⟨s, hsj, rfl⟩, rfl⟩
+      simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
@@ -673,6 +675,14 @@ lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [CommSemiring S] {f : R →+*
   · rintro ⟨q, hq, rfl⟩
     simp
 
+/--
+For a maximal ideal `p` of `R`, `p` extended to `S` and restricted back to `R` is `p` if
+its image in `S` is not equal to `⊤`.
+-/
+theorem comap_map_eq_self_of_isMaximal (f : R →+* S) {p : Ideal R} [hP' : p.IsMaximal]
+    (hP : Ideal.map f p ≠ ⊤) : (map f p).comap f = p :=
+  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp <| le_comap_map
+
 end CommRing
 
 end MapAndComap
@@ -717,6 +727,9 @@ theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
 
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
+
+lemma ker_eq_top_of_subsingleton [Subsingleton S] (f : F) : ker f = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ Subsingleton.elim _ _
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
@@ -786,7 +799,7 @@ theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
   have := Ideal.bot_prime (α := S)
   inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
-/-- The kernel of a homomorphism to a field is a maximal ideal. -/
+/-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
     [FunLike F R K] [RingHomClass F R K] (f : F)
     (hf : Function.Surjective f) : (ker f).IsMaximal :=
@@ -994,6 +1007,13 @@ theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injecti
   simp [map, span_eq_bot, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
 
 end Semiring
+
+open Pointwise in
+lemma map_pointwise_smul {R S : Type*} [CommSemiring R] [CommSemiring S]
+    (r : R) (I : Ideal R) (f : R →+* S) :
+    Ideal.map f (r • I) = f r • I.map f := by
+  rw [← Submodule.ideal_span_singleton_smul, smul_eq_mul, Ideal.map_mul, Ideal.map_span,
+    Set.image_singleton, ← smul_eq_mul, Submodule.ideal_span_singleton_smul]
 
 section Ring
 

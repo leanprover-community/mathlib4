@@ -224,3 +224,8 @@ example {p q : Nat} : ¬ g.Adj p q := by
   exact test_sorry
 
 end no_proj
+
+-- test that binder names are preserved by `push_neg`
+/-- info: ∀ (a b : ℕ), ∃ c d, a + b ≠ c + d -/
+#guard_msgs in
+#push_neg ¬ ∃ a b : Nat, ∀ c d : Nat, a + b = c + d

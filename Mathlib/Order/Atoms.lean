@@ -3,13 +3,15 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.ModularLattice
-import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ModularLattice
+public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -51,6 +53,8 @@ which are lattices with only two elements, and related ideas.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/
+
+@[expose] public section
 
 open Order
 
@@ -699,6 +703,39 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
 instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
+@[deprecated "Use `IsAtom.le_sSup` instead" (since := "2025-11-24")]
+theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α] {a}
+    (ha : IsAtom a) {s : Set α} (hs : a ≤ sSup s) : ∃ b ∈ s, a ≤ b :=
+  (IsAtom.le_sSup ha).mp hs
+
+lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
+    (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
+  ext a
+  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  obtain ⟨b, hbS, hba⟩ := (IsAtom.le_sSup hatom).mp hale
+  obtain rfl | rfl := (hS b hbS).le_iff.mp hba
+  · simpa using hatom.1
+  assumption
+
+/--
+Representation theorem for complete atomic boolean algebras:
+For a complete atomic Boolean algebra `α`, `toSetOfIsAtom` is an order isomorphism
+between `α` and the set of subsets of its atoms.
+-/
+def toSetOfIsAtom {α} [CompleteAtomicBooleanAlgebra α] : α ≃o (Set {a : α // IsAtom a}) where
+  toFun A := {a | a ≤ A}
+  invFun S := sSup (Subtype.val '' S)
+  left_inv A := by simp [Subtype.coe_image]
+  right_inv S := by
+    have h : ∀ a ∈ Subtype.val '' S, IsAtom a := by
+      rintro a ⟨a', ha', rfl⟩
+      exact a'.prop
+    rw [← Subtype.val_injective.image_injective.eq_iff, eq_setOf_le_sSup_and_isAtom h]
+    ext a
+    simp
+  map_rel_iff' {a b} := by
+    simpa using le_iff_atom_le_imp.symm
+
 end CompleteAtomicBooleanAlgebra
 
 end Atomistic
@@ -740,7 +777,6 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
-  le := (· ≤ ·)
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
   le_trans a b c := by
     rcases eq_bot_or_eq_top a with (rfl | rfl)
@@ -1095,18 +1131,12 @@ theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAto
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyAtomic :=
-  Lattice.isStronglyAtomic
-
 /-- A lower-modular lattice that is coatomistic is strongly coatomic.
 Not an instance to prevent loops. -/
 theorem Lattice.isStronglyCoatomic [OrderTop α] [IsLowerModularLattice α]
     [IsCoatomistic α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact Lattice.isStronglyAtomic
-
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyCoatomic :=
-  Lattice.isStronglyCoatomic
 
 end Lattice
 

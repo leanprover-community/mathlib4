@@ -3,11 +3,13 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.LocallyConstant.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Order.Filter.Germ.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-! # Germs of functions between topological spaces
 
@@ -31,6 +33,8 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
   `f` is constant.
 -/
+
+@[expose] public section
 
 open scoped Topology
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Monad.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Monad.Basic
 
 /-! # Kleisli category on a (co)monad
 
@@ -17,12 +19,14 @@ the monad `(T, η_ T, μ_ T)` as well as the co-Kleisli adjunction which gives r
 * [Riehl, *Category theory in context*, Definition 5.2.9][riehl2017]
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u} [Category.{v} C]
 
 /-- The objects for the Kleisli category of the monad `T : Monad C`, which are the same

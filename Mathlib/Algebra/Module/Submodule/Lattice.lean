@@ -3,15 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.PUnit
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # The lattice structure on `Submodule`s
@@ -29,6 +31,8 @@ This structure should match the `AddSubmonoid.CompleteLattice` structure, and we
 to unify the APIs where possible.
 
 -/
+
+@[expose] public section
 
 universe v
 
@@ -76,7 +80,6 @@ instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
 
 instance : OrderBot (Submodule R M) where
-  bot := ⊥
   bot_le p x := by simp +contextual [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
@@ -132,20 +135,21 @@ instance : Top (Submodule R M) :=
 theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
   rfl
 
+@[simp] lemma mem_top {x : M} : x ∈ (⊤ : Submodule R M) := trivial
+
 @[simp]
 theorem top_toAddSubmonoid : (⊤ : Submodule R M).toAddSubmonoid = ⊤ :=
   rfl
 
 @[simp]
-lemma top_toAddSubgroup {R M} [Ring R] [AddCommGroup M] [Module R M] :
+lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     (⊤ : Submodule R M).toAddSubgroup = ⊤ := rfl
 
 @[simp]
-theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
-  trivial
+lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
 
 instance : OrderTop (Submodule R M) where
-  top := ⊤
   le_top _ _ _ := trivial
 
 theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=

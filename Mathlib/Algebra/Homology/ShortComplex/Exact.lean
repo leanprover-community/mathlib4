@@ -3,12 +3,14 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
+public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Exact short complexes
@@ -23,6 +25,8 @@ Almost by construction, this notion of exactness is self dual,
 see `Exact.op` and `Exact.unop`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -539,11 +543,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
       sub_eq_self, reassoc_of% hx, zero_comp])
     (fun x _ b hb => by simp only [← hb, assoc, f_r, comp_id])
   let f' := hi.lift (KernelFork.ofι S.f S.zero)
-  have hf' : f' = 𝟙 _ := by
-    apply Fork.IsLimit.hom_ext hi
-    dsimp
-    erw [Fork.IsLimit.lift_ι hi]
-    simp only [Fork.ι_ofι, id_comp]
+  have hf' : f' = 𝟙 _ := by simp [f']
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
   have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
       (by rw [hf']; infer_instance) (isZero_zero _)

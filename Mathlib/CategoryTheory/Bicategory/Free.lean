@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Free bicategories
@@ -19,6 +21,8 @@ axioms of a bicategory.
 * `FreeBicategory.lift F`: the pseudofunctor from `FreeBicategory B` to `C` associated with a
   prefunctor `F` from `B` to `C`.
 -/
+
+@[expose] public section
 
 
 universe w w₁ w₂ v v₁ v₂ u u₁ u₂
@@ -320,7 +324,7 @@ theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom�
 `free_bicategory B` to `C`.
 -/
 @[simps]
-def lift : Pseudofunctor (FreeBicategory B) C where
+def lift : FreeBicategory B ⥤ᵖ C where
   obj := F.obj
   map := liftHom F
   mapId _ := Iso.refl _

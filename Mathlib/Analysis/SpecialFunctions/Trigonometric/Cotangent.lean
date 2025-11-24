@@ -3,15 +3,17 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.Complex.IntegerCompl
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Complex.IntegerCompl
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 /-!
 # Cotangent
@@ -22,6 +24,8 @@ In particular, we prove that
 as well as the infinite sum representation of cotangent (also known as the Mittag-Leffler
 expansion): `π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
+
+@[expose] public section
 
 open Real Complex
 
@@ -36,14 +40,13 @@ lemma Complex.cot_eq_exp_ratio (z : ℂ) :
   rw [Complex.cot, Complex.sin, Complex.cos]
   have h1 : exp (z * I) + exp (-z * I) = exp (-(z * I)) * (exp (2 * I * z) + 1) := by
     rw [mul_add, ← Complex.exp_add]
-    simp only [mul_one]
     ring_nf
   have h2 : (exp (-z * I) - exp (z * I)) = exp (-(z * I)) * ((1 - exp (2 * I * z))) := by
     ring_nf
     rw [mul_assoc, ← Complex.exp_add]
     ring_nf
   rw [h1, h2]
-  field_simp
+  field
 
 /- The version one probably wants to use more. -/
 lemma Complex.cot_pi_eq_exp_ratio (z : ℂ) :
@@ -113,7 +116,7 @@ private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     apply le_trans (hs x hx) (le_abs_self s)
 
 lemma multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
-    MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n)) {Z} := by
+    MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n)) Z := by
   obtain ⟨u, hu, hu2⟩ := sineTerm_bound_aux hZC
   refine Summable.multipliableUniformlyOn_nat_one_add hZC hu ?_ ?_
   · filter_upwards with n z hz using hu2 n z hz
@@ -122,9 +125,9 @@ lemma multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
 lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
     (hZC : IsCompact Z) :
     HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
-    (fun x => (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
+    (fun x => (Complex.sin (↑π * x) / (↑π * x))) Z := by
   apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZC).hasProdUniformlyOn.congr_right
-  exact fun s hs x hx => euler_sineTerm_tprod (by aesop)
+  exact fun x hx => euler_sineTerm_tprod (by aesop)
 
 lemma HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
@@ -161,7 +164,7 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
     deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
-  · field_simp
+  · ring
   · simp
   · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
     exact ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
@@ -180,9 +183,8 @@ lemma logDeriv_sineTerm_eq_cotTerm (hx : x ∈ ℂ_ℤ) (i : ℕ) :
       aesop
   simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, logDeriv_apply,
     deriv_const_add', deriv_div_const, deriv.fun_neg', differentiableAt_fun_id, deriv_fun_pow,
-    Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, cotTerm, one_div] at *
-  field_simp
-  ring
+    Nat.cast_ofNat, deriv_id'', cotTerm] at *
+  field
 
 lemma logDeriv_prod_sineTerm_eq_sum_cotTerm (hx : x ∈ ℂ_ℤ) (n : ℕ) :
     logDeriv (fun (z : ℂ) ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x =
@@ -345,7 +347,7 @@ private lemma aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
 
 variable {z : ℂ}
 
--- We have this auxiliary ugly version on the lhs so the the rhs looks nicer.
+-- We have this auxiliary ugly version on the lhs so the rhs looks nicer.
 private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
     (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) +
       iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =

@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # The Minkowski functional
@@ -35,6 +37,8 @@ For a real vector space,
 
 Minkowski functional, gauge
 -/
+
+@[expose] public section
 
 open NormedField Set
 open scoped Pointwise Topology NNReal
@@ -142,9 +146,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     refine hs₁.smul_mem_of_zero_mem hs₀ hδ ⟨by positivity, ?_⟩
     rw [inv_mul_le_iff₀ hr', mul_one]
     exact hδr.le
-  · have hε' := (lt_add_iff_pos_right a).2 (half_pos hε)
-    exact
-      (gauge_le_of_mem (ha.trans hε'.le) <| h _ hε').trans_lt (add_lt_add_left (half_lt_self hε) _)
+  · linarith [gauge_le_of_mem (by linarith) <| h (a + ε / 2) (by linarith)]
 
 theorem gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
     { x | gauge s x < a } = ⋃ (r : ℝ) (_ : 0 < r) (_ : r < a), r • s := by
@@ -192,7 +194,7 @@ theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
 
 theorem gauge_sum_le {ι : Type*} (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (t : Finset ι)
     (f : ι → E) : gauge s (∑ i ∈ t, f i) ≤ ∑ i ∈ t, gauge s (f i) :=
-  Finset.le_sum_of_subadditive _ gauge_zero (gauge_add_le hs absorbs) _ _
+  Finset.le_sum_of_subadditive _ gauge_zero.le (gauge_add_le hs absorbs) _ _
 
 theorem self_subset_gauge_le_one : s ⊆ { x | gauge s x ≤ 1 } := fun _ => gauge_le_one_of_mem
 
@@ -398,9 +400,6 @@ theorem tendsto_gauge_nhds_zero_nhdsGE (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩
 
-@[deprecated (since := "2025-03-02")]
-alias tendsto_gauge_nhds_zero' := tendsto_gauge_nhds_zero_nhdsGE
-
 theorem tendsto_gauge_nhds_zero (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝 0) :=
   (tendsto_gauge_nhds_zero_nhdsGE hs).mono_right inf_le_left
 
@@ -439,10 +438,10 @@ theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuo
     calc
       gauge s x = gauge s (x + y + (-y)) := by simp
       _ ≤ gauge s (x + y) + gauge s (-y) := gauge_add_le hc ha _ _
-      _ ≤ gauge s (x + y) + ε := add_le_add_left (gauge_le_of_mem hε₀.le (mem_neg.1 hy.2)) _
+      _ ≤ gauge s (x + y) + ε := by grw [gauge_le_of_mem hε₀.le (mem_neg.1 hy.2)]
   · calc
       gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
-      _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy.1) _
+      _ ≤ gauge s x + ε := by grw [gauge_le_of_mem hε₀.le hy.1]
 
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
@@ -581,8 +580,7 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
     calc
       gauge s x = gauge s (y + (x - y)) := by simp
       _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.mono hs) _ _
-      _ ≤ gauge s y + ‖x - y‖ / r :=
-        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr.le _)) _
+      _ ≤ gauge s y + ‖x - y‖ / r := by grw [gauge_mono this hs (x - y), gauge_ball]; positivity
       _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]
 
 theorem Convex.lipschitz_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :

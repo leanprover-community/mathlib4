@@ -3,14 +3,16 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+module
+
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
-# A Cartesian-closed category with zero object is trivial
+# A Cartesian closed category with zero object is trivial
 
-A Cartesian-closed category with zero object is trivial: it is equivalent to the category with one
+A Cartesian closed category with zero object is trivial: it is equivalent to the category with one
 object and one morphism.
 
 ## References
@@ -18,6 +20,8 @@ object and one morphism.
 * https://mathoverflow.net/a/136480
 
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -31,7 +35,7 @@ open Category Limits MonoidalCategory
 variable {C : Type u} [Category.{v} C]
 variable [CartesianMonoidalCategory C] [CartesianClosed C]
 
-/-- If a Cartesian-closed category has an initial object which is isomorphic to the terminal object,
+/-- If a Cartesian closed category has an initial object which is isomorphic to the terminal object,
 then each homset has exactly one element.
 -/
 def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : C) : Unique (X ⟶ Y) :=
@@ -43,7 +47,7 @@ def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : 
 
 open scoped ZeroObject
 
-/-- If a Cartesian-closed category has a zero object, each homset has exactly one element. -/
+/-- If a Cartesian closed category has a zero object, each homset has exactly one element. -/
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : HasInitial C := HasZeroObject.hasInitial
   apply uniqueHomsetOfInitialIsoUnit _ X Y
@@ -51,7 +55,7 @@ def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
 
 attribute [local instance] uniqueHomsetOfZero
 
-/-- A Cartesian-closed category with a zero object is equivalent to the category with one object and
+/-- A Cartesian closed category with a zero object is equivalent to the category with one object and
 one morphism.
 -/
 def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} where

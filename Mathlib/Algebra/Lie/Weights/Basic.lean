@@ -3,13 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Ring.Divisibility.Lemmas
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Pi
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.LinearAlgebra.Eigenspace.Pi
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
@@ -44,6 +46,8 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
+
+@[expose] public section
 
 variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -84,11 +88,10 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   let F : Module.End R M₃ := toEnd R L M₃ x - (χ₁ + χ₂) • ↑1
   -- The goal is linear in `t` so use induction to reduce to the case that `t` is a pure tensor.
   refine t.induction_on ?_ ?_ ?_
-  · use 0; simp only [LinearMap.map_zero, LieModuleHom.map_zero]
+  · use 0; simp only [map_zero]
   swap
   · rintro t₁ t₂ ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩; use max k₁ k₂
-    simp only [LieModuleHom.map_add, LinearMap.map_add,
-      Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
+    simp only [map_add, Module.End.pow_map_zero_of_le (le_max_left k₁ k₂) hk₁,
       Module.End.pow_map_zero_of_le (le_max_right k₁ k₂) hk₂, add_zero]
   -- Now the main argument: pure tensors.
   rintro ⟨m₁, hm₁⟩ ⟨m₂, hm₂⟩
@@ -99,11 +102,11 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
     ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
-      lie_tmul_right, tmul_smul, toEnd_apply_apply, LieModuleHom.map_smul,
-      Module.End.one_apply, LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply,
-      LinearMap.coe_comp, LinearMap.rTensor_tmul, LieModuleHom.map_add, LinearMap.add_apply,
-      LieModuleHom.map_sub, LinearMap.sub_apply, LinearMap.lTensor_tmul,
-      AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, LinearMap.coe_restrictScalars]
+      lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, Module.End.one_apply,
+      LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
+      LinearMap.rTensor_tmul, map_add, LinearMap.add_apply, map_sub, LinearMap.sub_apply,
+      LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars]
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
@@ -526,7 +529,7 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     obtain ⟨k, hk⟩ := hm x
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by
-      rw [← f.map_zero] at this; exact hf this
+      rw [← map_zero f] at this; exact hf this
     simpa [hk] using (LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h k) m).symm
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_genWeightSpace_le f

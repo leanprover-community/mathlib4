@@ -3,8 +3,10 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Tight sets of measures
@@ -26,6 +28,8 @@ measures in the set, the complement of `K` has measure at most `ε`.
 * `isTightMeasureSet_singleton_of_innerRegularWRT`: every finite, inner-regular measure is tight.
 
 -/
+
+@[expose] public section
 
 open Filter Set
 
@@ -65,8 +69,7 @@ theorem isTightMeasureSet_singleton_of_innerRegularWRT [OpensMeasurableSpace �
   let r := μ Set.univ
   cases lt_or_ge ε r with
   | inl hεr =>
-    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) (zero_le'.trans_lt hεr).ne'
-      hε.ne'
+    have hεr' : r - ε < r := ENNReal.sub_lt_self (measure_ne_top μ _) hεr.ne_bot hε.ne'
     obtain ⟨K, _, ⟨hK_compact, hK_closed⟩, hKμ⟩ := h .univ (r - ε) hεr'
     refine ⟨K, hK_compact, ?_⟩
     simp only [mem_singleton_iff, forall_eq]

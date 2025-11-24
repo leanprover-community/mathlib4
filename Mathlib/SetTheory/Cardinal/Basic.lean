@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Logic.Small.Set
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basic results on cardinal numbers
@@ -31,6 +33,8 @@ finite/countable/small types and sets.
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -97,11 +101,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
-
-private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} _) = #(ULift.{u} _) + 1
-  rw [← mk_option]
-  simp
 
 /-! ### Order properties -/
 
@@ -192,14 +191,23 @@ instance uncountable : Uncountable Cardinal.{u} :=
 
 /-! ### Bounds on suprema -/
 
-theorem sum_le_iSup_lift {ι : Type u}
-    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
-  rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
+theorem sum_le_lift_mk_mul_iSup_lift {ι : Type u} (f : ι → Cardinal.{v}) :
+    sum f ≤ lift #ι * ⨆ i, lift (f i) := by
+  rw [← (sum f).lift_id, lift_sum, ← lift_umax.{u, v}, ← (⨆ i, lift (f i)).lift_id,
+    lift_umax.{max v u, u}, ← sum_const]
+  refine sum_le_sum _ _ fun i => ?_
+  rw [lift_umax.{v, u}]
+  exact le_ciSup (bddAbove_of_small _) i
 
-theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
-  rw [← lift_id #ι]
-  exact sum_le_iSup_lift f
+theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
+    sum f ≤ lift #ι * ⨆ i, f i := by
+  simpa [← lift_umax] using sum_le_lift_mk_mul_iSup_lift f
+
+theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * ⨆ i, f i := by
+  simpa using sum_le_lift_mk_mul_iSup_lift f
+
+@[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
+@[deprecated (since := "2025-09-04")] alias sum_le_iSup := sum_le_mk_mul_iSup
 
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
@@ -249,6 +257,11 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
     {f' : ι' → Cardinal.{v'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) (g : ι → ι')
     (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
   lift_iSup_le_lift_iSup hf hf' h
+
+theorem lift_iSup_le_sum {ι : Type u} [Small.{v} ι] (f : ι → Cardinal.{v}) :
+    lift (⨆ i, f i) ≤ sum f := by
+  rw [lift_iSup (bddAbove_of_small _)]
+  exact ciSup_le' fun i => lift_le_sum f i
 
 /-! ### Properties about the cast from `ℕ` -/
 
@@ -615,6 +628,9 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
     #(Subtype p) ≤ #(Subtype q) :=
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 
+theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
+  ⟨Set.embeddingOfSubset s t h⟩
+
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
@@ -694,6 +710,10 @@ theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
 theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
   simpa using mk_image_embedding_lift f s
 
+theorem iSup_mk_le_mk_iUnion {α : Type u} {ι : Type v} {f : ι → Set α} :
+    ⨆ i, #(f i) ≤ #(⋃ i, f i) :=
+  ciSup_le' fun _ => mk_le_mk_of_subset (subset_iUnion _ _)
+
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
     #(⋃ i, f i) ≤ #(Σ i, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
@@ -721,11 +741,11 @@ theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #ι * ⨆ i, #(f i) :=
-  mk_iUnion_le_sum_mk.trans (sum_le_iSup _)
+  mk_iUnion_le_sum_mk.trans (sum_le_mk_mul_iSup _)
 
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
-  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_iSup_lift _)
+  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_lift_mk_mul_iSup _)
   rw [← lift_sum, lift_id'.{_,u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
@@ -794,9 +814,6 @@ theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α := by
   classical
   exact mk_congr (Equiv.Set.sumCompl s)
-
-theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
-  ⟨Set.embeddingOfSubset s t h⟩
 
 theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set α} :
     #t ≤ n ↔ ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n := by

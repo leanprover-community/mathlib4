@@ -3,9 +3,11 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Hanting Zhang
 -/
-import Mathlib.Tactic.Core
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Data.Fintype.Basic
+module
+
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Data.Fintype.Basic
 
 /-!
 # The `fin_cases` tactic.
@@ -16,6 +18,8 @@ or a hypothesis of the form `h : A`, where `[Fintype A]` is available,
 `fin_cases h` will repeatedly call `cases` to split the goal into
 separate cases for each possible value.
 -/
+
+public meta section
 
 open Lean.Meta
 

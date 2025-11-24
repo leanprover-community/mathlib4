@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.LinearAlgebra.AffineSpace.Pointwise
-import Mathlib.LinearAlgebra.Basis.SMul
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
+public import Mathlib.LinearAlgebra.Basis.SMul
 
 /-!
 # Affine bases and barycentric coordinates
@@ -39,6 +41,8 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 * Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
 
 -/
+
+@[expose] public section
 
 open Affine Module Set
 open scoped Pointwise

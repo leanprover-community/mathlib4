@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Logic.Unique
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Unique
+public import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
@@ -16,6 +18,8 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 
 quotient
 -/
+
+@[expose] public section
 
 variable {α : Sort*} {β : Sort*}
 
@@ -272,7 +276,9 @@ theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
   ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
-@[simp]
+-- This should not be a `@[simp]` lemma,
+-- as this prevents us from using `simp` reliably in the quotient,
+-- because this might bump us back out from equality to the underlying relation.
 theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=
   ⟨Quotient.exact, Quotient.sound⟩
 

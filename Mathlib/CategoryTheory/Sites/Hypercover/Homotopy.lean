@@ -3,8 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Sites.Hypercover.One
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The category of `1`-hypercovers up to homotopy
@@ -24,6 +27,8 @@ In this file we define the category of `1`-hypercovers up to homotopy. This is t
 - `CategoryTheory.GrothendieckTopology.HOneHypercover.isCofiltered_of_hasPullbacks`: The
   category of `1`-hypercovers up to homotopy is cofiltered if `C` has pullbacks.
 -/
+
+@[expose] public section
 
 universe w'' w' w v u
 

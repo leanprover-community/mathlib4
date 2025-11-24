@@ -3,9 +3,11 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
-import Mathlib.Algebra.Algebra.Hom.Rat
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.NumberTheory.NumberField.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom.Rat
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Embeddings of number fields
@@ -25,6 +27,8 @@ the field of complex numbers.
 
 number field, embeddings
 -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -117,7 +121,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
   refine h.resolve_right fun hp => ?_
   specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
-  rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
+  rw [eq_zero_of_pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 
 end Bounded
 
@@ -173,6 +177,11 @@ theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
     (conjugate φ).comp σ = conjugate (φ.comp σ) :=
   rfl
 
+variable (K) in
+theorem involutive_conjugate :
+    Function.Involutive (conjugate : (K →+* ℂ) → (K →+* ℂ)) := by
+  intro; simp
+
 @[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 
@@ -214,7 +223,7 @@ lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
 
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
-    ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
+    ∃ σ : Gal(K/k), φ.comp σ.symm = ψ := by
   letI := (φ.comp (algebraMap k K)).toAlgebra
   letI := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
@@ -223,10 +232,10 @@ lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →
   ext1 x
   exact AlgHom.restrictNormal_commutes ψ' K x
 
-variable [Algebra k K] (φ : K →+* ℂ) (σ : K ≃ₐ[k] K)
+variable [Algebra k K] (φ : K →+* ℂ) (σ : Gal(K/k))
 
 /--
-`IsConj φ σ` states that `σ : K ≃ₐ[k] K` is the conjugation under the embedding `φ : K →+* ℂ`.
+`IsConj φ σ` states that `σ : Gal(K/k)` is the conjugation under the embedding `φ : K →+* ℂ`.
 -/
 def IsConj : Prop := conjugate φ = φ.comp σ
 
@@ -234,10 +243,10 @@ variable {φ σ}
 
 lemma IsConj.eq (h : IsConj φ σ) (x) : φ (σ x) = star (φ x) := RingHom.congr_fun h.symm x
 
-lemma IsConj.ext {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) (h₂ : IsConj φ σ₂) : σ₁ = σ₂ :=
+lemma IsConj.ext {σ₁ σ₂ : Gal(K/k)} (h₁ : IsConj φ σ₁) (h₂ : IsConj φ σ₂) : σ₁ = σ₂ :=
   AlgEquiv.ext fun x ↦ φ.injective ((h₁.eq x).trans (h₂.eq x).symm)
 
-lemma IsConj.ext_iff {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) : σ₁ = σ₂ ↔ IsConj φ σ₂ :=
+lemma IsConj.ext_iff {σ₁ σ₂ : Gal(K/k)} (h₁ : IsConj φ σ₁) : σ₁ = σ₂ ↔ IsConj φ σ₂ :=
   ⟨fun e ↦ e ▸ h₁, h₁.ext⟩
 
 lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) := by
@@ -245,7 +254,7 @@ lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) 
   simp only [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply, ← h.eq,
     starRingEnd_apply, AlgEquiv.commutes]
 
-lemma isConj_one_iff : IsConj φ (1 : K ≃ₐ[k] K) ↔ IsReal φ := Iff.rfl
+lemma isConj_one_iff : IsConj φ (1 : Gal(K/k)) ↔ IsReal φ := Iff.rfl
 
 alias ⟨_, IsReal.isConjGal_one⟩ := ComplexEmbedding.isConj_one_iff
 
@@ -264,7 +273,7 @@ lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
     σ (σ x) = x := by
   simp [← φ.injective.eq_iff, hσ.eq]
 
-theorem IsConj.comp (hσ : IsConj φ σ) (ν : K ≃ₐ[k] K) :
+theorem IsConj.comp (hσ : IsConj φ σ) (ν : Gal(K/k)) :
     IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
   ext
   simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _

@@ -55,11 +55,12 @@ open Lean Elab Command in
 `#check_copyright cop` takes as input the `String` `cop`, expected to be a copyright statement.
 It logs details of what the linter would report if the `cop` is "malformed".
 -/
-elab "#check_copyright " cop:str : command => do
-  let cop := cop.getString
+elab "#check_copyright " copStx:str : command => do
+  let cop := copStx.getString
+  let offset := copStx.raw.getPos?.get!.increaseBy 1
   for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop do
     if let some rg := s.getRange? then
-      logInfo
+      logInfoAt (.ofRange ({start := rg.start.offsetBy offset, stop := rg.stop.offsetBy offset}))
         m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
            Range: {(rg.start, rg.stop)}\n\
            Message: '{replaceMultilineComments m}'"
@@ -318,5 +319,76 @@ Copyright (c) 2024 Damiano Testa
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName
   and others.
+-/
+"
+
+/--
+info: Text: `Authors:`
+Range: (140, 148)
+Message: 'The authors line should begin with 'Authors: ''
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa, another Name. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors:
+-/
+"
+
+/--
+info: Text: `. All rights reserved.`
+Range: (21, 43)
+Message: ''Copyright (c) YYYY' should be followed by a space'
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
+
+/--
+info: Text: `. All rights reserved.`
+Range: (22, 44)
+Message: 'There should be at least one copyright author, separated from the year by exactly one space.'
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
+
+-- We don't do further validation of names.
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 nameinalllowercase. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 First middle LastName. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 First Last Name jr.. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
 -/
 "

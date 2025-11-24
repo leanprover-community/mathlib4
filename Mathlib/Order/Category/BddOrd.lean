@@ -3,15 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Bipointed
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.Bounded
+module
+
+public import Mathlib.CategoryTheory.Category.Bipointed
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.Bounded
 
 /-!
 # The category of bounded orders
 
 This defines `BddOrd`, the category of bounded orders.
 -/
+
+@[expose] public section
 
 
 universe u v

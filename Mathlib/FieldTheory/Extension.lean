@@ -3,8 +3,10 @@ Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extension of field embeddings
@@ -20,6 +22,8 @@ extends to an embedding of E/F into K/F.
 The American Mathematical Monthly
 
 -/
+
+@[expose] public section
 
 open Polynomial
 
@@ -201,7 +205,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
 /-- Given a lift `x` and an integral element `s : E` over `x.carrier` whose conjugates over
 `x.carrier` are all in `K`, we can extend the lift to a lift whose carrier contains `s`. -/
 theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carrier s)
-    (h2 : (minpoly x.carrier s).Splits x.emb.toRingHom) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
+    (h2 : ((minpoly x.carrier s).map x.emb.toRingHom).Splits) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   have I2 := (minpoly.degree_pos h1).ne'
   letI : Algebra x.carrier K := x.emb.toRingHom.toAlgebra
   let carrier := x.carrier⟮s⟯.restrictScalars F
@@ -218,7 +222,7 @@ theorem exists_lift_of_splits' (x : Lifts F E K) {s : E} (h1 : IsIntegral x.carr
 /-- Given an integral element `s : E` over `F` whose `F`-conjugates are all in `K`,
 any lift can be extended to one whose carrier contains `s`. -/
 theorem exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
-    (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
+    (h2 : ((minpoly F s).map (algebraMap F K)).Splits) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
   exists_lift_of_splits' x h1.tower_top <| h1.minpoly_splits_tower_top' <| by
     rwa [← x.emb.comp_algebraMap] at h2
 
@@ -227,7 +231,7 @@ end Lifts
 section
 
 private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
-    (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+    (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits) :
     ∃ φ : adjoin L S →ₐ[F] K, φ.restrictDomain L = f := by
   obtain ⟨φ, hfφ, hφ⟩ := zorn_le_nonempty_Ici₀ _
     (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
@@ -242,7 +246,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
   · convert (hK s h).2; ext; apply hfφ.2
 
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
-  (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom)
+  (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits)
 
 include hK in
 theorem exists_algHom_adjoin_of_splits' :
@@ -274,14 +278,15 @@ theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :
   have ⟨φ, hφ⟩ := exists_algHom_adjoin_of_splits' f hK
   ⟨φ.comp (((equivOfEq hS).trans topEquiv).symm.toAlgHom.restrictScalars F), hφ⟩
 
-theorem exists_algHom_of_splits' (hK : ∀ s : E, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom) :
+theorem exists_algHom_of_splits'
+    (hK : ∀ s : E, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits) :
     ∃ φ : E →ₐ[F] K, φ.restrictDomain L = f :=
   exists_algHom_of_adjoin_splits' f (fun x _ ↦ hK x) (adjoin_univ L E)
 
 end
 
-variable (hK : ∀ s ∈ S, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
-  (hK' : ∀ s : E, IsIntegral F s ∧ (minpoly F s).Splits (algebraMap F K))
+variable (hK : ∀ s ∈ S, IsIntegral F s ∧ ((minpoly F s).map (algebraMap F K)).Splits)
+  (hK' : ∀ s : E, IsIntegral F s ∧ ((minpoly F s).map (algebraMap F K)).Splits)
   {L : IntermediateField F E} (f : L →ₐ[F] K) (hL : L ≤ adjoin F S) {x : E} {y : K}
 
 section
@@ -356,7 +361,7 @@ polynomial over `F` of elements of `K` splits. Then, for `x ∈ K`, the images o
 of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly_of_splits {F K : Type*} (L : Type*)
     [Field F] [Field K] [Field L] [Algebra F L] [Algebra F K]
-    (hA : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
+    (hA : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits)
     [Algebra.IsAlgebraic F K] (x : K) :
     (Set.range fun (ψ : K →ₐ[F] L) => ψ x) = (minpoly F x).rootSet L := by
   ext a

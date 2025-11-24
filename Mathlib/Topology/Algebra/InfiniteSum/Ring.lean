@@ -3,11 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Infinite sum in a ring
@@ -17,8 +21,11 @@ This file provides lemmas about the interaction between infinite sums and multip
 ## Main results
 
 * `tsum_mul_tsum_eq_tsum_sum_antidiagonal`: Cauchy product formula
+* `Summable.tsum_pow_mul_one_sub`, `Summable.one_sub_mul_tsum_pow`: geometric series formula.
 * `tprod_one_add`: expanding `∏' i : ι, (1 + f i)` as infinite sum.
 -/
+
+@[expose] public section
 
 open Filter Finset Function
 
@@ -172,8 +179,6 @@ protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=
   hf.hasSum.mul_eq hg.hasSum hfg.hasSum
 
-@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum := Summable.tsum_mul_tsum
-
 end tsum_mul_tsum
 
 /-!
@@ -224,9 +229,6 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable
   exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
     (fun n ↦ (hasSum_fintype _).summable)
 
-@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
-  Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal
-
 end HasAntidiagonal
 
 section Nat
@@ -250,12 +252,32 @@ protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
   exact hf.tsum_mul_tsum_eq_tsum_sum_antidiagonal hg hfg
 
-@[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_range :=
-  Summable.tsum_mul_tsum_eq_tsum_sum_range
-
 end Nat
 
 end CauchyProduct
+
+section GeomSeries
+
+/-!
+### Geometric series `∑' n : ℕ, x ^ n`
+
+This section gives a general result about geometric series without assuming additional structure on
+the topological ring. For normed ring, see also `geom_series_mul_neg` and friends.
+-/
+
+variable [Ring α] [TopologicalSpace α] [IsTopologicalRing α] [T2Space α]
+
+theorem Summable.tsum_pow_mul_one_sub {x : α} (h : Summable (x ^ ·)) :
+    (∑' (i : ℕ), x ^ i) * (1 - x) = 1 := by
+  refine tendsto_nhds_unique (h.hasSum.mul_right (1 - x)).tendsto_sum_nat ?_
+  simpa [← Finset.sum_mul, geom_sum_mul_neg] using tendsto_const_nhds.sub h.tendsto_atTop_zero
+
+theorem Summable.one_sub_mul_tsum_pow {x : α} (h : Summable (x ^ ·)) :
+    (1 - x) * ∑' (i : ℕ), x ^ i = 1 := by
+  refine tendsto_nhds_unique (h.hasSum.mul_left (1 - x)).tendsto_sum_nat ?_
+  simpa [← Finset.mul_sum, mul_neg_geom_sum] using tendsto_const_nhds.sub h.tendsto_atTop_zero
+
+end GeomSeries
 
 section ProdOneSum
 

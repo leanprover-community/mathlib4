@@ -4,25 +4,29 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Kim Morrison
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Lattice structure of lists
 
-This files prove basic properties about `List.disjoint`, `List.union`, `List.inter` and
+This file proves basic properties about `List.disjoint`, `List.union`, `List.inter` and
 `List.bagInter`, which are defined in core Lean and `Data.List.Defs`.
 
 `l₁ ∪ l₂` is the list where all elements of `l₁` have been inserted in `l₂` in order. For example,
-`[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [1, 2, 4, 3, 3, 0]`
+`[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [1, 2, 4, 3, 3, 0]`.
 
 `l₁ ∩ l₂` is the list of elements of `l₁` in order which are in `l₂`. For example,
-`[0, 0, 1, 2, 2, 3] ∪ [4, 3, 3, 0] = [0, 0, 3]`
+`[0, 0, 1, 2, 2, 3] ∩ [4, 3, 3, 0] = [0, 0, 3]`.
 
 `List.bagInter l₁ l₂` is the list of elements that are in both `l₁` and `l₂`,
 counted with multiplicity and in the order they appear in `l₁`.
 As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For example,
-`bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`
+`bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`.
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -149,8 +153,8 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
   BAll.imp_left (fun _ => mem_of_mem_inter_right) h
 
 @[simp]
-theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, elem_eq_mem, mem_reverse]
+theorem inter_reverse {xs ys : List α} : xs ∩ ys.reverse = xs ∩ ys := by
+  simp only [List.inter_def, elem_eq_mem, mem_reverse]
 
 theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
   List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)

@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Subgroup
-import Mathlib.Analysis.Normed.Group.Submodule
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Subgroup
+public import Mathlib.Analysis.Normed.Group.Submodule
 
 /-!
 # Normed rings
@@ -16,6 +18,8 @@ In this file we define (semi)normed rings. We also prove some theorems about the
 A normed ring instance can be constructed from a given real absolute value on a ring via
 `AbsoluteValue.toNormedRing`.
 -/
+
+@[expose] public section
 
 -- Guard against import creep.
 assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
@@ -394,7 +398,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
   | 1, _ => by simp only [pow_one, le_rfl]
   | n + 2, _ => by
     simpa only [pow_succ' _ (n + 1)] using
-      le_trans (nnnorm_mul_le _ _) (mul_le_mul_left' (nnnorm_pow_le' a n.succ_pos) _)
+      le_trans (nnnorm_mul_le _ _) (mul_le_mul_right (nnnorm_pow_le' a n.succ_pos) _)
 
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
 See also `nnnorm_pow_le'`. -/

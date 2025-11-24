@@ -3,10 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Monad.Equalizer
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Monad.Equalizer
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Comonadicity theorems
@@ -36,6 +38,8 @@ Please try to keep them in sync.
 Beck, comonadicity, descent
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -286,7 +290,7 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
       letI _ :
         F.IsCosplitPair (G.map (F.map (adj.unit.app Y)))
@@ -375,7 +379,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
       intro Y
       rw [comparisonAdjunction_unit_app]
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
-      infer_instance
+      · infer_instance
       have : IsCoreflexivePair (G.map (F.map (adj.unit.app Y)))
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _

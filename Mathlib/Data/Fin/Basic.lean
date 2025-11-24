@@ -3,9 +3,12 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Int.DivMod
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Int.DivMod
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Common
+public import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements
@@ -18,10 +21,10 @@ This file expands on the development in the core library.
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
 Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
-* `Fin.divNat i` : divides `i : Fin (m * n)` by `n`;
-* `Fin.modNat i` : takes the mod of `i : Fin (m * n)` by `n`;
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Monoid Finset
@@ -29,6 +32,14 @@ assert_not_exists Monoid Finset
 open Fin Nat Function
 
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
+
+theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∀ k hk, p k hk) ↔ ∀ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.forall_iff
+
+theorem Nat.exists_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∃ k hk, p k hk) ↔ ∃ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.exists_iff
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
@@ -197,7 +208,7 @@ lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
-  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  rw [lt_def, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
   exact NeZero.ne n
 
 end Order
@@ -258,10 +269,6 @@ section Add
 -/
 
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
-  rfl
-
-@[deprecated val_one' (since := "2025-03-10")]
-theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
@@ -383,7 +390,7 @@ lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤
   simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
-  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_def, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
   (natCast_le_natCast (hab.trans hbn) hbn).2 hab
@@ -405,26 +412,11 @@ end Add
 
 section DivMod
 
-/-- Compute `i / n`, where `n` is a `Nat` and inferred the type of `i`. -/
-def divNat (i : Fin (m * n)) : Fin m :=
-  ⟨i / n, Nat.div_lt_of_lt_mul <| Nat.mul_comm m n ▸ i.prop⟩
-
-@[simp]
-theorem coe_divNat (i : Fin (m * n)) : (i.divNat : ℕ) = i / n :=
-  rfl
-
-/-- Compute `i % n`, where `n` is a `Nat` and inferred the type of `i`. -/
-def modNat (i : Fin (m * n)) : Fin n := ⟨i % n, Nat.mod_lt _ <| Nat.pos_of_mul_pos_left i.pos⟩
-
-@[simp]
-theorem coe_modNat (i : Fin (m * n)) : (i.modNat : ℕ) = i % n :=
-  rfl
-
 theorem modNat_rev (i : Fin (m * n)) : i.rev.modNat = i.modNat.rev := by
   ext
   have H₁ : i % n + 1 ≤ n := i.modNat.is_lt
   have H₂ : i / n < m := i.divNat.is_lt
-  simp only [coe_modNat, val_rev]
+  simp only [val_rev]
   calc
     (m * n - (i + 1)) % n = (m * n - ((i / n) * n + i % n + 1)) % n := by rw [Nat.div_add_mod']
     _ = ((m - i / n - 1) * n + (n - (i % n + 1))) % n := by
@@ -530,20 +522,13 @@ section Mul
 ### mul
 -/
 
-protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
-  rcases n with - | n
-  · simp [eq_iff_true_of_subsingleton]
-  cases n
-  · simp [fin_one_eq_zero]
-  simp [mul_def, mod_eq_of_lt (is_lt k)]
+@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
 
-protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
-  rw [Fin.mul_comm, Fin.mul_one']
+@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
 
-protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [mul_def]
+@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 

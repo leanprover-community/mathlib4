@@ -3,14 +3,16 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Algebra.Ring.AddAut
-import Mathlib.Data.Nat.Totient
-import Mathlib.GroupTheory.Divisible
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.Order.T5
+module
+
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Algebra.Ring.AddAut
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Divisible
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Topology.Order.T5
 
 /-!
 # The additive circle
@@ -47,6 +49,8 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Exponential equivalence to `Circle`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -192,6 +196,12 @@ def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
 
 variable {p a}
 
+theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIco, QuotientAddGroup.equivIcoMod_symm_apply]
+
+theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply, equivIoc, QuotientAddGroup.equivIocMod_symm_apply]
+
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
   refine ⟨fun h => ?_, by tauto⟩
@@ -202,19 +212,17 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
     liftIco p a f ↑x = f x := by
-  have : (equivIco p a) x = ⟨x, hx⟩ := by
-    rw [Equiv.apply_eq_iff_eq_symm_apply]
-    rfl
-  rw [liftIco, comp_apply, this]
-  rfl
+  simp [liftIco, equivIco_coe_eq hx]
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) :
     liftIoc p a f ↑x = f x := by
-  have : (equivIoc p a) x = ⟨x, hx⟩ := by
-    rw [Equiv.apply_eq_iff_eq_symm_apply]
-    rfl
-  rw [liftIoc, comp_apply, this]
-  rfl
+  simp [liftIoc, equivIoc_coe_eq hx]
+
+lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
+    liftIco p a (g ∘ f) x = g (liftIco p a f x) := rfl
+
+lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
+    liftIoc p a (g ∘ f) x = g (liftIoc p a f x) := rfl
 
 lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
@@ -309,6 +317,20 @@ entire space. -/
 theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
   eq_top_mono (image_mono Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
 
+/-- If functions on AddCircle agree on the image of the interval `[a, a + p)` then they are equal -/
+lemma Ico_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
+    (h : ∀ x ∈ Ico a (a + p), f x = g x) : f = g := by
+  rw [← Set.eqOn_univ, ← coe_image_Ico_eq p a]
+  rintro - ⟨x, hx, rfl⟩
+  exact h x hx
+
+/-- If functions on AddCircle agree on the image of the interval `(a, a + p]` then they are equal -/
+lemma Ioc_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
+    (h : ∀ x ∈ Ioc a (a + p), f x = g x) : f = g := by
+  rw [← Set.eqOn_univ, ← coe_image_Ioc_eq p a]
+  rintro - ⟨x, hx, rfl⟩
+  exact h x hx
+
 end LinearOrderedAddCommGroup
 
 section LinearOrderedField
@@ -381,7 +403,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
 
 omit [IsStrictOrderedRing 𝕜] in
 @[simp] lemma coe_fract (x : 𝕜) : (↑(Int.fract x) : AddCircle (1 : 𝕜)) = x := by
-  simp [← Int.self_sub_floor]
+  simp [← Int.self_sub_floor, mem_zmultiples_iff]
 
 end FloorRing
 
@@ -416,7 +438,7 @@ theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   cases m
-  · simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.natAbs_natCast] at h ⊢
+  · simp only [Int.ofNat_eq_natCast, Int.cast_natCast, Int.natAbs_natCast] at h ⊢
     exact addOrderOf_div_of_gcd_eq_one hn h
   · simp only [Int.cast_negSucc, neg_div, neg_mul, coe_neg, addOrderOf_neg]
     exact addOrderOf_div_of_gcd_eq_one hn h
@@ -515,9 +537,6 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
 theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
-
-@[deprecated (since := "2025-03-26")]
-alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
 
 theorem finite_torsion {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | n • u = 0 }.Finite := by

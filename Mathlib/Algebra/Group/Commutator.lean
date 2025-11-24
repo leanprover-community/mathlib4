@@ -3,12 +3,16 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Bracket
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Bracket
 
 /-!
 # The bracket on a group given by commutator.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

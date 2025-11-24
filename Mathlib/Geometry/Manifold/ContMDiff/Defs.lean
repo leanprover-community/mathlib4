@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
-import Mathlib.Geometry.Manifold.LocalInvariantProperties
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
 # `C^n` functions between manifolds
@@ -42,6 +44,8 @@ For this to work, the definition of `ContMDiffWithinAt` and friends has to
 follow definitionally the setup of local invariant properties. Still, we recast the definition
 in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter ChartedSpace IsManifold
@@ -211,6 +215,9 @@ theorem ContMDiff.contMDiffAt (h : ContMDiff I I' n f) : ContMDiffAt I I' n f x 
 
 theorem contMDiffWithinAt_univ : ContMDiffWithinAt I I' n f univ x ↔ ContMDiffAt I I' n f x :=
   Iff.rfl
+
+@[simp]
+theorem contMDiffOn_empty : ContMDiffOn I I' n f ∅ := fun _x hx ↦ hx.elim
 
 theorem contMDiffOn_univ : ContMDiffOn I I' n f univ ↔ ContMDiff I I' n f := by
   simp only [ContMDiffOn, ContMDiff, contMDiffWithinAt_univ, forall_prop_of_true, mem_univ]
@@ -615,7 +622,7 @@ theorem contMDiffWithinAt_iff_le_ne_infty :
   | coe n =>
     exact contMDiffWithinAt_iff_nat.2 (fun m hm ↦ h _ (mod_cast hm) (by simp))
 
-/-- A function is `C^n`at a point iff it is `C^m`at this point, for
+/-- A function is `C^n` at a point iff it is `C^m` at this point, for
 any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
 theorem contMDiffAt_iff_le_ne_infty :

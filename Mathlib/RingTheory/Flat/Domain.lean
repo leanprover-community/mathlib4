@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.Localization
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Flat modules in domains
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Flat.Localization
 We show that the tensor product of two injective linear maps is injective if the sources are flat
 and the ring is an integral domain.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -70,4 +74,4 @@ This is true over non-domains if one of the modules is flat.
 See `LinearIndepOn.tmul_of_flat_left`. -/
 nonrec lemma LinearIndepOn.tmul_of_isDomain (hv : LinearIndepOn R v s) (hw : LinearIndepOn R w t) :
     LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective :)

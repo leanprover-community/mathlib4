@@ -3,8 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.GeomSum
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Partial sums of geometric series in a field
@@ -21,6 +23,8 @@ $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
 Several variants are recorded, generalising in particular to the case of a division ring in
 which `x` and `y` commute.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing
 

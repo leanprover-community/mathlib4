@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Circumcenter and circumradius
@@ -28,6 +30,8 @@ the circumcenter.
 * https://en.wikipedia.org/wiki/Circumscribed_circle
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -82,8 +86,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
         simp only [ycc₂]
-        field_simp
-        ring
+        field
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
           dist_of_mem_subset_mk_sphere hp₁ hcr, dist_eq_norm_vsub V cc₂ cc, vadd_vsub, norm_smul, ←
@@ -132,7 +135,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     congr
     rw [hcr₃val]
     congr 2
-    field_simp
+    field
 
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
@@ -332,6 +335,40 @@ theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 @[simp]
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
+
+@[simp] lemma circumcenter_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).circumcenter = f s.circumcenter := by
+  rw [eq_comm]
+  refine (s.map f.toAffineMap f.injective).eq_circumcenter_of_dist_eq (r := s.circumradius) ?_
+    fun i ↦ by simp
+  rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
+  exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
+
+@[simp] lemma circumradius_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).circumradius = s.circumradius := by
+  rw [eq_comm]
+  refine (s.map f.toAffineMap f.injective).eq_circumradius_of_dist_eq (p := f s.circumcenter) ?_
+    fun i ↦ by simp
+  rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
+  exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
+
+@[simp] lemma circumcenter_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).circumcenter = s.circumcenter := by
+  rw [eq_comm]
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumcenter_map S.subtypeₐᵢ
+
+@[simp] lemma circumradius_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).circumradius = s.circumradius := by
+  rw [eq_comm]
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumradius_map S.subtypeₐᵢ
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)

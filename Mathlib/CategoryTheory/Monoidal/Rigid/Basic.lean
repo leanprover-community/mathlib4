@@ -3,9 +3,11 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Rigid (autonomous) monoidal categories
@@ -56,6 +58,8 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 rigid category, monoidal category
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory MonoidalCategory
