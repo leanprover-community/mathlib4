@@ -161,13 +161,22 @@ end Mathlib.Tactic
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
 @[expose] def LibraryNote := Unit
 
-open Lean in
+open Lean Elab.Command in
 /-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`
 in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
 You can access this note using, for example, `#print Mathlib.LibraryNote.«my note»`.
 -/
-macro "library_note2 " name:ident ppSpace dc:docComment : command =>
-  `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
+elab "library_note2 " name:ident ppSpace dc:docComment : command => do
+  let name := `Mathlib.LibraryNote ++ name.getId
+  let decl := .defnDecl {
+      name
+      levelParams := []
+      type := .const `LibraryNote []
+      value := .const `Unit.unit []
+      safety := .safe
+      hints := .regular 0 }
+  liftCoreM <| addAndCompile decl
+  liftTermElabM <| addDocString name Syntax.missing dc
 
 open Lean Elab Command in
 /-- Support the old `library_note "foo"` syntax, with a deprecation warning. -/
