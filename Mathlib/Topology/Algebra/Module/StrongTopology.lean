@@ -506,13 +506,14 @@ instance instCompleteSpace [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] 
     CompleteSpace (E →SL[σ] F) :=
   completeSpace <| .of_seq fun _ _ h ↦ (h.isVonNBounded_range 𝕜₁).insert _
 
-variable (G) [TopologicalSpace F] [TopologicalSpace G] (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
+variable [TopologicalSpace F] [TopologicalSpace G] (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
 
-/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map on the uniform
+variable (G) in
+/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
 @[simps]
 def precomp_uniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    {L : E →SL[σ] F} (hL : MapsTo (fun s ↦ L '' s) 𝔖 𝔗) :
+    (L : E →SL[σ] F) (hL : MapsTo (L '' ·) 𝔖 𝔗) :
     (UniformConvergenceCLM τ G 𝔗) →L[𝕜₃] UniformConvergenceCLM ρ G 𝔖 where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
@@ -524,19 +525,19 @@ def precomp_uniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul
     exact (UniformOnFun.precomp_uniformContinuous hL).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
+variable (G) in
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
 
 Note that in non-normed space it is not always true that composition is continuous
 in both variables, so we have to fix one of them. -/
-@[simps!]
+@[simps! apply]
 def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
-    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G :=
-  precomp_uniformConvergenceCLM G { S | IsVonNBounded 𝕜₁ S } { S | IsVonNBounded 𝕜₂ S }
-  (fun _ hS ↦ hS.image L)
+    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
+  toFun f := f.comp L
+  __ := precomp_uniformConvergenceCLM G { S | IsVonNBounded 𝕜₁ S } { S | IsVonNBounded 𝕜₂ S } L
+    (fun _ hS ↦ hS.image L)
 
-variable {G}
-
-/-- Post-composition by a *fixed* continuous linear map as a continuous linear map on the uniform
+/-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
 @[simps]
 def postcomp_uniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
@@ -561,10 +562,11 @@ variable (E)
 
 Note that in non-normed space it is not always true that composition is continuous
 in both variables, so we have to fix one of them. -/
-@[simps!]
+@[simps! apply]
 def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G :=
-  postcomp_uniformConvergenceCLM { S | IsVonNBounded 𝕜₁ S } L
+    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
+  toFun f := L.comp f
+  __ := postcomp_uniformConvergenceCLM { S | IsVonNBounded 𝕜₁ S } L
 
 variable (σ F) {E} in
 lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
