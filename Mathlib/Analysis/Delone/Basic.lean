@@ -96,28 +96,18 @@ lemma nonempty [Inhabited X] (D : DeloneSet X) : D.carrier.Nonempty := by
   rcases hcov (default : X) with ⟨y, hyD, _⟩
   exact ⟨y, hyD⟩
 
-/-- Extract the covering radius of a Delone set. -/
-lemma exists_covering_radius (D : DeloneSet X) :
-    ∃ R > 0, ∀ x : X, ∃ y ∈ D.carrier, dist x y ≤ R :=
-  D.relativelyDense
-
-/-- Extract the packing radius of a Delone set. -/
-lemma exists_packing_radius (D : DeloneSet X) :
-    ∃ r > 0, ∀ ⦃x y⦄, x ∈ D.carrier → y ∈ D.carrier → x ≠ y → dist x y ≥ r :=
-  D.uniformlyDiscrete
-
 /-- Distinct points in a Delone set are at positive distance. -/
 lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
     (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
     0 < dist x y := by
-  obtain ⟨r, hr, hsep⟩ := D.exists_packing_radius
+  obtain ⟨r, hr, hsep⟩ := D.uniformlyDiscrete
   exact lt_of_lt_of_le hr <| hsep hx hy hne
 
 /-- At most one point of a Delone set lies in a sufficiently small ball. -/
-lemma subset_ball_singleton (D : DeloneSet X) :
+lemma subset_ball_singleton' (D : DeloneSet X) :
     ∃ r > 0, ∀ x y z, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
       dist x z < r / 2 → dist z y < r / 2 → x = y := by
-  obtain ⟨ρ, hρ, hsep⟩ := D.exists_packing_radius
+  obtain ⟨ρ, hρ, hsep⟩ := D.uniformlyDiscrete
   refine ⟨ρ, hρ, fun x y z hx hy hz hxz hyz ↦ ?_⟩
   have hxy_lt : dist x y < ρ := by
     have := calc
