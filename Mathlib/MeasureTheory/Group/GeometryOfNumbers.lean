@@ -95,11 +95,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s)
     (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
-  have h_mes : μ s ≠ 0 := by
-    intro hμ
-    suffices μ F = 0 from fund.measure_ne_zero (NeZero.ne μ) this
-    rw [hμ, le_zero_iff, mul_eq_zero] at h
-    exact h.resolve_right <| pow_ne_zero _ two_ne_zero
+  have h_mes : μ s ≠ 0 := fun hμ ↦ fund.measure_ne_zero (NeZero.ne μ) <| by simpa [hμ] using h
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
   let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
   let K : ConvexBody E := ⟨s, h_conv, h_cpt, h_nemp⟩

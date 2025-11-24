@@ -404,9 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
   have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
-  rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
-  refine ⟨r, r_in_Ioo, ?_⟩
-  simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
+  simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
 
 theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) :
     ∃ rs : ℕ → ℝ,

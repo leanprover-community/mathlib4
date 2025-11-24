@@ -345,9 +345,8 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     exact hδ
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra
-    suffices μ (closedBall 0 (δ/2)) = 0 by
-      apply isOpen_univ.measure_ne_zero μ univ_nonempty <| le_zero_iff.mp <| le_trans hδ _
-      simp [this]
+    refine (isOpen_univ.measure_pos μ univ_nonempty).not_ge <| hδ.trans ?_
+    suffices μ (closedBall 0 (δ/2)) = 0 by simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
   have h'' : ∀ j, (B j).Nonempty := by intro j; rwa [nonempty_closedBall]
