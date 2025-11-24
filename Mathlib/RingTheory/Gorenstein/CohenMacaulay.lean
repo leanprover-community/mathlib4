@@ -805,6 +805,15 @@ theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth R (le_of_le_of_eq le _)
   simp [IsLocalRing.depth_eq_of_iso (Shrink.linearEquiv.{u} R R).toModuleIso]
 
+theorem injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing [IsGorensteinLocalRing R] :
+    injectiveDimension (ModuleCat.of R R) = ringKrullDim R := by
+  have gor := (isGorensteinLocalRing_def R).mp ‹_›
+  have le := supportDim_le_injectiveDimension (ModuleCat.of R R)
+  rw [Module.supportDim_self_eq_ringKrullDim] at le
+  have le' := depth_le_ringKrullDim (ModuleCat.of R R)
+  rw [← IsLocalRing.depth_eq_of_iso (Shrink.linearEquiv.{u} R R).toModuleIso,
+    ← injectiveDimension_eq_depth (ModuleCat.of R R) gor] at le'
+  exact le_antisymm le' le
 
 /-
 variable {R} in
