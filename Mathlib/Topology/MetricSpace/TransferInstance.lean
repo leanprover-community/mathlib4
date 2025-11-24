@@ -8,7 +8,7 @@ module
 public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
-# Transfer algebraic structures across `Equiv`s
+# Transfer metric space structures across `Equiv`s
 
 In this file, we transfer a distance and (pseudo-)metric space structure across an equivalence.
 
