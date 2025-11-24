@@ -4997,6 +4997,7 @@ public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
 public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 public import Mathlib.ModelTheory.Basic
 public import Mathlib.ModelTheory.Bundled
@@ -5811,6 +5812,7 @@ public import Mathlib.RingTheory.GradedAlgebra.Radical
 public import Mathlib.RingTheory.Grassmannian
 public import Mathlib.RingTheory.HahnSeries.Addition
 public import Mathlib.RingTheory.HahnSeries.Basic
+public import Mathlib.RingTheory.HahnSeries.Binomial
 public import Mathlib.RingTheory.HahnSeries.HEval
 public import Mathlib.RingTheory.HahnSeries.HahnEmbedding
 public import Mathlib.RingTheory.HahnSeries.Lex
@@ -6801,6 +6803,7 @@ public import Mathlib.Topology.Category.CompHaus.Frm
 public import Mathlib.Topology.Category.CompHaus.Limits
 public import Mathlib.Topology.Category.CompHaus.Projective
 public import Mathlib.Topology.Category.CompHausLike.Basic
+public import Mathlib.Topology.Category.CompHausLike.Cartesian
 public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
@@ -6810,6 +6813,7 @@ public import Mathlib.Topology.Category.DeltaGenerated
 public import Mathlib.Topology.Category.FinTopCat
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.LightProfinite.Basic
+public import Mathlib.Topology.Category.LightProfinite.Cartesian
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 public import Mathlib.Topology.Category.LightProfinite.Extend
 public import Mathlib.Topology.Category.LightProfinite.Limits
