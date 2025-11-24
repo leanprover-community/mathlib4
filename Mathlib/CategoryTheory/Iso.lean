@@ -138,7 +138,10 @@ instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) wher
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
-@[simp, grind =]
+-- Annotating this with `@[grind =]` triggers a run-away chain of `Category.assoc` instantiations.
+-- Hopefully this can be restored when `grind` has support for associative/commutative operations,
+-- or direct support for category theory.
+@[simp]
 theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
     (hom' : Y ⟶ Z) (inv' : Z ⟶ Y) (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
     Iso.trans ⟨hom, inv, hom_inv_id, inv_hom_id⟩ ⟨hom', inv', hom_inv_id', inv_hom_id'⟩ =
