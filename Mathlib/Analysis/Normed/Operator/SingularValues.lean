@@ -129,10 +129,8 @@ open Cardinal in
 The sequence of singular values converges to their infimum.
 -/
 public theorem ContinuousLinearMap.tendsto_atTop_singularValue
-  : Tendsto T.singularValue (atTop : Filter ℕ)
-    (𝓝 (⨅ H : {S : X →L[𝕜] Y // S.rank < ℵ₀}, ‖T - H‖₊)) := by
+  : Tendsto T.singularValue (atTop : Filter ℕ) (𝓝 (⨅ n : ℕ, T.singularValue n)) := by
   apply tendsto_atTop_isGLB (antitone_singularValue T)
-  rw [←ContinuousLinearMap.iInf_singularValue]
   apply isGLB_ciInf
   exact OrderBot.bddBelow (Set.range T.singularValue)
 
@@ -210,20 +208,36 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y] [CompleteSpace Y]
   (T : X →L[𝕜] Y)
 
--- Note: might require space to be complete (i.e. a Banach space instead of just a normed space)
 -- Probably want to use ContinuousLinearMap.iInf_singularValue in the proof
+open Topology in
 public theorem ContinuousLinearMap.isCompactOperator_of_iInf_singularValue_eq_zero
   (h : ⨅ n : ℕ, T.singularValue n = 0) : IsCompactOperator T := by
-  -- We can choose `R n` such that `‖T - R n‖ < T.singularValue n + 1/(n + 1)`
+  -- We can choose finite rank operators `R n` such that `‖T - R n‖ < T.singularValue n + 1/(n + 1)`
   have hT (n : ℕ) := T.lt_singularValue_add_pos n (Nat.one_div_pos_of_nat : 0 < 1/((n : ℝ≥0) + 1))
   let R (n : ℕ) := Classical.choose (hT n)
   have hR (n : ℕ) : (R n).rank ≤ n ∧ ‖T - R n‖₊ < T.singularValue n + 1/((n : ℝ≥0) + 1)
     := Classical.choose_spec (hT n)
 
+  have hl₁ : Filter.Tendsto T.singularValue Filter.atTop (𝓝 0) := h ▸ T.tendsto_atTop_singularValue
+  --have hl₂ : Filter.Tendsto (fun (n : ℕ) ↦ 1/((n : ℝ≥0) + 1)) Filter.atTop (𝓝 0) := by
+  --  exact tendsto_one_div_add_atTop_nhds_zero_nat
+  have hl₂ : Filter.Tendsto (fun n ↦ T.singularValue n + 1/((n : ℝ≥0) + 1)) Filter.atTop (𝓝 0) := by
+    simpa using Filter.Tendsto.add hl₁ (tendsto_one_div_add_atTop_nhds_zero_nat)
+
+  have := Filter.Tendsto.squeeze (f := fun n : ℕ ↦ ‖T - R n‖₊) (g := fun _ ↦ 0)
+    tendsto_const_nhds hl₂ sorry sorry
+
   -- It suffices to show that `R n` converges to `T` and that all but finitely many `R n` are finite
   -- rank (in fact, they are all finite rank).
   apply isCompactOperator_of_tendsto (F := R) (l := Filter.atTop)
-  · sorry
+  · -- tendsto_zero_iff_norm_tendsto_zero
+    -- tendsto_iff_norm_sub_tendsto_zero
+    -- Or `squeeze_zero_norm` -> Doesn't work because
+    rw [tendsto_iff_norm_sub_tendsto_zero]
+    simp_rw [norm_sub_rev]
+    apply this
+
+    sorry
   · apply Filter.Eventually.of_forall
     intro n
     sorry
