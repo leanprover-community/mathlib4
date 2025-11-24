@@ -258,6 +258,19 @@ lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
   intro m
   rw [Nat.le_log2 hn, Nat.le_log_iff_pow_le Nat.one_lt_two hn]
 
+@[simp]
+lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · rcases k.eq_zero_or_pos with rfl | hk
+    · simp
+    · rcases Nat.lt_or_ge 1 b with hb | hb
+      · refine eq_of_forall_le_iff fun c ↦ ?_
+        rw [le_log_iff_pow_le (Nat.one_lt_pow (Nat.ne_of_gt hk) hb) hn, Nat.le_div_iff_mul_le hk,
+          le_log_iff_pow_le hb hn, Nat.pow_mul']
+      · rw [log_of_left_le_one hb, Nat.zero_div, log_of_left_le_one]
+        rwa [Nat.pow_le_one_iff (Nat.ne_of_gt hk)]
+
 /-! ### Ceil logarithm -/
 
 
@@ -392,6 +405,22 @@ theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   rw [ne_eq, ← clog_lt_clog_succ_iff hb, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
+
+/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉, using operations on natural numbers
+to express this equality.
+
+Since Lean has no dedicated function for the ceiling division,
+we use `(a + (b - 1)) / b` for `⌈a / b⌉`. -/
+theorem clog_pow_left (b k n : ℕ) : clog (b ^ k) n = (clog b n + (k - 1)) / k := by
+  rcases k.eq_zero_or_pos with rfl | hk
+  · simp
+  · rcases Nat.lt_or_ge 1 b with hb | hb
+    · refine eq_of_forall_lt_iff fun c ↦ ?_
+      rw [lt_clog_iff_pow_lt (Nat.one_lt_pow (Nat.ne_of_gt hk) hb), Nat.lt_div_iff_mul_lt hk,
+        Nat.add_sub_cancel, lt_clog_iff_pow_lt hb, Nat.pow_mul']
+    · suffices (k - 1) / k = 0 by grind [clog_of_left_le_one, Nat.pow_le_one_iff]
+      apply Nat.div_eq_of_lt
+      grind
 
 /-! ### Computating the logarithm efficiently -/
 section computation
