@@ -195,6 +195,11 @@ instance [T1Space α] : Singleton α (Closeds α) where
 @[deprecated "Use `{x}` instead" (since := "2025-11-23")]
 abbrev singleton [T1Space α] (x : α) : Closeds α := {x}
 
+@[simp]
+theorem mk_singleton [T1Space α] {x : α} :
+    (⟨{x}, isClosed_singleton⟩ : Closeds α) = {x} :=
+  rfl
+
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ ({b} : Closeds α) ↔ a = b := Iff.rfl
 
 theorem singleton_injective [T1Space α] : Function.Injective ({·} : α → Closeds α) :=
@@ -414,6 +419,11 @@ instance [T1Space α] : Singleton α (IrreducibleCloseds α) where
 /-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
 @[deprecated "Use `{x}` instead" (since := "2025-11-23")]
 abbrev singleton [T1Space α] (x : α) : IrreducibleCloseds α := {x}
+
+@[simp]
+theorem mk_singleton [T1Space α] {x : α} :
+    (⟨{x}, isIrreducible_singleton, isClosed_singleton⟩ : IrreducibleCloseds α) = {x} :=
+  rfl
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ ({b} : IrreducibleCloseds α) ↔ a = b :=
   Iff.rfl
