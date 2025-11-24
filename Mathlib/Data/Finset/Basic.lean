@@ -551,8 +551,12 @@ theorem choose_spec (hp : ∃! a, a ∈ l ∧ p a) : choose p l hp ∈ l ∧ p (
 theorem choose_mem (hp : ∃! a, a ∈ l ∧ p a) : choose p l hp ∈ l :=
   (choose_spec _ _ _).1
 
+grind_pattern choose_mem => choose p l hp
+
 theorem choose_property (hp : ∃! a, a ∈ l ∧ p a) : p (choose p l hp) :=
   (choose_spec _ _ _).2
+
+grind_pattern choose_property => choose p l hp
 
 end Choose
 
