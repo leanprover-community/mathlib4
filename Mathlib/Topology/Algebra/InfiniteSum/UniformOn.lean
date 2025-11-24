@@ -301,7 +301,7 @@ the product `∏ i, f i b` converges uniformly (wrt `b`) to `g`. -/
 the sum `∑ i, f i b` converges uniformly (wrt `b`) to `g`. -/]
 def HasProdUniformly : Prop := HasProd (UniformFun.ofFun ∘ f) (UniformFun.ofFun g)
 
-variable (f g 𝔖) in
+variable (f g) in
 /-- `MultipliableUniformly f` means that there is some infinite product to which
 `f` converges uniformly. Use `fun x ↦ ∏' i, f i x` to get the product function. -/
 @[to_additive /-- `SummableUniformly f` means that there is some infinite sum to which
@@ -389,7 +389,7 @@ section LocallyUniformly
 
 variable [TopologicalSpace β]
 
-variable (f g s) in
+variable (f g) in
 /-- `HasProdLocallyUniformly f g` means that the (potentially infinite) product `∏' i, f i b`
 for `b : β` converges locally uniformly to `g b` (in the sense of
 `TendstoLocallyUniformly`). -/
@@ -398,7 +398,7 @@ for `b : β` converges locally uniformly to `g b` (in the sense of
 `TendstoLocallyUniformly`). -/]
 def HasProdLocallyUniformly : Prop := TendstoLocallyUniformly (∏ i ∈ ·, f i ·) g atTop
 
-variable (f g s) in
+variable (f g) in
 /-- `MultipliableLocallyUniformly f` means that the product `∏' i, f i b` converges locally
 uniformly to something. -/
 @[to_additive /-- `SummableLocallyUniformly f` means that `∑' i, f i b` converges locally
