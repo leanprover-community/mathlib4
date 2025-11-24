@@ -46,6 +46,8 @@ Prove noetherianity of `MvPowerSeries` in finitely many variables.
 
 -/
 
+@[expose] public section
+
 variable {R : Type*}
 
 open Ideal Set Finset

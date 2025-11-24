@@ -20,6 +20,9 @@ in a functor `Φ.fiber : C ⥤ Type w` such that the category `Φ.fiber.Elements
 is cofiltered (and initially small) and such that if `x : Φ.fiber.obj X`
 and `R` is a covering sieve of `X`, then `x` belongs to the image
 of some `y : Φ.fiber.obj Y` by a morphism `f : Y ⟶ X` which belongs to `R`.
+(This definition is essentially the definition of a fiber functor on a site
+from SGA 4 IV 6.3.)
+
 The fact that `Φ.fiber.Elementsᵒᵖ` is filtered allows to define
 `Φ.presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A` by taking the filtering colimit
 of the evaluation functors at `op X` when `(X : C, x : F.obj X)` varies in
@@ -76,7 +79,7 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
   [HasColimitsOfSize.{w, w} A]
 
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
-    hasColimitsOfShape_of_finallySmall _ _
+  hasColimitsOfShape_of_finallySmall _ _
 
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
