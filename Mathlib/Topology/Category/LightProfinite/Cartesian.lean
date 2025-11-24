@@ -24,7 +24,7 @@ open CategoryTheory Limits CompHausLike
 
 namespace LightProfinite
 
-noncomputable instance : CartesianMonoidalCategory LightProfinite.{u} :=
+instance : CartesianMonoidalCategory LightProfinite.{u} :=
   cartesianMonoidalCategory
 
 end LightProfinite
