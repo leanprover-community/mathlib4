@@ -20,11 +20,11 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 ## Main definitions
 
 * `Ideal.ramificationIdxIn`: It can be seen from
-  the theorem `Ideal.ramificationIdx_eq_of_IsGalois` that all `Ideal.ramificationIdx` over a fixed
-  maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`.
+  the theorem `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a
+  fixed maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`.
 
 * `Ideal.inertiaDegIn`: It can be seen from
-  the theorem `Ideal.inertiaDeg_eq_of_IsGalois` that all `Ideal.inertiaDeg` over a fixed
+  the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`.
 
 ## Main results
@@ -53,7 +53,7 @@ namespace Ideal
 
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from the theorem
-  `Ideal.ramificationIdx_eq_of_IsGalois` that all `Ideal.ramificationIdx` over a fixed
+  `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
@@ -62,7 +62,7 @@ noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
 
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from
-  the theorem `Ideal.inertiaDeg_eq_of_IsGalois` that all `Ideal.inertiaDeg` over a fixed
+  the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
 noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
@@ -141,7 +141,7 @@ instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesO
 alias isPretransitive_of_isGalois := isPretransitive_of_isGaloisGroup
 
 include G in
-/-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
+/-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
     ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
@@ -151,7 +151,7 @@ theorem ramificationIdx_eq_of_isGaloisGroup :
 alias ramificationIdx_eq_of_isGalois := ramificationIdx_eq_of_isGaloisGroup
 
 include G in
-/-- All the `inertiaDeg` over a fixed maximal ideal are the same. -/
+/-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
 theorem inertiaDeg_eq_of_isGaloisGroup [p.IsMaximal] :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
