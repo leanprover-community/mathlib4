@@ -38,6 +38,7 @@ theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset {α : Type*}
   [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
   {a u' : α} {s : Set α} (hu' : a < u') :
   s ∈ nhdsWithin a (Set.Ici a) ↔ ∃ (u : α) (H : u ∈ Set.Ioc a u'), Set.Ico a u ⊆ s := by sorry
+
 end
 
 /--
@@ -196,8 +197,10 @@ include hab hrect
 theorem continuous_right_self_arclength
   (hcont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
     ContinuousWithinAt (arclength f a) (Set.Ici a) a := by
-  replace hcont : ContinuousWithinAt f (Set.Iio b) a :=
-    by refine hcont.mono_of_mem_nhdsWithin ?_; sorry
+  replace hcont : ContinuousWithinAt f (Set.Ici a) a := by
+    refine hcont.mono_of_mem_nhdsWithin ?_
+    refine (mem_nhdsWithin.mpr ⟨_, isOpen_Iio, hab, ?_⟩)
+    rintro _ ⟨h₁, h₂⟩; exact ⟨h₂, h₁⟩
   rw [ContinuousWithinAt, arclength_self, ENNReal.tendsto_nhds_zero]
   intro ε hε
   by_cases hlab : arclength f a b = 0
@@ -209,9 +212,9 @@ theorem continuous_right_self_arclength
     obtain ⟨⟨n, u, hu, hmem, hea, hal⟩, hl⟩ :=
       lt_iSup_iff.1 (ENNReal.sub_lt_self hrect hlab hε2.ne')
     simp_rw [← arclength_eq_supr f hab.le, edist_comm] at hl
-    obtain ⟨c, hc, hcb⟩ : ∃ (c : α) (_ : _), Set.Ico a c ⊆ {x | edist (f x) (f a) < ε/2} := by
-      rw [← mem_nhdsWithin_Ici_iff_exists_Ico_subset hab]
-      sorry
+    obtain ⟨c, hc, hcb⟩ : ∃ (c : α) (_ : _), _ := by
+      rw [← mem_nhdsWithin_Ici_iff_exists_Ico_subset hab, ←Filter.Eventually]
+      exact Iff.mp (EMetric.nhds_basis_eball.tendsto_right_iff) hcont _ hε2
     by_cases h : ∀ x, ¬ x ∈ Set.Ioo a c
     · unfold Filter.Eventually
       rw [mem_nhdsWithin_Ici_iff_exists_Ico_subset hab]
@@ -253,24 +256,26 @@ theorem continuous_right_self_arclength
         _ = _ + (ε + arclength f e (u 1)) := by rw [add_assoc, add_right_comm, ENNReal.add_halves]
         _ ≤ _ + arclength f (u 0) (u 1) := by
           rw [hea, ← arclength_add f hae.le <| min_le_left _ d, add_comm ε]
-          rw [← add_comm (arclength _ _ _),  ←add_assoc _ _ ε, ←add_assoc _ (arclength _ _ _)]
+          rw [←add_comm (arclength _ _ _),  ←add_assoc _ _ ε, ←add_assoc _ (arclength _ _ _)]
           refine add_le_add_left (?_) _
           push_neg at hac; exact hac.le
         _ = ∑ i ∈ Finset.range (n+1), arclength f (u i) (u <| i+1) := by rw [Finset.sum_range_succ']
         _ = arclength f (u 0) (u <| n+1) := arclength_sum f hu
         _ ≤ arclength f a b := by rw [hea]; exact arclength_mono f a (hmem _).2
 
-#check le_add_of_nonneg_right
-
 theorem continuous_right_arclength
   (hcont : ContinuousWithinAt f (Set.Ico a b) a) :
     ContinuousWithinAt (arclength f c) (Set.Ici a) a := by
+  by_cases h : c ≤ a
+  · sorry
   sorry
 
 theorem continuous_left_arclength'
   (hcont : ContinuousWithinAt f (Set.Ioc a b) b) /- f is left continuous at b -/ :
     ContinuousWithinAt (arclength f a) (Set.Iic b) b := by
+  -- rw [← arclength_comp_of_dual, ←arclength'_eq] at hrect
   sorry
+
 
 omit hab
 
