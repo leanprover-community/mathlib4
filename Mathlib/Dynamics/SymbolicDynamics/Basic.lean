@@ -3,7 +3,9 @@ Copyright (c) 2025 Silvère Gangloff. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Silvère Gangloff
 -/
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.Topology.Constructions
 
 /-!
 # Symbolic dynamics on cancellative monoids
@@ -104,6 +106,7 @@ between the two viewpoints, since both may naturally want to reuse names like
   manipulations and `Function.update`).
 -/
 
+@[expose] public section
 
 noncomputable section
 open Set Topology
