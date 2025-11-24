@@ -153,8 +153,8 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
   BAll.imp_left (fun _ => mem_of_mem_inter_right) h
 
 @[simp]
-theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, elem_eq_mem, mem_reverse]
+theorem inter_reverse {xs ys : List α} : xs ∩ ys.reverse = xs ∩ ys := by
+  simp only [List.inter_def, elem_eq_mem, mem_reverse]
 
 theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
   List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)
