@@ -89,16 +89,21 @@ theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
-theorem adjoin_simple_toSubalgebra_of_algebraic (hα : IsAlgebraic F α) :
+theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
     F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
   adjoin_algebraic_toSubalgebra <| by simpa
+
+@[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
+theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
+    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+  adjoin_algebraic_toSubalgebra <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
   adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x
 
-theorem adjoin_algebraic_eq_top_iff {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
+theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     adjoin F S = ⊤ ↔ Algebra.adjoin F S = ⊤ := by
   rw [← IntermediateField.adjoin_algebraic_toSubalgebra hS,
       ← IntermediateField.toSubalgebra_inj,
@@ -106,7 +111,7 @@ theorem adjoin_algebraic_eq_top_iff {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_algebraic_eq_top_iff
 
-theorem adjoin_simple_eq_top_iff {x : E} (hx : IsAlgebraic F x) :
+theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
     F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_algebraic_eq_top_iff (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ := adjoin_simple_eq_top_iff
