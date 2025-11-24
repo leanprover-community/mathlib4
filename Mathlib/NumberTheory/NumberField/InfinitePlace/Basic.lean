@@ -44,7 +44,6 @@ number field, infinite places
 
 @[expose] public section
 
-@[expose] public section
 
 open scoped Finset Topology
 
