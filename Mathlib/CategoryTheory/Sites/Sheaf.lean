@@ -364,6 +364,7 @@ abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
 
 /-- `Sheaf.homEquiv` as a natural isomorphism. -/
+@[simps!]
 def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
     sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op ≅
       yoneda :=
@@ -377,6 +378,7 @@ lemma sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : 
   rfl
 
 /-- `Sheaf.homEquiv` as a natural isomorphism, using coyoneda. -/
+@[simps!]
 def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
     (sheafToPresheaf J A).op ⋙ coyoneda ⋙
       (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A) ≅
