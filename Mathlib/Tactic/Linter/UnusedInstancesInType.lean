@@ -185,6 +185,9 @@ which are not used in the remainder of the type. If so, it suggests removing the
 `classical` or `open scoped Classical in`, as appropriate, in the theorem's proof instead.
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
+
+Note: `set_option linter.unusedDecidableInType _ in <command>` currently only works at the
+outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
 -/
 public register_option linter.unusedDecidableInType : Bool := {
   defValue := false
@@ -203,7 +206,9 @@ def unusedDecidableInType : Linter where
     if let `(command| set_option $opt:ident false in $_:command) := cmd then
       if opt.getId == `linter.unusedDecidableInType then
         return
-    unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
+    let override := if let `(command| set_option $opt:ident true in $_:command) := cmd then
+       opt.getId == `linter.unusedDecidableInType else false
+    unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
       /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
