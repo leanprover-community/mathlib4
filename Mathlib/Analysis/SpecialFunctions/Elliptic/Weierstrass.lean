@@ -31,57 +31,64 @@ open Module
 noncomputable section
 
 /-- A pair of `ℝ`-linearly independent complex numbers.
-They span the period lattice in `PeriodPair.lattice`,
+They span the period lattice in `lattice`,
 and are the periods of the elliptic functions we shall construct. -/
 structure PeriodPair : Type where
   /-- The first period in a `PeriodPair`. -/
   ω₁ : ℂ
-  /-- The first period in a `PeriodPair`. -/
+  /-- The second period in a `PeriodPair`. -/
   ω₂ : ℂ
   indep : LinearIndependent ℝ ![ω₁, ω₂]
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] (L : PeriodPair)
 
+namespace PeriodPair
+
 /-- The `ℝ`-basis of `ℂ` determined by a pair of periods. -/
-def PeriodPair.basis : Basis (Fin 2) ℝ ℂ :=
+protected def basis : Basis (Fin 2) ℝ ℂ :=
   basisOfLinearIndependentOfCardEqFinrank L.indep (by simp)
 
-@[simp] lemma PeriodPair.basis_zero : L.basis 0 = L.ω₁ := by simp [basis]
-@[simp] lemma PeriodPair.basis_one : L.basis 1 = L.ω₂ := by simp [basis]
+@[simp] lemma basis_zero : L.basis 0 = L.ω₁ := by simp [PeriodPair.basis]
+@[simp] lemma basis_one : L.basis 1 = L.ω₂ := by simp [PeriodPair.basis]
 
 /-- The lattice spanned by a pair of periods. -/
-def PeriodPair.lattice : Submodule ℤ ℂ := Submodule.span ℤ {L.ω₁, L.ω₂}
+def lattice : Submodule ℤ ℂ := Submodule.span ℤ {L.ω₁, L.ω₂}
 
-lemma PeriodPair.mem_lattice {L : PeriodPair} {x : ℂ} :
+lemma mem_lattice {L : PeriodPair} {x : ℂ} :
     x ∈ L.lattice ↔ ∃ m n : ℤ, m * L.ω₁ + n * L.ω₂ = x := by
   simp only [lattice, Submodule.mem_span_pair, zsmul_eq_mul]
 
-lemma PeriodPair.ω₁_mem_lattice : L.ω₁ ∈ L.lattice := Submodule.subset_span (by simp)
-lemma PeriodPair.ω₂_mem_lattice : L.ω₂ ∈ L.lattice := Submodule.subset_span (by simp)
+lemma ω₁_mem_lattice : L.ω₁ ∈ L.lattice := Submodule.subset_span (by simp)
+lemma ω₂_mem_lattice : L.ω₂ ∈ L.lattice := Submodule.subset_span (by simp)
 
-lemma PeriodPair.ω₁_div_two_notMem_lattice : L.ω₁ / 2 ∉ L.lattice := by
-  intro h
-  obtain ⟨m, n, e⟩ := mem_lattice.mp h
-  rw [← sub_eq_zero] at e
-  have := (LinearIndependent.pair_iff.mp L.indep (m - 1/2) n (by convert e using 1; simp; ring)).1
-  rw [sub_eq_zero, eq_div_iff (by norm_num)] at this
-  norm_cast at this
-  exact Int.two_dvd_ne_zero (n := 1).mpr rfl ⟨m, by linarith⟩
+lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
+    α * L.ω₁ + β * L.ω₂ ∈ L.lattice ↔ α.den = 1 ∧ β.den = 1 := by
+  refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  · obtain ⟨m, n, e⟩ := mem_lattice.mp H
+    have := LinearIndependent.pair_iff.mp L.indep (m - α) (n - β)
+      (by simpa using by linear_combination e)
+    simp only [sub_eq_zero] at this
+    norm_cast at this
+    aesop
+  · lift α to ℤ using h₁
+    lift β to ℤ using h₂
+    simp only [Rat.cast_intCast, ← zsmul_eq_mul]
+    exact add_mem (Submodule.smul_mem _ _ L.ω₁_mem_lattice)
+      (Submodule.smul_mem _ _ L.ω₂_mem_lattice)
 
-lemma PeriodPair.ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
-  intro h
-  obtain ⟨m, n, e⟩ := mem_lattice.mp h
-  rw [← sub_eq_zero] at e
-  have := (LinearIndependent.pair_iff.mp L.indep m (n - 1/2) (by convert e using 1; simp; ring)).2
-  rw [sub_eq_zero, eq_div_iff (by norm_num)] at this
-  norm_cast at this
-  exact Int.two_dvd_ne_zero (n := 1).mpr rfl ⟨n, by linarith⟩
+lemma ω₁_div_two_notMem_lattice : L.ω₁ / 2 ∉ L.lattice := by
+  simpa [inv_mul_eq_div] using
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 1/2) (β := 0)).not.mpr (by norm_num)
+
+lemma ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
+  simpa [inv_mul_eq_div] using
+    (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1/2)).not.mpr (by norm_num)
 
 -- helper lemma to connect to the ZLattice API
-lemma PeriodPair.lattice_eq_span_range_basis :
+lemma lattice_eq_span_range_basis :
     L.lattice = Submodule.span ℤ (Set.range L.basis) := by
   have : Finset.univ (α := Fin 2) = {0, 1} := rfl
-  rw [PeriodPair.lattice, ← Set.image_univ, ← Finset.coe_univ, this]
+  rw [lattice, ← Set.image_univ, ← Finset.coe_univ, this]
   simp [Set.image_insert_eq]
 
 instance : DiscreteTopology L.lattice := L.lattice_eq_span_range_basis ▸ inferInstance
@@ -90,41 +97,39 @@ instance : IsZLattice ℝ L.lattice := by
   simp_rw [L.lattice_eq_span_range_basis]
   infer_instance
 
-lemma PeriodPair.isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
+lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
   @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
     (inferInstanceAs (DiscreteTopology L.lattice))
 
-lemma PeriodPair.isClosed_lattice_sdiff (s : Set ℂ) : IsClosed (L.lattice \ s) := by
-  convert L.isClosed_lattice.isClosedMap_subtype_val _ (isClosed_discrete ((↑) ⁻¹' sᶜ))
-  · convert Set.image_preimage_eq_inter_range.symm using 1; simp [Set.diff_eq_compl_inter]
-  · exact inferInstanceAs (DiscreteTopology L.lattice)
+lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
+  convert L.isClosed_lattice.isClosedMap_subtype_val _
+    (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
+  convert Set.image_preimage_eq_inter_range.symm using 1
+  simpa
 
-instance PeriodPair.properSpace_lattice : ProperSpace L.lattice :=
-  .of_isClosed L.isClosed_lattice
+instance : ProperSpace L.lattice := .of_isClosed L.isClosed_lattice
 
 /-- The `ℤ`-basis of the lattice determined by a pair of periods. -/
-def PeriodPair.latticeBasis : Basis (Fin 2) ℤ L.lattice :=
+def latticeBasis : Basis (Fin 2) ℤ L.lattice :=
   (Basis.span (v := ![L.ω₁, L.ω₂]) (L.indep.restrict_scalars' _)).map
     (.ofEq _ _ (by simp [lattice, Set.pair_comm L.ω₂ L.ω₁]))
 
-@[simp] lemma PeriodPair.latticeBasis_zero : L.latticeBasis 0 = L.ω₁ := by simp [latticeBasis]
-@[simp] lemma PeriodPair.latticeBasis_one : L.latticeBasis 1 = L.ω₂ := by simp [latticeBasis]
+@[simp] lemma latticeBasis_zero : L.latticeBasis 0 = L.ω₁ := by simp [latticeBasis]
+@[simp] lemma latticeBasis_one : L.latticeBasis 1 = L.ω₂ := by simp [latticeBasis]
 
-@[simp]
-lemma PeriodPair.finrank_lattice : Module.finrank ℤ L.lattice = 2 :=
-    Module.finrank_eq_card_basis L.latticeBasis
+@[simp] lemma finrank_lattice : finrank ℤ L.lattice = 2 := finrank_eq_card_basis L.latticeBasis
 
 /-- The equivalence from the lattice generated by a pair of periods to `ℤ × ℤ`. -/
-def PeriodPair.latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
+def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
   L.latticeBasis.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _ ≪≫ₗ .finTwoArrow ℤ ℤ
 
-lemma PeriodPair.latticeEquiv_symm_apply (x : ℤ × ℤ) :
+lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
   rfl
 
 open Topology Filter in
-lemma PeriodPair.hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
+lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
     (hf : ∀ r > 0, ∀ᶠ R in atTop, ∀ x, ‖x‖ < r → ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :
     HasSumLocallyUniformlyOn f (∑' j, f j ·) .univ := by
@@ -146,7 +151,7 @@ lemma PeriodPair.hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
   exact hR _ hs'.le _ hs _ rfl
 
 -- Only the asymptotics matter and `10` is just a convenient constant to pick.
-lemma PeriodPair.℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l : ℂ) (h : 2 * r ≤ ‖l‖) :
+lemma ℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l : ℂ) (h : 2 * r ≤ ‖l‖) :
     ‖1 / (s - l) ^ 2 - 1 / l ^ 2‖ ≤ 10 * r * ‖l‖ ^ (-3 : ℝ) := by
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
   have : 0 < ‖l‖ := by
@@ -181,10 +186,10 @@ lemma PeriodPair.℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (
 section ℘Except
 
 /-- The Weierstrass ℘ function with the `l₀`-term missing. -/
-def PeriodPair.℘Except (l₀ : ℂ) (z : ℂ) : ℂ :=
-  ∑' l : L.lattice, if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
+def ℘Except (l₀ : ℂ) (z : ℂ) : ℂ :=
+  ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-lemma PeriodPair.hasSumLocallyUniformlyOn_℘Except (l₀ : ℂ) :
+lemma hasSumLocallyUniformlyOn_℘Except (l₀ : ℂ) :
     HasSumLocallyUniformlyOn
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
       (L.℘Except l₀) .univ := by
@@ -194,25 +199,24 @@ lemma PeriodPair.hasSumLocallyUniformlyOn_℘Except (l₀ : ℂ) :
   rintro _ h s hs l rfl
   split_ifs
   · simp; positivity
-  · exact PeriodPair.℘_bound r hr s hs l h
+  · exact ℘_bound r hr s hs l h
 
-lemma PeriodPair.hasSum_℘Except (l₀ : ℂ) (z : ℂ) :
+lemma hasSum_℘Except (l₀ : ℂ) (z : ℂ) :
     HasSum (fun l : L.lattice ↦ if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
       (L.℘Except l₀ z) :=
   (L.hasSumLocallyUniformlyOn_℘Except l₀).hasSum (Set.mem_univ z)
 
 /- `℘Except l₀` is differentiable on non-lattice points and `l₀`. -/
-lemma PeriodPair.differentiableOn_℘Except (l₀ : ℂ) :
+lemma differentiableOn_℘Except (l₀ : ℂ) :
     DifferentiableOn ℂ (L.℘Except l₀) (L.lattice \ {l₀})ᶜ := by
   refine ((L.hasSumLocallyUniformlyOn_℘Except l₀).mono (Set.subset_univ _)).differentiableOn
-    (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) (L.isClosed_lattice_sdiff _).isOpen_compl
+    (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_)
+    (L.isClosed_of_subset_lattice Set.diff_subset).isOpen_compl
   split_ifs
   · simp
-  refine .sub (.div (by fun_prop) (by fun_prop) fun x hx ↦ ?_) (by fun_prop)
-  have : x ≠ i := by rintro rfl; simp_all
-  simpa [sub_eq_zero]
+  · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
 
-lemma PeriodPair.℘Except_neg (l₀ : ℂ) (z : ℂ) : L.℘Except l₀ (-z) = L.℘Except (-l₀) z := by
+lemma ℘Except_neg (l₀ : ℂ) (z : ℂ) : L.℘Except l₀ (-z) = L.℘Except (-l₀) z := by
   simp only [℘Except]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   congr! 3 with l
@@ -225,9 +229,9 @@ end ℘Except
 section ℘
 
 /-- The Weierstrass ℘ function. -/
-def PeriodPair.℘ (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
+def ℘ (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-lemma PeriodPair.℘Except_add (l₀ : L.lattice) (z : ℂ) :
+lemma ℘Except_add (l₀ : L.lattice) (z : ℂ) :
     L.℘Except l₀ z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = L.℘ z := by
   trans L.℘Except l₀ z +
     ∑' i : L.lattice, if i.1 = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
@@ -237,37 +241,37 @@ lemma PeriodPair.℘Except_add (l₀ : L.lattice) (z : ℂ) :
   · exact ⟨_, L.hasSum_℘Except _ _⟩
   · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
 
-lemma PeriodPair.℘Except_def (l₀ : L.lattice) (z : ℂ) :
+lemma ℘Except_def (l₀ : L.lattice) (z : ℂ) :
     L.℘Except l₀ z = L.℘ z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
   rw [← L.℘Except_add l₀]
   abel
 
-lemma PeriodPair.℘Except_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
+lemma ℘Except_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
     L.℘Except l₀ = L.℘ := by
   delta ℘Except ℘
   congr! 3 with z l
   have : l.1 ≠ l₀ := by rintro rfl; simp at hl
   simp [this]
 
-lemma PeriodPair.hasSumLocallyUniformlyOn_℘ :
+lemma hasSumLocallyUniformlyOn_℘ :
     HasSumLocallyUniformlyOn
       (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) L.℘ .univ := by
   convert L.hasSumLocallyUniformlyOn_℘Except (L.ω₁ / 2) using 3 with l
   · rw [if_neg]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.℘Except_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
-lemma PeriodPair.hasSum_℘ (z : ℂ) :
+lemma hasSum_℘ (z : ℂ) :
     HasSum (fun l : L.lattice ↦ (1 / (z - l) ^ 2 - 1 / l ^ 2)) (L.℘ z) :=
   L.hasSumLocallyUniformlyOn_℘.hasSum (Set.mem_univ z)
 
-lemma PeriodPair.differentiableOn_℘ :
+lemma differentiableOn_℘ :
     DifferentiableOn ℂ L.℘ L.latticeᶜ := by
   rw [← L.℘Except_of_notMem _ L.ω₁_div_two_notMem_lattice]
   convert L.differentiableOn_℘Except _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
-lemma PeriodPair.℘_neg (z : ℂ) : L.℘ (-z) = L.℘ z := by
+lemma ℘_neg (z : ℂ) : L.℘ (-z) = L.℘ z := by
   simp only [℘]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   congr with l
@@ -275,3 +279,5 @@ lemma PeriodPair.℘_neg (z : ℂ) : L.℘ (-z) = L.℘ z := by
   ring
 
 end ℘
+
+end PeriodPair
