@@ -3,8 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Objects that are local with respect to a property of morphisms
@@ -18,9 +21,13 @@ part of a Galois connection, with "dual" construction
 
 -/
 
-universe v u
+@[expose] public section
+
+universe v v' u u'
 
 namespace CategoryTheory
+
+open Limits
 
 variable {C : Type u} [Category.{v} C]
 
@@ -46,6 +53,18 @@ instance : W.isLocal.IsClosedUnderIsomorphisms where
     rw [← Function.Bijective.of_comp_iff _ (Iso.homToEquiv e).bijective]
     convert (Iso.homToEquiv e).bijective.comp (hZ f hf) using 1
     aesop
+
+instance (J : Type u') [Category.{v'} J] :
+    W.isLocal.IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    refine ⟨fun g₁ g₂ h ↦ p.isLimit.hom_ext
+      (fun j ↦ (p.prop_diag_obj j f hf).1 (by simp [reassoc_of% h])), fun g ↦ ?_⟩
+    choose app h using fun j ↦ (p.prop_diag_obj j f hf).2 (g ≫ p.π.app j)
+    exact ⟨p.isLimit.lift (Cone.mk _
+      { app := app
+        naturality _ _ a := (p.prop_diag_obj _ f hf).1
+          (by simp [reassoc_of% h, h, p.w a]) }),
+      p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
 end MorphismProperty
 

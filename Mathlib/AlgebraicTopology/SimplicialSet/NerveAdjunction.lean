@@ -3,11 +3,13 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
-import Mathlib.CategoryTheory.Limits.Presheaf
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
+public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.Presheaf
 /-!
 
 # The adjunction between the nerve and the homotopy category functor.
@@ -31,6 +33,8 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -575,7 +579,7 @@ instance preservesBinaryProduct (X Y : SSet) :
 `Discrete Limits.WalkingPair`. -/
 instance preservesBinaryProducts :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
-  preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
+  preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (diagramIsoPair F).symm
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
@@ -584,6 +588,21 @@ instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 noncomputable instance Monoidal : Monoidal hoFunctor :=
   Monoidal.ofChosenFiniteProducts hoFunctor
+
+open MonoidalCategory
+
+/-- An equivalence between the vertices of a simplicial set `X` and the
+objects of `hoFunctor.obj X`. -/
+def unitHomEquiv (X : SSet.{u}) :
+    (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
+  (SSet.unitHomEquiv X).trans <|
+    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+
+theorem unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
+    hoFunctor.unitHomEquiv X x = LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x := by
+  simp [unitHomEquiv]
+  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
+  rfl
 
 end hoFunctor
 

@@ -3,11 +3,13 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Category of types with an omega complete partial order
@@ -23,6 +25,8 @@ an `OmegaCompletePartialOrder`.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -31,6 +35,8 @@ universe u v
 
 /-- The category of types with an omega complete partial order. -/
 structure ωCPO : Type (u + 1) where
+  /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [str : OmegaCompletePartialOrder carrier]
@@ -43,10 +49,6 @@ open OmegaCompletePartialOrder
 
 instance : CoeSort ωCPO Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled ωCPO from the underlying type and typeclass. -/
-abbrev of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO where
-  carrier := α
 
 theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl

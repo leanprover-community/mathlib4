@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 
 /-! # Functors that are linear with respect to an action
 
@@ -26,6 +28,8 @@ express compatibility of `F` with the action of `C`:
   `δᵣ F` is a left and right inverse to `μᵣ`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Functor
 

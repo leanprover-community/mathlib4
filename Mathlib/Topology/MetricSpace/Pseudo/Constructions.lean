@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 This file constructs the supremum distance on binary products of pseudometric spaces and provides
 instances for type synonyms.
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set Topology
 open scoped NNReal
@@ -107,10 +111,10 @@ lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
 
 lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
-  by_cases c_pos : 0 < c
+  by_cases! c_pos : 0 < c
   · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
     simp [Real.toNNReal, c_pos.le]
-  simp [not_lt.mp c_pos]
+  simp [c_pos]
 
 lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
     Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp

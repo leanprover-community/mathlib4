@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.GroupTheory.Subgroup.Simple
 
 /-! # Iwasawa criterion for simplicity
 
@@ -14,7 +15,7 @@ import Mathlib.GroupTheory.Subgroup.Simple
 For a group `G`, this consists of an action of `G` on a type `α` and,
 for every `a : α`, of a subgroup `T a`, such that the following properties hold:
   - for all `a`, `T a` is commutative
-  - for all `g : G` and `a : α`, `T (g • a) = MulAut.conj g • T a
+  - for all `g : G` and `a : α`, `T (g • a) = MulAut.conj g • T a`
   - the subgroups `T a` generate `G`
 
 We then prove two versions of the Iwasawa criterion when
@@ -33,6 +34,8 @@ and `G` is nontrivial and perfect, then `G` is simple.
 Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
+
+@[expose] public section
 
 namespace MulAction
 

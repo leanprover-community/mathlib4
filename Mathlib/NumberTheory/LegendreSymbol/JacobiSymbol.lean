@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, Thomas Zhu, Mario Carneiro
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 /-!
 # The Jacobi Symbol
@@ -57,6 +59,8 @@ We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheor
 ## Tags
 Jacobi symbol, quadratic reciprocity
 -/
+
+@[expose] public section
 
 
 section Jacobi
@@ -463,7 +467,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
     · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
       simp only [ha₂, Nat.cast_mul, ← mul_assoc]
       apply dvd_mul_left
-  rcases e with - | e; · rfl
+  rcases e with - | e; · simp
   · rw [χ₈_nat_mod_eight, χ₈_nat_mod_eight (b % (4 * a)), mod_mod_of_dvd b]
     use 2 ^ e * a'; rw [ha₂, Nat.pow_succ]; ring
 
