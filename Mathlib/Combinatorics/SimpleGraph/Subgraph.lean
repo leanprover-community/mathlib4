@@ -823,7 +823,6 @@ alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
 
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
-  apply not_subsingleton_iff_nontrivial.mp
   by_contra
   simp_all [G'.degree_eq_zero_of_subsingleton v]
 

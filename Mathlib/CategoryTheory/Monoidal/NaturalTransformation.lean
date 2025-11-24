@@ -219,7 +219,7 @@ a monoidal natural transformation.
 lemma natTransIsMonoidal_of_transport {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
-  letI G.Monoidal := transport e
+  letI : G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
   simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 

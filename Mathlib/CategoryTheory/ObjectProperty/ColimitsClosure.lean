@@ -17,7 +17,7 @@ family of categories `J : α → Type _`, we introduce the closure
 and under certain smallness assumptions, we show that it is essentially small.
 
 (We deduce these results about the closure under colimits by dualising the
-results in the file `ObjectProperty.LimitsClosure`.)
+results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
 

@@ -87,8 +87,9 @@ lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.strictLimitsClosureStep J ≤ Q.strictLimitsClosureStep J := by
   dsimp [strictLimitsClosureStep]
   simp only [sup_le_iff, iSup_le_iff]
-  exact ⟨h.trans le_sup_left, fun a ↦ (strictLimitsOfShape_monotone (J a) h).trans
-    (le_trans (by rfl) ((le_iSup _ a).trans le_sup_right))⟩
+  exact ⟨h.trans le_sup_left, fun a ↦
+    (strictLimitsOfShape_monotone (J a) h).trans <|
+      le_iSup (fun a ↦ Q.strictLimitsOfShape (J a)) a |>.trans le_sup_right⟩
 
 section
 

@@ -219,8 +219,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
     refine hr.le.trans ?_
-    norm_num
-    exact Nat.one_le_iff_ne_zero.mpr hd
+    simpa [Nat.one_le_iff_ne_zero]
 
 /--
 Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that `d < r`.
