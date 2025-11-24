@@ -319,6 +319,20 @@ lemma iIndepSet_precomp_of_bijective (hg : Function.Bijective g) :
     iIndepSet (s ∘ g) μ ↔ iIndepSet s μ :=
   Kernel.iIndepSet_precomp_of_bijective hg
 
+variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
+
+lemma iIndepFun.precomp (hg : g.Injective) (h : iIndepFun f μ) :
+    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ :=
+  Kernel.iIndepFun.precomp hg h
+
+lemma iIndepFun.of_precomp (hg : g.Surjective)
+    (h : iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ) : iIndepFun f μ :=
+  Kernel.iIndepFun.of_precomp hg h
+
+lemma iIndepFun_precomp_of_bijective (hg : g.Bijective) :
+    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun f μ :=
+  Kernel.iIndepFun_precomp_of_bijective hg
+
 end Definition_lemmas
 
 section Indep
@@ -854,12 +868,6 @@ lemma iIndepFun.indepFun_prodMk_prodMk₀ (h_indep : iIndepFun f μ) (hf : ∀ i
     IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ :=
   Kernel.iIndepFun.indepFun_prodMk_prodMk₀ h_indep (by simp [hf]) i j k l hik hil hjk hjl
 
-variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
-
-lemma iIndepFun.precomp {g : ι' → ι} (hg : g.Injective) (h : iIndepFun f μ) :
-    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ :=
-  Kernel.iIndepFun.precomp hg h
-
 lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.restrict f) μ where
   mp h s := h.precomp (g := ((↑) : s → ι)) Subtype.val_injective
   mpr h := by
@@ -868,14 +876,6 @@ lemma iIndepFun_iff_finset : iIndepFun f μ ↔ ∀ s : Finset ι, iIndepFun (s.
     have : ⋂ i ∈ s, f i = ⋂ i : s, f i := by ext; simp
     rw [← Finset.prod_coe_sort, this]
     exact (h s).meas_iInter fun i ↦ hs i i.2
-
-lemma iIndepFun.of_precomp {g : ι' → ι} (hg : g.Surjective)
-    (h : iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ) : iIndepFun f μ :=
-  Kernel.iIndepFun.of_precomp hg h
-
-lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
-    iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun f μ :=
-  Kernel.iIndepFun_precomp_of_bijective hg
 
 end iIndepFun
 
