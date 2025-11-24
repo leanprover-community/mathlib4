@@ -71,7 +71,7 @@ theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht
 theorem cofinite_eq_bot_iff : μ.cofinite = ⊥ ↔ IsFiniteMeasure μ := by
   simp [← empty_mem_iff_bot, μ.mem_cofinite, isFiniteMeasure_iff]
 
-@[nontriviality] -- TODO: should it be `@[simp]`?
+@[nontriviality, simp]
 theorem cofinite_eq_bot [IsFiniteMeasure μ] : μ.cofinite = ⊥ := cofinite_eq_bot_iff.2 ‹_›
 
 /-- The measure of the whole space with respect to a finite measure, considered as `ℝ≥0`. -/
