@@ -622,7 +622,7 @@ theorem contMDiffWithinAt_iff_le_ne_infty :
   | coe n =>
     exact contMDiffWithinAt_iff_nat.2 (fun m hm ↦ h _ (mod_cast hm) (by simp))
 
-/-- A function is `C^n`at a point iff it is `C^m`at this point, for
+/-- A function is `C^n` at a point iff it is `C^m` at this point, for
 any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
 theorem contMDiffAt_iff_le_ne_infty :
