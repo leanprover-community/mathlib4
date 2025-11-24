@@ -3,7 +3,9 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Strict
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
 /-!
 # Cartesian products of bicategories
@@ -18,6 +20,8 @@ We define:
 * `swap`      : the strict pseudofunctor `B × C ⥤ C × B` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Bicategory
 
