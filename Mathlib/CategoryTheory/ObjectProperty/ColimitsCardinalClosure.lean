@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
