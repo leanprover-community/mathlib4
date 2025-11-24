@@ -1346,7 +1346,7 @@ attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPo
   PosMulStrictMono.toMulPosStrictMono PosMulReflectLT.toMulPosReflectLT
 
 /-- See `le_inv_mul_iff₀` for a version with multiplication on the other side. -/
-lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b := by
+lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ a * c ≤ b := by
   rw [le_inv_mul_iff₀ hc, mul_comm]
 
 /-- See `inv_mul_le_iff₀` for a version with multiplication on the other side. -/
