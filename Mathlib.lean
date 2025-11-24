@@ -5764,6 +5764,7 @@ public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
 public import Mathlib.RingTheory.Generators
+public import Mathlib.RingTheory.Gorenstein.Basic
 public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
