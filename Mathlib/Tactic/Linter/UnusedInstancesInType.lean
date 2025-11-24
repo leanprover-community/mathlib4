@@ -189,12 +189,14 @@ This linter fires only on theorems. (This includes `lemma`s and `instance`s of `
 Note: `set_option linter.unusedDecidableInType _ in <command>` currently only works at the
 outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
 -/
-public register_option linter.unusedDecidableInType : Bool := {
+register_option linter.unusedDecidableInType : Bool := {
   defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
     replaced by a use of `classical` in the proof."
 }
+
+#check withSetOptionIn
 
 /-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
@@ -203,11 +205,13 @@ def unusedDecidableInType : Linter where
   run := /- withSetOptionIn -/ fun cmd => do
     /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
     until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313) -/
-    if let `(command| set_option $opt:ident false in $_:command) := cmd then
+    let mut override := false
+    if let `(command| set_option $opt:ident $val in $_:command) := cmd then
       if opt.getId == `linter.unusedDecidableInType then
-        return
-    let override := if let `(command| set_option $opt:ident true in $_:command) := cmd then
-       opt.getId == `linter.unusedDecidableInType else false
+        match val.raw with
+        | Syntax.atom _ "true" => override := true
+        | Syntax.atom _ "false" => return -- exit early
+        | _ => pure () -- invalid option value, should be caught during elaboration
     unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
