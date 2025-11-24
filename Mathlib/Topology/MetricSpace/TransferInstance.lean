@@ -23,14 +23,14 @@ namespace Equiv
 variable (e : α ≃ β)
 
 /-- Transfer a `Dist` across an `Equiv` -/
-protected abbrev dist (e : α ≃ β) : ∀ [Dist β], Dist α := ⟨fun x y ↦ dist (e x) (e y)⟩
+protected abbrev dist (e : α ≃ β) [Dist β] : Dist α := ⟨fun x y ↦ dist (e x) (e y)⟩
 
 /-- Transfer a `PseudoMetricSpace` across an `Equiv` -/
-protected abbrev pseudometricSpace (e : α ≃ β) : ∀ [PseudoMetricSpace β], PseudoMetricSpace α :=
+protected abbrev pseudometricSpace [PseudoMetricSpace β] (e : α ≃ β) : PseudoMetricSpace α :=
   .induced e ‹_›
 
 /-- Transfer a `MetricSpace` across an `Equiv` -/
-protected abbrev metricSpace (e : α ≃ β) : ∀ [MetricSpace β], MetricSpace α :=
+protected abbrev metricSpace [MetricSpace β] (e : α ≃ β) : MetricSpace α :=
   .induced e e.injective ‹_›
 
 end Equiv

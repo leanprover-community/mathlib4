@@ -26,15 +26,13 @@ variable (e : α ≃ β)
 
 variable (R) in
 /-- Transfer `Module` across an `Equiv` -/
-protected abbrev module (e : α ≃ β) [AddCommMonoid β] :
-    let _ := Equiv.addCommMonoid e
-    ∀ [Module R β], Module R α := by
-  intros
-  exact
-    ({ Equiv.distribMulAction R e with
-        zero_smul := by simp [smul_def, zero_smul, zero_def]
-        add_smul := by simp [add_def, smul_def, add_smul] } :
-      Module R α)
+protected abbrev module (e : α ≃ β) [AddCommMonoid β] [Module R β] :
+    letI := Equiv.addCommMonoid e
+    Module R α :=
+  letI := Equiv.addCommMonoid e
+  { Equiv.distribMulAction R e with
+      zero_smul := by simp [smul_def, zero_smul, zero_def]
+      add_smul := by simp [add_def, smul_def, add_smul] }
 
 variable (R) in
 /-- An equivalence `e : α ≃ β` gives a linear equivalence `α ≃ₗ[R] β`
