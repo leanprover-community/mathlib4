@@ -44,6 +44,10 @@ variable (i : K →+* L)
 @[deprecated (since := "2025-11-24")]
 alias splits_zero := Splits.zero
 
+@[deprecated "Use `Splits.C` instead." (since := "2025-11-24")]
+theorem splits_of_map_eq_C {f : K[X]} {a : L} (h : f.map i = C a) : Splits (f.map i) :=
+  h ▸ Splits.C a
+
 @[deprecated (since := "2025-11-24")]
 alias splits_C := Splits.C
 
@@ -71,6 +75,11 @@ theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Spli
   simp only [Splits, Polynomial.map_mul, mul_ne_zero_iff] at hfg h
   exact (splits_mul_iff hfg.1 hfg.2).mp h
 
+@[deprecated "Use `Polynomial.map_map` instead." (since := "2025-11-24")]
+theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
+    Splits ((f.map i).map j) ↔ Splits (f.map (j.comp i)) := by
+  rw [Polynomial.map_map]
+
 @[deprecated (since := "2025-11-24")]
 alias splits_one := Splits.one
 
@@ -91,6 +100,11 @@ alias splits_pow := Splits.pow
 
 @[deprecated (since := "2025-11-24")]
 alias splits_X_pow := Splits.X_pow
+
+@[deprecated "Use `Polynomial.map_id` instead." (since := "2025-11-24")]
+theorem splits_id_iff_splits {f : K[X]} :
+    ((f.map i).map (RingHom.id L)).Splits ↔ (f.map i).Splits := by
+  rw [map_id]
 
 variable {i}
 
