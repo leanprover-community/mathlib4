@@ -77,12 +77,11 @@ instance : Inhabited (AdjoinRoot f) :=
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
 
-protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
-  Ideal.Quotient.nontrivial
-    (by
-      simp_rw [Ne, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
-      rintro x hx rfl
-      exact h (degree_C hx.ne_zero))
+protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) := by
+  simp only [AdjoinRoot, Quotient.nontrivial_iff, Ne, span_singleton_eq_top,
+    Polynomial.isUnit_iff, not_exists, not_and]
+  rintro x hx rfl
+  exact h (degree_C hx.ne_zero)
 
 /-- Ring homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mk : R[X] →+* AdjoinRoot f :=

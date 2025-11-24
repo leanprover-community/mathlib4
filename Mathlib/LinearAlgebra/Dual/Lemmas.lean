@@ -630,7 +630,7 @@ lemma dualAnnihilator_eq_bot_iff' {W : Submodule R M} :
 
 @[simp] lemma dualAnnihilator_eq_bot_iff {W : Submodule R M} [Projective R (M ⧸ W)] :
     W.dualAnnihilator = ⊥ ↔ W = ⊤ := by
-  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, subsingleton_quotient_iff_eq_top]
+  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, Quotient.subsingleton_iff]
 
 @[simp] lemma dualAnnihilator_eq_top_iff {W : Submodule R M} [Projective R M] :
     W.dualAnnihilator = ⊤ ↔ W = ⊥ := by
