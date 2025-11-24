@@ -418,27 +418,26 @@ theorem comap_comap (P : RingPreordering C) (g : B →+* C) (f : A →+* B) :
 instance (P : RingPreordering B) [HasMemOrNegMem P] (f : A →+* B) : HasMemOrNegMem (comap f P) where
   mem_or_neg_mem x := by have := mem_or_neg_mem P (f x); aesop
 
-@[simp]
 theorem mem_comap_supportAddSubgroup {P : RingPreordering B} {f : A →+* B} {x : A} :
     x ∈ supportAddSubgroup (P.comap f) ↔ f x ∈ P.supportAddSubgroup := by
   simp [mem_supportAddSubgroup]
 
 @[simp]
 theorem comap_supportAddSubgroup {P : RingPreordering B} {f : A →+* B} :
-    supportAddSubgroup (P.comap f) = (P.supportAddSubgroup).comap f := by ext; simp
+    supportAddSubgroup (P.comap f) = (P.supportAddSubgroup).comap f := by
+  ext; simp [mem_comap_supportAddSubgroup]
 
 instance (P : RingPreordering B) [P.HasIdealSupport] (f : A →+* B) :
     HasIdealSupport (P.comap f) where
   smul_mem_support x a ha := by have := smul_mem_support P (f x) (by simpa using ha); simp_all
 
-@[simp]
 theorem mem_comap_support {P : RingPreordering B} [P.HasIdealSupport] {f : A →+* B} {x : A} :
     x ∈ (P.comap f).support ↔ f x ∈ P.support := by
   simpa using mem_comap_supportAddSubgroup (P := P)
 
 @[simp]
 theorem comap_support {P : RingPreordering B} [P.HasIdealSupport] {f : A →+* B} :
-    (P.comap f).support = (P.support).comap f := by ext; simp
+    (P.comap f).support = (P.support).comap f := by ext; simp [mem_comap_support]
 
 /-- The preimage of an ordering along a ring homomorphism is an ordering. -/
 instance (P : RingPreordering B) [P.IsOrdering] (f : A →+* B) : IsOrdering (comap f P) where
@@ -475,7 +474,6 @@ instance {f : A →+* B} {P : RingPreordering A} [HasMemOrNegMem P] (hf : Functi
     have := mem_or_neg_mem P x'
     aesop
 
-@[simp]
 theorem mem_map_supportAddSubgroup {f : A →+* B} {P : RingPreordering A}
     {hf : Function.Surjective f} {hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup} {x : B} :
     x ∈ supportAddSubgroup (map hf hsupp) ↔ ∃ y ∈ P.supportAddSubgroup, f y = x := by
@@ -486,7 +484,8 @@ theorem mem_map_supportAddSubgroup {f : A →+* B} {P : RingPreordering A}
 @[simp]
 theorem map_supportAddSubgroup {f : A →+* B} {P : RingPreordering A} {hf : Function.Surjective f}
     {hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup} :
-    supportAddSubgroup (map hf hsupp) = (P.supportAddSubgroup).map f := by ext; simp
+    supportAddSubgroup (map hf hsupp) = (P.supportAddSubgroup).map f := by
+  ext; simp [mem_map_supportAddSubgroup]
 
 instance {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport] (hf : Function.Surjective f)
     (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup) :
@@ -498,7 +497,6 @@ instance {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport] (hf : Funct
     have := smul_mem_support P x' ha'
     aesop
 
-@[simp]
 theorem mem_map_support {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport]
     {hf : Function.Surjective f}
     {hsupp : RingHom.ker f ≤ P.support} {x : B} :
@@ -509,7 +507,7 @@ theorem mem_map_support {f : A →+* B} {P : RingPreordering A} [P.HasIdealSuppo
 theorem map_support {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport]
     {hf : Function.Surjective f} {hsupp : RingHom.ker f ≤ P.support} :
     (map hf hsupp).support = (P.support).map f := by
-  ext; simp [Ideal.mem_map_iff_of_surjective f hf]
+  ext; simp [mem_map_support, Ideal.mem_map_iff_of_surjective f hf]
 
 /-- The image of an ordering `P` along a surjective ring homomorphism
   with kernel contained in the support of `P` is an ordering. -/
