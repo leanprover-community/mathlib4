@@ -84,8 +84,6 @@ public theorem ContinuousLinearMap.singularValue_eq_zero_of_le
   have := zero_le (T.singularValue m)
   order
 
-public theorem ContinuousLinearMap.support_singularValue
-  : T.singularValue.support = {n : ℕ | n < T.rank} := sorry
 
 public theorem ContinuousLinearMap.support_singularValue_of_eq {m : ℕ} (h : T.rank = m)
   : T.singularValue.support = Set.Iio m := sorry
@@ -237,6 +235,14 @@ public theorem ContinuousLinearMap.isCompactOperator_of_iInf_singularValue_eq_ze
   · apply Filter.Eventually.of_forall
     intro n
     sorry
+
+
+public theorem ContinuousLinearMap.exists_norm_eq_singularValue (n : ℕ) {ε : ℝ≥0} (hε : 0 < ε)
+  : ∃ R : X →L[𝕜] Y, R.rank ≤ ↑n ∧ ‖T - R‖₊ = T.singularValue n := by
+  sorry
+
+public theorem ContinuousLinearMap.support_singularValue
+  : T.singularValue.support = {n : ℕ | n < T.rank} := sorry
 
 end banach_space
 
