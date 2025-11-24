@@ -152,7 +152,7 @@ def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
       thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
-        -- TODO: restore in order to log on type signature
+        -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
         -- t.withDeclSigRef cmd thm.name do
         log t thm unusedParams
 
