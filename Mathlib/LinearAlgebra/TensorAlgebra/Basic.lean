@@ -221,6 +221,14 @@ theorem range_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
 def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=
   lift R (0 : M →ₗ[R] R)
 
+@[simp]
+lemma algebraMapInv_ι_apply (m : M) : algebraMapInv (ι R m) = 0 := by
+  simp [algebraMapInv]
+
+@[simp]
+lemma algebraMapInv_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ ι R = (0 : M →ₗ[R] R) :=
+  LinearMap.ext <| algebraMapInv_ι_apply
+
 variable (M)
 
 theorem algebraMap_leftInverse :
