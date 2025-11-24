@@ -78,7 +78,7 @@ instance : CompleteLattice (IntermediateField F E) where
 
 section
 
-variable (K₁ K₂ : IntermediateField F E)
+variable (K₁ K₂ : IntermediateField F E) {ι : Type*} (K : ι → IntermediateField F E) (i : ι)
 
 instance : Algebra ↥(K₁ ⊓ K₂) K₁ :=
   inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
@@ -101,6 +101,14 @@ instance : Algebra K₂ ↥(K₁ ⊔ K₂) := RingHom.toAlgebra (inclusion le_su
 instance : IsScalarTower K₁ ↑(K₁ ⊔ K₂) E := IsScalarTower.of_algebraMap_eq' rfl
 
 instance : IsScalarTower K₂ ↑(K₁ ⊔ K₂) E := IsScalarTower.of_algebraMap_eq' rfl
+
+instance : Algebra (K i) ↑(⨆ i, K i) := RingHom.toAlgebra (inclusion (le_iSup _ i)).toRingHom
+
+instance : IsScalarTower (K i) ↑(⨆ i, K i) E := IsScalarTower.of_algebraMap_eq' rfl
+
+instance : Algebra ↑(⨅ i, K i) (K i) := RingHom.toAlgebra (inclusion (iInf_le _ i)).toRingHom
+
+instance : IsScalarTower ↑(⨅ i, K i) (K i) E := IsScalarTower.of_algebraMap_eq' rfl
 
 end
 
