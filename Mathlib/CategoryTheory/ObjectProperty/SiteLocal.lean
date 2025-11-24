@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 # Locality conditions on object properties
 
 In this file we define locality conditions on object properties in a category. Let `K` be a
-precoverage in a category `C` and `P` be a morphism property on `C` that respects isomorphisms.
+precoverage in a category `C` and `P` be an object property that is closed under isomorphisms.
 
 We say that
 
