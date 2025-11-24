@@ -22,14 +22,14 @@ aperiodic order, and tiling theory.
 
 ## Main definitions
 
-* `Delone.UniformlyDiscrete (D : Set X)`
-  There is a positive packing radius separating distinct points of `D`.
+* `UniformlyDiscrete (D : Set X)`
+  Positive packing radius separating distinct points of `D`.
 
-* `Delone.RelativelyDense (D : Set X)`
-  There is a positive covering radius so that `R`-balls around `D` cover `X`.
+* `RelativelyDense (D : Set X)`
+  Positive covering radius so that `R`-balls around `D` cover `X`.
 
 * `DeloneSet X`
-  A structure bundling a nonempty uniformly discrete and relatively dense set.
+  A structure bundling a uniformly discrete and relatively dense set.
 
 ## Main results
 
@@ -37,49 +37,49 @@ aperiodic order, and tiling theory.
 * `DeloneSet.exists_covering_radius`
 * `DeloneSet.exists_packing_radius`
 * `DeloneSet.dist_pos_of_ne`
-* `DeloneSet.map` (image of a Delone set under an isometry is Delone)
+* `DeloneSet.map`
 -/
 
 @[expose] public section
 
 open Metric
 
-namespace Delone
+namespace Metric
 
 /-- A set `D` in a metric space is *uniformly discrete* if there exists `r > 0`
 such that distinct points of `D` are at least distance `r` apart. -/
 def UniformlyDiscrete {X : Type*} [MetricSpace X] (D : Set X) : Prop :=
-  ∃ r > 0, ∀ ⦃x y⦄, x ∈ D → y ∈ D → x ≠ y → dist x y ≥ r
+  ∃ r > 0, ∀ ⦃x y⦄, x ∈ D → y ∈ D → x ≠ y → r ≤ dist x y
 
 /-- A set `D` in a metric space is *relatively dense* if there exists `R > 0`
 such that every point of the space is within distance `R` of some point in `D`. -/
 def RelativelyDense {X : Type*} [MetricSpace X] (D : Set X) : Prop :=
   ∃ R > 0, ∀ x : X, ∃ y ∈ D, dist x y ≤ R
 
-/-- The image of a uniformly discrete set under a subset relation is uniformly discrete. -/
+/-- If `D ⊆ E` and `E` is uniformly discrete, then so is `D`. -/
 lemma uniformlyDiscrete_mono {X} [MetricSpace X] {D E : Set X} (hDE : D ⊆ E) :
     UniformlyDiscrete E → UniformlyDiscrete D := by
   rintro ⟨r, hr, hsep⟩
-  refine ⟨r, hr, ?_⟩
-  intro x y hx hy hne
+  refine ⟨r, hr, fun x y hx hy hne ↦ ?_⟩
   exact hsep (hDE hx) (hDE hy) hne
 
-/-- The image of a relatively dense set under a subset relation is relatively dense. -/
+/-- If `D ⊆ E` and `D` is relatively dense, then so is `E`. -/
 lemma relativelyDense_mono {X} [MetricSpace X] {D E : Set X} (hDE : D ⊆ E) :
     RelativelyDense D → RelativelyDense E := by
   rintro ⟨R, hR, hcov⟩
-  refine ⟨R, hR, ?_⟩
-  intro x
+  refine ⟨R, hR, fun x ↦ ?_⟩
   rcases hcov x with ⟨y, hyD, hxy⟩
   exact ⟨y, hDE hyD, hxy⟩
 
-end Delone
+end Metric
+
+namespace Delone
 
 /-- A **Delone set** in a metric space: uniformly discrete and relatively dense. -/
 structure DeloneSet (X : Type*) [MetricSpace X] where
-  carrier : Set X
-  uniformlyDiscrete : Delone.UniformlyDiscrete carrier
-  relativelyDense : Delone.RelativelyDense carrier
+  (carrier : Set X)
+  (uniformlyDiscrete : UniformlyDiscrete carrier)
+  (relativelyDense : RelativelyDense carrier)
 
 attribute [simp] DeloneSet.carrier
 
@@ -88,9 +88,8 @@ namespace DeloneSet
 variable {X : Type*} [MetricSpace X]
 
 /-- A Delone set is nonempty. -/
-lemma nonempty {X : Type*} [MetricSpace X] [Inhabited X] (D : DeloneSet X) :
-    D.carrier.Nonempty := by
-  rcases D.relativelyDense with ⟨R, hR, hcov⟩
+lemma nonempty [Inhabited X] (D : DeloneSet X) : D.carrier.Nonempty := by
+  obtain ⟨R, hR, hcov⟩ := D.relativelyDense
   rcases hcov (default : X) with ⟨y, hyD, _⟩
   exact ⟨y, hyD⟩
 
@@ -104,30 +103,19 @@ lemma exists_packing_radius (D : DeloneSet X) :
     ∃ r > 0, ∀ ⦃x y⦄, x ∈ D.carrier → y ∈ D.carrier → x ≠ y → dist x y ≥ r :=
   D.uniformlyDiscrete
 
-/-- If two points of a Delone set are distinct, they are at positive distance. -/
+/-- Distinct points in a Delone set are at positive distance. -/
 lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
-    (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) : 0 < dist x y := by
-  rcases D.exists_packing_radius with ⟨r, hr, hsep⟩
-  have hxy := hsep hx hy hne
-  exact lt_of_lt_of_le hr hxy
+    (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
+    0 < dist x y := by
+  obtain ⟨r, hr, hsep⟩ := D.exists_packing_radius
+  exact lt_of_lt_of_le hr <| hsep hx hy hne
 
-/-- Every point of the space is within the covering radius of some point of a Delone set. -/
-lemma exists_close_point (D : DeloneSet X) :
-    ∃ R > 0, ∀ x : X, ∃ y ∈ D.carrier, dist x y ≤ R :=
-D.exists_covering_radius
-
-/-- A small ball contains at most one point of a Delone set. -/
+/-- At most one point of a Delone set lies in a sufficiently small ball. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
-    ∃ r > 0, ∀ x y z,
-      x ∈ D.carrier →
-      y ∈ D.carrier →
-      z ∈ D.carrier →
-      dist x z < r / 2 →
-      dist z y < r / 2 →
-      x = y := by
-  rcases D.exists_packing_radius with ⟨ρ, hρ, hsep⟩
-  refine ⟨ρ, hρ, ?_⟩
-  intro x y z hx hy hz hxz hyz
+    ∃ r > 0, ∀ x y z, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
+      dist x z < r / 2 → dist z y < r / 2 → x = y := by
+  obtain ⟨ρ, hρ, hsep⟩ := D.exists_packing_radius
+  refine ⟨ρ, hρ, fun x y z hx hy hz hxz hyz ↦ ?_⟩
   have hxy_lt : dist x y < ρ := by
     have := calc
       dist x y ≤ dist x z + dist z y := dist_triangle _ _ _
@@ -135,26 +123,20 @@ lemma subset_ball_singleton (D : DeloneSet X) :
       _ = ρ := by ring
     simpa using this
   by_contra hne
-  have hge := hsep hx hy hne
-  exact lt_irrefl _ (lt_of_lt_of_le hxy_lt hge)
+  exact lt_irrefl _ (lt_of_lt_of_le hxy_lt <| hsep hx hy hne)
 
 /-- The image of a Delone set under an isometry is a Delone set. -/
 def map {Y : Type*} [MetricSpace Y] (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
   carrier := f '' D.carrier
   uniformlyDiscrete := by
-    rcases D.uniformlyDiscrete with ⟨r, hr, hsep⟩
+    obtain ⟨r, hr, hsep⟩ := D.uniformlyDiscrete
     refine ⟨r, hr, ?_⟩
-    intro y y' hy hy' hne
-    rcases hy with ⟨x, hx, rfl⟩
-    rcases hy' with ⟨x', hx', rfl⟩
-    have hxne : x ≠ x' := by grind
-    have := hsep hx hx' hxne
-    simpa using f.dist_eq x x' ▸ this
+    rintro y y' ⟨x, hx, rfl⟩ ⟨x', hx', rfl⟩ hne
+    simpa using f.dist_eq x x' ▸ (hsep hx hx' (by grind))
   relativelyDense := by
-    rcases D.relativelyDense with ⟨R, hR, hcov⟩
-    refine ⟨R, hR, ?_⟩
-    intro y
-    rcases hcov (f.symm y) with ⟨x, hxD, hxR⟩
+    obtain ⟨R, hR, hcov⟩ := D.relativelyDense
+    refine ⟨R, hR, fun y ↦ ?_⟩
+    obtain ⟨x, hxD, hxR⟩ := hcov (f.symm y)
     refine ⟨f x, ⟨x, hxD, rfl⟩, ?_⟩
     have hdist : dist y (f x) = dist (f.symm y) x := by
       simpa [f.apply_symm_apply y] using
@@ -168,39 +150,27 @@ def map {Y : Type*} [MetricSpace Y] (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneS
 
 lemma map_id (D : DeloneSet X) :
     D.map (IsometryEquiv.refl X) = D := by
-  ext x
-  constructor
-  · intro hx
-    rcases hx with ⟨y, hyD, rfl⟩
-    exact hyD
-  · intro hx
-    exact ⟨x, hx, rfl⟩
+  ext x; constructor
+  · rintro ⟨y, hyD, rfl⟩; exact hyD
+  · intro hx; exact ⟨x, hx, rfl⟩
 
 lemma map_comp
     {X Y Z : Type*} [MetricSpace X] [MetricSpace Y] [MetricSpace Z]
     (D : DeloneSet X)
     (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
     D.map (f.trans g) = (D.map f).map g := by
-  ext z
-  constructor
-  · intro hz
-    rcases hz with ⟨x, hxD, rfl⟩
-    exact ⟨f x, ⟨x, hxD, rfl⟩, by simp⟩
-  · intro hz
-    rcases hz with ⟨y, hyf, rfl⟩
-    rcases hyf with ⟨x, hxD, rfl⟩
-    exact ⟨x, hxD, by simp⟩
+  ext z; constructor
+  · rintro ⟨x, hxD, rfl⟩; exact ⟨f x, ⟨x, hxD, rfl⟩, rfl⟩
+  · rintro ⟨y, ⟨x, hxD, rfl⟩, rfl⟩; exact ⟨x, hxD, rfl⟩
 
 lemma map_symm
     {X Y : Type*} [MetricSpace X] [MetricSpace Y]
     (D : DeloneSet X) (f : X ≃ᵢ Y) :
     (D.map f).map f.symm = D := by
   ext x; constructor
-  · intro hx
-    rcases hx with ⟨y, hy, rfl⟩
-    rcases hy with ⟨x₀, hx₀D, rfl⟩
-    simpa
-  · intro hx
-    exact ⟨f x, ⟨x, hx, rfl⟩, by simp⟩
+  · rintro ⟨y, ⟨x₀, hx₀D, rfl⟩, rfl⟩; simpa
+  · intro hx; exact ⟨f x, ⟨x, hx, rfl⟩, by simp⟩
 
 end DeloneSet
+
+end Delone
