@@ -628,7 +628,7 @@ protected lemma Reachable.coe_subgraphMap {G' : G.Subgraph} {G'' : G'.coe.Subgra
     map_rel' r := Relation.map_apply.mpr (by tauto)
   }
 
-protected lemma Reachable.subgraphCoeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+protected lemma Reachable.coe_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
     (Subgraph.coeSubgraph G'').coe.Reachable (Subgraph.vert _ u (by simp_all))
       (Subgraph.vert _ v (by simp_all)) :=
