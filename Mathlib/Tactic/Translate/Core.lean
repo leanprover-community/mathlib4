@@ -830,16 +830,16 @@ def guessReorder (src tgt : Expr) : List (List Nat) := Id.run do
   src := src.instantiateRev vars
   tgt := tgt.instantiateRev vars
   let mut some map := go src tgt (.replicate n none) | return []
-  -- compute the list of cycles representing the permutation `map`.
+  -- Compute the list of cycles representing the permutation `map`.
   let mut perm := []
   for h : i in 0...n do
     let mut some j := map[i] | continue
     if i = j then continue
     let mut cycle := [i, j]
     repeat do
-      let some j' := map[j] | return []
-       -- to avoid adding the same cycle multiple times, and to avoid infinite loops,
-       -- we erase visited indices
+      let some j' := map[j] | return [] -- If the permutation is malformed, return `[]`.
+       -- To avoid computing the same cycle multiple times, and to avoid infinite loops,
+       -- we erase visited elements from `map`.
       map := map.set! j none
       if j' = i then break
       j := j'
@@ -865,7 +865,7 @@ where
     | .fvar ⟨.num _ i₁⟩  , .fvar ⟨.num _ i₂⟩  =>
       if h : i₂ < n then
         if let some i₂' := map[i₁]! then
-          guard (i₂ == i₂')
+          guard (i₂ == i₂') -- If `i₂ ≠ i₂'`, it's not clear what `i₁` should be translated to.
           some map
         else
           some <| map.set! i₁ (some ⟨i₂, h⟩)
