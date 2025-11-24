@@ -409,7 +409,7 @@ theorem resultant_C_left (r : R) :
 where `α` and `β` runs through the roots of `f` and `g` respectively. -/
 lemma resultant_eq_prod_roots_sub
     {K : Type*} [Field K] (f g : K[X]) (hf : f.Monic) (hg : g.Monic)
-    (hf' : f.Factors) (hg' : g.Factors) :
+    (hf' : f.Splits) (hg' : g.Splits) :
     resultant f g = ((f.roots ×ˢ g.roots).map fun ij ↦ ij.1 - ij.2).prod := by
   wlog hfg : g.natDegree ≤ f.natDegree
   · trans ((f.roots ×ˢ g.roots).map fun ij ↦ (-1) * (ij.2 - ij.1)).prod
@@ -480,7 +480,7 @@ lemma resultant_eq_prod_roots_sub
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
-    (f g : R[X]) (n : ℕ) (hg : g.natDegree ≤ n) (hf : f.Factors) :
+    (f g : R[X]) (n : ℕ) (hg : g.natDegree ≤ n) (hf : f.Splits) :
     resultant f g f.natDegree n = f.leadingCoeff ^ n * (f.roots.map g.eval).prod := by
   wlog hR : IsField R
   · let K := FractionRing R
@@ -522,7 +522,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   rw [← resultant_map_map, ← Nat.add_sub_cancel' hg, resultant_add_right_deg _ _ _ _ _ (by simp),
     this, coeff_map, coeff_natDegree, hfm.leadingCoeff, map_one, one_pow, one_mul,
     map_sub_sprod_roots_eq_prod_map_eval _ _ (hgm.map _) (SplittingField.splits _),
-    roots_map _ (by simp [Splits, hf]), map_multiset_prod, Multiset.map_map]
+    roots_map _ (by simp [hf]), map_multiset_prod, Multiset.map_map]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
@@ -533,10 +533,10 @@ Let `P` be a predicate on a polynomial.
 If `R → S` injective implies `(∀ p : S[X], P p) → (∀ p : R[X], P p)`,
 and if `R → S` surjective implies `(∀ p : R[X], P p) → (∀ p : S[X], P p)`,
 then we may reduce to the case where `R` is a field and `p` splits. -/
-nonrec lemma induction_of_factors_of_injective_of_surjective.{u}
+nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
     {R : Type u} [CommRing R] (p : R[X])
     (P : ∀ {R : Type u} [CommRing R], R[X] → Prop)
-    (factors : ∀ (R : Type u) [Field R] (p : R[X]) (hp : p.Factors), P p)
+    (Splits : ∀ (R : Type u) [Field R] (p : R[X]) (hp : p.Splits), P p)
     (injective : ∀ (R S : Type u) [CommRing R] [CommRing S]
       (φ : R →+* S) (hφ : Function.Injective φ) (p : R[X]) (IH : P (p.map φ)), P p)
     (surjective : ∀ (R S : Type u) [CommRing R] [CommRing S]
@@ -548,12 +548,12 @@ nonrec lemma induction_of_factors_of_injective_of_surjective.{u}
   wlog hR : IsField R generalizing R
   · exact injective _ _ _ (FaithfulSMul.algebraMap_injective R (FractionRing R)) _
       (this _ inferInstance (Field.toIsField _))
-  wlog hp : p.Factors generalizing R
+  wlog hp : p.Splits generalizing R
   · letI inst := hR.toField
     exact injective _ _ _ (algebraMap R p.SplittingField).injective _
       (this _ inferInstance (Field.toIsField _) (SplittingField.splits _))
   letI inst := hR.toField
-  exact factors _ _ hp
+  exact Splits _ _ hp
 
 /-- `Res(f, g₁ * g₂) = Res(f, g₁) * Res(f, g₂)`. -/
 nonrec lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegree ≤ m) :
@@ -564,8 +564,8 @@ nonrec lemma resultant_mul_right (f g₁ g₂ : R[X]) (m : ℕ) (hm : f.natDegre
     simp [resultant_add_left_deg, this f g₁ g₂, coeff_mul_degree_add_degree]
     ring_nf
   subst hgn; clear hm
-  induction f using induction_of_factors_of_injective_of_surjective with
-  | factors R f hff =>
+  induction f using induction_of_Splits_of_injective_of_surjective with
+  | Splits R f hff =>
     simp [resultant_eq_prod_eval, natDegree_mul_le, hff]
     ring_nf
   | injective R SatisfiesM φ hφ f IH =>
@@ -591,8 +591,8 @@ lemma resultant_mul_left (f₁ f₂ g : R[X]) (n : ℕ) (hn : g.natDegree ≤ n)
 
 /-- `Res(f, f) = 0` unless `deg f = 0`. Also see `resultant_self_eq_zero`. -/
 @[simp] nonrec lemma resultant_self (f : R[X]) : resultant f f = 0 ^ f.natDegree := by
-  induction f using induction_of_factors_of_injective_of_surjective with
-  | factors R f hf =>
+  induction f using induction_of_Splits_of_injective_of_surjective with
+  | Splits R f hf =>
     by_cases h : f.natDegree = 0
     · obtain ⟨r, rfl⟩ := natDegree_eq_zero.mp h; simp
     rw [resultant_eq_prod_eval _ _ _ le_rfl hf]
@@ -695,8 +695,8 @@ nonrec lemma resultant_scaleRoots (f g : R[X]) (r : R) :
   rw [natDegree_scaleRoots, natDegree_scaleRoots]
   obtain rfl | hf := eq_or_ne f 0; · simp
   obtain rfl | hg := eq_or_ne g 0; · simp
-  induction f using induction_of_factors_of_injective_of_surjective with
-  | factors R f hf' =>
+  induction f using induction_of_Splits_of_injective_of_surjective with
+  | Splits R f hf' =>
     by_cases hf0 : f.natDegree = 0
     · obtain ⟨a, rfl⟩ := natDegree_eq_zero.mp hf0; simp
     by_cases hg0 : g.natDegree = 0
@@ -766,8 +766,8 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
 /-- `Res(f(x + r), g(x + r)) = Res(f, g)`. -/
 nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
     resultant (f.taylor r) (g.taylor r) = resultant f g := by
-  induction f using induction_of_factors_of_injective_of_surjective with
-  | factors R f hf' =>
+  induction f using induction_of_Splits_of_injective_of_surjective with
+  | Splits R f hf' =>
     induction hf' using Submonoid.closure_induction with
     | mem x h =>
       obtain (⟨s, rfl⟩ | ⟨s, rfl⟩) := h

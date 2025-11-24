@@ -108,7 +108,7 @@ protected theorem Splits.prod {ι : Type*} {f : ι → R[X]} {s : Finset ι}
   prod_mem h
 
 lemma Splits.taylor {p : R[X]} (hp : p.Splits) (r : R) : (p.taylor r).Splits := by
-  have (i : _) : (X + C r + C i).Splits := by simpa [add_assoc] using Factors.X_add_C (r + i)
+  have (i : _) : (X + C r + C i).Splits := by simpa [add_assoc] using Splits.X_add_C (r + i)
   induction hp using Submonoid.closure_induction <;> aesop
 
 /-- See `splits_iff_exists_multiset` for the version with subtraction. -/
@@ -252,7 +252,7 @@ theorem Splits.splits (hf : Splits f) :
     (hf.of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
 
 lemma map_sub_sprod_roots_eq_prod_map_eval
-    (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Factors) :
+    (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((s ×ˢ g.roots).map fun ij ↦ ij.1 - ij.2).prod = (s.map g.eval).prod := by
   have := hg'.eq_prod_roots
   rw [hg.leadingCoeff, map_one, one_mul] at this
@@ -262,7 +262,7 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   ext; simp
 
 lemma map_sub_roots_sprod_eq_prod_map_eval
-    (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Factors) :
+    (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
     ((g.roots ×ˢ s).map fun ij ↦ ij.1 - ij.2).prod =
       (-1) ^ (s.card * g.roots.card) * (s.map g.eval).prod := by
   trans ((s ×ˢ g.roots).map fun ij ↦ (-1) * (ij.1 - ij.2)).prod
