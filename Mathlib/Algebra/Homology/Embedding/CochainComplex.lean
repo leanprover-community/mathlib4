@@ -92,36 +92,36 @@ abbrev IsGE (n : ℤ) := K.IsSupported (embeddingUpIntGE n)
 /-- The condition that a cochain complex `K` is (cohomologically) `≤ n`. -/
 abbrev IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 
-lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n := by cutsat) [K.IsStrictlyGE n] :
+lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n := by lia) [K.IsStrictlyGE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntGE n) i
     (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
-lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i := by cutsat) [K.IsStrictlyLE n] :
+lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i := by lia) [K.IsStrictlyLE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntLE n) i
     (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
-lemma exactAt_of_isGE (n i : ℤ) (hi : i < n := by cutsat) [K.IsGE n] :
+lemma exactAt_of_isGE (n i : ℤ) (hi : i < n := by lia) [K.IsGE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntGE n) i
     (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
-lemma exactAt_of_isLE (n i : ℤ) (hi : n < i := by cutsat) [K.IsLE n] :
+lemma exactAt_of_isLE (n i : ℤ) (hi : n < i := by lia) [K.IsLE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntLE n) i
     (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
-lemma isZero_of_isGE (n i : ℤ) (hi : i < n := by cutsat) [K.IsGE n] [K.HasHomology i] :
+lemma isZero_of_isGE (n i : ℤ) (hi : i < n := by lia) [K.IsGE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
   (K.exactAt_of_isGE n i hi).isZero_homology
 
-lemma isZero_of_isLE (n i : ℤ) (hi : n < i := by cutsat) [K.IsLE n] [K.HasHomology i] :
+lemma isZero_of_isLE (n i : ℤ) (hi : n < i := by lia) [K.IsLE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
   (K.exactAt_of_isLE n i hi).isZero_homology
 
 lemma isStrictlyGE_iff (n : ℤ) :
-    K.IsStrictlyGE n ↔ ∀ (i : ℤ) (_ : i < n := by cutsat), IsZero (K.X i) := by
+    K.IsStrictlyGE n ↔ ∀ (i : ℤ) (_ : i < n := by lia), IsZero (K.X i) := by
   constructor
   · intro _ i hi
     exact K.isZero_of_isStrictlyGE n i hi

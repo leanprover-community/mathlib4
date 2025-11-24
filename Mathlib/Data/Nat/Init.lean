@@ -440,7 +440,7 @@ cases where it is most structurally obvious from the syntactic form of `n` that 
 required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than
 global instances and then made into instances locally where needed. If implicit arguments,
 appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
-Lean, such an `autoParam` that is proved `by cutsat` might be a more general replacement for the
+Lean, such an `autoParam` that is proved `by lia` might be a more general replacement for the
 use of typeclass inference for this purpose. -/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n

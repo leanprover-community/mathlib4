@@ -43,7 +43,7 @@ public lemma triangle_map_ext {T T' : Triangle C} {f₁ f₂ : T ⟶ T'}
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C) (a b : ℤ)
     (h₀ : t.IsLE T.obj₁ a) (h₁ : t.IsGE T'.obj₃ b)
     (H : f₁.hom₂ = f₂.hom₂ := by cat_disch)
-    (hab : a ≤ b := by cutsat) : f₁ = f₂ := by
+    (hab : a ≤ b := by lia) : f₁ = f₂ := by
   suffices ∀ (f : T ⟶ T'), f.hom₂ = 0 → f = 0 by rw [← sub_eq_zero]; cat_disch
   intro f hf
   ext
@@ -61,7 +61,7 @@ of distinguished triangles when for a t-structure `T.obj₁ ≤ a` and `T'.obj�
 public lemma triangle_map_exists {T T' : Triangle C}
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
     (φ : T.obj₂ ⟶ T'.obj₂) (a b : ℤ)
-    (h₀ : t.IsLE T.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) (h : a < b := by cutsat) :
+    (h₀ : t.IsLE T.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) (h : a < b := by lia) :
     ∃ (f : T ⟶ T'), f.hom₂ = φ := by
   obtain ⟨a, comm₁⟩ := T'.coyoneda_exact₂ hT' (T.mor₁ ≫ φ) (t.zero _ a b)
   obtain ⟨c, comm₂, comm₃⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
@@ -73,7 +73,7 @@ both `T.obj₃` and `T'.obj₃` are `≥ b`. -/
 public lemma triangle_iso_exists {T T' : Triangle C}
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C) (e : T.obj₂ ≅ T'.obj₂)
     (a b : ℤ) (h₀ : t.IsLE T.obj₁ a) (h₁ : t.IsGE T.obj₃ b)
-    (h₀' : t.IsLE T'.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) (h : a < b := by cutsat) :
+    (h₀' : t.IsLE T'.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) (h : a < b := by lia) :
     ∃ (e' : T ≅ T'), e'.hom.hom₂ = e.hom := by
   obtain ⟨hom, hhom⟩ := triangle_map_exists t hT hT' e.hom _ _ h₀ h₁'
   obtain ⟨inv, _⟩ := triangle_map_exists t hT' hT e.inv _ _ h₀' h₁
