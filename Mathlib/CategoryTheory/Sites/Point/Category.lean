@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Point.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
 # The category of points of a site
@@ -13,6 +15,8 @@ a morphism between `Φ₁ ⟶ Φ₂` between two points consists of a
 morphism `Φ₂.fiber ⟶ Φ₁.fiber` (SGA 4 IV 3.2).
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
