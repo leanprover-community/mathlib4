@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Tactic.Bound
+public import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Convex spaces
@@ -19,32 +20,40 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 
 ## Main definitions
 
-* `StdSimplex R ι`: A finitely supported probability distribution over `ι` with coefficients
-  in `R`. The weights are non-negative and sum to 1.
-* `ConvexSpace R M`: A typeclass for spaces `M` equipped with an operation of taking convex
-  combinations with coefficients in `R`.
+* `StdSimplex R M`: A finitely supported probability distribution over elements of `M` with
+  coefficients in `R`. The weights are non-negative and sum to 1.
+* `StdSimplex.map`: Map a function over the support of a standard simplex.
+* `StdSimplex.join`: Monadic join operation for standard simplices.
+* `ConvexSpace R M`: A typeclass for spaces `M` equipped with an operation
+  `convexCombination : StdSimplex R M → M` satisfying monadic laws.
 * `convexCombo₂`: Binary convex combinations of two points.
+
+## Design
+
+The design follows a monadic structure where `StdSimplex R` forms a monad and `convexCombination`
+is a monadic algebra. This eliminates the need for explicit extensionality axioms and resolves
+universe issues with indexed families.
 
 ## TODO
 
+* Complete the proofs for `StdSimplex.map` and `StdSimplex.join`.
 * Show that an `AffineSpace` is a `ConvexSpace`.
 * Show that `lineMap` agrees with `convexCombo₂` where defined.
 * Show the usual associativity law for binary convex combinations follows from the `assoc` axiom.
-* Decide if the `ext` axiom is necessary (via a counterexample), or derive it from `assoc`.
 -/
 
 @[expose] public section
 
-universe u v
+universe u v w
 
 noncomputable section
 
 /--
-A finitely supported probability distribution over `ι` with coefficients in `R`.
+A finitely supported probability distribution over elements of `M` with coefficients in `R`.
 The weights are non-negative and sum to 1.
 -/
-structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (ι : Type v)
-    extends weights : ι →₀ R where
+structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (M : Type v)
+    extends weights : M →₀ R where
   /-- All weights are non-negative. -/
   nonneg : ∀ m, 0 ≤ weights m
   /-- The weights sum to 1. -/
@@ -53,12 +62,12 @@ structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (ι : Type v)
 namespace StdSimplex
 
 variable {R : Type u} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
-  {κ : Type v} {ι : κ → Type v}
+  {M : Type v}
 
 open Classical in
-/-- The point mass distribution concentrated at `i`. -/
-def single {ι : Type v} (i : ι) : StdSimplex R ι where
-  weights := Finsupp.single i 1
+/-- The point mass distribution concentrated at `x`. -/
+def single (x : M) : StdSimplex R M where
+  weights := Finsupp.single x 1
   nonneg m := by
     rw [Finsupp.single_apply]
     split
@@ -66,58 +75,78 @@ def single {ι : Type v} (i : ι) : StdSimplex R ι where
     · grind
   total := by simp
 
-/-- A probability distribution on `Fin 2` with weights `x` and `y`. -/
--- Is it useful to generalize this to `x y : ι`?
-def duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R (Fin 2) where
-  weights := Finsupp.single 0 s + Finsupp.single 1 t
-  nonneg := by
-    simp
-    grind
+open Classical in
+/-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
+def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
+  weights := Finsupp.single x s + Finsupp.single y t
+  nonneg m := by
+    -- Proof by Claude, needs golfing:
+    simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_apply]
+    split_ifs with hx hy
+    · exact add_nonneg hs ht
+    · simp; exact hs
+    · simp; exact ht
+    · simp
   total := by
-    simpa [Finsupp.sum_add_index]
+    -- Proof by Claude, needs golfing:
+    rw [Finsupp.sum_add_index]
+    · simp only [Finsupp.sum_single_index, h]
+    · intro; simp
+    · intro; simp
 
 /--
-Composition of probability distributions.
-Given a distribution `f` over `κ` and a family `g` of distributions over `ι k` for each `k : κ`,
-produces a distribution over `Σ k, ι k`.
+Map a function over the support of a standard simplex.
+For each n : N, the weight is the sum of weights of all m : M with g m = n.
 -/
-def comp (f : StdSimplex R κ) (g : (k : κ) → StdSimplex R (ι k)) :
-    StdSimplex R (Σ k, ι k) where
-  weights := f.sum (fun m r => (r • (g m).weights).embDomain <| .sigmaMk m)
-  nonneg := by
-    intro ⟨k, i⟩
+def map {M : Type v} {N : Type w} (g : M → N) (f : StdSimplex R M) : StdSimplex R N where
+  weights := f.weights.sum (fun m r => Finsupp.single (g m) r)
+  nonneg n := by
+    -- Proof by Claude, needs golfing:
+    classical
     simp only [Finsupp.sum, Finsupp.coe_finset_sum, Finset.sum_apply]
-    refine (Finset.sum_nonneg (fun k hk => ?_))
-    simp [Finsupp.embDomain]
-    have := f.nonneg
-    have := (g k).nonneg
+    refine Finset.sum_nonneg fun m _ => ?_
+    rw [Finsupp.single_apply]
+    split_ifs
+    · exact f.nonneg m
+    · rfl
+  total := by
+    -- Proof by Aristotle, needs golfing:
+    simp [Finsupp.sum_sum_index]
+    induction f
+    grind
+
+/--
+Join operation for standard simplices (monadic join).
+Given a distribution over distributions, flattens it to a single distribution.
+-/
+def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
+  weights := f.weights.sum (fun d r => r • d.weights)
+  nonneg m := by
+    -- Proof by Claude, needs golfing:
+    simp only [Finsupp.sum, Finsupp.coe_finset_sum, Finset.sum_apply]
+    refine Finset.sum_nonneg (fun d _ => ?_)
+    simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
+    have := f.nonneg d
+    have := d.nonneg m
     bound
   total := by
-    -- This proof was minimally cleaned up from a proof by Aristotle.
-    have h_total : (f.sum fun m r => (r • (g m).weights).embDomain (.sigmaMk m)) =
-        (f.sum fun m r => Finsupp.single m r).sum
-          fun m r => (r • (g m).weights).embDomain (.sigmaMk m) := by simp
-    have h_sum : ∀ m, ((f.weights m • (g m).weights).embDomain (.sigmaMk m)).sum (fun x r => r) =
-        f.weights m * (g m).weights.sum (fun x r => r) := by
-      intro m
-      rw [Finsupp.sum_embDomain]
-      simp only [Finsupp.sum, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
-      rw [Finset.mul_sum _ _ _,
-        Finset.sum_subset (show _ ⊆ ((g m).weights.support) from
-          fun x hx => by aesop) fun x hx₁ hx₂ => by aesop]
-    have h_final : (f.sum fun m r => (r • (g m).weights).embDomain (.sigmaMk m)).sum
-        (fun x r => r) = (f.sum fun (m : κ) (r : R) => Finsupp.single m r).sum fun m r => r := by
-      rw [h_total, Finsupp.sum_sum_index];
-      · have h_g_sum : ∀ m : κ, (g m).weights.sum (fun x r => r) = 1 := by
-          intro m
-          apply (g m).total
-        simp_all only [Finsupp.sum_single, mul_one]
-        exact Finset.sum_congr rfl fun m hm => h_sum m
-      · exact fun _ => rfl
-      · exact fun _ _ _ => rfl
-    convert f.total using 1
-    convert h_final using 1
-    rw [Finsupp.sum_sum_index] <;> aesop
+    -- Proof by Aristotle, needs golfing:
+    have h_sum_d : ∀ d ∈ f.support, (d.weights.sum (fun _ r => r)) = 1 := by
+      intros d hd
+      apply d.total;
+    simp_all only [Finsupp.mem_support_iff, ne_eq, implies_true, Finsupp.sum_sum_index]
+    refine Eq.trans (b := f.support.sum fun d => f.weights d * 1) (Finset.sum_congr rfl ?_) ?_
+    · have h_sum_mul : ∀ (a : StdSimplex R M) (b : R),
+        (b • a.weights).sum (fun _ r => r) = b * a.weights.sum (fun _ r => r) := by
+        intro a b
+        have : ((b • a.weights).sum fun x r ↦ r) = b * a.sum fun x r ↦ r := by
+          rw [Finsupp.sum_smul_index]
+          · simp_all [Finsupp.sum, Finset.mul_sum]
+          · simp
+        bound
+      aesop
+    · simp_all [StdSimplex.total];
+      exact f.total
 
 end StdSimplex
 
@@ -127,21 +156,13 @@ where the coefficients must be non-negative and sum to 1.
 -/
 class ConvexSpace (R : Type u) (M : Type v)
     [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] where
-  /-- Take a convex combination of a family of points with the given probability distribution. -/
-  convexCombination {ι : Type v} (f : StdSimplex R ι) (xs : ι → M) : M
-  /-- Associativity of convex combination. -/
-  assoc
-    {κ : Type v} (f₀ : StdSimplex R κ)
-    {ι : κ → Type v} (f₁ : (k : κ) → StdSimplex R (ι k))
-    (xs : (k : κ) → (ι k) → M) :
-    convexCombination f₀ (fun m => convexCombination (f₁ m) (xs m)) =
-      convexCombination (f₀.comp f₁) (fun ⟨k, i⟩ => xs k i)
+  /-- Take a convex combination with the given probability distribution over points. -/
+  convexCombination (f : StdSimplex R M) : M
+  /-- Associativity of convex combination (monadic join law). -/
+  assoc (f : StdSimplex R (StdSimplex R M)) :
+    convexCombination (f.map convexCombination) = convexCombination f.join
   /-- A convex combination of a single point is that point. -/
-  single {ι : Type v} (i : ι) (x : M) : convexCombination (.single i) (fun _ => x) = x
-  /-- Convex combinations are determined by the points with non-zero weights. -/
-  -- Perhaps this follows from `assoc`, but I don't see how.
-  ext {ι : Type v} (f : StdSimplex R ι) (xs xs' : ι → M)
-    (h : ∀ i, i ∈ f.support → xs i = xs' i) : convexCombination f xs = convexCombination f xs'
+  single (x : M) : convexCombination (.single x) = x
 
 open ConvexSpace
 
@@ -149,7 +170,7 @@ variable {R M} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] [ConvexSpac
 
 /-- Take a convex combination of two points. -/
 def convexCombo₂ (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) : M :=
-  convexCombination (.duple hs ht h) (fun | 0 => x | 1 => y)
+  convexCombination (.duple x y hs ht h)
 
 /-- A binary convex combination with weight 0 on the first point returns the second point. -/
 proof_wanted convexCombo₂_zero {x y : M} :
