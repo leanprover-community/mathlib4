@@ -84,7 +84,7 @@ variable {β : Type*} {t : Set β} (K' : FiniteExhaustion t)
 is the finite exhaustion on `s ×ˢ t` given by the pointwise set product of the exhaustions. -/
 protected def prod :
     FiniteExhaustion (s ×ˢ t) :=
-  { toFun := fun n ↦ K n ×ˢ K' n
+  { toFun n := K n ×ˢ K' n
     Finite' := fun n ↦ Set.Finite.prod (K.Finite n) (K'.Finite n)
     subset_succ' := fun n ↦ Set.prod_mono (K.subset_succ n) (K'.subset_succ n)
     iUnion_eq' := by
