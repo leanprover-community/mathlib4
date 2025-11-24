@@ -72,5 +72,4 @@ noncomputable def equivSmallFreeIso :
       (isoWhiskerRight ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm _ ≪≫
         (Functor.associator _ _ _)))
 
-
 end LightCondensed
