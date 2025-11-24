@@ -105,7 +105,7 @@ theorem Splits.comp_of_degree_le_one {f : L[X]} {p : L[X]} (hd : p.degree ≤ 1)
   grw [sub_comp, X_comp, C_comp, degree_sub_le, hd, degree_C_le, max_eq_left zero_le_one]
 
 @[deprecated (since := "2025-11-24")]
-alias comp_of_map_degree_le_one := Splits.comp_of_degree_le_one
+alias Splits.comp_of_map_degree_le_one := Splits.comp_of_degree_le_one
 
 theorem splits_iff_comp_splits_of_degree_eq_one {f : L[X]} {p : L[X]} (hd : p.degree = 1) :
     f.Splits ↔ (f.comp p).Splits := by
