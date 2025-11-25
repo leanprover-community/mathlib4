@@ -5,24 +5,23 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Category.ModuleCat.Baer
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.Algebra.Algebra.Shrink
-public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Regular.Category
+public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 
@@ -31,6 +30,30 @@ public import Mathlib.RingTheory.RingHom.Flat
 -/
 
 @[expose] public section
+
+
+section ENat
+
+lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a with
+  | top => simpa only [_root_.top_add, top_le_iff] using WithTop.add_coe_eq_top_iff
+  | coe a => induction b with
+    | top => simp
+    | coe b => simp [← Nat.cast_add]
+
+lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a with
+  | bot => simp
+  | coe a =>
+    induction b with
+    | bot => simp
+    | coe b =>
+      norm_cast
+      exact ENat.add_le_add_right_iff a b c
+
+end ENat
 
 section
 
@@ -119,7 +142,7 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       ((@AddCommGrpCat.isZero_of_subsingleton _ (h3 h2.2)).eq_zero_of_src _)
       ((@AddCommGrpCat.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
     exact AddCommGrpCat.subsingleton_of_isZero this
-/-
+
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
     (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
       Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
@@ -143,7 +166,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     apply le_of_eq_of_le Ideal.annihilator_quotient.symm (Module.annihilator_le_of_mem_support hq.1)
   let S := (ModuleCat.of R (Shrink.{v, u} (R ⧸ p))).smulShortComplex x
   have reg : IsSMulRegular (Shrink.{v, u} (R ⧸ p)) x := by
-    rw [(Shrink.linearEquiv R _).isSMulRegular_congr, isSMulRegular_iff_right_eq_zero_of_smul]
+    rw [(Shrink.linearEquiv.{v} R _).isSMulRegular_congr, isSMulRegular_iff_right_eq_zero_of_smul]
     intro r hr
     simpa [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem, nmem] using hr
   have S_exact : S.ShortExact := IsSMulRegular.smulShortComplex_shortExact reg
@@ -165,9 +188,7 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   simp only [ModuleCat.smulShortComplex_X₁, ModuleCat.smulShortComplex_X₂, Ext.mk₀_smul,
       Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
   simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
--/
 
-/-
 lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
     (h : ∀ i ≥ n, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
     ∀ i ≥ n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M i) := by
@@ -225,6 +246,5 @@ lemma injectiveDimension_eq_sInf (M : ModuleCat.{v} R) [Module.Finite R M] :
     apply ext_vanish_of_residueField_vanish M i _ j hj N
     intro k hk
     exact h k (lt_of_lt_of_le hi (Nat.cast_le.mpr hk))
--/
 
 end
