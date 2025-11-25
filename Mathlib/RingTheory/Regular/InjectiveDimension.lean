@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
@@ -34,7 +35,7 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 section ENat
 
-lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
+lemma ENat.add_le_add_right_iff' (a b : ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
   induction a with
   | top => simpa only [_root_.top_add, top_le_iff] using WithTop.add_coe_eq_top_iff
@@ -42,7 +43,7 @@ lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
     | top => simp
     | coe b => simp [← Nat.cast_add]
 
-lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
+lemma WithBot.add_le_add_right_iff' (a b : WithBot ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
   induction a with
   | bot => simp
@@ -51,7 +52,7 @@ lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
     | bot => simp
     | coe b =>
       norm_cast
-      exact ENat.add_le_add_right_iff a b c
+      exact ENat.add_le_add_right_iff' a b c
 
 end ENat
 
@@ -95,9 +96,9 @@ local instance small_of_quotient'' [Small.{v} R] (I : Ideal R) : Small.{v} (R �
 
 open CategoryTheory Abelian Module
 
-variable {R} [IsLocalRing R] [IsNoetherianRing R]
-
 section
+
+variable {R} [IsLocalRing R] [IsNoetherianRing R]
 
 universe w
 
@@ -219,7 +220,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
         intro q hqp hq
         let q : PrimeSpectrum R := ⟨q, hq⟩
         have : ringKrullDim (R ⧸ q.1) ≤ n := by
-          rw [← WithBot.add_le_add_right_iff _ _ 1]
+          rw [← WithBot.add_le_add_right_iff' _ _ 1]
           apply le_trans _ hp
           obtain ⟨r, hrq, hrp⟩ := Set.exists_of_ssubset hqp
           apply ringKrullDim_succ_le_of_surjective (r := Ideal.Quotient.mk p.1 r)
@@ -246,5 +247,83 @@ lemma injectiveDimension_eq_sInf (M : ModuleCat.{v} R) [Module.Finite R M] :
     apply ext_vanish_of_residueField_vanish M i _ j hj N
     intro k hk
     exact h k (lt_of_lt_of_le hi (Nat.cast_le.mpr hk))
+
+end
+
+section
+
+section restrictScalars
+
+universe u'
+
+variable {R} {R' : Type u'} [CommRing R']
+
+variable (f : R →+* R')
+
+instance : (ModuleCat.restrictScalars.{v} f).Additive where
+  map_add := by simp
+
+lemma ModuleCat.restrictScalars_map_exact (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
+    (S.map (ModuleCat.restrictScalars.{v} f)).Exact := by
+  rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
+  exact h
+
+instance : Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
+  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
+    (ModuleCat.restrictScalars_map_exact f)
+  exact this.1
+
+instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
+  have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
+    (ModuleCat.restrictScalars_map_exact f)
+  exact this.2
+
+end restrictScalars
+
+universe w
+
+variable [Small.{v} R] [UnivLE.{v, w}]
+
+/-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
+  Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
+  is bijective. -/
+theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsSMulRegular R x)
+    (regM : IsSMulRegular M x) (N : ModuleCat.{v} (R ⧸ Ideal.span {x})) (n : ℕ) :
+    Function.Bijective ((regM.smulShortComplex_shortExact.extClass.postcomp
+    ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) rfl).comp
+    ((ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x}))).mapExtAddHom N
+    (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)) := by
+
+  sorry
+
+end
+
+section
+
+variable {R} [IsLocalRing R] [IsNoetherianRing R]
+
+section
+
+universe w
+
+variable [Small.{v} R] [UnivLE.{v, w}]
+
+lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
+    (regR : IsSMulRegular R x) (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) (n : ℕ) :
+    letI : IsLocalRing (R ⧸ Ideal.span {x}) := sorry
+    Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M (n + 1)) ↔
+    Subsingleton (Ext.{w} (ModuleCat.of (R ⧸ Ideal.span {x})
+    (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
+    (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) := by
+  sorry
+
+end
+
+theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension {M : ModuleCat.{v} R}
+    [Module.Finite R M] {x : R} (regR : IsSMulRegular R x) (regM : IsSMulRegular M x)
+    (mem : x ∈ maximalIdeal R) :
+    injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) + 1 =
+    injectiveDimension M := by
+  sorry
 
 end
