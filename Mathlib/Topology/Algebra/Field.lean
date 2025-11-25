@@ -178,10 +178,9 @@ variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  have : DiscreteTopology ({1, -1} : Set 𝕜) := Finite.instDiscreteTopology
   have hmaps : MapsTo f S {1, -1} := by
     simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
-  simpa using hS.eqOn_const_of_mapsTo hf hmaps
+  simpa using hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on
