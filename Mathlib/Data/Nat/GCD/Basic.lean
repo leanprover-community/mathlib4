@@ -270,7 +270,6 @@ lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) =
     (gcd_pos_of_pos_left n hm), Nat.gcd_mul_right m c n] using (Nat.dvd_gcd hmc hnc)
 
 lemma gcd_add_eq_of_dvd {a q : ℕ} (h : a ∣ q) : (q + a).gcd q = a := by
-  rw [Nat.gcd_self_add_left]
-  exact Nat.gcd_eq_left h
+  rw [gcd_self_add_left, gcd_eq_left h]
 
 end Nat
