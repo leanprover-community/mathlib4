@@ -82,7 +82,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
             IsSplittingField.adjoin_rootSet_eq_range E p (j'.restrictScalars F)]
       exact ⟨x, (j'.commutes _).trans (algHomAdjoinIntegralEquiv_symm_apply_gen F hx _)⟩
     · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]; exact hL.1
-  · rwa [Polynomial.map_ne_zero_iff (algebraMap F L).injective]
+  · exact Polynomial.map_ne_zero hp
 
 instance Polynomial.SplittingField.instNormal (p : F[X]) : Normal F p.SplittingField :=
   Normal.of_isSplittingField p
@@ -189,9 +189,9 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
     Nonempty.some <|
       @IntermediateField.nonempty_algHom_of_adjoin_splits _ _ _ _ _ _ _
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
-        (fun x _ ↦ ⟨(h.out x).1.tower_top, @IsIntegral.minpoly_splits_tower_top F K₁ E E
-          _ _ _ _ _ _ _ _ x (((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra) _ _
-          (h.out x).1 (h.out x).2⟩)
+        (fun x _ ↦ ⟨(h.out x).1.tower_top,
+          @IsIntegral.minpoly_splits_tower_top F K₁ E E _ _ _ _ _ _ _ _ x
+            (RingHom.toAlgebra _) _ _ (h.out x).1 (h.out x).2⟩)
         (IntermediateField.adjoin_univ _ _)
 
 @[simp]
