@@ -252,7 +252,8 @@ lemma f_mem_fixedBy_iff_forall_eq_to_eq (g : (Equiv.Perm X)) (c : X → Y) :
     have hab : (⟦g⁻¹ • x⟧ :Quotient (Equiv.Perm.SameCycle.setoid (MulAction.toPerm g)))= ⟦x⟧ := by
       apply Quotient.sound
       refine ⟨(1 : Int), ?_⟩
-      simp only [zpow_one, Perm.smul_def, toPerm_apply, apply_symm_apply]
+      simp only [zpow_one, Perm.smul_def, toPerm_apply]
+      simp only [Perm.coe_inv, apply_symm_apply]
     have := hconst (g⁻¹ • x) x hab
     rw[← this]
     exact hconst (g⁻¹ • x) (g⁻¹ • x) rfl
