@@ -374,7 +374,7 @@ lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
   lift x to ℝ using by aesop
   simpa using hx
 
-lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
+@[simp] lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
   ext x
   constructor
   · rintro ⟨y, ⟨hy0, _⟩, rfl⟩
@@ -384,7 +384,7 @@ lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
     use (x : EReal)
     simpa using hx
 
-lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
+@[simp] lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
   ext x
   constructor
   · rintro ⟨y, ⟨_, hy0⟩, rfl⟩
