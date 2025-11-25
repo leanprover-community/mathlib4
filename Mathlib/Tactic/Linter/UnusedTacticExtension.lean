@@ -62,7 +62,6 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `Mathlib.Tactic.successIfFailWithMsg,
     `Mathlib.Tactic.failIfNoProgress,
     `Mathlib.Tactic.ExtractGoal.extractGoal,
-    `Mathlib.Tactic.Propose.propose',
     `Lean.Parser.Tactic.traceState,
     `Mathlib.Tactic.tacticMatch_target_,
     `change?,
