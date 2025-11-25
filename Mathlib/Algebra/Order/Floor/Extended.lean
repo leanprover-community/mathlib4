@@ -6,9 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.ENNReal.Operations
 public import Mathlib.Data.NNReal.Basic
 public import Mathlib.Data.Real.ENatENNReal
+
+import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Extended floor and ceil
@@ -37,6 +38,8 @@ typeclass.
 efloor, eceil
 -/
 
+public section
+
 open Set
 open scoped ENNReal NNReal
 
@@ -44,12 +47,12 @@ namespace ENat
 variable {r s : ℝ≥0∞} {n : ℕ∞}
 
 /-- `⌊r⌋ₑ` is the greatest extended natural `n` such that `n ≤ r`. -/
-noncomputable def floor : ℝ≥0∞ → ℕ∞
+@[expose] noncomputable def floor : ℝ≥0∞ → ℕ∞
   | ∞ => ⊤
   | (r : ℝ≥0) => ⌊r⌋₊
 
 /-- `⌈r⌉ₑ` is the least extended natural `n` such that `r ≤ n` -/
-noncomputable def ceil : ℝ≥0∞ → ℕ∞
+@[expose] noncomputable def ceil : ℝ≥0∞ → ℕ∞
   | ∞ => ⊤
   | (r : ℝ≥0) => ⌈r⌉₊
 
@@ -88,7 +91,7 @@ lemma gc_ceil_toENNReal : GaloisConnection ceil (↑) := fun _ _ ↦ ceil_le
   · simp only [ne_eq, Nat.cast_eq_zero, ceil_coe, Nat.cast_le, toENNReal_coe] at hn₀ ⊢
     norm_cast
     rw [← Nat.add_one_le_ceil_iff, Nat.sub_add_cancel]
-    omega
+    cutsat
 
 @[simp] lemma lt_floor (hn : n ≠ ⊤) : n < ⌊r⌋ₑ ↔ n + 1 ≤ r := by simp [← add_one_le_iff hn]
 
