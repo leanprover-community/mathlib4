@@ -230,9 +230,9 @@ lemma isAffineHom_of_isInducing
     exact Opens.ext hU'
 
 lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g : Y ⟶ Z}
-    {U : X.Opens} (hU : IsAffineOpen U) {V : Y.Opens} (hV : IsCompact V.1)
+    {U : X.Opens} (hU : IsAffineOpen U) {V : Y.Opens} (hV : IsCompact (V : Set Y))
     {W : Z.Opens} (hW : IsAffineOpen W) (hUW : U ≤ f ⁻¹ᵁ W) (hVW : V ≤ g ⁻¹ᵁ W) :
-    IsCompact (pullback.fst f g ⁻¹ᵁ U ⊓ pullback.snd f g ⁻¹ᵁ V).1 := by
+    IsCompact (pullback.fst f g ⁻¹ᵁ U ⊓ pullback.snd f g ⁻¹ᵁ V : Set ↑(pullback f g)) := by
   have : IsAffine U.toScheme := hU
   have : IsAffine W.toScheme := hW
   have : CompactSpace V := isCompact_iff_compactSpace.mp hV
