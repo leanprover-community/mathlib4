@@ -385,13 +385,13 @@ theorem descFactorial_mul_descFactorial {k m n : ℕ} (hkm : k ≤ m) :
     (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m := by
   by_cases hmn : m ≤ n
   · apply Nat.mul_left_cancel (n - m).factorial_pos
-    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by cutsat, ← Nat.mul_assoc,
-      factorial_mul_descFactorial (show m - k ≤ n - k by cutsat),
+    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by lia, ← Nat.mul_assoc,
+      factorial_mul_descFactorial (show m - k ≤ n - k by lia),
       factorial_mul_descFactorial (le_trans hkm hmn)]
-  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by cutsat)]
+  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by lia)]
     by_cases hkn : k ≤ n
-    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by cutsat), Nat.zero_mul]
-    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by cutsat), Nat.mul_zero]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by lia), Nat.zero_mul]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by lia), Nat.mul_zero]
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
@@ -419,7 +419,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
     ∀ {k : ℕ}, k + 2 ≤ n → (n - (k + 1)) ^ (k + 2) < n.descFactorial (k + 2)
   | 0, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.pow_one, descFactorial_one]
-    exact Nat.mul_lt_mul_of_pos_left (by cutsat) (Nat.sub_pos_of_lt h)
+    exact Nat.mul_lt_mul_of_pos_left (by lia) (Nat.sub_pos_of_lt h)
   | k + 1, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm]
     refine Nat.mul_lt_mul_of_pos_left ?_ (Nat.sub_pos_of_lt h)
@@ -446,7 +446,8 @@ theorem descFactorial_lt_pow {n : ℕ} (hn : n ≠ 0) : ∀ {k : ℕ}, 2 ≤ k �
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', Nat.mul_comm, Nat.mul_comm n]
-    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (by omega) (Nat.pow_pos <| by omega)
+    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (by lia)
+      (Nat.pow_pos <| by lia)
 
 end DescFactorial
 
