@@ -226,6 +226,17 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
   simp_all
 
 @[to_additive]
+theorem Finset.uniformContinuous_prod {α β ι : Type*} [UniformSpace α] [CommGroup α]
+    [IsUniformGroup α] [UniformSpace β] {f : ι → β → α} (s : Finset ι)
+    (h : ∀ i ∈ s, UniformContinuous (f i)) :
+    UniformContinuous (∏ i ∈ s, f i ·) := by
+  induction s using Finset.cons_induction with
+  | empty => simpa using uniformContinuous_const
+  | cons a s ha ih =>
+    simp_rw [Finset.mem_cons, forall_eq_or_imp] at h
+    simpa [Finset.prod_cons] using h.1.mul (ih h.2)
+
+@[to_additive]
 theorem uniformContinuous_mul : UniformContinuous fun p : α × α => p.1 * p.2 :=
   uniformContinuous_fst.mul uniformContinuous_snd
 
