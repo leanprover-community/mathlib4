@@ -176,19 +176,21 @@ open InnerProductSpace
 open scoped RealInnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
-    [CompleteSpace E] [BorelSpace E] {μ : Measure E}
-
-lemma isGaussian_iff_charFun_eq [IsFiniteMeasure μ] :
-    IsGaussian μ ↔
-    ∀ t, charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
-  rw [isGaussian_iff_charFunDual_eq]
-  refine ⟨fun h t ↦ ?_, fun h L ↦ by simpa using h ((toDual ℝ E).symm L)⟩
-  convert h (toDualMap ℝ E t)
-  exact charFun_eq_charFunDual_toDualMap t
+    [BorelSpace E] {μ : Measure E}
 
 lemma IsGaussian.charFun_eq [IsGaussian μ] (t : E) :
     charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
-  rw [isGaussian_iff_charFun_eq.1 inferInstance]
+  rw [charFun_eq_charFunDual_toDualMap, IsGaussian.charFunDual_eq]
+  rfl
+
+-- TODO: This should not require completeness as `toDualMap` has dense range, but this is not
+-- in mathlib.
+lemma isGaussian_iff_charFun_eq [CompleteSpace E] [IsFiniteMeasure μ] :
+    IsGaussian μ ↔
+    ∀ t, charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
+  simp_rw [isGaussian_iff_charFunDual_eq, (toDual ℝ E).surjective.forall,
+    charFun_eq_charFunDual_toDualMap]
+  rfl
 
 end charFun
 
