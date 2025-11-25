@@ -188,6 +188,21 @@ protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0
 protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
   simpa using NormedField.continuousAt_zpow (n := -1) (x := x)
 
+lemma not_continuousAt_zpow_zero (n : ℤ) (hn : n < 0) : ¬ ContinuousAt (· ^ n) (0 : 𝕜) := by
+  intro H
+  have : {0} ∈ nhds (0 : 𝕜) := by
+    have := H (U := Metric.ball 0 1) (Metric.isOpen_ball.mem_nhds (by simp [hn.ne, zero_zpow]))
+    convert (nhds 0).inter_mem this (Metric.isOpen_ball (x := 0) (ε := 1).mem_nhds (by simp))
+    ext a
+    by_cases ha : a = 0
+    · simp [ha, zero_zpow_eq, hn.ne]
+    · obtain ⟨n, rfl⟩ := neg_surjective n
+      lift n to ℕ using le_of_lt <| by simpa using hn
+      replace hn : n ≠ 0 := by simpa using hn.ne
+      have : 0 < ‖a‖ ^ n := by aesop
+      simp +contextual [inv_lt_one_iff₀, one_lt_pow_iff_of_nonneg, hn, this.not_ge, le_of_lt, ha]
+  exact not_isOpen_singleton _ (isOpen_singleton_of_finite_mem_nhds _ this (Set.finite_singleton 0))
+
 end NontriviallyNormedField
 end NormedField
 
