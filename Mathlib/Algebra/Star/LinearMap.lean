@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -145,4 +146,23 @@ open Module.End in
     IsUnit (star f) ↔ IsUnit f :=
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
 
+section eigenspace
+variable {R V : Type*} [InvolutiveStar R] [AddCommGroup V] [StarAddMonoid V]
+
+open scoped IntrinsicStar
+open LinearMap
+
+theorem mem_eigenspace_intrinsicStar_iff [CommRing R] [Module R V] [StarModule R V]
+    (f : End R V) (α : R) (x : V) :
+    x ∈ (star f).eigenspace α ↔ star x ∈ f.eigenspace (star α) := by
+  simp_rw [mem_eigenspace_iff, intrinsicStar_apply, star_eq_iff_star_eq, star_smul, eq_comm]
+
+@[simp]
+theorem spectrum_intrinsicStar [CommSemiring R] [Module R V] [StarModule R V] (f : End R V) :
+    spectrum R (star f) = star (spectrum R f) := by
+  ext x
+  simp_rw [Set.mem_star, spectrum.mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one]
+  rw [← isUnit_intrinsicStar_iff, star_sub, star_star, star_smul, one_eq_id, intrinsicStar_id]
+
+end eigenspace
 end Module.End
