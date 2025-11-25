@@ -6730,7 +6730,6 @@ public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 public import Mathlib.Topology.Algebra.Module.PerfectSpace
 public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
-public import Mathlib.Topology.Algebra.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.Module.Star
 public import Mathlib.Topology.Algebra.Module.StrongDual
