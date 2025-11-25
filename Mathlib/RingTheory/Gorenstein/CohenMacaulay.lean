@@ -642,6 +642,37 @@ theorem injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing [IsGorenstei
     ← injectiveDimension_eq_depth (ModuleCat.of R R) gor] at le'
   exact le_antisymm le' le
 
+lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
+  induction a with
+  | bot => rfl
+  | coe n =>
+    induction n with
+    | top => rfl
+    | coe n => simpa using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
+
+open Pointwise in
+lemma quotient_span_regular_isGorenstein_iff_isGorenstein
+    (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+    IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.span {x}) := by
+  have : IsLocalRing (R ⧸ Ideal.span {x}) :=
+    have : Nontrivial (R ⧸ Ideal.span {x}) :=
+      Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+    have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+  rw [isGorensteinLocalRing_def, isGorensteinLocalRing_def,
+    ← injectiveDimension_quotSMulTop_succ_eq_injectiveDimension reg reg mem]
+  let e : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x R)) ≅
+    (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) :=
+    { __ := Submodule.quotEquivOfEq _ (Ideal.span {x}) (by
+        simp [← Submodule.ideal_span_singleton_smul])
+      map_smul' r y := by
+        rcases Ideal.Quotient.mk_surjective r with ⟨s, hs⟩
+        simp only [← hs, IsTorsionBySet.mk_smul, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+          map_smul, LinearEquiv.coe_coe, RingHomCompTriple.comp_apply, smul_eq_mul]
+        rfl }.toModuleIso
+  simp [injectiveDimension_eq_of_iso e, add_one_eq_top_iff]
+
 /-
 variable {R} in
 class Ideal.isIrreducible (I : Ideal R) : Prop where
