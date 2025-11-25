@@ -300,6 +300,8 @@ theorem span_sup : span R s ⊔ p = span R (s ∪ p) := by rw [Submodule.span_un
 character `•` U+2022. -/
 notation:72 R:72 " ∙ " x:72 => span R (singleton x)
 
+/-- Unexpander for `R ∙ x` notation. This needs to be defined separately because the `{_}`
+notation is ambiguous, so we have to specify that it is the `«term{_}»` notation. -/
 @[app_unexpander span]
 meta def span.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $R $s) => match s with
