@@ -503,7 +503,7 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
-/-- The isomorpism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
+/-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
 This states that `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
 def compUliftCoyonedaIso (adj : F ⊣ G) :
