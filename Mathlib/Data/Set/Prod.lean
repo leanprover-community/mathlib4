@@ -3,8 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.SProd
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.SProd
+public import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -22,6 +25,8 @@ This file contains basic results on the following notions, which are defined in 
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -223,8 +228,6 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
 @[simp, mfld_simps]
 theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
-
-@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
 
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
@@ -535,7 +538,7 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
-alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_nonempty
+alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_eq_empty
 
 variable (s t)
 
@@ -798,11 +801,7 @@ theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹'
   grind
 
 theorem update_mem_pi_iff [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i} :
-    update a i b ∈ pi s t ↔ a ∈ pi (s \ {i}) t ∧ (i ∈ s → b ∈ t i) := by
-  constructor
-  · grind [update_self, update_of_ne]
-  · rintro h j
-    cases eq_or_ne i j <;> grind [update_self, update_of_ne]
+    update a i b ∈ pi s t ↔ a ∈ pi (s \ {i}) t ∧ (i ∈ s → b ∈ t i) := by grind
 
 theorem update_mem_pi_iff_of_mem [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i}
     (ha : a ∈ pi s t) : update a i b ∈ pi s t ↔ i ∈ s → b ∈ t i := by
@@ -864,6 +863,9 @@ theorem subset_pi_eval_image (s : Set ι) (u : Set (∀ i, α i)) : u ⊆ pi s f
 
 theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
+
+lemma uncurry_preimage_prod_pi {κ α : Type*} (s : Set ι) (t : Set κ) (u : ι × κ → Set α) :
+    Function.uncurry ⁻¹' (s ×ˢ t).pi u = s.pi (fun i ↦ t.pi fun j ↦ u ⟨i, j⟩) := by grind
 
 end Pi
 

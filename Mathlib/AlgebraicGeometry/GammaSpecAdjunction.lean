@@ -3,10 +3,12 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Reflective
+module
+
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Adjunction between `Γ` and `Spec`
@@ -30,6 +32,8 @@ case the unit and the counit would switch to each other.
   `CommRingᵒᵖ` to `Scheme`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -416,13 +420,14 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
 
 end ΓSpec
 
-theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
-    (Scheme.toSpecΓ X).base x =
-      (Spec.map (X.presheaf.germ ⊤ x trivial)).base (IsLocalRing.closedPoint _) := rfl
+theorem Scheme.toSpecΓ_apply (X : Scheme.{u}) (x) :
+    Scheme.toSpecΓ X x = Spec.map (X.presheaf.Γgerm x) (IsLocalRing.closedPoint _) := rfl
+
+@[deprecated (since := "2025-10-17")] alias Scheme.toSpecΓ_base := Scheme.toSpecΓ_apply
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
+    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map f.appTop :=
   ΓSpec.adjunction.unit.naturality f
 
 @[simp]
@@ -441,8 +446,18 @@ theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
   dsimp at this
   rwa [← IsIso.eq_comp_inv, Category.id_comp, ← Spec.map_inv, IsIso.Iso.inv_inv, eq_comm] at this
 
+@[reassoc (attr := simp)]
+theorem SpecMap_ΓSpecIso_inv_toSpecΓ (R : CommRingCat.{u}) :
+    Spec.map (Scheme.ΓSpecIso R).inv ≫ (Spec R).toSpecΓ = 𝟙 _ := by
+  rw [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Iso.hom_inv_id, Spec.map_id]
+
+@[reassoc (attr := simp)]
+theorem toSpecΓ_SpecMap_ΓSpecIso_inv (R : CommRingCat.{u}) :
+    (Spec R).toSpecΓ ≫ Spec.map (Scheme.ΓSpecIso R).inv = 𝟙 _ := by
+  rw [← SpecMap_ΓSpecIso_hom, ← Spec.map_comp, Iso.inv_hom_id, Spec.map_id]
+
 lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
-    X.toSpecΓ ⁻¹ᵁ (PrimeSpectrum.basicOpen r) = X.basicOpen r := by
+    X.toSpecΓ ⁻¹ᵁ PrimeSpectrum.basicOpen r = X.basicOpen r := by
   rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen, ← Scheme.Hom.appTop]
   congr
   rw [Scheme.toSpecΓ_appTop]
@@ -463,7 +478,7 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
 
 lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by
-  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
+  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.Hom.comp_app]
   simp
 
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
@@ -475,8 +490,6 @@ theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
       U.toScheme.toSpecΓ.appTop ≫ U.topIso.hom := by simp
 
 /-! Immediate consequences of the adjunction. -/
-
-
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
 is fully faithful. -/

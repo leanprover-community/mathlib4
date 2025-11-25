@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Generators in the category of presheaves
@@ -15,6 +16,8 @@ has a separator (and suitable coproducts), then the category of
 presheaves `Cᵒᵖ ⥤ A` also has a separator.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -63,17 +66,17 @@ lemma freeYonedaHomEquiv_symm_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A} (α : M
 
 variable (C)
 
-lemma isSeparating {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S)) :
-    IsSeparating (Set.range (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))) := by
+lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S)) :
+    ObjectProperty.IsSeparating (.ofObj (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))) := by
   intro F G f g h
   ext ⟨X⟩
   refine hS _ _ ?_
-  rintro _ ⟨i, rfl⟩ α
+  rintro _ ⟨i⟩ α
   apply freeYonedaHomEquiv.symm.injective
   simpa only [freeYonedaHomEquiv_symm_comp] using
-    h _ ⟨⟨X, i⟩, rfl⟩ (freeYonedaHomEquiv.symm α)
+    h _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩) (freeYonedaHomEquiv.symm α)
 
-lemma isSeparator {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S))
+lemma isSeparator {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S))
     [HasCoproduct (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))]
     [HasZeroMorphisms A] :
     IsSeparator (∐ (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))) :=

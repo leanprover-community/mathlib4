@@ -3,10 +3,12 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Rat.Cardinal
-import Mathlib.SetTheory.Cardinal.Continuum
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Data.Rat.Cardinal
+public import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
 # The cardinality of the reals
@@ -39,6 +41,8 @@ We conclude that all intervals with distinct endpoints have cardinality continuu
 ## Tags
 continuum, cardinality, reals, cardinality of the reals
 -/
+
+@[expose] public section
 
 
 open Nat Set
@@ -146,11 +150,10 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
         simp [g_min]
       · exact cantorFunctionAux_zero _
   | succ n ih =>
-    rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
-    rw [hn 0 <| zero_lt_succ n]
-    apply add_lt_add_left
-    rw [mul_lt_mul_left h1]
-    exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
+  rw [cantorFunction_succ f h1.le h3, cantorFunction_succ g h1.le h3]
+  rw [hn 0 <| zero_lt_succ n]
+  gcongr
+  exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
 
 /-- `cantorFunction c` is injective if `0 < c < 1/2`. -/
 theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :

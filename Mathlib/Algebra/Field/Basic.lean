@@ -3,16 +3,20 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Algebra.Ring.Invertible
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.Ring.Invertible
+public import Mathlib.Order.Synonym
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
 
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 

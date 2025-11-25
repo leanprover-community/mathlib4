@@ -3,13 +3,13 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, David Renshaw, Heather Macbeth, Michael Rothgang
 -/
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Real.Basic
 
 /-!
-# Tests for the `field_simp` tactic
+# Tests for the `field_simp` and `field` tactics
 -/
 
 private axiom test_sorry : ∀ {α}, α
@@ -273,6 +273,16 @@ example (hx : x ≠ 0) (hy : y ≠ 0) : P ((x * y) * (y * x)⁻¹) := by test_fi
 #guard_msgs in
 example (hy : y ≠ 0) : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
+/-- info: P (x / (1 - y + y)) -/
+#guard_msgs in
+example (hy : 1 - y ≠ 0): P (x / (1 - y) / (1 + y / (1 - y))) := by test_field_simp
+
+-- test `conv` tactic
+example (hy : 1 - y ≠ 0) : P (x / (1 - y) / (1 + y / (1 - y))) := by
+  conv => enter [1]; field_simp
+  guard_target = P (x / (1 - y + y))
+  exact test_sorry
+
 /-! ### Three atoms -/
 
 /-- info: P (x * y * z) -/
@@ -360,29 +370,89 @@ end
 
 /-! ## Cancel denominators from equalities -/
 
-/-! ### Most common use case: Cancel denominators to something solvable by `ring`
+/-! ### Finishing tactic
 
-When (eventually) this is robust enough, there should be a `field` tactic
+The `field` tactic is a finishing tactic for equalities in fields.
+Effectively it runs `field_simp` to clear denominators, then hands the result to `ring1`.
 -/
-
-macro "field" : tactic => `(tactic | (try field_simp) <;> ring1)
 
 example : (1:ℚ) / 3 + 1 / 6 = 1 / 2 := by field
 example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by field
 example {a b : ℚ} (h : b ≠ 0) : a / b + 2 * a / b + (-a) / b + (- (2 * a)) / b = 0 := by field
+
+-- example from the `field` docstring
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field
+
+example {x : ℚ} : x ^ 2 / (x ^ 2 + 1) + 1 / (x ^ 2 + 1) = 1 := by field
 
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 = 1 := by
   field
 
--- example from the `field_simp` docstring
 example {K : Type*} [Field K] (a b c d x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
     a + b / x + c / x ^ 2 + d / x ^ 3 = a + x⁻¹ * (y * b / y + (d / x + c) / x) := by
   field
 
+-- example from the `field` docstring
 example {a b : ℚ} (ha : a ≠ 0) : a / (a * b) - 1 / b = 0 := by field
+
 example {x : ℚ} : x ^ 2 * x⁻¹ = x := by field
+
+-- example from `field` docstring
+example {K : Type*} [Field K] (hK : ∀ x : K, x ^ 2 + 1 ≠ 0) (x : K) :
+    1 / (x ^ 2 + 1) + x ^ 2 / (x ^ 2 + 1) = 1 := by
+  field [hK]
+
+-- testing that mdata is cleared before parsing goal
+example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
+  have : 1 = 1 := rfl
+  field
+
+-- `field` will suggest `field_simp` on failure, if `field_simp` does anything.
+
+/--
+info: Try this:
+  [apply] field_simp
+---
+error: unsolved goals
+x y z : ℚ
+hx : x + y ≠ 0
+⊢ 1 = z
+-/
+#guard_msgs in
+example {x y z : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = z := by field
+
+-- If `field` fails but `field_simp` also fails, we just throw an error.
+/--
+error: ring failed, ring expressions not equal
+x y z : ℚ
+⊢ x + y = z
+-/
+#guard_msgs in
+example {x y z : ℚ} : x + y = z := by field
+
+/-
+The `field` tactic differs slightly from `field_simp; ring1` in that it clears denominators only at
+the top level, not recursively in subexpressions.
+
+(`ring1` acts only at the top level, so for consistency we also clear denominators only at the top
+level.) -/
+/--
+info: Try this:
+  [apply] field_simp
+---
+error: unsolved goals
+a b : ℚ
+f : ℚ → ℚ
+⊢ f (a * b) * (1 - 1) = 0
+-/
+#guard_msgs in
+example (a b : ℚ) (f : ℚ → ℚ) : f (a ^ 2 * b / a) - f (b ^ 2 * a / b) = 0 := by field
+
+-- (Compare with the example above: this is out of scope for `field`.)
+example (a b : ℚ) (f : ℚ → ℚ) : f (a ^ 2 * b / a) - f (b ^ 2 * a / b) = 0 := by
+  field_simp
+  ring1
 
 /-! ### Mid-proof use -/
 
@@ -429,6 +499,67 @@ example {x y z : ℚ} (h : x * y = x * z) : True := by
   guard_hyp h : x * y = x * z
   exact trivial
 
+example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
+    (a * x + b * y)⁻¹ ≤ a * x⁻¹ + b * y⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+-- vary `<` vs `≤`, `≥` vs `≤`
+example {x y a b : ℚ} (hx : x > 0) (hy : 0 < y) (ha : 0 ≤ a) (hb : 0 < b) :
+    a * x⁻¹ + b * y⁻¹ ≥ (a * x + b * y)⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
+    (a * x + b * y)⁻¹ < a * x⁻¹ + b * y⁻¹ := by
+  field_simp
+  guard_target = x * y < (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
+  field_simp
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  field_simp
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+-- used in `field_simp` docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
+
+-- used in `field` simproc-set docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
+
 section
 
 -- TODO (new implementation): do we want `field_simp` to reduce this to `⊢ x * y = z * y ^ 2`?
@@ -458,9 +589,10 @@ normalize properly.
 It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
 eventually. Nor is it clear whether, if so, there are any bounds on how many iterations are needed.
 -/
-section
 
 -- modified from 2021 American Mathematics Competition 12B, problem 9
+section
+
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   ring_nf
@@ -482,6 +614,77 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   field_simp
   guard_target = P 2
   exact test_sorry
+
+end
+
+section
+
+-- This example is used in the `field` docstring.
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  ring_nf at *
+  field
+
+/--
+info: Try this:
+  [apply] field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : b + a ≠ 0
+⊢ (a + b) / (a + b) = 1
+-/
+#guard_msgs in
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  ring_nf
+  field
+
+/--
+info: Try this:
+  [apply] field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : b + a ≠ 0
+⊢ a * (b + a) / (a + b) + b = b + a
+-/
+#guard_msgs in
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  field
+
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  field_simp
+  ring_nf at *
+  field
+
+/--
+info: Try this:
+  [apply] field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : 1 + a + b ≠ 0
+⊢ a * (1 + a + b) / (a + b * 2 / (1 + b) + b ^ 2 / (1 + b) + 1 / (1 + b)) + b + 1 = 1 + a + b
+-/
+#guard_msgs in
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  ring_nf at *
+  field
+
+/--
+info: Try this:
+  [apply] field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : a + b + 1 ≠ 0
+⊢ a / (a + (b + 1)) + (b + 1) / (b + a + 1) = 1
+-/
+#guard_msgs in
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  field
 
 end
 
@@ -531,6 +734,12 @@ example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
 example {x y z : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (y * x / (y ^ 2 / z)) / f (z / (y / x)) = 1 := by
   field_simp [hf]
+
+open Finset in
+example (n : ℕ) : ∏ i ∈ range n, (1 - (i + 2 : ℚ)⁻¹) < 1 := by
+  field_simp
+  guard_target = ∏ x ∈ range n, ((x:ℚ) + 2 - 1) / (x + 2) < 1
+  exact test_sorry
 
 /-! ## Performance -/
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -29,6 +31,8 @@ surjection `P →ₐ[R] R`.
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -300,10 +304,8 @@ variable (x y : P.Cotangent) (w z : P.ker.Cotangent)
 end Cotangent
 
 lemma Cotangent.smul_eq_zero_of_mem (p : P.Ring) (hp : p ∈ P.ker) (m : P.ker.Cotangent) :
-    p • m = 0 := by
-  obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ m
-  rw [← map_smul, Ideal.toCotangent_eq_zero, Submodule.coe_smul, smul_eq_mul, pow_two]
-  exact Ideal.mul_mem_mul hp x.2
+    p • m = 0 :=
+  Ideal.Cotangent.smul_eq_zero_of_mem hp m
 
 attribute [local simp] RingHom.mem_ker
 
@@ -370,6 +372,24 @@ lemma Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
     Cotangent.mk x = 0 ↔ x.val ∈ P.ker ^ 2 := by
   simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
 
+lemma Cotangent.mk_eq_mk_iff_sub_mem (x y : P.ker) :
+    mk x = mk y ↔ x.val - y.val ∈ P.ker ^ 2 := by
+  simp [Extension.Cotangent.ext_iff, Ideal.toCotangent_eq]
+
+variable (P) in
+lemma Cotangent.ker_mk : LinearMap.ker (mk (P := P)) = P.ker • ⊤ := by
+  ext ⟨x, hx⟩
+  simp [LinearMap.mem_ker, mk_eq_zero_iff, Submodule.mem_smul_top_iff, sq]
+
+lemma Cotangent.span_eq_top_of_span_eq_ker {ι : Type*} (s : ι → P.Ring)
+    (hs : Ideal.span (Set.range s) = P.ker) :
+    Submodule.span S (.range (fun i ↦ mk ⟨s i, hs.le (Ideal.subset_span ⟨i, rfl⟩)⟩)) = ⊤ := by
+  rw [Ideal.span, ← Submodule.span_range_subtype_eq_top_iff] at hs
+  · apply Submodule.span_eq_top_of_span_eq_top (R := P.Ring)
+    rw [← Function.comp_def, Set.range_comp, ← Submodule.map_span, hs, Submodule.map_top,
+      LinearMap.range_eq_top_of_surjective _ mk_surjective]
+  · simp [← hs, Ideal.mem_span_range_self]
+
 variable {P'}
 variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
@@ -422,7 +442,7 @@ lemma Cotangent.finite (hP : P.ker.FG) :
   refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
-  exact (P.ker.fg_top.mpr hP).map _
+  exact ((Submodule.fg_top P.ker).mpr hP).map _
 
 end Cotangent
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.ENat.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
 # Basic results un unique factorization monoids
@@ -24,6 +26,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 * `UniqueFactorizationMonoid.exists_reduced_factors`: in a UFM, we can divide out a common factor
   to get relatively prime elements.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
