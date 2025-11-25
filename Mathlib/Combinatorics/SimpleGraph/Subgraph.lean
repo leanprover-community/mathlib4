@@ -1231,7 +1231,7 @@ instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [D
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
 
-/-- Equivalence between an induced Subgraph and its corresponding SimpleGraph. -/
+/-- Equivalence between an induced subgraph and its corresponding simple graph. -/
 def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
     (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
   toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, h hv⟩, by simp at hv; aesop⟩
