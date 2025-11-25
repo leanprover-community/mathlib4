@@ -240,6 +240,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter, `ImportGraph),
   (`Mathlib.Tactic.Linter, `Mathlib.Tactic.MinImports),
   (`Mathlib.Tactic.Linter.TextBased, `Mathlib.Data.Nat.Notation),
+  (`Mathlib.Tactic.Linter.UnusedAssumptionInType, `Mathlib.Lean.Expr.Basic),
 
   (`Mathlib.Logic, `Batteries),
   -- TODO: should the next import direction be flipped?
