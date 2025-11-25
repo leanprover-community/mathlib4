@@ -260,9 +260,6 @@ lemma SetLike.isDiscrete_iff_discreteTopology {S : Type*} [SetLike S X] {s : S} 
     IsDiscrete (s : Set X) ↔ DiscreteTopology s :=
   ⟨fun s ↦ s.to_subtype, fun s ↦ ⟨s⟩⟩
 
-lemma isDiscrete_of_discreteTopology [DiscreteTopology X] : IsDiscrete s :=
-  ⟨instDiscreteTopologySubtype⟩
-
 lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨inferInstance⟩
 
 end IsDiscrete
