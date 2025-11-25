@@ -115,6 +115,15 @@ variable (C) in
 /-- The property of objects that are `κ`-presentable. -/
 def isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
 
+instance (X : (isCardinalPresentable C κ).FullSubcategory) :
+    IsCardinalPresentable X.obj κ :=
+  X.property
+
+instance (X : (isCardinalPresentable C κ).FullSubcategory) :
+    IsCardinalPresentable ((isCardinalPresentable C κ).ι.obj X) κ := by
+  dsimp
+  infer_instance
+
 lemma isCardinalPresentable_iff (X : C) :
     isCardinalPresentable C κ X ↔ IsCardinalPresentable X κ := Iff.rfl
 
