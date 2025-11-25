@@ -25,8 +25,11 @@ variable {R V E F : Type*}
 
 open Fin
 
+/--
+The notation typeclass for the line derivative.
+-/
 class LineDeriv (V : Type u) (E : Type v) (F : outParam (Type w)) where
-  /-- `∂_{v} f` is the partial derivative of `f` in direction `v`. The meaning of this notation is
+  /-- `∂_{v} f` is the line derivative of `f` in direction `v`. The meaning of this notation is
   type-dependent. -/
   lineDerivOp : V → E → F
 
@@ -75,14 +78,23 @@ end LineDeriv
 
 open LineDeriv
 
+/--
+The notation typeclass for the line derivative.
+-/
 class LineDerivAdd (V : Type u) (E : Type v) (F : outParam (Type w))
   [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] where
   lineDerivOp_add (v : V) (x y : E) : ∂_{v} (x + y) = ∂_{v} x + ∂_{v} y
 
+/--
+The notation typeclass for the line derivative.
+-/
 class LineDerivSMul (R : Type*) (V : Type u) (E : Type v) (F : outParam (Type w))
   [SMul R E] [SMul R F] [LineDeriv V E F] where
   lineDerivOp_smul (v : V) (r : R) (x : E) : ∂_{v} (r • x) = r • ∂_{v} x
 
+/--
+The notation typeclass for the line derivative.
+-/
 class ContinuousLineDeriv (V : Type u) (E : Type v) (F : outParam (Type w))
   [TopologicalSpace E] [TopologicalSpace F] [LineDeriv V E F] where
   continuous_lineDerivOp (v : V) : Continuous (∂_{v} : E → F)
