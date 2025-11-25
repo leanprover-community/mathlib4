@@ -173,9 +173,9 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
       rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
         restrict_compl_singleton]
-    _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
-      μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
-        (f ∘ Subtype.val ∘ Prod.snd)
+    _ = ∫ x, f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) := by
+      simpa using μ.measurePreserving_homeomorphUnitSphereProd.integral_comp
+        (Homeomorph.measurableEmbedding _) (f ∘ Subtype.val ∘ Prod.snd)
     _ = μ.toSphere.real univ • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
       integral_fun_snd (f ∘ Subtype.val)
     _ = _ := by
