@@ -144,6 +144,7 @@ lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
   · rw [← mk_eq_zero_iff] at h
     rw [h, map_zero]
 
+variable (K L n) in
 lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _) := by
   refine ⟨fun x y h ↦ ?_, fun f ↦ ?_⟩
   · obtain ⟨x, rfl⟩ := x.mk_surjective
@@ -158,7 +159,7 @@ lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _)
 noncomputable def homAddEquiv :
     CohomologyClass K L n ≃+
       ((HomotopyCategory.quotient C _).obj K ⟶ (HomotopyCategory.quotient C _).obj (L⟦n⟧)) :=
-  AddEquiv.ofBijective toHom toHom_bijective
+  AddEquiv.ofBijective toHom (toHom_bijective _ _ _)
 
 end CohomologyClass
 

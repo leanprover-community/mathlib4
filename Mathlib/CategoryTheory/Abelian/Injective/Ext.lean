@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
@@ -22,12 +23,66 @@ universe w v u
 
 open CategoryTheory CochainComplex HomComplex Abelian Localization
 
-def CochainComplex.HomComplex.equivOfIsKInjective
-    {C : Type u} [Category.{v} C] [Abelian C]
-    {K L : CochainComplex C ℤ} [L.IsKInjective] {n : ℤ}
-    [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L] :
+-- to be moved...
+namespace CochainComplex.HomComplex
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+  {K L : CochainComplex C ℤ} {n : ℤ}
+  [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
+
+namespace CohomologyClass
+
+/-- Given `x : CohomologyClass K L n`, this is the element in the type
+`SmallShiftedHom` relatively to quasi-isomorphisms that is associated
+to the `x`. -/
+noncomputable def toSmallShiftedHom (x : CohomologyClass K L n) :
+    SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) K L n :=
+  Quotient.lift (fun y ↦ SmallShiftedHom.mk _ (Cocycle.equivHomShift.symm y)) (by
+    letI := HasDerivedCategory.standard C
+    intro y₁ y₂ h
+    refine (SmallShiftedHom.equiv _ DerivedCategory.Q).injective ?_
+    simp only [SmallShiftedHom.equiv_mk, ShiftedHom.map]
+    rw [cancel_mono, DerivedCategory.Q_map_eq_of_homotopy]
+    apply HomotopyCategory.homotopyOfEq
+    rw [← toHom_mk, ← toHom_mk]
+    congr 1
+    exact Quotient.sound h) x
+
+lemma toSmallShiftedHom_mk (x : Cocycle K L n) :
+    (mk x).toSmallShiftedHom =
+      SmallShiftedHom.mk _ (Cocycle.equivHomShift.symm x) := rfl
+
+@[simp]
+lemma equiv_toSmallShiftedHom_mk [HasDerivedCategory C] (x : Cocycle K L n) :
+    SmallShiftedHom.equiv _ DerivedCategory.Q (mk x).toSmallShiftedHom =
+      ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q := by
+  simp [toSmallShiftedHom_mk]
+
+open DerivedCategory in
+lemma bijective_toSmallShiftedHom_of_isKInjective [L.IsKInjective] :
+    Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
+  letI := HasDerivedCategory.standard C
+  rw [← Function.Bijective.of_comp_iff'
+    (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
+    ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)
+      ((Q.commShiftIso n).symm.app L ≪≫ (quotientCompQhIso C).symm.app (L⟦n⟧))).bijective]
+  convert (CochainComplex.IsKInjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
+  ext x
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  simp [toHom_mk, ShiftedHom.map]
+
+/-- When `L` is a K-injective cochain complex, cohomology classes
+in `CohomologyClass K L n` identify to elements in a type `SmallShiftedHom` relatively
+to quasi-isomorphisms. -/
+@[simps! -isSimp]
+noncomputable def equivOfIsKInjective [L.IsKInjective] :
     CohomologyClass K L n ≃
-      SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ) ) K L n := sorry
+      SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) K L n :=
+  Equiv.ofBijective _ bijective_toSmallShiftedHom_of_isKInjective
+
+end CohomologyClass
+
+end CochainComplex.HomComplex
 
 namespace CategoryTheory
 
@@ -39,10 +94,9 @@ variable {X Y : C} (R : InjectiveResolution Y) {n : ℕ}
 
 instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
 
--- should be generalized as a lemma
-instance (K L : CochainComplex C ℤ) [K.IsGE 0] [K.IsLE 0] [L.IsGE 0] [L.IsLE 0] :
-    HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso _ _) ℤ K L := sorry
-
+/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identify
+to the type of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
+to `R.cochainComplex`. -/
 noncomputable def extEquivCohomologyClass :
     Ext X Y n ≃ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n := by
   have hι' : HomologicalComplex.quasiIso C (ComplexShape.up ℤ) R.ι' := by
@@ -50,7 +104,7 @@ noncomputable def extEquivCohomologyClass :
     infer_instance
   exact (SmallShiftedHom.postcompEquiv.{w} R.ι'
       (by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance)).trans
-    CochainComplex.HomComplex.equivOfIsKInjective.{w}.symm
+    CochainComplex.HomComplex.CohomologyClass.equivOfIsKInjective.{w}.symm
 
 /-- Given an injective resolution `R` of an object `Y` of an abelian category,
 this is a constructor for elements in `Ext X Y n` which takes as an input
