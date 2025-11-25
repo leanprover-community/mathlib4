@@ -84,9 +84,9 @@ def getEquivOfForallCountEqOne [DecidableEq α] (l : List α) (h : ∀ x, l.coun
 variable [Preorder α] {l : List α}
 
 @[deprecated (since := "2025-10-11")]
-alias Sorted.get_mono := SortedLE.get_mono
+alias Sorted.get_mono := SortedLE.monotone_get
 @[deprecated (since := "2025-10-11")]
-alias Sorted.get_strictMono := SortedLT.get_strictMono
+alias Sorted.get_strictMono := SortedLT.strictMono_get
 
 variable [DecidableEq α]
 

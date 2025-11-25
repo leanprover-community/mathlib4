@@ -89,6 +89,12 @@ theorem nodup_iff_injective_getElem {l : List α} :
 theorem nodup_iff_injective_get {l : List α} : Nodup l ↔ Function.Injective l.get :=
   nodup_iff_injective_getElem
 
+protected theorem Nodup.injective_get {l : List α} (h : Nodup l) : Function.Injective l.get :=
+  nodup_iff_injective_get.mp h
+
+protected theorem _root_.Function.Injective.nodup {l : List α}
+    (h : Function.Injective l.get) : l.Nodup := nodup_iff_injective_get.mpr h
+
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
   (nodup_iff_injective_get.1 h).eq_iff
