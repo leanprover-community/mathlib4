@@ -156,7 +156,7 @@ lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
   · simp
   · exact ⟨.cons huv .nil⟩
 
-lemma reachable_of_subsingleton [Subsingleton V] {u v : V} : G.Reachable u v := by
+lemma Reachable.of_subsingleton [Subsingleton V] {u v : V} : G.Reachable u v := by
   rw [Subsingleton.allEq u v]
 
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
