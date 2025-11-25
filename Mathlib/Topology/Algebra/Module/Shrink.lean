@@ -40,7 +40,7 @@ variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves the continuous module structure. -/
 @[simps!]
 def continuousLinearEquiv [AddCommMonoid α] [TopologicalSpace α] [Module R α] :
-    Shrink.{v} α ≃L[R] α := by
-  convert (equivShrink α).symm.continuousLinearEquiv R
+    Shrink.{v} α ≃L[R] α :=
+  (equivShrink α).symm.continuousLinearEquiv R
 
 end Shrink

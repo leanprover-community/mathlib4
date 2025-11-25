@@ -26,10 +26,9 @@ protected abbrev topologicalSpace [TopologicalSpace β] (e : α ≃ β) :
     TopologicalSpace α :=
   .induced e ‹_›
 
-
 /-- An equivalence `e : α ≃ β` gives a homeomorphism `α ≃ₜ β` where the topological space structure
 on `α` is the one obtained by transporting the topological space structure on `β` back along `e`. -/
-def homeomorph (e : α ≃ β) [TopologicalSpace β] :
+def homeomorph [TopologicalSpace β] (e : α ≃ β) :
     letI := e.topologicalSpace
     α ≃ₜ β :=
   letI := e.topologicalSpace
