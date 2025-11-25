@@ -66,6 +66,12 @@ instance (J : Type u') [Category.{v'} J] :
           (by simp [reassoc_of% h, h, p.w a]) }),
       p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
+attribute [local simp] isLocal_iff in
+@[simp]
+lemma isLocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isLocal = ⨅ (i : ι), (W i).isLocal := by
+  aesop
+
 end MorphismProperty
 
 end CategoryTheory

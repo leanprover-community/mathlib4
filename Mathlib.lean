@@ -2825,7 +2825,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.InheritedFromHom
@@ -2876,6 +2878,7 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 public import Mathlib.CategoryTheory.Presentable.Basic
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
+public import Mathlib.CategoryTheory.Presentable.Continuous
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.Limits
