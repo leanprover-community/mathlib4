@@ -151,9 +151,9 @@ public theorem angle_le_angle_add_angle (x y z : V) :
 /-- The triangle inequality is an equality if the middle vector is a nonnegative linear combination
 of the other two vectors. See `angle_add_angle_eq_pi_of_angle_eq_pi` for the other equality case. -/
 public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y ≠ 0)
-    (h_mem : y ∈ (ℝ≥0 ∙ x) ⊔ (ℝ≥0 ∙ z)) : angle x z = angle x y + angle y z := by
-  simp only [Submodule.mem_sup, Submodule.mem_span_singleton] at h_mem
-  obtain ⟨_, ⟨kx, rfl⟩, _, ⟨kz, rfl⟩, rfl⟩ := h_mem
+    (h_mem : y ∈ Submodule.span ℝ≥0 {x, z}) : angle x z = angle x y + angle y z := by
+  rw [Submodule.mem_span_pair] at h_mem
+  obtain ⟨kx, kz, rfl⟩ := h_mem
   rcases (zero_le kx).eq_or_lt with rfl | hkx <;> rcases (zero_le kz).eq_or_lt with rfl | hkz
   · simp at hy
   · simp_all [NNReal.smul_def]
@@ -170,7 +170,7 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
 /-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
 `angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
 proof_wanted angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
-    angle x z = angle x y + angle y z ↔ angle x z = π ∨ y ∈ (ℝ≥0 ∙ x) ⊔ (ℝ≥0 ∙ z)
+    angle x z = angle x y + angle y z ↔ angle x z = π ∨ y ∈ Submodule.span ℝ≥0 {x, z}
 
 end InnerProductGeometry
 
