@@ -35,15 +35,9 @@ def antidiagonal (n : ℕ) : List (ℕ × ℕ) :=
 /-- A pair (i, j) is contained in the antidiagonal of `n` if and only if `i + j = n`. -/
 @[simp]
 theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
-  rw [antidiagonal, mem_map]; constructor
-  · rintro ⟨i, hi, rfl⟩
-    rw [mem_range, Nat.lt_succ_iff] at hi
-    exact Nat.add_sub_cancel' hi
-  · rintro rfl
-    refine ⟨x.fst, ?_, ?_⟩
-    · rw [mem_range]
-      lia
-    · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
+  rcases x with ⟨x, y⟩
+  simp [antidiagonal]
+  grind
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/
 @[simp]

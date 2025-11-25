@@ -305,4 +305,18 @@ theorem ofDigits_neg_one :
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
 
+/-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
+theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
+  obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
+  clear h
+  rw [List.getD_eq_getElem?_getD]
+  induction n using Nat.caseStrongRecOn generalizing i with
+  | zero => simp
+  | ind n IH =>
+    rcases i with _ | i
+    · rw [← List.head?_eq_getElem?, ← default_eq_zero, Option.getD_default_eq_iget,
+        ← List.head!_eq_head?, head!_digits (by grind)]
+      simp
+    · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
+
 end Nat

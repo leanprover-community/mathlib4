@@ -219,26 +219,25 @@ section T0Space
 
 variable [T0Space α]
 
-theorem isUniformEmbedding_singleton : IsUniformEmbedding (Closeds.singleton (α := α)) :=
+theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → Closeds α) :=
   isUniformEmbedding_coe.of_comp_iff.mp UniformSpace.hausdorff.isUniformEmbedding_singleton
 
-theorem uniformContinuous_singleton : UniformContinuous (Closeds.singleton (α := α)) :=
+theorem uniformContinuous_singleton : UniformContinuous ({·} : α → Closeds α) :=
   isUniformEmbedding_singleton.uniformContinuous
 
 @[fun_prop]
-theorem isEmbedding_singleton : IsEmbedding (Closeds.singleton (α := α)) :=
+theorem isEmbedding_singleton : IsEmbedding ({·} : α → Closeds α) :=
   isUniformEmbedding_singleton.isEmbedding
 
 @[fun_prop]
-theorem continuous_singleton : Continuous (Closeds.singleton (α := α)) :=
+theorem continuous_singleton : Continuous ({·} : α → Closeds α) :=
   isEmbedding_singleton.continuous
 
 @[fun_prop]
-theorem isClosedEmbedding_singleton :
-    Topology.IsClosedEmbedding (Closeds.singleton (α := α)) where
+theorem isClosedEmbedding_singleton : Topology.IsClosedEmbedding ({·} : α → Closeds α) where
   __ := isUniformEmbedding_singleton.isEmbedding
   isClosed_range := by
-    rw [← SetLike.coe_injective.preimage_image (s := Set.range singleton), ← Set.range_comp]
+    rw [← SetLike.coe_injective.preimage_image (s := Set.range ({·})), ← Set.range_comp]
     exact UniformSpace.hausdorff.isClosedEmbedding_singleton.isClosed_range.preimage
       uniformContinuous_coe.continuous
 

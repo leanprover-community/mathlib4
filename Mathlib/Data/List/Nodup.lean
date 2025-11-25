@@ -120,10 +120,9 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-theorem idxOf_getElem [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Nat)
-    (h : i < l.length) : idxOf l[i] l = i := by
-  rw [← H.getElem_inj_iff, getElem_idxOf]
-  simp [idxOf_lt_length_iff]
+@[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
+theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
+    idxOf l[i] l = i := Nodup.idxOf_getElem
 
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
