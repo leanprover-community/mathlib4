@@ -3,15 +3,19 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Lemmas about localizations of commutative monoids
 
 that requires additional imports.
 -/
+
+@[expose] public section
 
 namespace Submonoid.IsLocalizationMap
 
