@@ -314,17 +314,6 @@ end dirac_injective
 
 end MeasureTheory
 
-namespace Set
-variable {α : Type*} {s : Set α} {a : α}
-
-@[simp] alias ⟨_, singleton_inter_of_notMem⟩ := singleton_inter_eq_empty
-@[simp] alias ⟨_, inter_singleton_of_notMem⟩ := inter_singleton_eq_empty
-
-@[simp] lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
-@[simp] lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
-
-end Set
-
 namespace MeasureTheory.Measure
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {f : α → β} {μ : Measure α}
   {b₁ b₂ : β}
