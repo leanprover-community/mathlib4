@@ -129,7 +129,7 @@ theorem idxOf_getElem [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : N
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
     idxOf (get l i) l = i := by
-  simp [idxOf_getElem, H]
+  simp [H]
 
 theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
