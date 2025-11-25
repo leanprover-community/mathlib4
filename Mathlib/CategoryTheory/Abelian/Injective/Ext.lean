@@ -43,10 +43,6 @@ instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
 instance (K L : CochainComplex C ℤ) [K.IsGE 0] [K.IsLE 0] [L.IsGE 0] [L.IsLE 0] :
     HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso _ _) ℤ K L := sorry
 
-instance : R.cochainComplex.IsGE 0 := sorry
-
-instance : R.cochainComplex.IsLE 0 := sorry
-
 noncomputable def extEquivCohomologyClass :
     Ext X Y n ≃ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n := by
   have hι' : HomologicalComplex.quasiIso C (ComplexShape.up ℤ) R.ι' := by
