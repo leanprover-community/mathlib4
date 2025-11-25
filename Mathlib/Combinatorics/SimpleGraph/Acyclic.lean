@@ -377,11 +377,9 @@ lemma Connected.exists_vertex_connected_induce_compl_singleton_of_finite_nontriv
 /-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
 lemma Connected.exists_vertex_preconnected_induce_compl_singleton_of_finite [Finite V]
     (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
-  by_cases h : Nontrivial V
+  cases subsingleton_or_nontrivial V
+  · exact ⟨hconn.nonempty.some, Preconnected.of_subsingleton⟩
   · obtain ⟨v, hv⟩ := hconn.exists_vertex_connected_induce_compl_singleton_of_finite_nontrivial
     exact ⟨v, hv.preconnected⟩
-  · use hconn.nonempty.some
-    have := not_nontrivial_iff_subsingleton.mp h
-    exact Preconnected.of_subsingleton
 
 end SimpleGraph
