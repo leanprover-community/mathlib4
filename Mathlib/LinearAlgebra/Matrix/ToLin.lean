@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Algebra.Star.LinearMap
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Data.Finite.Sum
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Basis.Basic
@@ -1166,38 +1164,3 @@ def endVecAlgEquivMatrixEnd :
     split_ifs <;> rfl
 
 end
-
-section intrinsicStar
-variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
-
-open scoped IntrinsicStar
-
-namespace LinearMap
-
-theorem toMatrix'_intrinsicStar (f : (m → R) →ₗ[R] (n → R)) :
-    (star f).toMatrix' = f.toMatrix'.map star := by
-  ext; simp [Pi.star_def, apply_ite]
-
-/-- A linear map `f : (m → R) →ₗ (n → R)` is self-adjoint (with respect to the intrinsic star)
-iff its corresponding matrix `f.toMatrix'` has all self-adjoint elements.
-So star-preserving maps correspond to their matrices containing only self-adjoint elements. -/
-theorem isSelfAdjoint_iff_forall_isSelfAdjoint_toMatrix'_apply (f : (m → R) →ₗ[R] (n → R)) :
-    IsSelfAdjoint f ↔ ∀ i j, IsSelfAdjoint (f.toMatrix' i j) := by
-  simp [IsSelfAdjoint, ← toMatrix'.injective.eq_iff, toMatrix'_intrinsicStar, ← Matrix.ext_iff]
-
-end LinearMap
-
-namespace Matrix
-
-theorem intrinsicStar_toLin' (A : Matrix n m R) : star A.toLin' = (A.map star).toLin' := by
-  simp [← LinearMap.toMatrix'.injective.eq_iff, LinearMap.toMatrix'_intrinsicStar]
-
-/-- Given a matrix `A`, `A.toLin'` is self-adjoint (with respect to the intrinsic star)
-iff all its elements are self-adjoint. -/
-theorem isSelfAdjoint_toLin'_iff_forall_isSelfAdjoint_apply (A : Matrix n m R) :
-    IsSelfAdjoint A.toLin' ↔ ∀ i j, IsSelfAdjoint (A i j) := by
-  simp [IsSelfAdjoint, intrinsicStar_toLin', ← ext_iff]
-
-end Matrix
-
-end intrinsicStar
