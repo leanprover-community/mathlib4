@@ -132,7 +132,7 @@ section SortLinearOrder
 
 variable [LinearOrder α]
 
-theorem sort_sorted_lt (s : Finset α) : (sort s).SortedLT :=
+theorem sort_sortedLT (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT (sort_nodup _ _)
 
 theorem sort_sorted_gt (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
@@ -188,7 +188,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
-    (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sort_sortedLT.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a

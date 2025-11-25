@@ -115,7 +115,7 @@ instance finset : Denumerable (Finset α) :=
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
       Finset.eq_of_veq <| by
         simp [-Multiset.map_coe, raise'Finset,
-          raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
+          raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sortedLT _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
         List.mergeSort_eq_self _ (raise'_sorted _ _).sortedLE.pairwise, lower_raise']⟩
