@@ -5,7 +5,8 @@ Authors: Kyle Miller, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs
