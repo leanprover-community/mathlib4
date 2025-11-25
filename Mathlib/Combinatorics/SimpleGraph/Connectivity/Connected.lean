@@ -307,6 +307,10 @@ lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp 
 @[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
 @[deprecated (since := "2025-09-23")] alias top_connected := connected_top
 
+lemma Connected.of_nonempty_subsingleton [Nonempty V] [Subsingleton V] (G : SimpleGraph V) :
+    G.Connected :=
+  ⟨Preconnected.of_subsingleton G⟩
+
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Connected ↔ H.Connected :=
   ⟨Connected.map e.toHom e.toEquiv.surjective, Connected.map e.symm.toHom e.symm.toEquiv.surjective⟩
