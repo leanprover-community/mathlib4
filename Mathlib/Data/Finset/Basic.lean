@@ -158,10 +158,17 @@ theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ s.erase a ⊆ t := by grind
 
+<<<<<<< HEAD
 theorem erase_insert_subset (a : α) (s : Finset α) : (insert a s).erase a ⊆ s :=
   subset_insert_iff.1 Subset.rfl
 
 theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (s.erase a) :=
+=======
+theorem erase_insert_subset (a : α) (s : Finset α) : erase (insert a s) a ⊆ s :=
+  subset_insert_iff.1 Subset.rfl
+
+theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (erase s a) :=
+>>>>>>> master
   subset_insert_iff.2 Subset.rfl
 
 theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
@@ -546,8 +553,12 @@ theorem choose_spec (hp : ∃! a, a ∈ l ∧ p a) : l.choose p hp ∈ l ∧ p (
 theorem choose_mem (hp : ∃! a, a ∈ l ∧ p a) : l.choose p hp ∈ l :=
   (choose_spec _ _ _).1
 
+grind_pattern choose_mem => l.choose p hp
+
 theorem choose_property (hp : ∃! a, a ∈ l ∧ p a) : p (l.choose p hp) :=
   (choose_spec _ _ _).2
+
+grind_pattern choose_property => l.choose p hp
 
 end Choose
 
