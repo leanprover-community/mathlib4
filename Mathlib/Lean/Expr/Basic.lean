@@ -266,7 +266,7 @@ partial def getUnusedForallInstanceBinderIdxsWhere (p : Expr → Bool) (e : Expr
 where
   /-- Inspects `body`, and if it is a `.forallE` of an instance with type `type` such that `p type`
   is `true` and the remainder of the type does not depend on it, pushes the `current` index onto
-  the accummulated array. -/
+  the accumulated array. -/
   go (body : Expr) (current : Nat) (acc : Array Nat) : Array Nat :=
     match body.cleanupAnnotations with
     | .forallE _ type body bi => go body (current+1) <|
