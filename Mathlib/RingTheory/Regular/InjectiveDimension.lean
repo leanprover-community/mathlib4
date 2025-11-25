@@ -97,6 +97,22 @@ lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := 
   exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
     (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
 
+variable {R} in
+lemma IsLocalRing.ResidueField.map_injective [IsLocalRing R] {S : Type*} [CommRing S]
+    [IsLocalRing S] (f : R →+* S) [IsLocalHom f] :
+    Function.Injective (ResidueField.map f) := by
+  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
+  intro x hx
+  simpa only [map_eq_zero] using hx
+
+variable {R} in
+lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : Type*} [CommRing S]
+    [IsLocalRing S] (f : R →+* S) (surj : Function.Surjective f) [IsLocalHom f] :
+    Function.Bijective (ResidueField.map f) := by
+  refine ⟨ResidueField.map_injective f, ?_⟩
+  apply Ideal.Quotient.lift_surjective_of_surjective
+  convert Function.Surjective.comp (Ideal.Quotient.mk_surjective (I := (maximalIdeal S))) surj
+
 local instance small_of_quotient'' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
@@ -299,7 +315,7 @@ end restrictScalars
 
 
 
-variable [Small.{v} R] [UnivLE.{v, w}]
+variable {R} [Small.{v} R] [UnivLE.{v, w}]
 
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
@@ -317,7 +333,11 @@ end
 
 section
 
-variable {R} [IsLocalRing R] [IsNoetherianRing R]
+lemma Function.Bijective.subsingleton_congr {α β : Type*} {f : α → β} (bij : Function.Bijective f) :
+    Subsingleton α ↔ Subsingleton β :=
+  ⟨fun _ ↦ bij.2.subsingleton, fun _ ↦ bij.1.subsingleton⟩
+
+variable {R} [IsLocalRing R]
 
 section
 
@@ -335,7 +355,28 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     Subsingleton (Ext.{w} (ModuleCat.of (R ⧸ Ideal.span {x})
     (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
     (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) := by
-  sorry
+  let _ : Nontrivial (R ⧸ Ideal.span {x}) :=
+      Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+  let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+    IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+  let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+  let k' := (ModuleCat.of (R ⧸ Ideal.span {x})
+    (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
+  let e' : (R ⧸ maximalIdeal R) ≃ₗ[R] (R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}) :=
+    { __ :=RingEquiv.ofBijective _ (ResidueField.map_bijective_of_surjective
+        (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective)
+      map_smul' r y := by
+        simp only [RingEquiv.toEquiv_eq_coe, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
+          Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul, RingEquiv.coe_ofBijective,
+          RingHom.id_apply, mul_eq_mul_right_iff]
+        left
+        rfl }
+  let e : (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) ≅
+    (ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj k' :=
+    (((Shrink.linearEquiv.{v} R _).trans e').trans (Shrink.linearEquiv.{v} R _).symm).toModuleIso
+  exact (Iff.trans (extClass_comp_mapExt_bijective regR regM k' n).subsingleton_congr
+    (((extFunctor (n + 1)).mapIso e.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr).symm
 
 end
 
@@ -346,7 +387,7 @@ local instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Mo
     map_smul' r m := rfl }
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
-theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R]
+theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] [IsNoetherianRing R]
     {M : ModuleCat.{v} R} [Module.Finite R M] {x : R} (regR : IsSMulRegular R x)
     (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) + 1 =
