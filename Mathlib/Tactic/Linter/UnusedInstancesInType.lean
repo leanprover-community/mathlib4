@@ -185,7 +185,7 @@ This linter fires only on theorems. (This includes `lemma`s and `instance`s of `
 Note: `set_option linter.unusedDecidableInType _ in <command>` currently only works at the
 outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
 -/
-register_option linter.unusedDecidableInType : Bool := {
+public register_option linter.unusedDecidableInType : Bool := {
   defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
