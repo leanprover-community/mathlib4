@@ -38,8 +38,8 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
   classical
   let s := Module.Basis.ofVectorSpace F K
   refine
-    ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
-      Subalgebra.toSubmodule.injective ?_⟩
+    ⟨∏ x, minpoly F (s x), Polynomial.map_prod (algebraMap F K) _ _ ▸
+      Splits.prod fun x _ => h.splits (s x), Subalgebra.toSubmodule.injective ?_⟩
   rw [Algebra.top_toSubmodule, eq_top_iff, ← s.span_eq, Submodule.span_le, Set.range_subset_iff]
   refine fun x =>
     Algebra.subset_adjoin
@@ -80,7 +80,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
       rw [← IsSplittingField.adjoin_rootSet_eq_range E p j,
             IsSplittingField.adjoin_rootSet_eq_range E p (j'.restrictScalars F)]
       exact ⟨x, (j'.commutes _).trans (algHomAdjoinIntegralEquiv_symm_apply_gen F hx _)⟩
-    · rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]; exact hL.1
+    · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]; exact hL.1
   · rw [Polynomial.map_ne_zero_iff (algebraMap F L).injective, mul_ne_zero_iff]
     exact ⟨hp, minpoly.ne_zero hx⟩
 
@@ -191,7 +191,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
         (fun x _ ↦ ⟨(h.out x).1.tower_top,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
-            (by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]
+            (by rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
                 exact (h.out x).2)
             (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩)
         (IntermediateField.adjoin_univ _ _)
@@ -291,5 +291,5 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
   splits' := by
     intro x
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
-    · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
+    · exact Splits.of_natDegree_le_one <| natDegree_map_le.trans (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
