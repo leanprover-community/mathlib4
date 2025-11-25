@@ -65,7 +65,7 @@ lemma ihomPoints_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
 lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
     (x : (A ⊗ ((free R).obj S.toCondensed)) ⟶ B) :
     (ihomPoints R A B S).symm x = (coherentTopology LightProfinite.{u}).yonedaEquiv
-      ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) := by
+      ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) :=
   rfl
 
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
