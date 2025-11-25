@@ -316,6 +316,7 @@ end restrictScalars
 
 variable {R} [Small.{v} R] [UnivLE.{v, w}]
 
+#check Category
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
   is bijective. -/
@@ -328,8 +329,19 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
   let Fr := (ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x})))
   induction n generalizing N
   · simp only [ModuleCat.smulShortComplex_X₁, Nat.reduceAdd, AddMonoidHom.coe_comp]
-    apply Function.Bijective.comp
-    · sorry
+    refine Function.Bijective.comp ⟨(injective_iff_map_eq_zero _).mpr fun y h ↦ ?_,
+      fun y ↦ Ext.covariant_sequence_exact₁ _ regM.smulShortComplex_shortExact y ?_ rfl⟩ ?_
+    · obtain ⟨z, rfl⟩ := y.covariant_sequence_exact₃ _ regM.smulShortComplex_shortExact rfl h
+      suffices z = 0 by simp [this]
+      apply @Subsingleton.eq_zero _ _ (@Ext.homEquiv₀.subsingleton _ _ ?_) z
+
+      sorry
+    · conv in ShortComplex.f ?_ => change x • (𝟙 M)
+      rw [← Ext.mk₀_id_comp (X := Fr.obj N) (y.comp (Ext.mk₀ (x • 𝟙 M)) rfl), Ext.mk₀_smul,
+        Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
+      suffices x • 𝟙 (Fr.obj N) = 0 by simp [this]
+      ext u
+      simp [Fr]
     · refine (EquivLike.comp_bijective _ Ext.homEquiv₀).mp <|
         (EquivLike.bijective_comp Ext.homEquiv₀.symm _).mp ?_
       erw [Functor.mapExtAddHom_coe]
