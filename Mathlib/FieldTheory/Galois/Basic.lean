@@ -470,7 +470,7 @@ theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
   obtain ⟨α, h1⟩ := Field.exists_primitive_element F E
   use minpoly F α, separable F α, IsGalois.splits F α
   rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← h1]
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (integral F α)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (integral F α).isAlgebraic]
   apply Algebra.adjoin_mono
   rw [Set.singleton_subset_iff, Polynomial.mem_rootSet]
   exact ⟨minpoly.ne_zero (integral F α), minpoly.aeval _ _⟩
