@@ -3,10 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.Galois.Abelian
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Galois.Abelian
 
 /-!
 # Cyclotomic extensions
@@ -57,6 +59,8 @@ Note that some results, for example `IsCyclotomicExtension.trans`,
 included in the `Cyclotomic` locale.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Algebra Module Set
@@ -477,7 +481,7 @@ theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
     [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.isIntegral ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end
@@ -488,15 +492,15 @@ variable {n S}
 
 /-- A cyclotomic extension splits `X ^ n - 1` if `n ∈ S`. -/
 theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
-    Splits (algebraMap K L) (X ^ n - 1) := by
-  rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
+    Splits (map (algebraMap K L) (X ^ n - 1)) := by
+  rw [Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
     Polynomial.map_X]
   obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS (NeZero.ne _)
   exact X_pow_sub_one_splits hz
 
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
-    Splits (algebraMap K L) (cyclotomic n K) := by
+    Splits ((cyclotomic n K).map (algebraMap K L)) := by
   refine splits_of_splits_of_dvd _ (X_pow_sub_C_ne_zero (NeZero.pos _) _)
     (splits_X_pow_sub_one K L hS) ?_
   use ∏ i ∈ n.properDivisors, Polynomial.cyclotomic i K
@@ -512,13 +516,13 @@ theorem _root_.IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimit
     rintro b ⟨n, hn, h1, h2⟩
     exact ⟨X ^ n - 1, (monic_X_pow_sub_C (1 : K) h1).ne_zero, by simp [h2]⟩
   change IsCyclotomicExtension S K (IntermediateField.toSubalgebra _)
-  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_algebraic_toSubalgebra key))]
+  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_toSubalgebra_of_isAlgebraic key))]
   exact Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K L h
 
 theorem isSeparable [IsCyclotomicExtension S K L] : Algebra.IsSeparable K L := by
   have := integral S K L
   have h := (IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_› |>.2
-  rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+  rw [← IntermediateField.adjoin_toSubalgebra_of_isAlgebraic
     fun b _ ↦ Algebra.IsAlgebraic.isAlgebraic b, ← IntermediateField.top_toSubalgebra] at h
   rw [← AlgEquiv.Algebra.isSeparable_iff <|
     (IntermediateField.equivOfEq (IntermediateField.toSubalgebra_injective h)).trans
@@ -972,8 +976,8 @@ theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
 theorem IntermediateField.isCyclotomicExtension_singleton_iff_eq_adjoin (F : IntermediateField K L)
     {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K F ↔ F = IntermediateField.adjoin K {ζ} := by
-  rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_integral
-    (hζ.isIntegral (NeZero.pos _)).tower_top]
+  rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_isAlgebraic
+    (hζ.isIntegral (NeZero.pos _)).tower_top.isAlgebraic]
   exact _root_.isCyclotomicExtension_singleton_iff_eq_adjoin n F.toSubalgebra hζ
 
 theorem IntermediateField.isCyclotomicExtension_eq (F₁ F₂ : IntermediateField K L)

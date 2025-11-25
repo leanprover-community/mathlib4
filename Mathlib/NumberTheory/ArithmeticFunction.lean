@@ -3,13 +3,16 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Tactic.ArithMult
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Tactic.ArithMult
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -63,6 +66,8 @@ The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom nota
 arithmetic functions, dirichlet convolution, divisors
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -1066,15 +1071,33 @@ theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 
     apply List.nodup_dedup
   · simp [h.dedup, cardFactors]
 
+theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
+  rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
+    ← Nat.toFinset_factors, List.card_toFinset]
+
 @[simp]
 theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
-    ω (p ^ k) = 1 := by
-  rw [cardDistinctFactors_apply, hp.primeFactorsList_pow, List.replicate_dedup hk,
-    List.length_singleton]
+    ω (p ^ k) = 1 :=
+  cardDistinctFactors_eq_one_iff.mpr <| hp.isPrimePow.pow hk
 
 @[simp]
 theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := by
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
+
+theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
+  simp [cardDistinctFactors_apply, Nat.perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
+    Nat.coprime_primeFactorsList_disjoint h |>.dedup_append]
+
+open scoped Function in
+theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+    (h : (s : Set ι).Pairwise (Nat.Coprime on f)) : ω (∏ i ∈ s, f i) = ∑ i ∈ s, ω (f i) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [prod_cons, sum_cons, cardDistinctFactors_mul, ih]
+    · exact fun {x} hx {y} hy hxy => h (by simp [hx]) (by simp [hy]) hxy
+    · exact Coprime.prod_right fun i hi =>
+        h (by simp) (by simp [hi]) (ne_of_mem_of_not_mem hi ha).symm
 
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
@@ -1403,6 +1426,65 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
 
 end SpecialFunctions
 
+section Sum
+
+theorem sum_Ioc_zeta (N : ℕ) : ∑ n ∈ Ioc 0 N, zeta n = N := by
+  simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
+  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
+  simp
+
+variable {R : Type*} [Semiring R]
+
+theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * g) n = ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
+  simp only [mul_apply]
+  trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
+  · refine sum_congr rfl fun n hn ↦ ?_
+    simp only [mem_Ioc] at hn
+    have hn0 : n ≠ 0 := by exact ne_zero_of_lt hn.1
+    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 hn.2]
+  · simp_rw [sum_filter]
+    rw [sum_comm]
+    exact sum_congr rfl fun _ _ ↦ (by simp_all)
+
+theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
+  rw [sum_Ioc_mul_eq_sum_prod_filter, sum_filter, sum_product]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp only [sum_ite, not_le, sum_const_zero, add_zero, mul_sum]
+  congr
+  ext
+  simp only [mem_filter, mem_Ioc, and_assoc, and_congr_right_iff]
+  intro _
+  have hn0 : n ≠ 0 := by
+    simp [mem_Ioc] at hn
+    exact ne_zero_of_lt hn.1
+  constructor
+  · intro ⟨_, h⟩
+    grw [← h, Nat.mul_div_cancel_left _ (by omega)]
+  · intro hm
+    grw [hm]
+    simp [mul_div_le, div_le_self]
+
+theorem sum_Ioc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * zeta) n = ∑ n ∈ Ioc 0 N, f n * ↑(N / n) := by
+  rw [sum_Ioc_mul_eq_sum_sum]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp_rw [natCoe_apply]
+  rw_mod_cast [sum_Ioc_zeta]
+
+--TODO: Dirichlet hyperbola method to get sums of length `sqrt N`
+/-- An `O(N)` formula for the sum of the number of divisors function. -/
+theorem sum_Ioc_sigma0_eq_sum_div (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, sigma 0 n = ∑ n ∈ Ioc 0 N, (N / n) := by
+  rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
+  convert sum_Ioc_mul_zeta_eq_sum zeta N using 1
+  simp only [zeta_apply, cast_id, ite_mul, zero_mul, one_mul]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp
+  tauto
+
+end Sum
 end ArithmeticFunction
 
 namespace Nat.Coprime
@@ -1424,7 +1506,7 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n
@@ -1436,7 +1518,7 @@ def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
     let rn ← core z p n
@@ -1447,3 +1529,4 @@ def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   | _, _, _ => throwError "not ArithmeticFunction.zeta"
 
 end Mathlib.Meta.Positivity
+set_option linter.style.longFile 1700

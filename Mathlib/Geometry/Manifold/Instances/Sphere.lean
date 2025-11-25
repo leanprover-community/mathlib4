@@ -3,17 +3,19 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.Normed.Module.Ball.Action
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Normed.Module.Ball.Action
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Tactic.Module
 
 /-!
 # Manifold structure on the sphere
@@ -63,6 +65,8 @@ naive expression `EuclideanSpace ℝ (Fin (finrank ℝ E - 1))` for the model sp
 
 Relate the stereographic projection to the inversion of the space.
 -/
+
+@[expose] public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
@@ -181,7 +185,7 @@ open scoped InnerProductSpace in
 theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
   refine Subtype.coe_ne_coe.1 ?_
-  rw [← inner_lt_one_iff_real_of_norm_one _ hv]
+  rw [← inner_lt_one_iff_real_of_norm_eq_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
       rw [inv_mul_lt_iff₀']
@@ -217,7 +221,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     · exact sq _
   -- a fact which will be helpful for clearing denominators in the main calculation
   have ha : 0 < 1 - a := by
-    have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
+    have : a < 1 := (inner_lt_one_iff_real_of_norm_eq_one hv (by simp)).mpr hx.symm
     linarith
   rw [split, Submodule.coe_smul_of_tower]
   simp only [norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg ha.le]
@@ -228,12 +232,12 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     linear_combination 4 * (a - 1) * pythag
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
-  simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
-    Submodule.orthogonalProjection_mem_subspace_eq_self]
+  simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul,
+    innerSL_apply_apply, Submodule.orthogonalProjection_mem_subspace_eq_self]
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
     Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
   have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-  have h₃ : ⟪v, v⟫ = 1 := by simp [real_inner_self_eq_norm_mul_norm, hv]
+  have h₃ : ⟪v, v⟫ = 1 := by simp [hv]
   rw [h₁, h₂, h₃]
   match_scalars
   simp [field]
@@ -260,7 +264,7 @@ def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) 
     continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
       dsimp
       exact
-        h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
+        h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_eq_one hv (by simp)).mp
   continuousOn_invFun := (continuous_stereoInvFun hv).continuousOn
 
 theorem stereographic_apply (hv : ‖v‖ = 1) (x : sphere (0 : E) 1) :
@@ -364,7 +368,7 @@ section ContMDiffManifold
 open scoped InnerProductSpace
 
 theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
-  simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_one]
+  simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_eq_one]
 
 theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
     (x : EuclideanSpace ℝ (Fin n)) :
@@ -405,7 +409,7 @@ instance EuclideanSpace.instIsManifoldSphere
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
       simp only [id, comp_apply, Submodule.subtypeL_apply, OpenPartialHomeomorph.coe_coe_symm,
-        innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
+        innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
 instance (n : ℕ) : IsManifold (𝓡 n) ω (sphere (0 :  EuclideanSpace ℝ (Fin (n + 1))) 1) :=
@@ -450,7 +454,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
   ext x
   have hfxv : f x = -↑v ↔ ⟪f x, -↑v⟫_ℝ = 1 := by
     have hfx : ‖f x‖ = 1 := by simpa using hf' x
-    rw [inner_eq_one_iff_of_norm_one hfx]
+    rw [inner_eq_one_iff_of_norm_eq_one hfx]
     exact norm_eq_of_mem_sphere (-v)
   simp [chartAt, ChartedSpace.chartAt, Subtype.ext_iff, hfxv, real_inner_comm]
 

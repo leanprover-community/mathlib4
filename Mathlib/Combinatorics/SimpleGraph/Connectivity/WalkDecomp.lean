@@ -3,8 +3,9 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 
 /-!
 # Decomposing walks
@@ -13,6 +14,8 @@ import Mathlib.Combinatorics.SimpleGraph.Walk
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
 - `rotate`: Rotate a loop walk such that it is centered at the given vertex.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph.Walk
 
