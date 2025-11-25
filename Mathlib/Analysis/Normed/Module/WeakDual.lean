@@ -287,7 +287,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
 
 variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
 
-theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
+theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 V)}
     (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
     IsSeqCompact s := by
   have b_isCompact' : CompactSpace s :=
