@@ -116,7 +116,7 @@ private lemma sineTerm_bound_aux (hZ : IsCompact Z) :
     apply le_trans (hs x hx) (le_abs_self s)
 
 lemma multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
-    MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n)) {Z} := by
+    MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n)) Z := by
   obtain ⟨u, hu, hu2⟩ := sineTerm_bound_aux hZC
   refine Summable.multipliableUniformlyOn_nat_one_add hZC hu ?_ ?_
   · filter_upwards with n z hz using hu2 n z hz
@@ -125,9 +125,9 @@ lemma multipliableUniformlyOn_euler_sin_prod_on_compact (hZC : IsCompact Z) :
 lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
     (hZC : IsCompact Z) :
     HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
-    (fun x => (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
+    (fun x => (Complex.sin (↑π * x) / (↑π * x))) Z := by
   apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZC).hasProdUniformlyOn.congr_right
-  exact fun s hs x hx => euler_sineTerm_tprod (by aesop)
+  exact fun x hx => euler_sineTerm_tprod (by aesop)
 
 lemma HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))

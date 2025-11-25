@@ -69,19 +69,12 @@ theorem antidiagonal_succ {n : ℕ} :
 
 theorem antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (antidiagonal n).map (Prod.map id Nat.succ) ++ [(n + 1, 0)] := by
-  simp only [antidiagonal, range_succ, Nat.add_sub_cancel_left, map_append, append_assoc,
-    Nat.sub_self, singleton_append, map_map, map]
-  congr 1
-  apply map_congr_left
-  simp +contextual [le_of_lt, Nat.sub_add_comm]
+  simp +contextual [antidiagonal, range_succ, Nat.le_of_lt, Nat.sub_add_comm]
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
-  rw [antidiagonal_succ']
-  simp only [antidiagonal_succ, map_cons, Prod.map_apply, id_eq, map_map, cons_append, cons.injEq,
-    append_cancel_right_eq, true_and]
-  ext
+  rw [antidiagonal_succ', antidiagonal_succ]
   simp
 
 theorem map_swap_antidiagonal {n : ℕ} :

@@ -131,6 +131,13 @@ lemma IsTangentAt.dist_eq_of_mem_of_mem {s : Sphere P} {p₁ p₂ q : P}
   have h2 := dist_sq_eq_of_mem h₂ hq_mem₂
   rwa [h1, add_left_cancel_iff, sq_eq_sq₀ dist_nonneg dist_nonneg] at h2
 
+lemma IsTangentAt.radius_lt_dist_center {s : Sphere P} {as : AffineSubspace ℝ P} {p q : P}
+    (h : s.IsTangentAt p as) (hq : q ∈ as) (hqp : q ≠ p) : s.radius < dist q s.center := by
+  suffices s.radius ^ 2 < dist q s.center ^ 2 by
+    simpa [sq_lt_sq, abs_of_nonneg (s.radius_nonneg_of_mem h.mem_sphere)] using this
+  rw [h.dist_sq_eq_of_mem hq]
+  simp [hqp]
+
 lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : AffineSubspace ℝ P}
     {p : P} (ht : s.IsTangentAt p as) (hr : s.radius ≠ 0)
     (hfr : Module.finrank ℝ as.direction + 1 = Module.finrank ℝ V) : as = s.orthRadius p := by

@@ -91,14 +91,13 @@ theorem digitsAux.go_fuel_irrel (b : ℕ) (h : 2 ≤ b) (n fuel fuel' : ℕ)
       solve_by_elim
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) :
-    digitsAux b h 0 = [] := by rw [digitsAux, digitsAux.go]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := by rw [digitsAux]
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
   cases n
   · cases w
-  · rw [digitsAux, digitsAux.go, digitsAux, digitsAux.go_fuel_irrel]
+  · rw [digitsAux]
 
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
