@@ -312,6 +312,23 @@ instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := b
     (ModuleCat.restrictScalars_map_exact f)
   exact this.2
 
+/-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
+def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjective f) :
+    (ModuleCat.restrictScalars.{v} f).FullyFaithful where
+  preimage {X Y} g := ofHom
+    { __ := g.hom
+      map_smul' r' x := by
+        let _ := Module.compHom X f
+        rcases h r' with ⟨r, hr⟩
+        rw [← hr]
+        exact map_smul g.hom r x }
+  map_preimage g := by
+    ext
+    rfl
+  preimage_map g := by
+    ext
+    rfl
+
 end restrictScalars
 
 variable {R} [Small.{v} R] [UnivLE.{v, w}]
@@ -335,10 +352,9 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       change Function.Bijective <| fun t ↦ Ext.homEquiv₀ <|
         (Fr.mapExt N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) 0) (Ext.homEquiv₀.symm t)
       simp only [Ext.homEquiv₀_symm_apply, Ext.mapExt_mk₀_eq_mk₀_map]
-      change Function.Bijective (Ext.homEquiv₀ ∘ Ext.homEquiv₀.symm ∘ Fr.map)
-      simp only [EquivLike.comp_bijective, Fr]
+      simp only [Ext.homEquiv₀, Equiv.ofBijective_symm_apply_apply, Fr]
       apply Functor.FullyFaithful.map_bijective
-      sorry
+      exact ModuleCat.restrictScalars_fullyFaithful_of_surjective _ Ideal.Quotient.mk_surjective
   · rename_i n ih
     let e : Basis N (R ⧸ Ideal.span {x}) (N →₀ Shrink.{v} (R ⧸ Ideal.span {x})) :=
       ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x}))⟩
