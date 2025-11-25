@@ -63,7 +63,7 @@ section precedence
 /-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: σ x : V x -/
+/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -83,7 +83,7 @@ variable {s : ι → (x : M) → V x} in
 #check T% s
 
 /--
-info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s i a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
+info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
 -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
@@ -107,7 +107,7 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #check (T% X) x
 
 -- This one is.
-/-- info: X x : TangentSpace I x -/
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
@@ -124,7 +124,7 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
-/-- info: X x : TangentSpace I x -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x) x)
 

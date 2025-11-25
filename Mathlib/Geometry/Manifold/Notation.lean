@@ -200,7 +200,7 @@ This elaborator searches the local context for suitable hypotheses for the above
 on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
 The search can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
 -/
-scoped elab:max "T% " t:term : term => do
+scoped elab:max "T% " t:term:arg : term => do
   totalSpaceMk (← Term.elabTerm t none)
 
 namespace Elab
