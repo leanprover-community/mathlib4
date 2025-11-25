@@ -241,7 +241,7 @@ instance : InvolutiveNeg EReal where
     | (a : ℝ) => congr_arg Real.toEReal (neg_neg a)
 
 @[simp]
-theorem toReal_neg : ∀ {a : EReal}, toReal (-a) = -toReal a
+theorem toReal_neg_eq : ∀ {a : EReal}, toReal (-a) = -toReal a
   | ⊤ => by simp
   | ⊥ => by simp
   | (x : ℝ) => rfl
