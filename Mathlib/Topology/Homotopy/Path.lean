@@ -294,7 +294,10 @@ We prefer this as the normal form, rather than generic `_root_.Quotient.mk'`,
 to have better control of simp lemmas.
 -/
 def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
-  _root_.Quotient.mk' p
+  Quotient.mk' p
+
+theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
+  Quotient.mk'_surjective
 
 /-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
 @[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
