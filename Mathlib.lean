@@ -8769,6 +8769,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 public import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
