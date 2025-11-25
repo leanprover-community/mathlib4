@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # The Orthogonal-reflection construction
