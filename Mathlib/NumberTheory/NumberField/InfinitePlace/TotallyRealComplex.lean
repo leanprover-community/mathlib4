@@ -162,7 +162,7 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} [Algebra.IsAlg
   exact IsTotallyReal.of_algebra _ (maximalRealSubfield K)
 
 instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F]
-    [Algebra.IsAlgebraic E K] [Algebra.IsAlgebraic F K] :
+    [Algebra.IsAlgebraic E K] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
   let _ : Algebra E ↑(E ⊔ F) := RingHom.toAlgebra <| Subfield.inclusion le_sup_left
   let _ : SMul E ↑(E ⊔ F) := Algebra.toSMul
