@@ -359,6 +359,10 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
   w := pullback.condition
   isColimit := isColimitCoforkOfEffectiveEpi f _ (pullback.isLimit _ _)
 
+lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
+    IsRegularEpi f ↔ EffectiveEpi f :=
+  ⟨fun ⟨_⟩ ↦ inferInstance, fun _ ↦ ⟨inferInstance⟩⟩
+
 /-- Every split epimorphism is a regular epimorphism. -/
 instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
