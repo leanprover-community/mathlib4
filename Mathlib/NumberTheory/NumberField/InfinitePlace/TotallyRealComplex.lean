@@ -84,7 +84,7 @@ instance [IsTotallyReal K] [CharZero K] (F : IntermediateField ℚ K) [Algebra.I
     IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
 
-instance [IsTotallyReal K] (F : Subfield K) [Algebra.IsIntegral F K] : IsTotallyReal F :=
+instance [IsTotallyReal K] (F : Subfield K) [Algebra.IsAlgebraic F K] : IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
 
 variable (K)
@@ -133,7 +133,7 @@ def maximalRealSubfield : Subfield K where
 theorem mem_maximalRealSubfield_iff (x : K) :
     x ∈ maximalRealSubfield K ↔ ∀ φ : K →+* ℂ, star (φ x) = φ x := .rfl
 
-instance isTotallyReal_maximalRealSubfield [Algebra.IsIntegral (maximalRealSubfield K) K] :
+instance isTotallyReal_maximalRealSubfield [Algebra.IsAlgebraic (maximalRealSubfield K) K] :
     IsTotallyReal (maximalRealSubfield K) where
   isReal w := by
     rw [InfinitePlace.isReal_iff, ComplexEmbedding.isReal_iff]
@@ -150,7 +150,7 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] 
   refine RingHom.congr_fun ?_ _
   exact ComplexEmbedding.isReal_iff.mp <| isReal_mk_iff.mp <| isReal _
 
-theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} [Algebra.IsIntegral E K] :
+theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} [Algebra.IsAlgebraic E K] :
     IsTotallyReal E ↔ E ≤ maximalRealSubfield K := by
   refine ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ ?_⟩
   let _ : Algebra E (maximalRealSubfield K) := RingHom.toAlgebra <| Subfield.inclusion h
@@ -158,19 +158,20 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} [Algebra.IsInt
   have : Algebra.IsAlgebraic (maximalRealSubfield K) K :=
       Algebra.IsAlgebraic.tower_top (K := E) (maximalRealSubfield K)
   have : Algebra.IsAlgebraic E (maximalRealSubfield K) :=
-      Algebra.IsAlgebraic.tower_bot E _ K
+      Algebra.IsAlgebraic.tower_bot E (maximalRealSubfield K) K
   exact IsTotallyReal.of_algebra _ (maximalRealSubfield K)
 
 instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F]
-    [Algebra.IsIntegral E K] [Algebra.IsIntegral F K] :
+    [Algebra.IsAlgebraic E K] [Algebra.IsAlgebraic F K] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
   let _ : Algebra E ↑(E ⊔ F) := RingHom.toAlgebra <| Subfield.inclusion le_sup_left
+  let _ : SMul E ↑(E ⊔ F) := Algebra.toSMul
   have : IsScalarTower E ↑(E ⊔ F) K := IsScalarTower.of_algebraMap_eq' rfl
-  have : Algebra.IsAlgebraic ↑(E ⊔ F) K := Algebra.IsAlgebraic.tower_top (K := E) _
+  have : Algebra.IsAlgebraic ↑(E ⊔ F) K := Algebra.IsAlgebraic.tower_top (K := E) ↑(E ⊔ F)
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
 instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
-    [∀ i, IsTotallyReal (k i)] [∀ i, Algebra.IsIntegral (k i) K] :
+    [∀ i, IsTotallyReal (k i)] [∀ i, Algebra.IsAlgebraic (k i) K] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   obtain hι | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
   · rw [iSup_of_empty]
@@ -181,16 +182,16 @@ instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
     simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
 @[simp]
-theorem IsTotallyReal.maximalRealSubfield_eq_top [CharZero K] [Algebra.IsIntegral ℚ K]
+theorem IsTotallyReal.maximalRealSubfield_eq_top [CharZero K] [Algebra.IsAlgebraic ℚ K]
     [IsTotallyReal K] :
     maximalRealSubfield K = ⊤ :=
-  have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
+  have : Algebra.IsAlgebraic (⊤ : Subfield K) K := Algebra.IsAlgebraic.tower_top (K := ℚ) _
   top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
 
-theorem maximalRealSubfield_eq_top_iff_isTotallyReal [CharZero K] [Algebra.IsIntegral ℚ K] :
+theorem maximalRealSubfield_eq_top_iff_isTotallyReal [CharZero K] [Algebra.IsAlgebraic ℚ K] :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
   mp h := by
-    have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
+    have : Algebra.IsAlgebraic (⊤ : Subfield K) K := Algebra.IsAlgebraic.tower_top (K := ℚ) _
     rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
   mpr _ := IsTotallyReal.maximalRealSubfield_eq_top
 
