@@ -166,11 +166,6 @@ theorem alternatizeUncurryFin_constOfIsEmptyLIE_comp (f : E →L[𝕜] F) :
   ext
   simp [alternatizeUncurryFin_apply]
 
-@[simp]
-lemma _root_.Fin.removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
-    i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
-  rfl
-
 /-- If `f` is a continuous bilinear map taking values in the space of continuous alternating maps,
 then evaluation of the twice uncurried `f` on a tuple of vectors `v`
 can be represented as a sum of
@@ -224,7 +219,8 @@ theorem fderivCompContinuousLinearMap_eq_alternatizeUncurryFin (f : F [⋀^Fin (
       i.insertNth (α := fun _ ↦ E →L[𝕜] F) dg (fun _ ↦ g) j (v j) =
         i.insertNth (α := fun _ ↦ F) (dg (v i)) (g ∘ i.removeNth v) j := by
     cases j using i.succAboveCases <;> simp [Fin.removeNth]
-  simp [alternatizeUncurryFin_apply, ← Fin.insertNth_removeNth, ← map_insertNth, this]
+  simp [alternatizeUncurryFin_apply, ← Fin.insertNth_removeNth, Fin.removeNth_fun_const,
+    ← map_insertNth, this]
 
 /-- Alternatized uncurry of `fderivCompContinuousLinearMap f g`
 composed with a symmetric bilinear map is zero. -/
