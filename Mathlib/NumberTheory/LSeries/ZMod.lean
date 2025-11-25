@@ -6,7 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Fourier.ZMod
-public import Mathlib.Analysis.NormedSpace.Connected
+public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!

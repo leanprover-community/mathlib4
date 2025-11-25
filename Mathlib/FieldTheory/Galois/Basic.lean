@@ -83,7 +83,7 @@ theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
 theorem separable [IsGalois F E] (x : E) : IsSeparable F x :=
   Algebra.IsSeparable.isSeparable F x
 
-theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
+theorem splits [IsGalois F E] (x : E) : ((minpoly F x).map (algebraMap F E)).Splits :=
   Normal.splits' x
 
 variable (E)
@@ -97,7 +97,7 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
 
 theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
     (hα : IsIntegral F α) (h_sep : IsSeparable F α)
-    (h_splits : (minpoly F α).Splits (algebraMap F F⟮α⟯)) :
+    (h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits) :
     Nat.card Gal(F⟮α⟯/F) = finrank F F⟮α⟯ := by
   rw [IntermediateField.adjoin.finrank hα]
   rw [← IntermediateField.card_algHom_adjoin_integral F hα h_sep h_splits]
@@ -117,8 +117,8 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
       commutes' := fun _ => rfl }
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : IsSeparable F α := IsGalois.separable F α
-  have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
-  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
+  have h_splits : ((minpoly F α).map (algebraMap F E)).Splits := IsGalois.splits F α
+  replace h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits := by
     simpa using
       Polynomial.splits_comp_of_splits (algebraMap F E) iso.symm.toAlgHom.toRingHom h_splits
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
@@ -470,7 +470,7 @@ theorem is_separable_splitting_field [FiniteDimensional F E] [IsGalois F E] :
   obtain ⟨α, h1⟩ := Field.exists_primitive_element F E
   use minpoly F α, separable F α, IsGalois.splits F α
   rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← h1]
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (integral F α)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (integral F α).isAlgebraic]
   apply Algebra.adjoin_mono
   rw [Set.singleton_subset_iff, Polynomial.mem_rootSet]
   exact ⟨minpoly.ne_zero (integral F α), minpoly.aeval _ _⟩
