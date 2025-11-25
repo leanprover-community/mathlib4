@@ -3,11 +3,13 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Altitude
-import Mathlib.Geometry.Euclidean.SignedDist
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Topology.Instances.Sign
+module
+
+public import Mathlib.Geometry.Euclidean.Altitude
+public import Mathlib.Geometry.Euclidean.SignedDist
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Topology.Instances.Sign
 
 /-!
 # Incenters and excenters of simplices.
@@ -36,6 +38,8 @@ and the center and radius of such spheres.
 * https://en.wikipedia.org/wiki/Incenter
 
 -/
+
+@[expose] public section
 
 
 open EuclideanGeometry
@@ -464,7 +468,7 @@ lemma incenter_ne_point (i : Fin (n + 1)) :
 variable {s} in
 lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
     {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i j : Fin (n + 1)) :
-    s.excenter signs ∉ affineSpan ℝ {s.points i, s.points j} := by
+    s.excenter signs ∉ line[ℝ, s.points i, s.points j] := by
   by_cases hij : i = j
   · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
       AffineSubspace.mem_affineSpan_singleton]
@@ -474,7 +478,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
     simp [Set.image_insert_eq]
 
 lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
-    s.incenter ∉ affineSpan ℝ {s.points i, s.points j} :=
+    s.incenter ∉ line[ℝ, s.points i, s.points j] :=
   s.excenterExists_empty.excenter_notMem_affineSpan_pair i j
 
 variable {s} in

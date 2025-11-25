@@ -3,9 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Order.CompleteSublattice
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Order.CompleteSublattice
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Isotypic modules and isotypic components
@@ -39,6 +41,8 @@ import Mathlib.RingTheory.SimpleModule.Basic
 isotypic component, fully invariant submodule
 
 -/
+
+@[expose] public section
 
 universe u
 

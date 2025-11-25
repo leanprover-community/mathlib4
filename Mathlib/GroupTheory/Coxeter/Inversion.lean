@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.GroupTheory.Coxeter.Length
-import Mathlib.Data.List.GetD
-import Mathlib.Tactic.Group
+module
+
+public import Mathlib.GroupTheory.Coxeter.Length
+public import Mathlib.Data.List.GetD
+public import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -42,6 +44,8 @@ inversions of $w$ in some order, but we do not prove that in this file.
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

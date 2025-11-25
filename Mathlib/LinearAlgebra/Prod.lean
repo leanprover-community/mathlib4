@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Graph
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! ### Products of modules
 
@@ -33,6 +35,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' y'
@@ -461,6 +465,20 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [hd.eq_bot, mem_bot] at this
   rw [this] at h
   simpa [this] using h
+
+/-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
+equivalence between `C` and `range f`. -/
+@[simps!]
+noncomputable def kerComplementEquivRange {R M M₂ : Type*} [Ring R] [AddCommGroup M]
+    [AddCommGroup M₂] [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) {C : Submodule R M}
+    (h : IsCompl C (LinearMap.ker f)) : C ≃ₗ[R] range f :=
+  .ofBijective (codRestrict (range f) f (mem_range_self f) ∘ₗ C.subtype)
+  ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
+   by
+    rintro ⟨-, x, rfl⟩
+    obtain ⟨y, z, hy, hz, rfl⟩ := codisjoint_iff_exists_add_eq.mp h.codisjoint x
+    use ⟨y, hy⟩
+    simpa [Subtype.ext_iff]⟩
 
 end LinearMap
 

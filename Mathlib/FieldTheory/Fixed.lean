@@ -3,14 +3,16 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.GroupRingAction
-import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.Algebra.Ring.Action.Invariant
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.FieldTheory.Normal.Defs
-import Mathlib.FieldTheory.Separable
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.Algebra.Polynomial.GroupRingAction
+public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.Algebra.Ring.Action.Invariant
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Fixed field under a group action.
@@ -28,6 +30,8 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 element of `G`, where `G` is a group that acts on `F`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -286,7 +290,7 @@ end FixedPoints
 theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
     [Semiring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
-  have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
+  have : LinearIndependent B (LinearMap.ltoFun R A B B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
         AlgHom.ext fun _ => DFunLike.ext_iff.1 hfg _ :
       _)

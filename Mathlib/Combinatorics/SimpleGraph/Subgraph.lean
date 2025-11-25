@@ -3,8 +3,10 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Data.Fintype.Powerset
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -44,6 +46,8 @@ sub-relation of the adjacency relation of the simple graph.
 * Images of graph homomorphisms as subgraphs.
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -819,7 +823,6 @@ alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
 
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
-  apply not_subsingleton_iff_nontrivial.mp
   by_contra
   simp_all [G'.degree_eq_zero_of_subsingleton v]
 

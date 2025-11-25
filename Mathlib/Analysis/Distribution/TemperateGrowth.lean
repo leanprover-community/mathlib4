@@ -3,12 +3,16 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-import Mathlib.Analysis.InnerProductSpace.Calculus
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Bounds
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 
 /-! # Functions and measures of temperate growth -/
+
+@[expose] public section
 
 noncomputable section
 

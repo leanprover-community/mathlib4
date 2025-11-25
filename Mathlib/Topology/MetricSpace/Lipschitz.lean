@@ -3,12 +3,14 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Bornology.Hom
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
+module
+
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Topology.Bornology.Hom
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Lipschitz continuous functions
@@ -29,6 +31,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis Ideal ContinuousMul
 

@@ -3,15 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.UniformSpace.Separation
-import Mathlib.Topology.DenseEmbedding
+module
+
+public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.UniformSpace.Separation
+public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Uniform embeddings of uniform spaces.
 
 Extension of uniform continuous functions.
 -/
+
+@[expose] public section
 
 
 open Filter Function Set Uniformity Topology

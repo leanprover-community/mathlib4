@@ -3,10 +3,12 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Int.DivMod
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Common
-import Batteries.Data.Fin.Basic
+module
+
+public import Mathlib.Data.Int.DivMod
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Common
+public import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements
@@ -22,12 +24,22 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 -/
 
+@[expose] public section
+
 
 assert_not_exists Monoid Finset
 
 open Fin Nat Function
 
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
+
+theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∀ k hk, p k hk) ↔ ∀ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.forall_iff
+
+theorem Nat.exists_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∃ k hk, p k hk) ↔ ∃ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.exists_iff
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=

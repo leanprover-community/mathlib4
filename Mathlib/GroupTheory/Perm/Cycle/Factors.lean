@@ -3,12 +3,13 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
+module
 
-import Mathlib.Data.List.Iterate
-import Mathlib.Data.Set.Pairwise.List
-import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.GroupTheory.NoncommPiCoprod
-import Mathlib.Tactic.Group
+public import Mathlib.Data.List.Iterate
+public import Mathlib.Data.Set.Pairwise.List
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.NoncommPiCoprod
+public import Mathlib.Tactic.Group
 
 /-!
 # Cycle factors of a permutation
@@ -19,6 +20,8 @@ Let `β` be a `Fintype` and `f : Equiv.Perm β`.
 * `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations
   that multiply to `f`.
 -/
+
+@[expose] public section
 
 open Equiv Function Finset
 
@@ -180,8 +183,9 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
 
 theorem Disjoint.cycleOf_mul_distrib [DecidableRel f.SameCycle] [DecidableRel g.SameCycle]
-    [DecidableRel (f * g).SameCycle] [DecidableRel (g * f).SameCycle] (h : f.Disjoint g) (x : α) :
+    [DecidableRel (f * g).SameCycle] (h : f.Disjoint g) (x : α) :
     (f * g).cycleOf x = f.cycleOf x * g.cycleOf x := by
+  classical
   rcases (disjoint_iff_eq_or_eq.mp h) x with hfx | hgx
   · simp [h.commute.eq, cycleOf_mul_of_apply_right_eq_self h.symm.commute, hfx]
   · simp [cycleOf_mul_of_apply_right_eq_self h.commute, hgx]

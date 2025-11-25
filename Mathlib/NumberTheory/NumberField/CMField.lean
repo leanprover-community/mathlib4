@@ -3,9 +3,11 @@ Copyright (c) 2025 X. Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-import Mathlib.NumberTheory.NumberField.Units.Regulator
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # CM-extension of number fields
@@ -47,6 +49,8 @@ results for the general case can be deduced for the CM case by using the isomorp
 `equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
 
 -/
+
+@[expose] public section
 
 open NumberField ComplexEmbedding InfinitePlace Algebra
 
