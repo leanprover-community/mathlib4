@@ -3,12 +3,14 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Preimage
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Preimage
 
 /-!
 # Pointwise operations of finsets
@@ -45,7 +47,9 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 
@@ -61,7 +65,7 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
+/-- The finset `1 : Finset α` is defined as `{1}` in scope `Pointwise`. -/
 @[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
@@ -268,6 +272,16 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
+@[to_additive (attr := simp)]
+theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
+    ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
+  ext; simp
+
+@[to_additive]
+theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  simp
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
@@ -286,7 +300,7 @@ lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_in
 
 @[to_additive (attr := simp)]
 lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
-    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast (s : Set α).inv_prod (t : Set β)
 
 end InvolutiveInv
 
@@ -433,7 +447,7 @@ lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image o
 @[to_additive (attr := simp)]
 lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
-  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
+  mod_cast (s₁ : Set α).prod_mul_prod_comm s₂ (t₁ : Set β) t₂
 
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
@@ -646,7 +660,7 @@ theorem subset_div {s t : Set α} :
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
-    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x / y) ≤ a :=
   sup_image₂_le
 
 @[to_additive]
@@ -880,7 +894,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  simp [← mem_coe, coe_pow, Set.mem_pow]
+  simp [← mem_coe (s := s ^ n), coe_pow, Set.mem_pow]
 
 @[to_additive]
 lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n

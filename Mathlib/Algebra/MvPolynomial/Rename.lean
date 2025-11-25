@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Eval
+module
+
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Renaming variables of polynomials
@@ -34,6 +36,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ α`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -270,10 +274,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
 end Rename
 
 theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPolynomial σ ℤ) :
-    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := by
-  apply MvPolynomial.induction_on p (fun n => by simp only [eval₂_C, rename_C])
-    (fun p q hp hq => by simp only [hp, hq, rename, eval₂_add, map_add])
-    fun p n hp => by simp only [eval₂_mul, hp, eval₂_X, comp_apply, map_mul, rename_X, eval₂_mul]
+    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := (eval₂_rename c f g p).symm
 
 section Coeff
 

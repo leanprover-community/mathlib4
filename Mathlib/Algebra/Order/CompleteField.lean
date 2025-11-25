@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
@@ -40,6 +42,8 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 
 reals, conditionally complete, ordered field, uniqueness
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*}
 
@@ -150,7 +154,7 @@ section InducedMap
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
-/-- The induced order preserving function from a linear ordered field to a conditionally complete
+/-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
 input. -/
 def inducedMap (x : α) : β :=
