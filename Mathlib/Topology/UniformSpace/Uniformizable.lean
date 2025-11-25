@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Separation.CompletelyRegular
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Uniformizable Spaces
@@ -41,45 +42,15 @@ open Filter Set Uniformity SetRel
 section UniformSpace
 variable [UniformSpace α]
 
-noncomputable def descend (s : { s : SetRel α α // s ∈ 𝓤 α }) :
-    { s : SetRel α α // s ∈ 𝓤 α } :=
-  ⟨_, (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
-    (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.1⟩
-
-theorem descend_open (s : { s : SetRel α α // s ∈ 𝓤 α }) :
-    IsOpen (descend s).1 :=
-  (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
-    (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.2.1
-
-theorem descend_symm (s : { s : SetRel α α // s ∈ 𝓤 α }) :
-    (descend s).1.IsSymm :=
-  (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
-    (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.2.2.1
-
-theorem descend_descends (s : { s : SetRel α α // s ∈ 𝓤 α }) :
-    (descend s).1 ○ (descend s).1 ⊆ s := by
-  dsimp [descend]
-  generalize_proofs o₁ c o₂
-  have hoc : o₂.choose ⊆ c.choose := by
-    trans o₂.choose ○ o₂.choose
-    · suffices _ : o₂.choose.IsRefl from left_subset_comp
-      rw [← id_subset_iff]
-      exact refl_le_uniformity o₂.choose_spec.1
-    · exact o₂.choose_spec.2.2.2
-  calc o₂.choose ○ o₂.choose
-    _ ⊆ c.choose ○ c.choose := comp_subset_comp hoc hoc
-    _ ⊆ o₁.choose ○ o₁.choose := comp_subset_comp c.choose_spec.2.2 c.choose_spec.2.2
-    _ ⊆ s.1 := o₁.choose_spec.2.2.2
-
 def P (c : Set α) (u : Set α) :=
-  ∃ (x : α) (uc uu : SetRel α α) (s : { s : SetRel α α // s ∈ 𝓤 α }),
+  ∃ (x : α) (uc uu s : SetRel α α),
     IsOpen uc ∧ uc.IsSymm ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
-    IsOpen uu ∧ u = Prod.mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu
+    IsOpen uu ∧ u = Prod.mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu ∧ s ∈ 𝓤 α
 
-theorem descend_spec {c u : Set α} (Pcu : P c u) :
+theorem urysohns_main {c u : Set α} (Pcu : P c u) :
     ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
-  obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn⟩ := Pcu
-  obtain ⟨(ds : SetRel α α), hdsu, hdso, hdss, hdsd⟩ := comp_open_symm_mem_uniformity_sets s.2
+  obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn, hs⟩ := Pcu
+  obtain ⟨(ds : SetRel α α), hdsu, hdso, hdss, hdsd⟩ := comp_open_symm_mem_uniformity_sets hs
   have ho : IsOpen (ds ○ uc ○ ds) := (hdso.relComp huc).relComp hdso
   use Prod.mk x ⁻¹' (ds ○ uc ○ ds), ho.preimage (Continuous.prodMk_right x)
   constructor
@@ -99,56 +70,41 @@ theorem descend_spec {c u : Set α} (Pcu : P c u) :
   have hucd : ds ○ uc ○ ds ∈ 𝓤 α :=
     mem_of_superset ucu (right_subset_comp.trans left_subset_comp)
   constructor
-  · exact ⟨x, uc, (ds ○ uc ○ ds), ⟨ds, hdsu⟩, huc, symmuc, ucu, rfl, ho, rfl, subset_rfl⟩
+  · exact ⟨x, uc, ds ○ uc ○ ds, ds, huc, symmuc, ucu, rfl, ho, rfl, subset_rfl, hdsu⟩
   · have hos : (ds ○ uc ○ ds).IsSymm := by
       rw [← inv_eq_self_iff, inv_comp, inv_comp, inv_eq_self, inv_eq_self, comp_assoc]
-    refine ⟨x, _, uu, ⟨ds, hdsu⟩, ho, hos, hucd, rfl, huu, rfl, ?_⟩
+    refine ⟨x, (ds ○ uc ○ ds), uu, ds, ho, hos, hucd, rfl, huu, rfl, ?_, hdsu⟩
     calc ds ○ (ds ○ uc ○ ds) ○ ds
-      _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by
-        simp [comp_assoc]
-      _ ⊆ s ○ uc ○ s :=
-        comp_subset_comp (comp_subset_comp hdsd subset_rfl) hdsd
+      _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by simp [comp_assoc]
+      _ ⊆ s ○ uc ○ s := comp_subset_comp (comp_subset_comp hdsd subset_rfl) hdsd
       _ ⊆ uu := hn
 
 public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
   completely_regular x K hK hx := by
     obtain ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
-    have hcu := (descend (descend ⟨O, hOu⟩)).2
-    have hccccO :=
-      (SetRel.comp_subset_comp
-        (descend_descends (descend ⟨O, hOu⟩))
-        (descend_descends (descend ⟨O, hOu⟩))).trans
-      (descend_descends ⟨O, hOu⟩)
-    obtain ⟨C, hCu, hC, hCc⟩ := mem_uniformity_isClosed hcu
-    have hCO := calc
-      _ ⊆ _ := hCc
-      _ ⊆ _ := subset_comp_self_of_mem_uniformity hcu
-      _ ⊆ _ := subset_comp_self_of_mem_uniformity
-        (mem_of_superset hcu (subset_comp_self_of_mem_uniformity hcu))
-      _ ⊆ _ := hccccO
-    have hou := (descend ⟨C, hCu⟩).2
-    have hoo := descend_open ⟨C, hCu⟩
-    have hosymm := descend_symm ⟨C, hCu⟩
-    have hooC := descend_descends ⟨C, hCu⟩
-    have hoC := (subset_comp_self_of_mem_uniformity hou).trans hooC
-    have hxo : x ∈ closure (Prod.mk x ⁻¹' (descend ⟨C, hCu⟩).1) :=
-      subset_closure (mem_ball_self x hou)
-    have hyo : K ⊆ (Prod.mk x ⁻¹' O)ᶜ := subset_compl_comm.mp hbO
+    obtain ⟨C, hCu, hCc, hCO⟩ := mem_uniformity_isClosed hOu
+    obtain ⟨(u3 : SetRel α α), hu3u, hu3C⟩ := comp3_mem_uniformity hCu
+    obtain ⟨(ds : SetRel α α), hdsu, hdso, hdss, hdsd⟩ := comp_open_symm_mem_uniformity_sets hu3u
+    have : u3.IsRefl := id_subset_iff.1 (refl_le_uniformity hu3u)
+    have : ds.IsRefl := id_subset_iff.1 (refl_le_uniformity hdsu)
+    replace hdsd : ds ⊆ u3 := left_subset_comp.trans hdsd
+    have hxc : x ∈ closure (Prod.mk x ⁻¹' ds) := subset_closure (refl_mem_uniformity hdsu)
+    have hyo : K ⊆ (Prod.mk x ⁻¹' O)ᶜ := subset_compl_comm.mpr hbO
     set c : Urysohns.CU P := {
-      C := closure (Prod.mk x ⁻¹' (descend ⟨C, hCu⟩).1)
+      C := closure (Prod.mk x ⁻¹' ds)
       U := Prod.mk x ⁻¹' O
       closed_C := isClosed_closure
       open_U := hOo.preimage (Continuous.prodMk_right x)
-      subset :=
-        (closure_minimal (Set.preimage_mono hoC) (isClosed_ball x hC)).trans (preimage_mono hCO)
-      hP _ Pcu _ _ := descend_spec Pcu
-      P_C_U :=
-        ⟨x, descend ⟨C, hCu⟩, O, _, hoo, hosymm, hou, rfl, hOo, rfl,
-          (comp_subset_comp (comp_subset_comp subset_rfl (hoC.trans hCc))
-            (subset_comp_self_of_mem_uniformity (descend (descend ⟨O, hOu⟩)).2)).trans hccccO⟩
+      subset := (closure_minimal (Set.preimage_mono
+        ((hdsd.trans left_subset_comp).trans hu3C))
+          (hCc.preimage (.prodMk_right x))).trans (preimage_mono hCO)
+      hP _ Pcu _ _ := urysohns_main Pcu
+      P_C_U := ⟨x, ds, O, u3, hdso, hdss, hdsu, rfl, hOo, rfl,
+        ((comp_assoc u3 ds u3).trans_le (comp_subset_comp_right
+          (comp_subset_comp_left hdsd))).trans (hu3C.trans hCO), hu3u⟩
     }
     exact ⟨fun x => ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
-      Subtype.ext (c.lim_of_mem_C x hxo), fun y hy => Subtype.ext (c.lim_of_notMem_U y (hyo hy))⟩
+      Subtype.ext (c.lim_of_mem_C x hxc), fun y hy => Subtype.ext (c.lim_of_notMem_U y (hyo hy))⟩
 
 end UniformSpace
 
