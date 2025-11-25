@@ -54,7 +54,7 @@ variable [p.IsContPerfPair]
 alias continuous_uncurry_of_isContPerfPair :=
   IsContPerfPair.continuous_uncurry
 
-/-- Given a perfect pairing between `M`and `N`, we may interchange the roles of `M` and `N`. -/
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 instance flip.instIsContPerfPair : p.flip.IsContPerfPair where
   continuous_uncurry := p.continuous_uncurry_of_isContPerfPair.comp continuous_swap
   bijective_left := IsContPerfPair.bijective_right p
