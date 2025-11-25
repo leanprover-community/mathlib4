@@ -3,7 +3,10 @@ Copyright (c) 2025 Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu
 -/
-import Mathlib.Topology.Separation.CompletelyRegular
+module
+
+public import Mathlib.Topology.Separation.CompletelyRegular
+
 import Mathlib.Topology.UniformSpace.OfCompactT2
 
 /-!
@@ -39,22 +42,22 @@ open Filter Set Uniformity SetRel
 section UniformSpace
 variable [UniformSpace α]
 
-private noncomputable def descend (s : { s : SetRel α α // s ∈ 𝓤 α }) :
+noncomputable def descend (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     { s : SetRel α α // s ∈ 𝓤 α } :=
   ⟨_, (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.1⟩
 
-private theorem descend_open (s : { s : SetRel α α // s ∈ 𝓤 α }) :
+theorem descend_open (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     IsOpen (descend s).1 :=
   (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.2.1
 
-private theorem descend_symm (s : { s : SetRel α α // s ∈ 𝓤 α }) :
+theorem descend_symm (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     (descend s).1.IsSymm :=
   (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.2.2.1
 
-private theorem descend_descends (s : { s : SetRel α α // s ∈ 𝓤 α }) :
+theorem descend_descends (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     (descend s).1 ○ (descend s).1 ⊆ s := by
   dsimp [descend]
   generalize_proofs o₁ c o₂
@@ -69,12 +72,12 @@ private theorem descend_descends (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     _ ⊆ o₁.choose ○ o₁.choose := comp_subset_comp c.choose_spec.2.2 c.choose_spec.2.2
     _ ⊆ s.1 := o₁.choose_spec.2.2.2
 
-private def P (c : Set α) (u : Set α) :=
+def P (c : Set α) (u : Set α) :=
   ∃ (x : α) (uc uu : SetRel α α) (s : { s : SetRel α α // s ∈ 𝓤 α }),
     IsOpen uc ∧ uc.IsSymm ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
     IsOpen uu ∧ u = Prod.mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu
 
-private theorem descend_spec {c u : Set α} (Pcu : P c u) :
+theorem descend_spec {c u : Set α} (Pcu : P c u) :
     ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
   obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn⟩ := Pcu
   have ho : IsOpen ((descend s).1 ○ uc ○ (descend s).1) :=
@@ -108,7 +111,7 @@ private theorem descend_spec {c u : Set α} (Pcu : P c u) :
         comp_subset_comp (comp_subset_comp (descend_descends s) subset_rfl) (descend_descends s)
       _ ⊆ uu := hn
 
-instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
+public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
   completely_regular x K hK hx := by
     obtain ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have hcu := (descend (descend ⟨O, hOu⟩)).2
@@ -152,16 +155,16 @@ end UniformSpace
 
 variable [t : TopologicalSpace α] [CompletelyRegularSpace α]
 
-theorem CompletelyRegularSpace.exists_uniformSpace :
+public theorem CompletelyRegularSpace.exists_uniformSpace :
     ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
   ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩
 
-theorem CompletelyRegularSpace.of_exists_uniformSpace
+public theorem CompletelyRegularSpace.of_exists_uniformSpace
     (h : ∃ (u : UniformSpace α), u.toTopologicalSpace = t) :
     CompletelyRegularSpace α := by
   obtain ⟨u, rfl⟩ := h
   infer_instance
 
-theorem completelyRegularSpace_iff_exists_uniformSpace :
+public theorem completelyRegularSpace_iff_exists_uniformSpace :
     CompletelyRegularSpace α ↔ ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
   ⟨@CompletelyRegularSpace.exists_uniformSpace α t, CompletelyRegularSpace.of_exists_uniformSpace⟩
