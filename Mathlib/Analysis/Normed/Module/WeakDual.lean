@@ -278,7 +278,7 @@ lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜
       (denseRange_denseSeq V) (map_continuous y) (by grind [Set.eqOn_range])
 
 /-- A compact subset of the dual space of a separable space is metrizable. -/
-lemma metrizable_of_compact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
+lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
   obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 V
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
