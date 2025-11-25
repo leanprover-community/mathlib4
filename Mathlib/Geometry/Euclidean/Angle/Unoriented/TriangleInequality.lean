@@ -169,7 +169,7 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
 
 /-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
 `angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
-proof_wanted angle_eq_angle_add_angle_iff {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+proof_wanted angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
     angle x z = angle x y + angle y z ↔ angle x z = π ∨ y ∈ (ℝ≥0 ∙ x) ⊔ (ℝ≥0 ∙ z)
 
 end InnerProductGeometry
