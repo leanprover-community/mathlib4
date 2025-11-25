@@ -383,6 +383,7 @@ theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain 
 
 @[deprecated (since := "2025-09-24")] alias Chain'.getElem := IsChain.getElem
 
+@[deprecated isChain_iff_getElem (since := "2025-11-25")]
 theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
     ∀ (i : Fin (l.length.pred)),
     haveI H := Nat.sub_one_add_one (Nat.lt_of_lt_pred i.pos).ne'
@@ -392,9 +393,11 @@ theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
 @[deprecated (since := "2025-09-24")] alias chain'_iff_forall_getElem := isChain_iff_getElem
 @[deprecated (since := "2025-09-24")] alias chain'_iff_get := isChain_iff_get
 
+@[deprecated isChain_iff_getElem (since := "2025-11-25")]
 theorem isChain_cons_iff_get {R} {a : α} {l : List α} : IsChain R (a :: l) ↔
     ∀ (i : Fin l.length), R ((a :: l).get i.castSucc) ((a :: l).get i.succ) := by
-  simp_rw [isChain_iff_get, length_cons, Nat.pred_succ, Fin.cast_refl, id_eq]
+  simp only [isChain_iff_getElem, length_cons, Fin.forall_iff, Nat.add_lt_add_iff_right,
+    getElem_cons_succ, Fin.castSucc_mk, get_eq_getElem, Fin.succ_mk]
 
 theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by simp_all [isChain_iff_getElem]
@@ -403,13 +406,13 @@ theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
 
 @[deprecated (since := "2025-09-19")] alias chain_iff_get := isChain_cons_iff_get
 
-theorem isChain_reverse {l : List α} : IsChain R (reverse l) ↔ IsChain (flip R) l := by
+theorem isChain_reverse {l : List α} : l.reverse.IsChain R ↔ l.IsChain (fun a b => R b a) := by
   induction l using twoStepInduction with
   | nil => grind
   | singleton a => grind
   | cons_cons a b l IH IH2 =>
     rw [isChain_cons_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
-      isChain_split, ← reverse_cons, IH2, and_comm, isChain_pair, flip]
+      isChain_split, ← reverse_cons, IH2, and_comm, isChain_pair]
 
 @[deprecated (since := "2025-09-24")] alias chain'_reverse := isChain_reverse
 
