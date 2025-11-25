@@ -10475,6 +10475,7 @@ public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Explicit
 public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Instances
+public import Mathlib.Condensed.Light.InternallyProjective
 public import Mathlib.Condensed.Light.Limits
 public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Light.Monoidal
