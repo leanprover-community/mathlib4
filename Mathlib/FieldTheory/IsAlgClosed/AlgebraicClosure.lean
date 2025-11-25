@@ -188,8 +188,8 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           simp⟩
 
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
-  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, ← splits_id_iff_splits, Monics.map_eq_prod]
-  exact splits_prod _ fun _ _ ↦ (splits_id_iff_splits _).mpr (splits_X_sub_C _)
+  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
+  exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
 

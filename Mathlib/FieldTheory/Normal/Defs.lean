@@ -57,7 +57,7 @@ variable (F K)
 
 instance normal_self : Normal F F where
   isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
-  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
+  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ by simp
 
 section NormalTower
 
@@ -72,7 +72,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
       ⟨hx.tower_top,
         Polynomial.splits_of_splits_of_dvd (algebraMap K E)
           (Polynomial.map_ne_zero (minpoly.ne_zero hx))
-          ((Polynomial.splits_map_iff (algebraMap F K) (algebraMap K E)).mpr hhx)
+          (map_map (algebraMap F K) (algebraMap K E) (minpoly F x) ▸ hhx)
           (minpoly.dvd_map_of_isScalarTower F K x)⟩
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
@@ -98,7 +98,7 @@ theorem Normal.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
   intro x
   rw [← g.apply_symm_apply x]
   refine ⟨(h (g.symm x)).1.map_of_comp_eq _ _ hcomp, ?_⟩
-  rw [← minpoly.map_eq_of_equiv_equiv hcomp, Polynomial.splits_map_iff, hcomp]
+  rw [← minpoly.map_eq_of_equiv_equiv hcomp, map_map, hcomp]
   exact Polynomial.splits_comp_of_splits _ _ (h (g.symm x)).2
 
 end NormalTower
