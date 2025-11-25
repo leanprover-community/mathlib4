@@ -196,6 +196,13 @@ theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
 
+omit [GeneralizedBooleanAlgebra α] in
+lemma Finset.disjiUnion_Iic_disjointed [DecidableEq α] (n : ι) (t : ι → Finset α) :
+    (Iic n).disjiUnion (disjointed t) ((disjoint_disjointed t).set_pairwise _) =
+      partialSups t n := by
+  rw [← partialSups_disjointed, partialSups_apply, Finset.sup'_eq_sup, Finset.sup_eq_biUnion,
+    disjiUnion_eq_biUnion]
+
 section SuccOrder
 
 variable [SuccOrder ι]

@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity.Core
 
@@ -727,8 +727,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
     ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
   convert ceil_lt_add_one (R := k) _ using 1
-  field_simp
-  abel
+  field
 
 lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
   obtain hab | hba := le_total a (b - 1)⁻¹

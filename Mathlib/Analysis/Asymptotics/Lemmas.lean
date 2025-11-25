@@ -202,6 +202,14 @@ theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) 
     ((eventually_ge_atTop _).and <| (tendsto_pow_atTop hn).eventually_ge_atTop C).exists
   exact (hC.of_pow hn hc hc₀).isBigO
 
+theorem IsBigO.pow_of_le_right {f : α → ℝ}
+    (hf : 1 ≤ᶠ[l] f) {m n : ℕ}
+    (h : n ≤ m) : (f ^ n) =O[l] (f ^ m) := by
+  rw [IsBigO_def]
+  refine ⟨1, ?_⟩
+  rw [IsBigOWith_def]
+  exact hf.mono fun x hx ↦ by simp [abs_eq_self.mpr (zero_le_one.trans hx), pow_le_pow_right₀ hx h]
+
 /-! ### Scalar multiplication -/
 
 section SMulConst

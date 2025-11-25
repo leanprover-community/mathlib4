@@ -62,6 +62,13 @@ lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
   (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
 
+@[to_additive]
+lemma isCancelSMul_iff_eq_one_of_smul_eq :
+    IsCancelSMul α β ↔ (∀ (g : α) (x : β), g • x = x → g = 1) := by
+  refine ⟨fun H _ _ ↦ IsCancelSMul.eq_one_of_smul, fun H ↦ ⟨fun g h x ↦ ?_⟩⟩
+  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← mul_smul, ← inv_mul_eq_one (G := α)]
+  exact H (g⁻¹ * h) x
+
 end Group
 
 section Monoid

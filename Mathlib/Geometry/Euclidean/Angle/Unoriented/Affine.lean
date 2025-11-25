@@ -289,8 +289,7 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
     convert (one_smul ℝ (p₂ -ᵥ p₁)).symm
-    field_simp [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
-    ring
+    field [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
   · rw [ne_comm, ← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
     exact ⟨hr.ne, hp₁p₂⟩
 

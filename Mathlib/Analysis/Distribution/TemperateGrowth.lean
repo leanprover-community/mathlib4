@@ -107,6 +107,36 @@ lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
+section Addition
+
+variable {f g : E → F}
+
+theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGrowth := by
+  refine ⟨hf.1.neg, fun n ↦ ?_⟩
+  obtain ⟨k, C, h⟩ := hf.2 n
+  exact ⟨k, C, fun x ↦ by simpa [iteratedFDeriv_neg_apply] using h x⟩
+
+theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
+    (f + g).HasTemperateGrowth := by
+  rw [hasTemperateGrowth_iff_isBigO] at *
+  refine ⟨hf.1.add hg.1, fun n ↦ ?_⟩
+  obtain ⟨k₁, h₁⟩ := hf.2 n
+  obtain ⟨k₂, h₂⟩ := hg.2 n
+  use max k₁ k₂
+  rw [iteratedFDeriv_add (hf.1.of_le (WithTop.coe_le_coe.mpr (le_of_lt (ENat.coe_lt_top _))))
+    (hg.1.of_le (WithTop.coe_le_coe.mpr (le_of_lt (ENat.coe_lt_top _))))]
+  have : 1 ≤ᶠ[⊤] fun (x : E) ↦ 1 + ‖x‖ := by
+    filter_upwards with _ using (le_add_iff_nonneg_right _).mpr (by positivity)
+  exact (h₁.trans (IsBigO.pow_of_le_right this (k₁.le_max_left k₂))).add
+    (h₂.trans (IsBigO.pow_of_le_right this (k₁.le_max_right k₂)))
+
+theorem HasTemperateGrowth.sub (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
+    (f - g).HasTemperateGrowth := by
+  convert hf.add hg.neg using 1
+  grind
+
+end Addition
+
 section Multiplication
 
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]

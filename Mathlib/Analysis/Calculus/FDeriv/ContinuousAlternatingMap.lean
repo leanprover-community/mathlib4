@@ -11,8 +11,9 @@ import Mathlib.Analysis.NormedSpace.Alternating.Basic
 
 In this file we prove formulas for the derivatives of
 
-- `ContinuousAlternatingMap.compContinuousLinearMap`;
-- application of a `ContinuousAlternatingMap`.
+- `ContinuousAlternatingMap.compContinuousLinearMap`, the pullback of a continuous alternating map
+  along a continuous linear map;
+- application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
 -/
 
 variable {𝕜 ι E F G H : Type*}
@@ -30,8 +31,15 @@ variable
   {g : E → F →L[𝕜] G} {g' : E →L[𝕜] F →L[𝕜] G}
   {s : Set E} {x : E}
 
-theorem ContinuousAlternatingMap.hasStrictFDerivAt_toContinuousMultilinearMap_comp_iff
-    [Finite ι] :
+/-!
+### Derivative of the pullback
+
+In this section we prove a formula for the derivative
+of the pullback of a continuous alternating map along a continuous linear map,
+as a function of both maps.
+-/
+
+theorem ContinuousAlternatingMap.hasStrictFDerivAt_toContinuousMultilinearMap_comp_iff [Finite ι] :
     HasStrictFDerivAt (toContinuousMultilinearMap ∘ f) (toContinuousMultilinearMapCLM 𝕜 ∘L f') x ↔
       HasStrictFDerivAt f f' x := by
   cases nonempty_fintype ι
@@ -103,6 +111,14 @@ theorem fderiv_continuousAlternatingMapCompContinuousLinearMap
 
 end HasFDerivAt
 
+/-!
+### Differentiability of the pullback
+
+In this section we prove that the pullback of a continuous alternating map
+along a continuous linear map is differentiable with respect to a parameter,
+provided that both maps are differentiable.
+-/
+
 variable [Finite ι]
 
 theorem DifferentiableWithinAt.continuousAlternatingMapCompContinuousLinearMap
@@ -122,6 +138,12 @@ theorem DifferentiableAt.continuousAlternatingMapCompContinuousLinearMap
     |>.differentiableAt
 
 end CompContinuousLinearMap
+
+/-!
+### Derivative of a continuous alternating map applied to a tuple of vectors
+
+In this section we prove the formula for the derivative `D_xf(x; g_0(x), ..., g_n(x))`.
+-/
 
 section Apply
 
@@ -219,8 +241,6 @@ theorem Differentiable.continuousAlternatingMap_apply (hf : Differentiable 𝕜 
 
 theorem ContinuousAlternatingMap.differentiable (f : E [⋀^ι]→L[𝕜] F) : Differentiable 𝕜 f := by
   cases nonempty_fintype ι
-  -- TODO: marking `Differentiable.continuousAlternatingMap_apply` as `fun_prop` doesn't work.
-  -- Fix it
   apply Differentiable.continuousAlternatingMap_apply <;> fun_prop
 
 end Apply

@@ -161,10 +161,10 @@ theorem comap_apply' (κ : Kernel α β) (hg : Measurable g) (c : γ) (s : Set �
 
 @[simp]
 lemma comap_zero (hg : Measurable g) : Kernel.comap (0 : Kernel α β) g hg = 0 := by
-  ext; rw [Kernel.comap_apply]; simp
+  ext; simp
 
 @[simp]
-lemma comap_id (κ : Kernel α β) : comap κ id measurable_id = κ := by ext a; rw [comap_apply]; simp
+lemma comap_id (κ : Kernel α β) : comap κ id measurable_id = κ := by ext; simp
 
 @[simp]
 lemma comap_id' (κ : Kernel α β) : comap κ (fun a ↦ a) measurable_id = κ := comap_id κ

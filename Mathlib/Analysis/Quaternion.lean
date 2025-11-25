@@ -181,19 +181,19 @@ theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
 
 @[continuity]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=
-  (continuous_apply 0).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 0).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_imI : Continuous fun q : ℍ => q.imI :=
-  (continuous_apply 1).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 1).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_imJ : Continuous fun q : ℍ => q.imJ :=
-  (continuous_apply 2).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 2).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
-  (continuous_apply 3).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 3).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by

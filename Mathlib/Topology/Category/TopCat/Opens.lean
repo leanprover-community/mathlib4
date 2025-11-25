@@ -209,8 +209,8 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
-  ext1; rw [iSup_def, iSup_def, map_obj]
-  dsimp; rw [Set.preimage_iUnion]
+  ext
+  simp
 
 section
 

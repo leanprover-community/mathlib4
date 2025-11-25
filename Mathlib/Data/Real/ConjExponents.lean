@@ -145,7 +145,7 @@ theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
 theorem conjugate_eq : q = p / (p - 1) := by
   convert inv_inv q ▸ congr($(h.symm.inv_sub_inv_eq_inv.symm)⁻¹) using 1
-  field_simp [h.ne_zero]
+  field [h.ne_zero]
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
 

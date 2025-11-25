@@ -27,7 +27,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   rw [← sub_pos] at hxy hxz hyz
   have ha : 0 ≤ (z - y) / (z - x) := by positivity
   have hb : 0 ≤ (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz ha hb (by field_simp; ring)
+  have key := hf.2 hx hz ha hb (by field)
   simp only [smul_eq_mul] at key
   ring_nf at key
   field_simp at key ⊢
@@ -52,7 +52,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   rw [← sub_pos] at hxy hxz hyz
   have ha : 0 < (z - y) / (z - x) := by positivity
   have hb : 0 < (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz hxz' ha hb (by field_simp; ring)
+  have key := hf.2 hx hz hxz' ha hb (by field)
   simp only [smul_eq_mul] at key
   ring_nf at key
   field_simp at key ⊢
@@ -177,8 +177,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
     ring_nf at key
     field_simp at key
     linear_combination key
-  · field_simp
-    ring
+  · field
 
 theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
     (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) ≤ (f z - f x) / (z - x) := by
@@ -220,8 +219,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
     ring_nf at key
     field_simp at key
     linear_combination key
-  · field_simp
-    ring
+  · field
 
 theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
     (hz : z ∈ s) (hxy : x < y) (hyz : y < z) : (f y - f x) / (y - x) < (f z - f x) / (z - x) := by

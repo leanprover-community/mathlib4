@@ -220,7 +220,7 @@ theorem iterate_derivative_one {k} (h : 0 < k) : derivative^[k] (1 : R[X]) = 0 :
 theorem iterate_derivative_X {k} (h : 1 < k) : derivative^[k] (X : R[X]) = 0 :=
   iterate_derivative_eq_zero <| natDegree_X_le.trans_lt h
 
-theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]}
+theorem natDegree_eq_zero_of_derivative_eq_zero [IsAddTorsionFree R] {f : R[X]}
     (h : derivative f = 0) : f.natDegree = 0 := by
   rcases eq_or_ne f 0 with (rfl | hf)
   · exact natDegree_zero
@@ -236,7 +236,7 @@ theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : 
   rw [hm, ← leadingCoeff, leadingCoeff_eq_zero] at h2
   exact hf h2
 
-theorem eq_C_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]} (h : derivative f = 0) :
+theorem eq_C_of_derivative_eq_zero [IsAddTorsionFree R] {f : R[X]} (h : derivative f = 0) :
     f = C (f.coeff 0) :=
   eq_C_of_natDegree_eq_zero <| natDegree_eq_zero_of_derivative_eq_zero h
 
@@ -289,7 +289,7 @@ theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction k generalizing f <;> simp [*]
 
-theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
+theorem mem_support_derivative [IsAddTorsionFree R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
     simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
@@ -297,7 +297,7 @@ theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
   simp only [Nat.succ_ne_zero, false_or]
 
 @[simp]
-theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < natDegree p) :
+theorem degree_derivative_eq [IsAddTorsionFree R] (p : R[X]) (hp : 0 < natDegree p) :
     degree (derivative p) = (natDegree p - 1 : ℕ) := by
   apply le_antisymm
   · rw [derivative_apply]

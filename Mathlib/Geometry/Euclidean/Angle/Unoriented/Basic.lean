@@ -178,7 +178,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
 theorem sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
   rw [← sin_angle_mul_norm_mul_norm]
-  field_simp
+  field
 
 /-- The sine of the angle between `x` and `x + y`. -/
 theorem sin_angle_add {x y : V} (hx : x ≠ 0) (hy : x + y ≠ 0) :

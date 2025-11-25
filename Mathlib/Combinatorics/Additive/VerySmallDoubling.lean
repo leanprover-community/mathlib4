@@ -468,7 +468,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
         rw [show (φ - K) * (K - ψ) = 1 - (K - 1) * K by grind]
         gcongr ?_ / _
         linarith [ineq]
-      _ = l := by field_simp
+      _ = l := by field
   -- Second, let's show that the `z ∈ S` with many representations are in `H`.
   · gcongr
     simp only [subset_iff, mem_filter, Set.mem_toFinset, SetLike.mem_coe, and_imp]

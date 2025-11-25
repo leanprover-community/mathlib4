@@ -66,7 +66,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -249,7 +249,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/

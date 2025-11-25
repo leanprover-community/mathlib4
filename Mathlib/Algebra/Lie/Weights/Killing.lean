@@ -556,7 +556,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
-    have _i : NoZeroSMulDivisors ℤ L := NoZeroSMulDivisors.int_of_charZero K L
+    have : IsAddTorsionFree L := .of_noZeroSMulDivisors K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
     contradiction
   · have : ⁅⁅e, f'⁆, f'⁆ = - α h • f' := lie_eq_smul_of_mem_rootSpace hfα h

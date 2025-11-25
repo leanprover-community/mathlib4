@@ -1155,11 +1155,8 @@ theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
 @[to_additive existing]
-theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum := by
-  rw [← Multiplicative.ofAdd_le, ofAdd_multiset_prod, Multiset.map_map]
-  refine Multiset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _
-  · simp
-  · exact norm_mul_le' x y
+theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
+  m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
@@ -1173,18 +1170,12 @@ theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E
   s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 
 @[to_additive existing]
-theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ := by
-  rw [← Multiplicative.ofAdd_le, ofAdd_sum]
-  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ enorm) ?_ (fun x y => ?_) _ _
-  · simp
-  · exact enorm_mul_le' x y
+theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
+  s.apply_prod_le_sum_apply _ enorm_one'.le enorm_mul_le'
 
 @[to_additive existing]
-theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
-  rw [← Multiplicative.ofAdd_le, ofAdd_sum]
-  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
-  · simp
-  · exact norm_mul_le' x y
+theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
+  s.apply_prod_le_sum_apply _ norm_one'.le norm_mul_le'
 
 @[to_additive]
 theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :

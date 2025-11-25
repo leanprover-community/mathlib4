@@ -210,7 +210,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       exact Nat.le_add_left _ _
   intro n hn
   induction n, hn using Nat.le_induction with
-  | base => exact le_of_eq <| by simp [a, Nat.factorial_two]; field_simp; ring
+  | base => exact le_of_eq <| by simp [a, Nat.factorial_two]; field
   | succ m _ h_m =>
       suffices (3 : ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
@@ -220,7 +220,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           ring
         · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
-          field_simp
+          field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
 

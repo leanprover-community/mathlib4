@@ -28,8 +28,7 @@ lemma norm_ofLp_crossProduct (a b : EuclideanSpace ℝ (Fin 3)) :
   refine sq_eq_sq₀ (by positivity) (by positivity) |>.mp ?_
   trans ‖a‖^2 * ‖b‖^2 - ⟪a, b⟫ ^ 2
   · simp_rw [norm_sq_eq_re_inner (𝕜 := ℝ), EuclideanSpace.inner_eq_star_dotProduct, star_trivial,
-      RCLike.re_to_real, WithLp.ofLp_toLp, cross_dot_cross,
-      dotProduct_comm (ofLp b) (ofLp a), sq]
+      RCLike.re_to_real, cross_dot_cross, dotProduct_comm (ofLp b) (ofLp a), sq]
   · linear_combination (‖a‖ * ‖b‖) ^ 2 * (sin_sq_add_cos_sq (angle a b)).symm +
       congrArg (· ^ 2) (cos_angle_mul_norm_mul_norm a b)
 

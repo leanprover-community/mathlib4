@@ -48,7 +48,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+    have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this

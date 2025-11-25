@@ -277,7 +277,7 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ = K * ∑ i ∈ Finset.range n, dist (I i).1 (I i).2 := by symm; exact Finset.mul_sum _ _ _
     _ ≤ K * (ε / (K + 1)) := by gcongr
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
-    _ = ε := by field_simp
+    _ = ε := by field
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -303,7 +303,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']
-    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field_simp
+    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
     apply Monotone.mul_const Nat.mono_cast
@@ -314,7 +314,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
       ∑ i ∈ Finset.range (n + 1), eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) := by
     convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
     · simp
-    · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
+    · simp only [Nat.cast_add, Nat.cast_one, δ']; field
     · norm_cast
   -- The variation of `f` on any subinterval `[x, y]` of `[a, b]` of length `< δ` is `≤ 1`.
   have v_each (x y : ℝ) (_ : a ≤ x) (_ : x ≤ y) (_ : y < x + δ) (_ : y ≤ b) :
@@ -363,7 +363,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   · rw [add_mul, ← add_assoc]; simpa
   · convert h_mono (show i + 1 ≤ n + 1 by omega)
     · norm_cast
-    · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
+    · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 
 /-- If `f` is absolute continuous on `uIcc a b`, then `f'` exists a.e. on `uIcc a b`. -/
 theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}

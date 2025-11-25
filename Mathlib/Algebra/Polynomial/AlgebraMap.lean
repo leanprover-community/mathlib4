@@ -479,10 +479,9 @@ theorem isRoot_of_eval₂_map_eq_zero (hf : Function.Injective f) {r : R} :
   apply hf
   rw [← eval₂_hom, h, f.map_zero]
 
-theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] {p : R[X]}
-    (inj : Function.Injective (algebraMap R S)) {r : R} (hr : aeval (algebraMap R S r) p = 0) :
-    p.IsRoot r :=
-  isRoot_of_eval₂_map_eq_zero inj hr
+theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] [FaithfulSMul R S] {p : R[X]} {r : R}
+    (hr : p.aeval (algebraMap R S r) = 0) : p.IsRoot r :=
+  isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective _ _) hr
 
 end Semiring
 

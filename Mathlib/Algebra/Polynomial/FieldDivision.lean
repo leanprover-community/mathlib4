@@ -249,35 +249,38 @@ theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 <
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 
-@[simp]
-protected theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
-  simp only [Polynomial.ext_iff]
-  congr!
-  simp [map_eq_zero, coeff_map, coeff_zero]
+end DivisionRing
 
-theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) : p.map f ≠ 0 :=
+section SimpleRing
+
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] {p q : R[X]}
+
+@[simp]
+protected theorem map_eq_zero (f : R →+* S) : p.map f = 0 ↔ p = 0 :=
+  Polynomial.map_eq_zero_iff f.injective
+
+theorem map_ne_zero {f : R →+* S} (hp : p ≠ 0) : p.map f ≠ 0 :=
   mt (Polynomial.map_eq_zero f).1 hp
 
 @[simp]
-theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
-    degree (p.map f) = degree p :=
-  p.degree_map_eq_of_injective f.injective
+theorem degree_map (p : R[X]) (f : R →+* S) : (p.map f).degree = p.degree :=
+  degree_map_eq_of_injective f.injective _
 
 @[simp]
-theorem natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) :
-    natDegree (p.map f) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_map _ f)
+theorem natDegree_map (f : R →+* S) : (p.map f).natDegree = p.natDegree :=
+  natDegree_map_eq_of_injective f.injective _
 
 @[simp]
-theorem leadingCoeff_map [Semiring S] [Nontrivial S] (f : R →+* S) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  simp only [← coeff_natDegree, coeff_map f, natDegree_map]
+theorem leadingCoeff_map (f : R →+* S) : (p.map f).leadingCoeff = f p.leadingCoeff :=
+  leadingCoeff_map_of_injective f.injective _
 
-theorem monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} :
-    (p.map f).Monic ↔ p.Monic := by
-  rw [Monic, leadingCoeff_map, ← f.map_one, Function.Injective.eq_iff f.injective, Monic]
+theorem nextCoeff_map_eq (p : R[X]) (f : R →+* S) : (p.map f).nextCoeff = f p.nextCoeff :=
+  nextCoeff_map f.injective _
 
-end DivisionRing
+@[simp] theorem monic_map_iff {f : R →+* S} {p : R[X]} : (p.map f).Monic ↔ p.Monic :=
+  Function.Injective.monic_map_iff f.injective |>.symm
+
+end SimpleRing
 
 section Field
 

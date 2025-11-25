@@ -136,7 +136,7 @@ theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
     apply rpow_pos_of_pos b_pos
   · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
-  field_simp [log_ne_zero_of_pos_of_ne_one b_pos b_ne_one]
+  field [log_ne_zero_of_pos_of_ne_one b_pos b_ne_one]
 
 @[simp]
 theorem rpow_logb (hx : 0 < x) : b ^ logb b x = x := by

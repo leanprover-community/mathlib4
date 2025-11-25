@@ -71,6 +71,17 @@ theorem getD_eq_getD_getElem? (n : ℕ) : l.getD n d = l[n]?.getD d := by
   | inl h => rw [getD_eq_getElem _ _ h, getElem?_eq_getElem h, Option.getD_some]
   | inr h => rw [getD_eq_default _ _ h, getElem?_eq_none_iff.mpr h, Option.getD_none]
 
+theorem getD_surjective_iff {l : List α} {d : α} :
+    (l.getD · d).Surjective ↔ (∀ x, x = d ∨ x ∈ l) := by
+  apply forall_congr'
+  have : ∃ x, l.length ≤ x := ⟨_, Nat.le_refl _⟩
+  simp only [getD_eq_getElem?_getD, getD_getElem?, dite_eq_iff, Nat.not_lt, exists_prop, exists_or,
+    exists_and_right, this, mem_iff_getElem?, getElem?_eq_some_iff]
+  grind
+
+theorem getD_surjective {l : List α} (h : ∀ x, x ∈ l) (d : α) : (l.getD · d).Surjective :=
+  getD_surjective_iff.mpr fun _ ↦ .inr <| h _
+
 end getD
 
 section getI

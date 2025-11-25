@@ -482,7 +482,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
       calc
         δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
         _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
-        _ = δ := by field_simp; ring
+        _ = δ := by field
     · positivity
     · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
       apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)

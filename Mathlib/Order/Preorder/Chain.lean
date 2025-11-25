@@ -245,6 +245,19 @@ lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc 
     exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
       ((e.toEquiv.subset_symm_image _ _).2 hf)
 
+protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s = ∅ := by
+  refine ⟨fun _ ↦ s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
+  constructor
+  intro x
+  simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
+  exact singleton_ne_empty x (h IsChain.singleton).symm
+
+protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s ≠ ∅ := by
+  grind [not_nonempty_iff, IsMaxChain.isEmpty_iff]
+
+theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
+  ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
+
 open Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
 is one of these chains. Otherwise it is `s`. -/

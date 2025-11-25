@@ -535,6 +535,20 @@ theorem Tendsto.prodMap_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a :
     Tendsto (Prod.map f g) (a.coprod b) (c.coprod d) :=
   map_prodMap_coprod_le.trans (coprod_mono hf hg)
 
+lemma Tendsto.coprod_of_prod_top_right {f : α × β → γ} {la : Filter α} {lb : Filter β}
+    {lc : Filter γ} (h₁ : ∀ s : Set α, s ∈ la → Tendsto f (𝓟 sᶜ ×ˢ lb) lc)
+    (h₂ : Tendsto f (la ×ˢ ⊤) lc) :
+    Tendsto f (la.coprod lb) lc := by
+  simp_all [tendsto_prod_iff, coprod_eq_prod_top_sup_top_prod]
+  grind
+
+lemma Tendsto.coprod_of_prod_top_left {f : α × β → γ} {la : Filter α} {lb : Filter β}
+    {lc : Filter γ} (h₁ : ∀ s : Set β, s ∈ lb → Tendsto f (la ×ˢ 𝓟 sᶜ) lc)
+    (h₂ : Tendsto f (⊤ ×ˢ lb) lc) :
+    Tendsto f (la.coprod lb) lc := by
+  simp_all [tendsto_prod_iff, coprod_eq_prod_top_sup_top_prod]
+  grind
+
 end Coprod
 
 end Filter

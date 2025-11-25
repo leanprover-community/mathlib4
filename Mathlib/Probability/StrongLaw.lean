@@ -565,7 +565,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
     ext1 n
     simp only [Function.comp_apply, sub_sub_sub_cancel_left]
   convert L.mul_isBigO (isBigO_refl (fun n : ℕ => (⌊c ^ n⌋₊ : ℝ)⁻¹) atTop) using 1 <;>
-  (ext1 n; field_simp [(H n).ne'])
+  (ext1 n; field [(H n).ne'])
 
 include hint hindep hident hnonneg in
 /-- `Xᵢ` satisfies the strong law of large numbers along all integers. This follows from the

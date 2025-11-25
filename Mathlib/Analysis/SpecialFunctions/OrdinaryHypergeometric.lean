@@ -201,7 +201,7 @@ theorem ordinaryHypergeometricSeries_radius_eq_one
     convert Filter.Tendsto.norm this
     exact norm_one.symm
   have (k : ℕ) : (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k) =
-        (c + k) / (a + k) * ((1 + k) / (b + k)) := by field_simp
+        (c + k) / (a + k) * ((1 + k) / (b + k)) := by field
   simp_rw [this]
   apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
   convert RCLike.tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
