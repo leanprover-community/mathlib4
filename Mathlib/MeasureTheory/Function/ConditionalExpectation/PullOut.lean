@@ -224,15 +224,13 @@ theorem condExp_bilin_of_aestronglyMeasurable_right [CompleteSpace F] {f : Ω �
 theorem condExp_smul_of_aestronglyMeasurable_left [CompleteSpace E] {f : Ω → ℝ} {g : Ω → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfg : Integrable (f • g) μ) (hg : Integrable g μ) :
     μ[f • g|m] =ᵐ[μ] f • μ[g|m] :=
-  condExp_bilin_of_aestronglyMeasurable_left
-    (ContinuousLinearMap.smulRightL ℝ ℝ E (ContinuousLinearMap.id ℝ ℝ)).flip hf hfg hg
+  condExp_bilin_of_aestronglyMeasurable_left (.lsmul ℝ ℝ) hf hfg hg
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_smul_of_aestronglyMeasurable_right [CompleteSpace E] {f : Ω → ℝ} {g : Ω → E}
     (hf : Integrable f μ) (hfg : Integrable (f • g) μ) (hg : AEStronglyMeasurable[m] g μ) :
     μ[f • g|m] =ᵐ[μ] μ[f|m] • g :=
-  condExp_bilin_of_aestronglyMeasurable_left
-    (ContinuousLinearMap.smulRightL ℝ ℝ E (ContinuousLinearMap.id ℝ ℝ)) hg hfg hf
+  condExp_bilin_of_aestronglyMeasurable_left (ContinuousLinearMap.lsmul ℝ ℝ).flip hg hfg hf
 
 /-- Pull-out property of the conditional expectation. -/
 theorem condExp_mul_of_aestronglyMeasurable_left {f g : Ω → ℝ} (hf : AEStronglyMeasurable[m] f μ)
