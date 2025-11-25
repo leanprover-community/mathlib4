@@ -171,6 +171,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       simp
     rwa [h_x_eq_y]
 
+@[simp]
 protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
   congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
 
