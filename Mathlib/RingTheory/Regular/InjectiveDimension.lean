@@ -332,7 +332,6 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     · sorry
     · refine (EquivLike.comp_bijective _ Ext.homEquiv₀).mp <|
         (EquivLike.bijective_comp Ext.homEquiv₀.symm _).mp ?_
-      erw [Functor.mapExtAddHom_coe]
       change Function.Bijective <| fun t ↦ Ext.homEquiv₀ <|
         (Fr.mapExt N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) 0) (Ext.homEquiv₀.symm t)
       simp only [Ext.homEquiv₀_symm_apply, Ext.mapExt_mk₀_eq_mk₀_map]
