@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Judith Ludwig, Christian Merten. All rights reserved.
+Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Smooth.Basic
-public import Mathlib.Tactic.DepRewrite
 
 /-!
 # Smooth algebras have Noetherian models
@@ -132,7 +131,7 @@ lemma kerSquareLift_comp_σ₀ :
   refine MvPolynomial.algHom_ext fun i ↦ ?_
   suffices h : ∃ p, p.IsHomogeneous 1 ∧ (eval (A.P.relationOfHasCoeffs A.R₀)) p =
       preimageOfCoeffsSubsetRange (A.coeffs_h_subset i) - X i by
-    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` dicsrepancies
+    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
     apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
     simpa [Ideal.mem_span_iff]
   have hinj : Function.Injective (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) :=
@@ -171,7 +170,7 @@ public theorem exists_finiteType [Smooth R S] :
   choose p homog hp using this
   have hsig (i : _) : f (h i) = P.val i := by
     rw [← AlgHom.kerSquareLift_mk]
-    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` dicsrepancies
+    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
     exact hh i ▸ congr($hsig (P.val i))
   have (i : Fin (Presentation.ofFinitePresentationVars R S)) :
       h i - X i ∈ Ideal.span (.range P.relation) := by
