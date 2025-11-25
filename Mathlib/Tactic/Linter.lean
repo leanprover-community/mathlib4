@@ -7,9 +7,12 @@ This file is ignored by `shake`:
 * it is in `ignoreAll`, meaning that all its imports are considered necessary;
 * it is in `ignoreImport`, meaning that where it is imported, it is considered necessary.
 -/
+module
 
-import Mathlib.Tactic.Linter.DeprecatedModule
-import Mathlib.Tactic.Linter.HaveLetLinter
-import Mathlib.Tactic.Linter.MinImports
-import Mathlib.Tactic.Linter.PPRoundtrip
-import Mathlib.Tactic.Linter.UpstreamableDecl
+public meta import Mathlib.Tactic.Linter.DeprecatedModule
+public meta import Mathlib.Tactic.Linter.HaveLetLinter
+public meta import Mathlib.Tactic.Linter.MinImports
+public meta import Mathlib.Tactic.Linter.PPRoundtrip
+public meta import Mathlib.Tactic.Linter.PrivateModule
+public meta import Mathlib.Tactic.Linter.UnusedInstancesInType
+public meta import Mathlib.Tactic.Linter.UpstreamableDecl
