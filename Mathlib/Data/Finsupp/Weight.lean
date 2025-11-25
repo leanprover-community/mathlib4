@@ -217,8 +217,8 @@ theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
 theorem degree_sum {α : Type*} [DecidableEq α] {s : Finset α} (f : α → σ →₀ ℕ) :
     (∑ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := by
   refine s.induction rfl ?_
-  · rintro a s hs hs'
-    rw [Finset.sum_insert hs, Finset.sum_insert hs, degree_add, hs']
+  intro a s hs hs'
+  rw [Finset.sum_insert hs, Finset.sum_insert hs, degree_add, hs']
 
 @[simp]
 theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
