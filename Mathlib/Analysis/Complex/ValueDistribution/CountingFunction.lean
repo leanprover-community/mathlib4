@@ -322,10 +322,10 @@ theorem counting_top_sum_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
   | insert a s ha hs =>
     rw [Finset.sum_insert ha, Finset.sum_insert ha]
     calc logCounting (f a + ∑ x ∈ s, f x) ⊤ r
-    _ ≤ (logCounting (f a) ⊤ + logCounting (∑ x ∈ s, f x) ⊤) r :=
-      counting_top_add_le (h₁f a) (MeromorphicOn.sum h₁f) hr
-    _ ≤ (logCounting (f a) ⊤ + ∑ x ∈ s, logCounting (f x) ⊤) r :=
-      add_le_add (by trivial) hs
+      _ ≤ (logCounting (f a) ⊤ + logCounting (∑ x ∈ s, f x) ⊤) r :=
+        counting_top_add_le (h₁f a) (MeromorphicOn.sum h₁f) hr
+      _ ≤ (logCounting (f a) ⊤ + ∑ x ∈ s, logCounting (f x) ⊤) r :=
+        add_le_add (by trivial) hs
 
 /--
 Asymptotically, the counting function of a sum `∑ a, f a` at `⊤` is less than or
