@@ -62,7 +62,7 @@ theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·.1]) =
   finRange_map_get l
 
 @[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
-  simpa using idxOf_getElem (nodup_finRange k) i
+  simpa using (nodup_finRange k).idxOf_getElem i
 
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
