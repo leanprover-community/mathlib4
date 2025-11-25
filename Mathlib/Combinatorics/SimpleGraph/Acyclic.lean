@@ -333,4 +333,52 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
 
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
+    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
+  obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
+  refine (connected_iff _).mpr ⟨?_, u, by aesop⟩
+  /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ
+  via the unique vertex u adjacent to vertex v. -/
+  intro w x
+  obtain ⟨pwu, hpwu⟩ := hconn.exists_isPath w u
+  obtain ⟨pux, hpux⟩ := hconn.exists_isPath u x
+  rw [Reachable, ← exists_true_iff_nonempty]
+  classical
+  use ((pwu.append pux).toPath.val.induce {v}ᶜ ?_).copy (SetCoe.ext rfl) (SetCoe.ext rfl)
+  /- Each path between vertex u and another vertex in G.induce {v}ᶜ
+  is contained in G.induce {v}ᶜ. -/
+  intro z hz
+  rw [Set.mem_compl_iff, Set.mem_singleton_iff]
+  obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
+  /- Prove vertex v is not in the path formed from the concatenated walks
+  by showing that vertex u must then be passed twice. -/
+  by_contra
+  subst_vars
+  refine List.nodup_iff_forall_not_duplicate.mp (pwu.append pux).toPath.nodup_support u ?_
+  rw [p_eq_pwzx, support_append, List.duplicate_iff_two_le_count, List.count_append]
+  have := List.one_le_count_iff.mpr (pwz.getVert_mem_support (pwz.length - 1))
+  simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
+  have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
+  rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
+  cutsat
+
+/-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
+removed. -/
+lemma Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial
+    [Finite V] [Nontrivial V] (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Connected := by
+  obtain ⟨T, _, T_isTree⟩ := hconn.exists_isTree_le
+  have ⟨hT, _⟩ := T_isTree
+  have := Fintype.ofFinite V
+  classical
+  obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
+  exact ⟨v, (hT.induce_compl_singleton_of_degree_eq_one hv).mono (by tauto)⟩
+
+/-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
+lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
+    (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
+  nontriviality V using hconn.nonempty
+  obtain ⟨v, hv⟩ := hconn.exists_connected_induce_compl_singleton_of_finite_nontrivial
+  exact ⟨v, hv.preconnected⟩
+
 end SimpleGraph

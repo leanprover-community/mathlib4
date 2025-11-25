@@ -1230,6 +1230,13 @@ instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [D
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
 
+/-- Equivalence between an induced subgraph and its corresponding simple graph. -/
+def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
+    (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, h hv⟩, by simp at hv; aesop⟩
+  invFun := fun ⟨v, hv⟩ ↦ ⟨v, hv⟩
+  map_rel_iff' := by simp
+
 end Induce
 
 /-- Given a subgraph and a set of vertices, delete all the vertices from the subgraph,
@@ -1293,6 +1300,13 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
         ⟨by trivial, x.2.2, by trivial, y.2.2, h⟩
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
+
+/-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
+def coeDeleteVertsIso (s : Set V) :
+    (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
+  invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
+  map_rel_iff' := by simp
 
 end DeleteVerts
 
