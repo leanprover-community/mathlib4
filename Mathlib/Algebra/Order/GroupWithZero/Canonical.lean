@@ -80,7 +80,7 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsOrderedMonoid :
     · simp
     obtain rfl | hab := hab.eq_or_lt
     · simp
-    · exact (mul_lt_mul_of_pos_left hab <| zero_lt_iff.2 hc).le
+    · exact (mul_lt_mul_of_pos_right hab <| zero_lt_iff.2 hc).le
 
 instance (priority := 100) : IsCancelMulZero α where
   mul_left_cancel_of_ne_zero ha := (strictMono_mul_left_of_pos <| zero_lt_iff.2 ha).injective
