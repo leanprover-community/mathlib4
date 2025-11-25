@@ -313,8 +313,6 @@ instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := b
 
 end restrictScalars
 
-
-
 variable {R} [Small.{v} R] [UnivLE.{v, w}]
 
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
@@ -331,7 +329,16 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
   · simp only [ModuleCat.smulShortComplex_X₁, Nat.reduceAdd, AddMonoidHom.coe_comp]
     apply Function.Bijective.comp
     · sorry
-    · sorry
+    · refine (EquivLike.comp_bijective _ Ext.homEquiv₀).mp <|
+        (EquivLike.bijective_comp Ext.homEquiv₀.symm _).mp ?_
+      erw [Functor.mapExtAddHom_coe]
+      change Function.Bijective <| fun t ↦ Ext.homEquiv₀ <|
+        (Fr.mapExt N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) 0) (Ext.homEquiv₀.symm t)
+      simp only [Ext.homEquiv₀_symm_apply, Ext.mapExt_mk₀_eq_mk₀_map]
+      change Function.Bijective (Ext.homEquiv₀ ∘ Ext.homEquiv₀.symm ∘ Fr.map)
+      simp only [EquivLike.comp_bijective, Fr]
+      apply Functor.FullyFaithful.map_bijective
+      sorry
   · rename_i n ih
     let e : Basis N (R ⧸ Ideal.span {x}) (N →₀ Shrink.{v} (R ⧸ Ideal.span {x})) :=
       ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x}))⟩
