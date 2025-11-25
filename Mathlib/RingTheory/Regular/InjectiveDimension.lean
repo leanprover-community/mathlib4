@@ -333,7 +333,6 @@ end restrictScalars
 
 variable {R} [Small.{v} R] [UnivLE.{v, w}]
 
-#check Category
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
   is bijective. -/
@@ -351,8 +350,8 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     · obtain ⟨z, rfl⟩ := y.covariant_sequence_exact₃ _ regM.smulShortComplex_shortExact rfl h
       suffices z = 0 by simp [this]
       apply @Subsingleton.eq_zero _ _ (@Ext.homEquiv₀.subsingleton _ _ ?_) z
-
-      sorry
+      apply subsingleton_of_forall_eq 0 fun f ↦ ModuleCat.hom_ext (LinearMap.ext fun t ↦ regM ?_)
+      simp [← map_smul]
     · conv in ShortComplex.f ?_ => change x • (𝟙 M)
       rw [← Ext.mk₀_id_comp (X := Fr.obj N) (y.comp (Ext.mk₀ (x • 𝟙 M)) rfl), Ext.mk₀_smul,
         Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
