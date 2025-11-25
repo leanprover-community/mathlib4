@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.InitialSeg
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.Cones
+module
+
+public import Mathlib.Order.InitialSeg
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.Cones
 
 /-!
 # Cocones associated to principal segments
@@ -15,6 +17,8 @@ there is a cocone for `f.monotone.functor ⋙ F : α ⥤ C`
 the point of which is `F.obj f.top`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 

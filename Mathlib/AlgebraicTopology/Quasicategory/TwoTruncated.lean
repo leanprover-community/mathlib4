@@ -3,8 +3,10 @@ Copyright (c) 2025 Julian Komaromy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Komaromy
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 
 /-!
 # 2-truncated quasicategories and homotopy relations
@@ -21,6 +23,8 @@ relations, and that the left and right homotopy relations coincide.
 Throughout this file, we make use of `Edge` and `CompStruct` to conveniently deal with
 edges and triangles in a 2-truncated simplicial set.
 -/
+
+@[expose] public section
 
 open CategoryTheory SimplicialObject.Truncated
 

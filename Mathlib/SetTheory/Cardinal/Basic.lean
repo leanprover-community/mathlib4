@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Logic.Small.Set
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basic results on cardinal numbers
@@ -31,6 +33,8 @@ finite/countable/small types and sets.
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -624,6 +628,9 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
     #(Subtype p) ≤ #(Subtype q) :=
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 
+theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
+  ⟨Set.embeddingOfSubset s t h⟩
+
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
@@ -702,6 +709,10 @@ theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
 @[simp]
 theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
   simpa using mk_image_embedding_lift f s
+
+theorem iSup_mk_le_mk_iUnion {α : Type u} {ι : Type v} {f : ι → Set α} :
+    ⨆ i, #(f i) ≤ #(⋃ i, f i) :=
+  ciSup_le' fun _ => mk_le_mk_of_subset (subset_iUnion _ _)
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
@@ -803,9 +814,6 @@ theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α := by
   classical
   exact mk_congr (Equiv.Set.sumCompl s)
-
-theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
-  ⟨Set.embeddingOfSubset s t h⟩
 
 theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set α} :
     #t ≤ n ↔ ∀ s : Finset α, (s : Set α) ⊆ t → s.card ≤ n := by

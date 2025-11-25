@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.MeasureTheory.Measure.Dirac
+module
+
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.MeasureTheory.Measure.Dirac
 
 /-!
 # Probability mass functions
@@ -29,6 +31,8 @@ to be the measure of the singleton set `{x}`.
 probability mass function, discrete probability measure
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -45,7 +49,7 @@ namespace PMF
 
 instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
-  coe_injective' _ _ h := Subtype.eq h
+  coe_injective' _ _ h := Subtype.ext h
 
 @[ext]
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
@@ -98,9 +102,9 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
       fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   classical
-  have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
-    (ENNReal.summable.tsum_ne_zero_iff.2
-      ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
+  have : 0 < ∑' b, ite (b = a) 0 (p b) := by
+    rw [pos_iff_ne_zero, ENNReal.summable.tsum_ne_zero_iff]
+    exact ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩
   calc
     1 = 1 + 0 := (add_zero 1).symm
     _ < p a + ∑' b, ite (b = a) 0 (p b) :=
@@ -115,7 +119,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
   classical
   refine hasSum_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
-  split_ifs with h <;> simp only [h, zero_le', le_rfl]
+  split_ifs with h <;> simp [h]
 
 theorem apply_ne_top (p : PMF α) (a : α) : p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt (p.coe_le_one a) ENNReal.one_lt_top)
