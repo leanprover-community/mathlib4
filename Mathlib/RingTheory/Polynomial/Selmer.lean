@@ -96,15 +96,6 @@ section Inertia
 
 open scoped Pointwise
 
-section inertia
-
-theorem AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
-    (G : Type*) [Group G] [MulAction G M] (H : Subgroup G) :
-    (I.inertia G).subgroupOf H = I.inertia H :=
-  rfl
-
-end inertia
-
 -- PR #30666
 section ram
 
@@ -254,7 +245,7 @@ theorem tada -- R = ℤ, S = 𝓞 K
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (m : MaximalSpectrum S)
      -- all roots already present (so no new roots in `S ⧸ m`)
-    (hf : (f.map (algebraMap R S)).Factors)
+    (hf : (f.map (algebraMap R S)).Splits)
     -- at most one collision
     (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
     ∀ g ∈ m.asIdeal.toAddSubgroup.inertia G,
@@ -306,7 +297,7 @@ theorem tada -- R = ℤ, S = 𝓞 K
 
 theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] (f : R[X])
-    (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Factors)
+    (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Splits)
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     [MulAction.IsPretransitive G (f.rootSet S)]
     (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤)
@@ -471,7 +462,7 @@ theorem X_pow_sub_X_sub_one_gal :
       grw [Multiset.toFinset_card_le, card_roots', natDegree_map_le, natDegree_sub_le,
         natDegree_sub_le, natDegree_X_pow, natDegree_X, natDegree_one, hn, max_self, Nat.max_zero]
     have : Unique ((X ^ n - X - 1 : ℚ[X]).Gal) := by
-      refine Gal.uniqueGalOfSplits _ (splits_of_natDegree_le_one _ (by compute_degree!))
+      refine Gal.uniqueGalOfSplits _ (Splits.of_natDegree_le_one (by compute_degree!))
     apply Unique.bijective
   have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
     simp only [trinomial, C_neg, C_1]; ring
