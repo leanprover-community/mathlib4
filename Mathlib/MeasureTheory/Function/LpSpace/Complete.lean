@@ -86,7 +86,7 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
 /-- If the `eLpNorm` of a sequence of `AEStronglyMeasurable` functions that converges almost
 everywhere is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
 `C`. -/
-theorem eLpNorm_le_of_tendsto_ae {f : ℕ → α → E} {g : α → E} {C : ℝ≥0∞}
+theorem eLpNorm_le_of_ae_tendsto {f : ℕ → α → E} {g : α → E} {C : ℝ≥0∞}
     (bound : ∀ᶠ n in atTop, eLpNorm (f n) p μ ≤ C) (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (f · x) atTop (nhds (g x))) :
     eLpNorm g p μ ≤ C := calc
