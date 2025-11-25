@@ -168,7 +168,8 @@ instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F
   let _ : SMul E ↑(E ⊔ F) := Algebra.toSMul
   have : IsScalarTower E ↑(E ⊔ F) K := IsScalarTower.of_algebraMap_eq' rfl
   have : Algebra.IsAlgebraic ↑(E ⊔ F) K := Algebra.IsAlgebraic.tower_top (K := E) ↑(E ⊔ F)
-  simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+  rw [isTotallyReal_iff_le_maximalRealSubfield, sup_le_iff]
+  exact ⟨IsTotallyReal.le_maximalRealSubfield E, IsTotallyReal.le_maximalRealSubfield F⟩
 
 instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
     [∀ i, IsTotallyReal (k i)] [∀ i, Algebra.IsAlgebraic (k i) K] :
@@ -179,7 +180,8 @@ instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
   · let _ :  Algebra (k i) ↥(⨆ i, k i) := RingHom.toAlgebra <| Subfield.inclusion (le_iSup _ i)
     have : IsScalarTower (k i) ↥(⨆ i, k i) K := IsScalarTower.of_algebraMap_eq' rfl
     have : Algebra.IsAlgebraic  ↑(⨆ i, k i) K := Algebra.IsAlgebraic.tower_top (K := k i) _
-    simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+    rw [isTotallyReal_iff_le_maximalRealSubfield, iSup_le_iff]
+    exact fun i ↦ IsTotallyReal.le_maximalRealSubfield (k i)
 
 @[simp]
 theorem IsTotallyReal.maximalRealSubfield_eq_top [CharZero K] [Algebra.IsAlgebraic ℚ K]
