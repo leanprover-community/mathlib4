@@ -382,10 +382,6 @@ lemma Connected.exists_vertex_preconnected_induce_compl_singleton_of_finite [Fin
     exact ⟨v, hv.preconnected⟩
   · use hconn.nonempty.some
     have := not_nontrivial_iff_subsingleton.mp h
-    have : G.induce {hconn.nonempty.some}ᶜ = ⊥ := by
-      ext w x
-      simp [subsingleton_iff.mp _ w x]
-    rw [this]
-    exact preconnected_bot
+    exact preconnected_of_subsingleton _
 
 end SimpleGraph
