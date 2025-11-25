@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Set.Equitable
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Set.Equitable
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite equipartitions
@@ -22,6 +24,8 @@ difference of `1`.
   equipped with an equipartition. Indices of elements in the same part are congruent modulo
   the number of parts.
 -/
+
+@[expose] public section
 
 
 open Finset Fintype
@@ -128,12 +132,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   have less : ∀ a, z a < #s := fun a ↦ by
     rcases hP.card_parts_eq_average (f a).1.2 with (c | c)
     · calc
-        _ < #P.parts * ((f a).2 + 1) := add_lt_add_left (gl a) _
-        _ ≤ #P.parts * (#s / #P.parts) := mul_le_mul_left' (c ▸ (f a).2.2) _
+        _ < #P.parts * ((f a).2 + 1) := by simp only [z, mul_add_one]; gcongr; exact gl a
+        _ ≤ #P.parts * (#s / #P.parts) := by gcongr; exact c ▸ (f a).2.2
         _ ≤ #P.parts * (#s / #P.parts) + #s % #P.parts := Nat.le_add_right ..
         _ = _ := Nat.div_add_mod ..
     · rw [← Nat.div_add_mod #s #P.parts]
-      exact add_lt_add_of_le_of_lt (mul_le_mul_left' (by cutsat) _) ((hg (f a).1).mp c)
+      exact add_lt_add_of_le_of_lt (mul_le_mul_right (by cutsat) _) ((hg (f a).1).mp c)
   let z' : s → Fin #s := fun a ↦ ⟨z a, less a⟩
   have bij : z'.Bijective := by
     refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩

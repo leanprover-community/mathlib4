@@ -3,17 +3,21 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.Indicator
-import Mathlib.Data.Fintype.Order
-import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+module
+
+public import Mathlib.Analysis.Normed.Group.Indicator
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.MeasureTheory.Function.AEEqFun
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # Basic theorems about ℒp space
 -/
+
+@[expose] public section
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
@@ -686,7 +690,7 @@ variable (c) in
 lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   obtain rfl | hp := eq_or_ne p 0
-  · simp only [eLpNorm_exponent_zero, zero_le']
+  · simp
   obtain rfl | h'p := eq_or_ne p ∞
   · simp only [eLpNorm_exponent_top, ENNReal.toReal_top, _root_.div_zero, ENNReal.rpow_zero,
       mul_one]

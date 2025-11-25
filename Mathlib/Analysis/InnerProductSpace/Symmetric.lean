@@ -3,10 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
 # Symmetric linear maps in an inner product space
@@ -31,6 +33,8 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 
 self-adjoint, symmetric
 -/
+
+@[expose] public section
 
 
 open RCLike
@@ -271,7 +275,7 @@ theorem _root_.Submodule.IsCompl.projection_isSymmetric_iff
   refine ⟨fun h u hu v hv => ?_, fun h x y => ?_⟩
   · rw [← Subtype.coe_mk u hu, ← Subtype.coe_mk v hv,
       ← Submodule.linearProjOfIsCompl_apply_left hUV ⟨u, hu⟩, ← U.subtype_apply, ← comp_apply,
-      ← h, comp_apply, linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
+      ← h, comp_apply, Submodule.linearProjOfIsCompl_apply_right hUV ⟨v, hv⟩,
       map_zero, inner_zero_left]
   · nth_rw 2 [← hUV.projection_add_projection_eq_self x]
     nth_rw 1 [← hUV.projection_add_projection_eq_self y]

@@ -3,16 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Polynomial.Quotient
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Adjoining roots of polynomials
@@ -46,6 +48,8 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Algebra (FinitePresentation FiniteType)
@@ -73,12 +77,11 @@ instance : Inhabited (AdjoinRoot f) :=
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
 
-protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
-  Ideal.Quotient.nontrivial
-    (by
-      simp_rw [Ne, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
-      rintro x hx rfl
-      exact h (degree_C hx.ne_zero))
+protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) := by
+  simp only [AdjoinRoot, Quotient.nontrivial_iff, Ne, span_singleton_eq_top,
+    Polynomial.isUnit_iff, not_exists, not_and]
+  rintro x hx rfl
+  exact h (degree_C hx.ne_zero)
 
 /-- Ring homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mk : R[X] →+* AdjoinRoot f :=

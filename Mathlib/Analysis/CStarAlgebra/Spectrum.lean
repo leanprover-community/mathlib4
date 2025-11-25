@@ -3,11 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.Normed.Algebra.GelfandFormula
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Algebra.Star.StarAlgHom
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -52,6 +54,8 @@ we can still establish a form of spectral permanence.
 + prove a variation of spectral permanence for `quasispectrum`.
 
 -/
+
+@[expose] public section
 
 
 local notation "σ" => spectrum
@@ -117,7 +121,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
   refine tendsto_nhds_unique ?_ hconst
   convert
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
-      (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
+      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
   refine funext fun n => ?_
   rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp

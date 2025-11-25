@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.Extension.Generators
-import Mathlib.RingTheory.MvPolynomial.Localization
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.Extension.Generators
+public import Mathlib.RingTheory.MvPolynomial.Localization
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -39,6 +41,8 @@ This contribution was created as part of the AIM workshop "Formalizing algebraic
 in June 2024.
 
 -/
+
+@[expose] public section
 
 universe t w u v
 
@@ -451,9 +455,7 @@ lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
   refine (Finsupp.sum_single_add_single (Finsupp.single () 1) 0 g (-1 : S) _ ?_ ?_).trans ?_
   · simp
   · simp [h0]
-  · simp only [Finsupp.mapDomain_single, h1, map_neg, map_one, Finsupp.mapDomain_zero,
-      monomial_zero', mul_one, add_left_inj]
-    rfl
+  · simp [h1, ← X_pow_eq_monomial]
 
 end Composition
 
