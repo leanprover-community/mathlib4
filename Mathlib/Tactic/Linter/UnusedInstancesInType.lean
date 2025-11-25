@@ -134,7 +134,7 @@ fun _ thm unusedParams => do
 which logs
 
 > \`{foo}\` has the hypothes[is/es] {p₁}, {p₂}, ..., and {pₙ} which [is/are] not used in the
-  remainder of the type.
+> remainder of the type.
 >
 > \<extra caption\>
 >
