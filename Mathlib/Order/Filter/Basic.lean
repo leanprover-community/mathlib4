@@ -771,11 +771,11 @@ theorem frequently_iff {f : Filter α} {P : α → Prop} :
   simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _)]
   rfl
 
-@[simp]
+@[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
   simp [Filter.Frequently]
 
-@[simp]
+@[simp, push]
 theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, ¬p x := by
   simp only [Filter.Frequently, not_not]
 

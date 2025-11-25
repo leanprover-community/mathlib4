@@ -72,7 +72,7 @@ theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 
 lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
-  simpa only [div_eq_mul_inv, coe_mul] using mul_le_mul_left' coe_inv_le _
+  simpa only [div_eq_mul_inv, coe_mul] using _root_.mul_le_mul_right coe_inv_le _
 
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
@@ -214,7 +214,7 @@ protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
 
 protected theorem inv_mul_le_iff {x y z : ℝ≥0∞} (h1 : x ≠ 0) (h2 : x ≠ ∞) :
     x⁻¹ * y ≤ z ↔ y ≤ x * z := by
-  rw [← mul_le_mul_left h1 h2, ← mul_assoc, ENNReal.mul_inv_cancel h1 h2, one_mul]
+  rw [← ENNReal.mul_le_mul_iff_right h1 h2, ← mul_assoc, ENNReal.mul_inv_cancel h1 h2, one_mul]
 
 protected theorem mul_inv_le_iff {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
     x * y⁻¹ ≤ z ↔ x ≤ z * y := by
@@ -359,7 +359,7 @@ protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ �
   · have hc : c ≠ 0 := h0.neg_resolve_left rfl
     simp [div_zero hc]
   · rw [← coe_ne_zero] at hb
-    rw [← ENNReal.mul_le_mul_right hb coe_ne_top, ENNReal.div_mul_cancel hb coe_ne_top]
+    rw [← ENNReal.mul_le_mul_iff_left hb coe_ne_top, ENNReal.div_mul_cancel hb coe_ne_top]
 
 protected theorem div_le_iff_le_mul (hb0 : b ≠ 0 ∨ c ≠ ∞) (hbt : b ≠ ∞ ∨ c ≠ 0) :
     a / b ≤ c ↔ a ≤ c * b := by
@@ -416,10 +416,10 @@ theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
   div_lt_of_lt_mul <| by rwa [mul_comm]
 
 protected lemma div_lt_div_iff_left (hc₀ : c ≠ 0) (hc : c ≠ ∞) : a / c < b / c ↔ a < b :=
-  ENNReal.mul_lt_mul_right (by simpa) (by simpa)
+  ENNReal.mul_lt_mul_iff_left (by simpa) (by simpa)
 
 protected lemma div_lt_div_iff_right (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a / b < a / c ↔ c < b :=
-  (ENNReal.mul_lt_mul_left ha₀ ha).trans (by simp)
+  (ENNReal.mul_lt_mul_iff_right ha₀ ha).trans (by simp)
 
 @[gcongr]
 protected lemma div_lt_div_right (hc₀ : c ≠ 0) (hc : c ≠ ∞) (hab : a < b) : a / c < b / c :=
@@ -462,7 +462,7 @@ protected theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ := by
   simp [left_ne_zero_of_mul_eq_one h] at h
 
 theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ ∞) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
-  rw [← @ENNReal.mul_le_mul_left _ a _ hr₀ hr₁, ← mul_assoc, ENNReal.mul_inv_cancel hr₀ hr₁,
+  rw [← @ENNReal.mul_le_mul_iff_right _ a _ hr₀ hr₁, ← mul_assoc, ENNReal.mul_inv_cancel hr₀ hr₁,
     one_mul]
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
@@ -784,13 +784,13 @@ lemma isUnit_iff : IsUnit a ↔ a ≠ 0 ∧ a ≠ ∞ := by
 @[simps! toEquiv apply symm_apply]
 def mulLeftOrderIso (a : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
   toEquiv := ha.unit.mulLeft
-  map_rel_iff' := by simp [ENNReal.mul_le_mul_left, ha.ne_zero, (isUnit_iff.1 ha).2]
+  map_rel_iff' := by simp [ENNReal.mul_le_mul_iff_right, ha.ne_zero, (isUnit_iff.1 ha).2]
 
 /-- Right multiplication by a nonzero finite `a` as an order isomorphism. -/
 @[simps! toEquiv apply symm_apply]
 def mulRightOrderIso (a : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
   toEquiv := ha.unit.mulRight
-  map_rel_iff' := by simp [ENNReal.mul_le_mul_right, ha.ne_zero, (isUnit_iff.1 ha).2]
+  map_rel_iff' := by simp [ENNReal.mul_le_mul_iff_left, ha.ne_zero, (isUnit_iff.1 ha).2]
 
 variable {ι κ : Sort*} {f g : ι → ℝ≥0∞} {s : Set ℝ≥0∞} {a : ℝ≥0∞}
 
