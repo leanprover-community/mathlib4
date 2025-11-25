@@ -147,9 +147,7 @@ lemma toNatTrans_comp {C D : Cat.{v, u}} {F G H : C ⟶ D} (η₁ : F ⟶ G) (η
 
 @[ext]
 lemma _root_.CategoryTheory.Cat.Hom₂.ext {C D : Cat.{v, u}} {F G : C ⟶ D} {η₁ η₂ : F ⟶ G}
-    (h : η₁.toNatTrans = η₂.toNatTrans) :
-    η₁ = η₂ := by
-  cases η₁; cases η₂; simp_all
+    (h : η₁.toNatTrans = η₂.toNatTrans) : η₁ = η₂ := congr($(h).toCatHom₂)
 
 /-- The 2-iso in Cat corresponding to a natural isomorphism. -/
 @[simps]
