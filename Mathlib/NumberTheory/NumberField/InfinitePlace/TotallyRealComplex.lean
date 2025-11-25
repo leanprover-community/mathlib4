@@ -164,15 +164,13 @@ theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
       Algebra.IsAlgebraic.tower_bot E (maximalRealSubfield K) K
   exact IsTotallyReal.of_algebra _ (maximalRealSubfield K)
 
-instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F]
-    [Algebra.IsAlgebraic E K] [Algebra.IsAlgebraic F K] :
+instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTotallyReal F] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
   rw [isTotallyReal_iff_le_maximalRealSubfield, sup_le_iff,
     ← isTotallyReal_iff_le_maximalRealSubfield, ← isTotallyReal_iff_le_maximalRealSubfield]
   exact ⟨hE, hF⟩
 
-instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
-    [∀ i, IsTotallyReal (k i)] :
+instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   obtain hι | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
   · rw [iSup_of_empty]
