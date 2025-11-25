@@ -301,7 +301,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   have key1 : ∀ {r : F[X]}, Irreducible r → P r := by
     intro r hr
     by_cases hr' : natDegree r = 0
-    · exact splits_of_natDegree_le_one _ (le_trans (le_of_eq hr') zero_le_one)
+    · exact Splits.of_natDegree_le_one <| natDegree_map_le.trans (hr'.trans_le zero_le_one)
     obtain ⟨x, hx⟩ :=
       exists_root_of_splits _ (SplittingField.splits (r.comp q)) fun h =>
         hr'

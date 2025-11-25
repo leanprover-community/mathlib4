@@ -304,8 +304,7 @@ theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebr
   isAlgebraic := inferInstance
   isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
     have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
-    exists_root_of_splits _ (splits_of_splits_of_dvd _ (map_monic_ne_zero monic)
-      ((splits_id_iff_splits _).mpr <| h g monic irred) dvd) <|
+    Splits.exists_eval_eq_zero (Splits.of_dvd (h g monic irred) (map_monic_ne_zero monic) dvd) <|
         degree_ne_of_natDegree_ne p_irred.natDegree_pos.ne'
 
 namespace IsAlgClosed

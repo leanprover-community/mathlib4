@@ -85,8 +85,8 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     have H5 : IsIntegral Ks a := H1.tower_top
     have H6 : ((minpoly Ks a).map (algebraMap Ks L)).Splits := by
       refine splits_of_splits_of_dvd _ ((minpoly.monic H1).map (algebraMap F Ks)).ne_zero
-        ((splits_map_iff _ _).2 ?_) (minpoly.dvd _ _ ?_)
-      · rw [← IsScalarTower.algebraMap_eq]
+        ?_ (minpoly.dvd _ _ ?_)
+      · rw [map_map, ← IsScalarTower.algebraMap_eq]
         exact H2
       · rw [Polynomial.aeval_map_algebraMap, minpoly.aeval]
     obtain ⟨y, hy⟩ := Polynomial.exists_root_of_splits _ H6 (minpoly.degree_pos H5).ne'
@@ -115,14 +115,14 @@ theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScala
 theorem minpoly_neg_splits [Algebra K L] {x : L} (g : ((minpoly K x).map (algebraMap K L)).Splits) :
     ((minpoly K (-x)).map (algebraMap K L)).Splits := by
   rw [minpoly.neg]
-  apply splits_mul _ _ g.comp_neg_X
+  apply splits_mul _ _ (by simpa [map_comp] using g.comp_neg_X)
   simpa only [map_pow, map_neg, map_one] using
-    (map_C (algebraMap K L) ▸ splits_C (algebraMap K L <| (-1) ^ _) :)
+    (map_C (algebraMap K L) ▸ Splits.C (algebraMap K L <| (-1) ^ _) :)
 
 theorem minpoly_add_algebraMap_splits [Algebra K L] {x : L} (r : K)
     (g : ((minpoly K x).map (algebraMap K L)).Splits) :
     ((minpoly K (x + algebraMap K L r)).map (algebraMap K L)).Splits := by
-  simpa [minpoly.add_algebraMap] using g.comp_X_sub_C r
+  simpa [minpoly.add_algebraMap, map_comp] using g.comp_X_sub_C (algebraMap K L r)
 
 theorem minpoly_sub_algebraMap_splits [Algebra K L] {x : L} (r : K)
     (g : ((minpoly K x).map (algebraMap K L)).Splits) :
@@ -148,7 +148,7 @@ theorem IsIntegral.minpoly_splits_tower_top' (int : IsIntegral R x) {f : K →+*
     (h : Splits ((minpoly R x).map (f.comp <| algebraMap R K))) :
     Splits ((minpoly K x).map f) :=
   splits_of_splits_of_dvd _ ((minpoly.monic int).map _).ne_zero
-    ((splits_map_iff _ _).mpr h) (minpoly.dvd_map_of_isScalarTower R _ x)
+    (map_map (algebraMap R K) f (minpoly R x) ▸ h) (minpoly.dvd_map_of_isScalarTower R _ x)
 
 theorem IsIntegral.minpoly_splits_tower_top [Algebra K L] [Algebra R L] [IsScalarTower R K L]
     (int : IsIntegral R x) (h : Splits ((minpoly R x).map (algebraMap R L))) :

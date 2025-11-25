@@ -151,9 +151,9 @@ theorem isSplittingField_iSup {p : ι → K[X]}
     (∏ i ∈ s, p i).IsSplittingField K (⨆ i ∈ s, t i : IntermediateField K L) := by
   let F : IntermediateField K L := ⨆ i ∈ s, t i
   have hF : ∀ i ∈ s, t i ≤ F := fun i hi ↦ le_iSup_of_le i (le_iSup (fun _ ↦ t i) hi)
-  simp only [isSplittingField_iff] at h ⊢
+  simp only [isSplittingField_iff, Polynomial.map_prod] at h ⊢
   refine
-    ⟨splits_prod (algebraMap K F) fun i hi ↦
+    ⟨Splits.prod fun i hi ↦
         splits_comp_of_splits (algebraMap K (t i)) (inclusion (hF i hi)).toRingHom
           (h i hi).1,
       ?_⟩
