@@ -456,10 +456,19 @@ this is not a mathematically meaningful difference.`
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
+
+See `target_subset_preimage_target` for a version stated using preimages instead of images.
 -/
 lemma map_target_subset_target (h : IsImmersionAt I J n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target :=
   h.isImmersionAtOfComplement_complement.map_target_subset_target
+
+/-- If `f` is an immersion at `x`, its domain chart's target `(h.domChart.extend I).target`
+is mapped to it codomain chart's target `(h.domChart.extend J).target`:
+see `map_target_subset_target` for a version stated using images. -/
+lemma target_subset_preimage_target (h : IsImmersionAt I J n f x) :
+    (h.domChart.extend I).target ⊆ (h.equiv ∘ (·, 0)) ⁻¹' (h.codChart.extend J).target :=
+  fun _x hx ↦ h.map_target_subset_target (mem_image_of_mem _ hx)
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
@@ -513,8 +522,11 @@ In other words, `f` is an immersion at each `x ∈ M`.
 
 Implicit in this definition is an abstract choice `F` of a complement of `E` in `E'`:
 being an immersion includes a choice of linear isomorphism between `E × F` and `E'`, which is where
-the choice of `F` enters. If you need closer control over the complement `F`,
+the choice of `F` enters. If you need stronger control over the complement `F`,
 use `IsImmersionOfComplement` instead.
+
+Note that our global choice of complement is a bit stronger than asking `f` to be an immersion at
+each `x ∈ M` w.r.t. to potentially varying complements: see `isImmersionAt` for details.
 -/
 def IsImmersion (f : M → N) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
