@@ -131,9 +131,8 @@ open Topology Filter in
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
     (hf : ∀ r > 0, ∀ᶠ R in atTop, ∀ x, ‖x‖ < r → ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :
-    HasSumLocallyUniformlyOn f (∑' j, f j ·) .univ := by
-  rw [hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn, tendstoLocallyUniformlyOn_univ,
-    tendstoLocallyUniformly_iff_filter]
+    HasSumLocallyUniformly f (∑' j, f j ·) := by
+  rw [hasSumLocallyUniformly_iff_tendstoLocallyUniformly, tendstoLocallyUniformly_iff_filter]
   intro x
   obtain ⟨r, hr, hr'⟩ : ∃ r, 0 < r ∧ 𝓝 x ≤ 𝓟 (Metric.ball 0 r) :=
     ⟨‖x‖ + 1, by positivity, Filter.le_principal_iff.mpr (Metric.isOpen_ball.mem_nhds (by simp))⟩
@@ -143,9 +142,8 @@ lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
   obtain ⟨R, hR⟩ := eventually_atTop.mp (hf r hr)
   refine (isCompact_iff_finite.mp (isCompact_closedBall (0 : L.lattice) R)).subset ?_
   intros l hl
-  simp only [Metric.mem_ball, dist_zero_right, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall,
-    not_le, Metric.mem_closedBall, AddSubgroupClass.coe_norm] at hl ⊢
-  obtain ⟨s, hs, hs'⟩ := hl
+  obtain ⟨s, hs, hs'⟩ : ∃ x, ‖x‖ < r ∧ u r l < ‖f l x‖ := by simpa using hl
+  simp only [Metric.mem_closedBall, dist_zero_right, AddSubgroupClass.coe_norm]
   contrapose! hs'
   exact hR _ hs'.le _ hs _ rfl
 
@@ -189,10 +187,10 @@ This is mainly a tool for calculations where one would want to omit a diverging 
 def ℘Except (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-lemma hasSumLocallyUniformlyOn_℘Except (l₀ : ℂ) :
-    HasSumLocallyUniformlyOn
+lemma hasSumLocallyUniformly_℘Except (l₀ : ℂ) :
+    HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
-      (L.℘Except l₀) .univ := by
+      (L.℘Except l₀) := by
   refine L.hasSumLocallyUniformly_aux (u := (10 * · * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
@@ -204,12 +202,12 @@ lemma hasSumLocallyUniformlyOn_℘Except (l₀ : ℂ) :
 lemma hasSum_℘Except (l₀ : ℂ) (z : ℂ) :
     HasSum (fun l : L.lattice ↦ if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
       (L.℘Except l₀ z) :=
-  (L.hasSumLocallyUniformlyOn_℘Except l₀).hasSum (Set.mem_univ z)
+  (L.hasSumLocallyUniformly_℘Except l₀).hasSum
 
 /- `℘Except l₀` is differentiable on non-lattice points and `l₀`. -/
 lemma differentiableOn_℘Except (l₀ : ℂ) :
     DifferentiableOn ℂ (L.℘Except l₀) (L.lattice \ {l₀})ᶜ := by
-  refine ((L.hasSumLocallyUniformlyOn_℘Except l₀).mono (Set.subset_univ _)).differentiableOn
+  refine (L.hasSumLocallyUniformly_℘Except l₀).hasSumLocallyUniformlyOn.differentiableOn
     (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_)
     (L.isClosed_of_subset_lattice Set.diff_subset).isOpen_compl
   split_ifs
@@ -253,16 +251,15 @@ lemma ℘Except_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
   have : l.1 ≠ l₀ := by rintro rfl; simp at hl
   simp [this]
 
-lemma hasSumLocallyUniformlyOn_℘ :
-    HasSumLocallyUniformlyOn
-      (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) L.℘ .univ := by
-  convert L.hasSumLocallyUniformlyOn_℘Except (L.ω₁ / 2) using 3 with l
+lemma hasSumLocallyUniformly_℘ :
+    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) L.℘ := by
+  convert L.hasSumLocallyUniformly_℘Except (L.ω₁ / 2) using 3 with l
   · rw [if_neg]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.℘Except_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
 lemma hasSum_℘ (z : ℂ) :
     HasSum (fun l : L.lattice ↦ (1 / (z - l) ^ 2 - 1 / l ^ 2)) (L.℘ z) :=
-  L.hasSumLocallyUniformlyOn_℘.hasSum (Set.mem_univ z)
+  L.hasSumLocallyUniformly_℘.hasSum
 
 lemma differentiableOn_℘ :
     DifferentiableOn ℂ L.℘ L.latticeᶜ := by
