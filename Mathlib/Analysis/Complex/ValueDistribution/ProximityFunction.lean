@@ -157,7 +157,7 @@ theorem proximity_add_top_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f�
 The proximity function `f * g` at `⊤` is less than or equal to the sum of the proximity functions of
 `f` and `g`, respectively.
 -/
-theorem proximity_top_mul_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
+theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
     proximity (f₁ * f₂) ⊤ ≤ (proximity f₁ ⊤) + (proximity f₂ ⊤) := by
   calc proximity (f₁ * f₂) ⊤
@@ -183,13 +183,13 @@ theorem proximity_top_mul_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn
 The proximity function `f * g` at `0` is less than or equal to the sum of the proximity functions of
 `f` and `g`, respectively.
 -/
-theorem proximity_zero_mul_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
+theorem proximity_mul_zero_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
     proximity (f₁ * f₂) 0 ≤ (proximity f₁ 0) + (proximity f₂ 0) := by
   calc proximity (f₁ * f₂) 0
     _ ≤ (proximity f₁⁻¹ ⊤) + (proximity f₂⁻¹ ⊤) := by
       rw [← proximity_inv, mul_inv]
-      apply proximity_top_mul_le (MeromorphicOn.inv_iff.mpr h₁f₁) (MeromorphicOn.inv_iff.mpr h₁f₂)
+      apply proximity_mul_top_le (MeromorphicOn.inv_iff.mpr h₁f₁) (MeromorphicOn.inv_iff.mpr h₁f₂)
     _ = (proximity f₁ 0) + (proximity f₂ 0) := by
       rw [proximity_inv, proximity_inv]
 
