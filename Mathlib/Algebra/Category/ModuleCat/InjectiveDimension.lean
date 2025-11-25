@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Baer
-public import Mathlib.Algebra.Category.ModuleCat.Ulift
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Ulift
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Ulift
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 /-!
