@@ -550,25 +550,6 @@ theorem Integrable.abs {β}
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
--- TODO: generalise this to enorms, once there is an `ENormedDivisionRing` class
-theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (hint : Integrable g μ)
-    (hm : AEStronglyMeasurable f μ) (hfbdd : ∃ C, ∀ x, ‖f x‖ ≤ C) :
-    Integrable (fun x => f x * g x) μ := by
-  rcases isEmpty_or_nonempty α with hα | hα
-  · rw [μ.eq_zero_of_isEmpty]
-    exact integrable_zero_measure
-  · refine ⟨hm.mul hint.1, ?_⟩
-    obtain ⟨C, hC⟩ := hfbdd
-    have hCnonneg : 0 ≤ C := le_trans (norm_nonneg _) (hC hα.some)
-    have : (fun x => ‖f x * g x‖₊) ≤ fun x => ⟨C, hCnonneg⟩ * ‖g x‖₊ := by
-      intro x
-      simp only [nnnorm_mul]
-      exact mul_le_mul_of_nonneg_right (hC x) (zero_le _)
-    refine lt_of_le_of_lt (lintegral_mono_nnreal this) ?_
-    simp only [ENNReal.coe_mul]
-    rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top]
-    exact ENNReal.mul_lt_top ENNReal.coe_lt_top hint.2
-
 -- TODO: generalise the following lemmas to enorm classes
 
 /-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
@@ -1061,7 +1042,8 @@ theorem integrable_mul_const_iff {c : 𝕜} (hc : IsUnit c) (f : α → 𝕜) :
     Integrable (fun x => f x * c) μ ↔ Integrable f μ :=
   hc.op.integrable_smul_iff f
 
-theorem Integrable.bdd_mul' {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
+-- TODO: generalise this to enorms, once there is an `ENormedDivisionRing` class
+theorem Integrable.bdd_mul {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     Integrable (fun x => f x * g x) μ :=
   hg.bdd_smul c hf hf_bound
