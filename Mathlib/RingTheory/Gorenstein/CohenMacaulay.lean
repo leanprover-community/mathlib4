@@ -5,26 +5,26 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.BaseChange
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+public import Mathlib.Algebra.Category.ModuleCat.Ext.BaseChange
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.CohenMacaulay.Basic
-public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.GlobalDimension
 public import Mathlib.RingTheory.Gorenstein.Defs
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
-public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
