@@ -324,12 +324,10 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
 /-- For a tower `R → A → B → M`, the precomposition defined in `compAlgebraMap`
 is an `A`-linear map. -/
 def compAlgebraHom [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M] [IsScalarTower R A M] :
-(Derivation R B M) →ₗ[A] Derivation R A M :=
-{
-  toFun := fun d ↦ compAlgebraMap A d
-  map_add' := by exact fun x y ↦ rfl
-  map_smul' := by exact fun m x ↦ rfl
-}
+    Derivation R B M →ₗ[A] Derivation R A M where
+  toFun d := d.compAlgebraMap A
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 section RestrictScalars
 
