@@ -54,13 +54,12 @@ theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   · simp [fib, hn, pow_add]
   · simp [fib_of_odd, hn]
 
-theorem fib_neg (n : ℤ) : fib (-n) = if Even n then - fib n else fib n := by
+theorem fib_neg (n : ℤ) : fib (-n) = if Even n then -fib n else fib n := by
   obtain ⟨n, _⟩ := n.eq_nat_or_neg
   aesop (add safe (by rw [fib_neg_natCast]))
 
 theorem coe_fib_neg (n : ℤ) : (fib (-n) : ℚ) = (-1) ^ (n + 1) * fib n := by
-  rw [fib_neg, cast_ite]
-  grind [neg_one_zpow_eq_ite]
+  aesop (add safe (by rw [fib_neg, neg_one_zpow_eq_ite]))
 
 theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
