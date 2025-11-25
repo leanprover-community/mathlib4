@@ -3,7 +3,9 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-! # Local properties of smooth functions which depend on both the source and target
 
@@ -33,6 +35,8 @@ local property of this form.
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
 
 -/
+
+public section
 
 open scoped Manifold Topology ContDiff
 
@@ -89,6 +93,7 @@ The motivating example are smooth immersions and submersions: the corresponding 
 `f` look like the inclusion `u ↦ (u, 0)` (resp. a projection `(u, v) ↦ u`)
 in the charts `φ` and `ψ`.
 -/
+@[expose]
 def LiftSourceTargetPropertyAt (f : M → N) (x : M)
     (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) : Prop :=
   Nonempty (LocalPresentationAt I I' n f x P)

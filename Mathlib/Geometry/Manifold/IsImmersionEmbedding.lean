@@ -3,10 +3,13 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
-import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Topology.Algebra.Module.Shrink
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Module.Shrink
+public import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-! # Smooth immersions and embeddings
 
@@ -69,6 +72,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 open scoped Topology ContDiff
 open Function Set Manifold
+
+@[expose] public section
 
 noncomputable section
 
