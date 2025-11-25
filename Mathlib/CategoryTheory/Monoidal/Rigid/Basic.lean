@@ -3,9 +3,11 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Rigid (autonomous) monoidal categories
@@ -25,7 +27,7 @@ exact pairings and duals.
 * `comp_rightAdjointMate`: The adjoint mates of the composition is the composition of
   adjoint mates.
 
-## Notations
+## Notation
 
 * `η_` and `ε_` denote the coevaluation and evaluation morphism of an exact pairing.
 * `Xᘁ` and `ᘁX` denote the right and left dual of an object, as well as the adjoint
@@ -56,6 +58,8 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 rigid category, monoidal category
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory MonoidalCategory

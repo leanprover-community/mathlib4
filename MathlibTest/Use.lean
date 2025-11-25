@@ -26,7 +26,10 @@ example (h : 42 = y) : ∃ x : Nat, x = y := by use 42, h
 example (h : 42 = y) : ∃ x : Nat, x = y := by use 42
 
 -- Check that `use` inserts a coercion:
-/-- info: Try this: Exists.intro (↑n) (Eq.refl ↑n) -/
+/--
+info: Try this:
+  [apply] Exists.intro (↑n) (Eq.refl ↑n)
+-/
 #guard_msgs (info) in
 example (n : Fin 3) : ∃ x : Nat, x = x := show_term by use n
 
@@ -122,7 +125,10 @@ example : foo := by
 example : foo := by
   use! 100, true, 4, 3
 
-/-- info: Try this: foo.mk 100 (true, 4) 3 -/
+/--
+info: Try this:
+  [apply] foo.mk 100 (true, 4) 3
+-/
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
@@ -131,7 +137,10 @@ example : foo := show_term by
   exact (100 : Nat)
   exact true
 
-/-- info: Try this: foo.mk 100 (true, 4) 3 -/
+/--
+info: Try this:
+  [apply] foo.mk 100 (true, 4) 3
+-/
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Categorical (co)products
@@ -30,6 +32,8 @@ As with the other special shapes in the limits library, all the definitions here
 `abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -832,6 +836,22 @@ theorem Sigma.ι_reindex_inv (b : β) :
 end
 
 end Reindex
+
+section
+
+variable {J : Type u₂} [Category.{v₂} J] (F : J ⥤ C)
+
+instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
+  right_cancellation _ _ h := by
+    refine limit.hom_ext fun j => ?_
+    simpa using h =≫ Pi.π _ j
+
+instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
+  left_cancellation _ _ h := by
+    refine colimit.hom_ext fun j => ?_
+    simpa using  Sigma.ι _ j ≫= h
+
+end
 
 section Fubini
 

@@ -3,9 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.MatrixPolynomialAlgebra
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -23,6 +26,8 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -278,5 +283,12 @@ theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
   charpoly_units_conj M⁻¹ N
+
+theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
+    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
+  simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
+  congr! with σ _ i _
+  by_cases hi : σ i = i <;> simp [hi]
+  ring
 
 end Matrix

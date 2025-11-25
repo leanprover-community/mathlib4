@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # Primality and GCD on pnat
@@ -12,6 +14,8 @@ import Mathlib.Data.PNat.Basic
 This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, analogous to those on
 `Nat`.
 -/
+
+@[expose] public section
 
 
 namespace Nat.Primes
@@ -80,7 +84,7 @@ theorem lcm_dvd {m n k : ℕ+} (hm : m ∣ k) (hn : n ∣ k) : lcm m n ∣ k :=
   dvd_iff.2 (@Nat.lcm_dvd (m : ℕ) (n : ℕ) (k : ℕ) (dvd_iff.1 hm) (dvd_iff.1 hn))
 
 theorem gcd_mul_lcm (n m : ℕ+) : gcd n m * lcm n m = n * m :=
-  Subtype.eq (Nat.gcd_mul_lcm (n : ℕ) (m : ℕ))
+  Subtype.ext (Nat.gcd_mul_lcm (n : ℕ) (m : ℕ))
 
 theorem eq_one_of_lt_two {n : ℕ+} : n < 2 → n = 1 := by
   intro h; apply le_antisymm; swap
@@ -253,12 +257,7 @@ theorem Coprime.gcd_mul (k : ℕ+) {m n : ℕ+} (h : m.Coprime n) :
   rw [← coprime_coe] at h; apply eq
   simp only [gcd_coe, mul_coe]; apply Nat.Coprime.gcd_mul k h
 
-theorem gcd_eq_left {m n : ℕ+} : m ∣ n → m.gcd n = m := by
-  rw [dvd_iff]
-  intro h
-  apply eq
-  simp only [gcd_coe]
-  apply Nat.gcd_eq_left h
+@[deprecated (since := "2025-11-14")] alias ⟨_, gcd_eq_left⟩ := gcd_eq_left_iff_dvd
 
 theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k : ℕ).Coprime (n ^ l) := by
   rw [← coprime_coe] at *; apply Nat.Coprime.pow; apply h

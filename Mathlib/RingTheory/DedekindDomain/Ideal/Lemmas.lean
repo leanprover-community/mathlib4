@@ -3,12 +3,14 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.RingTheory.ChainOfDivisors
-import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Localization
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.RingTheory.ChainOfDivisors
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Localization
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Dedekind domains and ideals
@@ -37,6 +39,8 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
+@[expose] public section
+
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
@@ -57,10 +61,6 @@ theorem exists_notMem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I 
 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_one_of_ne_bot := exists_notMem_one_of_ne_bot
-
-theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
-    StrictMono (I * ·) :=
-  strictMono_of_le_iff_le fun _ _ => (mul_left_le_iff hI).symm
 
 end FractionalIdeal
 
@@ -126,6 +126,17 @@ nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) 
       not_false_eq_true, implies_true]
   · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
 
+variable (A) in
+open UniqueFactorizationMonoid in
+theorem Ideal.mem_primesOver_iff_mem_normalizedFactors {p : Ideal R} [h : p.IsMaximal]
+    [Algebra R A] [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} :
+    P ∈ p.primesOver A ↔ P ∈ normalizedFactors (Ideal.map (algebraMap R A) p) := by
+  rw [primesOver, Set.mem_setOf_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
+    liesOver_iff, under_def, and_congr_right_iff, map_le_iff_le_comap]
+  intro hP
+  refine ⟨fun h ↦ le_of_eq h, fun h' ↦ ((IsCoatom.le_iff_eq (isMaximal_def.mp h) ?_).mp h').symm⟩
+  exact comap_ne_top (algebraMap R A) (IsPrime.ne_top hP)
+
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=
   strictAnti_nat_of_succ_lt fun e =>
@@ -180,6 +191,11 @@ lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) 
     I⁻¹ ≤ J ↔ J⁻¹ ≤ I := by
   simpa using le_inv_comm (A := A) (K := K) (inv_ne_zero hI) (inv_ne_zero hJ)
 
+@[simp]
+theorem FractionalIdeal.inv_le_inv_iff {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I⁻¹ ≤ J⁻¹ ↔ J ≤ I := by
+  rw [le_inv_comm (inv_ne_zero hI) hJ, inv_inv]
+
 open FractionalIdeal
 
 
@@ -206,16 +222,14 @@ theorem Ideal.exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι 
     · contrapose! hpI
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
-      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
+      refine (mem_div_iff_of_ne_zero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
       · intro x y _ _ hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
       · intro b x _ hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
-  calc
-    ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
-    _ < 1 * I⁻¹ := mul_right_strictMono (inv_ne_zero hI0) ?_
-    _ = I⁻¹ := one_mul _
+  rw [div_eq_mul_inv]
+  refine mul_lt_of_lt_one_left (by simpa [pos_iff_ne_zero]) ?_
   rw [← coeIdeal_top]
   -- And multiplying by `I⁻¹` is indeed strictly monotone.
   exact
@@ -232,10 +246,7 @@ lemma Ideal.mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal 
   refine (le_iInf fun i ↦ Ideal.mul_mono_right (iInf_le _ _)).antisymm ?_
   have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans Ideal.mul_le_right
   obtain ⟨K, hK⟩ := Ideal.dvd_iff_le.mpr H
-  rw [hK]
-  refine mul_le_mul_left' ?_ I
-  rw [le_iInf_iff]
-  intro i
+  grw [hK, le_iInf (a := K) fun i ↦ ?_]
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]
   · exact iInf_le _ _
   · exact bot_lt_iff_ne_bot.mpr hI
@@ -688,7 +699,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  omega
+  cutsat
 
 /-- Variant of `UniqueFactorizationMonoid.count_normalizedFactors_eq` for associated Ideals. -/
 theorem Ideal.count_associates_eq [DecidableEq (Associates (Ideal R))]
@@ -1000,6 +1011,37 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
+include hpb in
+theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset hpb]
+
+variable {R} (A) in
+theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
+    [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
+  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+/--
+The bijection between the elements of the height one prime spectrum of `B` that divide the lift
+of the maximal ideal `p` in `B` and the primes over `p` in `B`.
+-/
+noncomputable def equivPrimesOver (hp : p ≠ 0) :
+    {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ p.primesOver B :=
+  Set.BijOn.equiv HeightOneSpectrum.asIdeal
+    ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
+    fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
+    fun Q hQ ↦ ⟨⟨Q, hQ.1, ne_bot_of_mem_primesOver hp hQ⟩,
+      (liesOver_iff_dvd_map hQ.1.ne_top).mp hQ.2, rfl⟩⟩
+
+@[simp]
+theorem equivPrimesOver_apply (hp : p ≠ 0)
+    (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
+    equivPrimesOver B hp v = v.1.asIdeal := rfl
+
+end IsDedekindDomain.HeightOneSpectrum
+
 variable (p) [Algebra.IsIntegral A B]
 
 theorem primesOver_finite : (primesOver p B).Finite := by
@@ -1011,8 +1053,10 @@ theorem primesOver_finite : (primesOver p B).Finite := by
   · rw [← coe_primesOverFinset hpb B]
     exact (primesOverFinset p B).finite_toSet
 
+noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
+
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
-  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  rcases exists_maximal_ideal_liesOver_of_isIntegral (S := B) p with ⟨P, hPm, hp⟩
   exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
 
 theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=

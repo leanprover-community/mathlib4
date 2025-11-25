@@ -3,9 +3,11 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.LinearAlgebra.Matrix.MvPolynomial
-import Mathlib.LinearAlgebra.Matrix.Polynomial
+module
+
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
+public import Mathlib.LinearAlgebra.Matrix.Polynomial
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -37,6 +39,8 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 cramer, cramer's rule, adjugate
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -216,7 +220,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
       rw [updateCol_self, Pi.single_eq_of_ne' h]
     rw [this]
     apply prod_eq_zero (mem_univ (σ⁻¹ i))
-    erw [apply_symm_apply σ i, updateRow_self]
+    simp only [Perm.coe_inv, apply_symm_apply, updateRow_self]
     apply Pi.single_eq_of_ne
     intro h'
     exact h ((symm_apply_eq σ).mp h')
@@ -384,6 +388,7 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   rw [adjugate_fin_succ_eq_det_submatrix, det_fin_two]
   fin_cases i <;> fin_cases j <;> simp [Fin.succAbove, Fin.lt_def] <;> ring
 
+set_option linter.style.commandStart false in -- Use spaces to format a matrix.
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i : α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =

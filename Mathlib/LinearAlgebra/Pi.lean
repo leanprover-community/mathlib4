@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -31,6 +33,8 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.diag`
 
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' x' y'
@@ -145,6 +149,9 @@ def single [DecidableEq ι] (i : ι) : φ i →ₗ[R] (i : ι) → φ i :=
 lemma single_apply [DecidableEq ι] {i : ι} (v : φ i) :
     single R φ i v = Pi.single i v :=
   rfl
+
+lemma sum_single_apply [Fintype ι] [DecidableEq ι] (v : Π i, φ i) :
+    ∑ i, Pi.single i (v i) = v := by ext; simp
 
 @[simp]
 theorem coe_single [DecidableEq ι] (i : ι) :

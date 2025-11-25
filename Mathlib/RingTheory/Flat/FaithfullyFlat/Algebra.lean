@@ -3,11 +3,13 @@ Copyright (c) 2025 Christian Merten, Yi Song, Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Yi Song, Sihan Su
 -/
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.TensorProduct.Quotient
+module
+
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Properties of faithfully flat algebras
@@ -35,6 +37,8 @@ Conversely, let `B` be a flat `A`-algebra:
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -80,6 +84,14 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
     simp
   rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
+
+instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
+  constructor
+  intro a₁ a₂ ha
+  apply Module.FaithfullyFlat.tensorProduct_mk_injective (A := A) (B := B) A
+  simp only [TensorProduct.mk_apply]
+  rw [← mul_one a₁, ← mul_one a₂]
+  simp only [← smul_eq_mul, ← TensorProduct.smul_tmul, ha (1 : B)]
 
 open Algebra.TensorProduct in
 /-- If `B` is a faithfully flat `A`-algebra, the preimage of the pushforward of any

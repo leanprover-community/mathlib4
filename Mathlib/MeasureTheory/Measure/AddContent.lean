@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.SetSemiring
-import Mathlib.MeasureTheory.OuterMeasure.Induced
+module
+
+public import Mathlib.MeasureTheory.SetSemiring
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
 
 /-!
 # Additive Contents
@@ -50,6 +52,8 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
   σ-additive on a set ring, then it is σ-subadditive.
 
 -/
+
+@[expose] public section
 
 open Set Finset Function Filter
 
@@ -191,8 +195,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
     exact (Exists.choose_spec (hC.disjointOfUnion_props h_ss)).2.2.2.2.2
   rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
-  · apply sum_le_sum
-    intro x hx
+  · gcongr with x hx
     refine sum_addContent_le_of_subset hC (hC.disjointOfUnion_subset h_ss hx)
       (hC.pairwiseDisjoint_disjointOfUnion_of_mem h_ss hx) (h_ss hx)
       (fun _ s ↦ hC.subset_of_mem_disjointOfUnion h_ss hx s)
@@ -229,7 +232,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
-  refine  ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
+  refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
   classical
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
