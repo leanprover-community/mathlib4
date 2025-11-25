@@ -11283,6 +11283,7 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Conformal
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.CrossProduct
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.TriangleInequality
 public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
