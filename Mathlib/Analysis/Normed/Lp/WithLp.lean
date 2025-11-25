@@ -273,20 +273,20 @@ variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
 namespace LinearMap
 
 /-- Lift a (semi)linear map to `WithLp`. -/
-def withLp (f : V →ₛₗ[σ] V') : WithLp p V →ₛₗ[σ] WithLp p V' :=
+def withLpMap (f : V →ₛₗ[σ] V') : WithLp p V →ₛₗ[σ] WithLp p V' :=
   (WithLp.linearEquiv p K' V').symm.toLinearMap ∘ₛₗ f ∘ₛₗ (WithLp.linearEquiv p K V).toLinearMap
 
 @[simp]
-theorem coe_withLp (f : V →ₛₗ[σ] V') : ⇑(withLp p f) = WithLp.map p f :=
+theorem coe_withLpMap (f : V →ₛₗ[σ] V') : ⇑(withLpMap p f) = WithLp.map p f :=
   rfl
 
 @[simp]
-theorem withLp_id : withLp p (LinearMap.id (R := K) (M := V)) = LinearMap.id :=
+theorem withLpMap_id : withLpMap p (LinearMap.id (R := K) (M := V)) = LinearMap.id :=
   rfl
 
 @[simp]
-theorem withLp_comp (f : V' →ₛₗ[τ] V'') (g : V →ₛₗ[σ] V') :
-    withLp p (f ∘ₛₗ g) = withLp p f ∘ₛₗ withLp p g :=
+theorem withLpMap_comp (f : V' →ₛₗ[τ] V'') (g : V →ₛₗ[σ] V') :
+    withLpMap p (f ∘ₛₗ g) = withLpMap p f ∘ₛₗ withLpMap p g :=
   rfl
 
 end LinearMap
