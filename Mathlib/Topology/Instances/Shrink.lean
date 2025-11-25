@@ -6,9 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Logic.Small.Defs
-public import Mathlib.Topology.Defs.Induced
-public import Mathlib.Topology.Homeomorph.Defs
-public import Mathlib.Topology.Algebra.Module.TransferInstance
+public import Mathlib.Topology.Homeomorph.TransferInstance
 
 /-!
 # Topological space structure on `Shrink X`

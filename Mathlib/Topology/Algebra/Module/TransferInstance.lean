@@ -5,16 +5,20 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Instances.Shrink
 
 /-!
-# Transfer algebraic structures across `Equiv`s
+# Transfer topological algebraic structures across `Equiv`s
 
-In this file, we transfer a topological space and continuous linear equivalence structure
-across an equivalence.
-This continues the pattern set in `Mathlib/Algebra/Normed/Module/TransferInstance.lean`.
+In this file, we construct a continuous linear equivalence `α ≃L[R] β` from an equivalence `α ≃ β`,
+where the continuous `R`-module structure on `α` is the one obtained by transporting an
+`R`-module structure on `β` back along `e`.
+We also specialize this construction to `Shrink α`.
+
+This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
 @[expose] public section
@@ -24,20 +28,6 @@ variable {R α β : Type*}
 namespace Equiv
 
 variable (e : α ≃ β)
-
-/-- Transfer a `TopologicalSpace` across an `Equiv` -/
-protected abbrev topologicalSpace (e : α ≃ β) : ∀ [TopologicalSpace β], TopologicalSpace α :=
-  .induced e ‹_›
-
-/-- An equivalence e : α ≃ β gives a homeomorphism α ≃ₜ β where the topological space structure
-on α is the one obtained by transporting the topological space structure on β back along e. -/
-def homeomorph (e : α ≃ β) [TopologicalSpace β] :
-    letI := e.topologicalSpace
-    α ≃ₜ β :=
-  letI := e.topologicalSpace
-  { e with
-    continuous_toFun := continuous_induced_dom
-    continuous_invFun := by convert continuous_coinduced_rng; exact e.coinduced_symm.symm }
 
 variable [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
 
@@ -56,13 +46,26 @@ def continuousLinearEquiv (e : α ≃ β) :
   letI := e.addCommMonoid
   letI := e.module R
   { toLinearEquiv := e.linearEquiv _
-    __ := e.homeomorph }
+    continuous_toFun := continuous_induced_dom
+    continuous_invFun := by
+      simp only [Equiv.topologicalSpace, ← @coinduced_symm]
+      exact continuous_coinduced_rng }
 
 @[simp]
-lemma continuousLinearEquiv_toLinearEquiv (e : α ≃ β) :
-    let _ := e.topologicalSpace
-    let _ := e.addCommMonoid
-    let _ := e.module R
-    (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := by rfl
+lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
+    letI := e.topologicalSpace
+    letI := e.addCommMonoid
+    letI := e.module R
+    (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := rfl
 
 end Equiv
+
+universe v
+
+variable (R α) in
+/-- Shrinking `α` to a smaller universe preserves the continuous module structure. -/
+@[simps!]
+noncomputable def Shrink.continuousLinearEquiv
+    [Small.{v} α] [AddCommMonoid α] [TopologicalSpace α] [Semiring R] [Module R α] :
+    Shrink.{v} α ≃L[R] α :=
+  (equivShrink α).symm.continuousLinearEquiv R
