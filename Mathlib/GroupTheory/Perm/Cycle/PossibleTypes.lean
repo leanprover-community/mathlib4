@@ -3,8 +3,9 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 /-! # Possible cycle types of permutations
 
@@ -13,6 +14,8 @@ import Mathlib.GroupTheory.Perm.Cycle.Concrete
   its sum is at most `Fintype.card α` and its members are at least 2.
 
 -/
+
+@[expose] public section
 
 variable (α : Type*) [DecidableEq α] [Fintype α]
 
@@ -40,12 +43,12 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp [klift, Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id']
+    simp [klift, Fin.valEmbedding_apply, List.pmap_eq_map, List.map_id']
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
     rw [← ranges_length c]
-    simp only [l, klift', map_map, map_pmap, Function.comp_apply, length_map, length_pmap,
+    simp only [l, klift', map_pmap, length_pmap,
       pmap_eq_map]
   constructor
   · -- nodup
@@ -106,10 +109,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       ·-- length
         rw [List.toFinset_card_of_nodup (hp_nodup x hx)]
       · -- length >= 1
-        intro a h
-        apply Nat.not_succ_le_self 1
-        conv_rhs => rw [← List.length_singleton (a := a)]; rw [← h]
-        exact hp2 x hx
+        grind
     · -- cycles
       intro g
       rw [List.mem_map]

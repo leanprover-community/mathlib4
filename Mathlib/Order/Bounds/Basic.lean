@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Directed
-import Mathlib.Order.BoundedOrder.Monotone
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
+public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds
@@ -16,13 +18,13 @@ monotonicity, behaviour under `∪`, `∩`, `insert`,
 and provide formulas for `∅`, `univ`, and intervals.
 -/
 
+@[expose] public section
+
 open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v
-
-variable {α : Type u} {γ : Type v}
+variable {α β γ : Type*}
 
 section
 
@@ -489,15 +491,12 @@ section
 variable [LinearOrder γ]
 
 theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
-  by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
+  by_cases! h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
   · refine ⟨i, fun j hj => le_of_lt hj, ?_⟩
     rw [mem_lowerBounds]
-    by_contra h
-    refine h_exists_lt ?_
-    push_neg at h
-    exact h
+    exact h_exists_lt
 
 theorem exists_glb_Ioi (i : γ) : ∃ j, IsGLB (Ioi i) j :=
   @exists_lub_Iio γᵒᵈ _ i
@@ -552,29 +551,14 @@ theorem lowerBounds_singleton : lowerBounds {a} = Iic a :=
 -/
 
 
-theorem bddAbove_Icc : BddAbove (Icc a b) :=
-  ⟨b, fun _ => And.right⟩
-
-theorem bddBelow_Icc : BddBelow (Icc a b) :=
-  ⟨a, fun _ => And.left⟩
-
-theorem bddAbove_Ico : BddAbove (Ico a b) :=
-  bddAbove_Icc.mono Ico_subset_Icc_self
-
-theorem bddBelow_Ico : BddBelow (Ico a b) :=
-  bddBelow_Icc.mono Ico_subset_Icc_self
-
-theorem bddAbove_Ioc : BddAbove (Ioc a b) :=
-  bddAbove_Icc.mono Ioc_subset_Icc_self
-
-theorem bddBelow_Ioc : BddBelow (Ioc a b) :=
-  bddBelow_Icc.mono Ioc_subset_Icc_self
-
-theorem bddAbove_Ioo : BddAbove (Ioo a b) :=
-  bddAbove_Icc.mono Ioo_subset_Icc_self
-
-theorem bddBelow_Ioo : BddBelow (Ioo a b) :=
-  bddBelow_Icc.mono Ioo_subset_Icc_self
+@[simp] lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
+@[simp] lemma bddBelow_Icc : BddBelow (Icc a b) := ⟨a, fun _ => And.left⟩
+@[simp] lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
+@[simp] lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
+@[simp] lemma bddAbove_Ioc : BddAbove (Ioc a b) := bddAbove_Icc.mono Ioc_subset_Icc_self
+@[simp] lemma bddBelow_Ioc : BddBelow (Ioc a b) := bddBelow_Icc.mono Ioc_subset_Icc_self
+@[simp] lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
+@[simp] lemma bddBelow_Ioo : BddBelow (Ioo a b) := bddBelow_Icc.mono Ioo_subset_Icc_self
 
 theorem isGreatest_Icc (h : a ≤ b) : IsGreatest (Icc a b) b :=
   ⟨right_mem_Icc.2 h, fun _ => And.right⟩
@@ -700,15 +684,9 @@ theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α
   eq_empty_of_subset_empty fun b hb =>
     not_isTop b fun x => hb (mem_univ x)
 
-@[deprecated (since := "2025-04-18")]
-alias NoMaxOrder.upperBounds_univ := NoTopOrder.upperBounds_univ
-
 @[simp]
 theorem NoBotOrder.lowerBounds_univ [NoBotOrder α] : lowerBounds (univ : Set α) = ∅ :=
   @NoTopOrder.upperBounds_univ αᵒᵈ _ _
-
-@[deprecated (since := "2025-04-18")]
-alias NoMinOrder.lowerBounds_univ := NoBotOrder.lowerBounds_univ
 
 @[simp]
 theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
@@ -876,7 +854,7 @@ end
 
 section Preorder
 
-variable [Preorder α] {s : Set α} {a b : α}
+variable [Preorder α] [Preorder β] {s : Set α} {t : Set β} {a b : α}
 
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
@@ -897,6 +875,20 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     x ≤ b := hb.1 hx
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
+
+@[simp] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
+
+@[simp] lemma lowerBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [lowerBounds, Prod.le_def, forall_and])
+
+lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
+    IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+lemma IsGLB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsGLB s a) (hb : IsGLB t b) :
+    IsGLB (s ×ˢ t) (a, b) := by simp_all +contextual [IsGLB, IsGreatest, upperBounds]
 
 end Preorder
 
@@ -977,3 +969,8 @@ theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
 theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
     IsLeast {w | Codisjoint a w} (￢a) := by
   simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a
+
+instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p] :
+    Decidable (IsLeast { n : ℕ | p n } n) :=
+  decidable_of_iff (p n ∧ ∀ k < n, ¬p k) <| .and .rfl <| by
+    simp [mem_lowerBounds, @imp_not_comm _ (p _)]

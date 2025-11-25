@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 
 /-!
 
@@ -14,6 +16,8 @@ We provide a `CartesianMonoidalCategory (Over X)` instance via pullbacks, and pr
 for the induced `MonoidalCategory (Over X)` instance.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Over
 
@@ -33,7 +37,7 @@ noncomputable abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCatego
 
 attribute [local instance] cartesianMonoidalCategory
 
-/-- `Over X` is braided wrt the cartesian monoidal structure given by `Limits.pullback`. -/
+/-- `Over X` is braided w.r.t. the Cartesian monoidal structure given by `Limits.pullback`. -/
 noncomputable abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
   .ofCartesianMonoidalCategory
 
@@ -159,16 +163,18 @@ lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
   (limit.lift_π _ _).trans (Category.comp_id _)
 
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
+    (f ⊗ₘ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
 
 @[reassoc (attr := simp)]
-lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ g).left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f.left :=
+lemma tensorHom_left_fst {S U : C} {R T : Over X} (fS : S ⟶ X) (fU : U ⟶ X)
+    (f : R ⟶ mk fS) (g : T ⟶ mk fU) :
+    (f ⊗ₘ g).left ≫ pullback.fst fS fU = pullback.fst R.hom T.hom ≫ f.left :=
   limit.lift_π _ _
 
 @[reassoc (attr := simp)]
-lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ g).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ g.left :=
+lemma tensorHom_left_snd {S U : C} {R T : Over X} (fS : S ⟶ X) (fU : U ⟶ X)
+    (f : R ⟶ mk fS) (g : T ⟶ mk fU) :
+    (f ⊗ₘ g).left ≫ pullback.snd fS fU = pullback.snd R.hom T.hom ≫ g.left :=
   limit.lift_π _ _
 
 @[simp]

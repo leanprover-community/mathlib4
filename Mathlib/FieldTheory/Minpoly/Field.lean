@@ -3,11 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -17,6 +19,8 @@ and derives some well-known properties, amongst which the fact that minimal poly
 are irreducible, and uniquely determined by their defining property.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Set Function minpoly
@@ -57,6 +61,10 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   apply degree_sub_lt _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
+
+theorem unique_of_degree_le_degree_minpoly {p : A[X]} (pmonic : p.Monic) (hp : p.aeval x = 0)
+    (pmin : p.degree ≤ (minpoly A x).degree) : p = minpoly A x :=
+  unique _ _ pmonic hp fun _ qm hq ↦ pmin.trans <| min _ _ qm hq
 
 /-- If an element `x` is a root of a polynomial `p`, then the minimal polynomial of `x` divides `p`.
 See also `minpoly.isIntegrallyClosed_dvd` which relaxes the assumptions on `A` in exchange for
@@ -195,6 +203,17 @@ theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
     · simp only [natDegree_zero, pow_zero, mul_zero]
     · exact IsIntegral.neg_iff.not.mpr hx
 
+theorem map_eq_of_equiv_equiv {R S T : Type*} [CommRing R] [IsDomain R] [Ring S] [Ring T]
+    [IsDomain S] [IsDomain T] [Algebra R S] [Algebra A T] [Algebra.IsIntegral R S]
+    {f : R ≃+* A} {g : S ≃+* T}
+    (hcomp : (algebraMap A T).comp f = (g : S →+* T).comp (algebraMap R S)) (x : S) :
+    map f (minpoly R x) = minpoly A (g x) := by
+  refine minpoly.eq_of_irreducible_of_monic ?_ ?_ ?_
+  · rw [← mapEquiv_apply, MulEquiv.irreducible_iff]
+    exact minpoly.irreducible (Algebra.IsIntegral.isIntegral x)
+  · simpa using (map_aeval_eq_aeval_map hcomp (minpoly R x) x).symm
+  · exact (monic (Algebra.IsIntegral.isIntegral x)).map _
+
 section AlgHomFintype
 
 open scoped Classical in
@@ -303,13 +322,12 @@ section AlgHom
 
 variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
 
-/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
+/-- The minimal polynomial (over `K`) of `σ : L ≃ₐ[K] L` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
-  · rw [map_sub]
-    simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
-  · intros q hq hs
+  · simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
+  · intro q hq hs
     rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
     intro H
     rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs

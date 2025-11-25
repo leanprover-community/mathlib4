@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.InnerProductSpace.Calculus
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
 # Derivative of the absolute value
@@ -18,10 +20,12 @@ from an inner product space.
 absolute value, derivative
 -/
 
+@[expose] public section
+
 open Filter Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {n : ℕ∞} {f : E → ℝ} {f' : E →L[ℝ] ℝ} {s : Set E} {x : E}
+variable {n : ℕ∞} {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {x : E}
 
 theorem contDiffAt_abs {x : ℝ} (hx : x ≠ 0) : ContDiffAt ℝ n (|·|) x := contDiffAt_norm ℝ hx
 

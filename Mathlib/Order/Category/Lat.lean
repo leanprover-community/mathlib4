@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # The category of lattices
@@ -19,6 +21,8 @@ corresponds to `BddLat`.
 
 The free functor from `Lat` to `BddLat` is `X → WithTop (WithBot X)`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -116,8 +120,8 @@ lemma hom_ext {X Y : Lat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : Lat} (f : X ⟶ Y) :

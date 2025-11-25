@@ -3,15 +3,19 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Order.Filter.ListTraverse
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Order.Filter.ListTraverse
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on lists and vectors
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Set Filter
@@ -39,14 +43,14 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       induction hu generalizing s with
       | nil =>
         exists []
-        simp only [List.forall₂_nil_left_iff, exists_eq_left]
+        simp only [List.forall₂_nil_left_iff]
         exact ⟨trivial, hus⟩
       | cons ht _ ih =>
         rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
         rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
         exact
           ⟨u::v, List.Forall₂.cons hu hv,
-            Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
+            Subset.trans (Set.seq_mono (Set.image_mono hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
     have : sequence v ∈ traverse 𝓝 l :=
       mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha

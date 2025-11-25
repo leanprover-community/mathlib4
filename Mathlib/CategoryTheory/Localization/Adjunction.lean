@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Localization of adjunctions
@@ -20,9 +22,11 @@ induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Localization Category
+open Localization Category Functor
 
 namespace Adjunction
 
@@ -42,7 +46,7 @@ namespace Localization
 /-- Auxiliary definition of the unit morphism for the adjunction `Adjunction.localization` -/
 noncomputable def ε : 𝟭 D₁ ⟶ G' ⋙ F' := by
   letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
-    Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso'.symm
+    Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
   exact Localization.liftNatTrans L₁ W₁ L₁ ((G ⋙ F) ⋙ L₁) (𝟭 D₁) (G' ⋙ F')
     (whiskerRight adj.unit L₁)
 
@@ -51,15 +55,15 @@ lemma ε_app (X₁ : C₁) :
       L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
         F'.map ((CatCommSq.iso G L₁ L₂ G').hom.app X₁) := by
   letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
-    Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso'.symm
+    Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
   simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
-    Functor.id_obj, Functor.comp_obj, Lifting.id_iso', Functor.rightUnitor_hom_app,
-      whiskerRight_app, CatCommSq.hComp_iso'_hom_app, id_comp]
+    Functor.id_obj, Functor.comp_obj, Functor.rightUnitor_hom_app,
+      whiskerRight_app, CatCommSq.hComp_iso_hom_app, id_comp]
 
 /-- Auxiliary definition of the counit morphism for the adjunction `Adjunction.localization` -/
 noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
   letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
-    Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso'.symm
+    Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
   exact liftNatTrans L₂ W₂ ((F ⋙ G) ⋙ L₂) L₂ (F' ⋙ G') (𝟭 D₂) (whiskerRight adj.counit L₂)
 
 lemma η_app (X₂ : C₂) :
@@ -68,9 +72,9 @@ lemma η_app (X₂ : C₂) :
         (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
         L₂.map (adj.counit.app X₂) := by
   letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
-    Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso'.symm
-  simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso'_inv_app,
-    whiskerRight_app, Lifting.id_iso', Functor.rightUnitor_inv_app, comp_id, assoc]
+    Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
+  simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso_inv_app,
+    whiskerRight_app, Functor.rightUnitor_inv_app, comp_id, assoc]
 
 end Localization
 

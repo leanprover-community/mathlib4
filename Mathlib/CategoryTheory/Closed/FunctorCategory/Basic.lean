@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Closed.Enrichment
-import Mathlib.CategoryTheory.Enriched.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Closed.Enrichment
+public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 
 /-!
 # Functor categories are monoidal closed
@@ -14,6 +16,8 @@ we obtain that the category `J ⥤ C` is monoidal closed if `C` has suitable
 limits.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -68,7 +72,7 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
           ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
         let α : Under.mk (𝟙 j) ⟶ (Under.map φ).obj (Under.mk (𝟙 j')) := Under.homMk φ
         exact (enrichedHom_condition C (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₃) α).symm }
-  left_inv f := by aesop_cat
+  left_inv f := by cat_disch
   right_inv g := by
     ext j
     dsimp

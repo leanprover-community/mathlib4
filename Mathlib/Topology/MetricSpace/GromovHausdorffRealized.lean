@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.MetricSpace.Gluing
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.MetricSpace.Gluing
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -29,6 +31,8 @@ embeddings of `X` and `Y` in metric spaces is a set of equicontinuous functions.
 it is compact, and one can find such a distance which is minimal. This distance defines a premetric
 space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCoupling X Y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -221,9 +225,10 @@ private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
   rw [this]
   repeat'
     first
-      |apply IsClosed.inter _ _
-      |apply isClosed_iInter _
-      |apply I1 _ _|apply I2 _ _|apply I3 _ _|apply I4 _ _ _|apply I5 _|apply I6 _ _|intro x
+      | apply IsClosed.inter _ _
+      | apply isClosed_iInter _
+      | apply I1 _ _ | apply I2 _ _ | apply I3 _ _ | apply I4 _ _ _ | apply I5 _ | apply I6 _ _
+      | intro x
 
 /-- We will then choose the candidate minimizing the Hausdorff distance. Except that we are not
 in a metric space setting, so we need to define our custom version of Hausdorff distance,
@@ -239,7 +244,7 @@ technical lemmas. -/
 theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
-  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
 
 private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
@@ -252,7 +257,7 @@ private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
-  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
 
 private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
@@ -285,7 +290,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun y : Y => g (inl x, inr y))
+    · change BddBelow (range fun y : Y => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g = ⨆ x, (⨅ y, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
@@ -313,7 +318,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun x : X => g (inl x, inr y))
+    · change BddBelow (range fun x : X => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g = ⨆ y, (⨅ x, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
@@ -325,8 +330,8 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
 
 private theorem HD_lipschitz_aux3 (f g : Cb X Y) :
     HD f ≤ HD g + dist f g :=
-  max_le (le_trans (HD_lipschitz_aux1 f g) (add_le_add_right (le_max_left _ _) _))
-    (le_trans (HD_lipschitz_aux2 f g) (add_le_add_right (le_max_right _ _) _))
+  max_le (by grw [HD_lipschitz_aux1 f g, HD, ← le_max_left])
+    (by grw [HD_lipschitz_aux2 f g, HD, ← le_max_right])
 
 /-- Conclude that `HD`, being Lipschitz, is continuous -/
 private theorem HD_continuous : Continuous (HD : Cb X Y → ℝ) :=
