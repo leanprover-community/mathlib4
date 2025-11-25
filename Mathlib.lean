@@ -1938,6 +1938,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Ray
 public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Module.WeakDual
@@ -4075,6 +4076,7 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Conformal
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.CrossProduct
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.TriangleInequality
 public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
@@ -6976,6 +6978,7 @@ public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.Hom.Open
 public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Homeomorph.TransferInstance
 public import Mathlib.Topology.Homotopy.Affine
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Homotopy.Contractible
