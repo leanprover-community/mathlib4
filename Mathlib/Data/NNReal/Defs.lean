@@ -909,9 +909,7 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
   rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
 @[simp]
-theorem nnabs_pos_iff {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
-
-alias ⟨_, nnabs_pos⟩ := nnabs_pos_iff
+theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
 
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
@@ -1011,6 +1009,8 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => failure
   | _, _, _ => throwError "not Real.toNNReal"
 
+private alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
+
 /-- Extension for the `positivity` tactic: `Real.nnabs. -/
 @[positivity Real.nnabs _]
 meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
@@ -1018,7 +1018,7 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
     assertInstancesCommute
     match (← core q(inferInstance) q(inferInstance) a).toNonzero with
-    | some pa => pure (.positive q(nnabs_pos $pa))
+    | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
     | _ => failure
   | _, _, _ => throwError "not Real.nnabs"
 
