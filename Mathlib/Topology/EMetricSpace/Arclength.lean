@@ -10,7 +10,8 @@ import Mathlib.Data.Set.Operations
 # Arc length
 
 This file is file is devoted to the definition of the `arclength` of a function `f` between
-`a` and `b`.
+`a` and `b` and the continuity of the single variable function `arclength a` or
+`fun x ↦ arclength x b`.
 
 ## Main results
 
