@@ -600,7 +600,7 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
     Function.Embedding.ext_iff.mp hg' ⟨i.val, hi⟩
   have hgk (i : Fin (Fintype.card α)) : (g • x) i = (k • x) i := by
     obtain ⟨j, hxj : (k • x) j = (g • x) i⟩ := hx (k • x) ((g • x) i)
-    grind
+    grind only [!Function.Embedding.injective]
   ext a
   obtain ⟨i, rfl⟩ := (hx x) a
   specialize hgk i
