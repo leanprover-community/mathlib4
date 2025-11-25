@@ -225,13 +225,13 @@ theorem extDerivWithin_extDerivWithin_eqOn (hω : ContDiffOn 𝕜 r ω s) (hr : 
   rintro x ⟨h'x, hx⟩
   exact extDerivWithin_extDerivWithin_apply (hω.contDiffWithinAt h'x) hr hs hx h'x
 
-/-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
+/-- The second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem extDeriv_extDeriv_apply (hω : ContDiffAt 𝕜 r ω x) (hr : minSmoothness 𝕜 2 ≤ r) :
     extDeriv (extDeriv ω) x = 0 := by
   simp only [← extDerivWithin_univ]
   apply extDerivWithin_extDerivWithin_apply (s := univ) hω.contDiffWithinAt hr <;> simp
 
-/-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
+/-- The second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem extDeriv_extDeriv (h : ContDiff 𝕜 r ω) (hr : minSmoothness 𝕜 2 ≤ r) :
     extDeriv (extDeriv ω) = 0 :=
   funext fun _ ↦ extDeriv_extDeriv_apply h.contDiffAt hr
