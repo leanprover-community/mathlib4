@@ -252,6 +252,19 @@ example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.sqrt := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.totient := by positivity
 
+section NNReal
+
+example (a : ℝ) (ha : 0 < a) : 0 < a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.nnabs := by positivity
+example (a : ℝ) (ha : 0 < a) : 0 < a.nnabs := by positivity
+example (a : ℝ) (ha : a ≠ 0) : 0 < a.nnabs := by positivity
+example (a : ℝ≥0) (ha : 0 < a) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) (ha : a ≠ 0) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) : 0 ≤ (a : ℝ) := by positivity
+
+end NNReal
+
 section ENNReal
 
 variable {a b : ℝ≥0∞}
