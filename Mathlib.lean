@@ -9273,6 +9273,7 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Pos
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
+public import Mathlib.Analysis.SpecialFunctions.Elliptic.Weierstrass
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Exponential
