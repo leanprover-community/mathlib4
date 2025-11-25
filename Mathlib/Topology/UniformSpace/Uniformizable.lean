@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu
 -/
 import Mathlib.Topology.Separation.CompletelyRegular
+import Mathlib.Topology.UniformSpace.OfCompactT2
 
 /-!
 # Uniformizable Spaces
@@ -33,79 +34,78 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 variable {α : Type*}
 
-open Filter Set Uniformity
+open Filter Set Uniformity SetRel
 
 section UniformSpace
 variable [UniformSpace α]
 
-private noncomputable def descend (s : { s : Set (α × α) // s ∈ 𝓤 α }) :
-    { s : Set (α × α) // s ∈ 𝓤 α } :=
+private noncomputable def descend (s : { s : SetRel α α // s ∈ 𝓤 α }) :
+    { s : SetRel α α // s ∈ 𝓤 α } :=
   ⟨_, (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.1⟩
 
-private theorem descend_open (s : { s : Set (α × α) // s ∈ 𝓤 α }):
+private theorem descend_open (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     IsOpen (descend s).1 :=
   (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.2.1
 
-private theorem descend_symm (s : { s : Set (α × α) // s ∈ 𝓤 α }) :
-    IsSymmetricRel (descend s).1 :=
+private theorem descend_symm (s : { s : SetRel α α // s ∈ 𝓤 α }) :
+    (descend s).1.IsSymm :=
   (comp_open_symm_mem_uniformity_sets (mem_uniformity_isClosed
     (comp_open_symm_mem_uniformity_sets s.2).choose_spec.1).choose_spec.1).choose_spec.2.2.1
 
-private theorem descend_descends (s : { s : Set (α × α) // s ∈ 𝓤 α }) :
+private theorem descend_descends (s : { s : SetRel α α // s ∈ 𝓤 α }) :
     (descend s).1 ○ (descend s).1 ⊆ s := by
   dsimp [descend]
   generalize_proofs o₁ c o₂
   have hoc : o₂.choose ⊆ c.choose := by
     trans o₂.choose ○ o₂.choose
-    · apply subset_comp_self
-      rw [← Filter.mem_principal]
+    · suffices _ : o₂.choose.IsRefl from left_subset_comp
+      rw [← id_subset_iff]
       exact refl_le_uniformity o₂.choose_spec.1
     · exact o₂.choose_spec.2.2.2
   calc o₂.choose ○ o₂.choose
-    _ ⊆ c.choose ○ c.choose := compRel_mono hoc hoc
-    _ ⊆ o₁.choose ○ o₁.choose := compRel_mono c.choose_spec.2.2 c.choose_spec.2.2
+    _ ⊆ c.choose ○ c.choose := comp_subset_comp hoc hoc
+    _ ⊆ o₁.choose ○ o₁.choose := comp_subset_comp c.choose_spec.2.2 c.choose_spec.2.2
     _ ⊆ s.1 := o₁.choose_spec.2.2.2
 
 private def P (c : Set α) (u : Set α) :=
-  ∃ (x : α) (uc uu : Set (α × α)) (s : { s : Set (α × α) // s ∈ 𝓤 α }),
-    IsOpen uc ∧ IsSymmetricRel uc ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
+  ∃ (x : α) (uc uu : SetRel α α) (s : { s : SetRel α α // s ∈ 𝓤 α }),
+    IsOpen uc ∧ uc.IsSymm ∧ uc ∈ 𝓤 α ∧ c = closure (Prod.mk x ⁻¹' uc) ∧
     IsOpen uu ∧ u = Prod.mk x ⁻¹' uu ∧ s ○ uc ○ s ⊆ uu
 
 private theorem descend_spec {c u : Set α} (Pcu : P c u) :
     ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
   obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn⟩ := Pcu
-  have ho : IsOpen (descend s ○ uc ○ descend s) :=
-    ((descend_open s).compRel huc).compRel (descend_open s)
+  have ho : IsOpen ((descend s).1 ○ uc ○ (descend s).1) :=
+    ((descend_open s).relComp huc).relComp (descend_open s)
   use Prod.mk x ⁻¹' (descend s ○ uc ○ descend s), ho.preimage (Continuous.prodMk_right x)
   constructor
   · apply ((Continuous.prodMk_right x).closure_preimage_subset _).trans
-    apply preimage_mono
-    rw [closure_eq_inter_uniformity, compRel_assoc]
+    apply Set.preimage_mono
+    rw [closure_eq_inter_uniformity, comp_assoc]
     exact iInter₂_subset (descend s).1 (descend s).2
   constructor
   · apply ((Continuous.prodMk_right x).closure_preimage_subset _).trans
-    apply preimage_mono
+    apply Set.preimage_mono
     apply hn.trans'
     rw [closure_eq_inter_uniformity]
     apply iInter₂_subset_of_subset (descend s).1 (descend s).2
-    exact Eq.trans_subset (by simp_rw [compRel_assoc])
-      (compRel_mono (compRel_mono (descend_descends s) subset_rfl) (descend_descends s))
+    exact Eq.trans_subset (by simp_rw [comp_assoc])
+      (comp_subset_comp (comp_subset_comp (descend_descends s) subset_rfl) (descend_descends s))
+  have : (descend s).1.IsRefl := id_subset_iff.1 (refl_le_uniformity (descend s).2)
   have hucd : descend s ○ uc ○ descend s ∈ 𝓤 α :=
-    mem_of_superset ucu
-      ((right_subset_compRel (refl_le_uniformity (descend s).2)).trans
-        (left_subset_compRel (refl_le_uniformity (descend s).2)))
+    mem_of_superset ucu (right_subset_comp.trans left_subset_comp)
   constructor
   · exact ⟨x, uc, _, _, huc, symmuc, ucu, rfl, ho, rfl, subset_rfl⟩
-  · have hos : IsSymmetricRel (descend s ○ uc ○ descend s) := by
-      simp [IsSymmetricRel, compRel_assoc, prodSwap_preimage_compRel,
-        symmuc.eq, (descend_symm s).eq]
+  · have hos : ((descend s).1 ○ uc ○ (descend s).1).IsSymm := by
+      sorry
     refine ⟨x, _, uu, descend s, ho, hos, hucd, rfl, huu, rfl, ?_⟩
-    calc descend s ○ (descend s ○ uc ○ descend s) ○ descend s
-      _ = (descend s ○ descend s) ○ uc ○ (descend s ○ descend s) := by simp [compRel_assoc]
+    calc (descend s).1 ○ ((descend s).1 ○ uc ○ (descend s).1) ○ (descend s).1
+      _ = ((descend s).1 ○ (descend s).1) ○ uc ○ ((descend s).1 ○ (descend s).1) := by
+        simp [comp_assoc]
       _ ⊆ s ○ uc ○ s :=
-        compRel_mono (compRel_mono (descend_descends s) subset_rfl) (descend_descends s)
+        comp_subset_comp (comp_subset_comp (descend_descends s) subset_rfl) (descend_descends s)
       _ ⊆ uu := hn
 
 instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
@@ -113,7 +113,7 @@ instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
     obtain ⟨O, hOu, hOo, hbO⟩ := isOpen_iff_isOpen_ball_subset.mp hK.isOpen_compl x hx
     have hcu := (descend (descend ⟨O, hOu⟩)).2
     have hccccO :=
-      (compRel_mono
+      (SetRel.comp_subset_comp
         (descend_descends (descend ⟨O, hOu⟩))
         (descend_descends (descend ⟨O, hOu⟩))).trans
       (descend_descends ⟨O, hOu⟩)
@@ -137,11 +137,12 @@ instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
       U := Prod.mk x ⁻¹' O
       closed_C := isClosed_closure
       open_U := hOo.preimage (Continuous.prodMk_right x)
-      subset := (closure_minimal (preimage_mono hoC) (isClosed_ball x hC)).trans (preimage_mono hCO)
+      subset :=
+        (closure_minimal (Set.preimage_mono hoC) (isClosed_ball x hC)).trans (preimage_mono hCO)
       hP _ Pcu _ _ := descend_spec Pcu
       P_C_U :=
         ⟨x, descend ⟨C, hCu⟩, O, _, hoo, hosymm, hou, rfl, hOo, rfl,
-          (compRel_mono (compRel_mono subset_rfl (hoC.trans hCc))
+          (SetRel.comp_subset_comp (SetRel.comp_subset_comp subset_rfl (hoC.trans hCc))
             (subset_comp_self_of_mem_uniformity (descend (descend ⟨O, hOu⟩)).2)).trans hccccO⟩
     }
     exact ⟨fun x => ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
@@ -149,14 +150,11 @@ instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
 
 end UniformSpace
 
-section CompletelyRegularSpace
-variable [CompletelyRegularSpace α]
+variable [t : TopologicalSpace α] [CompletelyRegularSpace α]
 
 theorem CompletelyRegularSpace.exists_uniformSpace :
     ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
   ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩
-
-end CompletelyRegularSpace
 
 theorem CompletelyRegularSpace.of_exists_uniformSpace
     (h : ∃ (u : UniformSpace α), u.toTopologicalSpace = t) :
@@ -167,5 +165,3 @@ theorem CompletelyRegularSpace.of_exists_uniformSpace
 theorem completelyRegularSpace_iff_exists_uniformSpace :
     CompletelyRegularSpace α ↔ ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
   ⟨@CompletelyRegularSpace.exists_uniformSpace α t, CompletelyRegularSpace.of_exists_uniformSpace⟩
-
-end TopologicalSpace
