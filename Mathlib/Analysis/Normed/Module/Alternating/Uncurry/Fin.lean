@@ -213,7 +213,7 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric
   ext v
   simp [alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_apply, hf]
 
-/-- Derivative of `compContinuousLinearMap` can be represented
+/-- The derivative of `compContinuousLinearMap` can be represented
 in terms of `alternatizeUncurryFinCLM`. -/
 theorem fderivCompContinuousLinearMap_eq_alternatizeUncurryFin (f : F [⋀^Fin (n + 1)]→L[𝕜] G)
     (g : E →L[𝕜] F) :
@@ -226,7 +226,7 @@ theorem fderivCompContinuousLinearMap_eq_alternatizeUncurryFin (f : F [⋀^Fin (
     cases j using i.succAboveCases <;> simp [Fin.removeNth]
   simp [alternatizeUncurryFin_apply, ← Fin.insertNth_removeNth, ← map_insertNth, this]
 
-/-- Alternatized uncurry of `fderivCompContinuousLinearMap f g`
+/-- `alternatizeUncurryFin` of `fderivCompContinuousLinearMap f g`
 composed with a symmetric bilinear map is zero. -/
 theorem alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero (f : F [⋀^Fin n]→L[𝕜] G)
     (g : E →L[𝕜] F) {h : E →L[𝕜] E →L[𝕜] F} (hsymm : ∀ x y, h x y = h y x) :
