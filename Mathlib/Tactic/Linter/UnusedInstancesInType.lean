@@ -125,18 +125,22 @@ A simple pattern is therefore
 ```
 fun _ thm unusedParams => do
   logLint linter.fooLinter (← getRef) m!"\
-    {thm.name.unusedInstancesMsg unusedParams}\n\
+    {thm.name.unusedInstancesMsg unusedParams}\n\n\
     <extra caption>"
 ```
 which logs
+```null
+`{foo}` has the hypothes(is/es):
+  • {p₁}
+  • {p₂}
+  ⋮
+  • {pₙ}
+which (is/are) not used in the remainder of the type.
 
-> \`{foo}\` has the hypothes[is/es] {p₁}, {p₂}, ..., and {pₙ} which [is/are] not used in the
-> remainder of the type.
->
-> \<extra caption\>
->
-> This linter can be disabled with \`set_option {linter.fooLinter.name} false\`
+<extra caption>
 
+Note: This linter can be disabled with `set_option {linter.fooLinter.name} false`
+```
 pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
