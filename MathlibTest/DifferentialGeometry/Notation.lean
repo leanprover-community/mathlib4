@@ -106,29 +106,41 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check (T% X) x
 
--- This one is.
+-- We apply head-beta reduction of the applied form: there is nothing to do here.
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X x)
 
-/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
+-- This variant is beta-reduced.
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
-#check (T% (fun x ↦ X x))
+#check (T% (fun x ↦ X x) x)
 
 /-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X)
 
--- No beta-reduction, because outside parentheses.
+-- As is this version.
+/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x))
+
+-- The term `x` is outside parentheses: the form `x ↦ X x` is still reduced because
+-- we apply head beta reduction to the application.
 /-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
+-- Parentheses around the argument are not required right now.
 /-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
-#check (T% (fun x ↦ X x) x)
+#check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice is fine (and idempotent).
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (T% X))
+
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (T% X)) x
