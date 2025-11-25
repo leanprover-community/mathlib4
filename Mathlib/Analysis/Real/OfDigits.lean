@@ -160,18 +160,28 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   · exact summable_ofDigitsTerm
 
 /-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
-theorem ofDigits_const_last_eq_one {b : ℕ} (hb : 1 < b) :
-    ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
+theorem ofDigits_const_last_eq_one (b : ℕ) [NeZero b] :
+    ofDigits (fun _ ↦ Fin.last b) = 1 := by
+  have : 1 < |(b + 1 : ℝ)| := by
+    rw [← Nat.cast_add_one, abs_of_nonneg (Nat.cast_nonneg _)]
+    simp [NeZero.pos b]
   simp only [ofDigits, ofDigitsTerm, ← inv_pow]
   rw [Summable.tsum_mul_left]
-  · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, hb]),
-      tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
-    push_cast [hb]
-    have : 0 < (b : ℝ) - 1 := by rify at hb; linarith
-    field_simp
-    ring
-  · rw [summable_nat_add_iff (f := fun n ↦ (b : ℝ)⁻¹ ^ n) 1]
-    apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])
+  · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, this]),
+      tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, NeZero.pos b])]
+    push_cast
+    have : (b : ℝ) ≠ 0 := mod_cast NeZero.ne b
+    field [*]
+  · rw [summable_nat_add_iff (f := fun n ↦ ((b + 1 : ℕ) : ℝ)⁻¹ ^ n) 1]
+    apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, NeZero.pos b])
+
+/-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
+theorem ofDigits_const_last_eq_one' {b : ℕ} (hb : 1 < b) :
+    ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
+  convert ofDigits_const_last_eq_one (b - 1)
+  · grind
+  · constructor
+    grind
 
 theorem ofDigits_SurjOn {b : ℕ} (hb : 1 < b) :
     Set.SurjOn (ofDigits (b := b)) Set.univ (Set.Icc 0 1) := by
@@ -181,7 +191,7 @@ theorem ofDigits_SurjOn {b : ℕ} (hb : 1 < b) :
   · use digits y b
     simp [ofDigits_digits hb hy']
   · simp only [Set.image_univ, show y = 1 by grind, Set.mem_range]
-    exact ⟨_, ofDigits_const_last_eq_one hb⟩
+    exact ⟨_, ofDigits_const_last_eq_one' hb⟩
 
 theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
   match b with
