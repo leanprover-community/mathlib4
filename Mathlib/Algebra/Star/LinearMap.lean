@@ -162,6 +162,7 @@ theorem isSelfAdjoint_toLin'_iff_forall_isSelfAdjoint_apply (A : Matrix n m R) :
 
 end Matrix
 end matrix
+
 namespace Module.End
 
 open scoped IntrinsicStar
