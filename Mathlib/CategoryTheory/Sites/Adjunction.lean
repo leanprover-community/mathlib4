@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.PreservesSheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Whiskering
+public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
 
@@ -13,6 +15,8 @@ In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
 categories of sheaves. We also show that `G` preserves sheafification.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

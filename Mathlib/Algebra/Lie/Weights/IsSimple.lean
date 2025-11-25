@@ -3,8 +3,10 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Simple Lie algebras
@@ -18,6 +20,8 @@ We show the irreducibility of root systems of simple Lie algebras.
 ## Main results
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
+
+@[expose] public section
 
 namespace LieAlgebra.IsKilling
 

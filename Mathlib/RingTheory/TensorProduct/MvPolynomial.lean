@@ -3,12 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 
@@ -37,6 +38,8 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 * `MvPolynomial.rTensorAlgHom` and `MvPolynomial.scalarRTensorAlgEquiv`
   are morphisms for the algebra structure by `MvPolynomial σ R`.
 -/
+
+@[expose] public section
 
 
 universe u v

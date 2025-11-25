@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -28,6 +30,9 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
 
+@[expose] public section
+
+open Function
 
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
@@ -65,17 +70,18 @@ namespace RingCon
 
 section Basic
 
-variable [Add R] [Mul R] (c : RingCon R)
+variable [Add R] [Mul R] {c d : RingCon R}
+
+lemma toCon_injective : Injective fun c : RingCon R ↦ c.toCon := fun c d ↦ by cases c; congr!
+
+@[simp] lemma toCon_inj : c.toCon = d.toCon ↔ c = d := toCon_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R (R → Prop) where
   coe c := c.r
-  coe_injective' x y h := by
-    rcases x with ⟨⟨x, _⟩, _⟩
-    rcases y with ⟨⟨y, _⟩, _⟩
-    congr!
-    rw [Setoid.ext_iff, (show ⇑x = ⇑y from h)]
-    simp
+  coe_injective' := DFunLike.coe_injective.comp toCon_injective
+
+variable (c)
 
 @[simp]
 theorem coe_mk (s : Con R) (h) : ⇑(mk s h) = s := rfl

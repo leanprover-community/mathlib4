@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernandez. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
@@ -113,6 +114,8 @@ series, all of which coefficients are `1`, is the sum of all indeterminates.)
 TODO: Define a coercion to MvPolynomial.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -294,9 +297,7 @@ theorem le_weightedOrder_mul :
 theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simpa [add_smul] using
-      le_trans (add_le_add_right hn (f.weightedOrder w)) (le_weightedOrder_mul w)
+  | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
 
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :

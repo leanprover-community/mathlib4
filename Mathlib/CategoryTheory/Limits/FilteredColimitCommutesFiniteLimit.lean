@@ -3,14 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.ColimitLimit
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Products.Bifunctor
-import Mathlib.Data.Countable.Small
+module
+
+public import Mathlib.CategoryTheory.Limits.ColimitLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Products.Bifunctor
+public import Mathlib.Data.Countable.Small
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -25,6 +27,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
+
+@[expose] public section
 
 -- Various pieces of algebra that have previously been spuriously imported here:
 assert_not_exists map_ne_zero MonoidWithZero
@@ -48,7 +52,7 @@ is just a variant of `limit_ext'`. -/
 
 variable (F : J × K ⥤ Type v)
 
-open CategoryTheory.Prod
+open Prod
 
 variable [IsFiltered K]
 
@@ -187,7 +191,8 @@ theorem colimitLimitToLimitColimit_surjective :
         colimit.ι ((curry.obj F).obj j') k' (F.map (𝟙 j' ×ₘ g j') (y j')) =
           colimit.ι ((curry.obj F).obj j') k' (F.map (f ×ₘ g j) (y j)) := by
       intro j j' f
-      simp only [Colimit.w_apply, ← Bifunctor.diagonal', ← curry_obj_obj_map, ← curry_obj_map_app]
+      nth_rw 2 [← Bifunctor.diagonal']
+      simp only [Colimit.w_apply, ← curry_obj_obj_map]
       rw [types_comp_apply, Colimit.w_apply, e, ← Limit.w_apply.{u₁, v, u₁} f, ← e]
       simp [Types.Colimit.ι_map_apply]
     -- Because `K` is filtered, we can restate this as saying that

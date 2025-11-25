@@ -3,9 +3,10 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds
@@ -55,6 +56,8 @@ practice.
 local diffeomorphism, manifold
 
 -/
+
+@[expose] public section
 
 open Manifold Set TopologicalSpace
 
