@@ -32,7 +32,7 @@ namespace CochainComplex.HomComplex.Cochain
 variable {C : Type u} [Category.{v} C] [Preadditive C]
   {K L : CochainComplex C ℤ}
 
-/-- Given `p₀ : ℤ`, this is condition on two cochains `α` and `β` in `Cochain K L N`
+/-- Given `p₀ : ℤ`, this is the condition on two cochains `α` and `β` in `Cochain K L N`
 saying that `α.v p q _ = β.v p q _` when `p ≤ p₀`. -/
 def EqUpTo {n : ℤ} (α β : Cochain K L n) (p₀ : ℤ) : Prop :=
   ∀ (p q : ℤ) (hpq : p + n = q), p ≤ p₀ → α.v p q hpq = β.v p q hpq
