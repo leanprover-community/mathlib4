@@ -175,7 +175,7 @@ theorem adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K)
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L := by
   have h : (adjoin E (L.toSubalgebra : Set K)).toSubalgebra =
       Algebra.adjoin E (L.toSubalgebra : Set K) :=
-    L.adjoin_toSubalgebra_of_isAlgebraic E halg
+    L.adjoin_intermediateField_toSubalgebra_of_isAlgebraic E halg
   have := L.toSubalgebra.adjoin_rank_le E
   rwa [(Subalgebra.equivOfEq _ _ h).symm.toLinearEquiv.rank_eq] at this
 
