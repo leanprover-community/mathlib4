@@ -220,7 +220,7 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
   set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
   change ‖T‖ = ‖v‖
   refine le_antisymm ?_ ?_
-  · refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x ↦ ?_
+  · refine T.opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
     refine (sq_le_sq₀ (by positivity) (by positivity)).mp ?_
     simp only [(T x).norm_sq_eq, ofLp_toEuclideanCLM, mulVec_diagonal, norm_mul, T]
     calc _ ≤ _ := Finset.sum_le_sum fun i _ ↦ by grw [mul_pow, norm_le_pi_norm v i]
