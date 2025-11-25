@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid
+-/
 module
 
 public meta import Mathlib.Util.AddRelatedDecl
 public meta import Mathlib.Tactic.Push
+
+/-!
+# The `to_fun` attribute
+
+Adding `@[to_fun]` to a lemma named `F` creates a new lemma named `fun_F`, which is obtained by
+running `pull fun _ ↦ _` on the type of `F`.
+-/
 
 public meta section
 
