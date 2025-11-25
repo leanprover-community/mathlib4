@@ -524,7 +524,7 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α]
   zero_le := WithZero.zero_le
   mul_lt_mul_of_pos_left
   | (a : α), _, 0, (c : α), _ => by simp [← WithZero.coe_mul]
-  | (a : α), _, (b : α), (c : α), hbc => by norm_cast at *; exact mul_lt_mul_left' hbc _
+  | (a : α), _, (b : α), (c : α), hbc => by norm_cast at *; exact mul_lt_mul_right hbc _
 
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
