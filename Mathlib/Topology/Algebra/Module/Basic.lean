@@ -99,13 +99,19 @@ end
 
 section LatticeOps
 
-variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace R]
-  {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
+variable {R S M₁ M₂ M₂' : Type*} {φ : R → S} [SMul R M₁] [SMul R M₂] [SMul S M₂']
+  [u : TopologicalSpace R] [u' : TopologicalSpace S]
+  {t : TopologicalSpace M₂} {t' : TopologicalSpace M₂'}
+  [ContinuousSMul R M₂] [ContinuousSMul S M₂']
   {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
+  {F' : Type*} [FunLike F' M₁ M₂'] [MulActionSemiHomClass F' φ M₁ M₂'] (f' : F')
+
+theorem continuousSMul_inducedₛₗ (hφ : Continuous φ) : @ContinuousSMul R M₁ _ u (t'.induced f') :=
+  let _ : TopologicalSpace M₁ := t'.induced f'
+  IsInducing.continuousSMul ⟨rfl⟩ hφ (map_smulₛₗ f' _ _)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
-  let _ : TopologicalSpace M₁ := t.induced f
-  IsInducing.continuousSMul ⟨rfl⟩ continuous_id (map_smul f _ _)
+  continuousSMul_inducedₛₗ f continuous_id
 
 end LatticeOps
 
