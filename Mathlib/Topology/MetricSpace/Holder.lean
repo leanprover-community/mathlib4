@@ -292,11 +292,45 @@ lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
     HolderWith C' r f :=
   fun x₁ x₂ ↦ (hf x₁ x₂).trans (by gcongr)
 
+/-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder, then it is
+`(C₁ ^ t₁ * C_₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0}
+    (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (ht : t₁ + t₂ = 1) :
+    HolderWith (C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) (r * t₁ + s * t₂) f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).interpolate (holderOnWith_univ.2 hf₂) ht)
+
+/-- If a function is Hölder over a bounded space, then it is bounded. -/
+lemma holderWith_zero_of_bounded {C D : ℝ≥0}
+    (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) :
+    HolderWith (C * D ^ (r : ℝ)) 0 f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).holderOnWith_zero_of_bounded (fun x _ y _ ↦ h x y))
+
 /-- If a function is `r`-Hölder over a bounded space, then it is also `t`-Hölder when `t ≤ r`. -/
-lemma of_le {C D t : ℝ≥0}
-    (hs : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (htr : t ≤ r) :
+lemma of_le {C D t : ℝ≥0} (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (htr : t ≤ r) :
     HolderWith (C * D ^ (r - t : ℝ)) t f :=
-  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ hs x y) htr)
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ h x y) htr)
+
+/-- If a function is `(C, r)`-Hölder and `(C, s)`-Hölder,
+then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate_const {C s t₁ t₂ : ℝ≥0}
+    (hf₁ : HolderWith C r f) (hf₂ : HolderWith C s f) (ht : t₁ + t₂ = 1) :
+    HolderWith C (r * t₁ + s * t₂) f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).interpolate_const (holderOnWith_univ.2 hf₂) ht)
+
+variable (f) in
+/-- For fixed `f : X → Y` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
+`f` is `(C, r)`-Hölder is convex. -/
+lemma _root_.convex_setOf_holderWith (C : ℝ≥0) :
+    Convex ℝ≥0 {r | HolderWith C r f} := by
+  simp_rw [← holderOnWith_univ]
+  exact convex_setOf_holderOnWith f C _
+
+lemma of_le_of_le {C₁ C₂ s t : ℝ≥0}
+    (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (hrt : r ≤ t)
+    (hts : t ≤ s) : HolderWith (max C₁ C₂) t f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).of_le_of_le (holderOnWith_univ.2 hf₂) hrt hts)
 
 end HolderWith
 
