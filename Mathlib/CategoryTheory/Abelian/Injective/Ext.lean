@@ -113,6 +113,16 @@ noncomputable def extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n 
     (.mk (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
       m (by cutsat) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])))
 
+lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
+    ∃ (f : X ⟶ R.cocomplex.X n) (hf : f ≫ R.cocomplex.d n m = 0),
+      R.extMk f m hm hf = α := by
+  obtain ⟨x, rfl⟩ := R.extEquivCohomologyClass.symm.surjective α
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  obtain ⟨f, hf, rfl⟩ := Cocycle.fromSingleMk_surjective x n (by simp) m (by cutsat)
+  exact ⟨f ≫ (R.cochainComplexXIso n n rfl).hom,
+    by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
+      ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
+
 end InjectiveResolution
 
 end CategoryTheory

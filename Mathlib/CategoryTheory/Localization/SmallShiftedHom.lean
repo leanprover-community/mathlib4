@@ -315,9 +315,12 @@ lemma mk₀_id_comp {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
   (equiv W W.Q).injective (by simp [equiv_comp])
 
 variable {W} in
-@[simps! -isSimp]
+/-- The postcomposition on the types `SmallShiftedHom W` with a morphism
+which satisfies `W` is a bijection. -/
+@[simps!]
 noncomputable def postcompEquiv {X Y Z : C}
-    [W.RespectsIso] [W.IsCompatibleWithShift M] [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [W.RespectsIso] [W.IsCompatibleWithShift M]
+    [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Z]
     [HasSmallLocalizedShiftedHom.{w} W M X Z]
     [HasSmallLocalizedShiftedHom.{w} W M Z Y]
@@ -334,6 +337,32 @@ noncomputable def postcompEquiv {X Y Z : C}
   right_inv β := by
     dsimp
     rw [comp_assoc _ _ _ _ _ (zero_add 0) (by simp)]
+    simp
+
+variable {W} in
+/-- The precomposition on the types `SmallShiftedHom W` with a morphism
+which satisfies `W` is a bijection. -/
+@[simps!]
+noncomputable def precompEquiv {X Y Z : C}
+    [W.RespectsIso] [W.IsCompatibleWithShift M]
+    [HasSmallLocalizedShiftedHom.{w} W M X X]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Y]
+    [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y X]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Z]
+    [HasSmallLocalizedShiftedHom.{w} W M X Z]
+    [HasSmallLocalizedShiftedHom.{w} W M Z Z]
+    (f : X ⟶ Y) (hf : W f) {a : M} :
+    SmallShiftedHom.{w} W Y Z a ≃ SmallShiftedHom.{w} W X Z a where
+  toFun α := (mk₀ _ _ rfl f).comp α (add_zero _)
+  invFun β := (mk₀Inv _ rfl _ hf).comp β (add_zero _)
+  left_inv α := by
+    dsimp
+    rw [← comp_assoc _ _ _ _ (add_zero 0) _ (by simp)]
+    simp
+  right_inv β  := by
+    dsimp
+    rw [← comp_assoc _ _ _ _ (add_zero 0) _ (by simp)]
     simp
 
 section ChangeOfUniverse
