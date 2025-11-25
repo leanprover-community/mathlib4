@@ -286,13 +286,13 @@ end
 
 section
 
+variable {R}
+
 section restrictScalars
 
 universe u'
 
-variable {R} {R' : Type u'} [CommRing R']
-
-variable (f : R →+* R')
+variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
 instance : (ModuleCat.restrictScalars.{v} f).Additive where
   map_add := by simp
@@ -331,7 +331,12 @@ def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjecti
 
 end restrictScalars
 
-variable {R} [Small.{v} R] [UnivLE.{v, w}]
+lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type v) {x : R}
+    (regR : IsSMulRegular R x) :
+    HasProjectiveDimensionLE (ModuleCat.of R (ι →₀ Shrink.{v} (R ⧸ Ideal.span {x}))) 1 := by
+  sorry
+
+variable [Small.{v} R] [UnivLE.{v, w}]
 
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
@@ -374,7 +379,8 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).subtype_injective
       epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
     let _ : Projective S.X₂ := ModuleCat.projective_of_free e
-    have projdim : HasProjectiveDimensionLE (Fr.obj S.X₂) 1 := sorry
+    have projdim : HasProjectiveDimensionLE (Fr.obj S.X₂) 1 :=
+      hasProjectiveDimensionLE_finsupp_quotient_regular N regR
     let _ : HasProjectiveDimensionLT (S.map Fr).X₂ 2 := projdim
     let MxM := (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M))
     let f : Ext S.X₂ MxM n →+ Ext S.X₁ MxM n := (Ext.mk₀ S.f).precomp MxM (zero_add n)
