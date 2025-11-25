@@ -312,6 +312,23 @@ instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := b
     (ModuleCat.restrictScalars_map_exact f)
   exact this.2
 
+/-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
+def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjective f) :
+    (ModuleCat.restrictScalars.{v} f).FullyFaithful where
+  preimage {X Y} g := ofHom
+    { __ := g.hom
+      map_smul' r' x := by
+        let _ := Module.compHom X f
+        rcases h r' with ⟨r, hr⟩
+        rw [← hr]
+        exact map_smul g.hom r x }
+  map_preimage g := by
+    ext
+    rfl
+  preimage_map g := by
+    ext
+    rfl
+
 end restrictScalars
 
 variable {R} [Small.{v} R] [UnivLE.{v, w}]
@@ -344,14 +361,12 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       simp [Fr]
     · refine (EquivLike.comp_bijective _ Ext.homEquiv₀).mp <|
         (EquivLike.bijective_comp Ext.homEquiv₀.symm _).mp ?_
-      erw [Functor.mapExtAddHom_coe]
       change Function.Bijective <| fun t ↦ Ext.homEquiv₀ <|
         (Fr.mapExt N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) 0) (Ext.homEquiv₀.symm t)
       simp only [Ext.homEquiv₀_symm_apply, Ext.mapExt_mk₀_eq_mk₀_map]
-      change Function.Bijective (Ext.homEquiv₀ ∘ Ext.homEquiv₀.symm ∘ Fr.map)
-      simp only [EquivLike.comp_bijective, Fr]
+      simp only [Ext.homEquiv₀, Equiv.ofBijective_symm_apply_apply, Fr]
       apply Functor.FullyFaithful.map_bijective
-      sorry
+      exact ModuleCat.restrictScalars_fullyFaithful_of_surjective _ Ideal.Quotient.mk_surjective
   · rename_i n ih
     let e : Basis N (R ⧸ Ideal.span {x}) (N →₀ Shrink.{v} (R ⧸ Ideal.span {x})) :=
       ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x}))⟩
@@ -403,16 +418,22 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (ft S.X₂ n) (ft S.X₁ n) (ft S.X₃ (n + 1)) ?_ ?_
       exac1 exac2 (ih S.X₂).2 (ih S.X₁) surj1 surj2
-    --Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map, Ext.mapExt_extClass_eq_extClass_map
     · ext z
-      simp only [ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
-        ModuleCat.smulShortComplex_X₁, AddMonoidHom.coe_comp, Function.comp_apply,
-        AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply, f', ft, f]
-
-      sorry
-    · simp only [ShortComplex.map_X₃, ShortComplex.map_X₁, ModuleCat.smulShortComplex_X₁, g', ft, g]
-
-      sorry
+      change (Ext.mk₀ (Fr.map S.f)).comp (((Fr.mapExt S.X₂
+        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) z).comp
+        regM.smulShortComplex_shortExact.extClass rfl) (zero_add _) =
+        ((Fr.mapExt S.X₁ (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)
+        ((Ext.mk₀ S.f).comp z (zero_add n))).comp regM.smulShortComplex_shortExact.extClass rfl
+      rw [← Ext.comp_assoc _ _ _ (zero_add n) rfl (by simp),
+        Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+    · ext z
+      change (S_exact.map_of_exact Fr).extClass.comp (((Fr.mapExt S.X₁
+        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) z).comp
+        regM.smulShortComplex_shortExact.extClass rfl) (add_comm 1 (n + 1)) =
+        ((Fr.mapExt S.X₃ (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) (n + 1))
+        (S_exact.extClass.comp z (add_comm 1 n))).comp regM.smulShortComplex_shortExact.extClass rfl
+      rw [← Ext.comp_assoc _ _ _ (add_comm 1 n) rfl (by simp [add_comm]),
+        Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
 
 end
 
