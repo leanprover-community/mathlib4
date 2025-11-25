@@ -256,7 +256,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
   have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
     L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
-  refine ((Metric.finite_isBounded_inter_isClosed
+  refine ((Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
     (Metric.isBounded_closedBall (x := (0 : E)) (r := 2 * ‖x‖)) H).preimage_embedding
     (.subtype _)).subset ?_
   intro t ht
