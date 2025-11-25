@@ -193,7 +193,7 @@ alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
 @[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
 @[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
 
-lemma preconnected_of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.Preconnected :=
+lemma Preconnected.of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.Preconnected :=
   fun _ _ ↦ G.reachable_of_subsingleton
 
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
