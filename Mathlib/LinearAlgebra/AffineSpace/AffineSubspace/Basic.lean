@@ -639,7 +639,7 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
     (h_agree : s.EqOn f g) : f = g := by
-  simpa [h_span]  using eqOn_affineSpan h_agree
+  simpa [h_span] using eqOn_affineSpan h_agree
 
 end AffineMap
 
@@ -649,7 +649,7 @@ namespace AffineEquiv
 theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} (h_span : affineSpan k s = ⊤)
     (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
-  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
+  AffineEquiv.toAffineMap_inj.mp <| AffineMap.ext_on h_span h_agree
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
