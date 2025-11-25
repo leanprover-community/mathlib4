@@ -220,7 +220,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     simp_rw [subset_univ, setOf_true] at this
     exact this.isCompact_of_isClosed isClosed_univ⟩
 
-theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
+theorem Closeds.isometry_singleton : Isometry ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEdist_singleton
 
 theorem Closeds.lipschitz_sup :

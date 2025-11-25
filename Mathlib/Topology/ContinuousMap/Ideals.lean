@@ -347,7 +347,7 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   exact idealOfSet_ofIdeal_isClosed inferInstance
 
 theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : Set X)).IsMaximal :=
-  (idealOfSet_isMaximal_iff 𝕜 (Closeds.singleton x).compl).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
+  (idealOfSet_isMaximal_iff 𝕜 _).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
 
 variable {𝕜}
 
