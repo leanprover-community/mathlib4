@@ -1,10 +1,18 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad
+-/
 module
 
-public import Batteries.Data.List.Pairwise
+public import Mathlib.Init
+public import Batteries.Tactic.Alias
 
 /-!
 ### The predicate `List.Sorted` (now deprecated).
 -/
+
+@[expose] public section
 
 namespace List
 
