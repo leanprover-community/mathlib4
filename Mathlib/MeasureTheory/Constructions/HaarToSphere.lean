@@ -227,8 +227,6 @@ which is positive for positive `n` and `ε`.
 
 This is a version stated in terms `MeasureTheory.Measure.real`. -/
 theorem toSphereBallBound_mul_measureReal_unitBall_le_toSphere_ball
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-    [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     {ε : ℝ} (hε : 0 < ε) (x : sphere (0 : E) 1) :
     toSphereBallBound (Module.finrank ℝ E) ε * μ.real (ball 0 1) ≤
       μ.toSphere.real (ball x ε) := by
