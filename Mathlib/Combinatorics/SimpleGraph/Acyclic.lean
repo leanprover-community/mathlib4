@@ -333,19 +333,18 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
 
-/-- The graph resulting from removing a vertex of degree one from a (pre)connected graph is
-connected. -/
-lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [DecidableEq V]
-    (hpreconn : G.Preconnected) {v : V} [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) :
-    (G.induce {v}ᶜ).Connected := by
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
+    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
   obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
   refine (connected_iff _).mpr ⟨?_, ?_⟩
   /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ
   via the unique vertex u adjacent to vertex v. -/
   · intro w x
-    obtain ⟨pwu, hpwu⟩ := hpreconn.exists_isPath w u
-    obtain ⟨pux, hpux⟩ := hpreconn.exists_isPath u x
+    obtain ⟨pwu, hpwu⟩ := hconn.exists_isPath w u
+    obtain ⟨pux, hpux⟩ := hconn.exists_isPath u x
     rw [Reachable, ← exists_true_iff_nonempty]
+    classical
     use ((pwu.append pux).toPath.val.induce {v}ᶜ ?_).copy (SetCoe.ext rfl) (SetCoe.ext rfl)
     /- Each path between vertex u and another vertex in G.induce {v}ᶜ
     is contained in G.induce {v}ᶜ. -/
@@ -366,25 +365,22 @@ lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [Decid
   · use u
     aesop
 
-/-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
+/-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
 removed. -/
-lemma Preconnected.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
-    [DecidableEq V] [Fintype V] [Nontrivial V] (hpreconn : G.Preconnected) :
-    ∃ v : V, (G.induce {v}ᶜ).Connected := by
-  obtain ⟨T, _, T_isTree⟩ := Connected.exists_isTree_le ⟨hpreconn⟩
+lemma Connected.exists_vertex_connected_induce_compl_singleton_of_finite_nontrivial
+    [Finite V] [Nontrivial V] (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Connected := by
+  obtain ⟨T, _, T_isTree⟩ := hconn.exists_isTree_le
   have ⟨hT, _⟩ := T_isTree
-  have := Classical.decRel T.Adj
+  have := Fintype.ofFinite V
+  classical
   obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
-  use v
-  exact (hT.preconnected.connected_induce_complement_singleton_of_degree_eq_one hv).mono (by tauto)
+  exact ⟨v, (hT.induce_compl_singleton_of_degree_eq_one hv).mono (by tauto)⟩
 
 /-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
-lemma Connected.exists_vertex_preconnected_induce_complement_singleton_of_fintype
-    [DecidableEq V] [Fintype V] (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
+lemma Connected.exists_vertex_preconnected_induce_compl_singleton_of_finite [Finite V]
+    (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
   by_cases h : Nontrivial V
-  · obtain ⟨v, hv⟩ :=
-      Preconnected.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
-      hconn.preconnected
+  · obtain ⟨v, hv⟩ := hconn.exists_vertex_connected_induce_compl_singleton_of_finite_nontrivial
     exact ⟨v, hv.preconnected⟩
   · use hconn.nonempty.some
     have := not_nontrivial_iff_subsingleton.mp h
