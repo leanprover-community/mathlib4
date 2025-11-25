@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
+public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
@@ -242,6 +243,26 @@ theorem nhds_ne_subtype_neBot_iff {S : Set X} {x : S} :
   rw [neBot_iff, neBot_iff, not_iff_not, nhds_ne_subtype_eq_bot_iff]
 
 end Top
+
+section IsDiscrete
+
+variable {X : Type*} [TopologicalSpace X] {s : Set X}
+
+/-- A subset `s` is **discrete** if the corresponding subtype (with the subspace topology) is a
+discrete space. -/
+structure IsDiscrete (s : Set X) : Prop where
+  to_subtype : DiscreteTopology ↥s
+
+lemma isDiscrete_iff_discreteTopology : IsDiscrete s ↔ DiscreteTopology s :=
+  ⟨fun s ↦ s.to_subtype, fun s ↦ ⟨s⟩⟩
+
+lemma SetLike.isDiscrete_iff_discreteTopology {S : Type*} [SetLike S X] {s : S} :
+    IsDiscrete (s : Set X) ↔ DiscreteTopology s :=
+  ⟨fun s ↦ s.to_subtype, fun s ↦ ⟨s⟩⟩
+
+lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨inferInstance⟩
+
+end IsDiscrete
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
 finite complements. -/
@@ -565,10 +586,19 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
   isClosed_range := by rwa [range_inclusion]
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X` on `s` is discrete, then also the topology induces on `t` is discrete. -/
+by `X` on `s` is discrete, then also the topology induces on `t` is discrete.
+
+(Compare `IsDiscrete.mono` which is the same thing stated without using subtypes.) -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (IsEmbedding.inclusion ts).discreteTopology
+
+/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and `s` is discrete,
+then `t` is discrete.
+
+(Compare `DiscreteTopology.of_subset` which is the same thing stated in terms of subtypes.) -/
+lemma IsDiscrete.mono {t : Set X} (hs : IsDiscrete s) (hst : t ⊆ s) : IsDiscrete t :=
+  ⟨.of_subset hs.to_subtype hst⟩
 
 /-- Let `s` be a discrete subset of a topological space. Then the preimage of `s` by
 a continuous injective map is also discrete. -/
