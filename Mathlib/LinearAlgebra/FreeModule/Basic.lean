@@ -172,8 +172,7 @@ variable {M} in
 theorem exists_dual_ne_zero {x : M} (hx : x ≠ 0) :
     ∃ f : Dual R M, f x ≠ 0 :=
   let b := chooseBasis R M
-  have hb : b.repr x ≠ 0 := by simpa
-  have ⟨i, hi⟩ := not_forall.mp fun h ↦ hb <| Finsupp.ext h
+  have ⟨i, hi⟩ := not_forall.mp fun h ↦ (b.repr.map_ne_zero_iff.mpr hx) <| Finsupp.ext h
   ⟨b.coord i, hi⟩
 
 end Semiring
