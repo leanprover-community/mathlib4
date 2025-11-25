@@ -36,7 +36,7 @@ namespace LineDeriv
 
 variable {V E : Type*} [LineDeriv V E E]
 
-/-- The iterated line derivative. -/
+/-- `∂^{m} f` is the iterated line derivative of `f`. -/
 def iteratedLineDerivOp {n : ℕ} : (Fin n → V) → E → E :=
   Nat.recOn n (fun _ ↦ id) (fun _ rec y ↦ LineDeriv.lineDerivOp (y 0) ∘ rec (tail y))
 
@@ -102,6 +102,7 @@ variable [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
   [LineDeriv V E F] [LineDerivAdd V E F] [LineDerivSMul R V E F] [ContinuousLineDeriv V E F]
 
 variable (R E) in
+/-- The line derivative as a continuous linear map. -/
 def lineDerivOpCLM (m : V) : E →L[R] F where
   toFun := ∂_{m}
   map_add' := lineDerivOp_add m
@@ -150,6 +151,7 @@ variable [Ring R] [AddCommGroup E] [Module R E]
   [LineDerivAdd V E E] [LineDerivSMul R V E E] [ContinuousLineDeriv V E E]
 
 variable (R E) in
+/-- The iterated line derivative as a continuous linear map. -/
 def iteratedLineDerivOpCLM {n : ℕ} (m : Fin n → V) : E →L[R] E where
   toFun := ∂^{m}
   map_add' := iteratedLineDerivOp_add m
