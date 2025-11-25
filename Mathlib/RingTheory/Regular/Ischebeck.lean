@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
@@ -26,46 +27,7 @@ universe u v
 variable {R : Type u} [CommRing R]
 
 local instance [Small.{v} R] : CategoryTheory.HasExt.{v} (ModuleCat.{v} R) :=
-  --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{v} (ModuleCat.{v} R)
-
-instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
-    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{v} N M i) := by
-  induction i generalizing N
-  · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
-  · rename_i n ih _
-    rcases Module.Finite.exists_fin' R N with ⟨m, f', hf'⟩
-    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-    have surjf : Function.Surjective f := by simpa [f] using hf'
-    let S : ShortComplex (ModuleCat.{v} R) := {
-      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-      g := ModuleCat.ofHom.{v} f
-      zero := by
-        ext x
-        simp }
-    have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
-      intro x
-      simp [S]
-    have S_exact : S.ShortExact := {
-      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
-      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-    let _ : Module.Finite R S.X₂ := by
-      simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-    let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
-    have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
-    have : Subsingleton (Ext S.X₂ M (n + 1)) :=
-      subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
-    have epi := (Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)).epi_f
-      (IsZero.eq_zero_of_tgt (AddCommGrpCat.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton _)
-    have surj : Function.Surjective (S_exact.extClass.precomp M (add_comm 1 n)) :=
-      (AddCommGrpCat.epi_iff_surjective _).mp epi
-    let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) := {
-      __ := S_exact.extClass.precomp M (add_comm 1 n)
-      map_smul' r x := by simp }
-    exact Module.Finite.of_surjective f surj
 
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
