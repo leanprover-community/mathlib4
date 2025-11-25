@@ -237,7 +237,7 @@ jobs:
 
           # Extract all inputRevs from the manifest
           invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?)$' || true)
+            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?)$' || true)
 
           if [ -n "$invalid_revs" ]; then
             echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
@@ -246,7 +246,7 @@ jobs:
             echo "All inputRevs must be one of:"
             echo "  - 'main'"
             echo "  - 'master'"
-            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3 or v1.2.3-pre)"
+            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
             exit 1
           else
             echo "✅ All inputRevs in lake-manifest.json are valid"
