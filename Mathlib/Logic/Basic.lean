@@ -727,6 +727,10 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
+-- This can be removed after https://github.com/leanprover/lean4/pull/11316
+-- arrives in a release candidate.
+grind_pattern Exists.choose_spec => P.choose
+
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]

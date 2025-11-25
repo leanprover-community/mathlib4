@@ -440,6 +440,17 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
   continuous_subtype_val.continuousAt
 
+/-- The induced homeomorphism between two equal subtypes of a given topological space:
+the underlying equivalence is `Equiv.subtypeEquivProp`. -/
+def Homeomorph.ofEqSubtypes {p q : X → Prop} (hpq : p = q) : Subtype p ≃ₜ Subtype q where
+  toEquiv := Equiv.subtypeEquivProp hpq
+  continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+  continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+
+@[simp]
+lemma Homeomorph.ofEqSubtypes_toEquiv {p q : X → Prop} (hpq : p = q) :
+    (Homeomorph.ofEqSubtypes hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
+
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
   rfl
@@ -554,7 +565,7 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
   isClosed_range := by rwa [range_inclusion]
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
+by `X` on `s` is discrete, then also the topology induces on `t` is discrete. -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (IsEmbedding.inclusion ts).discreteTopology
