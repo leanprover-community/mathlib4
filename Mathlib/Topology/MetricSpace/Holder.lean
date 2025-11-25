@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.MetricSpace.Lipschitz
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.Convex.NNReal
 
 /-!
 # Hölder continuous functions
@@ -206,6 +207,38 @@ lemma of_le {C D t : ℝ≥0} {s : Set X}
     simp [mul_sub, θ₂, mul_div_cancel₀ _ hr.ne']
   rw [hθC, ← hθt]
   exact hf.interpolate (hf.holderOnWith_zero_of_bounded hs) hθ
+
+lemma mono_const {C₁ C₂ : ℝ≥0} {A : Set X} (hf : HolderOnWith C₁ r f A)
+    (hC : C₁ ≤ C₂) : HolderOnWith C₂ r f A := by
+  intro x hx y hy
+  grw [← hC]
+  exact hf x hx y hy
+
+/-- If a function is `(C, r)`-Hölder and `(C, s)`-Hölder,
+then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate_const {C s t₁ t₂ : ℝ≥0} {A : Set X}
+    (hf₁ : HolderOnWith C r f A) (hf₂ : HolderOnWith C s f A) (ht : t₁ + t₂ = 1) :
+    HolderOnWith C (r * t₁ + s * t₂) f A := by
+  convert hf₁.interpolate hf₂ ht
+  simp [← NNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
+
+variable (f) in
+/-- For fixed `f : X → Y`, `A : Set X` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
+`f` is `(C, r)`-Hölder on `A` is convex. -/
+lemma _root_.convex_setOf_holderOnWith (C : ℝ≥0) (A : Set X) :
+    Convex ℝ≥0 {r | HolderOnWith C r f A} := by
+  intro r hr s hs _ _ _ _ ht
+  rw [smul_eq_mul, smul_eq_mul, ← mul_comm r, ← mul_comm s]
+  exact hr.interpolate_const hs ht
+
+lemma of_le_of_le {C₁ C₂ s t : ℝ≥0} {A : Set X}
+    (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (hrt : r ≤ t)
+    (hts : t ≤ s) : HolderOnWith (max C₁ C₂) t f A := by
+  replace hf₁ := hf₁.mono_const (le_max_left C₁ C₂)
+  replace hf₂ := hf₂.mono_const (le_max_right C₁ C₂)
+  exact convex_setOf_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
+    (NNReal.Icc_subset_segment ⟨hrt, hts⟩)
 
 end HolderOnWith
 

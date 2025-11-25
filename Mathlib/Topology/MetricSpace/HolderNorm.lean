@@ -177,29 +177,20 @@ lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {t : Set X}
   have : BoundedSpace t := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ ht x.2 y.2⟩
   exact MemHolder.of_le hf hs
 
-/-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
-lemma MemHolder.memHolder_of_le_of_le {s t : ℝ≥0} (hf₁ : MemHolder r f) (hf₂ : MemHolder t f)
-    (hrs : r ≤ s) (hst : s ≤ t) : MemHolder s f := by
-  obtain ⟨C₁, hf₁⟩ := hf₁
-  obtain ⟨C₂, hf₂⟩ := hf₂
-  refine ⟨max C₁ C₂, fun x y ↦ ?_⟩
-  obtain h | h := le_total (edist x y) 1
-  · grw [hf₂ x y]
-    refine mul_le_mul ?_ (rpow_le_rpow_of_exponent_ge h (by norm_cast)) (by simp) (by simp)
-    gcongr
-    exact le_max_right _ _
-  · grw [hf₁ x y]
-    refine mul_le_mul ?_ (rpow_le_rpow_of_exponent_le h (by norm_cast)) (by simp) (by simp)
-    gcongr
-    exact le_max_left _ _
-
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,
 then it is locally `s`-Hölder for `r ≤ s ≤ t`. -/
 lemma HolderOnWith.exists_holderOnWith_of_le_of_le {s t : ℝ≥0} {u : Set X}
     (hf₁ : ∃ C, HolderOnWith C r f u) (hf₂ : ∃ C, HolderOnWith C t f u)
     (hrs : r ≤ s) (hst : s ≤ t) : ∃ C, HolderOnWith C s f u := by
-  simp_rw [← HolderWith.restrict_iff, ← MemHolder.eq_1] at *
-  exact hf₁.memHolder_of_le_of_le hf₂ hrs hst
+  obtain ⟨C₁, hf₁⟩ := hf₁
+  obtain ⟨C₂, hf₂⟩ := hf₂
+  exact ⟨max C₁ C₂, hf₁.of_le_of_le hf₂ hrs hst⟩
+
+/-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
+lemma MemHolder.memHolder_of_le_of_le {s t : ℝ≥0} (hf₁ : MemHolder r f) (hf₂ : MemHolder t f)
+    (hrs : r ≤ s) (hst : s ≤ t) : MemHolder s f := by
+  simp_rw [MemHolder, ← holderOnWith_univ] at *
+  exact HolderOnWith.exists_holderOnWith_of_le_of_le hf₁ hf₂ hrs hst
 
 end Monotonicity
 
