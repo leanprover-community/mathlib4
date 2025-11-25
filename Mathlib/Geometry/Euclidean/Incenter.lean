@@ -270,15 +270,16 @@ lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.Excenter
 /-- The barycentric coordinates of the incenter are less than `2⁻¹` (thus, it lies closer on an
 angle bisector to the opposite side than to the vertex, or equivalently the image of the incenter
 under a homothety with scale factor 2 about a vertex lies outside the simplex). -/
-lemma excenterWeights_empty_lt_inv_two [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+lemma excenterWeights_empty_lt_inv_two [n.AtLeastTwo] (i : Fin (n + 1)) :
     s.excenterWeights ∅ i < 2⁻¹ := by
-  have h := s.inv_height_lt_sum_inv_height i
-  rw [Finset.filter_ne', ← Finset.compl_singleton, ← add_lt_add_iff_left (s.height i)⁻¹] at h
-  have h' : 2 * (s.height i)⁻¹ < ∑ j ∈ {i}, (s.height j)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
-    rwa [two_mul, Finset.sum_singleton]
-  rw [Finset.sum_add_sum_compl, ← lt_inv_mul_iff₀ (by norm_num), ← div_lt_iff₀ (by positivity)]
-    at h'
-  convert h'
+  have h : (s.height i)⁻¹ + (s.height i)⁻¹ < (s.height i)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    have := s.inv_height_lt_sum_inv_height i
+    rwa [filter_ne', ← compl_singleton, ← add_lt_add_iff_left (s.height i)⁻¹] at this
+  replace h : 2 * (s.height i)⁻¹ < ∑ j ∈ {i}, (s.height j)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    rwa [two_mul, sum_singleton]
+  replace h : (s.height i)⁻¹ / ∑ i, (s.height i)⁻¹ < 2⁻¹ := by
+    rwa [sum_add_sum_compl, ← lt_inv_mul_iff₀ zero_lt_two, ← div_lt_iff₀ (by positivity)] at h
+  convert h
   simp [excenterWeights, excenterWeightsUnnorm, div_eq_inv_mul]
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
