@@ -13761,7 +13761,6 @@ public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.ProdAssoc
-public import Mathlib.Tactic.Propose
 public import Mathlib.Tactic.ProxyType
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Push.Attr
