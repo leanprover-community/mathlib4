@@ -135,7 +135,7 @@ variable [LinearOrder α]
 theorem sort_sortedLT (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-theorem sort_sorted_gt (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
+theorem sort_sortedGT (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
