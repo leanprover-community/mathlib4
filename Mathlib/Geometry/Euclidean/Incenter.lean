@@ -267,6 +267,7 @@ terms of `ExcenterExists`. -/
 lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.ExcenterExists {i} :=
   (s.sum_excenterWeightsUnnorm_singleton_pos i).ne'
 
+open Finset in
 /-- The barycentric coordinates of the incenter are less than `2⁻¹` (thus, it lies closer on an
 angle bisector to the opposite side than to the vertex, or equivalently the image of the incenter
 under a homothety with scale factor 2 about a vertex lies outside the simplex). -/
