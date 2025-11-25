@@ -3,13 +3,14 @@ Copyright (c) 2024 Lenny Taelman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lenny Taelman
 -/
+module
 
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-import Mathlib.Topology.Category.LightProfinite.AsLimit
-import Mathlib.Topology.Category.CompHausLike.Limits
-import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Order.RelClasses
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.Topology.Category.LightProfinite.AsLimit
+public import Mathlib.Topology.Category.CompHausLike.Limits
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.Order.RelClasses
 
 /-!
 
@@ -35,6 +36,8 @@ along a presentation of S as sequential limit of finite spaces. The key lemma is
 * <https://www.youtube.com/watch?v=_4G582SIo28&t=3187s>
 
 -/
+
+@[expose] public section
 
 noncomputable section
 universe u
