@@ -5,7 +5,7 @@ Authors: Kyle Miller, Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 
 /-!
 # Decomposing walks
