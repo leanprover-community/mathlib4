@@ -128,7 +128,7 @@ lemma HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
   simp only [HasProd, tendsto_map'_iff, symmetricIcc_eq_map_Icc_nat,
     ← Nat.map_cast_int_atTop, symmetricIco] at *
   apply tendsto_of_div_tendsto_one _ hf
-  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by omega)]
+  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by lia)]
     using hf2
 
 @[to_additive]

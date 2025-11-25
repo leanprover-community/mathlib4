@@ -340,15 +340,15 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
   by_cases h : (m + n) % 2 = 0
   · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
       Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
-    cutsat
+    lia
   · simp only [mod_two_ne_zero] at h
     simp only [h, xor_mod_two_eq_one]
-    cutsat
+    lia
 
 @[simp]
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
-  cutsat
+  lia
 
 @[simp]
 theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by

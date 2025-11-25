@@ -97,7 +97,7 @@ private def S.decode (n : ℕ) : S :=
     S.nat p.2
   else
     have : p.1 ≤ n := Nat.unpair_left_le n
-    have := Nat.unpair_lt (by cutsat : 1 ≤ n)
+    have := Nat.unpair_lt (by lia : 1 ≤ n)
     have := nat_unpair_lt_2 h
     S.cons (S.decode (p.1 - 1)) (S.decode p.2)
 
@@ -127,8 +127,8 @@ private def S_equiv : S ≃ ℕ where
       · exact nat_unpair_lt_2 h
       · obtain _ | n' := n
         · exact False.elim (h rfl)
-        · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
-          omega
+        · have := Nat.unpair_lt (by lia : 1 ≤ n' + 1)
+          lia
 
 private instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
 
