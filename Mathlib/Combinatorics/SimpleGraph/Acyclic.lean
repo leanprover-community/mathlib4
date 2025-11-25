@@ -365,7 +365,7 @@ lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v
 
 /-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
 removed. -/
-lemma Connected.exists_vertex_connected_induce_compl_singleton_of_finite_nontrivial
+lemma Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial
     [Finite V] [Nontrivial V] (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Connected := by
   obtain ⟨T, _, T_isTree⟩ := hconn.exists_isTree_le
   have ⟨hT, _⟩ := T_isTree
