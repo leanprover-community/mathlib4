@@ -375,11 +375,11 @@ lemma Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial
   exact ⟨v, (hT.induce_compl_singleton_of_degree_eq_one hv).mono (by tauto)⟩
 
 /-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
-lemma Connected.exists_vertex_preconnected_induce_compl_singleton_of_finite [Finite V]
+lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
     (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
   cases subsingleton_or_nontrivial V
-  · exact ⟨hconn.nonempty.some, Preconnected.of_subsingleton⟩
-  · obtain ⟨v, hv⟩ := hconn.exists_vertex_connected_induce_compl_singleton_of_finite_nontrivial
+  · exact ⟨hconn.nonempty.some, .of_subsingleton⟩
+  · obtain ⟨v, hv⟩ := hconn.exists_connected_induce_compl_singleton_of_finite_nontrivial
     exact ⟨v, hv.preconnected⟩
 
 end SimpleGraph
