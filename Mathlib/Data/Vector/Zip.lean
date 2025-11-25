@@ -1,16 +1,19 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Data.List.Zip
+module
+
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # The `zipWith` operation on vectors.
 -/
 
-namespace Mathlib
+@[expose] public section
+
+namespace List
 
 namespace Vector
 
@@ -48,4 +51,4 @@ end ZipWith
 
 end Vector
 
-end Mathlib
+end List

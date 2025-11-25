@@ -3,8 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -25,9 +27,11 @@ With `open scoped RightActions`, this provides:
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
 
-assert_not_exists MonoidWithZero
+@[expose] public section
 
-variable {R M N α : Type*}
+assert_not_exists MonoidWithZero Units FaithfulSMul MonoidHom
+
+variable {M N α β : Type*}
 
 /-!
 ### Actions _on_ the opposite type
@@ -97,7 +101,7 @@ In lemma names this is still called `op_vadd`. -/
 scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
 
 section examples
-variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
+variable [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
 
 -- Left and right actions are just notation around the general `•` and `+ᵥ` notations
 example : a •> b = a • b := rfl
@@ -124,7 +128,7 @@ end examples
 end RightActions
 
 section
-variable {α β : Type*} [Monoid α] [MulAction αᵐᵒᵖ β]
+variable [Monoid α] [MulAction αᵐᵒᵖ β]
 
 open scoped RightActions
 
@@ -136,32 +140,9 @@ lemma op_smul_mul (b : β) (a₁ a₂ : α) : b <• (a₁ * a₂) = b <• a₁
 
 end
 
-/-! ### Actions _by_ the opposite type (right actions)
-
-In `Mul.toSMul` in another file, we define the left action `a₁ • a₂ = a₁ * a₂`. For the
-multiplicative opposite, we define `MulOpposite.op a₁ • a₂ = a₂ * a₁`, with the multiplication
-reversed.
--/
+/-! ### Actions _by_ the opposite type (right actions) -/
 
 open MulOpposite
-
-/-- Like `Mul.toSMul`, but multiplies on the right.
-
-See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
-@[to_additive "Like `Add.toVAdd`, but adds on the right.
-
-  See also `AddMonoid.toOppositeAddAction`."]
-instance Mul.toHasOppositeSMul [Mul α] : SMul αᵐᵒᵖ α where smul c x := x * c.unop
-
-@[to_additive] lemma op_smul_eq_mul [Mul α] {a a' : α} : op a • a' = a' * a := rfl
-
-@[to_additive (attr := simp)]
-lemma MulOpposite.smul_eq_mul_unop [Mul α] {a : αᵐᵒᵖ} {a' : α} : a • a' = a' * a.unop := rfl
-
-/-- The right regular action of a group on itself is transitive. -/
-@[to_additive "The right regular action of an additive group on itself is transitive."]
-instance MulAction.OppositeRegular.isPretransitive {G : Type*} [Group G] : IsPretransitive Gᵐᵒᵖ G :=
-  ⟨fun x y => ⟨op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 
 @[to_additive]
 instance Semigroup.opposite_smulCommClass [Semigroup α] : SMulCommClass αᵐᵒᵖ α α where
@@ -176,9 +157,8 @@ instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α �
   op_smul_eq_smul _ _ := mul_comm _ _
 
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
-@[to_additive "Like `AddMonoid.toAddAction`, but adds on the right."]
+@[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
 instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
-  smul := (· • ·)
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 
@@ -198,9 +178,3 @@ instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N 
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
 example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction := by
   with_reducible_and_instances rfl
-
-/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]
-instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
-    FaithfulSMul αᵐᵒᵖ α where
-  eq_of_smul_eq_smul h := unop_injective <| mul_left_cancel (h 1)

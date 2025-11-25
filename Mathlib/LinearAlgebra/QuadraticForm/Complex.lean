@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # Quadratic forms over the complex numbers
@@ -13,6 +15,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 a sum of squares.
 
 -/
+
+@[expose] public section
 
 
 namespace QuadraticForm
@@ -35,30 +39,30 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
   convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℂ w')
     ((Pi.basisFun ℂ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hw' i).unit)
   ext1 v
-  erw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
+  rw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
   refine sum_congr rfl fun j hj => ?_
   have hsum : (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hw' i).unit : ℂ) • (Pi.basisFun ℂ ι) i) j =
       v j • w j ^ (-(1 / 2 : ℂ)) := by
     classical
     rw [Finset.sum_apply, sum_eq_single j, Pi.basisFun_apply, IsUnit.unit_spec,
-      LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply, Function.update_same, smul_eq_mul,
+      Pi.smul_apply, Pi.smul_apply, Pi.single_eq_same, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_one]
     · intro i _ hij
-      rw [Pi.basisFun_apply, LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply,
-        Function.update_noteq hij.symm, Pi.zero_apply, smul_eq_mul, smul_eq_mul,
+      rw [Pi.basisFun_apply, Pi.smul_apply, Pi.smul_apply,
+        Pi.single_eq_of_ne hij.symm, smul_eq_mul, smul_eq_mul,
         mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
-  simp_rw [Basis.unitsSMul_apply]
+  simp_rw [Module.Basis.unitsSMul_apply]
   erw [hsum, smul_eq_mul]
   split_ifs with h
   · simp only [h, zero_smul, zero_mul]
   have hww' : w' j = w j := by simp only [w, dif_neg h, Units.val_mk0]
-  simp (config := {zeta := false}) only [one_mul, Units.val_mk0, smul_eq_mul]
+  simp -zeta only [one_mul, smul_eq_mul]
   rw [hww']
   suffices v j * v j = w j ^ (-(1 / 2 : ℂ)) * w j ^ (-(1 / 2 : ℂ)) * w j * v j * v j by
     rw [this]; ring
   rw [← Complex.cpow_add _ _ (w j).ne_zero, show -(1 / 2 : ℂ) + -(1 / 2) = -1 by simp [← two_mul],
-    Complex.cpow_neg_one, inv_mul_cancel (w j).ne_zero, one_mul]
+    Complex.cpow_neg_one, inv_mul_cancel₀ (w j).ne_zero, one_mul]
 
 /-- The isometry between a weighted sum of squares on the complex numbers and the
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
@@ -70,7 +74,7 @@ noncomputable def isometryEquivSumSquaresUnits (w : ι → Units ℂ) :
 the sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
 theorem equivalent_sum_squares {M : Type*} [AddCommGroup M] [Module ℂ M] [FiniteDimensional ℂ M]
     (Q : QuadraticForm ℂ M) (hQ : (associated (R := ℂ) Q).SeparatingLeft) :
-    Equivalent Q (weightedSumSquares ℂ (1 : Fin (FiniteDimensional.finrank ℂ M) → ℂ)) :=
+    Equivalent Q (weightedSumSquares ℂ (1 : Fin (Module.finrank ℂ M) → ℂ)) :=
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
   ⟨hw₁.trans (isometryEquivSumSquaresUnits w)⟩
 

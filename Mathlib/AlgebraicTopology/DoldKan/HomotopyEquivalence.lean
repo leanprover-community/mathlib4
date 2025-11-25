@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 
@@ -14,6 +16,8 @@ In this file, when the category `A` is abelian, we obtain the homotopy equivalen
 normalized Moore complex and the alternating face map complex of a simplicial object in `A`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -44,9 +48,9 @@ def homotopyQToZero (q : ℕ) : Homotopy (Q q : K[X] ⟶ _) 0 :=
   Homotopy.equivSubZero.toFun (homotopyPToId X q).symm
 
 theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
-    ((homotopyPToId X (q + 1)).hom n (n + 1) : X _[n] ⟶ X _[n + 1]) =
+    ((homotopyPToId X (q + 1)).hom n (n + 1) : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (homotopyPToId X q).hom n (n + 1) := by
-  simp only [homotopyHσToZero, AlternatingFaceMapComplex.obj_X, Nat.add_eq, Homotopy.trans_hom,
+  simp only [homotopyHσToZero, AlternatingFaceMapComplex.obj_X, Homotopy.trans_hom,
     Homotopy.ofEq_hom, Pi.zero_apply, Homotopy.add_hom, Homotopy.compLeft_hom, add_zero,
     Homotopy.nullHomotopy'_hom, ComplexShape.down_Rel, hσ'_eq_zero hqn (c_mk (n + 1) n rfl),
     dite_eq_ite, ite_self, comp_zero, zero_add, homotopyPToId]
@@ -58,19 +62,15 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   hom i j := (homotopyPToId X (j + 1)).hom i j
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
-    rcases n with _|n
+    rcases n with _ | n
     · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
-        PInfty_f, Nat.zero_eq, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
-    · simp only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
-        HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (rfl.le : n + 1 ≤ n + 1)]
-      -- Porting note(lean4/2146): remaining proof was
-      -- `simpa only [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
-      -- using (homotopyPToId X (n + 2)).comm (n + 1)`;
-      -- fails since leanprover/lean4:nightly-2023-05-16; `erw` below clunkily works around this.
-      erw [homotopyPToId_eventually_constant X (lt_add_one (Nat.succ n))]
-      have := (homotopyPToId X (n + 2)).comm (n + 1)
-      rw [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex] at this
-      exact this
+        PInfty_f, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
+    · simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,
+          HomologicalComplex.id_f, PInfty_f, ← P_is_eventually_constant (le_refl <| n + 1),
+          homotopyPToId_eventually_constant X (Nat.lt_add_one (Nat.succ n)),
+          Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex]
+        using (homotopyPToId X (n + 2)).comm (n + 1)
+
 
 /-- The inclusion of the Moore complex in the alternating face map complex
 is a homotopy equivalence -/

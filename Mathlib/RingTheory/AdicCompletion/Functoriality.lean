@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.AdicCompletion.Algebra
-import Mathlib.Algebra.DirectSum.Basic
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.AdicCompletion.Algebra
+public import Mathlib.Algebra.DirectSum.Basic
 
 /-!
 # Functoriality of adic completions
@@ -14,7 +16,7 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `AdicCauchySequence.map I f`: the linear map on `I`-adic cauchy sequences induced by `f`
+- `AdicCauchySequence.map I f`: the linear map on `I`-adic Cauchy sequences induced by `f`
 - `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
@@ -23,6 +25,8 @@ In this file we establish functorial properties of the adic completion.
 - `piEquivOfFintype`: adic completion commutes with finite products
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -81,7 +85,7 @@ theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
 
 namespace AdicCauchySequence
 
-/-- A linear map induces a linear map on adic cauchy sequences. -/
+/-- A linear map induces a linear map on adic Cauchy sequences. -/
 @[simps]
 def map (f : M →ₗ[R] N) : AdicCauchySequence I M →ₗ[R] AdicCauchySequence I N where
   toFun a := ⟨fun n ↦ f (a n), fun {m n} hmn ↦ by
@@ -128,7 +132,7 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
 def map (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
   toFun := adicCompletionAux I f
-  map_add' := by aesop
+  map_add' := by simp
   map_smul' r x := by
     ext n
     simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
@@ -140,12 +144,12 @@ theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
   rfl
 
 /-- Equality of maps out of an adic completion can be checked on Cauchy sequences. -/
-theorem map_ext {f g : AdicCompletion I M → N}
+theorem map_ext {N} {f g : AdicCompletion I M → N}
     (h : ∀ (a : AdicCauchySequence I M),
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x h
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
@@ -154,7 +158,7 @@ theorem map_ext' {f g : AdicCompletion I M →ₗ[AdicCompletion I R] T}
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x h
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
@@ -179,7 +183,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
 
 theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (x : AdicCompletion I M) :
     map I g (map I f x) = map I (g ∘ₗ f) x := by
-  show (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
+  change (map I g ∘ₗ map I f) x = map I (g ∘ₗ f) x
   rw [map_comp]
 
 @[simp]
@@ -216,7 +220,7 @@ section Families
 In this section we consider a family `M : ι → Type*` of `R`-modules. Purely from
 the formal properties of adic completions we obtain two canonical maps
 
-- `AdicCompleiton I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
+- `AdicCompletion I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
 - `(⨁ j, (AdicCompletion I (M j))) →ₗ[R] AdicCompletion I (⨁ j, M j)`
 
 If `ι` is finite, both are isomorphisms and, modulo
@@ -225,7 +229,7 @@ inverse to each other.
 
 -/
 
-variable {ι : Type*} [DecidableEq ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]
   [∀ i, Module R (M i)]
 
 section Pi
@@ -244,19 +248,19 @@ open DirectSum
 
 /-- The canonical map from the sum of the adic completions to the adic completion
 of the sum. -/
-def sum :
+def sum [DecidableEq ι] :
     (⨁ j, (AdicCompletion I (M j))) →ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
   toModule (AdicCompletion I R) ι (AdicCompletion I (⨁ j, M j))
     (fun j ↦ map I (lof R ι M j))
 
 @[simp]
-theorem sum_lof (j : ι) (x : AdicCompletion I (M j)) :
+theorem sum_lof [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.lof (AdicCompletion I R) ι (fun i ↦ AdicCompletion I (M i)) j) x) =
       map I (lof R ι M j) x := by
   simp [sum]
 
 @[simp]
-theorem sum_of (j : ι) (x : AdicCompletion I (M j)) :
+theorem sum_of [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.of (fun i ↦ AdicCompletion I (M i)) j) x) =
       map I (lof R ι M j) x := by
   rw [← lof_eq_of R]
@@ -284,9 +288,11 @@ theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
   apply induction_on I _ x (fun x ↦ ?_)
   rfl
 
+variable [DecidableEq ι]
+
 theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
-  ext j x
-  apply DirectSum.ext (AdicCompletion I R) (fun i ↦ ?_)
+  ext j x : 2
+  apply DirectSum.ext_component (AdicCompletion I R) (fun i ↦ ?_)
   ext n
   simp only [LinearMap.coe_comp, Function.comp_apply, sum_lof, map_mk, component_sumInv,
     mk_apply_coe, AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply, LinearMap.id_comp]
@@ -299,11 +305,11 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
     Submodule.mkQ_apply]
-  rw [← DirectSum.sum_univ_of _ (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
-  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe,
-    AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
-  simp only [← Submodule.mkQ_apply, ← map_sum]
-  erw [DirectSum.sum_univ_of]
+  rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
+  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
+    AdicCauchySequence.map_apply_coe]
+  simp only [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
+    DirectSum.sum_univ_of]
 
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :
@@ -326,7 +332,7 @@ section Pi
 
 open DirectSum
 
-variable [Fintype ι]
+variable [DecidableEq ι] [Fintype ι]
 
 /-- If `ι` is finite, `pi` is a linear equiv. -/
 def piEquivOfFintype :

@@ -3,28 +3,30 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Algebra.Ring.Basic
-import Mathlib.Algebra.Field.MinimalAxioms
-import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
+public import Mathlib.Algebra.Field.MinimalAxioms
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
+# The First-Order Theory of Fields
 
-# The First Order Theory of Fields
-
-This file defines the first order theory of fields as a theory over the language of rings.
+This file defines the first-order theory of fields as a theory over the language of rings.
 
 ## Main definitions
-* `FirstOrder.Language.Theory.field` : the theory of fields
-* `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
-  already has ring operations.
-* `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
-by `fieldOfModelField` are compatible with the ring operations on `K` given by the
-`Language.ring.Structure` instance.
 
+- `FirstOrder.Language.Theory.field` : the theory of fields
+- `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
+  already has ring operations.
+- `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
+  by `fieldOfModelField` are compatible with the ring operations on `K` given by the
+  `Language.ring.Structure` instance.
 -/
+
+@[expose] public section
 
 variable {K : Type*}
 
@@ -40,7 +42,7 @@ Language.ring.Sentence` -/
 inductive FieldAxiom : Type
   | addAssoc : FieldAxiom
   | zeroAdd : FieldAxiom
-  | addLeftNeg : FieldAxiom
+  | negAddCancel : FieldAxiom
   | mulAssoc : FieldAxiom
   | mulComm : FieldAxiom
   | oneMul : FieldAxiom
@@ -48,12 +50,12 @@ inductive FieldAxiom : Type
   | leftDistrib : FieldAxiom
   | existsPairNE : FieldAxiom
 
-/-- The first order sentence corresponding to each field axiom -/
+/-- The first-order sentence corresponding to each field axiom -/
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .addAssoc => ∀' ∀' ∀' (((&0 + &1) + &2) =' (&0 + (&1 + &2)))
   | .zeroAdd => ∀' (((0 : Language.ring.Term _) + &0) =' &0)
-  | .addLeftNeg => ∀' ∀' ((-&0 + &0) =' 0)
+  | .negAddCancel => ∀' ∀' ((-&0 + &0) =' 0)
   | .mulAssoc => ∀' ∀' ∀' (((&0 * &1) * &2) =' (&0 * (&1 * &2)))
   | .mulComm => ∀' ∀' ((&0 * &1) =' (&1 * &0))
   | .oneMul => ∀' (((1 : Language.ring.Term _) * &0) =' &0)
@@ -67,7 +69,7 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
     FieldAxiom → Prop
   | .addAssoc => ∀ x y z : K, (x + y) + z = x + (y + z)
   | .zeroAdd => ∀ x : K, 0 + x = x
-  | .addLeftNeg => ∀ x : K, -x + x = 0
+  | .negAddCancel => ∀ x : K, -x + x = 0
   | .mulAssoc => ∀ x y z : K, (x * y) * z = x * (y * z)
   | .mulComm => ∀ x y : K, x * y = y * x
   | .oneMul => ∀ x : K, 1 * x = x
@@ -75,7 +77,7 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
   | .leftDistrib => ∀ x y z : K, x * (y + z) = x * y + x * z
   | .existsPairNE => ∃ x y : K, x ≠ y
 
-/-- The first order theory of fields, as a theory over the language of rings -/
+/-- The first-order theory of fields, as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
   Set.range FieldAxiom.toSentence
 
@@ -115,7 +117,7 @@ noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
   Field.ofMinimalAxioms K
     addAssoc.toProp_of_model
     zeroAdd.toProp_of_model
-    addLeftNeg.toProp_of_model
+    negAddCancel.toProp_of_model
     mulAssoc.toProp_of_model
     mulComm.toProp_of_model
     oneMul.toProp_of_model
@@ -134,7 +136,7 @@ instance on `K`. This instance is to be used on models for the language of field
 not already have the ring operations on the Type.
 
 Always add `fieldOfModelField` as a local instance first before using this instance.
-  -/
+-/
 noncomputable abbrev compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : CompatibleRing K :=
   compatibleRingOfRingStructure K
@@ -148,10 +150,10 @@ instance [Field K] [CompatibleRing K] : Theory.field.Model K :=
       rw [a.realize_toSentence_iff_toProp (K := K)]
       cases a with
       | existsPairNE => exact exists_pair_ne K
-      | existsInv => exact fun x hx0 => ⟨x⁻¹, mul_inv_cancel hx0⟩
+      | existsInv => exact fun x hx0 => ⟨x⁻¹, mul_inv_cancel₀ hx0⟩
       | addAssoc => exact add_assoc
       | zeroAdd => exact zero_add
-      | addLeftNeg => exact add_left_neg
+      | negAddCancel => exact neg_add_cancel
       | mulAssoc => exact mul_assoc
       | mulComm => exact mul_comm
       | oneMul => exact one_mul

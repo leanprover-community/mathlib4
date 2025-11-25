@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Paracompact topological spaces
@@ -43,6 +45,8 @@ Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+t
 
 compact space, paracompact space, locally finite covering
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -95,7 +99,6 @@ indexed by the same type. -/
 theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s) (u : ι → Set X)
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
-  -- Porting note (#10888): added proof of uc
   have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
     · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
@@ -107,8 +110,23 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
   · simp only [iUnion_option, ← compl_subset_iff_union] at vc
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 
-theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
-    ParacompactSpace X where
+theorem ParacompactSpace.of_hasBasis {ι : X → Sort*} {p : ∀ x, ι x → Prop} {s : ∀ x, ι x → Set X}
+    (hb : ∀ x, (𝓝 x).HasBasis (p x) (s x))
+    (h : ∀ f : (x : X) → ι x, (∀ x, p x (f x)) →
+      ∃ (β : Type u) (t : β → Set X), (∀ b, IsOpen (t b)) ∧ (⋃ b, t b) = univ ∧ LocallyFinite t ∧
+        ∀ b, ∃ x, t b ⊆ s x (f x)) : ParacompactSpace X where
+  locallyFinite_refinement α S ho hu := by
+    have := fun x ↦ (iUnion_eq_univ_iff.1 hu x).imp fun a ha ↦ (hb _).mem_iff.1 ((ho a).mem_nhds ha)
+    choose a f hp hsub using this
+    rcases h f hp with ⟨β, t, hto, ht, htf, hts⟩
+    refine ⟨range t, Subtype.val, forall_subtype_range_iff.2 hto, ?_, htf.on_range,
+      forall_subtype_range_iff.2 fun b ↦ ?_⟩
+    · rwa [iUnion_subtype, biUnion_range]
+    · rcases hts b with ⟨x, hx⟩
+      exact ⟨_, hx.trans (hsub _)⟩
+
+theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y}
+    (he : IsClosedEmbedding e) : ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
     choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
     simp only [← hU] at hu ⊢
@@ -120,7 +138,7 @@ theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he 
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
 
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
-  ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
+  ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
 
 /-- The product of a compact space and a paracompact space is a paracompact space. The formalization
 is based on https://dantopology.wordpress.com/2009/10/24/compact-x-paracompact-is-paracompact/
@@ -208,15 +226,13 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
     have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
       fun n x ↦ (K.isClosed n).compl_mem_nhds fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
-    -- Porting note: Commented out `haveI` for now.
-    --haveI : ∀ (n) (x : ↑(Kdiff n ∩ s)), Nonempty (ι x) := fun n x ↦ (hB x x.2.2).nonempty
     choose! r hrp hr using fun n (x : ↑(Kdiff (n + 1) ∩ s)) ↦ (hB x x.2.2).mem_iff.1 (this n x)
     have hxr : ∀ (n x) (hx : x ∈ Kdiff (n + 1) ∩ s), B x (r n ⟨x, hx⟩) ∈ 𝓝 x := fun n x hx ↦
       (hB x hx.2).mem_of_mem (hrp _ ⟨x, hx⟩)
     choose T hT using fun n ↦ (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
     set T' : ∀ n, Set ↑(Kdiff (n + 1) ∩ s) := fun n ↦ T n
     -- Finally, we take the union of all these coverings
-    refine ⟨Σn, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
+    refine ⟨Σ n, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_⟩
     · rintro ⟨n, x, hx⟩
       exact ⟨x.2.2, hrp _ _⟩
     · refine fun x hx ↦ mem_iUnion.2 ?_
@@ -226,11 +242,11 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
       refine
         ⟨interior (K (K'.find x + 3)),
           IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), ?_⟩
-      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σn, T' n)).Finite :=
+      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σ n, T' n)).Finite :=
         (finite_le_nat _).biUnion fun k _ ↦ finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩
-      simp only [mem_iUnion, mem_setOf_eq, mem_image, Subtype.coe_mk]
+      simp only [mem_iUnion, mem_setOf_eq, Subtype.coe_mk]
       rintro ⟨x, hxB : x ∈ B c (r k c), hxK⟩
       refine ⟨k, ?_, ⟨c, hc⟩, rfl⟩
       have := (mem_compl_iff _ _).1 (hr k c hxB)

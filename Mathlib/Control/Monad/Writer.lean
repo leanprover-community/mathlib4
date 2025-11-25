@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon, E.W.Ayers
+Authors: Simon Hudon, Edward Ayers
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Writer monads
@@ -19,28 +21,38 @@ computation progresses.
 
 -/
 
+@[expose] public section
+
 universe u v
 
+/-- Adds a writable output of type `ω` to a monad.
+
+The instances on this type assume that either `[Monoid ω]` or `[EmptyCollection ω] [Append ω]`.
+
+Use `WriterT.run` to obtain the final value of this output. -/
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
 abbrev Writer ω := WriterT ω Id
 
 class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
-  tell : ω → M PUnit
-  listen {α} : M α → M (α × ω)
-  pass {α} : M (α × (ω → ω)) → M α
+  /-- Emit an output `w`. -/
+  tell (w : ω) : M PUnit
+  /-- Capture the output produced by `f`, without intercepting. -/
+  listen {α} (f : M α) : M (α × ω)
+  /-- Buffer the output produced by `f` as `w`, then emit `(← f).2 w` in its place. -/
+  pass {α} (f : M (α × (ω → ω))) : M α
 
 export MonadWriter (tell listen pass)
 
-variable {M : Type u → Type v} [Monad M] {α ω ρ σ : Type u}
+variable {M : Type u → Type v} {α ω ρ σ : Type u}
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
   tell w := (tell w : M _)
   listen x r := listen <| x r
   pass x r := pass <| x r
 
-instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
+instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
   listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
@@ -48,7 +60,7 @@ instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
 namespace WriterT
 
 @[inline]
-protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α := cmd
+protected def mk {ω : Type u} (cmd : M (α × ω)) : WriterT ω M α := cmd
 @[inline]
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[inline]
@@ -57,12 +69,12 @@ protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[ext]
 protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
 
-variable {ω : Type u} {α β : Type u}
+variable [Monad M]
 
-/-- Creates an instance of Monad, with an explicitly given empty and append operation.
+/-- Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
 
 Previously, this would have used an instance of `[Monoid ω]` as input.
-In practice, however, WriterT is used for logging and creating lists so restricting to
+In practice, however, `WriterT` is used for logging and creating lists so restricting to
 monoids with `Mul` and `One` can make `WriterT` cumbersome to use.
 
 This is used to derive instances for both `[EmptyCollection ω] [Append ω]` and `[Monoid ω]`.
@@ -87,10 +99,10 @@ instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
 
 instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
   (bind_pure_comp := by
-    intros; simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
-  (id_map := by intros; simp [Functor.map, WriterT.mk])
-  (pure_bind := by intros; simp [Bind.bind, Pure.pure, WriterT.mk])
-  (bind_assoc := by intros; simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
+    simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
+  (id_map := by simp [Functor.map, WriterT.mk])
+  (pure_bind := by simp [Bind.bind, Pure.pure, WriterT.mk])
+  (bind_assoc := by simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)

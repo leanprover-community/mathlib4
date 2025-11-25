@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Quotient
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 
@@ -12,24 +14,20 @@ import Mathlib.RingTheory.Ideal.Quotient
 
 ## Main definitions
 
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
-* `LocalRing.residue`: The quotient map from a local ring to its residue field.
+* `IsLocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+* `IsLocalRing.residue`: The quotient map from a local ring to its residue field.
 -/
 
-namespace LocalRing
+@[expose] public section
 
-variable (R : Type*) [CommRing R] [LocalRing R]
+namespace IsLocalRing
+
+variable (R : Type*) [CommRing R] [IsLocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
 def ResidueField :=
   R ⧸ maximalIdeal R
-
--- Porting note: failed at `deriving` instances automatically
-instance ResidueFieldCommRing : CommRing (ResidueField R) :=
-  show CommRing (R ⧸ maximalIdeal R) from inferInstance
-
-instance ResidueFieldInhabited : Inhabited (ResidueField R) :=
-  show Inhabited (R ⧸ maximalIdeal R) from inferInstance
+deriving CommRing, Inhabited
 
 noncomputable instance ResidueField.field : Field (ResidueField R) :=
   Ideal.Quotient.field (maximalIdeal R)
@@ -38,4 +36,4 @@ noncomputable instance ResidueField.field : Field (ResidueField R) :=
 def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 
-end LocalRing
+end IsLocalRing

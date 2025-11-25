@@ -3,8 +3,11 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # Denominators of evaluation of polynomials at ratios
@@ -14,6 +17,8 @@ Let `i : R → K` be a homomorphism of semirings.  Assume that `K` is commutativ
 `f ∈ R[X]` the "mathematical" expression `b ^ f.natDegree * f (a / b) ∈ K` is in
 the image of the homomorphism `i`.
 -/
+
+@[expose] public section
 
 
 open Polynomial Finset
@@ -78,7 +83,8 @@ denominators, yields a number greater than or equal to one.  The target can be a
 `LinearOrderedField K`.
 The assumption on `K` could be weakened to `LinearOrderedCommRing` assuming that the
 image of the denominator is invertible in `K`. -/
-theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
+theorem one_le_pow_mul_abs_eval_div {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    {f : ℤ[X]} {a b : ℤ}
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
     (1 : K) ≤ (b : K) ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| := by
   obtain ⟨ev, bi, bu, hF⟩ :=
@@ -87,12 +93,12 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[
         rw [eq_intCast, one_div_mul_cancel]
         rw [Int.cast_ne_zero]
         exact b0.ne.symm)
-  obtain Fa := _root_.congr_arg abs hF
+  obtain Fa := congr_arg abs hF
   rw [eq_one_div_of_mul_eq_one_left bu, eq_intCast, eq_intCast, abs_mul] at Fa
   rw [abs_of_pos (pow_pos (Int.cast_pos.mpr b0) _ : 0 < (b : K) ^ _), one_div, eq_intCast] at Fa
   rw [div_eq_mul_inv, ← Fa, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
   refine Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 => fab ?_))
   rw [eq_one_div_of_mul_eq_one_left bu, F0, one_div, eq_intCast, Int.cast_zero, zero_eq_mul] at hF
-  cases' hF with hF hF
-  · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (pow_eq_zero hF)))).elim
+  rcases hF with hF | hF
+  · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (eq_zero_of_pow_eq_zero hF)))).elim
   · rwa [div_eq_mul_inv]

@@ -3,14 +3,18 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Measurable functions in normed spaces
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -19,17 +23,16 @@ variable {α : Type*} [MeasurableSpace α]
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type*} [NormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
-  [OpensMeasurableSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [MeasurableSpace F]
-  [BorelSpace F]
+variable {R E F : Type*} [Semiring R]
+  [SeminormedAddCommGroup E] [Module R E] [MeasurableSpace E] [OpensMeasurableSpace E]
+  [SeminormedAddCommGroup F] [Module R F] [MeasurableSpace F] [BorelSpace F]
 
 @[fun_prop, measurability]
-protected theorem measurable (L : E →L[𝕜] F) : Measurable L :=
+protected theorem measurable (L : E →L[R] F) : Measurable L :=
   L.continuous.measurable
 
 @[fun_prop]
-theorem measurable_comp (L : E →L[𝕜] F) {φ : α → E} (φ_meas : Measurable φ) :
+theorem measurable_comp (L : E →L[R] F) {φ : α → E} (φ_meas : Measurable φ) :
     Measurable fun a : α => L (φ a) :=
   L.measurable.comp φ_meas
 
@@ -52,7 +55,6 @@ theorem measurable_apply [MeasurableSpace F] [BorelSpace F] (x : E) :
     Measurable fun f : E →L[𝕜] F => f x :=
   (apply 𝕜 F x).continuous.measurable
 
-@[measurability]
 theorem measurable_apply' [MeasurableSpace E] [OpensMeasurableSpace E] [MeasurableSpace F]
     [BorelSpace F] : Measurable fun (x : E) (f : E →L[𝕜] F) => f x :=
   measurable_pi_lambda _ fun f => f.measurable
@@ -90,10 +92,10 @@ variable [BorelSpace 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 
 
 theorem measurable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     (Measurable fun x => f x • c) ↔ Measurable f :=
-  (closedEmbedding_smul_left hc).measurableEmbedding.measurable_comp_iff
+  (isClosedEmbedding_smul_left hc).measurableEmbedding.measurable_comp_iff
 
 theorem aemeasurable_smul_const {f : α → 𝕜} {μ : Measure α} {c : E} (hc : c ≠ 0) :
     AEMeasurable (fun x => f x • c) μ ↔ AEMeasurable f μ :=
-  (closedEmbedding_smul_left hc).measurableEmbedding.aemeasurable_comp_iff
+  (isClosedEmbedding_smul_left hc).measurableEmbedding.aemeasurable_comp_iff
 
 end NormedSpace

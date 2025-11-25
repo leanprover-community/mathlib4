@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Sequences of functors from a category equipped with a shift
 
@@ -24,6 +26,8 @@ for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category ZeroObject Limits
 
@@ -59,9 +63,8 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
-    dsimp
     rw [shiftFunctorAdd'_zero_add]
-    aesop_cat
+    cat_disch
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     dsimp
@@ -85,24 +88,21 @@ def shiftIso (n a a' : M) (ha' : n + a = a') :
     shiftFunctor C n ⋙ F.shift a ≅ F.shift a' :=
   ShiftSequence.shiftIso n a a' ha'
 
-@[reassoc (attr := simp 1100)]
+@[reassoc (attr := simp)]
 lemma shiftIso_hom_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a).map (f⟦n⟧') ≫ (shiftIso F n a a' ha').hom.app Y =
       (shiftIso F n a a' ha').hom.app X ≫ (shift F a').map f :=
   (F.shiftIso n a a' ha').hom.naturality f
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X ⟶ Y) :
     (shift F a').map f ≫ (shiftIso F n a a' ha').inv.app Y =
-      (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') :=
-  (F.shiftIso n a a' ha').inv.naturality f
+      (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') := by
+  simp
 
-variable (M)
-
+variable (M) in
 /-- The canonical isomorphism `F.shift 0 ≅ F`. -/
 def isoShiftZero : F.shift (0 : M) ≅ F := ShiftSequence.isoZero
-
-variable {M}
 
 /-- The canonical isomorphism `shiftFunctor C n ⋙ F ≅ F.shift n`. -/
 def isoShift (n : M) : shiftFunctor C n ⋙ F ≅ F.shift n :=
@@ -239,7 +239,6 @@ lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
       (by rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero])).hom.app Y) := by
   have hnm' : m + n = 0 := by
     rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero]
-  dsimp
   simp [F.shiftIso_hom_app_comp_shiftMap f n 0 hnm' a' a, shiftIso_zero_hom_app,
     shiftFunctorCompIsoId]
 

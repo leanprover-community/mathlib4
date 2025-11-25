@@ -3,10 +3,12 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
-import Mathlib.AlgebraicTopology.DoldKan.Compatibility
-import Mathlib.CategoryTheory.Idempotents.SimplicialObject
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
+public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
+public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 
@@ -32,6 +34,8 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 suppress_compilation
@@ -97,8 +101,8 @@ theorem equivalence_functor : (equivalence : SimplicialObject C ≌ _).functor =
 theorem equivalence_inverse : (equivalence : SimplicialObject C ≌ _).inverse = Γ :=
   rfl
 
-/-- The natural isomorphism `NΓ' satisfies the compatibility that is needed
-for the construction of our counit isomorphism `η` -/
+/-- The natural isomorphism `NΓ'` satisfies the compatibility that is needed
+for the construction of our counit isomorphism `η`. -/
 theorem hη :
     Compatibility.τ₀ =
       Compatibility.τ₁ isoN₁ isoΓ₀
@@ -125,14 +129,13 @@ theorem hε :
   ext1
   rw [← cancel_epi Γ₂N₁.inv, Iso.inv_hom_id]
   ext X : 2
-  rw [NatTrans.comp_app]
-  erw [compatibility_Γ₂N₁_Γ₂N₂_natTrans X]
-  rw [Compatibility.υ_hom_app, Preadditive.DoldKan.equivalence_unitIso, Iso.app_inv, assoc]
-  erw [← NatTrans.comp_app_assoc, IsIso.hom_inv_id]
-  rw [NatTrans.id_app, id_comp, NatTrans.id_app, Γ₂N₂ToKaroubiIso_inv_app]
-  dsimp only [Preadditive.DoldKan.equivalence_inverse, Preadditive.DoldKan.Γ]
-  rw [← Γ₂.map_comp, Iso.inv_hom_id_app, Γ₂.map_id]
-  rfl
+  rw [NatTrans.comp_app, Γ₂N₁_inv, compatibility_Γ₂N₁_Γ₂N₂_natTrans X, Compatibility.υ_hom_app,
+    Preadditive.DoldKan.equivalence_unitIso, Iso.app_inv, assoc]
+  dsimp only [Functor.comp_obj, Preadditive.DoldKan.equivalence_inverse, Preadditive.DoldKan.Γ.eq_1,
+    toKaroubiEquivalence, Functor.asEquivalence_functor, Preadditive.DoldKan.N.eq_1,
+    NatTrans.id_app]
+  rw [← NatTrans.comp_app_assoc, ← Γ₂N₂_inv, Iso.inv_hom_id, NatTrans.id_app, id_comp,
+    Γ₂N₂ToKaroubiIso_inv_app, ← Γ₂.map_comp, Iso.inv_hom_id_app, Γ₂.map_id]
 
 /-- The unit isomorphism induced by `Γ₂N₁`. -/
 def ε : 𝟭 (SimplicialObject C) ≅ N ⋙ Γ :=

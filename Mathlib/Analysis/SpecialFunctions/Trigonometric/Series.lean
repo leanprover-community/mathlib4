@@ -3,7 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yaël Dillies
 -/
-import Mathlib.Analysis.SpecialFunctions.Exponential
+module
+
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Trigonometric functions as sums of infinite series
@@ -17,6 +20,8 @@ In this file we express trigonometric functions in terms of their series expansi
 * `Complex.hasSum_sin`, `Complex.sin_eq_tsum`: `Complex.sin` as the sum of an infinite series.
 * `Real.hasSum_sin`, `Real.sin_eq_tsum`: `Real.sin` as the sum of an infinite series.
 -/
+
+@[expose] public section
 
 open NormedSpace
 
@@ -40,7 +45,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
-    neg_mul, mul_neg, neg_div, add_right_neg, zero_div, add_zero,
+    neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
     mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 
 theorem Complex.hasSum_sin' (z : ℂ) :
@@ -146,7 +151,7 @@ lemma sinh_eq_tsum (r : ℝ) : sinh r = ∑' n, r ^ (2 * n + 1) / ↑(2 * n + 1)
 
 lemma cosh_le_exp_half_sq (x : ℝ) : cosh x ≤ exp (x ^ 2 / 2) := by
   rw [cosh_eq_tsum, exp_eq_exp_ℝ, exp_eq_tsum]
-  refine tsum_le_tsum (fun i ↦ ?_) x.hasSum_cosh.summable <| expSeries_summable' (x ^ 2 / 2)
+  refine x.hasSum_cosh.summable.tsum_le_tsum (fun i ↦ ?_) <| expSeries_summable' (x ^ 2 / 2)
   simp only [div_pow, pow_mul, smul_eq_mul, inv_mul_eq_div, div_div]
   gcongr
   norm_cast

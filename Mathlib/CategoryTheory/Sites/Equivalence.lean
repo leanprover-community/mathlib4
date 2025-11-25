@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.InducedTopology
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
+public import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 # Equivalences of sheaf categories
 
@@ -36,7 +38,9 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe v₁ v₂ v₃ u₁ u₂ u₃ w
+@[expose] public section
+
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
 namespace CategoryTheory
 
@@ -48,79 +52,36 @@ variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
-theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
-  intro X T
-  convert T.prop
-  ext Z f
-  constructor
-  · rintro ⟨_, _, g', hg, rfl⟩
-    exact T.val.downward_closed hg g'
-  · intro hf
-    refine ⟨e.functor.obj Z, (Adjunction.homEquiv e.toAdjunction _ _).symm f, e.unit.app Z, ?_, ?_⟩
-    · simp only [Adjunction.homEquiv_counit, Functor.id_obj, Equivalence.toAdjunction_counit,
-        Sieve.functorPullback_apply, Presieve.functorPullback_mem, Functor.map_comp,
-        Equivalence.inv_fun_map, Functor.comp_obj, Category.assoc, Equivalence.unit_inverse_comp,
-        Category.comp_id]
-      exact T.val.downward_closed hf _
-    · simp
-
-theorem coverPreserving : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
-  cover_preserve {U S} h := by
-    change _ ∈ J.sieves (e.inverse.obj (e.functor.obj U))
-    convert J.pullback_stable (e.unitInv.app U) h
-    ext Z f
-    rw [← Sieve.functorPushforward_comp]
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left, id_obj,
-      comp_obj, Sieve.pullback_apply]
-    constructor
-    · rintro ⟨W, g, hg, x, rfl⟩
-      rw [Category.assoc]
-      apply S.downward_closed
-      simpa using hg
-    · intro hf
-      exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
-        e.unit.app Z ≫ e.unit.app _, by simp⟩
-
-instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
+instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
   is_cover U := by
-    change _ ∈ J.sieves _
-    convert J.top_mem (e.inverse.obj U)
-    ext Y f
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-      Sieve.top_apply, iff_true]
-    exact ⟨e.functor.obj Y, (Adjunction.homEquiv e.toAdjunction _ _).symm f,
-      Presieve.in_coverByImage _ _, e.unit.app _, by simp⟩
-
-instance : IsCoverDense e.inverse J where
-  is_cover U := by
+    let e := (asEquivalence G).symm
     convert J.top_mem U
     ext Y f
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left,
-      Sieve.top_apply, iff_true]
+    simp only [Sieve.top_apply, iff_true]
     let g : e.inverse.obj _ ⟶ U := (e.unitInv.app Y) ≫ f
     have : (Sieve.coverByImage e.inverse U).arrows g := Presieve.in_coverByImage _ g
     replace := Sieve.downward_closed _ this (e.unit.app Y)
     simpa [g] using this
 
-/-- A class saying that the equivalence `e` transports the Grothendieck topology `J` to `K`. -/
-class TransportsGrothendieckTopology : Prop where
-  /-- `K` is equal to the induced topology. -/
-  eq_inducedTopology : K = (e.locallyCoverDense J).inducedTopology
+instance : e.functor.IsDenseSubsite J (e.inverse.inducedTopology J) := by
+  have : J = e.functor.inducedTopology (e.inverse.inducedTopology J) := by
+    ext X S
+    rw [show S ∈ (e.functor.inducedTopology (e.inverse.inducedTopology J)) X ↔ _
+      from (GrothendieckTopology.pullback_mem_iff_of_isIso (i := e.unit.app X)).symm]
+    congr!; ext Y f; simp
+  nth_rw 1 [this]
+  infer_instance
 
-instance : e.TransportsGrothendieckTopology J (e.locallyCoverDense J).inducedTopology := ⟨rfl⟩
+lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
+    K = e.inverse.inducedTopology J := by
+  ext
+  exact (e.inverse.functorPushforward_mem_iff K J).symm
 
-variable [e.TransportsGrothendieckTopology J K]
+variable [e.inverse.IsDenseSubsite K J]
 
-theorem eq_inducedTopology_of_transports : K = (e.locallyCoverDense J).inducedTopology :=
-  TransportsGrothendieckTopology.eq_inducedTopology
-
-instance : IsContinuous e.functor J K := by
-  rw [e.eq_inducedTopology_of_transports J K]
-  exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J)
-
-instance : IsContinuous e.inverse K J := by
-  rw [eq_inducedTopology_of_transports J K e]
-  exact IsCoverDense.isContinuous _ _ _ (e.locallyCoverDense J).inducedTopology_coverPreserving
+instance : e.functor.IsDenseSubsite J K := by
+  rw [e.eq_inducedTopology_of_isDenseSubsite J K]
+  infer_instance
 
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
@@ -151,6 +112,7 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
 
 /-- The equivalence of sheaf categories. -/
+@[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor := sheafCongr.functor J K e A
   inverse := sheafCongr.inverse J K e A
@@ -159,16 +121,12 @@ def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor_unitIso_comp X := by
     ext
     simp only [id_obj, sheafCongr.functor_obj_val_obj, comp_obj,
-      Sheaf.instCategorySheaf_comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
+      Sheaf.comp_val, NatTrans.comp_app, sheafCongr.inverse_obj_val_obj,
       Opposite.unop_op, sheafCongr.functor_map_val_app,
       sheafCongr.unitIso_hom_app_val_app, sheafCongr.counitIso_hom_app_val_app,
-      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.instCategorySheaf_id_val,
+      sheafCongr.functor_obj_val_map, Quiver.Hom.unop_op, Sheaf.id_val,
       NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
-
--- /-- The equivalence of sheaf categories explicitly stated for the induced topology. -/
--- abbrev sheafCongrRight : Sheaf J A ≌ Sheaf (e.locallyCoverDense J).inducedTopology A :=
---   sheafCongr e A rfl
 
 variable [HasSheafify K A]
 
@@ -182,7 +140,6 @@ noncomputable
 def transportIsoSheafToPresheaf : (e.sheafCongr J K A).functor ⋙
     sheafToPresheaf K A ⋙ e.op.congrLeft.inverse ≅ sheafToPresheaf J A :=
   NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.val)
-    (by intros; ext; simp [Equivalence.sheafCongr])
 
 /-- Transporting and sheafifying is left adjoint to taking the underlying presheaf. -/
 noncomputable
@@ -192,8 +149,9 @@ def transportSheafificationAdjunction : transportAndSheafify J K e A ⊣ sheafTo
     (transportIsoSheafToPresheaf _ _ _ _)
 
 noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J K e A where
-  preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
+  preservesFiniteLimits _ := comp_preservesLimitsOfShape _ _
 
+include K e in
 /-- Transport `HasSheafify` along an equivalence of sites. -/
 theorem hasSheafify : HasSheafify J A :=
   HasSheafify.mk' J A (transportSheafificationAdjunction J K e A)
@@ -201,6 +159,7 @@ theorem hasSheafify : HasSheafify J A :=
 variable {A : Type*} [Category A] {B : Type*} [Category B] (F : A ⥤ B)
   [K.HasSheafCompose F]
 
+include K e in
 theorem hasSheafCompose : J.HasSheafCompose F where
   isSheaf P hP := by
     have hP' : Presheaf.IsSheaf K (e.inverse.op ⋙ P ⋙ F) := by
@@ -213,15 +172,17 @@ theorem hasSheafCompose : J.HasSheafCompose F where
 
 end Equivalence
 
+variable (B : Type u₄) [Category.{v₄} B] (F : A ⥤ B)
+
+section
 variable [EssentiallySmall.{w} C]
-variable (B : Type*) [Category B] (F : A ⥤ B)
-variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
-variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
+variable [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A]
+variable [((equivSmallModel C).inverse.inducedTopology J).HasSheafCompose F]
 
 /-- Transport to a small model and sheafify there. -/
 noncomputable
 def smallSheafify : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A := (equivSmallModel C).transportAndSheafify J
-  ((equivSmallModel C).locallyCoverDense J).inducedTopology A
+  ((equivSmallModel C).inverse.inducedTopology J) A
 
 /--
 Transporting to a small model and sheafifying there is left adjoint to the underlying presheaf
@@ -231,29 +192,34 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J _ A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
-  (equivSmallModel C).hasSheafify J ((equivSmallModel C).locallyCoverDense J).inducedTopology A
+lemma hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+  (equivSmallModel C).hasSheafify J ((equivSmallModel C).inverse.inducedTopology J) A
 
 instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
-  (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).locallyCoverDense J).inducedTopology F
+  (equivSmallModel C).hasSheafCompose J ((equivSmallModel C).inverse.inducedTopology J) F
 
-instance hasLimitsEssentiallySmallSite
-    [HasLimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
+omit [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] in
+lemma hasLimitsEssentiallySmallSite
+    [HasLimits <| Sheaf ((equivSmallModel C).inverse.inducedTopology J) A] :
     HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
-    ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
+    ((equivSmallModel C).inverse.inducedTopology J) A).functor
 
 instance hasColimitsEssentiallySmallSite
-    [HasColimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
+    [HasColimits <| Sheaf ((equivSmallModel C).inverse.inducedTopology J) A] :
     HasColimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J
-    ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
+    ((equivSmallModel C).inverse.inducedTopology J) A).functor
+
+end
 
 namespace GrothendieckTopology
 
 variable {A}
-variable [G.IsCoverDense J] [Functor.IsContinuous G K J] [G.Full]
-  [(G.sheafPushforwardContinuous A K J).EssSurj]
+variable [G.IsCoverDense J] [G.Full]
+
+section
+variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
 
 open Localization
 
@@ -261,10 +227,10 @@ lemma W_inverseImage_whiskeringLeft :
     K.W.inverseImage ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op) = J.W := by
   ext P Q f
   have h₁ : K.W (A := A) =
-    Localization.LeftBousfield.W (· ∈ Set.range (sheafToPresheaf J A ⋙
+    ObjectProperty.isLocal (· ∈ Set.range (sheafToPresheaf J A ⋙
       ((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op)).obj) := by
-    rw [W_eq_W_range_sheafToPresheaf_obj, ← LeftBousfield.W_isoClosure]
-    conv_rhs => rw [← LeftBousfield.W_isoClosure]
+    rw [W_eq_isLocal_range_sheafToPresheaf_obj, ← ObjectProperty.isoClosure_isLocal]
+    conv_rhs => rw [← ObjectProperty.isoClosure_isLocal]
     apply congr_arg
     ext P
     constructor
@@ -281,7 +247,7 @@ lemma W_inverseImage_whiskeringLeft :
     exact Function.Bijective.of_comp_iff'
       (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
         (fun g ↦ f ≫ g)
-  rw [h₁, J.W_eq_W_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
+  rw [h₁, J.W_eq_isLocal_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
   constructor
   · rintro h _ ⟨R, rfl⟩
     exact (h₂ R).1 (h _ ⟨R, rfl⟩)
@@ -293,13 +259,47 @@ lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
   rw [← W_inverseImage_whiskeringLeft J K G]
   rfl
 
-variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A]
-  [K.WEqualsLocallyBijective A]
+end
 
-lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
+lemma PreservesSheafification.transport
+    [Functor.IsContinuous.{v₄} G K J] [Functor.IsContinuous.{v₃} G K J]
+    [(G.sheafPushforwardContinuous B K J).EssSurj]
+    [(G.sheafPushforwardContinuous A K J).EssSurj]
+    [K.PreservesSheafification F] : J.PreservesSheafification F where
+  le P Q f hf := by
+    rw [← J.W_whiskerLeft_iff (G := G) (K := K)] at hf
+    have := K.W_of_preservesSheafification F (whiskerLeft G.op f) hf
+    rw [whiskerRight_left] at this
+    haveI := K.W.of_postcomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_inv _) <|
+      K.W.of_precomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_hom _) this
+    rwa [K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
+
+variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
+variable [G.IsCocontinuous K J] {FA : A → A → Type*} {CA : A → Type*}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+variable [K.WEqualsLocallyBijective A]
+
+lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
+    J.WEqualsLocallyBijective A where
   iff f := by
     rw [← W_whiskerLeft_iff J K G f, ← Presheaf.isLocallyInjective_whisker_iff K J G f hG,
       ← Presheaf.isLocallySurjective_whisker_iff K J G f hG, W_iff_isLocallyBijective]
+
+variable [EssentiallySmall.{w} C]
+  [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
+
+lemma WEqualsLocallyBijective.ofEssentiallySmall
+    [((equivSmallModel C).inverse.inducedTopology J).WEqualsLocallyBijective A] :
+    J.WEqualsLocallyBijective A :=
+  WEqualsLocallyBijective.transport J ((equivSmallModel C).inverse.inducedTopology J)
+    (equivSmallModel C).inverse (IsDenseSubsite.coverPreserving _ _ _)
+
+variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) B]
+variable [PreservesSheafification ((equivSmallModel C).inverse.inducedTopology J) F]
+
+instance : PreservesSheafification J F :=
+  PreservesSheafification.transport (A := A) J
+    ((equivSmallModel C).inverse.inducedTopology J) (equivSmallModel C).inverse B F
 
 end GrothendieckTopology
 

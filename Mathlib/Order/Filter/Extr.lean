@@ -3,9 +3,12 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Order.Group.Defs
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set
@@ -73,14 +76,14 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
   types of filters, and define the missing lemmas once one of these two lists grows.
 -/
 
+@[expose] public section
+
 
 universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
-open Set Filter
-
-open Filter
+open Set Filter Relator
 
 section Preorder
 
@@ -130,6 +133,25 @@ theorem isMinOn_univ_iff : IsMinOn f univ a ↔ ∀ x, f a ≤ f x :=
 
 theorem isMaxOn_univ_iff : IsMaxOn f univ a ↔ ∀ x, f x ≤ f a :=
   univ_subset_iff.trans eq_univ_iff_forall
+
+theorem IsMinOn.bddBelow (h : IsMinOn f s a) :
+    BddBelow (f '' s) :=
+  ⟨f a, by simpa [mem_lowerBounds] using h⟩
+
+theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
+    IsGLB {f x | x ∈ s} (f a) := by
+  rw [isGLB_iff_le_iff]
+  intro b
+  simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  exact ⟨fun hba x hx ↦ le_trans hba (hfsa hx), fun hb ↦ hb a ha⟩
+
+theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
+    IsLUB {f x | x ∈ s} (f a) :=
+  IsMinOn.isGLB (α := αᵒᵈ) (β := βᵒᵈ) ha hfsa
+
+theorem IsMaxOn.bddAbove (h : IsMaxOn f s a) :
+    BddAbove (f '' s) :=
+  ⟨f a, by simpa [mem_upperBounds] using h⟩
 
 theorem IsMinFilter.tendsto_principal_Ici (h : IsMinFilter f l a) : Tendsto f l (𝓟 <| Ici (f a)) :=
   tendsto_principal.2 h
@@ -365,7 +387,8 @@ end Preorder
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.add (hf : IsMinFilter f l a) (hg : IsMinFilter g l a) :
     IsMinFilter (fun x => f x + g x) l a :=
@@ -390,7 +413,8 @@ end OrderedAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup β] {f g : α → β} {a : α} {s : Set α} {l : Filter α}
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  {f g : α → β} {a : α} {s : Set α} {l : Filter α}
 
 theorem IsMinFilter.neg (hf : IsMinFilter f l a) : IsMaxFilter (fun x => -f x) l a :=
   hf.comp_antitone fun _x _y hx => neg_le_neg hx
@@ -577,3 +601,34 @@ theorem IsMinOn.iInf_eq (hx₀ : x₀ ∈ s) (h : IsMinOn f s x₀) : ⨅ x : s,
   @IsMaxOn.iSup_eq αᵒᵈ β _ _ _ _ hx₀ h
 
 end ConditionallyCompleteLinearOrder
+
+/-! ### Value of `Finset.sup` / `Finset.inf` -/
+
+section SemilatticeSup
+
+variable [SemilatticeSup β] [OrderBot β] {D : α → β} {s : Finset α}
+
+theorem sup_eq_of_isMaxOn {a : α} (hmem : a ∈ s) (hmax : IsMaxOn D s a) : s.sup D = D a :=
+  (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
+
+theorem sup_eq_of_max [Nonempty α] {b : β} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ s)
+    (hmax : ∀ a ∈ s, D a ≤ b) : s.sup D = b := by
+  obtain ⟨a, rfl⟩ := hb
+  rw [← Function.apply_invFun_apply (f := D)]
+  apply sup_eq_of_isMaxOn hmem; intro
+  rw [Function.apply_invFun_apply (f := D)]; apply hmax
+
+end SemilatticeSup
+
+section SemilatticeInf
+
+variable [SemilatticeInf β] [OrderTop β] {D : α → β} {s : Finset α}
+
+theorem inf_eq_of_isMinOn {a : α} (hmem : a ∈ s) (hmax : IsMinOn D s a) : s.inf D = D a :=
+  sup_eq_of_isMaxOn (α := αᵒᵈ) (β := βᵒᵈ) hmem hmax.dual
+
+theorem inf_eq_of_min [Nonempty α] {b : β} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ s)
+    (hmin : ∀ a ∈ s, b ≤ D a) : s.inf D = b :=
+  sup_eq_of_max (α := αᵒᵈ) (β := βᵒᵈ) hb hmem hmin
+
+end SemilatticeInf

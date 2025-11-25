@@ -3,9 +3,12 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Typeclasses for power-associative structures
@@ -34,6 +37,8 @@ We also produce the following instances:
 
 -/
 
+@[expose] public section
+
 assert_not_exists DenselyOrdered
 
 variable {M : Type*}
@@ -51,7 +56,7 @@ section MulOneClass
 
 variable [MulOneClass M] [Pow M ℕ] [NatPowAssoc M]
 
-theorem npow_add (k n : ℕ) (x : M) : x ^ (k + n) = x ^ k * x ^ n  :=
+theorem npow_add (k n : ℕ) (x : M) : x ^ (k + n) = x ^ k * x ^ n :=
   NatPowAssoc.npow_add k n x
 
 @[simp]
@@ -83,7 +88,7 @@ end MulOneClass
 section Neg
 
 theorem neg_npow_assoc {R : Type*} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (a b : R) (k : ℕ) :
-    (-1)^k * a * b = (-1)^k * (a * b) := by
+    (-1) ^ k * a * b = (-1) ^ k * (a * b) := by
   induction k with
   | zero => simp only [npow_zero, one_mul]
   | succ k ih =>
@@ -116,13 +121,13 @@ instance Monoid.PowAssoc : NatPowAssoc M where
 @[simp, norm_cast]
 theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n m : ℕ) :
     (↑(n ^ m) : R) = (↑n : R) ^ m := by
-  induction' m with m ih
-  · simp only [pow_zero, Nat.cast_one, npow_zero]
-  · rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
+  induction m with
+  | zero => simp only [pow_zero, Nat.cast_one, npow_zero]
+  | succ m ih => rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
 
 @[simp, norm_cast]
 theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
-    (n : ℤ) : ∀(m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
+    (n : ℤ) : ∀ (m : ℕ), @Int.cast R NonAssocRing.toIntCast (n ^ m) = (n : R) ^ m
   | 0 => by
     rw [pow_zero, npow_zero, Int.cast_one]
   | m + 1 => by

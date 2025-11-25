@@ -3,8 +3,11 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableDegree
-import Mathlib.FieldTheory.IsSepClosed
+module
+
+public import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.FieldTheory.IsSepClosed
+public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
 
@@ -59,9 +62,9 @@ separable degree, degree, separable closure
 
 -/
 
-open scoped Classical Polynomial
+@[expose] public section
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -75,11 +78,12 @@ section separableClosure
 /-- The (relative) separable closure of `F` in `E`, or called maximal separable subextension
 of `E / F`, is defined to be the intermediate field of `E / F` consisting of all separable
 elements. The previous results prove that these elements are closed under field operations. -/
+@[stacks 09HC]
 def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
   mul_mem' := isSeparable_mul
   add_mem' := isSeparable_add
-  algebraMap_mem' := isSeparable_algebraMap E
+  algebraMap_mem' := isSeparable_algebraMap
   inv_mem' _ := isSeparable_inv
 
 variable {F E K}
@@ -117,7 +121,7 @@ theorem separableClosure.map_eq_of_separableClosure_eq_bot [Algebra E K] [IsScal
     (separableClosure F E).map (IsScalarTower.toAlgHom F E K) = separableClosure F K := by
   refine le_antisymm (map_le_of_algHom _) (fun x hx ↦ ?_)
   obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
-    (IsSeparable.of_isScalarTower E <| mem_separableClosure_iff.1 hx)
+    (IsSeparable.tower_top E <| mem_separableClosure_iff.1 hx)
   exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
 
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then the image of `separableClosure F E`
@@ -142,6 +146,7 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
   ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
+@[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
   ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
@@ -159,8 +164,7 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
-  ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
-    fun _ ↦ le_separableClosure _ _ _⟩
+  Subalgebra.isSeparable_iff.symm
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
@@ -172,11 +176,13 @@ theorem separableClosure.separableClosure_eq_bot :
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
-    haveI : Algebra.IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
+    have : Algebra.IsSeparable F i.fieldRange :=
+      (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
 normal and separable) over `F`. -/
+@[stacks 0EXK]
 instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by
@@ -205,6 +211,9 @@ algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
 or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
+instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
+  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :
@@ -221,7 +230,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsS
 `separableClosure E K`. -/
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F :=
-  fun _ h ↦ IsSeparable.of_isScalarTower E h
+  fun _ ↦ IsSeparable.tower_top E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
@@ -250,16 +259,45 @@ instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → Intermediat
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
 
+variable {F E} in
+theorem le_restrictScalars_separableClosure (L : IntermediateField F E) :
+    L ≤ (separableClosure L E).restrictScalars F :=
+  fun x hx ↦ isSeparable_algebraMap (F := L) ⟨x, hx⟩
+
+/-- `separableClosure` as a `ClosureOperator`. -/
+abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
+  refine .mk' (fun K ↦ (separableClosure K E).restrictScalars F) (fun K L le x hx ↦ ?_)
+    le_restrictScalars_separableClosure fun K x hx ↦ ?_ <;> dsimp only at hx ⊢
+  · let _ := (inclusion le).toAlgebra
+    have : IsScalarTower K L E := .of_algebraMap_eq' rfl
+    exact hx.tower_top _
+  · obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
+    exact x.2
+
+lemma isClosed_restrictScalars_separableClosure [Algebra K E] [IsScalarTower F K E] :
+    (separableClosureOperator F E).IsClosed ((separableClosure K E).restrictScalars F) :=
+  ClosureOperator.isClosed_iff_closure_le.mpr fun x hx ↦ by
+    obtain ⟨x, rfl⟩ := (separableClosure.separableClosure_eq_bot K E).le hx
+    exact x.2
+
+lemma separableClosure_le_separableClosure_iff
+    [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
+    (separableClosure L E).restrictScalars F ≤ (separableClosure K E).restrictScalars F ↔
+      L ≤ (separableClosure K E).restrictScalars F :=
+   (isClosed_restrictScalars_separableClosure F E K).closure_le_iff
+
 end separableClosure
 
 namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
 to be the degree of `separableClosure F E / F`. -/
+@[stacks 030L "Part 1"]
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
 to be the degree of `E / separableClosure F E`. -/
+@[stacks 030L "Part 2"]
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The finite inseparable degree for a general field extension `E / F` is defined
@@ -291,6 +329,12 @@ theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ
 to the (infinite) field extension degree. -/
 theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
   rank_mul_rank F (separableClosure F E) E
+
+theorem sepDegree_le_rank : sepDegree F E ≤ Module.rank F E :=
+  Module.rank_bot_le_rank_of_isScalarTower _ _ _
+
+theorem insepDegree_le_rank : insepDegree F E ≤ Module.rank F E :=
+  Module.rank_top_le_rank_of_isScalarTower _ _ _
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same
 inseparable degree over `F`. -/
@@ -325,6 +369,35 @@ theorem finInsepDegree_self : finInsepDegree F F = 1 := by
 end Field
 
 namespace IntermediateField
+
+/-- In a finitely generated field extension, there exists a maximal
+separably generated field extension. -/
+lemma FG.exists_finset_maximalFor_isTranscendenceBasis_separableClosure
+    (Hfg : FG (F := F) (E := E) ⊤) :
+    ∃ s : Finset E, MaximalFor (fun t : Set E ↦ IsTranscendenceBasis F ((↑) : t → E))
+      (fun t ↦ (separableClosure (adjoin F t) E).restrictScalars F) s := by
+  let d (s : Finset E) := Field.finInsepDegree (adjoin F (s : Set E)) E
+  have Hexists : {s : Finset E | IsTranscendenceBasis F ((↑) : s → E)}.Nonempty := by
+    have ⟨s, hs⟩ := Hfg
+    have : Algebra.IsAlgebraic (Algebra.adjoin F (s : Set E)) E := by
+      rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
+      refine Algebra.isIntegral_of_surjective topEquiv.surjective
+    have ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := F) (s : Set E)
+    lift t to Finset E using s.finite_toSet.subset hts
+    exact ⟨t, ht⟩
+  let s := d.argminOn _ Hexists
+  have hs := d.argminOn_mem _ Hexists
+  refine ⟨s, hs, fun t ht ↦ not_lt_iff_le_imp_ge.mp fun H ↦ ?_⟩
+  have : t.Finite := by
+    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.nat_lt_aleph0]
+  lift t to Finset E using this
+  have : Module.Finite (adjoin F (s : Set E)) E := by
+    apply (config := { allowSynthFailures := true }) finite_of_fg_of_isAlgebraic
+    · exact .of_restrictScalars (K := F) (by rwa [restrictScalars_top])
+    · convert hs.isAlgebraic_field <;> simp [s]
+  have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
+    inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
+  exact d.not_lt_argminOn _ ht Hexists (by apply finrank_lt_of_gt H)
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
@@ -380,6 +453,38 @@ theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F
 @[simp]
 theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E :=
   insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+
+variable (F) in
+lemma _root_.Field.insepDegree_top_le_insepDegree_of_isScalarTower :
+    insepDegree E K ≤ insepDegree F K := by
+  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
+  have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
+    .of_algebraMap_eq' rfl
+  exact Module.rank_top_le_rank_of_isScalarTower
+    (separableClosure F K) ((separableClosure E K).restrictScalars F) K
+
+variable {K} in
+lemma _root_.Field.insepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂) :
+    insepDegree E₂ K ≤ insepDegree E₁ K := by
+  letI := (IntermediateField.inclusion H).toAlgebra
+  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
+  exact insepDegree_top_le_insepDegree_of_isScalarTower _ _ _
+
+variable (F) in
+lemma _root_.Field.finInsepDegree_top_le_finInsepDegree_of_isScalarTower [Module.Finite F K] :
+    finInsepDegree E K ≤ finInsepDegree F K := by
+  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
+  have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
+    .of_algebraMap_eq' rfl
+  exact Module.finrank_top_le_finrank_of_isScalarTower
+    (separableClosure F K) ((separableClosure E K).restrictScalars F) K
+
+variable {K} in
+lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂)
+    [Module.Finite E₁ K] : finInsepDegree E₂ K ≤ finInsepDegree E₁ K := by
+  letI := (IntermediateField.inclusion H).toAlgebra
+  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
+  exact finInsepDegree_top_le_finInsepDegree_of_isScalarTower _ _ _
 
 end Tower
 

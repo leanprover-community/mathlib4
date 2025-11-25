@@ -3,7 +3,9 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
 # Second intersection of a sphere and a line
@@ -17,6 +19,8 @@ through a point on that sphere.
   through a point on that sphere.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -50,14 +54,11 @@ theorem Sphere.secondInter_dist (s : Sphere P) (p : P) (v : V) :
 theorem Sphere.secondInter_mem {s : Sphere P} {p : P} (v : V) : s.secondInter p v ∈ s ↔ p ∈ s := by
   simp_rw [mem_sphere, Sphere.secondInter_dist]
 
-variable (V)
-
+variable (V) in
 /-- If the vector is zero, `secondInter` gives the original point. -/
 @[simp]
 theorem Sphere.secondInter_zero (s : Sphere P) (p : P) : s.secondInter p (0 : V) = p := by
   simp [Sphere.secondInter]
-
-variable {V}
 
 /-- The point given by `secondInter` equals the original point if and only if the line is
 orthogonal to the radius vector. -/
@@ -68,7 +69,7 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
     · simp [hv]
     rwa [Sphere.secondInter, eq_comm, eq_vadd_iff_vsub_eq, vsub_self, eq_comm, smul_eq_zero,
       or_iff_left hv, div_eq_zero_iff, inner_self_eq_zero, or_iff_left hv, mul_eq_zero,
-      or_iff_right (by norm_num : (-2 : ℝ) ≠ 0)] at hp
+      or_iff_right (by simp : (-2 : ℝ) ≠ 0)] at hp
   · rw [Sphere.secondInter, hp, mul_zero, zero_div, zero_smul, zero_vadd]
 
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
@@ -79,7 +80,7 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
   · rcases h with (h | h)
     · rwa [h]
     · rwa [h, Sphere.secondInter_mem]
-  · rw [AffineSubspace.mem_mk'_iff_vsub_mem, Submodule.mem_span_singleton] at hp'
+  · rw [AffineSubspace.mem_mk', Submodule.mem_span_singleton] at hp'
     rcases hp' with ⟨r, hr⟩
     rw [eq_comm, ← eq_vadd_iff_vsub_eq] at hr
     subst hr
@@ -89,6 +90,17 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
     rw [mem_sphere] at h hp
     rw [← hp, dist_smul_vadd_eq_dist _ _ hv] at h
     rcases h with (h | h) <;> simp [h]
+
+/-- A point on a line through a point on a sphere and a second point equals that point or
+`secondInter`. -/
+lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
+    (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
+    p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
+  convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
+  convert hp'
+  rw [AffineSubspace.eq_iff_direction_eq_of_mem (AffineSubspace.self_mem_mk' p _)
+    (left_mem_affineSpan_pair _ _ _)]
+  simp [direction_affineSpan, vectorSpan_pair_rev]
 
 /-- `secondInter` is unchanged by multiplying the vector by a nonzero real. -/
 @[simp]
@@ -103,7 +115,7 @@ theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r
 @[simp]
 theorem Sphere.secondInter_neg (s : Sphere P) (p : P) (v : V) :
     s.secondInter p (-v) = s.secondInter p v := by
-  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by norm_num : (-1 : ℝ) ≠ 0)]
+  rw [← neg_one_smul ℝ v, s.secondInter_smul p v (by simp : (-1 : ℝ) ≠ 0)]
 
 /-- Applying `secondInter` twice returns the original point. -/
 @[simp]
@@ -114,7 +126,7 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   simp only [Sphere.secondInter, vadd_vsub_assoc, vadd_vadd, inner_add_right, inner_smul_right,
     div_mul_cancel₀ _ hv']
   rw [← @vsub_eq_zero_iff_eq V, vadd_vsub, ← add_smul, ← add_div]
-  convert zero_smul ℝ (M := V) _
+  convert zero_smul ℝ _
   convert zero_div (G₀ := ℝ) _
   ring
 

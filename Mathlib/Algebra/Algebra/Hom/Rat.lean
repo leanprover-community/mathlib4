@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Algebra.Rat
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Homomorphisms of `ℚ`-algebras
 
 -/
+
+@[expose] public section
 
 
 namespace RingHom
@@ -25,6 +29,11 @@ def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S
 theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :
     ↑f.toRatAlgHom = f :=
   RingHom.ext fun _x => rfl
+
+@[simp]
+theorem toRatAlgHom_apply [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) (x : R) :
+    f.toRatAlgHom x = f x :=
+  rfl
 
 end RingHom
 
@@ -47,5 +56,3 @@ def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
   right_inv f := AlgHom.toRingHom_toRatAlgHom f
 
 end
-
-

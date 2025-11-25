@@ -3,8 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Logic.Function.Defs
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
 
 /-!
 # Propositional typeclasses on several maps
@@ -21,10 +23,12 @@ TODO :
 
 -/
 
+@[expose] public section
+
 section CompTriple
 
 /-- Class of composing triples -/
-class CompTriple  {M N P : Type*} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
+class CompTriple {M N P : Type*} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
   /-- The maps form a commuting triangle -/
   comp_eq : ψ.comp φ = χ
 
@@ -47,10 +51,10 @@ instance instId_comp {M N : Type*} {φ : M → N} {ψ : N → N} [IsId ψ] :
     CompTriple φ ψ φ where
   comp_eq := by simp only [IsId.eq_id, Function.id_comp]
 
-/-- `φ`, `ψ` and `ψ ∘ φ` for` a `CompTriple` -/
+/-- `φ`, `ψ` and `ψ ∘ φ` for a `CompTriple`. -/
 theorem comp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
-    CompTriple φ ψ  (ψ.comp φ) where
+    CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
 
 lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
@@ -62,5 +66,7 @@ lemma comp_apply {M N P : Type*}
     {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, Function.comp_apply]
+
+end CompTriple
 
 end CompTriple

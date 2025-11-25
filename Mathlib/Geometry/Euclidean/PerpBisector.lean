@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Joseph Myers
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Perpendicular bisector of a segment
@@ -19,6 +21,8 @@ define this subspace.
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
 
+@[expose] public section
+
 open Set
 open scoped RealInnerProductSpace
 
@@ -29,20 +33,19 @@ noncomputable section
 
 namespace AffineSubspace
 
-variable {c c₁ c₂ p₁ p₂ : P}
+variable {c p₁ p₂ : P}
 
 /-- Perpendicular bisector of a segment in a Euclidean affine space. -/
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
-  .comap ((AffineEquiv.vaddConst ℝ (midpoint ℝ p₁ p₂)).symm : P →ᵃ[ℝ] V) <|
-    (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁))).toAffineSubspace
+  mk' (midpoint ℝ p₁ p₂) (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁)))
 
-/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `p₂ -ᵥ p₁` is orthogonal to
+/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `p₂ -ᵥ p₁` is orthogonal to
 `c -ᵥ midpoint ℝ p₁ p₂`. -/
 theorem mem_perpBisector_iff_inner_eq_zero' :
     c ∈ perpBisector p₁ p₂ ↔ ⟪p₂ -ᵥ p₁, c -ᵥ midpoint ℝ p₁ p₂⟫ = 0 :=
   Iff.rfl
 
-/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `c -ᵥ midpoint ℝ p₁ p₂` is
+/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `c -ᵥ midpoint ℝ p₁ p₂` is
 orthogonal to `p₂ -ᵥ p₁`. -/
 theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=
@@ -70,8 +73,7 @@ theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
     (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by
-  erw [perpBisector, comap_symm, map_direction, Submodule.map_id,
-    Submodule.toAffineSubspace_direction]
+  rw [perpBisector, direction_mk']
   ext x
   exact Submodule.mem_orthogonal_singleton_iff_inner_right.symm
 

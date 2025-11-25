@@ -3,17 +3,19 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Boundary of an embedding of complex shapes
 
-In the file `Mathlib.Algebra.Homology.Embedding.Basic`, given `p : ℤ`, we have defined
+In the file `Mathlib/Algebra/Homology/Embedding/Basic.lean`, given `p : ℤ`, we have defined
 an embedding `embeddingUpIntGE p` of `ComplexShape.up ℕ` in `ComplexShape.up ℤ`
 which sends `n : ℕ` to `p + n`. The (canonical) truncation (`≥ p`) of
 `K : CochainComplex C ℤ` shall be defined as the extension to `ℤ`
-(see `Mathlib.Algebra.Homology.Embedding.Extend`) of
+(see `Mathlib/Algebra/Homology/Embedding/Extend.lean`) of
 a certain cochain complex indexed by `ℕ`:
 
 `Q ⟶ K.X (p + 1) ⟶ K.X (p + 2) ⟶ K.X (p + 3) ⟶ ...`
@@ -32,11 +34,13 @@ only element in this lower boundary. Similarly, we define
 
 -/
 
+@[expose] public section
+
 namespace ComplexShape
 
 namespace Embedding
 
-variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι') (e : Embedding c c')
+variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
 
 /-- The lower boundary of an embedding `e : Embedding c c'`, as a predicate on `ι`.
 It is satisfied by `j : ι` when there exists `i' : ι'` not in the image of `e.f`
@@ -67,9 +71,11 @@ lemma not_boundaryGE_next' [e.IsRelIff] {j k : ι} (hj : ¬ e.BoundaryGE j) (hk 
     simpa only [c.next_eq_self j hjk] using hj
 
 variable {e} in
-lemma BoundaryGE.not_mem {j : ι} (hj : e.BoundaryGE j) {i' : ι'} (hi' : c'.Rel i' (e.f j))
+lemma BoundaryGE.notMem {j : ι} (hj : e.BoundaryGE j) {i' : ι'} (hi' : c'.Rel i' (e.f j))
     (a : ι) : e.f a ≠ i' := fun ha =>
   hj.2 a (by simpa only [ha] using hi')
+
+@[deprecated (since := "2025-05-23")] alias BoundaryGE.not_mem := BoundaryGE.notMem
 
 lemma prev_f_of_not_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
     (hj : ¬ e.BoundaryGE j) :
@@ -87,7 +93,7 @@ lemma prev_f_of_not_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
     exact hij' (by simpa only [hij] using hi)
 
 variable {e} in
-lemma BoundaryGE.false {j : ι} (hj : e.BoundaryGE j) [e.IsTruncLE] : False := by
+lemma BoundaryGE.false_of_isTruncLE {j : ι} (hj : e.BoundaryGE j) [e.IsTruncLE] : False := by
   obtain ⟨i, hi⟩ := e.mem_prev hj.1
   exact hj.2 i (by simpa only [hi] using hj.1)
 
@@ -120,9 +126,11 @@ lemma not_boundaryLE_prev' [e.IsRelIff] {i j : ι} (hj : ¬ e.BoundaryLE j) (hk 
     simpa only [c.prev_eq_self j hij] using hj
 
 variable {e} in
-lemma BoundaryLE.not_mem {j : ι} (hj : e.BoundaryLE j) {k' : ι'} (hk' : c'.Rel (e.f j) k')
+lemma BoundaryLE.notMem {j : ι} (hj : e.BoundaryLE j) {k' : ι'} (hk' : c'.Rel (e.f j) k')
     (a : ι) : e.f a ≠ k' := fun ha =>
   hj.2 a (by simpa only [ha] using hk')
+
+@[deprecated (since := "2025-05-23")] alias BoundaryLE.not_mem := BoundaryLE.notMem
 
 lemma next_f_of_not_boundaryLE [e.IsRelIff] {j k : ι} (hjk : c.next j = k)
     (hj : ¬ e.BoundaryLE j) :
@@ -139,10 +147,27 @@ lemma next_f_of_not_boundaryLE [e.IsRelIff] {j k : ι} (hjk : c.next j = k)
     rw [c.next_eq' hk] at hjk
     exact hjk' (by simpa only [hjk] using hk)
 
+lemma next_f [e.IsTruncGE] {j k : ι} (hjk : c.next j = k) : c'.next (e.f j) = e.f k := by
+  by_cases hj : c'.Rel (e.f j) (c'.next (e.f j))
+  · obtain ⟨k', hk'⟩ := e.mem_next hj
+    rw [← hk', e.rel_iff] at hj
+    rw [← hk', ← c.next_eq' hj, hjk]
+  · rw [c'.next_eq_self _ hj, ← hjk, c.next_eq_self j]
+    intro hj'
+    apply hj
+    rw [← e.rel_iff] at hj'
+    simpa only [c'.next_eq' hj'] using hj'
+
+lemma prev_f [e.IsTruncLE] {i j : ι} (hij : c.prev j = i) : c'.prev (e.f j) = e.f i :=
+  e.op.next_f hij
+
 variable {e} in
-lemma BoundaryLE.false {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE] : False := by
+lemma BoundaryLE.false_of_isTruncGE {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE] : False := by
   obtain ⟨k, hk⟩ := e.mem_next hj.1
   exact hj.2 k (by simpa only [hk] using hj.1)
+
+@[simp] lemma op_boundaryLE_iff {j : ι} : e.op.BoundaryLE j ↔ e.BoundaryGE j := by rfl
+@[simp] lemma op_boundaryGE_iff {j : ι} : e.op.BoundaryGE j ↔ e.BoundaryLE j := by rfl
 
 end Embedding
 
@@ -150,32 +175,32 @@ lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
   constructor
   · intro h
-    obtain _|n := n
+    obtain _ | n := n
     · rfl
     · have := h.2 n
       dsimp at this
-      omega
+      cutsat
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      omega
+      cutsat
 
 lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
-    (embeddingUpIntGE p).BoundaryGE n ↔ n = 0 := by
+    (embeddingUpIntLE p).BoundaryLE n ↔ n = 0 := by
   constructor
   · intro h
-    obtain _|n := n
+    obtain _ | n := n
     · rfl
     · have := h.2 n
       dsimp at this
-      omega
+      cutsat
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      omega
+      cutsat
 
 end ComplexShape
