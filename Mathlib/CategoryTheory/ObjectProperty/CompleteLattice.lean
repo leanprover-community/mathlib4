@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
@@ -15,11 +16,11 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 @[expose] public section
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 example : CompleteLattice (ObjectProperty C) := inferInstance
 
@@ -74,6 +75,23 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
   simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self,
     isoClosure_iSup, isoClosure_eq_self]
 
+instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
+    ((⨅ (a : α), P a)).IsClosedUnderIsomorphisms where
+  of_iso e h := by
+    simp only [iInf_apply, iInf_Prop_eq] at h ⊢
+    intro a
+    exact (P a).prop_of_iso e (h a)
+
 end
+
+@[simp]
+lemma ι_map_top (P : ObjectProperty C) :
+    (⊤ : ObjectProperty _).map P.ι = P.isoClosure := by
+  ext X
+  constructor
+  · rintro ⟨⟨Y, hY⟩, _, ⟨e⟩⟩
+    exact ⟨Y, hY, ⟨e.symm⟩⟩
+  · rintro ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨⟨Y, hY⟩, by simp, ⟨e.symm⟩⟩
 
 end CategoryTheory.ObjectProperty

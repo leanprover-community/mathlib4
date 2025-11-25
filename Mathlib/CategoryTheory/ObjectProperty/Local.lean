@@ -66,6 +66,24 @@ instance (J : Type u') [Category.{v'} J] :
           (by simp [reassoc_of% h, h, p.w a]) }),
       p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
+attribute [local simp] isLocal_iff in
+@[simp]
+lemma isLocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isLocal = ⨅ (i : ι), (W i).isLocal := by
+  aesop
+
+instance (J : Type u') [Category.{v'} J] :
+    W.isLocal.IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    refine ⟨fun g₁ g₂ h ↦ p.isLimit.hom_ext
+      (fun j ↦ (p.prop_diag_obj j f hf).1 (by simp [reassoc_of% h])), fun g ↦ ?_⟩
+    choose app h using fun j ↦ (p.prop_diag_obj j f hf).2 (g ≫ p.π.app j)
+    exact ⟨p.isLimit.lift (Cone.mk _
+      { app := app
+        naturality _ _ a := (p.prop_diag_obj _ f hf).1
+          (by simp [reassoc_of% h, h, p.w a]) }),
+      p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
+
 end MorphismProperty
 
 end CategoryTheory

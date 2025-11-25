@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Generator.Type
+public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Types.Set
 
@@ -137,6 +138,28 @@ instance (X : Type u) : IsPresentable.{u} X := by
   have : Fact κ.IsRegular := ⟨hκ⟩
   have := hX.isCardinalPresentable
   exact isPresentable_of_isCardinalPresentable X κ
+
+
+lemma isStrongGenerator_punit :
+    (ObjectProperty.singleton (PUnit.{u + 1})).IsStrongGenerator  := by
+  rw [ObjectProperty.isStrongGenerator_iff]
+  refine ⟨isSeparator_punit, fun _ _ i hi₁ hi₂ ↦ ?_⟩
+  · rw [mono_iff_injective] at hi₁
+    rw [isIso_iff_bijective]
+    refine ⟨hi₁, fun y ↦ ?_⟩
+    obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (fun _ ↦ y)
+    exact ⟨f .unit, congr_fun hf .unit⟩
+
+instance (κ : Cardinal.{u}) [Fact κ.IsRegular] :
+    IsCardinalLocallyPresentable (Type u) κ := by
+  rw [IsCardinalLocallyPresentable.iff_exists_isStrongGenerator]
+  exact ⟨.singleton PUnit, inferInstance, isStrongGenerator_punit, by
+    simp only [ObjectProperty.singleton_le_iff,
+      CategoryTheory.isCardinalPresentable_iff, isCardinalPresentable_iff]
+    exact hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out)⟩
+
+instance : IsLocallyPresentable.{u} (Type u) where
+  exists_cardinal := ⟨_, Cardinal.fact_isRegular_aleph0, inferInstance⟩
 
 end Types
 
