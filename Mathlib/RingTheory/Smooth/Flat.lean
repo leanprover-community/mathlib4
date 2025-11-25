@@ -123,6 +123,12 @@ lemma kerProj_comp_sectionAdicCompletion :
     (AdicCompletion.kerProj hf).comp (sectionAdicCompletion f hf) = AlgHom.id R A :=
   AlgHom.ext fun x ↦ kerProj_sectionAdicCompletion _ _ x
 
+/-- If `A` is formally smooth over `R`, the projection from the adic completion of
+`S` at the kernel of `f : S →ₐ[R] A` has a section. -/
+lemma exists_kerProj_comp_eq_id : ∃ (g : A →ₐ[R] AdicCompletion (ker f) S),
+    (AdicCompletion.kerProj hf).comp g = AlgHom.id R A :=
+  ⟨sectionAdicCompletion f hf, kerProj_comp_sectionAdicCompletion f hf⟩
+
 include hf in
 lemma flat_of_algHom_of_isNoetherianRing [Module.Flat R S] [IsNoetherianRing S] :
     Module.Flat R A := by
