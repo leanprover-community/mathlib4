@@ -156,6 +156,7 @@ lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
   · simp
   · exact ⟨.cons huv .nil⟩
 
+@[nontriviality]
 lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
     G.Reachable u v := by
   rw [Subsingleton.allEq u v]
@@ -194,6 +195,7 @@ alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
 @[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
 @[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
 
+@[nontriviality]
 lemma Preconnected.of_subsingleton {G : SimpleGraph V} [Subsingleton V] : G.Preconnected :=
   fun _ _ ↦ .of_subsingleton
 
@@ -308,6 +310,7 @@ lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp 
 @[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
 @[deprecated (since := "2025-09-23")] alias top_connected := connected_top
 
+@[nontriviality]
 lemma Connected.of_subsingleton {G : SimpleGraph V} [Nonempty V] [Subsingleton V] :
     G.Connected :=
   ⟨.of_subsingleton⟩
