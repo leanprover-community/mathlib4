@@ -17,7 +17,7 @@ subspace to the entire Banach space.
 
 * `ContinuousLinearMap.extend`: Extend from a dense subspace using `IsUniformInducing`
 * `ContinuousLinearMap.extendOfNorm`: Extend from a continuous linear map that is a dense map into
-the domain and together with a norm estimate.
+the domain together with a norm estimate.
 
 -/
 
