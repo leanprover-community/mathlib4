@@ -8,7 +8,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-10204"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
-require "leanprover-community" / "aesop" @ git "nightly-testing"
+require "leanprover-community" / "aesop" @ git "lean-pr-testing-10204"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.83-pre1" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
