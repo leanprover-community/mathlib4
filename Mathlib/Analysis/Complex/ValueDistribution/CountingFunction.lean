@@ -328,11 +328,11 @@ theorem counting_top_sum_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
         add_le_add (by trivial) hs
 
 /--
-Asymptotically, the counting function of a sum `∑ a, f a` at `⊤` is less than or
+Asymptotically, the counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or
 equal to the sum of the counting functions of `f ·`.
 -/
 theorem counting_top_sum_eventuallyLE {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
-  (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) :
+    (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) :
     logCounting (∑ a ∈ s, f a) ⊤ ≤ᶠ[Filter.atTop] ∑ a ∈ s, (logCounting (f a) ⊤) := by
   filter_upwards [Filter.eventually_ge_atTop 1]
   exact fun _ hr ↦ counting_top_sum_le s f h₁f hr
