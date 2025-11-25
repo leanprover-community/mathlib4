@@ -103,12 +103,15 @@ instance : IsTotallyReal ℚ where
     rw [Subsingleton.elim v Rat.infinitePlace]
     exact Rat.isReal_infinitePlace
 
+instance [IsTotallyReal K] :
+    IsTotallyReal (⊤ : Subfield K) := isTotallyReal_top_iff.mpr ‹_›
+
 instance _root_.IntermediateField.isTotallyReal_bot [CharZero K] :
-      IsTotallyReal (⊥ : IntermediateField ℚ K) :=
+    IsTotallyReal (⊥ : IntermediateField ℚ K) :=
   IsTotallyReal.ofRingEquiv (IntermediateField.botEquiv ℚ K).symm.toRingEquiv
 
 instance _root_.Subfield.isTotallyReal_bot [CharZero K] :
-      IsTotallyReal (⊥ : Subfield K) := by
+    IsTotallyReal (⊥ : Subfield K) := by
   rw [Subfield.bot_eq_of_charZero]
   exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
 
@@ -141,6 +144,11 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] 
   rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by simp, RCLike.star_def, ← conjugate_coe_eq]
   refine RingHom.congr_fun ?_ _
   exact ComplexEmbedding.isReal_iff.mp <| isReal_mk_iff.mp <| isReal _
+
+@[simp]
+theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] :
+    maximalRealSubfield K = ⊤ :=
+  top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
 
 variable [CharZero K] [Algebra.IsAlgebraic ℚ K]
 
@@ -177,11 +185,6 @@ instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotal
     infer_instance
   · rw [isTotallyReal_iff_le_maximalRealSubfield, iSup_le_iff]
     exact fun i ↦ IsTotallyReal.le_maximalRealSubfield (k i)
-
-@[simp]
-theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] :
-    maximalRealSubfield K = ⊤ :=
-  top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
 
 theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
