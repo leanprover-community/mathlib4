@@ -122,7 +122,7 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
         IO.println "-- Linting passed."
   return 0
 
-/-- Setting up command line options and help text for `lake exe run_linter`. -/
+/-- Setting up command line options and help text for `lake exe run-linter`. -/
 unsafe def runLinter : Cmd := `[Cli|
   lint_style VIA runLinterCli; ["0.0.1"]
   "Runs the linters on all declarations in the given module (or `Mathlib` by default)."
@@ -144,5 +144,5 @@ unsafe def runLinter : Cmd := `[Cli|
     module : String; "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
 ]
 
-/-- The entry point to the `lake exe run_linter` command. -/
+/-- The entry point to the `lake exe run-linter` command. -/
 unsafe def main (args : List String) : IO UInt32 := do runLinter.validate args
