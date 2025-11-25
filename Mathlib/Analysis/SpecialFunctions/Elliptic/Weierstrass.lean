@@ -289,6 +289,17 @@ lemma ℘_neg (z : ℂ) : L.℘ (-z) = L.℘ z := by
   simp
   ring
 
+lemma not_continuousAt_℘ (x : ℂ) (hx : x ∈ L.lattice) : ¬ ContinuousAt L.℘ x := by
+  eta_expand
+  simp_rw [← L.℘Except_add ⟨x, hx⟩]
+  intro H
+  apply NormedField.not_continuousAt_zpow_zero (𝕜 := ℂ) (-2) (by decide)
+  simpa [Function.comp_def] using
+    (((H.sub ((L.differentiableOn_℘Except x).differentiableAt (x := x)
+      (L.isOpen_compl_lattice_diff.mem_nhds (by simp))).continuousAt).add
+      (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
+      (continuous_add_left x).continuousAt (add_zero _):)
+
 end ℘
 
 section ℘'Except
@@ -527,17 +538,6 @@ lemma ℘'_coe (l : L.lattice) : L.℘' l = 0 := by
 @[simp]
 lemma ℘'_sub_coe (z : ℂ) (l : L.lattice) : L.℘' (z - l) = L.℘' z := by
   rw [← L.℘'_add_coe _ l, sub_add_cancel]
-
-lemma not_continuousAt_℘ (x : ℂ) (hx : x ∈ L.lattice) : ¬ ContinuousAt L.℘ x := by
-  eta_expand
-  simp_rw [← L.℘Except_add ⟨x, hx⟩]
-  intro H
-  apply not_continuousAt_zpow_zero (-2) (by decide)
-  simpa [Function.comp_def] using
-    (((H.sub ((L.differentiableOn_℘Except x).differentiableAt (x := x)
-      (L.isOpen_compl_lattice_diff.mem_nhds (by simp))).continuousAt).add
-      (continuous_const (y := 1 / x ^ 2)).continuousAt).comp_of_eq
-      (continuous_add_left x).continuousAt (add_zero _):)
 
 /-- `deriv ℘ = ℘'`. This is true globally because of junk values. -/
 @[simp] lemma deriv_℘ : deriv L.℘ = L.℘' := by
