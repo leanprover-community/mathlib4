@@ -82,7 +82,7 @@ namespace CategoryTheory
 open Category Functor
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
@@ -502,6 +502,16 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
+
+/-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
+This states that `Adjunction.homEquiv` is natural in both arguments. -/
+@[simps!]
+def compUliftCoyonedaIso (adj : F ⊣ G) :
+    F.op ⋙ uliftCoyoneda.{max w v₁} ≅
+      uliftCoyoneda.{max w v₂} ⋙ (whiskeringLeft _ _ _).obj G :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+    (fun Y ↦ (Equiv.ulift.trans
+      ((adj.homEquiv X.unop Y).trans Equiv.ulift.symm)).toIso))
 
 section
 
