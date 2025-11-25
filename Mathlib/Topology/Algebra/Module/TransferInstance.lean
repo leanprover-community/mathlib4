@@ -16,7 +16,7 @@ public import Mathlib.Topology.Instances.Shrink
 In this file, we construct a continuous linear equivalence `α ≃L[R] β` from an equivalence `α ≃ β`,
 where the continuous `R`-module structure on `α` is the one obtained by transporting an
 `R`-module structure on `β` back along `e`.
-We also provide a corresponding `Shrink` instance.
+We also specialize this construction to `Shrink α`.
 
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
