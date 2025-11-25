@@ -1,5 +1,7 @@
+module
+
 import Aesop.Frontend.Attribute
-import Mathlib.Tactic.Linter.CommandStart
+import all Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
@@ -111,7 +113,7 @@ should be written as
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-instance   {R} : Add R := sorry
+instance   {R} : Sub R := sorry
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")

@@ -193,7 +193,6 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
       pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
-public -- for use in unit tests only
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux ∅ src fmt
 
