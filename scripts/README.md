@@ -130,6 +130,7 @@ to learn about it as well!
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git remotes, GitHub, elan toolchains, and build cache.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
