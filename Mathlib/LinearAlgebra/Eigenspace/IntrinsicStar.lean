@@ -22,11 +22,13 @@ variable {R V : Type*} [InvolutiveStar R] [AddCommGroup V] [StarAddMonoid V]
 open scoped IntrinsicStar
 open LinearMap
 
+@[simp]
 theorem mem_eigenspace_intrinsicStar_iff [CommRing R] [Module R V] [StarModule R V]
     (f : End R V) (α : R) (x : V) :
     x ∈ (star f).eigenspace α ↔ star x ∈ f.eigenspace (star α) := by
   simp_rw [mem_eigenspace_iff, intrinsicStar_apply, star_eq_iff_star_eq, star_smul, eq_comm]
 
+@[simp]
 theorem spectrum_intrinsicStar [CommSemiring R] [Module R V] [StarModule R V] (f : End R V) :
     spectrum R (star f) = star (spectrum R f) := by
   ext x

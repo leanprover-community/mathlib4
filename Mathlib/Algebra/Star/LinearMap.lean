@@ -134,7 +134,7 @@ theorem IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
     simp [← mul_eq_comp, one_eq_id]
 
 open Module.End in
-theorem isUnit_intrinsicStar_iff {f : End R E} :
+@[simp] theorem isUnit_intrinsicStar_iff {f : End R E} :
     IsUnit (star f) ↔ IsUnit f :=
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
 
