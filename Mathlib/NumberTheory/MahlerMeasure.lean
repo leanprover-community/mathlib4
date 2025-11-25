@@ -35,12 +35,11 @@ lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
   apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
   rw [leadingCoeff, p.degree_map_int_castRingHom]
   simp only [coeff_map, coeff_natDegree, eq_intCast, Complex.norm_intCast]
-  norm_cast
-  exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
+  exact_mod_cast one_le_abs <| leadingCoeff_ne_zero.mpr hp
 
 section Northcott
 
-variable (n : ℕ) {B₁ B₂ : Fin (n + 1) → ℝ}
+variable {n : ℕ} {B₁ B₂ : Fin (n + 1) → ℝ}
 
 local notation3 "BoxPoly" =>
   {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i : Fin (n + 1), B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
@@ -67,8 +66,8 @@ theorem card_eq_of_natDegree_le_of_coeff_le (h_B : ∀ i, ⌈B₁ i⌉ ≤ ⌊B�
       apply Subtype.ext
       simp [f, g, ofFn_comp_toFn_eq_id_of_natDegree_lt <| Nat.lt_succ_iff.mpr p.property.1]
     · intro ⟨_, _⟩
-      ext i
-      simp_all [toFn, f, g]
+      ext
+      simp [toFn, f, g]
   rw [Nat.card_eq_of_bijective f hfBij, Nat.card_eq_finsetCard Box, Pi.card_Icc]
   simp_rw [card_Icc]
   grind
@@ -86,7 +85,7 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
       simp only [ceil_neg, neg_le_self_iff, floor_nonneg]
       positivity
     conv => enter [1,1,1,1]; ext p; enter [2]; ext i; rw [norm_eq_abs, abs_le]
-    rw [card_eq_of_natDegree_le_of_coeff_le n h_B]
+    rw [card_eq_of_natDegree_le_of_coeff_le h_B]
     simp only [ceil_neg, sub_neg_eq_add, ← two_mul]
     apply congr_arg
     ext i
