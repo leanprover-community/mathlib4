@@ -92,6 +92,9 @@ theorem splits_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
   splits_of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
 
+theorem splits_of_isUnit [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Splits f :=
+  splits_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
+
 end Semiring
 
 section CommSemiring
@@ -309,8 +312,7 @@ theorem splits_iff_splits {f : R[X]} :
   · simp [hf0]
   obtain ⟨u, hu⟩ := factors_prod hf0
   rw [← hu]
-  refine (Splits.multisetProd fun g hg ↦ ?_).mul
-    (splits_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit u.isUnit))
+  refine (Splits.multisetProd fun g hg ↦ ?_).mul (splits_of_isUnit u.isUnit)
   exact Splits.of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
 
 end Field
