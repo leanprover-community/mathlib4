@@ -20,11 +20,7 @@ In this file, given `P : ObjectProperty C`, we define
 
 @[expose] public section
 
-<<<<<<< HEAD
-universe w' w v u
-=======
-universe w v v' u u'
->>>>>>> origin/master
+universe w' w v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
