@@ -448,7 +448,7 @@ lemma resultant_eq_prod_roots_sub
     rw [Monic, leadingCoeff, natDegree_C_mul (by simpa), coeff_C_mul, leadingCoeff,
       inv_mul_cancel₀ (by simpa)]
   let L := r.SplittingField
-  have := IH _ (by simp; cutsat)
+  have := IH _ (by simp; lia)
     (g.map (algebraMap K L)) (r.map (algebraMap K L)) (hg.map _) (hr.map _)
     (hg'.map _) (SplittingField.splits _) (by simpa [r, natDegree_C_mul, hr₀] using hrd.le) rfl
   rw [resultant_map_map, natDegree_map, natDegree_map, resultant_C_mul_right,
@@ -634,7 +634,7 @@ lemma resultant_dvd_leadingCoeff_pow [IsDomain R] (f g : R[X]) (H : IsCoprime f 
     rw [← natDegree_mul ha hf, ← natDegree_mul hb hg] at H
     have := natDegree_add_eq_left_of_natDegree_lt H
     simp only [e, natDegree_one] at this
-    cutsat
+    lia
 
 lemma resultant_ne_zero [IsDomain R] (f g : R[X]) (H : IsCoprime f g) :
     resultant f g ≠ 0 := by
@@ -764,7 +764,7 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
   have := resultant_scaleRoots f g g.leadingCoeff
   rw [natDegree_scaleRoots, natDegree_scaleRoots,
     ← integralNormalization_mul_C_leadingCoeff, mul_comm, resultant_C_mul_right] at this
-  rw [this, ← mul_assoc, ← pow_add, add_comm, ← Nat.mul_add_one, Nat.sub_add_cancel (by cutsat)]
+  rw [this, ← mul_assoc, ← pow_add, add_comm, ← Nat.mul_add_one, Nat.sub_add_cancel (by lia)]
 
 /-- `Res(f(x + r), g(x + r)) = Res(f, g)`. -/
 nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
@@ -837,13 +837,13 @@ lemma toMatrix_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDeg
         simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
     rw [ite_and]
     split_ifs with h₁ h₂ <;> try rfl
-    exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+    exact coeff_eq_zero_of_natDegree_lt (by lia)
   · suffices (if j.1 ≤ i then f.coeff (i - j) else 0) =
       if j ≤ i.1 ∧ ↑i ≤ j + m then f.coeff (i - j) else 0 by
         simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
     rw [ite_and]
     split_ifs with h₁ h₂ <;> try rfl
-    exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+    exact coeff_eq_zero_of_natDegree_lt (by lia)
 
 lemma toMatrix_sylvesterMap' (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
     (sylvesterMap f g hf hg).toMatrix

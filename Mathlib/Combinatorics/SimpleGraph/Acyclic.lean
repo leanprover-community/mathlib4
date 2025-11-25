@@ -361,7 +361,7 @@ lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v
   simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
   have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
   rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
-  cutsat
+  lia
 
 /-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
 removed. -/
