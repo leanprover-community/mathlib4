@@ -479,8 +479,8 @@ theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
   let i : L ≃ₐ[F] L' := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)
   have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
       (Algebra.adjoin L' (A : Set E)).toSubsemiring := by
-    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
-      Algebra.adjoin_toSubsemiring]
+    rw [adjoin_intermediateField_toSubalgebra_of_isAlgebraic _ _ halg.symm,
+      Algebra.adjoin_toSubsemiring, Algebra.adjoin_toSubsemiring]
     congr 2
     ext x
     simp only [Set.mem_range, Subtype.exists]
@@ -512,8 +512,8 @@ theorem lift_adjoin_rank_eq_lift_rank_right_of_isAlgebraic (H : A.LinearDisjoint
   set L' := (IsScalarTower.toAlgHom F L E).range
   have heq : (adjoin L (A : Set E)).toSubalgebra.toSubsemiring =
       (Algebra.adjoin A (L' : Set E)).toSubsemiring := by
-    rw [adjoin_toSubalgebra_of_isAlgebraic _ _ halg.symm, Algebra.adjoin_toSubsemiring,
-      Algebra.adjoin_toSubsemiring, Set.union_comm]
+    rw [adjoin_intermediateField_toSubalgebra_of_isAlgebraic _ _ halg.symm,
+      Algebra.adjoin_toSubsemiring, Algebra.adjoin_toSubsemiring, Set.union_comm]
     congr 2
     ext x
     simp
