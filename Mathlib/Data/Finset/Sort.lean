@@ -92,7 +92,7 @@ theorem sort_perm_toList : sort s r ~ s.toList := by
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
     sort l.toFinset r = l ↔ l.Pairwise r := by
-  refine ⟨?_, List.Perm.eq_of_pairwise' ((sort_perm_toList _ r).trans (List.toFinset_toList hl))
+  refine ⟨?_, ((sort_perm_toList _ r).trans (List.toFinset_toList hl)).eq_of_pairwise'
     (pairwise_sort _ _)⟩
   intro h
   rw [← h]
@@ -331,9 +331,8 @@ end Finset
 namespace Fin
 
 theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
-  List.Perm.eq_of_pairwise
-    (List.perm_of_nodup_nodup_toFinset_eq
-      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))
+  (List.perm_of_nodup_nodup_toFinset_eq
+      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp)).eq_of_pairwise'
     (Finset.univ.pairwise_sort LE.le)
     (List.pairwise_le_finRange n)
 
