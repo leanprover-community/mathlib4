@@ -25,11 +25,6 @@ is star-preserving.
 is mathematically distinct from the global instance on `E →ₗ[𝕜] E` where
 `star := LinearMap.adjoint`.
 For that reason, the intrinsic star operation is scoped to `IntrinsicStar`.
-
-When adding a lemma that uses this star operation, please use `foo_intrinsicStar` for the name
-as to not confuse which star it is.
-If the lemma doesn't contain the word star but uses the operation, for example, `IsSelfAdjoint`,
-then please add a comment mentioning that is the "intrinsic star".
 -/
 
 @[expose] public section
