@@ -150,9 +150,8 @@ public theorem angle_le_angle_add_angle (x y z : V) :
 
 /-- The triangle inequality is an equality if the middle vector is a nonnegative linear combination
 of the other two vectors. See `angle_add_angle_eq_pi_of_angle_eq_pi` for the other equality case. -/
-public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y ≠ 0) (hz : z ≠ 0)
-    (h_mem : y ∈ (ℝ≥0 ∙ x) ⊔ (ℝ≥0 ∙ z)) :
-    angle x z = angle x y + angle y z := by
+public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y ≠ 0)
+    (h_mem : y ∈ (ℝ≥0 ∙ x) ⊔ (ℝ≥0 ∙ z)) : angle x z = angle x y + angle y z := by
   simp only [Submodule.mem_sup, Submodule.mem_span_singleton] at h_mem
   obtain ⟨_, ⟨kx, rfl⟩, _, ⟨kz, rfl⟩, rfl⟩ := h_mem
   rcases (zero_le kx).eq_or_lt with rfl | hkx <;> rcases (zero_le kz).eq_or_lt with rfl | hkz
@@ -160,8 +159,13 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
   · simp_all [NNReal.smul_def]
   · simp_all [NNReal.smul_def]
   · rw [angle_comm (_ + _) z]
-    simpa [hkx, hkz, NNReal.smul_def] using
-      angle_eq_angle_add_add_angle_add (kx • x) (smul_ne_zero hkz.ne' hz)
+    by_cases! hz : z ≠ 0
+    · simpa [hkx, hkz, NNReal.smul_def] using
+        angle_eq_angle_add_add_angle_add (kx • x) (smul_ne_zero hkz.ne' hz)
+    · have hx : x ≠ 0 := by simp_all
+      rw [angle_comm, add_comm, add_comm (kx • x)]
+      simpa [hkx, hkz, NNReal.smul_def] using
+        angle_eq_angle_add_add_angle_add (kz • z) (smul_ne_zero hkx.ne' hx)
 
 /-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
 `angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
