@@ -384,16 +384,22 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (ft S.X₂ n) (ft S.X₁ n) (ft S.X₃ (n + 1)) ?_ ?_
       exac1 exac2 (ih S.X₂).2 (ih S.X₁) surj1 surj2
-    --Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map, Ext.mapExt_extClass_eq_extClass_map
     · ext z
-      simp only [ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
-        ModuleCat.smulShortComplex_X₁, AddMonoidHom.coe_comp, Function.comp_apply,
-        AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply, f', ft, f]
-
-      sorry
-    · simp only [ShortComplex.map_X₃, ShortComplex.map_X₁, ModuleCat.smulShortComplex_X₁, g', ft, g]
-
-      sorry
+      change (Ext.mk₀ (Fr.map S.f)).comp (((Fr.mapExt S.X₂
+        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) z).comp
+        regM.smulShortComplex_shortExact.extClass rfl) (zero_add _) =
+        ((Fr.mapExt S.X₁ (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)
+        ((Ext.mk₀ S.f).comp z (zero_add n))).comp regM.smulShortComplex_shortExact.extClass rfl
+      rw [← Ext.comp_assoc _ _ _ (zero_add n) rfl (by simp),
+        Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+    · ext z
+      change (S_exact.map_of_exact Fr).extClass.comp (((Fr.mapExt S.X₁
+        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) z).comp
+        regM.smulShortComplex_shortExact.extClass rfl) (add_comm 1 (n + 1)) =
+        ((Fr.mapExt S.X₃ (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) (n + 1))
+        (S_exact.extClass.comp z (add_comm 1 n))).comp regM.smulShortComplex_shortExact.extClass rfl
+      rw [← Ext.comp_assoc _ _ _ (add_comm 1 n) rfl (by simp [add_comm]),
+        Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
 
 end
 
