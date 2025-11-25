@@ -16,6 +16,8 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.LinearAlgebra.Projectivization.Action
 
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
@@ -516,6 +518,8 @@ namespace SpecialLinearGroup
 
 section action
 
+open MulAction SubMulAction
+
 instance : SMul (SpecialLinearGroup R V) V where
   smul e v := e v
 
@@ -534,6 +538,33 @@ instance : DistribMulAction (SpecialLinearGroup R V) V where
 /-- The action of `SpecialLinearGroup R V` on `V` is `R`-linear. -/
 instance : SMulCommClass (SpecialLinearGroup R V) R V where
   smul_comm := by simp
+
+variable (R V) in
+def subMulAction : SubMulAction (SpecialLinearGroup R V) V where
+  carrier := {v | v ≠ 0}
+  smul_mem' e v hv := by simpa using hv
+
+instance :
+    MulAction (SpecialLinearGroup R V) {v : V | v ≠ 0} :=
+  (subMulAction R V).mulAction
+
+variable (R) in
+def subMulAction_fixingSubgroup (W : Submodule R V) :
+    SubMulAction (fixingSubgroup (SpecialLinearGroup R V) W.carrier) V where
+  carrier := {v | v ∉ W}
+  smul_mem' e v hv := fun hev ↦ hv <| by
+    rw [← inv_smul_smul e v]
+    suffices e⁻¹ • e • v = e • v by rwa [this]
+    exact (mem_fixingSubgroup_iff _).mp (inv_mem e.prop) (e • v) hev
+
+instance (W : Submodule R V) :
+    MulAction (fixingSubgroup (SpecialLinearGroup R V) W.carrier) {v : V | v ∉ W} :=
+  (subMulAction_fixingSubgroup R W).mulAction
+
+theorem smul_eq_iff (e : SpecialLinearGroup R V) (v w : { v : V | v ≠ 0}) :
+    e • v = w ↔ e • v.val = w.val := by
+  simp only [← Subtype.coe_inj]
+  exact Eq.congr_right rfl
 
 end action
 
@@ -580,8 +611,8 @@ theorem _root_.Module.Basis.sumExtend_apply_left {ι K V : Type*}
     Equiv.coe_trans, Function.comp_apply]
   rfl
 
-theorem exists_mem_transvections_apply_eq_of_indep
-    (u v : V) (h : LinearIndependent K ![u, v]) :
+theorem exists_mem_transvections_apply_eq_of_indep {u v : V}
+    (h : LinearIndependent K ![u, v]) :
     ∃ t ∈ transvections K V, v = t • u := by
   have : ∃ f : Dual K V, f (v - u) = 0 ∧ f u = 1 := by
     replace h : LinearIndepOn K ![u, v] ⊤ :=
@@ -600,19 +631,139 @@ theorem exists_mem_transvections_apply_eq_of_indep
   refine ⟨SpecialLinearGroup.transvection hvu, ⟨f, v - u, hvu, rfl⟩, ?_⟩
   simp [transvection, LinearMap.transvection.apply, hx]
 
+theorem exists_mem_transvections_apply_eq_of_indep'
+    {W : Submodule K V} {u v : V}
+    (hu : u ∉ W) (hv : u ∉ W)
+    (h : LinearIndependent K ![u, v]) :
+    ∃ t ∈ transvections K V, t ∈ fixingSubgroup _ W.carrier ∧ v = t • u := by
+  sorry /-
+  have : ∃ f : Dual K V, W ≤ LinearMap.ker f ∧ f (v - u) = 0 ∧ f u = 1 := by
+    replace h : LinearIndepOn K ![u, v] ⊤ :=
+      linearIndepOn_iff.mpr fun l a a_1 ↦ h a_1
+    set ι := ↑(⊤ : Set (Fin 2)) ⊕ ↑(Basis.sumExtendIndex h)
+    set b : Basis ι K V := Module.Basis.sumExtend h with hb
+    let i : ι := Sum.inl (⟨0, Set.mem_univ 0⟩)
+    let j : ι := Sum.inl (⟨1, Set.mem_univ 1⟩)
+    have hi : b i = u := Module.Basis.sumExtend_apply_left h ⟨0, Set.mem_univ 0⟩
+    have hj : b j = v := Basis.sumExtend_apply_left h ⟨1, Set.mem_univ 1⟩
+    use b.coord i + b.coord j
+    rw [← hi, ← hj]
+    have hij : i ≠ j := by simp [ne_eq, i, j, Sum.inl_injective.eq_iff]
+    simp [Finsupp.single_eq_of_ne hij, Finsupp.single_eq_of_ne' hij]
+  obtain ⟨f, hvu, hx⟩ := this
+  refine ⟨SpecialLinearGroup.transvection hvu, ⟨f, v - u, hvu, rfl⟩, ?_⟩
+  simp [transvection, LinearMap.transvection.apply, hx] -/
+
+section
+
+variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
+    (W : Submodule R V)
+
+theorem linearIndependent_sum (ι κ : Type*) (b : ι → W) (c : κ → V ⧸ W)
+    (hb : LinearIndependent R b) (hc : LinearIndependent R c) :
+    LinearIndependent R
+      (Sum.elim (fun i ↦ (b i : V)) ((Function.surjInv W.mkQ_surjective) ∘ c)) := by
+  rw [linearIndependent_iff]
+  intro a ha
+  set a' := Finsupp.sumFinsuppLEquivProdFinsupp R a with ha'
+  rw [← LinearEquiv.symm_apply_eq] at ha'
+  suffices a' = 0 by rw [← ha', this, map_zero]
+  rw [Prod.ext_iff]
+  simp only [Prod.fst_zero, Prod.snd_zero]
+  rw [← ha'] at ha
+  -- nonterminal simp
+  simp [Finsupp.linearCombination_apply, Finsupp.sum_sumElim] at ha
+  suffices a'.2 = 0 by
+    simp only [this, and_true]
+    rw [linearIndependent_iff] at hb
+    specialize hb a'.1
+    apply hb
+    rw [Finsupp.linearCombination_apply]
+    rwa [this, Finsupp.sum_zero_index, add_zero,
+      Finsupp.sum_congr (g2 := (fun i a ↦ W.subtype (a • (b i)))) (by simp),
+      ← map_finsuppSum, LinearMap.map_eq_zero_iff _ W.subtype_injective] at ha
+  replace ha := LinearMap.congr_arg (f := W.mkQ) ha
+  simp only [map_add] at ha
+  suffices W.mkQ _ = 0 by
+    rw [linearIndependent_iff] at hc
+    specialize hc a'.2
+    apply hc
+    rw [Finsupp.linearCombination_apply]
+    rwa [this, zero_add, map_finsuppSum, map_zero,
+      Finsupp.sum_congr (g2 := fun k a ↦ a • (c k))] at ha
+    intro k _
+    simp [Function.surjInv_eq W.mkQ_surjective (c k)]
+  rw [map_finsuppSum]
+  convert Finsupp.sum_zero with i r
+  simp only [Function.comp_apply, Sum.elim_inl, map_smul, Submodule.mkQ_apply]
+  convert smul_zero _
+  simp
+
+
+variable [Module.Free R W]
+    [Module.Free R (V ⧸ W)] [Module.Finite R V]
+    (f : V →ₗ[R] V) (hfW : W ≤ W.comap f)
+
+example (hfW : W ≤ W.comap f) : V ⧸ W →ₗ[R] V ⧸ W :=
+  Submodule.mapQ W W f hfW
+
+example (hfW : W ≤ W.comap f) : W →ₗ[R] W :=
+  f.restrict hfW
+
+#synth Module.Finite R (V ⧸ W)
+
+
+
+
+
+noncomputable example (ι κ : Type*) (b : Basis ι R W) (c : Basis κ R (V ⧸ W)) :
+    Basis (ι ⊕ κ) R V := by
+  have : Function.Surjective W.mkQ := by
+    exact Submodule.mkQ_surjective W
+  let w : V ⧸ W → V := Function.invFun W.mkQ
+  let v : (ι ⊕ κ) → V := Sum.elim (fun i ↦ b i) (fun k ↦ Function.invFun W.mkQ (c k))
+  apply Basis.mk (v := v)
+  · sorry
+  · sorry
+
+
+example : (V ⧸ W) →ₗ[R] V := by
+  have := Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)
+    (Module.Free.chooseBasis R S.X₃))
+
+
+example : f.det = (f.restrict hfW).det * (Submodule.mapQ W W f hfW).det := by
+  sorry
+
+end
+example (W : Submodule K V) :
+    fixingSubgroup (SpecialLinearGroup K V) W.carrier →* SpecialLinearGroup K (V ⧸ W) where
+  toFun e := sorry
+  map_mul' := sorry
+  map_one' := sorry
+
 example {ι : Type*} [Fintype ι] (v : ι → V) :
     Fintype.card ι = finrank K (Submodule.span K (Set.range v)) ↔
       LinearIndependent K v := by
   simp [linearIndependent_iff_card_eq_finrank_span, Set.finrank]
 
-variable (K V) in
-def subMulAction : SubMulAction (SpecialLinearGroup K V) V where
-  carrier := {v | v ≠ 0}
-  smul_mem' e v hv := by simpa using hv
-
-local instance :
-    MulAction (SpecialLinearGroup K V) {v : V | v ≠ 0} :=
-  (subMulAction K V).mulAction
+lemma linearIndependent_of_not_mem_span {x y z : V} (hx : x ≠ 0)
+    (hz : z ∉ Submodule.span K {x, y}) :
+    LinearIndependent K ![x, z] := by
+  rw [LinearIndependent.pair_iff]
+  intro s t hst
+  rw [and_comm]
+  by_contra! h'
+  apply hz
+  by_cases ht : t = 0
+  · exfalso
+    apply h' ht
+    simpa [ht, hx] using hst
+  rw [Submodule.mem_span_insert]
+  refine ⟨ -(s / t), 0, Submodule.zero_mem _, ?_⟩
+  rw [add_zero, ← sub_eq_zero, neg_smul, sub_neg_eq_add,
+    ← smul_eq_zero_iff_right ht, smul_add, smul_smul,
+    add_comm, mul_div_cancel₀ s ht, hst]
 
 theorem transvections_isPretransitive (h2 : 2 ≤ finrank K V) :
     MulAction.IsPretransitive (Subgroup.closure (transvections K V)) {v : V | v ≠ 0} where
@@ -621,41 +772,27 @@ theorem transvections_isPretransitive (h2 : 2 ≤ finrank K V) :
     wlog h : LinearIndependent K ![x.val , y.val] with hyp
     · suffices ∃ z : V, z ∉ Submodule.span K {x.val, y.val} by
         obtain ⟨z, hz⟩ := this
-        have {x y z : V} (hx : x ≠ 0)
---            (hxy : LinearIndependent K ![x, y])
-            (hz : z ∉ Submodule.span K {x, y}) :
-          LinearIndependent K ![x, z] := by
-          rw [LinearIndependent.pair_iff]
-          intro s t hst
-          rw [and_comm]
-          by_contra! h'
-          apply hz
-          by_cases ht : t = 0
-          · exfalso
-            apply h' ht
-            simpa [ht, hx] using hst
-          rw [Submodule.mem_span_insert]
-          refine ⟨ -(s / t), 0, Submodule.zero_mem _, ?_⟩
-          rw [add_zero, ← sub_eq_zero, neg_smul, sub_neg_eq_add,
-            ← smul_eq_zero_iff_right ht, smul_add, smul_smul,
-            add_comm, mul_div_cancel₀ s ht, hst]
-        have hxz : LinearIndependent K ![x.val, z] := this x.prop hz
+        have hz0 : z ≠ 0 := fun h ↦ hz <| by
+          rw [h]
+          exact zero_mem _
+        have hxz : LinearIndependent K ![x.val, z] := by
+          exact linearIndependent_of_not_mem_span x.prop hz
         have hzy : LinearIndependent K ![z, y.val] := by
           rw [LinearIndependent.pair_symm_iff]
-          apply this y.prop (y := x.val)
+          apply linearIndependent_of_not_mem_span y.prop (y := x.val)
           convert hz using 3
           grind
-        obtain ⟨g, hg⟩ := hyp h2 _ _ hxz
-        obtain ⟨h, hh⟩ := hyp h2 _ _ hzy
+        obtain ⟨g, hg⟩ := hyp h2 x ⟨z, hz0⟩ hxz
+        obtain ⟨h, hh⟩ := hyp h2 ⟨z, hz0⟩ y hzy
         use h * g
         simp [mul_smul, hg, hh]
-      suffices Submodule.span K {x, y} ≠ ⊤ by
+      suffices Submodule.span K {x.val, y.val} ≠ ⊤ by
         by_contra! hz
         apply this
         rw [eq_top_iff]
         exact fun z _ ↦ hz z
       intro h'
-      have : Set.finrank K {x, y} < 2 := by
+      have : Set.finrank K {x.val, y.val} < 2 := by
         apply Nat.lt_of_le_of_ne _ ?_
         · rw [← Finset.coe_pair]
           exact le_trans (finrank_span_finset_le_card _) Finset.card_le_two
@@ -665,11 +802,72 @@ theorem transvections_isPretransitive (h2 : 2 ≤ finrank K V) :
       apply this
       simp only [Set.finrank]
       rwa [h', finrank_top]
-    sorry
+    obtain ⟨g, hg, hgxy⟩ := exists_mem_transvections_apply_eq_of_indep h
+    use ⟨g, Subgroup.subset_closure hg⟩
+    simp only [Subgroup.smul_def, ne_eq, Set.coe_setOf]
+    rw [smul_eq_iff g x y, hgxy]
 
-theorem closure_transvection :
+example (W : Submodule K V) :
+    Set (fixingSubgroup (SpecialLinearGroup K V) W.carrier) := by
+  exact (fixingSubgroup  _ _).subtype ⁻¹' (transvections K V)
+
+open scoped Set.Notation in
+theorem transvections_isPretransitive_fixingSubgroup
+    (W : Submodule K V) (h2 : 2 ≤ finrank K V) :
+    MulAction.IsPretransitive
+      (Subgroup.closure
+        ((fixingSubgroup (SpecialLinearGroup K V) W.carrier).subtype ⁻¹' (transvections K V)))
+      {v : V | v ∉ W} where
+  exists_smul_eq x y := by
+    classical
+    wlog h : LinearIndependent K ![x.val , y.val] with hyp
+    · suffices ∃ z : V, z ∉ Submodule.span K {x.val, y.val} by
+        obtain ⟨z, hz⟩ := this
+        have hz0 : z ≠ 0 := fun h ↦ hz <| by
+          rw [h]
+          exact zero_mem _
+        have hxz : LinearIndependent K ![x.val, z] := by
+          exact linearIndependent_of_not_mem_span x.prop hz
+        have hzy : LinearIndependent K ![z, y.val] := by
+          rw [LinearIndependent.pair_symm_iff]
+          apply linearIndependent_of_not_mem_span y.prop (y := x.val)
+          convert hz using 3
+          grind
+        obtain ⟨g, hg⟩ := hyp h2 x ⟨z, hz0⟩ hxz
+        obtain ⟨h, hh⟩ := hyp h2 ⟨z, hz0⟩ y hzy
+        use h * g
+        simp [mul_smul, hg, hh]
+      suffices Submodule.span K {x.val, y.val} ≠ ⊤ by
+        by_contra! hz
+        apply this
+        rw [eq_top_iff]
+        exact fun z _ ↦ hz z
+      intro h'
+      have : Set.finrank K {x.val, y.val} < 2 := by
+        apply Nat.lt_of_le_of_ne _ ?_
+        · rw [← Finset.coe_pair]
+          exact le_trans (finrank_span_finset_le_card _) Finset.card_le_two
+        rw [eq_comm]
+        simpa [linearIndependent_iff_card_eq_finrank_span, Set.pair_comm] using h
+      rw [← not_le] at this
+      apply this
+      simp only [Set.finrank]
+      rwa [h', finrank_top]
+    obtain ⟨g, hg, hgxy⟩ := exists_mem_transvections_apply_eq_of_indep h
+    use ⟨g, Subgroup.subset_closure hg⟩
+    simp only [Subgroup.smul_def, ne_eq, Set.coe_setOf]
+    rw [smul_eq_iff g x y, hgxy]
+
+theorem closure_transvection [Module.Finite K V] :
     Subgroup.closure (transvections K V) = ⊤ := by
   rw [eq_top_iff]
+  nontriviality V
+  wlog h2 : 2 ≤ Module.finrank K V
+  · suffices Subsingleton (SpecialLinearGroup K V) by simp
+    rw [not_le, Nat.lt_succ_iff] at h2
+    apply subsingleton_of_finrank_eq_one
+    apply le_antisymm h2
+    rwa [Nat.add_one_le_iff, finrank_pos_iff]
   suffices ∀ (n : ℕ) (e : SpecialLinearGroup K V)
     (hn : n = finrank K (eigenspace (e : End K V) (1 : K))),
       e ∈ Subgroup.closure (transvections K V) by
@@ -701,7 +899,23 @@ theorem closure_transvection :
       -- f = 0 sur W, f u = 0
       -- e' v = (t f u) (e v) = e v + f (e v) • u = v
       -- u = v - e v, f (e v) = f (v) = 1
+      have := transvections_isPretransitive h2
+      have := this.exists_smul_eq
+        ⟨(e : End K V) v, fun h ↦ hv' <| by rw [h, eq_comm];simpa using h⟩
+        ⟨v, fun h ↦ hv' <| by rw [h, map_zero]⟩
+      obtain ⟨⟨t, ht⟩, htv⟩ := this
+      set e' := t * e with he'
+      rw [← inv_mul_eq_iff_eq_mul] at he'
+      rw [← he']
+      apply Subgroup.mul_mem _ (Subgroup.inv_mem _ ht)
+      apply hind _ _ e' rfl
       set W' := W ⊔ Submodule.span K {(e : End K V) v - v} with hW'
+      rw [gt_iff_lt, he]
+      apply Submodule.finrank_lt_finrank_of_lt
+      rw [lt_iff_le_and_ne]
+      constructor
+
+
       have hv' : v ∉ W' := fun h ↦ by
         rw [hW', Submodule.mem_sup] at h
         obtain ⟨w, hw, z, hz, hwz⟩ := h
@@ -710,16 +924,10 @@ theorem closure_transvection :
         have ha : a ≠ 0 := fun h ↦ by
           apply hv
           rwa [← hwz, h, zero_smul, add_zero]
-
-
-
-
-
-
-
-
+        sorry
       sorry
+
+end generation
 
 end SpecialLinearGroup
 
-end generation
