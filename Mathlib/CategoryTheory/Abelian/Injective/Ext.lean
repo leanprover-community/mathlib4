@@ -98,11 +98,8 @@ instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
 to the type of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
 to `R.cochainComplex`. -/
 noncomputable def extEquivCohomologyClass :
-    Ext X Y n ≃ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n := by
-  have hι' : HomologicalComplex.quasiIso C (ComplexShape.up ℤ) R.ι' := by
-    simp only [HomologicalComplex.mem_quasiIso_iff]
-    infer_instance
-  exact (SmallShiftedHom.postcompEquiv.{w} R.ι'
+    Ext X Y n ≃ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n :=
+  (SmallShiftedHom.postcompEquiv.{w} R.ι'
       (by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance)).trans
     CochainComplex.HomComplex.CohomologyClass.equivOfIsKInjective.{w}.symm
 
