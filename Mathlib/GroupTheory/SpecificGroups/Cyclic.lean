@@ -611,7 +611,7 @@ lemma finite_finOrder_zpow (g : α) (hp : ¬orderOf g = 0) :
     Finite (Subgroup.zpowers g) := by
   simp_all only [orderOf_eq_zero_iff, not_not, finiteCyclic_iff_finiteCarrier, finite_zpowers]
 
-lemma not_mem_zpowers_sq_of_orderOf_zero {g : α} (horder : orderOf g = 0) :
+theorem odd_not_mem_of_g_two {g : α} (horder : orderOf g = 0) :
     g ∉ (Subgroup.zpowers (g ^ 2)) := by
   intro hgmem
   rcases hgmem with ⟨z, hz⟩
@@ -664,7 +664,7 @@ theorem comm_simple_is_finite : Finite α := by
     intro htop
     have h1 : g ^ 1 ∈ Subgroup.zpowers g := by exact Subgroup.npow_mem_zpowers g 1
     have hn1 : g ^ 1 ∉ H := by
-      simpa [H] using not_mem_zpowers_sq_of_orderOf_zero (g := g) horder
+      simpa [H] using odd_not_mem_of_g_two (g := g) horder
     simp_all only [Subgroup.mem_top]
   have hneq_bot : H ≠ ⊥ := by
     intro hbot
@@ -878,9 +878,7 @@ theorem comm_simple_iso_ZMod_prime [CommGroup α] [IsSimpleGroup α] :
   have orderG : Nat.card α  = p := by exact Eq.symm (orderOf_eq_card_of_zpowers_eq_top hg)
   have FinG : Finite α  := by exact IsSimpleGroup.comm_simple_is_finite
   have hp : Nat.Prime p := by rw [← orderG]; apply IsSimpleGroup.prime_card
-  use p
-  refine Nonempty.intro ?_
-  rw [← orderG]
+  use p ; refine Nonempty.intro ?_ ; rw [← orderG]
   have e : ZMod (Nat.card α) ≃+ Additive α := by
     simpa using zmodAddCyclicAddEquiv (G := Additive α ) (by infer_instance)
   exact e.symm
