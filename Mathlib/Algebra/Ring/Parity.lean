@@ -354,7 +354,7 @@ lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
 end DistribNeg
 
 section DivisionMonoid
-variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {m n : ℤ}
+variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
 
 lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
