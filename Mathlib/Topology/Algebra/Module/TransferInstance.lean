@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Homeomorph.TransferInstance
 
 /-!
 # Transfer topological algebraic structures across `Equiv`s
