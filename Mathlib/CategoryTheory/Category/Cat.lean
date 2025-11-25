@@ -119,6 +119,9 @@ def _root_.CategoryTheory.NatTrans.toCatHom₂ {C D : Type u} [Category.{v} C]
     [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) : F.toCatHom ⟶ G.toCatHom where
   toNatTrans := η
 
+abbrev _root_.CategoryTheory.Cat.Hom₂.app {C D : Cat.{v, u}} {F G : C ⟶ D} (η : F ⟶ G) (X : C) :
+    F.toFunctor.obj X ⟶ G.toFunctor.obj X := η.toNatTrans.app X
+
 instance instCategory {X Y : Cat.{v, u}} : Category (X ⟶ Y) where
   id F := NatTrans.toCatHom₂ (𝟙 F.toFunctor)
   comp η₁ η₂ := NatTrans.toCatHom₂ (η₁.toNatTrans ≫ η₂.toNatTrans)
@@ -227,20 +230,20 @@ theorem Hom.comp_map {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} 
 
 @[simp]
 theorem Hom₂.id_app {C D : Cat.{v, u}} (F : C ⟶ D) (X : C) :
-    (𝟙 F : F ⟶ F).toNatTrans.app X = 𝟙 (F.toFunctor.obj X) := by
-  simp
+    (𝟙 F : F ⟶ F).app X = 𝟙 (F.toFunctor.obj X) := by
+  simp [Hom₂.app]
 
 @[simp]
 theorem Hom₂.comp_app {C D : Cat.{v, u}} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
-    (α ≫ β).toNatTrans.app X = α.toNatTrans.app X ≫ β.toNatTrans.app X := rfl
+    (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
 @[simp]
 theorem Hom₂.eqToHom_toNatTrans {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F = G) :
   (eqToHom h).toNatTrans = eqToHom congr(($h).toFunctor) := by cases h; simp
 
 theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
-    (eqToHom h).toNatTrans.app X = eqToHom congr(($h).toFunctor.obj X) := by
-  simp
+    (eqToHom h).app X = eqToHom congr(($h).toFunctor.obj X) := by
+  simp [Hom₂.app]
 
 @[simp, push_cast]
 lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
@@ -248,7 +251,7 @@ lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} 
 
 @[simp]
 lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
-    (F ◁ η).toNatTrans.app X = η.toNatTrans.app (F.toFunctor.obj X) := by simp
+    (F ◁ η).app X = η.app (F.toFunctor.obj X) := by simp [Hom₂.app]
 
 @[simp, push_cast]
 lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) :
@@ -256,7 +259,7 @@ lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E)
 
 @[simp]
 lemma whiskerRight_app {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
-    (η ▷ H).toNatTrans.app X = H.toFunctor.map (η.toNatTrans.app X) := by simp
+    (η ▷ H).app X = H.toFunctor.map (η.app X) := by simp [Hom₂.app]
 
 @[simp, push_cast]
 lemma Hom.toNatIso_leftUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
@@ -271,10 +274,10 @@ lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
 
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) :
-    (λ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
+    (λ_ F).hom.app X = eqToHom (by simp) := by simp [Hom₂.app]
 
 lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) :
-    (λ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
+    (λ_ F).inv.app X = eqToHom (by simp) := by simp [Hom₂.app]
 
 @[simp, push_cast]
 lemma Hom.toNatIso_rightUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
@@ -289,10 +292,10 @@ lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
 
 lemma rightUnitor_hom_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
-    (ρ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
+    (ρ_ F).hom.app X = eqToHom (by simp) := by simp [Hom₂.app]
 
 lemma rightUnitor_inv_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
-    (ρ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
+    (ρ_ F).inv.app X = eqToHom (by simp) := by simp [Hom₂.app]
 
 @[simp, push_cast]
 lemma Hom.toNatIso_associator {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
@@ -307,10 +310,10 @@ lemma associator_inv_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ 
     (α_ F G H).inv.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).inv := rfl
 
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).hom.toNatTrans.app X = eqToHom (by simp) := by simp
+    (α_ F G H).hom.app X = eqToHom (by simp) := by simp [Hom₂.app]
 
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).inv.toNatTrans.app X = eqToHom (by simp) := by simp
+    (α_ F G H).inv.app X = eqToHom (by simp) := by simp [Hom₂.app]
 
 /-- The identity in the category of categories equals the identity functor. -/
 theorem id_eq_id (X : Cat.{u, v}) : (𝟙 X : X ⟶ X).toFunctor = 𝟭 X := rfl
