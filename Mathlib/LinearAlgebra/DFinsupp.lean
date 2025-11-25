@@ -572,9 +572,11 @@ theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
     iSupIndep p ↔ Function.Injective (lsum ℕ fun i => (p i).subtype) :=
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
 
+omit [DecidableEq ι] in
 theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
     (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
+  classical
   simp_rw [iSupIndep_def, Submodule.disjoint_def]
   constructor
   · intro h s v hv hv0 i hi
@@ -586,15 +588,16 @@ theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) 
     obtain ⟨f, hf, rfl⟩ := (Submodule.mem_iSup_iff_exists_finsupp ..).mp hsup
     contrapose! h
     use insert i f.support, fun j ↦ if j = i then -f.sum fun _ x ↦ x else f j
-    refine ⟨fun j hj ↦ ?_, ?_, by grind [neg_eq_zero, Finsupp.mem_support_iff]⟩
+    refine ⟨fun j hj ↦ ?_, ?_, by grind⟩
     · beta_reduce
       split_ifs with h
       · exact (p j).neg_mem (h ▸ hx)
       · simpa [h] using hf j
     · specialize hf i
       simp at hf
-      grind [Finsupp.sum, Finset.sum_congr, Finsupp.mem_support_iff]
+      grind [Finsupp.sum, Finset.sum_congr]
 
+omit [DecidableEq ι] in
 theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
     (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by

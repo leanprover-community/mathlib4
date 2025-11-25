@@ -926,8 +926,7 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
-  ⟨by decide⟩
+instance instSubsingletonUnits : Subsingleton (ZMod 2)ˣ := ⟨by decide⟩
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
@@ -1296,3 +1295,12 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
+
+-- there is a faster proof with Module.toAddMonoidEnd
+instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
+    Subsingleton (Module (ZMod n) M) := by
+  obtain _ | n := n
+  · exact inferInstanceAs (Subsingleton (Module ℤ M))
+  refine ⟨fun m1 m2 ↦ Module.ext' _ _ fun r m ↦ ?_⟩
+  obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
+  rw [(letI := m1; Nat.cast_smul_eq_nsmul _ r m), Nat.cast_smul_eq_nsmul _ r m]

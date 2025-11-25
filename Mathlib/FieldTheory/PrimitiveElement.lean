@@ -143,7 +143,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
         Algebra.smul_def, add_sub_cancel_right, minpoly.aeval]
     · rw [eval_map, ← aeval_def, minpoly.aeval]
-  have h_splits : Splits ιEE' h :=
+  have h_splits : Splits (h.map ιEE') :=
     splits_of_splits_gcd_right ιEE' map_g_ne_zero (SplittingField.splits _)
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx
@@ -346,7 +346,7 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E]
     [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 theorem AlgHom.natCard_of_splits (L : Type*) [Field L] [Algebra F L]
-    (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
+    (hL : ∀ x : E, ((minpoly F x).map (algebraMap F L)).Splits) :
     Nat.card (E →ₐ[F] L) = finrank F E :=
   (AlgHom.natCard_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
     (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
@@ -354,7 +354,7 @@ theorem AlgHom.natCard_of_splits (L : Type*) [Field L] [Algebra F L]
 
 @[simp]
 theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
-    (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
+    (hL : ∀ x : E, ((minpoly F x).map (algebraMap F L)).Splits) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
   rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_splits F E L hL]
 
@@ -383,7 +383,7 @@ theorem primitive_element_iff_minpoly_degree_eq (α : E) :
   exact minpoly.ne_zero_of_finite F α
 
 variable [Algebra.IsSeparable F E] (A : Type*) [Field A] [Algebra F A]
-  (hA : ∀ x : E, (minpoly F x).Splits (algebraMap F A))
+  (hA : ∀ x : E, ((minpoly F x).map (algebraMap F A)).Splits)
 include hA
 
 theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :

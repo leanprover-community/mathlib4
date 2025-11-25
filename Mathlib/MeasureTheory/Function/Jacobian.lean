@@ -314,10 +314,8 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         (𝓝 (d * μ (closedBall 0 1))) := by
       convert L1
       exact (addHaar_image_continuousLinearMap _ _ _).symm
-    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) :=
-      (ENNReal.mul_lt_mul_right (measure_closedBall_pos μ _ zero_lt_one).ne'
-            measure_closedBall_lt_top.ne).2
-        hm
+    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) := by
+      gcongr; exacts [(measure_closedBall_pos μ _ zero_lt_one).ne', measure_closedBall_lt_top.ne]
     have H :
       ∀ᶠ b : ℝ in 𝓝[>] 0, μ (closedBall 0 b + A '' closedBall 0 1) < m * μ (closedBall 0 1) :=
       (tendsto_order.1 L2).2 _ I

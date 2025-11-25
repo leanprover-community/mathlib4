@@ -297,9 +297,7 @@ theorem le_weightedOrder_mul :
 theorem le_weightedOrder_pow (n : ℕ) : n • f.weightedOrder w ≤ (f ^ n).weightedOrder w := by
   induction n with
   | zero => simp
-  | succ n hn =>
-    simpa [add_smul] using
-      le_trans (add_le_add_right hn (f.weightedOrder w)) (le_weightedOrder_mul w)
+  | succ n hn => grw [succ_nsmul, pow_succ, hn, le_weightedOrder_mul]
 
 theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
     (f : ι → MvPowerSeries σ R) (s : Finset ι) :
