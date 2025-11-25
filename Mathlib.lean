@@ -855,6 +855,7 @@ public import Mathlib.Algebra.Order.Field.Subfield
 public import Mathlib.Algebra.Order.Floor
 public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Algebra.Order.Floor.Div
+public import Mathlib.Algebra.Order.Floor.Extended
 public import Mathlib.Algebra.Order.Floor.Ring
 public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Algebra.Order.Floor.Semiring
@@ -3524,6 +3525,7 @@ public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Data.Int.CharZero
 public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Data.Int.DivMod
+public import Mathlib.Data.Int.Fib
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Int.Interval
