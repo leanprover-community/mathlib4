@@ -65,17 +65,14 @@ instance : ToMessageData Parameter where
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
-> \`{foo}\` has the hypothes(is/es):
->
->   {p₁}
->
->   {p₂}
->
->    ⋮
->
->   {pₙ}
->
-> which (is/are) not used in the remainder of the type.
+```null
+`{foo}` has the hypothes(is/es):
+  • {p₁}
+  • {p₂}
+  ⋮
+  • {pₙ}
+which (is/are) not used in the remainder of the type.
+```
 -/
 def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
     (unusedInstanceBinders : Array Parameter) : MessageData :=
