@@ -48,7 +48,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
-* `isImmersion_iff_isImmersionAt`: `f` is an immersion iff `f` is an immersion at each `x`
 * The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
@@ -335,7 +334,7 @@ lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') 
   intro x hx
   simp
 
-/-- Being an immersion at `x` is stable under replacing `F` by an isomorphism copy. -/
+/-- Being an immersion at `x` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
@@ -521,7 +520,6 @@ use `IsImmersionOfComplement` instead.
 -/
 def IsImmersion (f : M → N) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
-  --∀ x, IsImmersionAt I J n f x
 
 namespace IsImmersion
 
@@ -541,7 +539,17 @@ lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
     IsImmersionOfComplement h.complement I J n f :=
   Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
-/-- If `f` is an immersion, it is an immersion at each point. -/
+/-- If `f` is an immersion, it is an immersion at each point.
+
+Note that the converse statement is false in general:
+if `f` is an immersion at each `x`, but with the choice of complement possibly depending on `x`,
+there need not be a global choice of complement for which `f` is an immersion at each point.
+The complement of `f` at `x` is isomorphic to the cokernel of `mfderiv I J f x`, but the `mfderiv`
+of `f` at (even nearby) points `x` and `x'` are not directly related. They have the same rank
+(the dimension of `E`, as will follow from injectivity), but if `E''` is infinite-dimensional this
+is not conclusive. If `E''` is infinite-dimensional, this dimension can indeed change between
+different connected of `M`.
+-/
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
   use h.complement, by infer_instance, by infer_instance, h.isImmersionOfComplement_complement x
