@@ -36,8 +36,6 @@ This shortens the overall argument, as the definition of submersions has the sam
   w.r.t. the chosen complement `F`.
 * `IsImmersion I J n f` means `f : M → N` is an immersion at every point `x : M`,
   w.r.t. some global choice of complement.
-  `isImmersion_iff_isImmersionAt` will prove this is equivalent to `f` being an
-  immersion at every point `x` (i.e., with respect to a complement that can depend on `x`).
 
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
@@ -51,7 +49,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 * The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
-* `IsImmersionAt.prodMap`: the product of two immersions is an immersion
+* `IsImmersionAt.prodMap`: the product of two immersions is an immersion.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
@@ -101,8 +99,9 @@ variable (F I J M N) in
 there exist charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that in these
 charts, `f` looks like the inclusion `u ↦ (u, 0)`.
 
-This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
-being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`. -/
+This definition has a fixed parameter `F`, which is a choice of complement of `E` in the model
+normed space `E'` of `N`: being an immersion at `x` includes a choice of linear isomorphism
+between `E × F` and `E'`. -/
 def ImmersionAtProp : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop :=
   fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E'',
     EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
@@ -125,7 +124,6 @@ variable (F I J n) in
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
-The chosen complement `F` is often not important
 
 NB. We don't know the particular atlasses used for `M` and `N`, so asking for `φ` and `ψ` to be
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
@@ -140,7 +138,7 @@ Unless you have a particular reason, prefer to use `IsImmersionAt` instead.
 irreducible_def IsImmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N)
 
--- Lift the universe from E'', to avoid a free universe parameter.
+-- Lift the universe from `E''`, to avoid a free universe parameter.
 variable (I J n) in
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -152,7 +150,7 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 Implicit in this definition is an abstract choice `F` of a complement of `E` in `E'`: being an
 immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`, which is
 where the choice of `F` enters.
-If you need closer control over the complement `F`, use `IsImmersionAtOfComplement` instead.
+If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
 -/
 irreducible_def IsImmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
@@ -249,8 +247,8 @@ lemma property (h : IsImmersionAtOfComplement F I J n f x) :
   rwa [IsImmersionAtOfComplement_def] at h
 
 /--
-If `f` is an immersion at `x`, it maps its domain chart's target to its codomain chart's target:
-`(h.domChart.extend I).target` to `(h.domChart.extend J).target`.
+If `f` is an immersion at `x`, it maps its domain chart's target `(h.domChart.extend I).target`
+to its codomain chart's target `(h.domChart.extend J).target`.
 
 Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
