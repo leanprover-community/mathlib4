@@ -47,7 +47,10 @@ syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 It uses cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments `α` and `β`
 with each other and the fifth and the sixth argument, and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
-`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
+`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `a ^ n` to `n • a`.
+
+If the translated declaration already exists (i.e. when using `existing` or `self`), this is
+inferred automatically using the function `guessReorder`.
 -/
 syntax reorderOption := &"reorder" " := " ((ident <|> num)+),*
 /--
