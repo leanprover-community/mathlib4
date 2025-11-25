@@ -290,7 +290,7 @@ theorem ContinuousWithinAt.diff_iff
     h.mono diff_subset⟩
 
 /-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
-requiring `T1Space α. -/
+requiring `T1Space α`. -/
 @[simp]
 theorem continuousWithinAt_diff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
