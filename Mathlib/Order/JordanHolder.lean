@@ -162,10 +162,9 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
   exact le_total i j
 
 theorem toList_sorted (s : CompositionSeries X) : s.toList.SortedLT :=
-  List.sortedLT_iff_get.2 fun i j h => by
-    dsimp only [RelSeries.toList]
-    rw [List.get_ofFn, List.get_ofFn]
-    exact s.strictMono h
+  List.IsChain.sortedLT <| by
+    simp_rw [List.isChain_iff_getElem, s.toList_getElem]
+    exact fun _ _ => s.strictMono (Nat.lt_succ_self _)
 
 theorem toList_nodup (s : CompositionSeries X) : s.toList.Nodup :=
   s.toList_sorted.nodup
@@ -173,13 +172,11 @@ theorem toList_nodup (s : CompositionSeries X) : s.toList.Nodup :=
 /-- Two `CompositionSeries` are equal if they have the same elements. See also `ext_fun`. -/
 @[ext]
 theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
-  toList_injective <|
-    List.Perm.eq_of_pairwise
-      (by
-        classical
-        exact List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup
-          (Finset.ext <| by simpa only [List.mem_toFinset, RelSeries.mem_toList]))
-      s₁.toList_sorted.pairwise s₂.toList_sorted.pairwise
+  toList_injective <| by
+      classical
+      exact (List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup
+          (by simpa only [Finset.ext_iff, List.mem_toFinset, RelSeries.mem_toList])).eq_of_pairwise'
+          s₁.toList_sorted.pairwise s₂.toList_sorted.pairwise
 
 @[simp]
 theorem le_last {s : CompositionSeries X} (i : Fin (s.length + 1)) : s i ≤ s.last :=

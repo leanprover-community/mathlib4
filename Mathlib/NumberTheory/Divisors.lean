@@ -183,8 +183,8 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
   have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
-  refine List.Perm.eq_of_pairwise' ?_ pairwise_divisorsAntidiagonalList_snd.reverse <|
-    pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id
+  refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
+    (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
     (nodup_divisorsAntidiagonalList.map Prod.swap_injective), mul_comm]
 

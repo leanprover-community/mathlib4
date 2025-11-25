@@ -535,19 +535,19 @@ theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.pairwise.nodup
 theorem sortedLE_iff_getElem : l.SortedLE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] ≤ l[j] :=
   sortedLE_iff_pairwise.trans pairwise_iff_getElem
-alias ⟨SortedLE.getElem_le_getElem, _⟩ := sortedLE_iff_getElem
+alias ⟨SortedLE.getElem_le_getElem, sortedLE_of_getElem_le_getElem⟩ := sortedLE_iff_getElem
 theorem sortedGE_iff_getElem : l.SortedGE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] ≤ l[i] :=
   sortedGE_iff_pairwise.trans pairwise_iff_getElem
-alias ⟨SortedGE.getElem_le_getElem, _⟩ := sortedGE_iff_getElem
+alias ⟨SortedGE.getElem_le_getElem, sortedGE_of_getElem_le_getElem⟩ := sortedGE_iff_getElem
 theorem sortedLT_iff_getElem : l.SortedLT ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] < l[j] :=
   sortedLT_iff_pairwise.trans pairwise_iff_getElem
-alias ⟨SortedLT.getElem_lt_getElem, _⟩ := sortedLT_iff_getElem
+alias ⟨SortedLT.getElem_lt_getElem, sortedLT_of_getElem_le_getElem⟩ := sortedLT_iff_getElem
 theorem sortedGT_iff_getElem : l.SortedGT ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[j] < l[i] :=
   sortedGT_iff_pairwise.trans pairwise_iff_getElem
-alias ⟨SortedGT.getElem_lt_getElem, _⟩ := sortedGT_iff_getElem
+alias ⟨SortedGT.getElem_lt_getElem, sortedGT_of_getElem_le_getElem⟩ := sortedGT_iff_getElem
 
 theorem sortedLE_iff_monotone : l.SortedLE ↔ Monotone l.get :=
   (sortedLE_iff_pairwise.trans pairwise_iff_get).trans monotone_iff_forall_lt.symm

@@ -429,7 +429,8 @@ def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where
       _ ≤ w[i1] := by
         obtain rfl | h := eq_or_lt_of_le hi
         · rfl
-        · exact List.sortedGE_iff_get.mp hw _ _ h
+        · apply hw.getElem_le_getElem
+          assumption
 
 theorem mem_ofRowLens {w : List ℕ} {hw : w.SortedGE} {c : ℕ × ℕ} :
     c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] :=

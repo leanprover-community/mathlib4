@@ -30,11 +30,8 @@ section sort
 def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
     [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
-    Perm.eq_of_pairwise' ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
-      (pairwise_mergeSort' IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
-      (pairwise_mergeSort' IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
+    ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm).eq_of_pairwise' (r := r)
+      (pairwise_mergeSort' _ _) (pairwise_mergeSort' _ _)
 
 section
 
@@ -48,7 +45,7 @@ theorem coe_sort : sort l r = mergeSort l (r · ·) :=
 
 @[simp]
 theorem pairwise_sort : (sort s r).Pairwise r :=
-  Quot.inductionOn s (pairwise_mergeSort _)
+  Quot.inductionOn s (pairwise_mergeSort' _)
 
 @[deprecated (since := "2025-10-11")]
 alias sort_sorted := pairwise_sort
