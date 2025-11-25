@@ -3,9 +3,10 @@ Copyright (c) 2025 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.Data.Set.Card
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Data.Set.Card
 
 /-!
 # Representation of components by a set of vertices
@@ -15,6 +16,8 @@ import Mathlib.Data.Set.Card
 * `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of
   components if it contains exactly one vertex from each component.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -86,7 +89,7 @@ lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedC
   · simpa [hrep.ncard_sdiff_of_notMem
       (by simpa [Set.ncard_image_of_injective, ← Nat.not_odd_iff_even] using h)] using h
   · have : K.supp.ncard ≠ 0 := Nat.ne_of_odd_add (Nat.not_even_iff_odd.mp h)
-    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by cutsat)]
+    rw [hrep.ncard_sdiff_of_mem (Nat.not_even_iff_odd.mp h), Nat.even_sub (by lia)]
     simpa [Nat.even_sub] using Nat.not_even_iff_odd.mp h
 
 end SimpleGraph

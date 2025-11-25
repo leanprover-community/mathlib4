@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Lattice
-import Batteries.Data.List.Pairwise
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lattice
+public import Batteries.Data.List.Pairwise
 
 /-!
 # Erasure of duplicates in a list
@@ -18,6 +20,8 @@ occurrence of each.
 
 duplicate, multiplicity, nodup, `nub`
 -/
+
+@[expose] public section
 
 
 universe u
@@ -97,7 +101,7 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
-    cutsat
+    lia
   · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
     have hal : a ∈ l.dedup := mem_dedup.2 h.1
     rw [← this, mem_cons, or_iff_not_imp_right] at hal
@@ -171,7 +175,7 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
       replicate_dedup n.succ_ne_zero]
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
-  simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
+  simp_rw [List.Nodup.count <| nodup_dedup l, mem_dedup]
 
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
   perm_iff_count.2 fun a =>

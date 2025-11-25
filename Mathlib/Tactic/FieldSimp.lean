@@ -3,19 +3,23 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Data.Ineq
-import Mathlib.Tactic.FieldSimp.Attr
-import Mathlib.Tactic.FieldSimp.Discharger
-import Mathlib.Tactic.FieldSimp.Lemmas
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.SynthesizeUsing
+module
+
+public meta import Mathlib.Data.Ineq
+public meta import Mathlib.Tactic.FieldSimp.Attr
+public meta import Mathlib.Tactic.FieldSimp.Discharger
+public meta import Mathlib.Tactic.FieldSimp.Lemmas
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.SynthesizeUsing
 
 /-!
 # `field_simp` tactic
 
 Tactic to clear denominators in algebraic expressions.
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -255,7 +259,7 @@ namespace DenomCondition
 
 /-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
 to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
-def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
+@[expose] def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
   | .none => Unit
   | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
   | .positive _ _ _ _ => Q(0 < NF.eval $(qNF.toNF L))
@@ -684,6 +688,10 @@ example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
   -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
 ```
 
+A very common pattern is `field_simp; ring` (clear denominators, then the resulting goal is
+solvable by the axioms of a commutative ring). The finishing tactic `field` is a shorthand for this
+pattern.
+
 Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
 side conditions. The `field_simp` tactic attempts to discharge these, and will omit such steps if it
 cannot discharge the corresponding side conditions. The discharger will try, among other things,
@@ -783,4 +791,4 @@ attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 /-!
  We register `field_simp` with the `hint` tactic.
  -/
-register_hint field_simp
+register_hint 1000 field_simp

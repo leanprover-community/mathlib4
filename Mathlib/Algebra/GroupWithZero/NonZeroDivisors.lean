@@ -3,11 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Regular.SMul
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -27,6 +29,8 @@ Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access th
 your own code.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -150,6 +154,9 @@ theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {c : M₀⁰} : x * c = 0 ↔ 
 lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ :=
   ⟨fun _ ↦ hx.mul_right_eq_zero.mp, fun _ ↦ hx.mul_left_eq_zero.mp⟩
 
+variable (M₀) in
+lemma isUnit_le_nonZeroDivisors : IsUnit.submonoid M₀ ≤ M₀⁰ := fun _ ↦ (·.mem_nonZeroDivisors)
+
 section Nontrivial
 variable [Nontrivial M₀]
 
@@ -205,7 +212,7 @@ theorem le_nonZeroDivisors_of_noZeroDivisors {S : Submonoid M₀} (hS : (0 : M�
   mem_nonZeroDivisors_of_ne_zero <| by rintro rfl; exact hS hx
 
 theorem powers_le_nonZeroDivisors_of_noZeroDivisors (hx : x ≠ 0) : Submonoid.powers x ≤ M₀⁰ :=
-  le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ pow_eq_zero)
+  le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ eq_zero_of_pow_eq_zero)
 
 end NoZeroDivisors
 

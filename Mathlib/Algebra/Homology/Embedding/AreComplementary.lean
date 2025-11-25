@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
 /-!
 # Complementary embeddings
@@ -18,6 +20,8 @@ we construct a quasi-isomorphism `shortComplexTruncLEX₃ToTruncGE` between
 the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K` and `K.truncGE e₂`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -276,12 +280,12 @@ end AreComplementary
 
 lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
-  disjoint i₁ i₂ := by dsimp; omega
+  disjoint i₁ i₂ := by dsimp; lia
   union i := by
     by_cases hi : i ≤ n₀
     · obtain ⟨k, rfl⟩ := Int.exists_add_of_le hi
-      exact Or.inl ⟨k, by dsimp; omega⟩
-    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by omega)
+      exact Or.inl ⟨k, by dsimp; lia⟩
+    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by lia)
       exact Or.inr ⟨k, rfl⟩
 
 end Embedding

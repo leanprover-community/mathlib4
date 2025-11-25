@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Induction
-import Mathlib.Data.List.Lex
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Lex
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -18,6 +20,8 @@ and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `IsChain r [a₁,
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
@@ -88,8 +92,6 @@ theorem IsChain.iff_mem_mem_tail {l : List α} :
 @[deprecated (since := "2025-09-24")] alias Chain'.iff_mem := IsChain.iff_mem
 @[deprecated (since := "2025-09-24")] alias Chain.iff_mem := IsChain.iff_mem_mem_tail
 
-@[deprecated (since := "2025-09-24")] alias isChain_cons := isChain_cons_cons
-
 theorem isChain_pair {x y} : IsChain R [x, y] ↔ R x y := by
   simp only [IsChain.singleton, isChain_cons_cons, and_true]
 
@@ -106,9 +108,7 @@ theorem isChain_isInfix : ∀ l : List α, IsChain (fun x y => [x, y] <:+: l) l
 
 theorem isChain_split {c : α} {l₁ l₂ : List α} :
     IsChain R (l₁ ++ c :: l₂) ↔ IsChain R (l₁ ++ [c]) ∧ IsChain R (c :: l₂) := by
-  induction l₁ using twoStepInduction generalizing l₂ with
-  | nil | singleton => grind
-  | cons_cons a b l₁ IH IH2 => simp only [cons_append, isChain_cons_cons] at IH ⊢; grind
+  induction l₁ using twoStepInduction generalizing l₂ with grind
 
 @[deprecated (since := "2025-09-24")]
 alias chain'_split := isChain_split
@@ -274,8 +274,14 @@ protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb :
 @[deprecated (since := "2025-09-19")]
 alias Chain.rel := IsChain.rel_cons
 
-theorem IsChain.tail {l : List α} : IsChain R l → IsChain R l.tail := by
-  induction l using twoStepInduction <;> grind
+theorem IsChain.of_cons {x} : ∀ {l : List α}, IsChain R (x :: l) → IsChain R l
+  | [] => fun _ => IsChain.nil
+  | _ :: _ => fun | .cons_cons _ h => h
+
+theorem IsChain.tail {l : List α} (h : IsChain R l) : IsChain R l.tail := by
+  cases l
+  · exact IsChain.nil
+  · exact h.of_cons
 
 @[deprecated (since := "2025-09-24")] alias Chain'.tail := IsChain.tail
 
@@ -290,31 +296,33 @@ theorem IsChain.rel_head? {x l} (h : IsChain R (x :: l)) ⦃y⦄ (hy : y ∈ hea
 
 @[deprecated (since := "2025-09-24")] alias Chain'.rel_head? := IsChain.rel_head?
 
-theorem IsChain.cons' {x} : ∀ {l : List α}, IsChain R l → (∀ y ∈ l.head?, R x y) →
+theorem IsChain.cons {x} : ∀ {l : List α}, IsChain R l → (∀ y ∈ l.head?, R x y) →
     IsChain R (x :: l)
   | [], _, _ => .singleton x
   | _ :: _, hl, H => hl.cons_cons <| H _ rfl
 
-@[deprecated (since := "2025-09-24")] alias Chain'.cons' := IsChain.cons'
+@[deprecated (since := "2025-10-16")] alias IsChain.cons' := IsChain.cons
+@[deprecated (since := "2025-09-24")] alias Chain'.cons' := IsChain.cons
 
 lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : IsChain R l) (h : R x (l.head l_ne_nil)) : IsChain R (x :: l) := by
-  refine hl.cons' fun y hy ↦ ?_
+  refine hl.cons fun y hy ↦ ?_
   convert h
-  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+  simpa [l.head?_eq_some_head l_ne_nil] using hy.symm
 
 @[deprecated (since := "2025-09-24")] alias Chain'.cons_of_ne_nil := IsChain.cons_of_ne_nil
 
-theorem isChain_cons' {x l} : IsChain R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ IsChain R l :=
-  ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
+theorem isChain_cons {x l} : IsChain R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ IsChain R l :=
+  ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons h₁⟩
 
-@[deprecated (since := "2025-09-24")] alias chain'_cons' := isChain_cons'
+@[deprecated (since := "2025-10-16")] alias isChain_cons' := isChain_cons
+@[deprecated (since := "2025-09-24")] alias chain'_cons' := isChain_cons
 
 theorem isChain_append :
     ∀ {l₁ l₂ : List α},
       IsChain R (l₁ ++ l₂) ↔ IsChain R l₁ ∧ IsChain R l₂ ∧ ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y
   | [], l => by simp
-  | [a], l => by simp [isChain_cons', and_comm]
+  | [a], l => by simp [isChain_cons, and_comm]
   | a :: b :: l₁, l₂ => by
     rw [cons_append, cons_append, isChain_cons_cons, isChain_cons_cons,
       ← cons_append, isChain_append, and_assoc]
@@ -376,7 +384,7 @@ theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain 
 @[deprecated (since := "2025-09-24")] alias Chain'.getElem := IsChain.getElem
 
 theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
-    ∀ (i : ℕ) (h : i + 1 < l.length), R (get l ⟨i, by cutsat⟩) (get l ⟨i + 1, h⟩) := by
+    ∀ (i : ℕ) (h : i + 1 < l.length), R (get l ⟨i, by lia⟩) (get l ⟨i + 1, h⟩) := by
   simp [isChain_iff_getElem]
 
 @[deprecated (since := "2025-09-24")] alias chain'_iff_forall_getElem := isChain_iff_getElem
@@ -385,7 +393,7 @@ theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
 theorem isChain_cons_iff_get {R} {a : α} {l : List α} : IsChain R (a :: l) ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
-        R (get l ⟨i, by cutsat⟩) (get l ⟨i+1, by cutsat⟩) := by
+        R (get l ⟨i, by lia⟩) (get l ⟨i+1, by lia⟩) := by
   cases l <;> grind [isChain_iff_get]
 
 theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
@@ -434,7 +442,7 @@ theorem isChain_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x
   induction l with
   | nil => grind
   | cons a l IH =>
-    rw [attachWith_cons, isChain_cons', isChain_cons', IH, and_congr_left]
+    rw [attachWith_cons, isChain_cons, isChain_cons, IH, and_congr_left]
     simp_rw [head?_attachWith]
     intros
     constructor <;>
@@ -472,7 +480,7 @@ alias exists_chain_of_relationReflTransGen := exists_isChain_cons_of_relationRef
 -/
 theorem exists_isChain_ne_nil_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b := by
-  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; use (a :: l); grind
+  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; grind
 
 /-- Given a chain `l`, such that a predicate `p` holds for its head if it is nonempty,
 and if `r x y → p x → p y`, then the predicate is true everywhere in the chain.
@@ -604,7 +612,7 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
   induction i with
   | zero => rfl
   | succ i h =>
-    rw [Function.iterate_succ', Function.comp_apply, h (by cutsat)]
+    rw [Function.iterate_succ', Function.comp_apply, h (by lia)]
     rw [List.isChain_iff_get] at hl
     apply hl
 
@@ -662,7 +670,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
   induction acc generalizing l with
   | intro a _ ih =>
     /- Bundle l with a proof that it is r-decreasing to form l' -/
-    have hl' := (List.isChain_cons'.1 hl).2
+    have hl' := (List.isChain_cons.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
       rcases l with - | ⟨b, l⟩
@@ -680,7 +688,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       · apply ih b hr
-      · apply ihl ⟨m, (List.isChain_cons'.1 hm).2⟩ hr
+      · apply ihl ⟨m, (List.isChain_cons.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :

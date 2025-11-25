@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-! Signs in constructions on homological complexes
 
@@ -24,13 +26,15 @@ satisfying certain properties (see `ComplexShape.TensorSigns`).
 
 -/
 
+@[expose] public section
+
 assert_not_exists Field TwoSidedIdeal
 
 variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
   (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
   (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape J)
 
-/-- A total complex shape for three complexes shapes `c₁`, `c₂`, `c₁₂` on three types
+/-- A total complex shape for three complex shapes `c₁`, `c₂`, `c₁₂` on three types
 `I₁`, `I₂` and `I₁₂` consists of the data and properties that will allow the construction
 of a total complex functor `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂` which
 sends `K` to a complex which in degree `i₁₂ : I₁₂` consists of the coproduct
@@ -161,8 +165,8 @@ instance : TotalComplexShape c c c where
 
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
-  rel_add p q r (hpq : q + 1 = p) := by dsimp; omega
-  add_rel p q r (hpq : q + 1 = p) := by dsimp; omega
+  rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
+  add_rel p q r (hpq : q + 1 = p) := by dsimp; lia
   ε'_succ := by
     rintro _ q rfl
     dsimp
@@ -173,8 +177,8 @@ lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n :=
 
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
-  rel_add p q r (hpq : p + 1 = q) := by dsimp; omega
-  add_rel p q r (hpq : p + 1 = q) := by dsimp; omega
+  rel_add p q r (hpq : p + 1 = q) := by dsimp; lia
+  add_rel p q r (hpq : p + 1 = q) := by dsimp; lia
   ε'_succ := by
     rintro p _ rfl
     dsimp

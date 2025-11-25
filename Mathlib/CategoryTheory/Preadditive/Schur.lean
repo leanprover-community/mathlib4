@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Simple
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+module
+
+public import Mathlib.Algebra.Group.Ext
+public import Mathlib.CategoryTheory.Simple
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
 # Schur's lemma
@@ -20,6 +22,8 @@ over an algebraically closed field `𝕜`:
 the hom space `X ⟶ Y` between simple objects `X` and `Y` is at most one dimensional,
 and is 1-dimensional iff `X` and `Y` are isomorphic.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -172,14 +176,14 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
     have le_one := finrank_hom_simple_simple_le_one 𝕜 X Y
     have zero_lt : 0 < finrank 𝕜 (X ⟶ Y) :=
       finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_nonzero f.hom).mp inferInstance⟩
-    cutsat
+    lia
 
 theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
-  cutsat
+  lia
 
 open scoped Classical in
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]

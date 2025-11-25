@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Tuple.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Lists from functions
@@ -19,6 +21,8 @@ The main statements pertain to lists generated using `List.ofFn`
 - `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -146,7 +150,7 @@ lemma find?_ofFn_eq_some {n} {f : Fin n → α} {p : α → Bool} {b : α} :
       ⟨hpb, ⟨⟨i, length_ofFn (f := f) ▸ hi⟩, by simpa using hfb, fun j hj ↦ by simpa using h j hj⟩⟩,
     fun ⟨hpb, i, hfb, h⟩ ↦
       ⟨hpb, ⟨i, (length_ofFn (f := f)).symm ▸ i.isLt, by simpa using hfb,
-        fun j hj ↦ by simpa using h ⟨j, by cutsat⟩ (by simpa using hj)⟩⟩⟩
+        fun j hj ↦ by simpa using h ⟨j, by lia⟩ (by simpa using hj)⟩⟩⟩
 
 lemma find?_ofFn_eq_some_of_injective {n} {f : Fin n → α} {p : α → Bool} {i : Fin n}
     (h : Function.Injective f) :

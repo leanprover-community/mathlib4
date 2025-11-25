@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Algebra.DirectSum.Algebra
+module
+
+public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
 # Tensor power of a semimodule over a commutative semiring
@@ -26,6 +28,8 @@ abbreviation for `⨂[R] i : Fin n, M`.
 In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplicative structure on
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -187,7 +191,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   congr 1 with j
   rw [Fin.append_assoc]
   refine congr_arg (Fin.append a (Fin.append b c)) (Fin.ext ?_)
-  rw [Fin.coe_cast, Fin.coe_cast]
+  rw [Fin.val_cast, Fin.val_cast]
 
 -- for now we just use the default for the `gnpow` field as it's easier.
 instance gmonoid : GradedMonoid.GMonoid fun i => ⨂[R]^i M :=

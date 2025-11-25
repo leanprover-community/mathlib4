@@ -3,13 +3,15 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Lemmas on the monotone multiplication typeclasses
@@ -17,6 +19,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by proving several
 lemmas that do not immediately follow from the typeclass specifications.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -109,20 +113,22 @@ local notation3 "α>0" => { x : α // 0 < x }
 variable [PartialOrder α]
 
 theorem posMulMono_iff_covariant_pos :
-    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
-  ⟨@PosMulMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
-    { elim a b c h := by
-        obtain ha | ha := a.prop.eq_or_lt
+    PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) where
+  mp _ := PosMulMono.to_covariantClass_pos_mul_le
+  mpr h :=
+    { mul_le_mul_of_nonneg_left a ha b c hbc := by
+        obtain ha | ha := ha.eq_or_lt
         · simp [← ha]
-        · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @CovariantClass.elim α>0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, ha⟩ _ _ hbc }
 
 theorem mulPosMono_iff_covariant_pos :
-    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
-  ⟨@MulPosMono.to_covariantClass_pos_mul_le _ _ _ _, fun h =>
-    { elim a b c h := by
-        obtain ha | ha := a.prop.eq_or_lt
+    MulPosMono α ↔ CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) where
+  mp _ := MulPosMono.to_covariantClass_pos_mul_le
+  mpr h :=
+    { mul_le_mul_of_nonneg_right a ha b c hbc := by
+        obtain ha | ha := ha.eq_or_lt
         · simp [← ha]
-        · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ h }⟩
+        · exact @CovariantClass.elim α>0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, ha⟩ _ _ hbc }
 
 theorem posMulReflectLT_iff_contravariant_pos :
     PosMulReflectLT α ↔ ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
@@ -705,15 +711,15 @@ section PartialOrder
 variable [PartialOrder α]
 
 theorem PosMulMono.toPosMulStrictMono [PosMulMono α] : PosMulStrictMono α where
-  elim := fun x _ _ h => (mul_le_mul_of_nonneg_left h.le x.2.le).lt_of_ne
-    (h.ne ∘ mul_left_cancel₀ x.2.ne')
+  mul_lt_mul_of_pos_left _a ha _b _c hbc :=
+    (mul_le_mul_of_nonneg_left hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_left_cancel₀ ha.ne')
 
 theorem posMulMono_iff_posMulStrictMono : PosMulMono α ↔ PosMulStrictMono α :=
   ⟨@PosMulMono.toPosMulStrictMono α _ _, @PosMulStrictMono.toPosMulMono α _ _⟩
 
 theorem MulPosMono.toMulPosStrictMono [MulPosMono α] : MulPosStrictMono α where
-  elim := fun x _ _ h => (mul_le_mul_of_nonneg_right h.le x.2.le).lt_of_ne
-    (h.ne ∘ mul_right_cancel₀ x.2.ne')
+  mul_lt_mul_of_pos_right _a ha _b _c hbc :=
+    (mul_le_mul_of_nonneg_right hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_right_cancel₀ ha.ne')
 
 theorem mulPosMono_iff_mulPosStrictMono : MulPosMono α ↔ MulPosStrictMono α :=
   ⟨@MulPosMono.toMulPosStrictMono α _ _, @MulPosStrictMono.toMulPosMono α _ _⟩
@@ -829,10 +835,8 @@ lemma one_div_nonneg : 0 ≤ 1 / a ↔ 0 ≤ a := one_div a ▸ inv_nonneg
 variable (G₀) in
 /-- For a group with zero, `PosMulReflectLT G₀` implies `PosMulStrictMono G₀`. -/
 theorem PosMulReflectLT.toPosMulStrictMono : PosMulStrictMono G₀ where
-  elim := by
-    rintro ⟨a, ha⟩ b c hlt
-    apply lt_of_mul_lt_mul_left _ (inv_pos_of_pos ha).le
-    simpa [ha.ne']
+  mul_lt_mul_of_pos_left a ha b c hbc :=
+    lt_of_mul_lt_mul_left (by simpa [ha.ne']) (inv_pos_of_pos ha).le
 
 variable (G₀) in
 /-- For a group with zero, `PosMulReflectLT G₀`
@@ -946,7 +950,7 @@ lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
 omit [ZeroLEOneClass G₀] in
 lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
     StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
-  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by cutsat)
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by lia)
 
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
@@ -1061,10 +1065,8 @@ lemma inv_pos : 0 < a⁻¹ ↔ 0 < a := by
 variable (G₀) in
 /-- For a group with zero, `MulPosReflectLT G₀` implies `MulPosStrictMono G₀`. -/
 theorem _root_.MulPosReflectLT.toMulPosStrictMono : MulPosStrictMono G₀ where
-  elim := by
-    rintro ⟨a, ha⟩ b c hlt
-    apply lt_of_mul_lt_mul_right _ (inv_pos.2 ha).le
-    simpa [ha.ne']
+  mul_lt_mul_of_pos_right a ha b c hbc :=
+    lt_of_mul_lt_mul_right (by simpa [ha.ne']) (inv_pos.2 ha).le
 
 lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
 
@@ -1344,7 +1346,7 @@ attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPo
   PosMulStrictMono.toMulPosStrictMono PosMulReflectLT.toMulPosReflectLT
 
 /-- See `le_inv_mul_iff₀` for a version with multiplication on the other side. -/
-lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b := by
+lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ a * c ≤ b := by
   rw [le_inv_mul_iff₀ hc, mul_comm]
 
 /-- See `inv_mul_le_iff₀` for a version with multiplication on the other side. -/

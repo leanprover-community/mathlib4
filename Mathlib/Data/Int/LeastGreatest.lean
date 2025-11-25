@@ -3,10 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Bounds.Defs
 
 /-! # Least upper bound and greatest lower bound properties for integers
 
@@ -37,6 +39,8 @@ counterpart of this statement for the least element.
 integer numbers, least element, greatest element
 -/
 
+@[expose] public section
+
 
 namespace Int
 
@@ -49,9 +53,8 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
     let ⟨elt, Helt⟩ := Hinh
     match elt, le.dest (Hb _ Helt), Helt with
     | _, ⟨n, rfl⟩, Hn => ⟨n, Hn⟩
-  ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h =>
-    match z, le.dest (Hb _ h), h with
-    | _, ⟨_, rfl⟩, h => add_le_add_left (Int.ofNat_le.2 <| Nat.find_min' _ h) _⟩
+  ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h => by
+    obtain ⟨n, rfl⟩ := le.dest (Hb _ h); grw [Int.ofNat_le.2 <| Nat.find_min' EX h]⟩
 
 /-- `Int.leastOfBdd` is the least integer satisfying a predicate which is false for all `z : ℤ` with
 `z < b` for some fixed `b : ℤ`. -/

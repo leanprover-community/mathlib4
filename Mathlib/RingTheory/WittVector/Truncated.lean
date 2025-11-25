@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.InitTail
+module
+
+public import Mathlib.RingTheory.WittVector.InitTail
 
 /-!
 
@@ -33,6 +35,8 @@ The ring of Witt vectors is the projective limit of all the rings of truncated W
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 open Function (Injective Surjective)
@@ -366,7 +370,7 @@ theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (truncate (p :
 theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
     (truncate hm x).coeff i = x.coeff (Fin.castLE hm i) := by
   obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ x
-  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.coe_castLE]
+  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.val_castLE]
 
 end
 

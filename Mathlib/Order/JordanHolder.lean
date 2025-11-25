@@ -3,12 +3,14 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.Lattice
-import Mathlib.Data.List.Sort
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Order.RelSeries
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Data.List.Sort
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Equiv.Functor
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Order.RelSeries
 
 /-!
 # Jordan-Hölder Theorem
@@ -67,6 +69,8 @@ instances should not be a global instance.
 > be obtained via `ModularLattice`. This is not the case in `mathlib4`.
 > See `JordanHolderModule.instJordanHolderLattice`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -222,7 +226,7 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
   rw [last_eraseLast, last]
-  have := s.step ⟨s.length - 1, by cutsat⟩
+  have := s.step ⟨s.length - 1, by lia⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
   convert this using 3
   exact (tsub_add_cancel_of_le h).symm

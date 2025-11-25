@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function
@@ -99,6 +101,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 In this file, we denote `⊤ : ℕ∞` with `∞`.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -190,7 +194,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (by norm_cast; cutsat)
+      apply (H m.succ).fderivWithin m (by norm_cast; lia)
     · intro m _
       apply (H m).cont m (by simp)
 

@@ -3,8 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.List.Chain
 
 /-!
 # List of Booleans
@@ -14,6 +18,8 @@ we prove that the number of `false`s plus the number of `true` equals the length
 we prove that in a list with alternating `true`s and `false`s, the number of `true`s differs from
 the number of `false`s by at most one. We provide several versions of these statements.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -75,9 +81,9 @@ theorem count_not_le_count_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
   · exact zero_le _
   obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
   · rw [count_cons_of_ne b.not_ne_self.symm, count_cons_self, hl.count_not_cons, add_assoc]
-    cutsat
+    lia
   · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm, hl.count_not_cons]
-    cutsat
+    lia
 
 theorem count_false_le_count_true_add_one (hl : IsChain (· ≠ ·) l) :
     count false l ≤ count true l + 1 :=

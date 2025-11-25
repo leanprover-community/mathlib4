@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupWithZero.Associated
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -14,6 +16,8 @@ This file contains some theorems relating definitions in `Algebra.Associated`
 and products of multisets, finsets, and finsupps.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -62,7 +66,6 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
   | insert j s hjs IH =>
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
-    rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
     grind [Associated.mul_mul]
 
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero M₀] {p : M₀} (hp : Prime p)
@@ -87,18 +90,18 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
     apply subset_closure
     simp only [Set.mem_setOf]
     simp only [Multiset.prod_zero] at hprod
-    left; exact isUnit_of_mul_eq_one _ _ hprod.symm
+    left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
     simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
     simp only [Multiset.prod_cons] at hprod
     simp only [Set.mem_setOf_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
-      refine hind x (y*k) ?_ hs ?_
+      refine hind x (y * k) ?_ hs ?_
       · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
         refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure ?_,
           Multiset.forall_mem_cons.2 ⟨subset_closure ?_, fun t ht => subset_closure (hs t ht)⟩⟩)
-        · left; exact isUnit_of_mul_eq_one_right _ _ hk
+        · left; exact .of_mul_eq_one_right _ hk
         · left; exact ha₁
       · rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
         left; exact hprod
@@ -222,12 +225,8 @@ theorem Prime.dvd_finsuppProd_iff {f : M₀ →₀ M} {g : M₀ → M → ℕ} {
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 
-@[deprecated (since := "2025-04-06")] alias Prime.dvd_finsupp_prod_iff := Prime.dvd_finsuppProd_iff
-
 theorem Prime.not_dvd_finsuppProd {f : M₀ →₀ M} {g : M₀ → M → ℕ} {p : ℕ} (pp : Prime p)
     (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
   Prime.not_dvd_finset_prod pp hS
-
-@[deprecated (since := "2025-04-06")] alias Prime.not_dvd_finsupp_prod := Prime.not_dvd_finsuppProd
 
 end CommMonoidWithZero

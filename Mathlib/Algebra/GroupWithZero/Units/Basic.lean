@@ -3,12 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Int.Basic
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Spread
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -16,6 +18,8 @@ import Mathlib.Tactic.Spread
 We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Equiv Subtype.restrict Multiplicative Ring
 
@@ -284,6 +288,7 @@ lemma mul_one_div_cancel (h : a ≠ 0) : a * (1 / a) = 1 := h.isUnit.mul_one_div
 
 lemma one_div_mul_cancel (h : a ≠ 0) : 1 / a * a = 1 := h.isUnit.one_div_mul_cancel
 
+@[simp]
 lemma div_left_inj' (hc : c ≠ 0) : a / c = b / c ↔ a = b := hc.isUnit.div_left_inj
 
 lemma div_eq_iff (hb : b ≠ 0) : a / b = c ↔ a = c * b := hb.isUnit.div_eq_iff
@@ -331,7 +336,7 @@ lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m *
 
 lemma pow_sub_of_lt (a : G₀) (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (Nat.ne_of_gt <| Nat.sub_pos_of_lt h), zero_pow (by cutsat), zero_mul]
+  · rw [zero_pow (Nat.ne_of_gt <| Nat.sub_pos_of_lt h), zero_pow (by lia), zero_mul]
   · exact pow_sub₀ _ ha <| Nat.le_of_lt h
 
 lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
