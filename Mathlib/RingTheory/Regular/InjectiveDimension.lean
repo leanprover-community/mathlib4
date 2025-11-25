@@ -67,12 +67,6 @@ section
 
 open CategoryTheory
 
-lemma AddCommGrpCat.subsingleton_of_isZero {G : AddCommGrpCat} (h : Limits.IsZero G) :
-    Subsingleton G := by
-  apply subsingleton_of_forall_eq 0 (fun g ↦ ?_)
-  rw [← AddMonoidHom.id_apply G g, ← AddCommGrpCat.hom_id]
-  simp [(CategoryTheory.Limits.IsZero.iff_id_eq_zero G).mp h]
-
 end
 
 universe w v u
@@ -294,22 +288,22 @@ universe u'
 
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
-instance : (ModuleCat.restrictScalars.{v} f).Additive where
+private instance : (ModuleCat.restrictScalars.{v} f).Additive where
   map_add := by simp
 
-lemma ModuleCat.restrictScalars_map_exact (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
+lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
     (S.map (ModuleCat.restrictScalars.{v} f)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
   exact h
 
-instance : Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
+private instance : Limits.PreservesFiniteLimits (ModuleCat.restrictScalars.{v} f) := by
   have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
-    (ModuleCat.restrictScalars_map_exact f)
+    (ModuleCat.restrictScalars_map_exact' f)
   exact this.1
 
-instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
+private instance : Limits.PreservesFiniteColimits (ModuleCat.restrictScalars.{v} f) := by
   have := ((CategoryTheory.Functor.exact_tfae (ModuleCat.restrictScalars.{v} f)).out 1 3).mp
-    (ModuleCat.restrictScalars_map_exact f)
+    (ModuleCat.restrictScalars_map_exact' f)
   exact this.2
 
 /-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
