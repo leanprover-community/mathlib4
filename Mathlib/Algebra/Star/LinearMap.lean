@@ -3,9 +3,12 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.TensorProduct
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -22,10 +25,13 @@ is mathematically distinct from the global instance on `E →ₗ[𝕜] E` where
 For that reason, the intrinsic star operation is scoped to `IntrinsicStar`.
 -/
 
-namespace LinearMap
+@[expose] public section
+
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
   [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
   [AddCommMonoid F] [Module R F] [StarAddMonoid F] [StarModule R F]
+
+namespace LinearMap
 
 /-- The intrinsic star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
@@ -115,3 +121,44 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 end TensorProduct
 
 end LinearMap
+
+namespace Module.End
+
+open scoped IntrinsicStar
+
+/-- Intrinsic star operation for `(End R E)ˣ`. -/
+def Units.intrinsicStar : Star (End R E)ˣ where
+  star f := by
+    refine ⟨star f, star (f⁻¹ : (End R E)ˣ), ?_, ?_⟩
+    all_goals
+      rw [mul_eq_comp, ← LinearMap.intrinsicStar_comp]
+      simp [← mul_eq_comp, one_eq_id]
+
+scoped[IntrinsicStar] attribute [instance] Module.End.Units.intrinsicStar
+
+theorem IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) : IsUnit (star f) :=
+  have ⟨u, hu⟩ := hf
+  hu ▸ (star u).isUnit
+
+open Module.End in
+@[simp] theorem isUnit_intrinsicStar_iff {f : End R E} : IsUnit (star f) ↔ IsUnit f :=
+  ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
+
+section eigenspace
+variable {R V : Type*} [CommRing R] [InvolutiveStar R] [AddCommGroup V] [StarAddMonoid V]
+  [Module R V] [StarModule R V]
+
+open LinearMap
+
+theorem mem_eigenspace_intrinsicStar_iff (f : End R V) (α : R) (x : V) :
+    x ∈ (star f).eigenspace α ↔ star x ∈ f.eigenspace (star α) := by
+  simp_rw [mem_eigenspace_iff, intrinsicStar_apply, star_eq_iff_star_eq, star_smul, eq_comm]
+
+@[simp]
+theorem spectrum_intrinsicStar (f : End R V) : spectrum R (star f) = star (spectrum R f) := by
+  ext x
+  simp_rw [Set.mem_star, spectrum.mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one]
+  rw [← isUnit_intrinsicStar_iff, star_sub, star_star, star_smul, one_eq_id, intrinsicStar_id]
+
+end eigenspace
+end Module.End

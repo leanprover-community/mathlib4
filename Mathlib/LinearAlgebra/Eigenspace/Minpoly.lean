@@ -3,10 +3,12 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 eigenvalue, minimal polynomial
 -/
+
+@[expose] public section
 
 
 universe u v w

@@ -3,13 +3,17 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 
 /-! # The characteristic polynomial of base change -/
+
+@[expose] public section
 
 variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
