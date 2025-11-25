@@ -92,16 +92,17 @@ def LinearOrder.toDecidableLE' : DecidableLE' α := fun a b => toDecidableLE b a
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
 
-lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
+@[to_dual self] lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
-lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
-lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
+@[to_dual self] lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
+@[to_dual self] lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
 @[to_dual gt_trichotomy]
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by grind
 
+@[to_dual self]
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
   | Or.inl hlt => le_of_lt hlt
@@ -110,12 +111,12 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
 
-lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
+@[to_dual self] lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
 @[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
 
-lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
+@[to_dual self] lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
 
 @[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
 
@@ -125,13 +126,10 @@ lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by grind
 @[to_dual ne_iff_gt_or_lt]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
 
-lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
+@[to_dual self] lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[simp, push] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp, push] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
-
-attribute [to_dual self (reorder := a b)]
-  le_total le_of_not_ge lt_of_not_ge le_of_not_gt lt_or_ge le_or_gt lt_iff_not_ge not_lt not_le
+@[simp, push, to_dual self] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp, push, to_dual self] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 @[to_dual eq_or_lt_of_not_gt]
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
@@ -139,7 +137,7 @@ lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
 
 @[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_gt fun h' => not_le_of_gt (H h') h
