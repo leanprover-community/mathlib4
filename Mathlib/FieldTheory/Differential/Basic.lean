@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.MapCoeffs
-import Mathlib.FieldTheory.PrimitiveElement
+module
+
+public import Mathlib.RingTheory.Derivation.MapCoeffs
+public import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Differential Fields
@@ -12,6 +14,8 @@ import Mathlib.FieldTheory.PrimitiveElement
 This file defines the logarithmic derivative `Differential.logDeriv` and proves properties of it.
 This is defined algebraically, compared to `logDeriv` which is analytical.
 -/
+
+@[expose] public section
 
 namespace Differential
 
@@ -34,13 +38,12 @@ lemma logDeriv_one : logDeriv (1 : R) = 0 := by
 
 lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
   unfold logDeriv
-  field_simp
+  simp [field]
   ring
 
 lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
   unfold logDeriv
-  field_simp [Derivation.leibniz_div, smul_sub]
-  ring
+  simp [field, Derivation.leibniz_div]
 
 @[simp]
 lemma logDeriv_pow (n : ℕ) (a : R) : logDeriv (a ^ n) = n * logDeriv a := by

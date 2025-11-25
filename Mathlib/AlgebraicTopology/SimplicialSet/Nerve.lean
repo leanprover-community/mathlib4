@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.ComposableArrows
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 
@@ -19,6 +21,8 @@ which is the category `Fin (n + 1) ⥤ C`.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+@[expose] public section
 
 open CategoryTheory.Category Simplicial
 
@@ -57,7 +61,25 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
 
 namespace nerve
 
+/-- Nerves of finite non-empty ordinals are representable functors. -/
+def representableBy {n : ℕ} (α : Type u) [Preorder α] (e : α ≃o Fin (n + 1)) :
+    (nerve α).RepresentableBy ⦋n⦌ where
+  homEquiv := SimplexCategory.homEquivFunctor.trans
+    { toFun F := F ⋙ e.symm.monotone.functor
+      invFun F := F ⋙ e.monotone.functor
+      left_inv F := Functor.ext (fun x ↦ by simp)
+      right_inv F := Functor.ext (fun x ↦ by simp) }
+  homEquiv_comp _ _ := rfl
+
 variable {C : Type*} [Category C] {n : ℕ}
+
+lemma δ_obj {n : ℕ} (i : Fin (n + 2)) (x : (nerve C) _⦋n + 1⦌) (j : Fin (n + 1)) :
+    ((nerve C).δ i x).obj j = x.obj (i.succAbove j) :=
+  rfl
+
+lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : (nerve C) _⦋n⦌) (j : Fin (n + 2)) :
+    ((nerve C).σ i x).obj j = x.obj (i.predAbove j) :=
+  rfl
 
 lemma δ₀_eq {x : nerve C _⦋n + 1⦌} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
@@ -78,6 +100,12 @@ theorem δ₁_mk₂_eq : (nerve C).δ 1 (ComposableArrows.mk₂ f g) = Composabl
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
 end
+
+@[ext]
+lemma ext_of_isThin [Quiver.IsThin C] {n : SimplexCategoryᵒᵖ} {x y : (nerve C).obj n}
+    (h : x.obj = y.obj) :
+    x = y :=
+  ComposableArrows.ext (by simp [h]) (by subsingleton)
 
 end nerve
 

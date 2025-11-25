@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Sigma
-import Mathlib.Data.DFinsupp.Submonoid
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.DFinsupp.Sigma
+public import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -21,6 +23,8 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
+
+@[expose] public section
 
 open Function
 
@@ -120,7 +124,7 @@ variable {β}
 theorem of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
   DFinsupp.single_eq_same
 
-theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
+theorem of_eq_of_ne (i j : ι) (x : β i) (h : j ≠ i) : (of _ i x) j = 0 :=
   DFinsupp.single_eq_of_ne h
 
 lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
@@ -270,8 +274,7 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
     invFun := of (fun _ => M) default
     left_inv := fun x =>
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
-        rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
+        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by grind
     right_inv := fun _ => toAddMonoid_of _ _ _ }
 
 section CongrLeft
@@ -349,9 +352,6 @@ theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
 
-@[deprecated (since := "2025-04-06")]
-alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
-
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
@@ -361,9 +361,9 @@ theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [Set
 theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
-  obtain rfl | h := Decidable.eq_or_ne i j
+  obtain rfl | h := Decidable.eq_or_ne j i
   · rw [DirectSum.of_eq_same, if_pos rfl]
-  · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
+  · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h.symm, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.

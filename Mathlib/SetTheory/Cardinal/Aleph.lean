@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
-import Mathlib.SetTheory.Ordinal.Enum
+module
+
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
+public import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
 # Omega, aleph, and beth functions
@@ -36,6 +38,8 @@ The following notations are scoped to the `Cardinal` namespace.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
   `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
 
@@ -513,6 +517,10 @@ theorem preBeth_le_preBeth {o₁ o₂ : Ordinal} : preBeth o₁ ≤ preBeth o₂
   preBeth_strictMono.le_iff_le
 
 @[simp]
+theorem preBeth_inj {o₁ o₂ : Ordinal} : preBeth o₁ = preBeth o₂ ↔ o₁ = o₂ :=
+  preBeth_strictMono.injective.eq_iff
+
+@[simp]
 theorem preBeth_zero : preBeth 0 = 0 := by
   rw [preBeth]
   simp
@@ -538,7 +546,7 @@ theorem isNormal_preBeth : Order.IsNormal preBeth := by
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | (n + 1) => by
+  | n + 1 => by
     rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
     simp
 
@@ -560,6 +568,25 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
 
+@[simp]
+theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
+  simpa using preBeth_inj (o₂ := 0)
+
+theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSuccLimit o := by
+  by_cases H : IsSuccLimit o
+  · refine iff_of_true ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩ H
+    rw [preBeth_limit H.isSuccPrelimit] at ha
+    rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+    have := power_le_power_left two_ne_zero ha.le
+    rw [← preBeth_succ] at this
+    exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
+  · apply iff_of_false _ H
+    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff'] at H
+    obtain ho | ⟨a, rfl⟩ := H
+    · simp [ho.eq_bot]
+    · intro h
+      simpa using h.two_power_lt (preBeth_strictMono (lt_succ a))
+
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
 
@@ -580,7 +607,7 @@ theorem preBeth_le_beth (o : Ordinal) : preBeth o ≤ ℶ_ o :=
   preBeth_le_preBeth.2 (Ordinal.le_add_left _ _)
 
 theorem beth_strictMono : StrictMono beth :=
-  preBeth_strictMono.comp fun _ _ h ↦ add_lt_add_left h _
+  preBeth_strictMono.comp fun _ _ h ↦ by gcongr
 
 theorem beth_mono : Monotone beth :=
   beth_strictMono.monotone
@@ -619,17 +646,7 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
-  rcases eq_or_ne o 0 with (rfl | h)
-  · rw [beth_zero]
-    exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
-    rw [beth_limit] at ha
-    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-      have := power_le_power_left two_ne_zero ha.le
-      rw [← beth_succ] at this
-      exact this.trans_lt (beth_strictMono (H.succ_lt hi))
-    · rw [isSuccLimit_iff]
-      exact ⟨h, H⟩
+theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
+  rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
 
 end Cardinal

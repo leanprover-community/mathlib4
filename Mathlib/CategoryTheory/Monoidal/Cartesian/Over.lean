@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 
 /-!
 
@@ -14,6 +16,8 @@ We provide a `CartesianMonoidalCategory (Over X)` instance via pullbacks, and pr
 for the induced `MonoidalCategory (Over X)` instance.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Over
 
@@ -33,7 +37,7 @@ noncomputable abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCatego
 
 attribute [local instance] cartesianMonoidalCategory
 
-/-- `Over X` is braided wrt the cartesian monoidal structure given by `Limits.pullback`. -/
+/-- `Over X` is braided w.r.t. the Cartesian monoidal structure given by `Limits.pullback`. -/
 noncomputable abbrev braidedCategory (X : C) : BraidedCategory (Over X) :=
   .ofCartesianMonoidalCategory
 

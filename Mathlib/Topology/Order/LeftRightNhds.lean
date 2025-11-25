@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Algebra.Ring.Pointwise.Set
+public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
@@ -14,6 +16,8 @@ import Mathlib.Topology.Order.Basic
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -107,7 +111,7 @@ space is second-countable. -/
 theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
   /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
-  is the whole space, as one can not use it inside the subspace since it doesn't have the order
+  is the whole space, as one cannot use it inside the subspace since it doesn't have the order
   topology. Instead, we follow the main steps of its proof. -/
   let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
   suffices H : t.Countable by
@@ -418,9 +422,6 @@ variable (α) in
 theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
     (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
-
-@[deprecated (since := "2025-03-18")]
-alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
 
 /-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
 form a basis of neighborhoods of `a`.

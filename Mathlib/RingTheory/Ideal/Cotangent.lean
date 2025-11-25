@@ -3,15 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.Filtration
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Nakayama
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -24,10 +26,12 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 -/
 
+@[expose] public section
+
 
 namespace Ideal
 
--- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
+-- Universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]

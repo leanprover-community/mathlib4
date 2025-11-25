@@ -224,7 +224,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
     calc
       (#M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact mod_cast card_le_two_pow_mul_sqrt
       _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
-      _ = x / 2 := by field_simp [x, mul_right_comm, ← pow_succ]
+      _ = x / 2 := by simp [field, x, ← pow_succ]
   refine lt_irrefl (x : ℝ) ?_
   calc
     (x : ℝ) = (#U' : ℝ) + (#M' : ℝ) := by assumption_mod_cast

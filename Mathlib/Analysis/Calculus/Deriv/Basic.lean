@@ -3,8 +3,12 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Calculus.TangentCone.DimOne
+public import Mathlib.Analysis.Calculus.TangentCone.Real
 
 /-!
 
@@ -85,6 +89,8 @@ The strategy to construct simp lemmas that give the simplifier the possibility t
 derivatives is the same as the one for differentiability statements, as explained in
 `FDeriv/Basic.lean`. See the explanations there.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -236,11 +242,6 @@ theorem derivWithin_zero_of_not_accPt (h : ¬AccPt x (𝓟 s)) : derivWithin f s
 theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = 0 :=
   derivWithin_zero_of_not_accPt <| mt AccPt.uniqueDiffWithinAt h
-
-set_option linter.deprecated false in
-@[deprecated derivWithin_zero_of_not_accPt (since := "2025-04-20")]
-theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
-  rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
 
 theorem derivWithin_zero_of_notMem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_notMem_closure h, ContinuousLinearMap.zero_apply]
@@ -593,6 +594,12 @@ theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
   unfold derivWithin
   rw [fderivWithin_congr hs hx]
 
+lemma Set.EqOn.deriv {f g : 𝕜 → F} {s : Set 𝕜} (hfg : s.EqOn f g) (hs : IsOpen s) :
+    s.EqOn (deriv f) (deriv g) := by
+  intro x hx
+  rw [← derivWithin_of_isOpen hs hx, ← derivWithin_of_isOpen hs hx]
+  exact derivWithin_congr hfg (hfg hx)
+
 theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x = deriv f x := by
   unfold deriv
   rwa [Filter.EventuallyEq.fderiv_eq]
@@ -790,6 +797,9 @@ theorem HasDerivWithinAt.continuousWithinAt (h : HasDerivWithinAt f f' s x) :
 
 theorem HasDerivAt.continuousAt (h : HasDerivAt f f' x) : ContinuousAt f x :=
   HasDerivAtFilter.tendsto_nhds le_rfl h
+
+theorem HasDerivWithinAt.continuousOn {f f' : 𝕜 → F} (h : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    ContinuousOn f s := fun x hx => (h x hx).continuousWithinAt
 
 protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x ∈ s, HasDerivAt f (f' x) x) :
     ContinuousOn f s := fun x hx => (hderiv x hx).continuousAt.continuousWithinAt

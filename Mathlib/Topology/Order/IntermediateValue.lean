@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.Monotone
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -41,6 +43,8 @@ on intervals.
 
 intermediate value theorem, connected space, connected set
 -/
+
+@[expose] public section
 
 
 open Filter OrderDual TopologicalSpace Function Set
@@ -185,7 +189,7 @@ In this section we prove the following results:
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
-  is one of the intervals `Set.Icc`, `set.`Ico`, `set.Ioc`, `set.Ioo`, ``Set.Ici`, `Set.Iic`,
+  is one of the intervals `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`, `Set.Ici`, `Set.Iic`,
   `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
   of positive numbers cannot be represented as `Set.Ioi _`.
 
@@ -317,15 +321,33 @@ theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : Is
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
   have : IsClosed (s ∩ Icc a y) := by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
-      rw [this]
-      exact IsClosed.inter hs isClosed_Icc
-    rw [inter_assoc]
-    congr
-    exact (inter_eq_self_of_subset_right <| Icc_subset_Icc_right hy.2).symm
-  exact
-    IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx =>
-      hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y from this ▸ hs.inter isClosed_Icc
+    grind [inter_assoc, inter_eq_self_of_subset_right, Icc_subset_Icc_right]
+  exact IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx ↦
+    hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and the set `s ∩ (a, b]` has no minimal point, then `a ∈ s`. -/
+theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
+  suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
+  have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
+  rw [preimage_inter, ← Icc_toDual] at this
+  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  rw [Ico_toDual, ← preimage_inter, ← Equiv.image_symm_eq_preimage, mem_image] at hx
+  aesop
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and for any `a ≤ y < x ≤ b`, `x ∈ s`, the set `s ∩ [y, x)`
+is not empty, then `[a, b] ⊆ s`. -/
+theorem IsClosed.Icc_subset_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hgt : ∀ x ∈ s ∩ Ioc a b, ∀ y ∈ Iio x, (s ∩ Ico y x).Nonempty) : Icc a b ⊆ s := by
+  intro y hy
+  have : IsClosed (s ∩ Icc y b) := by
+    suffices s ∩ Icc y b = s ∩ Icc a b ∩ Icc y b from this ▸ hs.inter isClosed_Icc
+    grind [Icc_subset_Icc_left, inter_eq_self_of_subset_right, inter_assoc]
+  exact IsClosed.mem_of_ge_of_forall_exists_lt this hb hy.2 fun x hx ↦
+    hgt x ⟨hx.1, Ioc_subset_Ioc_left hy.1 hx.2⟩ y hx.2.1
 
 variable [DenselyOrdered α] {a b : α}
 
@@ -639,16 +661,15 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
   intro a b hab
   by_contra! h
   have H : f b < f a := lt_of_le_of_ne h <| hf_i.ne hab.ne'
-  by_cases ha : f a ≤ f ⊥
+  by_cases! ha : f a ≤ f ⊥
   · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
     have : u = ⊥ := hf_i hu.2
     simp_all
-  · by_cases hb : f ⊥ < f b
+  · by_cases! hb : f ⊥ < f b
     · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
       rw [hf_i hu.2] at hu
       exact (hab.trans hu.1.2).false
-    · push_neg at ha hb
-      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+    · replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
       simp_all

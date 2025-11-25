@@ -3,12 +3,14 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+module
+
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Matrices and linear equivalences
@@ -29,6 +31,8 @@ to linear equivs.
 matrix, linear_equiv, determinant, inverse
 
 -/
+
+@[expose] public section
 
 open Module
 
@@ -231,7 +235,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
         exact Ne.lt_of_le hi (h_sup i)
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
-      rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
+      rw [← mul_le_mul_iff_right₀ (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
       rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀

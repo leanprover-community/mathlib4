@@ -3,7 +3,9 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Opposite categories
@@ -21,9 +23,11 @@ Unfortunately, because we do not have a definitional equality `op (op X) = X`,
 there are quite a few variations that are needed in practice.
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 open Opposite
 
 variable {C : Type u₁}
@@ -58,17 +62,24 @@ end Quiver
 
 namespace CategoryTheory
 
-open Functor
+section
 
-variable [Category.{v₁} C]
+variable [CategoryStruct.{v₁} C]
 
-/-- The opposite category. -/
-@[stacks 001M]
-instance Category.opposite : Category.{v₁} Cᵒᵖ where
+/-- The opposite `CategoryStruct`. -/
+instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 
-@[simp, reassoc]
+@[simp]
+theorem unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
+  rfl
+
+@[simp]
+theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
+  rfl
+
+@[simp, grind _=_]
 theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
   rfl
 
@@ -76,21 +87,41 @@ theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op �
 theorem op_id {X : C} : (𝟙 X).op = 𝟙 (op X) :=
   rfl
 
-@[simp, reassoc]
-theorem unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
-  rfl
-
 @[simp]
-theorem unop_id {X : Cᵒᵖ} : (𝟙 X).unop = 𝟙 (unop X) :=
+theorem unop_comp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).unop = g.unop ≫ f.unop :=
   rfl
 
 @[simp]
 theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
   rfl
 
-@[simp]
-theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
+-- This lemma is needed to prove `Category.opposite` below.
+theorem op_comp_unop {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) : (g.unop ≫ f.unop).op = f ≫ g :=
   rfl
+
+end
+
+open Functor
+
+variable [Category.{v₁} C]
+
+/-- The opposite category. -/
+@[stacks 001M]
+instance Category.opposite : Category.{v₁} Cᵒᵖ where
+  __ := CategoryStruct.opposite
+  comp_id f := by rw [← op_comp_unop, unop_id, id_comp, Quiver.Hom.op_unop]
+  id_comp f := by rw [← op_comp_unop, unop_id, comp_id, Quiver.Hom.op_unop]
+  assoc f g h := by simp only [← op_comp_unop, Quiver.Hom.unop_op, assoc]
+
+-- Note: these need to be proven manually as the original lemmas are only stated in terms
+-- of `CategoryStruct`s!
+theorem op_comp_assoc {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {Z' : Cᵒᵖ} {h : op X ⟶ Z'} :
+    (f ≫ g).op ≫ h = g.op ≫ f.op ≫ h := by
+  simp only [op_comp, Category.assoc]
+
+theorem unop_comp_assoc {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : Y ⟶ Z} {Z' : C} {h : unop X ⟶ Z'} :
+    (f ≫ g).unop ≫ h = g.unop ≫ f.unop ≫ h := by
+  simp only [unop_comp, Category.assoc]
 
 section
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 
@@ -28,13 +30,15 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
   for purely inseparable field extension `L / K` with exponent; for `n ≥ exponent K L`, it acts like
   `x ↦ x ^ p ^ n` but the codomain is the base field `K`.
 - `IsPurelyInseparable.iterateFrobeniusₛₗ`: version of `iterateFrobenius` as a semilinear map over
-  a subfield `F` of `K`, wrt the iterated Frobenius homomorphism on `F`.
+  a subfield `F` of `K`, w.r.t. the iterated Frobenius homomorphism on `F`.
 
 ## Tags
 
 purely inseparable
 
 -/
+
+@[expose] public section
 
 namespace IsPurelyInseparable
 
@@ -304,7 +308,7 @@ section Semilinear
 variable [Field F] [Algebra F K] [Algebra F L] [IsScalarTower F K L]
 variable [ExpChar F p]
 
-/-- Version of `iterateFrobenius` as a semilinear map over a subfield `F` of `K`, wrt the
+/-- Version of `iterateFrobenius` as a semilinear map over a subfield `F` of `K`, w.r.t. the
 iterated Frobenius homomorphism on `F`. -/
 noncomputable def iterateFrobeniusₛₗ {n : ℕ} (hn : exponent K L ≤ n) :
     L →ₛₗ[_root_.iterateFrobenius F p n] K where

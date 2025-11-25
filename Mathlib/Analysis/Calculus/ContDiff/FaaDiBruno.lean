@@ -3,10 +3,12 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finite.Card
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+module
+
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
 # Faa di Bruno formula
@@ -74,6 +76,8 @@ equivalence between `(c : OrderedFinpartition n) × Option (Fin c.length)`
 and `OrderedFinpartition (n + 1)`. This equivalence shows up prominently in the inductive proof
 of Faa di Bruno formula to identify the sums that show up.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -332,7 +336,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
 
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
-  simp [extendLeft]
+  simp only [extendLeft, cases_zero]
   apply @range_const _ _ (by simp; infer_instance)
 
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
@@ -439,7 +443,7 @@ lemma range_emb_extendMiddle_ne_singleton_zero (c : OrderedFinpartition n) (i j 
       simp only [Nat.succ_eq_add_one, mem_range]
       have A : (c.extendMiddle j).partSize j = c.partSize j + 1 := by simp [extendMiddle]
       refine ⟨Fin.cast A.symm (succ 0), ?_⟩
-      simp only [extendMiddle, ↓reduceDIte, comp_apply, cast_trans, cast_eq_self, cases_succ]
+      simp only [extendMiddle, ↓reduceDIte, comp_apply, Fin.cast_cast, cast_eq_self, cases_succ]
     simp only [mem_singleton_iff] at this
     exact Fin.succ_ne_zero _ this
   · have : (c.extendMiddle i).emb j 0 ∈ range ((c.extendMiddle i).emb j) :=
@@ -536,9 +540,9 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
     · simp only [hi, ↓reduceDIte, pred_lt_pred_iff, Nat.succ_eq_add_one]
       exact (c.emb_strictMono _).comp (cast_strictMono _) hab
   parts_strictMono i j hij := by
-    simp only [Fin.lt_iff_val_lt_val]
+    simp only [Fin.lt_def]
     rw [← Nat.add_lt_add_iff_right (k := 1)]
-    convert Fin.lt_iff_val_lt_val.1 (c.parts_strictMono hij)
+    convert Fin.lt_def.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
@@ -546,9 +550,9 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         · congr; omega
         · rw [Order.one_le_iff_pos]
           conv_lhs => rw [show (0 : ℕ) = c.emb (c.index 0) 0 by simp [emb_zero]]
-          rw [← lt_iff_val_lt_val]
+          rw [← lt_def]
           apply c.emb_strictMono
-          simp [lt_iff_val_lt_val]
+          simp [lt_def]
       · simp only [hi, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne, cast_mk, coe_pred]
         apply Nat.sub_add_cancel
         have : c.emb i ⟨c.partSize i - 1, Nat.sub_one_lt_of_lt (c.partSize_pos i)⟩
@@ -562,9 +566,9 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         · congr; omega
         · rw [Order.one_le_iff_pos]
           conv_lhs => rw [show (0 : ℕ) = c.emb (c.index 0) 0 by simp [emb_zero]]
-          rw [← lt_iff_val_lt_val]
+          rw [← lt_def]
           apply c.emb_strictMono
-          simp [lt_iff_val_lt_val]
+          simp [lt_def]
       · simp only [hj, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne, cast_mk, coe_pred]
         apply Nat.sub_add_cancel
         have : c.emb j ⟨c.partSize j - 1, Nat.sub_one_lt_of_lt (c.partSize_pos j)⟩
@@ -665,7 +669,6 @@ def extendEquiv (n : ℕ) :
       ext
       · exact A
       · refine (Fin.heq_fun_iff A).mpr (fun i ↦ ?_)
-        simp
         induction i using Fin.induction with
         | zero => change 1 = c.partSize 0; simp [c.partSize_eq_one_of_range_emb_eq_singleton h]
         | succ i => simp only [cons_succ, val_succ]; rfl

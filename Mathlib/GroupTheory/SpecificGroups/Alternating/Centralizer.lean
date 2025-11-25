@@ -3,8 +3,10 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Perm.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.Alternating
+module
+
+public import Mathlib.GroupTheory.Perm.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Centralizer of an element in the alternating group
 
@@ -32,6 +34,8 @@ TODO :
 Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
+
+@[expose] public section
 
 open Equiv Finset Function MulAction
 
@@ -239,7 +243,7 @@ theorem centralizer_le_alternating_iff :
         exact hc.left
     · suffices y = 1 by simp [this]
       have := card_fixedPoints g
-      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by omega)
+      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by cutsat)
 
 namespace IsThreeCycle
 

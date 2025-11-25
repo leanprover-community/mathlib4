@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.Hom.Order
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Order.Hom.Order
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Fixed point construction on complete lattices
@@ -27,6 +29,8 @@ This file sets up the basic theory of fixed points of a monotone function in a c
 
 fixed point, complete lattice, monotone function
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -146,7 +150,7 @@ theorem lfp_lfp (h : α →o α →o α) : (lfp.comp h).lfp = h.onDiag.lfp := by
     _ = a := ha
 
 theorem gfp_gfp (h : α →o α →o α) : (gfp.comp h).gfp = h.onDiag.gfp :=
-  @lfp_lfp αᵒᵈ _ <| (OrderIso.dualHom αᵒᵈ αᵒᵈ).symm.toOrderEmbedding.toOrderHom.comp h.dual
+  @lfp_lfp αᵒᵈ _ <| (OrderHom.dualIso αᵒᵈ αᵒᵈ).symm.toOrderEmbedding.toOrderHom.comp h.dual
 
 end Eqn
 
@@ -203,7 +207,7 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
--- Porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
+-- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance
 theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 

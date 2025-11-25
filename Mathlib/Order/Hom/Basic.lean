@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Disjoint
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Order.Disjoint
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Order homomorphisms
@@ -33,13 +35,11 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.id`: identity map as `α →o α`;
 * `OrderHom.curry`: an order homomorphism between `α × β →o γ` and `α →o β →o γ`;
 * `OrderHom.uncurry`: an order homomorphism between `α →o β →o γ` and `α × β →o γ`;
-* `OrderIso.curry`: an order isomorphism between `α × β →o γ` and `α →o β →o γ`;
 * `OrderHom.comp`: composition of two bundled monotone maps;
 * `OrderHom.compₘ`: composition of bundled monotone maps as a bundled monotone map;
 * `OrderHom.const`: constant function as a bundled monotone map;
 * `OrderHom.prod`: combine `α →o β` and `α →o γ` into `α →o β × γ`;
 * `OrderHom.prodₘ`: a more bundled version of `OrderHom.prod`;
-* `OrderIso.prod`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
 * `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
@@ -51,10 +51,11 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.apply`: application of an `OrderHom` at a point as a bundled monotone map;
 * `OrderHom.pi`: combine a family of monotone maps `f i : α →o π i` into a monotone map
   `α →o Π i, π i`;
-* `OrderIso.pi`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
 * `OrderHom.Subtype.val`: embedding `Subtype.val : Subtype p → α` as a bundled monotone map;
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
-* `OrderIso.dualHom`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
+* `OrderHom.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
+* `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
+  Boolean algebra;
 
 We also define two functions to convert other bundled maps to `α →o β`:
 
@@ -65,6 +66,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 
 monotone map, bundled morphism
 -/
+
+@[expose] public section
 
 -- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
 assert_not_imported Mathlib.Data.Set.Basic
@@ -358,6 +361,26 @@ higher universe. -/
 @[simps!]
 def uliftMap (f : α →o β) : ULift α →o ULift β :=
   ⟨fun i => ⟨f i.down⟩, fun _ _ h ↦ f.monotone h⟩
+
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `α →o ULift β` in a
+higher universe. -/
+@[simps!]
+def uliftRightMap (f : α →o β) : α →o ULift β :=
+  ⟨fun i => ⟨f i⟩, fun _ _ h ↦ f.monotone h⟩
+
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o β` in a
+higher universe. -/
+@[simps!]
+def uliftLeftMap (f : α →o β) : ULift α →o β :=
+  ⟨fun i => f i.down, fun _ _ h ↦ f.monotone h⟩
+
+@[simp]
+theorem uliftLeftMap_uliftRightMap_eq (f : α →o β) : f.uliftLeftMap.uliftRightMap = f.uliftMap :=
+  rfl
+
+@[simp]
+theorem uliftRightMap_uliftLeftMap_eq (f : α →o β) : f.uliftRightMap.uliftLeftMap = f.uliftMap :=
+  rfl
 
 end OrderHom
 
@@ -671,6 +694,9 @@ theorem refl_toEquiv : (refl α).toEquiv = Equiv.refl α :=
 
 /-- Inverse of an order isomorphism. -/
 def symm (e : α ≃o β) : β ≃o α := RelIso.symm e
+
+@[simp] lemma symm_mk (e : α ≃ β) (map_rel_iff') :
+    symm (.mk e map_rel_iff') = .mk e.symm (by simp [← map_rel_iff']) := rfl
 
 @[simp]
 theorem apply_symm_apply (e : α ≃o β) (x : β) : e (e.symm x) = x :=
@@ -993,7 +1019,7 @@ noncomputable def ofUnique
 /-- Order isomorphism between the space of monotone maps to `β × γ` and the product of the spaces
 of monotone maps to `β` and `γ`. -/
 @[simps]
-def prod [Preorder α] [Preorder β] [Preorder γ] : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
+def prodIso [Preorder α] [Preorder β] [Preorder γ] : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (OrderHom.fst.comp f, OrderHom.snd.comp f)
   invFun f := f.1.prod f.2
   map_rel_iff' := forall_and.symm
@@ -1003,13 +1029,14 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, Preorder (π i)]
 /-- Order isomorphism between bundled monotone maps `α →o Π i, π i` and families of bundled monotone
 maps `Π i, α →o π i`. -/
 @[simps]
-def pi [Preorder α] : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
+def piIso [Preorder α] : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := OrderHom.pi
   map_rel_iff' := forall_swap
 
 /-- `OrderHom.dual` as an order isomorphism. -/
-def dualHom (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
+def _root_.OrderHom.dualIso (α β : Type*) [Preorder α] [Preorder β] :
+    (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 
@@ -1131,6 +1158,17 @@ end StrictMono
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
 protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
   ⟨f.toEquiv, f.map_rel_iff⟩
+
+section
+variable [LE α] [LE β] (f : α ≃o β)
+
+@[simp] lemma OrderIso.dual_apply (x) : f.dual x = .toDual (f x.ofDual) := rfl
+
+@[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
+
+@[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+
+end
 
 section LatticeIsos
 
@@ -1269,3 +1307,10 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     rw [hf.le_iff_ge]
 
 end DenselyOrdered
+
+universe v u in
+/-- The bijection `ULift.{v} α ≃ α` as an isomorphism of orders. -/
+@[pp_with_univ, simps!]
+def ULift.orderIso {α : Type u} [Preorder α] :
+    ULift.{v} α ≃o α :=
+  Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)

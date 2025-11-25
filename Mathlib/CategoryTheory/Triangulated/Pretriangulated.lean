@@ -3,9 +3,11 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Triangulated.TriangleShift
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 
 /-!
 # Pretriangulated Categories
@@ -20,6 +22,8 @@ but not necessarily additive categories, as is assumed in some sources.
 
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -85,15 +89,13 @@ namespace Pretriangulated
 
 variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
--- Porting note: increased the priority so that we can write `T ∈ distTriang C`, and
--- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
-notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
+notation:60 "distTriang " C:60 => @distinguishedTriangles C _ _ _ _ _ _
 
 variable {C}
 
 lemma distinguished_iff_of_iso {T₁ T₂ : Triangle C} (e : T₁ ≅ T₂) :
-    (T₁ ∈ distTriang C) ↔ T₂ ∈ distTriang C :=
+    T₁ ∈ distTriang C ↔ T₂ ∈ distTriang C :=
   ⟨fun hT₁ => isomorphic_distinguished _ hT₁ _ e.symm,
     fun hT₂ => isomorphic_distinguished _ hT₂ _ e⟩
 
@@ -116,7 +118,7 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
 ```
 the composition `f ≫ g = 0`. -/
 @[reassoc, stacks 0146]
-theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
+theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ distTriang C) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
       T.mor₁ rfl

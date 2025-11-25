@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Congruence.Hom
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Congruence relations
@@ -27,6 +29,8 @@ used, since this perspective adds more layers of definitional unfolding.
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid, isomorphism theorems
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}
@@ -168,7 +172,7 @@ theorem le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
 variable (x y : M)
 
 @[to_additive (attr := simp)]
--- Porting note: removed dot notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
   MonoidHom.mrange_eq_top.2 mk'_surjective
 

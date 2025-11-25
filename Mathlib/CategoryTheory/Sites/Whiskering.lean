@@ -3,7 +3,9 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -19,6 +21,8 @@ Given a natural transformation `η : F ⟶ G`, we obtain a natural transformatio
 `sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -117,7 +121,7 @@ end GrothendieckTopology.Cover
 Composing a sheaf with a functor preserving the limit of `(S.index P).multicospan` yields a functor
 between sheaf categories.
 -/
-instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
+instance (priority := high) hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F] :
     J.HasSheafCompose F where
   isSheaf P hP := by
@@ -145,8 +149,8 @@ lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
     (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
   rintro X S hS x y h
-  exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
+  exact (((isSheaf_iff_isSheaf_of_type _ _).1
+    ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]

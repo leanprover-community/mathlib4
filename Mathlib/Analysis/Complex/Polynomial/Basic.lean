@@ -3,11 +3,13 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Liouville
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.FieldTheory.PolynomialGaloisGroup
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # The fundamental theorem of algebra
@@ -22,14 +24,16 @@ of non-real roots.
 We also show that an irreducible real polynomial has degree at most two.
 -/
 
+@[expose] public section
+
 open Polynomial Bornology Complex
 
 open scoped ComplexConjugate
 
 namespace Complex
 
-/-- **Fundamental theorem of algebra**: every non constant complex polynomial
-  has a root -/
+/-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
+  has a root. -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
@@ -57,7 +61,7 @@ namespace Polynomial.Gal
 
 section Rationals
 
-theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact (p.Splits (algebraMap ℚ ℂ)) :=
+theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact ((p.map (algebraMap ℚ ℂ)).Splits) :=
   ⟨IsAlgClosed.splits_codomain p⟩
 
 attribute [local instance] splits_ℚ_ℂ

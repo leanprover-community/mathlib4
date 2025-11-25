@@ -3,14 +3,15 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
+module
 
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.CategoryTheory.Category.Cat.Terminal
-import Mathlib.CategoryTheory.Category.ReflQuiv
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.CategoryTheory.Category.ReflQuiv
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.CategoryTheory.Category.Cat.Terminal
 
 /-!
 
@@ -36,6 +37,8 @@ nerve functor, made by possible by the fact that nerves of categories are 2-cosk
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
 -/
 
+@[expose] public section
+
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
 open SimplexCategory.Truncated SimplicialObject.Truncated
@@ -47,33 +50,6 @@ section
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _⦋0⦌₂` as its underlying
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
-
-/-- Abbreviations for face maps in the 2-truncated simplex category. -/
-abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
-
-/-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
-abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
-
-@[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
-
-@[reassoc]
-lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
-  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
-
-@[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
-
-@[reassoc (attr := simp)]
-lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
-
-@[reassoc]
-lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
-  SimplexCategory.δ_comp_σ_of_gt' (by decide)
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
@@ -90,7 +66,7 @@ structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
   Hom X Y := SSet.OneTruncation₂.Hom X Y
   id X :=
-    { edge := S.map (SSet.σ₂ (n := 0) 0).op X
+    { edge := S.map (σ₂ (n := 0) 0).op X
       src_eq := by
         simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero,
           op_id, FunctorToTypes.map_id_apply]
@@ -100,7 +76,7 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
 
 @[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
-    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (SSet.σ₂ 0).op X := rfl
+    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (σ₂ 0).op X := rfl
 
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
 @[simps]
@@ -351,6 +327,11 @@ def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFun
 end
 
 end
+
+/-- For a simplicial set `X`, the underlying type of `hoFunctor.obj X` is equivalent to `X _⦋0⦌`. -/
+def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
+  (Quotient.equiv.{u,u} _).trans (Quotient.equiv _)
+
 section
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus

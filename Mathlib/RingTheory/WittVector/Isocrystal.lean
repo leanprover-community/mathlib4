@@ -3,7 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.RingTheory.WittVector.FrobeniusFractionField
+module
+
+public import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 
 /-!
 
@@ -33,7 +35,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `Isocrystal`.
+This file introduces notation in the scope `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -49,6 +51,8 @@ This file introduces notation in the locale `Isocrystal`.
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

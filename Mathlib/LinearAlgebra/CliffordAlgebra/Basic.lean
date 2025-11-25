@@ -3,10 +3,12 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Utensil Song
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.QuadraticForm.Isometry
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+module
+
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # Clifford Algebras
@@ -41,6 +43,8 @@ The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, 
 
 This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.lean`.
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]
@@ -187,14 +191,15 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       algebraMap_mem' := algebraMap }
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
-      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+      fun m => Subtype.ext <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x
-    simp [of]
-    -- porting note: `simp` should fire with the following lemma automatically
-    have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
-    exact this
+    simpa [of, -LinearMap.codRestrict_apply]
+      -- This `@[simp]` lemma applies to `coeSort s.subModule`, but the goal contains
+      -- a plain `coeSort s`. So we remove it from the `simp` arguments, and add it to
+      -- the term that `simpa` will simplify before applying.
+      using LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, ← of_id]
   exact (lift Q of a).prop

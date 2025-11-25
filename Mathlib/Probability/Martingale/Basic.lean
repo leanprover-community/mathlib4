@@ -3,8 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Process.Stopping
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.Predictable
 
 /-!
 # Martingales
@@ -34,6 +37,8 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
   martingale with respect to `ℱ` and `μ`.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter
@@ -299,7 +304,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E]
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [NormedSpace ℝ F] [CompleteSpace F]
-  [OrderedSMul ℝ F]
+  [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
@@ -310,7 +315,7 @@ theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Superma
 theorem smul_nonpos [IsOrderedAddMonoid F] {f : ι → Ω → F} {c : ℝ}
     (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -322,16 +327,16 @@ namespace Submartingale
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [IsOrderedAddMonoid F]
-  [NormedSpace ℝ F] [CompleteSpace F] [OrderedSMul ℝ F]
+  [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by simp : - -c • f = -(c • -f))]
+  rw [← neg_neg (c • f), ← smul_neg]
   exact Supermartingale.neg (hf.neg.smul_nonneg hc)
 
 theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Submartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -443,10 +448,42 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
     exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
+section IsPredictable
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- A predictable submartingale is a.e. greater than or equal to its initial state.
+
+In constrast to the non-primed version, this results require second countablility as `Adapted` is
+defined using strong measurability while `IsPredictable` only provides measurable. -/
+theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
+    {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hf : IsPredictable 𝒢 f) (n : ℕ) :
+    f 0 ≤ᵐ[μ] f n :=
+  zero_le_of_predictable hfmgle (fun _ ↦ (hf.measurable_add_one _).stronglyMeasurable) n
+
+/-- A predictable supermartingale is a.e. less equal than its initial state.
+
+In constrast to the non-primed version, this results require second countablility as `Adapted` is
+defined using strong measurability while `IsPredictable` only provides measurable. -/
+theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
+    {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f)
+    (n : ℕ) : f n ≤ᵐ[μ] f 0 :=
+  le_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+
+/-- A predictable martingale is a.e. equal to its initial state.
+
+In constrast to the non-primed version, this results require second countablility as `Adapted` is
+defined using strong measurability while `IsPredictable` only provides measurable. -/
+theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
+    (hfmgle : Martingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
+  eq_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+
+end IsPredictable
+
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
-    {τ : Ω → ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
+    {τ : Ω → ℕ∞} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue f τ) μ :=
   integrable_stoppedValue ℕ hτ hf.integrable hbdd
 

@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Aaron Anderson
 -/
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
@@ -32,7 +32,7 @@ equal:
 
 $$\prod_{i=0}^\infty \frac {1}{1-X^{2i+1}} = \prod_{i=0}^\infty (1+X^{i+1})$$
 
-In fact, we do not take a limit: it turns out that comparing the `n`'th coefficients of the partial
+In fact, we do not take a limit: it turns out that comparing the `n`-th coefficients of the partial
 products up to `m := n + 1` is sufficient.
 
 In particular, we
@@ -97,11 +97,11 @@ theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) [Decidable (n ∈ 
     coeff n (indicatorSeries α s) = if n ∈ s then 1 else 0 := by
   convert coeff_mk _ _
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) [Decidable (n ∈ s)] :
-    coeff n (indicatorSeries α s) = 1 := by rw [coeff_indicator, if_pos h]
+theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
+    coeff n (indicatorSeries α s) = 1 := by classical rw [coeff_indicator, if_pos h]
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) [Decidable (n ∈ s)] :
-    coeff n (indicatorSeries α s) = 0 := by rw [coeff_indicator, if_neg h]
+theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
+    coeff n (indicatorSeries α s) = 0 := by classical rw [coeff_indicator, if_neg h]
 
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] [Decidable (0 ∈ s)] :
     constantCoeff (indicatorSeries α s) = if 0 ∈ s then 1 else 0 := by
@@ -213,7 +213,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [mem_finsuppAntidiag] at hf'
     refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
-      simp only [mem_sum] at hi
+      simp only [Multiset.mem_sum] at hi
       rcases hi with ⟨t, ht, z⟩
       apply hs
       rwa [Multiset.eq_of_mem_replicate z]
@@ -230,7 +230,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         rwa [← hw₂, Nat.mul_div_cancel _ (hs i h)]
       · exact hc _ h
     · intro i hi
-      rw [mem_sum] at hi
+      rw [Multiset.mem_sum] at hi
       rcases hi with ⟨j, hj₁, hj₂⟩
       rwa [Multiset.eq_of_mem_replicate hj₂]
     · ext i

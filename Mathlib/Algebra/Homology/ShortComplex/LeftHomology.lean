@@ -3,9 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Left Homology of short complexes
@@ -28,6 +29,8 @@ the same `H` up to a canonical isomorphism), we shall define `[S.HasHomology]`
 and `S.homology`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -153,10 +156,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
 
 @[simp] lemma ofIsColimitCokernelCofork_f' (hg : S.g = 0) (c : CokernelCofork S.f)
     (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
-  rw [← cancel_mono (ofIsColimitCokernelCofork S hg c hc).i, f'_i,
-    ofIsColimitCokernelCofork_i]
-  dsimp
-  rw [comp_id]
+  rfl
 
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given by
 the chosen `cokernel S.f` -/

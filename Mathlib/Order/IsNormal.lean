@@ -3,8 +3,10 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.CompleteLinearOrder
-import Mathlib.Order.SuccPred.InitialSeg
+module
+
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
 # Normal functions
@@ -21,6 +23,8 @@ bound of `f b` with `b < a`.
 * Prove the equivalence with the standard definition (in some other file).
 * Replace `Ordinal.IsNormal` by this more general notion.
 -/
+
+@[expose] public section
 
 open Order Set
 
@@ -158,6 +162,19 @@ theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddA
   convert map_sSup hf (range_nonempty g) hg
   ext
   simp
+
+theorem preimage_Iic (hf : IsNormal f) {x : β}
+    (h₁ : (f ⁻¹' Iic x).Nonempty) (h₂ : BddAbove (f ⁻¹' Iic x)) :
+    f ⁻¹' Iic x = Iic (sSup (f ⁻¹' Iic x)) := by
+  refine le_antisymm (fun _ ↦ le_csSup h₂) (fun y hy ↦ ?_)
+  obtain hy | rfl := hy.lt_or_eq
+  · rw [lt_csSup_iff h₂ h₁] at hy
+    obtain ⟨z, hz, hyz⟩ := hy
+    exact (hf.strictMono hyz).le.trans hz
+  · rw [mem_preimage, hf.map_sSup h₁ h₂]
+    apply (csSup_le_csSup bddAbove_Iic _ (image_preimage_subset ..)).trans
+    · rw [csSup_Iic]
+    · simpa
 
 end ConditionallyCompleteLinearOrder
 

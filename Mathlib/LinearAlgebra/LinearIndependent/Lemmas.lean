@@ -3,15 +3,17 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Logic.Equiv.Fin.Rotate
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Linear independence
@@ -45,6 +47,8 @@ Rework proofs to hold in semirings, by avoiding the path through
 linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Cardinal
@@ -108,25 +112,16 @@ theorem linearIndepOn_iUnion_of_directed {η : Type*} {s : η → Set ι} (hs : 
     rintro _ ⟨_, ⟨i, _⟩, _⟩
     exact hη ⟨i⟩
 
-@[deprecated (since := "2025-02-15")] alias
-    linearIndependent_iUnion_of_directed := linearIndepOn_iUnion_of_directed
-
 theorem linearIndepOn_sUnion_of_directed {s : Set (Set ι)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, LinearIndepOn R v a) : LinearIndepOn R v (⋃₀ s) := by
   rw [sUnion_eq_iUnion]
   exact linearIndepOn_iUnion_of_directed hs.directed_val (by simpa using h)
-
-@[deprecated (since := "2025-02-15")] alias
-    linearIndependent_sUnion_of_directed := linearIndepOn_sUnion_of_directed
 
 theorem linearIndepOn_biUnion_of_directed {η} {s : Set η} {t : η → Set ι}
     (hs : DirectedOn (t ⁻¹'o (· ⊆ ·)) s) (h : ∀ a ∈ s, LinearIndepOn R v (t a)) :
     LinearIndepOn R v (⋃ a ∈ s, t a) := by
   rw [biUnion_eq_iUnion]
   exact linearIndepOn_iUnion_of_directed (directed_comp.2 <| hs.directed_val) (by simpa using h)
-
-@[deprecated (since := "2025-02-15")] alias
-    linearIndependent_biUnion_of_directed := linearIndepOn_biUnion_of_directed
 
 end Indexed
 
@@ -211,10 +206,19 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
       (fun c hc => ⟨⟨⋃ I ∈ c, (I : Set ι), key c hc⟩, fun I => Set.subset_biUnion_of_mem⟩) @trans
   exact ⟨I, hli, fun J hsub hli => Set.Subset.antisymm hsub (hmax ⟨J, hli⟩ hsub)⟩
 
-@[deprecated (since := "2025-02-15")] alias
-  exists_maximal_independent' :=  exists_maximal_linearIndepOn'
-
 end Maximal
+
+lemma Submodule.codisjoint_span_image_of_codisjoint (hv : Submodule.span R (Set.range v) = ⊤)
+    {s t : Set ι} (hst : Codisjoint s t) :
+    Codisjoint (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) := by
+  rw [Finsupp.span_image_eq_map_linearCombination, Finsupp.span_image_eq_map_linearCombination]
+  refine Submodule.codisjoint_map ?_ (Finsupp.codisjoint_supported_supported hst)
+  rwa [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
+
+lemma LinearIndependent.isCompl_span_image (h₁ : LinearIndependent R v)
+    (h₂ : Submodule.span R (Set.range v) = ⊤) {s t : Set ι} (hst : IsCompl s t) :
+    IsCompl (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) :=
+  ⟨h₁.disjoint_span_image hst.1, Submodule.codisjoint_span_image_of_codisjoint h₂ hst.2⟩
 
 end Semiring
 
@@ -332,10 +336,6 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
   ext i; fin_cases i <;> simp <;> module
 
-@[deprecated (since := "2025-04-15")]
-alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
-  LinearIndependent.pair_add_smul_add_smul_iff
-
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
     LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by
   rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim c 0]
@@ -392,9 +392,6 @@ theorem linearIndepOn_id_iUnion_finite {f : ι → Set M} (hl : ∀ i, LinearInd
     rw [span_iUnion₂]
     exact hd i s s.finite_toSet his
 
-@[deprecated (since := "2025-02-15")] alias
-    linearIndependent_iUnion_finite_subtype := linearIndepOn_id_iUnion_finite
-
 theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : ∀ j : η, ιs j → M}
     (hindep : ∀ j, LinearIndependent R (f j))
     (hd : ∀ i, ∀ t : Set η,
@@ -445,7 +442,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
       rintro x hx
       refine (memJ.mp (supp_f hx)).resolve_left ?_
       rintro rfl
-      exact hIlinind (Finsupp.mem_support_iff.mp hx)
+      exact (Finsupp.mem_support_iff.mp hx) hIlinind
     use f i, hfi
     have hfi' : i ∈ f.support := Finsupp.mem_support_iff.mpr hfi
     rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.notMem_erase _ _),
@@ -453,9 +450,6 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
     rw [sum_f]
     refine neg_mem (sum_mem fun c hc => smul_mem _ _ (subset_span ⟨c, ?_, rfl⟩))
     exact (memJ.mp (supp_f (Finset.erase_subset _ _ hc))).resolve_left (Finset.ne_of_mem_erase hc)
-
-@[deprecated (since := "2025-02-15")] alias
-  exists_maximal_independent := exists_maximal_linearIndepOn
 
 @[stacks 0CKM]
 lemma linearIndependent_algHom_toLinearMap
@@ -470,6 +464,38 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
+
+lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddCommGroup N] [Module R N]
+    {f : M →ₗ[R] N} {ι : Type*} {v : ι → M}
+    (hv : Submodule.span R (.range v) = ⊤) (hli : LinearIndependent R (f ∘ v)) :
+    Function.Injective f := by
+  refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
+  have : x ∈ Submodule.span R (.range v) := by rw [hv]; exact mem_top
+  obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp this
+  simp only [map_finsuppSum, map_smul] at hx
+  obtain rfl := linearIndependent_iff.mp hli c hx
+  simp
+
+lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCommGroup N]
+    [Module R N] {f : M →ₗ[R] N} {ι : Type*} {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤)
+    (hli : LinearIndependent R (f ∘ v)) (hsp : Submodule.span R (Set.range <| f ∘ v) = ⊤) :
+    Function.Bijective f := by
+  refine ⟨LinearMap.injective_of_linearIndependent hv hli, ?_⟩
+  rw [Set.range_comp, ← Submodule.map_span, hv, Submodule.map_top] at hsp
+  rwa [← range_eq_top]
+
+/-- Version of `LinearIndepOn.insert` that works when the scalars are not a field. -/
+lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
+    (hx : ∀ r : R, r • v i ∈ Submodule.span R (v '' s) → r = 0) :
+    LinearIndepOn R v (insert i s) := by
+  rw [← Set.union_singleton]
+  refine hs.union (.singleton' fun r hr ↦ hx _ <| by simp [hr]) ?_
+  simp +contextual [disjoint_span_singleton'', hx]
+
+/-- Version of `LinearIndepOn.id_insert` that works when the scalars are not a field. -/
+lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
+    (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
+  hs.insert' <| by simpa
 
 end Module
 
@@ -503,20 +529,18 @@ protected theorem LinearIndepOn.insert {s : Set ι} {x : ι} (hs : LinearIndepOn
     (hx : v x ∉ span K (v '' s)) : LinearIndepOn K v (insert x s) := by
   rw [← union_singleton]
   have x0 : v x ≠ 0 := fun h => hx (h ▸ zero_mem _)
-  apply hs.union (LinearIndepOn.singleton _ x0)
+  apply hs.union (LinearIndepOn.singleton x0)
   rwa [image_singleton, disjoint_span_singleton' x0]
 
 protected theorem LinearIndepOn.id_insert (hs : LinearIndepOn K id s) (hx : x ∉ span K s) :
     LinearIndepOn K id (insert x s) :=
   hs.insert ((image_id s).symm ▸ hx)
 
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.insert := LinearIndepOn.id_insert
-
 theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u'} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
@@ -542,13 +566,9 @@ theorem linearIndepOn_insert {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s
   rw [range_comp']
   simp
 
-@[deprecated (since := "2025-02-15")] alias linearIndependent_insert' := linearIndepOn_insert
-
 theorem linearIndepOn_id_insert (hxs : x ∉ s) :
     LinearIndepOn K id (insert x s) ↔ LinearIndepOn K id s ∧ x ∉ Submodule.span K s :=
   (linearIndepOn_insert (f := id) hxs).trans <| by simp
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_insert := linearIndepOn_insert
 
 theorem linearIndepOn_insert_iff {s : Set ι} {a : ι} {f : ι → V} :
     LinearIndepOn K f (insert a s) ↔ LinearIndepOn K f s ∧ (f a ∈ span K (f '' s) → a ∈ s) := by
@@ -586,11 +606,8 @@ theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn 
 alias LinearIndepOn.not_mem_span_iff_id := LinearIndepOn.notMem_span_iff_id
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
-    LinearIndepOn K id {x, y} :=
-  pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).id_insert (x := y) <|
-    mt mem_span_singleton.1 <| not_exists.2 hy
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
+    LinearIndepOn K id {x, y} := by
+  rw [pair_comm]; exact .id_insert (.singleton hx) <| by simpa [mem_span_singleton]
 
 /-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
 theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :
@@ -670,9 +687,6 @@ theorem exists_linearIndepOn_id_extension (hs : LinearIndepOn K id s) (hst : s �
     ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndepOn K id b := by
   convert exists_linearIndepOn_extension hs hst <;> simp
 
-@[deprecated (since := "2025-02-15")] alias exists_linearIndependent_extension :=
-    exists_linearIndepOn_id_extension
-
 variable (K t)
 
 theorem exists_linearIndependent :
@@ -705,21 +719,13 @@ all elements of `t`. -/
 noncomputable def LinearIndepOn.extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) : Set ι :=
   Classical.choose (exists_linearIndepOn_extension hs hst)
 
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.extend := LinearIndepOn.extend
-
 theorem LinearIndepOn.extend_subset (hs : LinearIndepOn K v s) (hst : s ⊆ t) : hs.extend hst ⊆ t :=
   let ⟨hbt, _hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hbt
 
-@[deprecated (since := "2025-02-15")] alias
-  LinearIndependent.extend_subset := LinearIndepOn.extend_subset
-
 theorem LinearIndepOn.subset_extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) : s ⊆ hs.extend hst :=
   let ⟨_hbt, hsb, _htb, _hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hsb
-
-@[deprecated (since := "2025-02-15")] alias
-  LinearIndependent.subset_extend := LinearIndepOn.subset_extend
 
 theorem LinearIndepOn.image_subset_span_image_extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
     v '' t ⊆ span K (v '' hs.extend hst) :=
@@ -730,9 +736,6 @@ theorem LinearIndepOn.subset_span_extend {s t : Set V} (hs : LinearIndepOn K id 
     t ⊆ span K (hs.extend hst) := by
   convert hs.image_subset_span_image_extend hst <;> simp
 
-@[deprecated (since := "2025-02-15")] alias
-  LinearIndependent.subset_span_extend := LinearIndepOn.subset_span_extend
-
 theorem LinearIndepOn.span_image_extend_eq_span_image (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
     span K (v '' hs.extend hst) = span K (v '' t) :=
   le_antisymm (span_mono (image_mono (hs.extend_subset hst)))
@@ -742,16 +745,10 @@ theorem LinearIndepOn.span_extend_eq_span {s t : Set V} (hs : LinearIndepOn K id
     span K (hs.extend hst) = span K t :=
   le_antisymm (span_mono (hs.extend_subset hst)) (span_le.2 (hs.subset_span_extend hst))
 
-@[deprecated (since := "2025-02-15")] alias
-  LinearIndependent.span_extend_eq_span := LinearIndepOn.span_extend_eq_span
-
 theorem LinearIndepOn.linearIndepOn_extend (hs : LinearIndepOn K v s) (hst : s ⊆ t) :
     LinearIndepOn K v (hs.extend hst) :=
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndepOn_extension hs hst)
   hli
-
-@[deprecated (since := "2025-02-15")] alias
-  LinearIndependent.linearIndependent_extend := LinearIndepOn.linearIndepOn_extend
 
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
@@ -777,9 +774,9 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
       have hst : s ∩ ↑t = ∅ :=
         eq_empty_of_subset_empty <|
-          -- Porting note: `-inter_subset_left, -subset_inter_iff` required.
+          -- Porting note: `-subset_inter_iff` required.
           Subset.trans
-            (by simp [inter_subset_inter, -inter_subset_left, -subset_inter_iff])
+            (by simp [inter_subset_inter, -subset_inter_iff])
             (le_of_eq hst)
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>
@@ -815,9 +812,6 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
   exact
     ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, or_imp]),
       h.2.1, by simp only [h.2.2, eq]⟩
-
-@[deprecated (since := "2025-02-15")] alias
-  exists_of_linearIndependent_of_finite_span := exists_of_linearIndepOn_of_finite_span
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set V} (ht : t.Finite)
     (hs : LinearIndepOn K id s) (hst : s ⊆ span K t) :

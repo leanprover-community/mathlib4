@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Topology.VectorBundle.Riemannian
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Topology.VectorBundle.Riemannian
 
 /-! # Riemannian vector bundles
 
@@ -16,7 +18,7 @@ We introduce a typeclass `[IsContMDiffRiemannianBundle IB n F E]` registering th
 Under this assumption, we show that the scalar product of two smooth maps into the same fibers of
 the bundle is a smooth function.
 
-If the fibers of a bundle `E` have a preexisting topology (like the tangent bundle), one can not
+If the fibers of a bundle `E` have a preexisting topology (like the tangent bundle), one cannot
 assume additionally `[∀ b, InnerProductSpace ℝ (E b)]` as this would create diamonds. Instead,
 use `[RiemannianBundle E]`, which endows the fibers with a scalar product while ensuring that
 there is no diamond (for this, the `Bundle` scope should be open). We provide a
@@ -37,6 +39,8 @@ variable
   [IsContMDiffRiemannianBundle IB n F E]
 ```
 -/
+
+@[expose] public section
 
 open Manifold Bundle ContinuousLinearMap ENat Bornology
 open scoped ContDiff Topology

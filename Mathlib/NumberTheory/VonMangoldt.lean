@@ -3,9 +3,12 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.NumberTheory.ArithmeticFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
 # The von Mangoldt Function
@@ -28,9 +31,11 @@ to deduce alternative expressions for the von Mangoldt function via Möbius inve
 
 We use the standard notation `Λ` to represent the von Mangoldt function.
 It is accessible in the locales `ArithmeticFunction` (like the notations for other arithmetic
-functions) and also in the locale `ArithmeticFunction.vonMangoldt`.
+functions) and also in the scope `ArithmeticFunction.vonMangoldt`.
 
 -/
+
+@[expose] public section
 
 namespace ArithmeticFunction
 
@@ -107,6 +112,9 @@ theorem vonMangoldt_sum {n : ℕ} : ∑ i ∈ n.divisors, Λ i = Real.log n := b
   rw [mul_divisors_filter_prime_pow hab, filter_union,
     sum_union (disjoint_divisors_filter_isPrimePow hab), ha, hb, Nat.cast_mul,
     Real.log_mul (cast_ne_zero.2 (pos_of_gt ha').ne') (cast_ne_zero.2 (pos_of_gt hb').ne')]
+
+-- access notation `ζ` and `μ`
+open scoped zeta Moebius
 
 @[simp]
 theorem vonMangoldt_mul_zeta : Λ * ζ = log := by

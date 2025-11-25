@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Normalizer
+module
+
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Normalizer
 
 /-!
 # Engel's theorem
@@ -64,6 +66,8 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 
 -/
 
+@[expose] public section
+
 
 universe u₁ u₂ u₃ u₄
 
@@ -119,9 +123,10 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
     refine ⟨(Submodule.map_mono ih).trans ?_, le_sup_of_le_right ?_⟩
     · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
-      exact sup_le_sup_left coe_map_toEnd_le _
-    · refine le_trans (mono_lie_right I ?_) (mono_lie_right I hIM)
-      exact antitone_lowerCentralSeries R L M le_self_add
+      grw [coe_map_toEnd_le]
+    · norm_cast
+      gcongr
+      exact le_trans (antitone_lowerCentralSeries R L M le_self_add) hIM
 
 theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x)
     (hIM : IsNilpotent I M) : IsNilpotent L M := by
@@ -232,12 +237,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     apply lt_of_le_of_ne K.le_normalizer
     rw [Ne, eq_comm, K.normalizer_eq_self_iff, ← Ne, ←
       LieSubmodule.nontrivial_iff_ne_bot R K]
-    have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
-      replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
-        rwa [Ne, ← LieSubmodule.toSubmodule_inj, K.coe_toLieSubmodule,
-          LieSubmodule.top_toSubmodule, ← LieSubalgebra.top_toSubmodule,
-          K.toSubmodule_inj]
-      exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
+    have : Nontrivial (L' ⧸ K.toLieSubmodule) := Submodule.Quotient.nontrivial_iff.2 <| by simpa
     have : LieModule.IsNilpotent K (L' ⧸ K.toLieSubmodule) := by
       refine hK₁ _ fun x => ?_
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)

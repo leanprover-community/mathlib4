@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Filtered.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Relation of morphism properties with limits
@@ -24,6 +26,8 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 `IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -191,13 +195,13 @@ theorem pullback_snd [IsStableUnderBaseChange P]
     P (pullback.snd f g) :=
   of_isPullback (IsPullback.of_hasPullback f g) H
 
-theorem baseChange_obj [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
+theorem baseChange_obj [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [∀ {W} (h : W ⟶ S), HasPullback h f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
 
-theorem baseChange_map [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
+theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [∀ {W} (h : W ⟶ S), HasPullback h f] {X Y : Over S} (g : X ⟶ Y)
     (H : P g.left) : P ((Over.pullback f).map g).left := by
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
@@ -764,7 +768,7 @@ lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
   ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
 
 /-- If `P` is multiplicative and stable under base change, having the of-postcomp property
-wrt. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
+w.r.t. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
 lemma hasOfPostcompProperty_iff_le_diagonal [P.IsStableUnderBaseChange]
     [P.IsMultiplicative] {Q : MorphismProperty C} [Q.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty Q ↔ Q ≤ P.diagonal := by
@@ -842,6 +846,17 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
   exact H ..
 
 end Universally
+
+variable (P : MorphismProperty C)
+
+/-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`
+exist. -/
+protected class HasPullbacks : Prop where
+  hasPullback {X Y S : C} {f : X ⟶ S} (g : Y ⟶ S) : P f → HasPullback f g := by infer_instance
+
+instance [HasPullbacks C] : P.HasPullbacks where
+
+alias hasPullback := HasPullbacks.hasPullback
 
 end MorphismProperty
 

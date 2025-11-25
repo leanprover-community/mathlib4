@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 /-!
 # The universal property of the even subalgebra
@@ -31,6 +33,8 @@ between one recursor invocation and the next.
 For the universal property of the even subalgebra, we apply a variant of the first trick again by
 choosing `S` to itself be a submodule of morphisms.
 -/
+
+@[expose] public section
 
 
 namespace CliffordAlgebra
@@ -176,8 +180,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · suffices f.bilin m₁ m * 0 = Q m • (0 : A) by simp
-      simp
+    · simp
     · rintro x y _hx _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx

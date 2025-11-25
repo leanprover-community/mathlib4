@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Positive linear maps
 
@@ -23,6 +24,8 @@ We nevertheless use the namespace for lemmas using that combination of typeclass
 More substantial results on positive maps such as their continuity can be found in
 the `Analysis/CStarAlgebra` folder.
 -/
+
+@[expose] public section
 
 /-- A positive linear map is a linear map that is also an order homomorphism. -/
 structure PositiveLinearMap (R E₁ E₂ : Type*) [Semiring R]
@@ -50,17 +53,16 @@ def toPositiveLinearMap (f : F) : E₁ →ₚ[R] E₂ :=
 instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
   coe f := toPositiveLinearMap f
 
-/-- A linear map that maps nonnegative elements to nonnegative elements is an order
-homomorphism. -/
-lemma _root_.OrderHomClass.ofLinear {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddCommGroup E₁']
-    [PartialOrder E₁'] [AddCommGroup E₂'] [PartialOrder E₂'] [Module R E₁'] [Module R E₂']
-    [LinearMapClass F' R E₁' E₂'] [IsOrderedAddMonoid E₁'] [IsOrderedAddMonoid E₂']
+/-- An additive group homomorphism that maps nonnegative elements to nonnegative elements
+is an order homomorphism. -/
+lemma _root_.OrderHomClass.of_addMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
+    [LE E₁'] [AddRightMono E₁'] [AddGroup E₂'] [LE E₂'] [AddRightMono E₂']
+    [AddMonoidHomClass F' E₁' E₂']
     (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
-  map_rel := by
-    intro f a b hab
-    rw [← sub_nonneg] at hab ⊢
-    have : 0 ≤ f (b - a) := h f (b - a) hab
-    simpa using this
+  map_rel f a b hab := by simpa using h f (b - a) (sub_nonneg.mpr hab)
+
+@[deprecated (since := "2025-09-13")] alias _root_.OrderHomClass.ofLinear :=
+  OrderHomClass.of_addMonoidHom
 
 end PositiveLinearMapClass
 

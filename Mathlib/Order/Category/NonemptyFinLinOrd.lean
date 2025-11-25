@@ -3,13 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.Category.FinPartOrd
-import Mathlib.Order.Category.LinOrd
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Category.FinPartOrd
+public import Mathlib.Order.Category.LinOrd
 
 /-!
 # Nonempty finite linear orders
@@ -20,6 +22,8 @@ orders with monotone maps. This is the index category for simplicial objects.
 Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its morphisms do not
 preserve `⊥` and `⊤`.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -120,8 +124,7 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
-  intro
-  intro a₁ a₂ h
+  intro _ a₁ a₂ h
   let X := of (ULift (Fin 1))
   let g₁ : X ⟶ A := ofHom ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
   let g₂ : X ⟶ A := ofHom ⟨fun _ => a₂, fun _ _ _ => by rfl⟩

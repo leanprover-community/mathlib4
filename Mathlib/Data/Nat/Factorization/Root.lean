@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Floor.Div
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Factorization.Defs
+module
+
+public import Mathlib.Algebra.Order.Floor.Div
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # Roots of natural numbers, rounded up and down
@@ -29,6 +31,8 @@ multiple of `a` as the multiples of some fixed number (aka `ceilRoot n a`). See
 * `norm_num` extension
 -/
 
+@[expose] public section
+
 open Finsupp
 
 namespace Nat
@@ -50,7 +54,7 @@ we special-case the following values:
 def floorRoot (n a : ℕ) : ℕ :=
   if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ (k / n)
 
-/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order theoretical
+/-- The RHS is a noncomputable version of `Nat.floorRoot` with better order-theoretic
 properties. -/
 lemma floorRoot_def :
     floorRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌊/⌋ n).prod (· ^ ·) := by
@@ -110,7 +114,7 @@ we special-case the following values:
 def ceilRoot (n a : ℕ) : ℕ :=
   if n = 0 ∨ a = 0 then 0 else a.factorization.prod fun p k ↦ p ^ ((k + n - 1) / n)
 
-/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order theoretical
+/-- The RHS is a noncomputable version of `Nat.ceilRoot` with better order-theoretic
 properties. -/
 lemma ceilRoot_def :
     ceilRoot n a = if n = 0 ∨ a = 0 then 0 else (a.factorization ⌈/⌉ n).prod (· ^ ·) := by

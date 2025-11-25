@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Exact sequences with free modules
@@ -25,6 +27,8 @@ This file proves results about linear independence and span in exact sequences o
 linear algebra, module, free
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Module
 
@@ -48,7 +52,7 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) ?_
-  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f.hom), hS.moduleCat_range_eq_ker]
+  rw [← LinearMap.coe_range, span_eq (LinearMap.range S.f.hom), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
 include hv hm in

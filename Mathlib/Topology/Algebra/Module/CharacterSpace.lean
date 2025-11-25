@@ -3,10 +3,12 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -31,6 +33,8 @@ which provides the element as a continuous linear map. (Even though `WeakDual �
 character space, Gelfand transform, functional calculus
 
 -/
+
+@[expose] public section
 
 
 namespace WeakDual
@@ -62,8 +66,8 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- Porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
--- until the `ContinuousLinearMapClass` instance is declared
+/-- This has to come after `WeakDual.CharacterSpace.instFunLike`, otherwise the right-hand side
+gets coerced via `Subtype.val` instead of directly via `DFunLike`. -/
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl

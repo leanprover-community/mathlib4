@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Kernel pairs
@@ -29,6 +31,8 @@ is developed here.
   and the converse in an effective regular category (WIP by b-mehta).
 
 -/
+
+@[expose] public section
 
 
 universe v u u₂
@@ -66,7 +70,6 @@ instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
 
 variable {f a b}
 
--- Porting note: `lift` and the two following simp lemmas were introduced to ease the port
 /--
 Given a pair of morphisms `p`, `q` to `X` which factor through `f`, they factor through any kernel
 pair of `f`.

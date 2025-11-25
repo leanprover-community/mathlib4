@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # (Semi)ring equivs
@@ -16,7 +18,7 @@ import Mathlib.Algebra.Notation.Prod
 In this file we define an extension of `Equiv` called `RingEquiv`, which is a datatype representing
 an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
-## Notations
+## Notation
 
 * ``infixl ` ≃+* `:25 := RingEquiv``
 
@@ -36,6 +38,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
+
+@[expose] public section
 
 -- guard against import creep
 assert_not_exists Field Fintype
@@ -231,9 +235,6 @@ theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
 theorem coe_refl (R : Type*) [Mul R] [Add R] : ⇑(RingEquiv.refl R) = id :=
   rfl
 
-@[deprecated coe_refl (since := "2025-02-10")]
-alias coe_refl_id := coe_refl
-
 @[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
   rfl
@@ -303,8 +304,13 @@ theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
 theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 
-theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹' s :=
+  e.toEquiv.image_symm_eq_preimage _
+
+lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm _
+
+@[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
 
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _
@@ -471,6 +477,17 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   __ := Equiv.piUnique R
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
+
+/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast
+    {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :
+    R i ≃+* R j where
+  __ := AddEquiv.cast h
+  __ := MulEquiv.cast h
 
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.

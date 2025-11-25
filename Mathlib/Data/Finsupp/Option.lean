@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Algebra.Module.Defs
+module
+
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Declarations about finitely supported functions whose support is an `Option` type p
@@ -19,6 +21,8 @@ import Mathlib.Algebra.Module.Defs
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -67,7 +71,7 @@ theorem embDomain_some_some [Zero M] (f : α →₀ M) (x) : f.embDomain .some (
 
 @[simp]
 theorem some_update_none [Zero M] (f : Option α →₀ M) (a : M) :
-    (f.update .none a).some = f.some := by
+    (f.update none a).some = f.some := by
   ext
   simp [Finsupp.update]
 
@@ -76,8 +80,8 @@ pairs of an element and a `Finsupp` on the original type. -/
 @[simps]
 noncomputable
 def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
-  toFun P := (P .none, P.some)
-  invFun P := (P.2.embDomain .some).update .none P.1
+  toFun P := (P none, P.some)
+  invFun P := (P.2.embDomain .some).update none P.1
   left_inv P := by ext (_ | a) <;> simp [Finsupp.update]
   right_inv P := by ext <;> simp [Finsupp.update]
 
@@ -108,7 +112,7 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
 @[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
   ext; rw [some_apply]; exact embDomain_apply _ _ _
 
-@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some .none = 0 :=
+@[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some none = 0 :=
   embDomain_notin_range _ _ _ (by simp)
 
 end Option

@@ -3,7 +3,9 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.EReal.Basic
+module
+
+public import Mathlib.Data.EReal.Basic
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -29,6 +31,8 @@ Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where eith
 see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`. See `EReal.left_distrib_of_nonneg`
 (similarly for right distributivity).
 -/
+
+@[expose] public section
 
 open ENNReal NNReal
 
@@ -145,7 +149,7 @@ theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t :
   · simp [h1, bot_le.trans_lt h2]
   · lift x to ℝ using ⟨h1.ne_top, hx⟩
     calc (x : EReal) + z < x + t := add_lt_add_left_coe h2 _
-    _ ≤ y + t := add_le_add_right h1.le _
+    _ ≤ y + t := by gcongr
 
 theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hbot : t ≠ ⊥)
     (htop : t = ⊤ → z = ⊤ → x = ⊥) : x + z < y + t := by
@@ -303,12 +307,12 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
     map_rel_iff' := neg_le_neg_iff }
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
-    - (x + y) = - x - y := by
+    -(x + y) = -x - y := by
   induction x <;> induction y <;> try tauto
   rw [← coe_add, ← coe_neg, ← coe_neg, ← coe_sub, neg_add']
 
 lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
-    - (x - y) = - x + y := by
+    -(x - y) = -x + y := by
   rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
 
 /-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
@@ -728,16 +732,7 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
-  | symm h =>
-    rw [EReal.mul_comm, h]
-    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;>
-    cases H with
-      | inl h => exact Or.inr (Or.inl ⟨h.2, h.1⟩)
-      | inr h => cases h with
-        | inl h => exact Or.inl ⟨h.2, h.1⟩
-        | inr h => cases h with
-          | inl h => exact Or.inr (Or.inr (Or.inr ⟨h.2, h.1⟩))
-          | inr h => exact Or.inr (Or.inr (Or.inl ⟨h.2, h.1⟩))
+  | symm h => grind [EReal.mul_comm]
   | top_top => simp
   | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
   | top_zero => simp
@@ -840,7 +835,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -859,7 +854,7 @@ def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute
@@ -872,11 +867,11 @@ def evalERealMul : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match (← core zα pα b).toNonneg with
-      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
-      | .none => pure .none
+      | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | none => pure .none
     | .nonzero pa =>
       match (← core zα pα b).toNonzero with
-      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
       | none => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a product of 2 `EReal`s"

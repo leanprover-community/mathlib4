@@ -3,12 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Filter
-import Mathlib.Analysis.BoxIntegral.Partition.Measure
-import Mathlib.Analysis.Oscillation
-import Mathlib.Data.Bool.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Topology.UniformSpace.Compact
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Filter
+public import Mathlib.Analysis.BoxIntegral.Partition.Measure
+public import Mathlib.Analysis.Oscillation
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
@@ -28,7 +30,7 @@ with respect to the volume `vol` is the sum of `vol J (f (π.tag J))` over all b
 The integral is defined as the limit of integral sums along a filter. Different filters correspond
 to different integration theories. In order to avoid code duplication, all our definitions and
 theorems take an argument `l : BoxIntegral.IntegrationParams`. This is a type that holds three
-boolean values, and encodes eight filters including those corresponding to Riemann,
+Boolean values, and encodes eight filters including those corresponding to Riemann,
 Henstock-Kurzweil, and McShane integrals.
 
 Following the design of infinite sums (see `hasSum` and `tsum`), we define a predicate
@@ -50,6 +52,8 @@ non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 
 integral
 -/
+
+@[expose] public section
 
 open scoped Topology NNReal Filter Uniformity BoxIntegral
 
@@ -301,9 +305,11 @@ theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
   classical
-  induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
-  simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
-  exact h.1.add (ihs h.2)
+  induction s using Finset.induction_on with
+  | empty => simp [hasIntegral_zero]
+  | insert a s ha ihs =>
+    simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
+    exact h.1.add (ihs h.2)
 
 theorem HasIntegral.smul (hf : HasIntegral I l f vol y) (c : ℝ) :
     HasIntegral I l (c • f) vol (c • y) := by
@@ -357,7 +363,7 @@ theorem norm_integral_le_of_le_const {c : ℝ}
   simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 
 /-!
-# Henstock-Sacks inequality and integrability on subboxes
+### Henstock-Sacks inequality and integrability on subboxes
 
 Henstock-Sacks inequality for Henstock-Kurzweil integral says the following. Let `f` be a function
 integrable on a box `I`; let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged partition of
@@ -549,7 +555,7 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
           dist (∑ J ∈ π₀.boxes, integralSum f vol (πi J)) (∑ J ∈ π₀.boxes, integral J l f vol) :=
       dist_triangle _ _ _
     _ ≤ ε + δ' + ∑ _J ∈ π₀.boxes, δ' := add_le_add this (dist_sum_sum_le_of_le _ hπiδ')
-    _ = ε + δ := by field_simp [δ']; ring
+    _ = ε + δ := by simp [field, δ']; ring
 
 /-- **Henstock-Sacks inequality**. Let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged
 *partition* of `I` subordinate to `r`, the integral sum of `f` over this partition differs from the
@@ -693,7 +699,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     rw [← sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
     · linarith
-    simp_rw [mul_le_mul_right ε₁0, μ.toBoxAdditive_apply]
+    simp_rw [mul_le_mul_iff_left₀ ε₁0, μ.toBoxAdditive_apply]
     refine le_trans ?_ <| toReal_mono (lt_top_iff_ne_top.1 μI) <| μ.mono <| un (B \ B') sdiff_subset
     simp_rw [measureReal_def]
     rw [← toReal_sum (fun J hJ ↦ μJ_ne_top J (mem_sdiff.1 hJ).1), ← Finset.tsum_subtype]
