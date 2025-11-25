@@ -274,3 +274,23 @@ theorem TendstoLocallyUniformlyOn.congr_inseparable_right {g : α → β}
 theorem TendstoLocallyUniformlyOn.congr_right {g : α → β} (hf : TendstoLocallyUniformlyOn F f p s)
     (hg : s.EqOn f g) : TendstoLocallyUniformlyOn F g p s :=
   hf.congr_inseparable_right fun _ hx => .of_eq (hg hx)
+
+theorem TendstoLocallyUniformly.congr_inseparable {G : ι → α → β}
+    (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ᶠ n in p, ∀ x, Inseparable (F n x) (G n x)) : TendstoLocallyUniformly G f p :=
+  tendstoLocallyUniformlyOn_univ.1
+    (hf.tendstoLocallyUniformlyOn.congr_inseparable (by simpa using hg))
+
+theorem TendstoLocallyUniformly.congr {G : ι → α → β} (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ n x, F n x = G n x) : TendstoLocallyUniformly G f p :=
+  hf.congr_inseparable (.of_forall fun n x => .of_eq (hg n x))
+
+theorem TendstoLocallyUniformly.congr_inseparable_right {g : α → β}
+    (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ x, Inseparable (f x) (g x)) : TendstoLocallyUniformly F g p :=
+  tendstoLocallyUniformlyOn_univ.1
+    (hf.tendstoLocallyUniformlyOn.congr_inseparable_right (by simpa using hg))
+
+theorem TendstoLocallyUniformly.congr_right {g : α → β} (hf : TendstoLocallyUniformly F f p)
+    (hg : ∀ x, f x = g x) : TendstoLocallyUniformly F g p :=
+  hf.congr_inseparable_right fun x => .of_eq (hg x)

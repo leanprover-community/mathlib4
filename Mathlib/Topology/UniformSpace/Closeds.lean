@@ -170,6 +170,18 @@ theorem isClosedEmbedding_singleton [T0Space α] :
 
 end UniformSpace.hausdorff
 
+/-- In the Hausdorff uniformity, the powerset of a totally bounded set is totally bounded. -/
+theorem TotallyBounded.powerset_hausdorff {t : Set α} (ht : TotallyBounded t) :
+    TotallyBounded t.powerset := by
+  simp_rw [(𝓤 α).basis_sets.uniformity_hausdorff.totallyBounded_iff, Function.comp_id,
+    Set.powerset, Set.setOf_subset, Set.mem_iUnion]
+  intro (U : SetRel α α) hU
+  obtain ⟨u, hu, ht⟩ := ht U hU
+  refine ⟨u.powerset, hu.powerset, fun s hs => ⟨u ∩ U.image s, by grind, fun x hx => ?_,
+    fun x ⟨_, hx⟩ => hx⟩⟩
+  obtain ⟨y, hy, hxy⟩ := Set.mem_iUnion₂.mp (ht (hs hx))
+  exact ⟨y, ⟨hy, ⟨x, hx, hxy⟩⟩, hxy⟩
+
 namespace TopologicalSpace.Closeds
 
 instance uniformSpace : UniformSpace (Closeds α) :=
@@ -199,6 +211,10 @@ theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : Closeds α | (t : Set α) ⊆ s} :=
   isClosed_induced (UniformSpace.hausdorff.isClosed_powerset hs)
 
+theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
+    TotallyBounded {F : Closeds α | ↑F ⊆ t} :=
+  totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
+
 section T0Space
 
 variable [T0Space α]
@@ -227,6 +243,17 @@ theorem isClosedEmbedding_singleton :
       uniformContinuous_coe.continuous
 
 end T0Space
+
+instance : T0Space (Closeds α) := by
+  suffices ∀ F₁ F₂ : Closeds α, Inseparable F₁ F₂ → F₁ ≤ F₂ from
+    ⟨fun F₁ F₂ h => le_antisymm (this F₁ F₂ h) (this F₂ F₁ h.symm)⟩
+  refine fun F₁ F₂ h x hx₁ => isClosed_iff_frequently.mp F₂.isClosed _ ?_
+  rw [nhds_eq_comap_uniformity, Filter.frequently_comap, Filter.frequently_iff]
+  intro (U : SetRel α α) hU
+  obtain ⟨h : (F₁ : Set α) ⊆ U.preimage F₂, -⟩ :=
+    mem_of_mem_nhds <| h.nhds_le_uniformity <| Filter.preimage_mem_comap <| Filter.mem_lift' hU
+  obtain ⟨y, hy, hxy⟩ := h hx₁
+  exact ⟨(x, y), hxy, y, rfl, hy⟩
 
 end TopologicalSpace.Closeds
 
@@ -273,6 +300,10 @@ theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
 theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : Compacts α | (t : Set α) ⊆ s} :=
   isClosed_induced (UniformSpace.hausdorff.isClosed_powerset hs)
+
+theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
+    TotallyBounded {K : Compacts α | ↑K ⊆ t} :=
+  totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
 
 theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → Compacts α) :=
   isUniformEmbedding_coe.of_comp_iff.mp UniformSpace.hausdorff.isUniformEmbedding_singleton
@@ -341,6 +372,10 @@ theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
 theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : NonemptyCompacts α | (t : Set α) ⊆ s} :=
   isClosed_induced (UniformSpace.hausdorff.isClosed_powerset hs)
+
+theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
+    TotallyBounded {K : NonemptyCompacts α | ↑K ⊆ t} :=
+  totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
 
 theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → NonemptyCompacts α) :=
   isUniformEmbedding_coe.of_comp_iff.mp UniformSpace.hausdorff.isUniformEmbedding_singleton
