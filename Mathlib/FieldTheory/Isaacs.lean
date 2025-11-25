@@ -44,8 +44,8 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   let p := (S.prod <| fun x ↦ (minpoly F x).map (algebraMap F K))
   let K' := SplittingField p
   have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
-    apply (SplittingField.splits p).of_dvd (map_monic_ne_zero (monic_prod_of_monic _ _
-      fun _ _ ↦ (minpoly.monic <| alg.isIntegral.1 _).map _)) ?_
+    apply (SplittingField.splits p).of_dvd (Polynomial.map_ne_zero (Finset.prod_ne_zero_iff.mpr
+      fun _ _ ↦ Polynomial.map_ne_zero (minpoly.ne_zero <| alg.isIntegral.1 _))) ?_
     rw [IsScalarTower.algebraMap_eq F K K', ← Polynomial.map_map, map_dvd_map']
     exact Finset.dvd_prod_of_mem _ hs
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F

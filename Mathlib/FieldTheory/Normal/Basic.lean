@@ -71,7 +71,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := SplittingField.splits (p * minpoly F x)
-  rw [Polynomial.map_mul, splits_mul_iff _ (map_monic_ne_zero (minpoly.monic hx))] at hL
+  rw [Polynomial.map_mul, splits_mul_iff _ (map_ne_zero (minpoly.ne_zero hx))] at hL
   · let j : E →ₐ[F] L := IsSplittingField.lift E p hL.1
     refine ⟨hx, splits_of_comp _ (j : E →+* L) (j.comp_algebraMap ▸ hL.2) fun a ha ↦ ?_⟩
     rw [j.comp_algebraMap] at ha

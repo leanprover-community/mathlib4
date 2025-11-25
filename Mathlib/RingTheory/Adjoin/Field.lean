@@ -84,7 +84,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     letI := (f : Ks →+* L).toAlgebra
     have H5 : IsIntegral Ks a := H1.tower_top
     have H6 : ((minpoly Ks a).map (algebraMap Ks L)).Splits := by
-      refine Splits.of_dvd H2 (map_monic_ne_zero (minpoly.monic H1)) ?_
+      refine Splits.of_dvd H2 (map_ne_zero (minpoly.ne_zero H1)) ?_
       rw [IsScalarTower.algebraMap_eq F Ks L, ← map_map, map_dvd_map']
       exact minpoly.dvd_map_of_isScalarTower F Ks a
     obtain ⟨y, hy⟩ := Polynomial.exists_root_of_splits _ H6 (minpoly.degree_pos H5).ne'
