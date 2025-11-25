@@ -265,6 +265,8 @@ this is not a mathematically meaningful difference.`
 
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to ascertain in practice.
+
+See `target_subset_preimage_target` for a version stated using preimages instead of images.
 -/
 lemma map_target_subset_target (h : IsImmersionAtOfComplement F I J n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend J).target := by
@@ -274,6 +276,13 @@ lemma map_target_subset_target (h : IsImmersionAtOfComplement F I J n f x) :
   have : f '' h.domChart.source ⊆ h.codChart.source := by
     simp [h.source_subset_preimage_source]
   grw [this, OpenPartialHomeomorph.extend_source]
+
+/-- If `f` is an immersion at `x`, its domain chart's target `(h.domChart.extend I).target`
+is mapped to it codomain chart's target `(h.domChart.extend J).target`:
+see `map_target_subset_target` for a version stated using images. -/
+lemma target_subset_preimage_target (h : IsImmersionAtOfComplement F I J n f x) :
+    (h.domChart.extend I).target ⊆ (h.equiv ∘ (·, 0)) ⁻¹' (h.codChart.extend J).target :=
+  fun _x hx ↦ h.map_target_subset_target (mem_image_of_mem _ hx)
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
@@ -308,6 +317,10 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   unfold smallComplement
   infer_instance
 
+/-- Given an immersion `f` at `x` w.r.t. a complement `F`, this construction provides
+a continuous linear equivalence from `F` to the small complement of `F`:
+mathematically, this is just the identity map; however, this is technically useful as it enables
+us to always work with `hf.smallComplement`. -/
 def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
   have := hf.small
   ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
@@ -331,8 +344,7 @@ end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
 
-lemma mk_of_charts [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
-    (equiv : (E × F) ≃L[𝕜] E'')
+lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'')
     (domChart : OpenPartialHomeomorph M H) (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
@@ -350,8 +362,7 @@ lemma mk_of_charts [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 This version does not assume that `f` maps `φ.source` to `ψ.source`,
 but that `f` is continuous at `x`. -/
-lemma mk_of_continuousAt [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
-    {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
+lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
     (domChart : OpenPartialHomeomorph M H) (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
