@@ -70,22 +70,6 @@ lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
     {s : SetRel α β} (hs : IsOpen s) {t : Set β} : IsOpen (s.preimage t) :=
   hs.relInv.relImage
 
-lemma IsOpen.compRel [TopologicalSpace α] {s t : Set (α × α)} (hs : IsOpen s) (ht : IsOpen t) :
-    IsOpen (s ○ t) := by
-  classical
-  refine (isTopologicalBasis_opens.prod isTopologicalBasis_opens).isOpen_induction
-    ((isTopologicalBasis_opens.prod isTopologicalBasis_opens).isOpen_induction ?_ ?_ ht) ?_ hs
-  · rintro S hS
-    rw [sUnion_compRel]
-    exact isOpen_biUnion hS
-  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩ _ ⟨s₁, hs₁, s₂, hs₂, rfl⟩
-    rw [prod_compRel_prod]
-    split_ifs
-    exacts [isOpen_empty, hs₁.prod ht₂]
-  · rintro T hT b hb
-    rw [compRel_sUnion]
-    exact isOpen_biUnion fun t ht ↦ hT t ht b hb
-
 section UniformSpace
 
 variable [UniformSpace α]

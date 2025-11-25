@@ -210,36 +210,6 @@ theorem subset_iterate_compRel {s t : SetRel α α} (h : idRel ⊆ s) (n : ℕ) 
   | zero => exact Subset.rfl
   | succ n ihn => exact (right_subset_compRel h).trans ihn
 
-theorem prodSwap_preimage_compRel (s t : Set (α × α)) :
-    Prod.swap ⁻¹' (s ○ t) = Prod.swap ⁻¹' t ○ Prod.swap ⁻¹' s := by
-  aesop
-
-variable {s₁ s₂ t₁ t₂ : Set α}
-
-lemma prod_compRel_prod_of_inter_nonempty (hst : (s₂ ∩ t₁).Nonempty) :
-    s₁ ×ˢ s₂ ○ t₁ ×ˢ t₂ = s₁ ×ˢ t₂ := by aesop
-
-lemma prod_compRel_prod_of_disjoint (hst : Disjoint s₂ t₁) : s₁ ×ˢ s₂ ○ t₁ ×ˢ t₂ = ∅ :=
-  eq_empty_of_forall_notMem fun _ ⟨_z, ⟨_, hzs⟩, hzt, _⟩ ↦ Set.disjoint_left.1 hst hzs hzt
-
-lemma prod_compRel_prod (s₁ s₂ t₁ t₂ : Set α) [Decidable (Disjoint s₂ t₁)] :
-    s₁ ×ˢ s₂ ○ t₁ ×ˢ t₂ = if Disjoint s₂ t₁ then ∅ else s₁ ×ˢ t₂ := by
-  split_ifs with hst
-  · exact prod_compRel_prod_of_disjoint hst
-  · exact prod_compRel_prod_of_inter_nonempty <| not_disjoint_iff_nonempty_inter.1 hst
-
-lemma compRel_iUnion (s : Set (α × α)) (t : ι → Set (α × α)) : s ○ ⋃ i, t i = ⋃ i, s ○ t i := by
-  aesop
-
-lemma iUnion_compRel (s : ι → Set (α × α)) (t : Set (α × α)) : (⋃ i, s i) ○ t = ⋃ i, s i ○ t := by
-  aesop
-
-lemma compRel_sUnion (s : Set (α × α)) (T : Set (Set (α × α))) : s ○ ⋃₀ T = ⋃ t ∈ T, s ○ t := by
-  aesop
-
-lemma sUnion_compRel (S : Set (Set (α × α))) (t : Set (α × α)) : ⋃₀ S ○ t = ⋃ s ∈ S, s ○ t := by
-  aesop
-
 /-- The relation is invariant under swapping factors. -/
 @[deprecated SetRel.IsSymm (since := "2025-10-17")]
 def IsSymmetricRel (V : SetRel α α) : Prop :=
