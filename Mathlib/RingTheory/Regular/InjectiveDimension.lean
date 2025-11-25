@@ -334,9 +334,61 @@ end restrictScalars
 lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type v) {x : R}
     (regR : IsSMulRegular R x) :
     HasProjectiveDimensionLE (ModuleCat.of R (ι →₀ Shrink.{v} (R ⧸ Ideal.span {x}))) 1 := by
-  sorry
+  let f' : Shrink.{v} R →ₗ[R] Shrink.{v} R := ((Shrink.linearEquiv R R).symm.toLinearMap.comp
+    (x • LinearMap.id)).comp (Shrink.linearEquiv R R).toLinearMap
+  let g' : Shrink.{v} R →ₗ[R] Shrink.{v} (R ⧸ Ideal.span {x}) :=
+    ((Shrink.linearEquiv R _).symm.toLinearMap.comp
+      (Ideal.Quotient.mkₐ R (Ideal.span {x})).toLinearMap).comp (Shrink.linearEquiv R R).toLinearMap
+  have inj : Function.Injective f' := by simpa [f'] using regR
+  have surj : Function.Surjective g' := by simpa [g'] using Ideal.Quotient.mk_surjective
+  have exac : Function.Exact f' g' := by
+    intro y
+    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, AlgHom.coe_toLinearMap,
+      Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
+      EquivLike.range_comp, Set.mem_range, LinearMap.smul_apply, LinearMap.id_coe,
+      LinearEquiv.symm_apply_eq, id_eq, Ideal.Quotient.eq_zero_iff_mem,
+      Ideal.mem_span_singleton', smul_eq_mul, mul_comm, g', f']
+  let S : ShortComplex (ModuleCat.{v} R) := {
+    X₁ := ModuleCat.of R (ι →₀ Shrink.{v} R)
+    X₂ := ModuleCat.of R (ι →₀ Shrink.{v} R)
+    X₃ := ModuleCat.of R (ι →₀ Shrink.{v} (R ⧸ Ideal.span {x}))
+    f := ModuleCat.ofHom (Finsupp.mapRange.linearMap f')
+    g := ModuleCat.ofHom (Finsupp.mapRange.linearMap g')
+    zero := by
+      rw [← ModuleCat.ofHom_comp, ← Finsupp.mapRange.linearMap_comp,
+        exac.linearMap_comp_eq_zero]
+      ext
+      simp }
+  have S_exact : S.ShortExact := {
+    exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr (by
+      simp [LinearMap.exact_iff, S, Finsupp.ker_mapRange, LinearMap.exact_iff.mp exac,
+        Finsupp.range_mapRange_linearMap f' (LinearMap.ker_eq_bot.mpr inj)] )
+    mono_f := (ModuleCat.mono_iff_injective _).mpr (Finsupp.mapRange_injective f' (map_zero _) inj)
+    epi_g := (ModuleCat.epi_iff_surjective _).mpr
+      (Finsupp.mapRange_surjective g' (map_zero _) surj) }
+  have : Projective (ModuleCat.of R (ι →₀ Shrink.{v} R)) := ModuleCat.projective_of_free
+    ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)⟩
+  exact S_exact.hasProjectiveDimensionLT_X₃ 1 inferInstance inferInstance
 
 variable [Small.{v} R] [UnivLE.{v, w}]
+
+open Limits in
+lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
+    (regM : IsSMulRegular M x) (N : ModuleCat.{v} R) (ann : x • 𝟙 N = 0) :
+    Function.Bijective (regM.smulShortComplex_shortExact.extClass.postcomp
+    N (rfl : 0 + 1 = 0 + 1)) := by
+  refine ⟨?_, fun y ↦ Ext.covariant_sequence_exact₁ _ regM.smulShortComplex_shortExact y ?_ rfl⟩
+  · apply (AddCommGrpCat.mono_iff_injective _).mp ((Ext.covariant_sequence_exact₃' N
+      regM.smulShortComplex_shortExact 0 1 (zero_add 1)).mono_g (IsZero.eq_zero_of_src ?_ _))
+    apply @AddCommGrpCat.isZero_of_subsingleton _ ?_
+    apply Ext.homEquiv₀.subsingleton_congr.mpr
+    apply subsingleton_of_forall_eq 0 fun f ↦ ModuleCat.hom_ext (LinearMap.ext fun t ↦ regM ?_)
+    have : (x • 𝟙 N) t = x • t := by simp
+    simp [smul_zero, ← map_smul, ← this, ann, map_zero]
+  · conv in ShortComplex.f ?_ => change x • (𝟙 M)
+    rw [← Ext.mk₀_id_comp (y.comp (Ext.mk₀ (x • 𝟙 M)) rfl), Ext.mk₀_smul,
+      Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
+    simp [ann]
 
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
@@ -350,21 +402,11 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
   let Fr := (ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x})))
   induction n generalizing N
   · simp only [ModuleCat.smulShortComplex_X₁, Nat.reduceAdd, AddMonoidHom.coe_comp]
-    refine Function.Bijective.comp ⟨(injective_iff_map_eq_zero _).mpr fun y h ↦ ?_,
-      fun y ↦ Ext.covariant_sequence_exact₁ _ regM.smulShortComplex_shortExact y ?_ rfl⟩ ?_
-    · obtain ⟨z, rfl⟩ := y.covariant_sequence_exact₃ _ regM.smulShortComplex_shortExact rfl h
-      suffices z = 0 by simp [this]
-      apply @Subsingleton.eq_zero _ _ (@Ext.homEquiv₀.subsingleton _ _ ?_) z
-      apply subsingleton_of_forall_eq 0 fun f ↦ ModuleCat.hom_ext (LinearMap.ext fun t ↦ regM ?_)
-      simp [← map_smul]
-    · conv in ShortComplex.f ?_ => change x • (𝟙 M)
-      rw [← Ext.mk₀_id_comp (X := Fr.obj N) (y.comp (Ext.mk₀ (x • 𝟙 M)) rfl), Ext.mk₀_smul,
-        Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
-      suffices x • 𝟙 (Fr.obj N) = 0 by simp [this]
+    refine Function.Bijective.comp ?_ ?_
+    · apply extClass_postcomp_bijective_of_isSMulRegular regM
       ext u
-      simp [Fr]
-    · refine (EquivLike.comp_bijective _ Ext.homEquiv₀).mp <|
-        (EquivLike.bijective_comp Ext.homEquiv₀.symm _).mp ?_
+      simp
+    · refine (Ext.homEquiv₀.comp_bijective _ ).mp ((Ext.homEquiv₀.symm.bijective_comp _).mp ?_)
       change Function.Bijective <| fun t ↦ Ext.homEquiv₀ <|
         (Fr.mapExt N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) 0) (Ext.homEquiv₀.symm t)
       simp only [Ext.homEquiv₀_symm_apply, Ext.mapExt_mk₀_eq_mk₀_map]
