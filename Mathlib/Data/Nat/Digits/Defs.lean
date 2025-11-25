@@ -47,58 +47,20 @@ def digitsAux1 (n : ℕ) : List ℕ :=
   List.replicate n 1
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
-def digitsAux (b : ℕ) (h : 2 ≤ b) (n : ℕ) : List ℕ :=
-  go n (n + 2) init
-where
-  init : (if n = 0 then 0 else n + 1) < n + 2 := by
-    split_ifs <;> simp
-  decreasing (n f : ℕ) (hf : (if n + 1 = 0 then 0 else n + 2) < f + 1) :
-      (if (n + 1) / b = 0 then 0 else ((n + 1) / b) + 1) < f := by
-    rw [if_neg n.add_one_ne_zero] at hf
-    split_ifs with hn
-    · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
-    · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
-      refine Nat.lt_of_le_of_lt (succ_le_succ ?_) (succ_lt_succ_iff.1 hf)
-      refine Nat.div_le_of_le_mul (Nat.le_trans ?_ (Nat.mul_le_mul_right n h))
-      omega
-  /-- Auxiliary function performing recursion for `Nat.digitsAux`. -/
-  go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else n + 1) < fuel) : List ℕ :=
-    match n, fuel, hfuel with
-    | 0, _, _ => []
-    | n + 1, f + 1, hf =>
-      ((n + 1) % b) :: go ((n + 1) / b) f (decreasing n f hf)
-
-theorem digitsAux.go_zero (b : ℕ) (h : 2 ≤ b) (fuel : ℕ)
-    (hfuel : (if 0 = 0 then 0 else n + 1) < fuel) :
-    digitsAux.go b h 0 fuel hfuel = [] := by
-  rw [digitsAux.go]
-
-theorem digitsAux.go_succ (b : ℕ) (h : 2 ≤ b) (n fuel : ℕ)
-    (hfuel : (if n + 1 = 0 then 0 else n + 2) < fuel + 1) :
-    digitsAux.go b h (n + 1) (fuel + 1) hfuel = ((n + 1) % b) ::
-      digitsAux.go b h ((n + 1) / b) fuel (decreasing b h n fuel hfuel) :=
-  rfl
-
-theorem digitsAux.go_fuel_irrel (b : ℕ) (h : 2 ≤ b) (n fuel fuel' : ℕ)
-    (hfuel : (if n = 0 then 0 else n + 1) < fuel)
-    (hfuel' : (if n = 0 then 0 else n + 1) < fuel') :
-    digitsAux.go b h n fuel hfuel = digitsAux.go b h n fuel' hfuel' := by
-  fun_induction go b h n fuel hfuel generalizing fuel'
-  · rw [go_zero]
-  · cases fuel'
-    · simp at hfuel'
-    · rw [go_succ]
-      solve_by_elim
+def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
+  | 0 => []
+  | n + 1 =>
+    ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
+decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) :
-    digitsAux b h 0 = [] := by rw [digitsAux, digitsAux.go]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := by rw [digitsAux]
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
   cases n
   · cases w
-  · rw [digitsAux, digitsAux.go, digitsAux, digitsAux.go_fuel_irrel]
+  · rw [digitsAux]
 
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.

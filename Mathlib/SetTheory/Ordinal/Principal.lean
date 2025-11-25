@@ -72,9 +72,7 @@ theorem not_principal_iff_of_monotone
     ¬ Principal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [principal_iff_of_monotone h₁ h₂]
 
-@[simp]
-theorem principal_zero : Principal op 0 := fun a _ h =>
-  (Ordinal.not_lt_zero a h).elim
+@[simp] lemma principal_zero : Principal op 0 := by simp [Principal]
 
 @[simp]
 theorem principal_one_iff : Principal op 1 ↔ op 0 0 = 0 := by
