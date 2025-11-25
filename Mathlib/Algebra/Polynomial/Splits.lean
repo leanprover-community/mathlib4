@@ -102,45 +102,14 @@ theorem splits_id_iff_splits {f : K[X]} :
 
 variable {i}
 
-theorem Splits.comp_of_degree_le_one {f : L[X]} {p : L[X]} (hd : p.degree ≤ 1)
-    (h : f.Splits) : (f.comp p).Splits := by
-  obtain ⟨m, hm⟩ := splits_iff_exists_multiset.mp h
-  rw [hm, mul_comp, C_comp, multiset_prod_comp]
-  refine (Splits.C _).mul (Splits.multisetProd ?_)
-  simp only [Multiset.mem_map]
-  rintro - ⟨-, ⟨a, -, rfl⟩, rfl⟩
-  apply Splits.of_degree_le_one
-  grw [sub_comp, X_comp, C_comp, degree_sub_le, hd, degree_C_le, max_eq_left zero_le_one]
+@[deprecated (since := "2025-11-25")]
+alias Splits.comp_of_degree_le_one := Splits.comp_of_natDegree_le_one
 
-@[deprecated (since := "2025-11-24")]
-alias Splits.comp_of_map_degree_le_one := Splits.comp_of_degree_le_one
+@[deprecated (since := "2025-11-25")]
+alias Splits.comp_of_map_degree_le_one := Splits.comp_of_natDegree_le_one
 
-theorem splits_iff_comp_splits_of_degree_eq_one {f : L[X]} {p : L[X]} (hd : p.degree = 1) :
-    f.Splits ↔ (f.comp p).Splits := by
-  refine ⟨Splits.comp_of_degree_le_one hd.le, fun h ↦ ?_⟩
-  let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
-      (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
-  have : f = (f.comp p).comp ((C ⅟p.leadingCoeff *
-      (X - C (p.coeff 0)))) := by
-    rw [comp_assoc]
-    nth_rw 1 [eq_X_add_C_of_degree_eq_one hd]
-    simp only [invOf_eq_inv, mul_sub, ← C_mul, add_comp, mul_comp, C_comp, X_comp,
-      ← mul_assoc]
-    simp
-  rw [this]
-  refine Splits.comp_of_degree_le_one ?_ h
-  simp [degree_C (inv_ne_zero (Invertible.ne_zero (a := p.leadingCoeff)))]
-
-theorem Splits.comp_X_sub_C (a : L) {f : L[X]}
-    (h : f.Splits) : (f.comp (X - C a)).Splits :=
-  Splits.comp_of_degree_le_one (degree_X_sub_C_le _) h
-
-theorem Splits.comp_X_add_C (a : L) {f : L[X]}
-    (h : f.Splits) : (f.comp (X + C a)).Splits :=
-  Splits.comp_of_degree_le_one (degree_X_add_C a).le h
-
-theorem Splits.comp_neg_X {f : L[X]} (h : f.Splits) : (f.comp (-X)).Splits :=
-  Splits.comp_of_degree_le_one (by rw [degree_neg, degree_X]) h
+@[deprecated (since := "2025-11-25")]
+alias splits_iff_comp_splits_of_degree_eq_one := splits_iff_comp_of_natDegree_eq_one
 
 variable (i)
 
