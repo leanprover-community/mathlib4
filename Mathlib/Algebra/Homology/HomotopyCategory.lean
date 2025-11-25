@@ -119,6 +119,11 @@ def homotopyOfEq {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (w : (quotient V c).map f = (quotient V c).map g) : Homotopy f g :=
   ((Quotient.functor_map_eq_iff _ _ _).mp w).some
 
+lemma quotient_map_eq_zero_iff {C D : HomologicalComplex V c} (f : C ⟶ D) :
+    (quotient V c).map f = 0 ↔ Nonempty (Homotopy f 0) :=
+  ⟨fun h ↦ ⟨homotopyOfEq _ _ (by simpa using h)⟩,
+    fun ⟨h⟩ ↦ by simpa using eq_of_homotopy _ _ h⟩
+
 /-- An arbitrarily chosen representation of the image of a chain map in the homotopy category
 is homotopic to the original chain map.
 -/
