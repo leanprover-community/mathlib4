@@ -323,11 +323,37 @@ variable {R} [Small.{v} R] [UnivLE.{v, w}]
 theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsSMulRegular R x)
     (regM : IsSMulRegular M x) (N : ModuleCat.{v} (R ⧸ Ideal.span {x})) (n : ℕ) :
     Function.Bijective ((regM.smulShortComplex_shortExact.extClass.postcomp
-    ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) rfl).comp
+    ((ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x}))).obj N) rfl).comp
     ((ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x}))).mapExtAddHom N
     (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)) := by
+  let Fr := (ModuleCat.restrictScalars.{v} (Ideal.Quotient.mk (Ideal.span {x})))
+  induction n generalizing N
+  · simp only [ModuleCat.smulShortComplex_X₁, Nat.reduceAdd, AddMonoidHom.coe_comp]
+    apply Function.Bijective.comp
+    · sorry
+    · sorry
+  · rename_i n ih
+    let e : Basis N (R ⧸ Ideal.span {x}) (N →₀ Shrink.{v} (R ⧸ Ideal.span {x})) :=
+      ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x}))⟩
+    let f := e.constr ℕ _root_.id
+    have surjf : Function.Surjective f :=
+      fun m ↦ ⟨Finsupp.single m 1, by simp [f, e, Basis.constr_apply]⟩
+    let S : ShortComplex (ModuleCat.{v} (R ⧸ Ideal.span {x})) :=
+    { X₃ := N
+      f := ModuleCat.ofHom (LinearMap.ker f).subtype
+      g := ModuleCat.ofHom f
+      zero := by
+        ext
+        simp }
+    have S_exact : S.ShortExact :=
+    { exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
+        (LinearMap.exact_subtype_ker_map f)
+      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).subtype_injective
+      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
+    let S' := S.map Fr
+    have S'_exact : S'.ShortExact := S_exact.map_of_exact Fr
 
-  sorry
+    sorry
 
 end
 
