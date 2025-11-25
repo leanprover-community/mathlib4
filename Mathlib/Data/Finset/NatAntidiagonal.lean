@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Antidiag.Prod
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.NatAntidiagonal
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Prod
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.NatAntidiagonal
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
@@ -19,6 +21,8 @@ generally for sums going from `0` to `n`.
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
 instance enabling `Finset.antidiagonal` on `Nat`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -154,8 +158,6 @@ def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
   invFun := fun ⟨i, h⟩ ↦ ⟨⟨i, n - i⟩, by
     rw [mem_antidiagonal, add_comm, Nat.sub_add_cancel]
     exact Nat.le_of_lt_succ h⟩
-  left_inv := by rintro ⟨⟨i, j⟩, h⟩; ext; rfl
-  right_inv _ := rfl
 
 end Nat
 

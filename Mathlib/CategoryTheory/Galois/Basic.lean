@@ -3,14 +3,17 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.Data.Finite.Card
-import Mathlib.Algebra.Equiv.TransferInstance
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.FintypeCat
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.Limits.Types.Equalizers
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Data.Finite.Card
 
 /-!
 # Definition and basic properties of Galois categories
@@ -41,6 +44,8 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂ v₁ v₂ w t
 
@@ -216,10 +221,10 @@ variable [PreGaloisCategory C] [FiberFunctor F]
 lemma initial_iff_fiber_empty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
   rw [(IsInitial.isInitialIffObj F X).nonempty_congr]
   haveI : PreservesFiniteColimits (forget FintypeCat) := by
-    show PreservesFiniteColimits FintypeCat.incl
+    change PreservesFiniteColimits FintypeCat.incl
     infer_instance
   haveI : ReflectsColimit (Functor.empty.{0} _) (forget FintypeCat) := by
-    show ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
+    change ReflectsColimit (Functor.empty.{0} _) FintypeCat.incl
     infer_instance
   exact Concrete.initial_iff_empty_of_preserves_of_reflects (F.obj X)
 
@@ -312,7 +317,7 @@ lemma evaluation_injective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A
 /-- The evaluation map on automorphisms is injective for connected objects. -/
 lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
-  show Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
+  change Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
   apply Function.Injective.comp
   · exact evaluation_injective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
@@ -364,9 +369,9 @@ lemma lt_card_fiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
   by_contra hlt
   apply h
   apply isIso_of_mono_of_eq_card_fiber F f
-  simp only [gt_iff_lt, not_lt] at hlt
+  simp only [not_lt] at hlt
   exact Nat.le_antisymm
-    (Finite.card_le_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
+    (Nat.card_le_card_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
 
 /-- The cardinality of the fiber of a not-initial object is non-zero. -/
 lemma non_zero_card_fiber_of_not_initial (X : C) (h : IsInitial X → False) :

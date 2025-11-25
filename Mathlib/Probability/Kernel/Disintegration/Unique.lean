@@ -3,7 +3,9 @@ Copyright (c) 2023 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.Integral
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.Integral
 
 /-!
 # Uniqueness of the conditional kernel
@@ -20,6 +22,8 @@ We prove that the conditional kernels `ProbabilityTheory.Kernel.condKernel` and
 * `ProbabilityTheory.Kernel.condKernel_apply_eq_condKernel`: the kernel `condKernel` is almost
   everywhere equal to the measure `condKernel`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter MeasurableSpace
 
@@ -50,7 +54,7 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : Kernel α Ω) [IsSFiniteKern
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
     (Kernel.measurable_coe κ hs) (Kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
   conv_rhs => rw [Measure.setLIntegral_condKernel_eq_measure_prod ht hs, hκ]
-  simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator ht]
+  simp only [Measure.compProd_apply (ht.prod hs), ← lintegral_indicator ht]
   congr with x
   by_cases hx : x ∈ t <;> simp [hx]
 

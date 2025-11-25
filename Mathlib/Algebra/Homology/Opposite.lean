@@ -3,11 +3,13 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ImageToKernel
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
@@ -26,6 +28,8 @@ It is convenient to define both `op` and `opSymm`; this is because given a compl
 ## Tags
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -198,8 +202,7 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
   counitIso := unopCounitIso V c
   functor_unitIso_comp X := by
     ext
-    simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
+    simp only [comp_f]
     exact Category.comp_id _
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :

@@ -3,10 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Data.Set.UnionLift
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Data.Set.UnionLift
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -16,6 +18,8 @@ In this file we define the type `ContinuousMap` of continuous bundled maps.
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 -/
+
+@[expose] public section
 
 
 open Function Topology
@@ -152,6 +156,19 @@ instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
+/-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
+`e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
+@[simps]
+def _root_.Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
+    [TopologicalSpace X₁] [TopologicalSpace X₂]
+    [TopologicalSpace Y₁] [TopologicalSpace Y₂]
+    (e : X₁ ≃ₜ X₂) (e' : Y₁ ≃ₜ Y₂) :
+    C(X₁, Y₁) ≃ C(X₂, Y₂) where
+  toFun f := ContinuousMap.comp ⟨_, e'.continuous⟩ (f.comp ⟨_, e.symm.continuous⟩)
+  invFun g := ContinuousMap.comp ⟨_, e'.symm.continuous⟩ (g.comp ⟨_, e.continuous⟩)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
 section Prod
 
 variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
@@ -212,8 +229,6 @@ each term. This is a version of `Equiv.piCurry` for continuous maps.
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
   toFun := sigma
   invFun f i := f.comp (sigmaMk i)
-  left_inv := by intro; ext; simp
-  right_inv := by intro; ext; simp
 
 end Sigma
 
@@ -244,8 +259,6 @@ each term
 def piEquiv : (∀ i, C(A, X i)) ≃ C(A, ∀ i, X i) where
   toFun := pi
   invFun f i := (eval i).comp f
-  left_inv := by intro; ext; simp [pi]
-  right_inv := by intro; ext; simp [pi]
 
 /-- Combine a collection of bundled continuous maps `C(X i, Y i)` into a bundled continuous map
 `C(∀ i, X i, ∀ i, Y i)`. -/
@@ -268,7 +281,7 @@ def restrict (f : C(α, β)) : C(s, β) where
   toFun := f ∘ ((↑) : s → α)
 
 @[simp]
-theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = f ∘ ((↑) : s → α) :=
+theorem coe_restrict (f : C(α, β)) : ⇑(f.restrict s) = s.restrict f :=
   rfl
 
 @[simp]
@@ -292,6 +305,52 @@ def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
     (map_continuousAt f _).restrictPreimage⟩
 
 end Restrict
+
+section mkD
+
+/--
+Interpret `f : α → β` as an element of `C(α, β)`, falling back to the default value
+`default : C(α, β)` if `f` is not continuous.
+This is mainly intended to be used for `C(α, β)`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous for almost every `i`, you can write
+the `C(α, β)`-valued integral "`∫ i, f i`" as `∫ i, ContinuousMap.mkD (f i) 0`.
+-/
+noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
+  open scoped Classical in
+  if h : Continuous f then ⟨_, h⟩ else default
+
+lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
+    mkD f g = ⟨f, hf⟩ := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous f) :
+    mkD f g = g := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
+    mkD f g x = f x := by
+  rw [mkD_of_continuous hf, coe_mk]
+
+lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g = ⟨s.restrict f, hf.restrict⟩ :=
+  mkD_of_continuous hf.restrict
+
+lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ¬ ContinuousOn f s) :
+    mkD (s.restrict f) g = g := by
+  rw [continuousOn_iff_continuous_restrict] at hf
+  exact mkD_of_not_continuous hf
+
+lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
+
+lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
+  mkD_of_continuous f.continuous
+
+end mkD
 
 section Gluing
 
@@ -319,7 +378,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := b
 @[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
-  simp only [coe_restrict, Function.comp_apply, liftCover_coe]
+  simp only [restrict_apply, liftCover_coe]
 
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),

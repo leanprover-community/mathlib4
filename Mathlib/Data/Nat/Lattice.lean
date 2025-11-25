@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Conditionally complete linear order structure on `ℕ`
@@ -15,6 +17,8 @@ In this file we
 * define a `ConditionallyCompleteLinearOrderBot` structure on `ℕ`;
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -48,7 +52,7 @@ theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sS
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with
   | inl h => subst h
-             simp only [or_true, eq_self_iff_true, iInf, InfSet.sInf,
+             simp only [or_true, InfSet.sInf,
                         mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
   | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
 
@@ -135,7 +139,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       trivial
     csSup_of_not_bddAbove := by
       intro s hs
-      simp only [mem_univ, forall_true_left, sSup,
+      simp only [sSup,
         mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
       rw [dif_neg]
       · exact le_antisymm (zero_le _) (find_le trivial)

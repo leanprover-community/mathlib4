@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 /-!
 # The distinguished triangle attached to a short exact sequence of cochain complexes
@@ -16,6 +18,8 @@ in the derived category of `C`.
 (See `triangleOfSES` and `triangleOfSES_distinguished`.)
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -32,11 +36,11 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 in the derived category when `S` is a short exact short complex of
 cochain complexes in an abelian category. -/
 noncomputable def triangleOfSESδ :
-  Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
-    have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
-    inv (Q.map (CochainComplex.mappingCone.descShortComplex S)) ≫
-      Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
-      (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
+    Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  inv (Q.map (CochainComplex.mappingCone.descShortComplex S)) ≫
+    Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
+    (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
 /-- The distinguished triangle in the derived category associated to a short
 exact sequence of cochain complexes. -/

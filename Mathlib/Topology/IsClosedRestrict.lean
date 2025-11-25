@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-! # Restriction of a closed compact set in a product space to a set of coordinates
 
@@ -19,6 +21,8 @@ a homeomorphism `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict 
 with `X = Sᶜ.restrict '' s` and `Y = Π i : S, α i`.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -73,7 +77,7 @@ lemma reorderRestrictProd_restrict_compl (x : Sᶜ.restrict ⁻¹' (Sᶜ.restric
     reorderRestrictProd S s ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩ = (x : Π j, α j) := by
   ext; simp [reorderRestrictProd]
 
-/-- Homeomorphism between the set of functions that concide with a given set of functions away
+/-- Homeomorphism between the set of functions that coincide with a given set of functions away
 from a given set `S`, and dependent functions away from `S` times any value on `S`. -/
 noncomputable
 def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
@@ -101,7 +105,7 @@ lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
         ((fun (x : Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)) ↦ (x : Π j, α j)) ⁻¹' s))
       = S.restrict '' s := by
   ext x
-  simp only [ne_eq, Homeomorph.preimageImageRestrict, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
+  simp only [Homeomorph.preimageImageRestrict, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
     mem_image, mem_preimage, Subtype.exists, exists_and_left, Prod.exists, Prod.mk.injEq,
     exists_and_right, exists_eq_right, Subtype.mk.injEq, exists_prop]
   constructor

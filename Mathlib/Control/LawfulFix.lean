@@ -3,10 +3,12 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Control.Fix
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Control.Fix
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Lawful fixed point operators
@@ -19,6 +21,8 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 * class `LawfulFix`
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -83,15 +87,14 @@ theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
   exact ⟨_, hh⟩
 
 theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := by
-  by_cases hh : ∃ i b, b ∈ approx f i x
+  by_cases! hh : ∃ i b, b ∈ approx f i x
   · rcases hh with ⟨i, b, hb⟩
     exists i
     intro b' h'
     have hb' := approx_le_fix f i _ _ hb
     obtain rfl := Part.mem_unique h' hb'
     exact hb
-  · simp only [not_exists] at hh
-    exists 0
+  · exists 0
     intro b' h'
     simp only [mem_iff f] at h'
     obtain ⟨i, h'⟩ := h'
@@ -128,14 +131,14 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [Fix.approxChain, OrderHom.coe_mk]
+    simp only [Fix.approxChain]
     intro y x
     apply approx_le_fix f
 
 theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [Fix.approxChain, OrderHom.coe_mk]
+  simp only [Fix.approxChain]
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
@@ -206,14 +209,14 @@ variable (α β γ)
 /-- `Sigma.curry` as a monotone function. -/
 @[simps]
 def monotoneCurry [(x y : _) → Preorder <| γ x y] :
-    (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
+    (∀ x : Σ a, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
   toFun := curry
   monotone' _x _y h a b := h ⟨a, b⟩
 
 /-- `Sigma.uncurry` as a monotone function. -/
 @[simps]
 def monotoneUncurry [(x y : _) → Preorder <| γ x y] :
-    (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2 where
+    (∀ (a) (b : β a), γ a b) →o ∀ x : Σ a, β a, γ x.1 x.2 where
   toFun := uncurry
   monotone' _x _y h a := h a.1 a.2
 
