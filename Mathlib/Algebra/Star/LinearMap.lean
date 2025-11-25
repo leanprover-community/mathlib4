@@ -125,13 +125,20 @@ namespace Module.End
 
 open scoped IntrinsicStar
 
+/-- Intrinsic star operation for `(End R E)ˣ`. -/
+def Units.intrinsicStar : Star (End R E)ˣ where
+  star f := by
+    refine ⟨star f, star (f⁻¹ : (End R E)ˣ), ?_, ?_⟩
+    all_goals
+      rw [mul_eq_comp, ← LinearMap.intrinsicStar_comp]
+      simp [← mul_eq_comp, one_eq_id]
+
+scoped[IntrinsicStar] attribute [instance] Module.End.Units.intrinsicStar
+
 theorem IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
-    IsUnit (star f) := by
-  obtain ⟨u, rfl⟩ := hf
-  refine Units.isUnit <| Units.mk (star (u : End R E)) (star (u⁻¹ : (End R E)ˣ)) ?_ ?_
-  all_goals
-    rw [mul_eq_comp, ← LinearMap.intrinsicStar_comp]
-    simp [← mul_eq_comp, one_eq_id]
+    IsUnit (star f) :=
+  have ⟨u, hu⟩ := hf
+  hu ▸ (star u).isUnit
 
 open Module.End in
 @[simp] theorem isUnit_intrinsicStar_iff {f : End R E} :
