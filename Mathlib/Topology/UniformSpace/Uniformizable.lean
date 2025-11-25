@@ -79,35 +79,35 @@ def P (c : Set α) (u : Set α) :=
 theorem descend_spec {c u : Set α} (Pcu : P c u) :
     ∃ (v : Set α), IsOpen v ∧ c ⊆ v ∧ closure v ⊆ u ∧ P c v ∧ P (closure v) u := by
   obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn⟩ := Pcu
-  have ho : IsOpen ((descend s).1 ○ uc ○ (descend s).1) :=
-    ((descend_open s).relComp huc).relComp (descend_open s)
-  use Prod.mk x ⁻¹' (descend s ○ uc ○ descend s), ho.preimage (Continuous.prodMk_right x)
+  obtain ⟨(ds : SetRel α α), hdsu, hdso, hdss, hdsd⟩ := comp_open_symm_mem_uniformity_sets s.2
+  have ho : IsOpen (ds ○ uc ○ ds) := (hdso.relComp huc).relComp hdso
+  use Prod.mk x ⁻¹' (ds ○ uc ○ ds), ho.preimage (Continuous.prodMk_right x)
   constructor
   · apply ((Continuous.prodMk_right x).closure_preimage_subset _).trans
     apply Set.preimage_mono
     rw [closure_eq_inter_uniformity, comp_assoc]
-    exact iInter₂_subset (descend s).1 (descend s).2
+    exact iInter₂_subset ds hdsu
   constructor
   · apply ((Continuous.prodMk_right x).closure_preimage_subset _).trans
     apply Set.preimage_mono
     apply hn.trans'
     rw [closure_eq_inter_uniformity]
-    apply iInter₂_subset_of_subset (descend s).1 (descend s).2
+    apply iInter₂_subset_of_subset ds hdsu
     exact Eq.trans_subset (by simp_rw [comp_assoc])
-      (comp_subset_comp (comp_subset_comp (descend_descends s) subset_rfl) (descend_descends s))
-  have : (descend s).1.IsRefl := id_subset_iff.1 (refl_le_uniformity (descend s).2)
-  have hucd : descend s ○ uc ○ descend s ∈ 𝓤 α :=
+      (comp_subset_comp (comp_subset_comp hdsd subset_rfl) hdsd)
+  have : ds.IsRefl := id_subset_iff.1 (refl_le_uniformity hdsu)
+  have hucd : ds ○ uc ○ ds ∈ 𝓤 α :=
     mem_of_superset ucu (right_subset_comp.trans left_subset_comp)
   constructor
-  · exact ⟨x, uc, _, _, huc, symmuc, ucu, rfl, ho, rfl, subset_rfl⟩
-  · have hos : ((descend s).1 ○ uc ○ (descend s).1).IsSymm := by
-      sorry
-    refine ⟨x, _, uu, descend s, ho, hos, hucd, rfl, huu, rfl, ?_⟩
-    calc (descend s).1 ○ ((descend s).1 ○ uc ○ (descend s).1) ○ (descend s).1
-      _ = ((descend s).1 ○ (descend s).1) ○ uc ○ ((descend s).1 ○ (descend s).1) := by
+  · exact ⟨x, uc, (ds ○ uc ○ ds), ⟨ds, hdsu⟩, huc, symmuc, ucu, rfl, ho, rfl, subset_rfl⟩
+  · have hos : (ds ○ uc ○ ds).IsSymm := by
+      rw [← inv_eq_self_iff, inv_comp, inv_comp, inv_eq_self, inv_eq_self, comp_assoc]
+    refine ⟨x, _, uu, ⟨ds, hdsu⟩, ho, hos, hucd, rfl, huu, rfl, ?_⟩
+    calc ds ○ (ds ○ uc ○ ds) ○ ds
+      _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by
         simp [comp_assoc]
       _ ⊆ s ○ uc ○ s :=
-        comp_subset_comp (comp_subset_comp (descend_descends s) subset_rfl) (descend_descends s)
+        comp_subset_comp (comp_subset_comp hdsd subset_rfl) hdsd
       _ ⊆ uu := hn
 
 public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
@@ -144,7 +144,7 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace �
       hP _ Pcu _ _ := descend_spec Pcu
       P_C_U :=
         ⟨x, descend ⟨C, hCu⟩, O, _, hoo, hosymm, hou, rfl, hOo, rfl,
-          (SetRel.comp_subset_comp (SetRel.comp_subset_comp subset_rfl (hoC.trans hCc))
+          (comp_subset_comp (comp_subset_comp subset_rfl (hoC.trans hCc))
             (subset_comp_self_of_mem_uniformity (descend (descend ⟨O, hOu⟩)).2)).trans hccccO⟩
     }
     exact ⟨fun x => ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
