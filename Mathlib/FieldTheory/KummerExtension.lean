@@ -525,7 +525,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     rw [mem_primitiveRoots finrank_pos] at hζ
     exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha
   · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,
-      IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite K α)]
+      IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.of_finite K α)]
     apply Algebra.adjoin_mono
     rw [Set.singleton_subset_iff, mem_rootSet_of_ne (X_pow_sub_C_ne_zero finrank_pos a),
       aeval_def, eval₂_sub, eval₂_X_pow, eval₂_C, ha, sub_self]

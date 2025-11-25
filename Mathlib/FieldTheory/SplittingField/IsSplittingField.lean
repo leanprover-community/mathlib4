@@ -179,7 +179,7 @@ theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsInte
 theorem isSplittingField_iff_intermediateField : p.IsSplittingField K L ↔
     (p.map (algebraMap K L)).Splits ∧ IntermediateField.adjoin K (p.rootSet L) = ⊤ := by
   rw [← IntermediateField.toSubalgebra_injective.eq_iff,
-      IntermediateField.adjoin_algebraic_toSubalgebra fun _ ↦ isAlgebraic_of_mem_rootSet]
+      IntermediateField.adjoin_toSubalgebra_of_isAlgebraic fun _ ↦ isAlgebraic_of_mem_rootSet]
   exact ⟨fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩, fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩⟩
 
 -- Note: p.Splits (algebraMap F E) also works
@@ -188,7 +188,7 @@ theorem IntermediateField.isSplittingField_iff :
   suffices _ → (Algebra.adjoin K (p.rootSet F) = ⊤ ↔ F = adjoin K (p.rootSet L)) by
     exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
   rw [← toSubalgebra_injective.eq_iff,
-      adjoin_algebraic_toSubalgebra fun x ↦ isAlgebraic_of_mem_rootSet]
+      adjoin_toSubalgebra_of_isAlgebraic fun x ↦ isAlgebraic_of_mem_rootSet]
   refine fun hp ↦ (adjoin_rootSet_eq_range hp F.val).symm.trans ?_
   rw [← F.range_val, eq_comm]
 
