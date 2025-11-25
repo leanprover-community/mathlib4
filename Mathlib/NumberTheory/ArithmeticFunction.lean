@@ -1430,7 +1430,7 @@ section Sum
 
 theorem sum_Ioc_zeta (N : ℕ) : ∑ n ∈ Ioc 0 N, zeta n = N := by
   simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
-  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
+  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; lia]
   simp
 
 variable {R : Type*} [Semiring R]
