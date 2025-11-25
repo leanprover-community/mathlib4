@@ -48,10 +48,21 @@ namespace Finset
 
 variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) (a b : α) {i : ℕ}
 
+/-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (F.card - 1), y (F.card - 1))`.
+Then `F.intervalGapsWithin a b i` is
+- `(a, x 0)` if `0 = i < F.card`;
+- `(y (i - 1), x i)` if `0 < i < F.card`;
+- `(y (i - 1), b)` if `0 < i = F.card`;
+- `(a, b)` otherwise.
+-/
 noncomputable def intervalGapsWithin (i : ℕ) : α × α := (fst, snd) where
+  /-- The first coordinate of `F.intervalGapsWithin a b i` is `y (i - 1)` if `0 < i ≤ F.card`,
+  `a` otherwise. -/
   fst := match i with
     | 0 => a
     | i + 1 => if hi : i < F.card then F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i, hi⟩ |>.2 else a
+  /-- The second coordinate of `F.intervalGapsWithin a b i` is `x i` if `i < F.card`,
+  `b` otherwise. -/
   snd := if hi : i < F.card then F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i, hi⟩ |>.1 else b
 
 @[simp]
