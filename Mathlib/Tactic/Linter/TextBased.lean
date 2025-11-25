@@ -362,6 +362,7 @@ public register_option linter.modulesUpperCamelCase : Bool := { defValue := true
 /-- Verifies that all modules in `modules` are named in `UpperCamelCase`
 (except for explicitly discussed exceptions, which are hard-coded here).
 Return the number of modules violating this. -/
+public
 def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
 
@@ -395,7 +396,7 @@ Also verify that module names contain no forbidden characters such as `*`, `?` (
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
-def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
