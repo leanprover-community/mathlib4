@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
-import Mathlib.Analysis.NormedSpace.Alternating.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.ContinuousMultilinearMap
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-!
 # Derivatives of operations on continuous alternating maps
@@ -15,6 +17,8 @@ In this file we prove formulas for the derivatives of
   along a continuous linear map;
 - application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
 -/
+
+@[expose] public section
 
 variable {𝕜 ι E F G H : Type*}
   [NontriviallyNormedField 𝕜]

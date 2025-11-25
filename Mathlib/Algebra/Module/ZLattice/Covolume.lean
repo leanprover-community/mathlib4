@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.BoxIntegral.UnitPartition
-import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+module
+
+public import Mathlib.Analysis.BoxIntegral.UnitPartition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Covolume of ℤ-lattices
@@ -51,6 +53,8 @@ the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -181,9 +185,9 @@ alias covolume_div_covolume_eq_relindex' := covolume_div_covolume_eq_relIndex'
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)} :
     volume ((b.ofZLatticeBasis ℝ L).equivFun '' s) = volume s / ENNReal.ofReal (covolume L) := by
-  rw [LinearEquiv.image_eq_preimage, Measure.addHaar_preimage_linearEquiv, LinearEquiv.symm_symm,
-    covolume_eq_det_inv L b, ENNReal.div_eq_inv_mul, ENNReal.ofReal_inv_of_pos
-    (abs_pos.mpr (LinearEquiv.det _).ne_zero), inv_inv, LinearEquiv.coe_det]
+  rw [LinearEquiv.image_eq_preimage_symm, Measure.addHaar_preimage_linearEquiv,
+    LinearEquiv.symm_symm, covolume_eq_det_inv L b, ENNReal.div_eq_inv_mul,
+    ENNReal.ofReal_inv_of_pos (abs_pos.2 (LinearEquiv.det _).ne_zero), inv_inv, LinearEquiv.coe_det]
 
 /-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
 see the `Naming conventions` section in the introduction. -/
@@ -299,7 +303,7 @@ private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {�
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
-  rw [LinearEquiv.image_eq_preimage, LinearEquiv.image_eq_preimage]
+  rw [LinearEquiv.image_eq_preimage_symm, LinearEquiv.image_eq_preimage_symm]
   exact (Homeomorph.preimage_frontier b.equivFunL.toHomeomorph.symm s).symm
 
 variable {ι : Type*} [Fintype ι]

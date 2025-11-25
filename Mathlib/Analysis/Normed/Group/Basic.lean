@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Analysis.Normed.Group.Seminorm
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
@@ -38,6 +40,8 @@ to for performance concerns.
 
 normed group
 -/
+
+@[expose] public section
 
 
 variable {𝓕 α ι κ E F G : Type*}
@@ -1154,9 +1158,20 @@ theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+theorem enorm_multisetSum_le (m : Multiset ε) :
+    ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
+  m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
+
 @[to_additive existing]
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
+
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
+@[to_additive existing]
+theorem enorm_multisetProd_le (m : Multiset ε) :
+    ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
+  m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
@@ -1380,7 +1395,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
@@ -1402,7 +1417,7 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)

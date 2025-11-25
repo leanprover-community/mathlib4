@@ -3,13 +3,15 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere
@@ -41,6 +43,8 @@ elementary but maybe the most elegant once necessary prerequisites are set up.
 
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
