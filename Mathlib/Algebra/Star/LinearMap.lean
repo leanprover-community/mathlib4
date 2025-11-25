@@ -149,7 +149,6 @@ open Module.End in
 section eigenspace
 variable {R V : Type*} [InvolutiveStar R] [AddCommGroup V] [StarAddMonoid V]
 
-open scoped IntrinsicStar
 open LinearMap
 
 theorem mem_eigenspace_intrinsicStar_iff [CommRing R] [Module R V] [StarModule R V]
