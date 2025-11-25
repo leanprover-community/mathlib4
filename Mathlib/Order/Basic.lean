@@ -74,8 +74,8 @@ section LE
 
 variable [LE α] {a b c : α}
 
-@[to_dual self (reorder := a b)] protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
-@[to_dual self (reorder := a b)] protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
+@[to_dual self] protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
+@[to_dual self] protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
 
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
 theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
@@ -91,8 +91,8 @@ section LT
 
 variable [LT α] {a b c : α}
 
-@[to_dual self (reorder := a b)] protected lemma LT.lt.gt (h : a < b) : b > a := h
-@[to_dual self (reorder := a b)] protected lemma GT.gt.lt (h : a > b) : b < a := h
+@[to_dual self] protected lemma LT.lt.gt (h : a < b) : b > a := h
+@[to_dual self] protected lemma GT.gt.lt (h : a > b) : b < a := h
 
 theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
 theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
@@ -435,26 +435,26 @@ end LinearOrder
 
 /-! ### Implications -/
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 lemma lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
   lt_of_not_ge fun h' ↦ (H h').not_gt h
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 lemma le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     a ≤ b → c ≤ d ↔ d < c → b < a :=
   ⟨lt_imp_lt_of_le_imp_le, le_imp_le_of_lt_imp_lt⟩
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 lemma lt_iff_lt_of_le_iff_le' {β} [Preorder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b ↔ c ≤ d) (H' : b ≤ a ↔ d ≤ c) : b < a ↔ d < c :=
   lt_iff_le_not_ge.trans <| (and_congr H' (not_congr H)).trans lt_iff_le_not_ge.symm
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 lemma lt_iff_lt_of_le_iff_le {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β}
     (H : a ≤ b ↔ c ≤ d) : b < a ↔ d < c := not_le.symm.trans <| (not_congr H).trans <| not_le
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 lemma le_iff_le_iff_lt_iff_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     (a ≤ b ↔ c ≤ d) ↔ (b < a ↔ d < c) :=
   ⟨lt_iff_lt_of_le_iff_le, fun H ↦ not_lt.symm.trans <| (not_congr H).trans <| not_lt⟩
@@ -698,10 +698,10 @@ local infixl:50 " ≺ " => StrongLT
 
 variable [∀ i, Preorder (π i)] {a b c : ∀ i, π i}
 
-@[to_dual self (reorder := a b)]
+@[to_dual self]
 theorem le_of_strongLT (h : a ≺ b) : a ≤ b := fun _ ↦ (h _).le
 
-@[to_dual self (reorder := a b)]
+@[to_dual self]
 theorem lt_of_strongLT [Nonempty ι] (h : a ≺ b) : a < b := by
   inhabit ι
   exact Pi.lt_def.2 ⟨le_of_strongLT h, default, h _⟩
@@ -710,11 +710,12 @@ theorem lt_of_strongLT [Nonempty ι] (h : a ≺ b) : a < b := by
 theorem strongLT_of_strongLT_of_le (hab : a ≺ b) (hbc : b ≤ c) : a ≺ c := fun _ ↦
   (hab _).trans_le <| hbc _
 
-@[to_dual self (reorder := a b)] alias StrongLT.le := le_of_strongLT
+@[to_dual self] alias StrongLT.le := le_of_strongLT
 
-@[to_dual self (reorder := a b)] alias StrongLT.lt := lt_of_strongLT
+@[to_dual self] alias StrongLT.lt := lt_of_strongLT
 
-@[to_dual LE.le.trans_strongLT] alias StrongLT.trans_le := strongLT_of_strongLT_of_le
+@[to_dual (reorder := hab hbc) LE.le.trans_strongLT]
+alias StrongLT.trans_le := strongLT_of_strongLT_of_le
 
 end Pi
 
@@ -726,16 +727,16 @@ variable [DecidableEq ι] [∀ i, Preorder (π i)] {x y : ∀ i, π i} {i : ι} 
 theorem le_update_iff : x ≤ Function.update y i a ↔ x i ≤ a ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j :=
   Function.forall_update_iff _ fun j z ↦ x j ≤ z
 
-@[to_dual self (reorder := x y, a b)]
+@[to_dual self]
 theorem update_le_update_iff :
     Function.update x i a ≤ Function.update y i b ↔ a ≤ b ∧ ∀ (j) (_ : j ≠ i), x j ≤ y j := by
   simp +contextual [update_le_iff]
 
-@[simp, to_dual self (reorder := a b)]
+@[simp, to_dual self]
 theorem update_le_update_iff' : update x i a ≤ update x i b ↔ a ≤ b := by
   simp [update_le_update_iff]
 
-@[simp, to_dual self (reorder := a b)]
+@[simp, to_dual self]
 theorem update_lt_update_iff : update x i a < update x i b ↔ a < b :=
   lt_iff_lt_of_le_iff_le' update_le_update_iff' update_le_update_iff'
 
@@ -764,10 +765,10 @@ namespace Function
 
 variable [Preorder α] [Nonempty β] {a b : α}
 
-@[simp, to_dual self (reorder := a b)]
+@[simp, to_dual self]
 theorem const_le_const : const β a ≤ const β b ↔ a ≤ b := by simp [Pi.le_def]
 
-@[simp, to_dual self (reorder := a b)]
+@[simp, to_dual self]
 theorem const_lt_const : const β a < const β b ↔ a < b := by simpa [Pi.lt_def] using le_of_lt
 
 end Function
@@ -925,31 +926,31 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 namespace Subtype
 
-@[simp, to_dual self (reorder := x y, hx hy)]
+@[simp, to_dual self]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) ≤ ⟨y, hy⟩ ↔ x ≤ y :=
   Iff.rfl
 
-@[gcongr, to_dual self (reorder := x y, hx hy)] alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
+@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk⟩ := mk_le_mk
 
-@[simp, to_dual self (reorder := x y, hx hy)]
+@[simp, to_dual self]
 theorem mk_lt_mk [LT α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
     (⟨x, hx⟩ : Subtype p) < ⟨y, hy⟩ ↔ x < y :=
   Iff.rfl
 
-@[gcongr, to_dual self (reorder := x y, hx hy)] alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
+@[gcongr, to_dual self] alias ⟨_, GCongr.mk_lt_mk⟩ := mk_lt_mk
 
-@[simp, norm_cast, to_dual self (reorder := x y)]
+@[simp, norm_cast, to_dual self]
 theorem coe_le_coe [LE α] {p : α → Prop} {x y : Subtype p} : (x : α) ≤ y ↔ x ≤ y :=
   Iff.rfl
 
-@[gcongr, to_dual self (reorder := x y)] alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
+@[gcongr, to_dual self] alias ⟨_, GCongr.coe_le_coe⟩ := coe_le_coe
 
-@[simp, norm_cast, to_dual self (reorder := x y)]
+@[simp, norm_cast, to_dual self]
 theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y ↔ x < y :=
   Iff.rfl
 
-@[gcongr, to_dual self (reorder := x y)] alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
+@[gcongr, to_dual self] alias ⟨_, GCongr.coe_lt_coe⟩ := coe_lt_coe
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
   Preorder.lift (fun (a : Subtype p) ↦ (a : α))
@@ -990,21 +991,18 @@ variable [LE α] [LE β] {x y : α × β} {a a₁ a₂ : α} {b b₁ b₂ : β}
 
 instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
-@[to_dual self (reorder := x y)]
+@[to_dual self]
 instance instDecidableLE [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
   inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
-@[to_dual self (reorder := x y)]
-lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
+@[to_dual self] lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
-@[simp, to_dual self (reorder := a₁ a₂, b₁ b₂)]
-lemma mk_le_mk : (a₁, b₁) ≤ (a₂, b₂) ↔ a₁ ≤ a₂ ∧ b₁ ≤ b₂ := .rfl
+@[simp, to_dual self] lemma mk_le_mk : (a₁, b₁) ≤ (a₂, b₂) ↔ a₁ ≤ a₂ ∧ b₁ ≤ b₂ := .rfl
 
-@[gcongr, to_dual self (reorder := a₁ a₂, b₁ b₂)]
+@[gcongr, to_dual self]
 lemma GCongr.mk_le_mk (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) : (a₁, b₁) ≤ (a₂, b₂) := ⟨ha, hb⟩
 
-@[simp, to_dual self (reorder := x y)]
-lemma swap_le_swap : x.swap ≤ y.swap ↔ x ≤ y := and_comm
+@[simp, to_dual self] lemma swap_le_swap : x.swap ≤ y.swap ↔ x ≤ y := and_comm
 
 @[to_dual (attr := simp) mk_le_swap]
 lemma swap_le_mk : x.swap ≤ (b, a) ↔ x ≤ (a, b) := and_comm
@@ -1020,33 +1018,33 @@ instance : Preorder (α × β) where
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
 
-@[simp, to_dual self (reorder := x y)]
+@[simp, to_dual self]
 theorem swap_lt_swap : x.swap < y.swap ↔ x < y :=
   and_congr swap_le_swap (not_congr swap_le_swap)
 
 @[to_dual (attr := simp) mk_lt_swap]
 lemma swap_lt_mk : x.swap < (b, a) ↔ x < (a, b) := by rw [← swap_lt_swap]; simp
 
-@[to_dual self (reorder := a₁ a₂)]
+@[to_dual self]
 theorem mk_le_mk_iff_left : (a₁, b) ≤ (a₂, b) ↔ a₁ ≤ a₂ :=
   and_iff_left le_rfl
 
-@[to_dual self (reorder := b₁ b₂)]
+@[to_dual self]
 theorem mk_le_mk_iff_right : (a, b₁) ≤ (a, b₂) ↔ b₁ ≤ b₂ :=
   and_iff_right le_rfl
 
-@[gcongr, to_dual self (reorder := a₁ a₂)] alias ⟨_, GCongr.mk_le_mk_left⟩ := mk_le_mk_iff_left
-@[gcongr, to_dual self (reorder := b₁ b₂)] alias ⟨_, GCongr.mk_le_mk_right⟩ := mk_le_mk_iff_right
+@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk_left⟩ := mk_le_mk_iff_left
+@[gcongr, to_dual self] alias ⟨_, GCongr.mk_le_mk_right⟩ := mk_le_mk_iff_right
 
-@[to_dual self (reorder := a₁ a₂)]
+@[to_dual self]
 theorem mk_lt_mk_iff_left : (a₁, b) < (a₂, b) ↔ a₁ < a₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_left mk_le_mk_iff_left
 
-@[to_dual self (reorder := b₁ b₂)]
+@[to_dual self]
 theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
   lt_iff_lt_of_le_iff_le' mk_le_mk_iff_right mk_le_mk_iff_right
 
-@[to_dual self (reorder := x y)]
+@[to_dual self]
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · by_cases h₁ : y.1 ≤ x.1
@@ -1056,21 +1054,21 @@ theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y
     · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_ge h.1⟩
     · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_ge h.2⟩
 
-@[simp, to_dual self (reorder := a₁ a₂, b₁ b₂)]
+@[simp, to_dual self]
 theorem mk_lt_mk : (a₁, b₁) < (a₂, b₂) ↔ a₁ < a₂ ∧ b₁ ≤ b₂ ∨ a₁ ≤ a₂ ∧ b₁ < b₂ :=
   lt_iff
 
-@[to_dual self (reorder := x y)]
+@[to_dual self]
 protected lemma lt_of_lt_of_le (h₁ : x.1 < y.1) (h₂ : x.2 ≤ y.2) : x < y := by simp [lt_iff, *]
 
-@[to_dual self (reorder := x y)]
+@[to_dual self]
 protected lemma lt_of_le_of_lt (h₁ : x.1 ≤ y.1) (h₂ : x.2 < y.2) : x < y := by simp [lt_iff, *]
 
-@[to_dual self (reorder := a₁ a₂, b₁ b₂)]
+@[to_dual self]
 lemma mk_lt_mk_of_lt_of_le (h₁ : a₁ < a₂) (h₂ : b₁ ≤ b₂) : (a₁, b₁) < (a₂, b₂) := by
   simp [lt_iff, *]
 
-@[to_dual self (reorder := a₁ a₂, b₁ b₂)]
+@[to_dual self]
 lemma mk_lt_mk_of_le_of_lt (h₁ : a₁ ≤ a₂) (h₂ : b₁ < b₂) : (a₁, b₁) < (a₂, b₂) := by
   simp [lt_iff, *]
 
@@ -1093,12 +1091,14 @@ class DenselyOrdered (α : Type*) [LT α] : Prop where
   /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 
+@[to_dual existing dense]
+theorem DenselyOrdered.dense' [LT α] [DenselyOrdered α] :
+    ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
+  simp_rw [and_comm]; exact dense
+
+@[to_dual exists_between']
 theorem exists_between [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂ :=
   DenselyOrdered.dense _ _
-
-@[to_dual existing (reorder := a₁ a₂) exists_between]
-theorem exists_between' [LT α] [DenselyOrdered α] {a₁ a₂ : α} : a₁ < a₂ → ∃ a, a < a₂ ∧ a₁ < a := by
-  simp_rw [and_comm]; apply exists_between
 
 instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
     DenselyOrdered αᵒᵈ :=
@@ -1197,11 +1197,11 @@ instance instLinearOrder : LinearOrder PUnit := .ofSubsingleton
 theorem max_eq : max a b = unit :=
   rfl
 
-@[to_dual self (reorder := a b)]
+@[to_dual self]
 protected theorem le : a ≤ b :=
   trivial
 
-@[to_dual self (reorder := a b)]
+@[to_dual self]
 theorem not_lt : ¬a < b :=
   not_false
 
