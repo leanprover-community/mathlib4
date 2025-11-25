@@ -529,8 +529,9 @@ def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
   LinearMap.mkContinuous
     { toFun := (fderivCompContinuousLinearMap · g)
       map_add' f₁ f₂ := by ext; simp [Finset.sum_add_distrib]
-      map_smul' c f := by ext; simp [Finset.smul_sum]
-    } (Fintype.card ι * ‖g‖ ^ (Fintype.card ι - 1)) fun f ↦ by
+      map_smul' c f := by ext; simp [Finset.smul_sum] }
+    (Fintype.card ι * ‖g‖ ^ (Fintype.card ι - 1))
+    fun f ↦ by
       refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun dg ↦ ?_
       refine opNorm_le_bound _ (by positivity) fun v ↦ ?_
       simp? [mul_assoc] says
