@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 /-!
 # Cohomology of the hom complex
 
-Given `ℤ`-index cochain complexes `K` and `L`, and `n : ℤ`, we introduce
+Given `ℤ`-indexed cochain complexes `K` and `L`, and `n : ℤ`, we introduce
 a type `HomComplex.CohomologyClass K L n` which is the quotient
 of `HomComplex.Cocycle K L n` which identifies cohomologous cocycles.
 The reason for not applying the homology API to this complex is that
