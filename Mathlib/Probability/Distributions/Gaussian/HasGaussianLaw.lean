@@ -184,7 +184,7 @@ lemma prodMk (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
   rw [this]
   exact hX.map _
 
-lemma toLp_comp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P := by
   simp_rw [← PiLp.continuousLinearEquiv_symm_apply p ℝ]
   exact hX.map_equiv _
