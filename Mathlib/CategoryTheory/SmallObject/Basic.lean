@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
+module
+
+public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 
 /-!
 # The small object argument
@@ -66,6 +68,8 @@ the file `Mathlib/CategoryTheory/SmallObject/TransfiniteCompositionLifting.lean`
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w v u
 

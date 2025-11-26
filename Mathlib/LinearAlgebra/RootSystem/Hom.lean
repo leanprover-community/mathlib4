@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Basic
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Morphisms of root pairings
@@ -44,6 +46,8 @@ given in SGA III Exp. 21 Section 6.
 * Weyl group reimplementation?
 
 -/
+
+@[expose] public section
 
 open Set Function
 

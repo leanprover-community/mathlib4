@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.Data.Fin.Parity
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Uncurrying alternating maps
@@ -40,6 +42,8 @@ not only a field of characteristic zero.
 A version of the latter theorem for continuous alternating maps
 will be used to prove that the second exterior derivative of a differential form is zero.
 -/
+
+@[expose] public section
 
 open Fin Function
 
@@ -172,7 +176,7 @@ over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
 Here $$\hat{v_i}$$ and $$\hat{v_j}$$ mean that these vectors are removed from the tuple.
 
 We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
-to encode pairs `(i.castSucc : Fin (n + 1), j.succ : Fin (n + 1))`,
+to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,
 so the power of `-1` is off by one compared to the informal texts.
 
 In particular, if `f` is symmetric in the first two arguments,

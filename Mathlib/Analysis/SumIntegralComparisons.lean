@@ -3,8 +3,10 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Data.Set.Function
 
 /-!
 # Comparing sums and integrals
@@ -39,6 +41,8 @@ At the moment it contains several lemmas in this direction, for antitone or mono
 
 analysis, comparison, asymptotics
 -/
+
+@[expose] public section
 
 
 open Set MeasureTheory MeasureSpace

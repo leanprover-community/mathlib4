@@ -3,11 +3,13 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.Exponential
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
 
 /-! # The unitary group in a unital C⋆-algebra is locally path connected
 
@@ -51,6 +53,8 @@ products of exponential unitaries.
   selfadjoint elements.
 -/
 
+@[expose] public section
+
 variable {A : Type*} [CStarAlgebra A]
 
 open Complex Metric NormedSpace selfAdjoint Unitary
@@ -64,7 +68,7 @@ lemma Unitary.two_mul_one_sub_le_norm_sub_one_sq {u : A} (hu : u ∈ unitary A)
   simp only [mem_sphere_iff_norm, sub_zero] at this
   rw [← cfc_id' ℂ u, ← cfc_one ℂ u, ← cfc_sub ..]
   convert norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
-  simpa using congr(Real.sqrt $(norm_sub_one_sq_eq_of_norm_one this)).symm
+  simpa using congr(Real.sqrt $(norm_sub_one_sq_eq_of_norm_eq_one this)).symm
 
 @[deprecated (since := "2025-10-29")] alias unitary.two_mul_one_sub_le_norm_sub_one_sq :=
   Unitary.two_mul_one_sub_le_norm_sub_one_sq

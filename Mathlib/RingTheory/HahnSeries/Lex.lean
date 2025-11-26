@@ -3,10 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.PiLex
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.PiLex
+public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 
@@ -22,6 +24,8 @@ it is an ordered group when `R` is.
   can be decomposed by `Γ`.
 
 -/
+
+@[expose] public section
 
 namespace HahnSeries
 
@@ -120,10 +124,8 @@ instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
       obtain ⟨i, hj, hi⟩ := hlt
-      refine ⟨i, ?_, ?_⟩
-      · intro j hji
-        simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
-      · simpa using add_lt_add_left hi ((ofLex c).coeff i)
+      refine ⟨i, fun j hji ↦ ?_, by simp; gcongr⟩
+      simpa using congr($(hj j hji) + (ofLex c).coeff j)
 
 end OrderedMonoid
 
