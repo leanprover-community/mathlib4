@@ -419,7 +419,7 @@ instance : SplitMonoCategory C where
       rw [Triangle.mor₁_eq_zero_of_mono₂ _ hT hf, zero_comp])
     exact ⟨r, hr.symm⟩
 
-/- The five lemma for triangulated categories -/
+/- The five lemma for pretriangulated categories -/
 lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
   have : Mono φ.hom₂ := by
