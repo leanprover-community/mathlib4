@@ -214,6 +214,7 @@ theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := 
 theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
+@[simp]
 theorem degree_sum {ι : Type*} [DecidableEq ι] {s : Finset ι} (f : ι → σ →₀ ℕ) :
     (∑ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := by
   refine s.induction rfl ?_
