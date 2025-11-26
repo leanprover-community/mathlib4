@@ -1,13 +1,15 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -39,6 +41,8 @@ TODO (anyone): Add "Main results" section.
 
 pseudo_metric, dist
 -/
+
+@[expose] public section
 
 assert_not_exists compactSpace_uniformity
 
@@ -233,7 +237,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-def evalDist : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDist : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
     let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
@@ -507,7 +511,7 @@ theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := 
 theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ < ε₁ + dist x y := add_lt_add_right (mem_ball.1 hz) _
+    _ < ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
 @[gcongr]
@@ -518,7 +522,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     closedBall x ε₁ ⊆ closedBall y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ ≤ ε₁ + dist x y := add_le_add_right (mem_closedBall.1 hz) _
+    _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
@@ -528,7 +532,7 @@ theorem closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
     closedBall x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ ≤ ε₁ + dist x y := add_le_add_right (mem_closedBall.1 hz) _
+    _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ < ε₂ := h
 
 theorem dist_le_add_of_nonempty_closedBall_inter_closedBall
@@ -594,6 +598,10 @@ theorem isBounded_iff {s : Set α} :
   rw [isBounded_def, ← Filter.mem_sets, @PseudoMetricSpace.cobounded_sets α, mem_setOf_eq,
     compl_compl]
 
+lemma boundedSpace_iff : BoundedSpace α ↔ ∃ C, ∀ a b : α, dist a b ≤ C := by
+  rw [← isBounded_univ, Metric.isBounded_iff]
+  simp
+
 theorem isBounded_iff_eventually {s : Set α} :
     IsBounded s ↔ ∀ᶠ C in atTop, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C :=
   isBounded_iff.trans
@@ -609,6 +617,13 @@ theorem isBounded_iff_nndist {s : Set α} :
     IsBounded s ↔ ∃ C : ℝ≥0, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → nndist x y ≤ C := by
   simp only [isBounded_iff_exists_ge 0, NNReal.exists, ← NNReal.coe_le_coe, ← dist_nndist,
     NNReal.coe_mk, exists_prop]
+
+lemma boundedSpace_iff_nndist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nndist a b ≤ C := by
+  rw [← isBounded_univ, Metric.isBounded_iff_nndist]
+  simp
+
+lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, edist a b ≤ C := by
+  simp [Metric.boundedSpace_iff_nndist]
 
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
@@ -707,12 +722,16 @@ theorem uniformContinuous_iff [PseudoMetricSpace β] {f : α → β} :
 theorem uniformContinuousOn_iff [PseudoMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
       ∀ ε > 0, ∃ δ > 0, ∀ x ∈ s, ∀ y ∈ s, dist x y < δ → dist (f x) (f y) < ε :=
-  Metric.uniformity_basis_dist.uniformContinuousOn_iff Metric.uniformity_basis_dist
+  uniformity_basis_dist.uniformContinuousOn_iff uniformity_basis_dist
+
+theorem uniformContinuous_iff_le [PseudoMetricSpace β] {f : α → β} :
+    UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, dist a b ≤ δ → dist (f a) (f b) ≤ ε :=
+  uniformity_basis_dist_le.uniformContinuous_iff uniformity_basis_dist_le
 
 theorem uniformContinuousOn_iff_le [PseudoMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
       ∀ ε > 0, ∃ δ > 0, ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ δ → dist (f x) (f y) ≤ ε :=
-  Metric.uniformity_basis_dist_le.uniformContinuousOn_iff Metric.uniformity_basis_dist_le
+  uniformity_basis_dist_le.uniformContinuousOn_iff uniformity_basis_dist_le
 
 theorem nhds_basis_ball : (𝓝 x).HasBasis (0 < ·) (ball x) :=
   nhds_basis_uniformity uniformity_basis_dist
@@ -990,29 +1009,27 @@ is everywhere finite, by pushing the edistance to reals. We set it up so that th
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
 push-forward of the edistance to reals. See note [reducible non-instances]. -/
-abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetricSpace α]
-    (dist : α → α → ℝ) (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤)
-    (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) : PseudoMetricSpace α where
+abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetricSpace X]
+    (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
+    (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
   dist := dist
-  dist_self x := by simp [h]
-  dist_comm x y := by simp [h, edist_comm]
+  dist_self x := by simpa [h, (dist_nonneg _ _).ge_iff_eq', -edist_self] using edist_self x
+  dist_comm x y := by simpa [h, dist_nonneg] using edist_comm x y
   dist_triangle x y z := by
-    simp only [h]
-    exact ENNReal.toReal_le_add (edist_triangle _ _ _) (edist_ne_top _ _) (edist_ne_top _ _)
+    simpa [h, dist_nonneg, add_nonneg, ← ENNReal.ofReal_add] using edist_triangle x y z
   edist := edist
-  edist_dist _ _ := by simp only [h, ENNReal.ofReal_toReal (edist_ne_top _ _)]
-  toUniformSpace := e.toUniformSpace
+  edist_dist _ _ := by simp only [h]
+  toUniformSpace := PseudoEMetricSpace.toUniformSpace
   uniformity_dist := e.uniformity_edist.trans <| by
-    simpa only [ENNReal.coe_toNNReal (edist_ne_top _ _), h]
-      using (Metric.uniformity_edist_aux fun x y : α => (edist x y).toNNReal).symm
+    simpa [h, dist_nonneg, ENNReal.coe_toNNReal_eq_toReal]
+      using (Metric.uniformity_edist_aux fun x y : X => (edist x y).toNNReal).symm
 
 /-- One gets a pseudometric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the emetric space. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
-  PseudoEMetricSpace.toPseudoMetricSpaceOfDist (fun x y => ENNReal.toReal (edist x y)) h fun _ _ =>
-    rfl
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.

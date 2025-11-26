@@ -3,14 +3,19 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Embedding.Set
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Data.Int.Init
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Data.Int.Init
+public import Batteries.Data.Fin.Lemmas
 
 /-!
 # Equivalences for `Fin n`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

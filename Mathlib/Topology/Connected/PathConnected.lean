@@ -3,7 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Path
+module
+
+public import Mathlib.Topology.Path
 
 /-!
 # Path connectedness
@@ -44,6 +46,8 @@ path-connected, and that every path-connected set/space is also connected. (See
 `Counterexamples.TopologistsSineCurve` for an example of a set in `ℝ × ℝ` that is connected but not
 path-connected.)
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -102,6 +106,10 @@ def pathSetoid : Setoid X where
 /-- The quotient type of points of a topological space modulo being joined by a continuous path. -/
 def ZerothHomotopy :=
   Quotient (pathSetoid X)
+
+/-- The quotient topology on path components. -/
+instance : TopologicalSpace <| ZerothHomotopy X :=
+  inferInstanceAs <| TopologicalSpace <| Quotient _
 
 instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
@@ -433,7 +441,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
   obtain ⟨hp, hx⟩ := hp
   induction p using snocInduction generalizing x with
   | h0 =>
-    simp only [snoc_zero, Path.cast_coe]
+    simp only [snoc_zero]
     use Path.refl x
     simp [hx]
   | @h n p y hp₂ =>
@@ -560,3 +568,13 @@ theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
   exact ⟨γ, t, h⟩
 
 end PathConnectedSpace
+
+/-- The preimage of a singleton in `ZerothHomotopy` is the path component of an element in the
+equivalence class. -/
+theorem ZerothHomotopy.preimage_singleton_eq_pathComponent (x : X) :
+    Quotient.mk' (s := pathSetoid X) ⁻¹' {⟦x⟧} = pathComponent x := by
+  ext y
+  rw [mem_preimage, mem_singleton_iff, eq_comm, mem_pathComponent_iff]
+  exact Quotient.eq
+
+instance [CompactSpace X] : CompactSpace <| ZerothHomotopy X := Quotient.compactSpace

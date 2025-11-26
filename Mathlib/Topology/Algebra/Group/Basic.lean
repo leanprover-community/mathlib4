@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Group.Submonoid.Units
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
@@ -33,6 +35,8 @@ groups.
 
 topological space, group, topological group
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
 
@@ -123,18 +127,13 @@ theorem IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (op 
   isClosedMap_mul_right x _ h
 
 @[to_additive]
-theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
-    DiscreteTopology G := by
-  rw [← singletons_open_iff_discrete]
-  intro g
-  suffices {g} = (g⁻¹ * ·) ⁻¹' {1} by
-    rw [this]
-    exact (continuous_mul_left g⁻¹).isOpen_preimage _ h
-  simp only [mul_one, Set.preimage_mul_left_singleton, inv_inv]
+theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
+  MulAction.IsPretransitive.discreteTopology_iff G 1
 
 @[to_additive]
-theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
-  ⟨fun h => forall_open_iff_discrete.mpr h {1}, discreteTopology_of_isOpen_singleton_one⟩
+theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
+    DiscreteTopology G :=
+  discreteTopology_iff_isOpen_singleton_one.mpr h
 
 end ContinuousMulGroup
 
@@ -374,9 +373,6 @@ variable [TopologicalSpace G] [Inv G] [Mul G] [ContinuousMul G]
 theorem IsTopologicalGroup.continuous_conj_prod [ContinuousInv G] :
     Continuous fun g : G × G => g.fst * g.snd * g.fst⁻¹ :=
   continuous_mul.mul (continuous_inv.comp continuous_fst)
-
-@[deprecated (since := "2025-03-11")]
-alias IsTopologicalAddGroup.continuous_conj_sum := IsTopologicalAddGroup.continuous_addConj_prod
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
 @[to_additive (attr := continuity)

@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.DivisionRing
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Continuous linear maps
@@ -18,6 +20,8 @@ modules which are continuous. The set of continuous semilinear maps between the 
 `R₁`-module `M` and `R₂`-module `M₂` with respect to the `RingHom` `σ` is denoted by `M →SL[σ] M₂`.
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -313,34 +317,34 @@ section
 variable (R₁ M₁)
 
 /-- the identity map as a continuous linear map. -/
-def id : M₁ →L[R₁] M₁ :=
+protected def id : M₁ →L[R₁] M₁ :=
   ⟨LinearMap.id, continuous_id⟩
 
 end
 
 instance one : One (M₁ →L[R₁] M₁) :=
-  ⟨id R₁ M₁⟩
+  ⟨.id R₁ M₁⟩
 
-theorem one_def : (1 : M₁ →L[R₁] M₁) = id R₁ M₁ :=
+theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ :=
   rfl
 
-theorem id_apply (x : M₁) : id R₁ M₁ x = x :=
-  rfl
-
-@[simp, norm_cast]
-theorem coe_id : (id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
+theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_id' : ⇑(id R₁ M₁) = _root_.id :=
+theorem coe_id : (ContinuousLinearMap.id R₁ M₁ : M₁ →ₗ[R₁] M₁) = LinearMap.id :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
   rfl
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_id :
-    (id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
+    (ContinuousLinearMap.id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
 
 @[simp, norm_cast]
-theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = id _ _ := by
+theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
 @[simp]
@@ -441,11 +445,11 @@ theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M�
   rfl
 
 @[simp]
-theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (id R₁ M₁) = f :=
+theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (.id R₁ M₁) = f :=
   ext fun _x => rfl
 
 @[simp]
-theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (id R₂ M₂).comp f = f :=
+theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (ContinuousLinearMap.id R₂ M₂).comp f = f :=
   ext fun _x => rfl
 
 section
@@ -807,8 +811,6 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   __ := ContinuousLinearMap.addCommMonoid
-  neg := (-·)
-  sub := (· - ·)
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
   nsmul := (· • ·)
   zsmul := (· • ·)
@@ -887,7 +889,7 @@ variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
 `LinearMap.range f₂`. -/
 def projKerOfRightInverse [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
     (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker f₁ :=
-  (id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x => by simp [h (f₁ x)]
+  (.id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁) fun x => by simp [h (f₁ x)]
 
 @[simp]
 theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
@@ -1141,7 +1143,8 @@ theorem ClosedComplemented.exists_isClosed_isCompl {p : Submodule R M} [T1Space 
 protected theorem ClosedComplemented.isClosed [IsTopologicalAddGroup M] [T1Space M]
     {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
   rcases h with ⟨f, hf⟩
-  have : ker (id R M - p.subtypeL.comp f) = p := LinearMap.ker_id_sub_eq_of_proj hf
+  have : ker (ContinuousLinearMap.id R M - p.subtypeL.comp f) = p :=
+    LinearMap.ker_id_sub_eq_of_proj hf
   exact this ▸ isClosed_ker _
 
 @[simp]
@@ -1150,7 +1153,8 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff.2 <| by simp⟩
+  ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
+    fun x => Subtype.ext_iff.2 <| by simp⟩
 
 end Submodule
 
@@ -1250,7 +1254,7 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := topDualPairing
+@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing := topDualPairing
 
 @[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
 
@@ -1259,7 +1263,7 @@ theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
 
-@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
+@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
 
 @[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 
