@@ -281,13 +281,18 @@ def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) 
       RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
     simp [Set.pair_comm]
 
-lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
+@[simp] lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
     MvPolynomial.aeval P.toPresentation.val
     (Bivariate.equivMvPolynomial R (.C p)) = p.aeval P.x := by
   change (((MvPolynomial.aeval _).comp (Bivariate.equivMvPolynomial R).toAlgHom).comp CAlgHom) _ = _
   congr 1
   ext
   simp
+
+attribute [local simp] Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det
+  Matrix.det_fin_two Algebra.PreSubmersivePresentation.jacobiMatrix_apply
+  Polynomial.Bivariate.pderiv_zero_equivMvPolynomial
+  Polynomial.Bivariate.pderiv_one_equivMvPolynomial
 
 /-- The `Algebra.SubmersivePresentation` associated to a standard etale presentation. -/
 @[simps map toPreSubmersivePresentation_toPresentation]
@@ -296,21 +301,11 @@ def StandardEtalePresentation.toSubmersivePresentation :
   __ := P.toPresentation
   map := id
   map_inj := Function.injective_id
-  jacobian_isUnit := by
-    simp [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det,
-      Matrix.det_fin_two, Algebra.PreSubmersivePresentation.jacobiMatrix_apply,
-      Polynomial.Bivariate.pderiv_zero_equivMvPolynomial,
-      Polynomial.Bivariate.pderiv_one_equivMvPolynomial,
-      aeval_val_equivMvPolynomial, P.hasMap.2, P.hasMap.isUnit_derivative_f]
+  jacobian_isUnit := by simp [P.hasMap.2, P.hasMap.isUnit_derivative_f]
 
 lemma StandardEtalePresentation.toSubmersivePresentation_jacobian :
     P.toSubmersivePresentation.jacobian = aeval P.x P.f.derivative * aeval P.x P.g := by
-  simp [StandardEtalePresentation.toSubmersivePresentation,
-    Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det,
-    Matrix.det_fin_two, Algebra.PreSubmersivePresentation.jacobiMatrix_apply,
-    Polynomial.Bivariate.pderiv_zero_equivMvPolynomial,
-    Polynomial.Bivariate.pderiv_one_equivMvPolynomial,
-    aeval_val_equivMvPolynomial]
+  simp [StandardEtalePresentation.toSubmersivePresentation]
 
 lemma StandardEtalePresentation.exists_mul_aeval_x_g_pow_eq_aeval_x (x : S) :
     ∃ p : R[X], ∃ n, x * P.g.aeval P.x ^ n = p.aeval P.x := by
@@ -370,13 +365,10 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
   rw [← map_mul] at this
   have H : Submonoid.map e.symm.toRingEquiv.toMonoidHom (.powers
       (algebraMap _ S' (AdjoinRoot.mk P.f p))) = .powers (aeval P.x p) := by
+    have : ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R _ S')).comp (AdjoinRoot.mkₐ P.f)) =
+      aeval P.x := by ext; simp [e, StandardEtalePair.equivAwayAdjoinRoot]
     rw [Submonoid.map_powers]
-    congr 1
-    change ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot P.f) S')).comp
-      (AdjoinRoot.mkₐ P.f)) p = _
-    congr 1
-    ext
-    simp [e, StandardEtalePair.equivAwayAdjoinRoot]
+    exact congr(Submonoid.powers ($this p))
   have : IsLocalization.Away (aeval P.x p) Sₛ :=
     IsLocalization.Away.of_associated (r := s) ⟨(P.hasMap.2.pow n).unit, hp⟩
   let e₁ : P'.Ring ≃ₐ[R]
