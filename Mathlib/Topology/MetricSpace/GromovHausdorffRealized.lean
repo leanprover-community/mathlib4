@@ -115,7 +115,6 @@ private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Non
 private theorem candidates_symm (fA : f ∈ candidates X Y) : f (x, y) = f (y, x) :=
   fA.1.1.1.2 x y
 
-@[local grind .]
 private theorem candidates_triangle (fA : f ∈ candidates X Y) : f (x, z) ≤ f (x, y) + f (y, z) :=
   fA.1.1.2 x y z
 
@@ -123,7 +122,7 @@ private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
-  grind [candidates_symm]
+  grind [candidates_symm, candidates_triangle]
 
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
@@ -170,7 +169,8 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
   calc
-    f (x, y) - f (z, t) ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by grind
+    f (x, y) - f (z, t) ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by
+      grind [candidates_triangle]
     _ = f (x, z) + f (t, y) := by simp [sub_eq_add_neg, add_assoc]
     _ ≤ maxVar X Y * dist x z + maxVar X Y * dist t y := by
       gcongr <;> apply candidates_dist_bound fA
