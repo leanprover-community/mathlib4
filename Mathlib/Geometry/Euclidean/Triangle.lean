@@ -195,6 +195,34 @@ theorem angle_add_angle_sub_add_angle_sub_eq_pi (x : V) {y : V} (hy : y ≠ 0) :
 
 end InnerProductGeometry
 
+namespace Orientation
+
+open Module InnerProductGeometry
+
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Fact (finrank ℝ V = 2)]
+variable (o : Orientation ℝ V (Fin 2))
+
+/-- **Converse of pons asinorum**, oriented vector angle form (given equality of angles mod `π`). -/
+theorem norm_eq_of_two_zsmul_oangle_sub_eq {x y : V}
+    (h : (2 : ℤ) • o.oangle x (x - y) = (2 : ℤ) • o.oangle (y - x) y) (h0 : o.oangle x y ≠ 0)
+    (hpi : o.oangle x y ≠ π) : ‖x‖ = ‖y‖ := by
+  have hs : (o.oangle x (x - y)).sign = (o.oangle (y - x) y).sign := by simp
+  rw [Real.Angle.two_zsmul_eq_iff] at h
+  rcases h with h | h
+  · rw [← o.angle_eq_iff_oangle_eq_of_sign_eq (o.left_ne_zero_of_oangle_ne_zero h0)
+      (sub_ne_zero_of_ne (o.ne_of_oangle_ne_zero h0))
+      (sub_ne_zero_of_ne (o.ne_of_oangle_ne_zero h0).symm)
+      (o.right_ne_zero_of_oangle_ne_zero h0) hs, angle_comm (y - x)] at h
+    refine norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h ?_
+    rw [ne_eq, ← o.oangle_eq_pi_iff_angle_eq_pi]
+    exact hpi
+  · rw [h, Real.Angle.sign_add_pi, SignType.neg_eq_self_iff, oangle_sign_sub_left_swap,
+      o.oangle_rev, Real.Angle.sign_neg, SignType.neg_eq_zero_iff,
+      Real.Angle.sign_eq_zero_iff] at hs
+    simp [h0, hpi] at hs
+
+end Orientation
+
 namespace EuclideanGeometry
 
 /-!
@@ -268,6 +296,20 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p
   rw [← angle_neg_neg, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev] at hpi
   rw [← vsub_sub_vsub_cancel_left p₃ p₂ p₁, ← vsub_sub_vsub_cancel_left p₂ p₃ p₁] at h
   exact norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h hpi
+
+/-- Converse of pons asinorum, oriented angle-at-point form (given equality of angles mod `π`). -/
+theorem dist_eq_of_two_zsmul_oangle_eq [Module.Oriented ℝ V (Fin 2)]
+    [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₂ p₃ p₁)
+    (h0 : ∡ p₃ p₁ p₂ ≠ 0) (hpi : ∡ p₃ p₁ p₂ ≠ π) : dist p₁ p₂ = dist p₁ p₃ := by
+  convert (Orientation.norm_eq_of_two_zsmul_oangle_sub_eq (x := p₃ -ᵥ p₁) (y := p₂ -ᵥ p₁) ?_ ?_
+    h0 hpi).symm
+  · rw [dist_eq_norm_vsub']
+  · rw [dist_eq_norm_vsub']
+  · rw [eq_comm, o.oangle_rev, ← o.oangle_neg_neg]
+    nth_rw 2 [o.oangle_rev, ← o.oangle_neg_neg]
+    simp_rw [smul_neg, neg_inj]
+    simp_rw [oangle] at h
+    convert h <;> simp
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where two
 given vertices are distinct), angle-at-point. -/
