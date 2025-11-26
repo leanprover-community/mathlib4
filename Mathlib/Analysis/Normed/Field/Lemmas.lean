@@ -192,8 +192,8 @@ protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0
   refine ⟨?_, continuousAt_zpow₀ _ _⟩
   contrapose!
   rintro ⟨rfl, hm⟩ hc
-  exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
-    (tendsto_norm_cobounded_atTop.comp <| tendsto_zpow_nhdsNE_zero_cobounded hm)
+  exact (hc.tendsto.mono_left nhdsWithin_le_nhds).not_tendsto (Metric.disjoint_nhds_cobounded _)
+    (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 @[simp]
 protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
