@@ -73,7 +73,7 @@ theorem urysohns_main {c u : Set α} (Pcu : P c u) :
   · exact ⟨x, uc, ds ○ uc ○ ds, ds, huc, symmuc, ucu, rfl, ho, rfl, subset_rfl, hdsu⟩
   · have hos : (ds ○ uc ○ ds).IsSymm := by
       rw [← inv_eq_self_iff, inv_comp, inv_comp, inv_eq_self, inv_eq_self, comp_assoc]
-    refine ⟨x, (ds ○ uc ○ ds), uu, ds, ho, hos, hucd, rfl, huu, rfl, ?_, hdsu⟩
+    refine ⟨x, ds ○ uc ○ ds, uu, ds, ho, hos, hucd, rfl, huu, rfl, ?_, hdsu⟩
     calc ds ○ (ds ○ uc ○ ds) ○ ds
       _ = (ds ○ ds) ○ uc ○ (ds ○ ds) := by simp [comp_assoc]
       _ ⊆ s ○ uc ○ s := comp_subset_comp (comp_subset_comp hdsd subset_rfl) hdsd
