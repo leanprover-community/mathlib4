@@ -216,41 +216,6 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
 
-/-
-ImplicitContDiff:
-leftFun : E × F → E
-rightFun : E × F → G
-pt : E × F := (a, b)
-φ : E → F
-
-Show φ is locally unique.
-
-For all (x, y) close to (a, b), if f (x, y) = f (a, b), then y = φ x.
-
-====================
-
-f (leftFun) : E → F
-g (rightfun) : E → G
-φ (φ.implicitFunction) : F → G → E
-a (φ.pt) : E
-
-For (y, z) close to (f a, g a),
-f (φ y z) = y
-g (φ y z) = z
-
-For all x close to a,
-φ (f x) (g x) = x
-
-Show φ is locally unique.
-
-For all (y, z) close to (f a, g a) and x close to a,
-(f x = y and g x = z) implies x = φ y z
-
-If for all x close to a, ψ (f x) (g x) = x, then
-for all (y, z) close to (f a, g a), ψ y z = φ y z
-
--/
-
 theorem eq_implicitFunction_of_prodFun_eq :
     ∀ᶠ xyz in 𝓝 (φ.pt, φ.prodFun φ.pt),
       have ⟨x, y, z⟩ := xyz
