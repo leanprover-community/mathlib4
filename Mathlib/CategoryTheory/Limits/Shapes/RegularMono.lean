@@ -53,7 +53,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {X Y : C}
 
 /-- A regular monomorphism is a morphism which is the equalizer of some parallel pair. -/
-class RegularMono (f : X ⟶ Y) where
+structure RegularMono (f : X ⟶ Y) where
   /-- An object in `C` -/
   Z : C
   /-- A map from the codomain of `f` to `Z` -/
@@ -68,8 +68,8 @@ class RegularMono (f : X ⟶ Y) where
 attribute [reassoc] RegularMono.w
 
 /-- Every regular monomorphism is a monomorphism. -/
-instance (priority := 100) RegularMono.mono (f : X ⟶ Y) [RegularMono f] : Mono f :=
-  mono_of_isLimit_fork RegularMono.isLimit
+def RegularMono.mono (f : X ⟶ Y) (h : RegularMono f) : Mono f :=
+  mono_of_isLimit_fork h.isLimit
 
 /-- Every isomorphism is a regular monomorphism. -/
 def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
@@ -81,7 +81,7 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
 
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
-    (e : Arrow.mk f ≅ Arrow.mk g) [h : RegularMono f] :
+    (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularMono f) :
     RegularMono g where
   Z := h.Z
   left := e.inv.right ≫ h.left
@@ -112,14 +112,15 @@ instance MorphismProperty.regularMono.respectsIso :
     (MorphismProperty.regularMono C).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
-instance isRegularMono_of_regularMono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
+lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨h⟩
 
 /-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
 def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
     RegularMono f :=
   h.some
 
-instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
+/-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
+def equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
   Z := Y
   left := g
@@ -131,7 +132,7 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
       simp [← w]
 
 /-- Every split monomorphism is a regular monomorphism. -/
-instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
+def RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
     RegularMono f where
   Z := Y
   left := 𝟙 Y
@@ -140,10 +141,10 @@ instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono 
 
 /-- If `f` is a regular mono, then any map `k : W ⟶ Y` equalizing `RegularMono.left` and
 `RegularMono.right` induces a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
-def RegularMono.lift' {W : C} (f : X ⟶ Y) [RegularMono f] (k : W ⟶ Y)
-    (h : k ≫ (RegularMono.left : Y ⟶ @RegularMono.Z _ _ _ _ f _) = k ≫ RegularMono.right) :
+def RegularMono.lift' {W : C} {f : X ⟶ Y} (hf : RegularMono f) (k : W ⟶ Y)
+    (h : k ≫ hf.left = k ≫ hf.right) :
     { l : W ⟶ X // l ≫ f = k } :=
-  Fork.IsLimit.lift' RegularMono.isLimit _ h
+  Fork.IsLimit.lift' hf.isLimit _ h
 
 /-- The second leg of a pullback cone is a regular monomorphism if the right component is too.
 
@@ -151,7 +152,7 @@ See also `Pullback.sndOfMono` for the basic monomorphism version, and
 `regularOfIsPullbackFstOfRegular` for the flipped version.
 -/
 def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
-    [hr : RegularMono h] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk _ _ comm)) :
+    (hr : RegularMono h) (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk _ _ comm)) :
     RegularMono g where
   Z := hr.Z
   left := k ≫ hr.left
@@ -162,7 +163,7 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   isLimit := by
     apply Fork.IsLimit.mk' _ _
     intro s
-    have l₁ : (Fork.ι s ≫ k) ≫ RegularMono.left = (Fork.ι s ≫ k) ≫ hr.right := by
+    have l₁ : (Fork.ι s ≫ k) ≫ hr.left = (Fork.ι s ≫ k) ≫ hr.right := by
       rw [Category.assoc, s.condition, Category.assoc]
     obtain ⟨l, hl⟩ := Fork.IsLimit.lift' hr.isLimit _ l₁
     obtain ⟨p, _, hp₂⟩ := PullbackCone.IsLimit.lift' t _ _ hl
@@ -170,6 +171,7 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
     intro m w
     have z : m ≫ g = p ≫ g := w.trans hp₂.symm
     apply t.hom_ext
+    have := hr.mono
     apply (PullbackCone.mk f g comm).equalizer_ext
     · simp only [PullbackCone.mk_π_app, ← cancel_mono h]
       grind [Fork.ι_ofι]
@@ -181,14 +183,16 @@ See also `Pullback.fstOfMono` for the basic monomorphism version, and
 `regularOfIsPullbackSndOfRegular` for the flipped version.
 -/
 def regularOfIsPullbackFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
-    [RegularMono k] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk _ _ comm)) :
+    (hk : RegularMono k) (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk _ _ comm)) :
     RegularMono f :=
-  regularOfIsPullbackSndOfRegular comm.symm (PullbackCone.flipIsLimit t)
+  regularOfIsPullbackSndOfRegular hk comm.symm (PullbackCone.flipIsLimit t)
 
-instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono f] : StrongMono f :=
+/-- Any regular monomorphism is a strong monomorphism. -/
+def strongMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
+  have := h.mono
   StrongMono.mk' (by
       intro A B z hz u v sq
-      have : v ≫ (RegularMono.left : Y ⟶ RegularMono.Z f) = v ≫ RegularMono.right := by
+      have : v ≫ h.left = v ≫ h.right := by
         apply (cancel_epi z).1
         repeat (rw [← Category.assoc, ← eq_whisker sq.w])
         simp only [Category.assoc, RegularMono.w]
@@ -196,8 +200,12 @@ instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono 
       refine CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 ?_, ht⟩
       simp only [Category.assoc, ht, sq.w])
 
+instance (priority := 100) (f : X ⟶ Y) [IsRegularMono f] : StrongMono f :=
+  strongMono_of_regularMono <| regularMonoOfIsRegularMono f
+
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
-theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) [RegularMono f] [Epi f] : IsIso f :=
+theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) (h : RegularMono f) [Epi f] : IsIso f :=
+  have := strongMono_of_regularMono h
   isIso_of_epi_of_strongMono _
 
 section
@@ -218,15 +226,14 @@ def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : Regular
 
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
     IsRegularMonoCategory C where
-  regularMonoOfMono f _ := by
+  regularMonoOfMono f _ :=
     haveI := isSplitMono_of_mono f
-    infer_instance
+    isRegularMono_of_regularMono <| RegularMono.ofIsSplitMono f
 
 instance (priority := 100) strongMonoCategory_of_regularMonoCategory [IsRegularMonoCategory C] :
     StrongMonoCategory C where
-  strongMono_of_mono f _ := by
-    haveI := regularMonoOfMono f
-    infer_instance
+  strongMono_of_mono f _ :=
+    strongMono_of_regularMono <| regularMonoOfMono f
 
 /-- A regular epimorphism is a morphism which is the coequalizer of some parallel pair. -/
 class RegularEpi (f : X ⟶ Y) where
