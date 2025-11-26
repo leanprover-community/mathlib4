@@ -814,11 +814,6 @@ theorem cyclotomicRing_isIntegralClosure :
   · rintro ⟨y, rfl⟩
     exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {n} ℤ _).isIntegral _)
 
-
-
-
-
-
 end IsCyclotomicExtension.Rat
 
 namespace IsPrimitiveRoot
