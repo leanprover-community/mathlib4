@@ -3,12 +3,14 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.List.Sort
-import Mathlib.Data.Nat.Bitwise
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.Nat.Bitwise
 
 /-!
 # Bit Indices
@@ -24,6 +26,8 @@ This is used in `Combinatorics.colex` to construct a bijection `equivBitIndices 
 
 Relate the material in this file to `Nat.digits` and `Nat.bits`.
 -/
+
+@[expose] public section
 
 open List
 namespace Nat
@@ -101,7 +105,6 @@ theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
       simp only [add_assoc, Function.comp_apply]; rw [tsub_add_cancel_of_le (haL _ hx)]
     simp [List.map_congr_left h']
   obtain ⟨L₀, hL₀, rfl⟩ := h'
-  have _ : L₀.length < (a :: (L₀.map (· + a + 1))).length := by simp
   have hrw : (2^·) ∘ (· + a + 1) = fun i ↦ 2^a * (2 * 2^i) := by
     ext x; simp only [Function.comp_apply, pow_add, pow_one]; ac_rfl
   simp only [List.map_cons, List.map_map, List.sum_map_mul_left, List.sum_cons, hrw]

@@ -3,12 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.Prime.Basic
 /-!
 # Prime natural numbers and the factorial operator
 
 -/
+
+@[expose] public section
 
 open Bool Subtype
 
@@ -32,5 +36,15 @@ theorem coprime_factorial_iff {m n : ℕ} (hm : m ≠ 1) :
     exact ⟨m.minFac, minFac_prime hm, minFac_dvd m, Nat.dvd_factorial (minFac_pos m) h⟩
   · rintro ⟨p, hp, hdvd, hdvd'⟩
     exact le_trans (minFac_le_of_dvd hp.two_le hdvd) (hp.dvd_factorial.mp hdvd')
+
+lemma Prime.coprime_factorial_of_lt {p n : ℕ} (hp : p.Prime) (hn : n < p) :
+    p.Coprime n.factorial := by
+  rwa [hp.coprime_iff_not_dvd, hp.dvd_factorial, not_le]
+
+lemma Prime.coprime_descFactorial_of_lt_of_le {p n k : ℕ} (hp : p.Prime) (hn : n < p) (hk : k ≤ n) :
+    p.Coprime (n.descFactorial k) := by
+  rw [Nat.descFactorial_eq_div hk]
+  refine (hp.coprime_factorial_of_lt hn).coprime_div_right ?_
+  simp [Nat.factorial_dvd_factorial]
 
 end Nat

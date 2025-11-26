@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.ModelTheory.Semantics
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.ModelTheory.Semantics
 
 /-!
 # Definable Sets
@@ -14,7 +16,7 @@ This file defines what it means for a set over a first-order structure to be def
 ## Main Definitions
 
 - `Set.Definable` is defined so that `A.Definable L s` indicates that the
-  set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
+  set `s` of a finite Cartesian power of `M` is definable with parameters in `A`.
 - `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
   `(s : Set M)` is definable with parameters in `A`.
 - `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
@@ -29,6 +31,8 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 
 -/
+
+@[expose] public section
 
 
 universe u v w u₁

@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Equiv
-import Mathlib.RingTheory.Bialgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Equiv
+public import Mathlib.RingTheory.Bialgebra.Hom
 
 /-!
 # Isomorphisms of `R`-bialgebras
@@ -16,10 +18,12 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `BialgEquiv R A B`: the type of `R`-bialgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁
 

@@ -3,13 +3,17 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Module.Injective
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
+module
+
+public import Mathlib.Algebra.Module.Injective
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Injective objects in the category of $R$-modules
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

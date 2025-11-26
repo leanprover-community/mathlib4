@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.SimpTheorems
-import Lean.Meta.Tactic.Simp.RegisterCommand
-import Lean.LabelAttribute
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.SimpTheorems
+public meta import Lean.Meta.Tactic.Simp.RegisterCommand
+public meta import Lean.LabelAttribute
 
 /-!
 # Attributes used in `Mathlib`
@@ -17,6 +19,8 @@ of them in one file for two reasons:
 - in Lean 4, one cannot use an attribute in the same file where it was declared;
 - this way it is easy to see which simp sets contain a given lemma.
 -/
+
+public meta section
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr functor_norm
@@ -30,11 +34,6 @@ register_simp_attr functor_norm
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr monad_norm
-
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
 
 /-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps
@@ -106,7 +105,7 @@ default simp lemmas:
 ```
 -MonoidalCategory.whiskerLeft_id, -MonoidalCategory.id_whiskerRight,
 -MonoidalCategory.tensor_comp, -MonoidalCategory.tensor_comp_assoc,
--Mon_Class.mul_assoc, -Mon_Class.mul_assoc_assoc
+-MonObj.mul_assoc, -MonObj.mul_assoc_assoc
 ```
 
 The general algorithm it follows is to push the associators `α_` and commutators `β_` inwards until
