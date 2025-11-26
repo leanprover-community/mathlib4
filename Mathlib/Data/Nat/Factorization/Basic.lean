@@ -517,7 +517,7 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
   simpa using congr(factorization $h p)
 
 theorem exists_eq_pow_of_pow_eq_pow
-    {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
+    {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
     letI g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
   set g := gcd m n
   let m' := m / gcd m n
@@ -535,6 +535,6 @@ theorem exists_eq_pow_of_pow_eq_pow
       · exact gcd_ne_zero_left hm
       · exact gcd_ne_zero_right hn
     exact Nat.pow_left_injective this h
-  exact exists_eq_pow_of_exponent_coprime_of_pow_eq_pow ha hb coprime pow_eq
+  exact exists_eq_pow_of_exponent_coprime_of_pow_eq_pow coprime pow_eq
 
 end Nat
