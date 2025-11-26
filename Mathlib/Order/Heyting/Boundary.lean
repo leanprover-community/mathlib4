@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Co-Heyting boundary
@@ -21,6 +23,8 @@ boundary.
 
 `∂ a` is notation for `Coheyting.boundary a` in scope `Heyting`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

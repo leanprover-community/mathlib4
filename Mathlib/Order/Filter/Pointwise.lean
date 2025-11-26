@@ -3,16 +3,18 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.NAry
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Filter.AtTopBot.Map
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.NAry
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Pointwise operations on filters
@@ -58,6 +60,8 @@ instances reducible changes the behavior of `simp`).
 
 filter multiplication, filter addition, pointwise addition, pointwise multiplication,
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Pointwise
@@ -218,9 +222,6 @@ protected theorem HasBasis.inv {ι : Sort*} {p : ι → Prop} {s : ι → Set α
     (h : f.HasBasis p s) : f⁻¹.HasBasis p fun i ↦ (s i)⁻¹ := by
   simpa using h.map Inv.inv
 
-@[to_additive]
-theorem hasBasis_inv : f⁻¹.HasBasis (· ∈ f) (·⁻¹) := f.basis_sets.inv
-
 /-- Inversion is involutive on `Filter α` if it is on `α`. -/
 @[to_additive /-- Negation is involutive on `Filter α` if it is on `α`. -/]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
@@ -268,11 +269,6 @@ theorem HasBasis.mul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
     {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
     (f * g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 * sg i.2 :=
   hf.map₂ (· * ·) hg
-
-@[to_additive]
-theorem hasBasis_mul :
-    (f * g).HasBasis (fun st : Set α × Set α ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 * st.2) :=
-  f.basis_sets.mul g.basis_sets
 
 @[to_additive (attr := simp)]
 theorem map₂_mul : map₂ (· * ·) f g = f * g :=
@@ -383,11 +379,6 @@ theorem HasBasis.div {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
     {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
     (f / g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 / sg i.2 :=
   hf.map₂ (· / ·) hg
-
-@[to_additive]
-theorem hasBasis_div :
-    (f / g).HasBasis (fun st : Set α × Set α ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 / st.2) :=
-  f.basis_sets.div g.basis_sets
 
 @[to_additive (attr := simp)]
 theorem map₂_div : map₂ (· / ·) f g = f / g :=
@@ -799,11 +790,6 @@ theorem HasBasis.smul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α
     {pg : ιg → Prop} {sg : ιg → Set β} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
     (f • g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 • sg i.2 :=
   hf.map₂ (· • ·) hg
-
-theorem hasBasis_smul :
-    (f • g).HasBasis (fun st : Set α × Set β ↦ st.1 ∈ f ∧ st.2 ∈ g) (fun st ↦ st.1 • st.2) :=
-  f.basis_sets.smul g.basis_sets
-
 
 @[to_additive (attr := simp)]
 theorem map₂_smul : map₂ (· • ·) f g = f • g :=

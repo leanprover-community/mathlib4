@@ -3,15 +3,19 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.FieldTheory.Tower
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Algebraic.Integral
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Tower
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
 -/
+
+@[expose] public section
 
 open Module
 
@@ -96,6 +100,14 @@ then `F = E`. -/
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
+
+lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
+    Module.finrank E L < Module.finrank F L := by
+  letI := (IntermediateField.inclusion H.le).toAlgebra
+  have : IsScalarTower F E L := .of_algebraMap_eq' rfl
+  refine lt_of_le_of_ne ?_ ?_
+  · exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
+  · exact .symm (mt (eq_of_le_of_finrank_eq' H.le) H.ne)
 
 theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
   let _ := (inclusion h).toRingHom.toAlgebra
