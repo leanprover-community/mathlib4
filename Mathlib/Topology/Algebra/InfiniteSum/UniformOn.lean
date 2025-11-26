@@ -160,6 +160,12 @@ uniformly on `s` to something. -/]
 def MultipliableLocallyUniformlyOn : Prop := ∃ g, HasProdLocallyUniformlyOn f g s
 
 @[to_additive]
+lemma MultipliableUniformlyOn.multipliableLocallyUniformlyOn (hf : MultipliableUniformlyOn f s) :
+    MultipliableLocallyUniformlyOn f s := by
+  obtain ⟨g, hg⟩ := hf.exists
+  exact ⟨g, hg.tendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
+
+@[to_additive]
 lemma hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn :
     HasProdLocallyUniformlyOn f g s ↔ TendstoLocallyUniformlyOn (∏ i ∈ ·, f i ·) g atTop s :=
   Iff.rfl
@@ -408,6 +414,12 @@ uniformly to something. -/
 @[to_additive /-- `SummableLocallyUniformly f` means that `∑' i, f i b` converges locally
 uniformly to something. -/]
 def MultipliableLocallyUniformly : Prop := ∃ g, HasProdLocallyUniformly f g
+
+@[to_additive]
+lemma MultipliableUniformly.multipliableLocallyUniformly (hf : MultipliableUniformly f) :
+    MultipliableLocallyUniformly f := by
+  obtain ⟨g, hg⟩ := hf.exists
+  exact ⟨g, hg.tendstoUniformly.tendstoLocallyUniformly⟩
 
 @[to_additive]
 lemma MultipliableLocallyUniformly.exists (h : MultipliableLocallyUniformly f) :
