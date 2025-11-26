@@ -3,10 +3,11 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Computability.AkraBazzi.SumTransform
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Computability.AkraBazzi.SumTransform
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
@@ -57,6 +58,8 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -178,8 +181,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 - ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
-      have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        positivity
+      have : 0 ≤ x⁻¹ / (log x ^ 2) := by positivity
       simp only [hp, Real.rpow_zero, one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
@@ -198,8 +200,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     have h₁ : (fun x => ‖deriv (fun z => z ^ p * (1 + ε z)) x‖)
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
-      have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        positivity
+      have : 0 ≤ x⁻¹ / (log x ^ 2) := by positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
@@ -527,14 +528,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
         -- Apply the induction hypothesis, or use the base case depending on how large n is
         gcongr (∑ i, a i * ?_) + g n with i _
         · exact le_of_lt <| R.a_pos _
-        · if ri_lt_n₀ : r i n < n₀ then
-            exact h_base _ <| by
+        · by_cases! ri_lt_n₀ : r i n < n₀
+          · exact h_base _ <| by
               simp_all only [gt_iff_lt, Nat.ofNat_pos, div_pos_iff_of_pos_right,
                 eventually_atTop, sub_pos, one_div, mem_Ico, and_imp,
                 forall_true_left, mem_univ, and_self, b', C, base_max]
-          else
-            push_neg at ri_lt_n₀
-            exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
+          · exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
               (h_asympBound_r_pos _ hn _) (h_smoothing_r_pos n hn i)
       _ = (∑ i, a i * (C * ((1 - ε (r i n)) * ((r i n) ^ (p a b)
                 * (1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1))))))) + g n := by
@@ -546,8 +545,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                 * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
         gcongr (∑ i, C * a i * (?_
             * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
-        · have := R.a_pos i
-          positivity
+        · positivity [R.a_pos i]
         · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
           rw [div_nonneg_iff]
           exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
@@ -571,10 +569,8 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
       _ ≤ (∑ i, C * a i * ((b i) ^ (p a b) * (1 - ε n)
                 * ((asympBound g a b n - c₁ * g n)))) + g n := by
         gcongr with i
-        · have := R.a_pos i
-          positivity
-        · have := R.b_pos i
-          positivity
+        · positivity [R.a_pos i]
+        · positivity [R.b_pos i]
         · exact h_sumTransform n hn i
       _ = (∑ i, C * (1 - ε n) * ((asympBound g a b n - c₁ * g n))
                 * (a i * (b i) ^ (p a b))) + g n := by
@@ -715,8 +711,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                 * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
         gcongr (∑ i, C * a i * (?_ *
             ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n with i
-        · have := R.a_pos i
-          positivity
+        · positivity [R.a_pos i]
         · refine add_nonneg zero_le_one <| Finset.sum_nonneg fun j _ => ?_
           rw [div_nonneg_iff]
           exact Or.inl ⟨R.g_nonneg j (by positivity), by positivity⟩
@@ -740,10 +735,8 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
       _ ≥ (∑ i, C * a i * ((b i) ^ (p a b) * (1 + ε n)
                 * ((asympBound g a b n - c₁ * g n)))) + g n := by
         gcongr with i
-        · have := R.a_pos i
-          positivity
-        · have := R.b_pos i
-          positivity
+        · positivity [R.a_pos i]
+        · positivity [R.b_pos i]
         · exact h_sumTransform n hn i
       _ = (∑ i, C * (1 + ε n) * ((asympBound g a b n - c₁ * g n))
                 * (a i * (b i) ^ (p a b))) + g n := by congr; ext; ring

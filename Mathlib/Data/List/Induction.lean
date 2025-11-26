@@ -3,9 +3,13 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-! ### Induction principles for lists -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -160,7 +164,7 @@ theorem twoStepInduction_singleton {motive : (l : List α) → Sort*} (x : α) (
 theorem twoStepInduction_cons_cons {motive : (l : List α) → Sort*} (x y : α) (xs : List α)
     (nil : motive []) (singleton : ∀ x, motive [x])
     (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs)) :
-    twoStepInduction nil singleton cons_cons (x :: y :: xs)  =
+    twoStepInduction nil singleton cons_cons (x :: y :: xs) =
     cons_cons x y xs
     (twoStepInduction nil singleton cons_cons xs)
     (fun y => twoStepInduction nil singleton cons_cons (y :: xs)) := twoStepInduction.eq_3 ..

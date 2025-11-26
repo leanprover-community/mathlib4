@@ -3,9 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Nonnegative real numbers
@@ -45,6 +47,8 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
+@[expose] public section
+
 assert_not_exists TrivialStar
 
 open Function
@@ -52,7 +56,7 @@ open Function
 -- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
   Nontrivial, Inhabited
 
@@ -124,7 +128,7 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
   Subtype.canLift _
 
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
-  Subtype.eq
+  Subtype.ext
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
   not_congr <| NNReal.eq_iff.symm
@@ -263,7 +267,6 @@ instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
-  smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   algebraMap := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
@@ -314,7 +317,8 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
-@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[gcongr] private alias ⟨_, GCongr.coe_le_coe_of_le⟩ := coe_le_coe
+@[gcongr, bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
@@ -348,9 +352,6 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
 @[simp]
 theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
-
-@[deprecated Real.toNNReal_coe_nat (since := "2025-03-12")]
-alias toNNReal_coe_nat := Real.toNNReal_coe_nat
 
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -905,7 +906,10 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
-  rw [NNReal.coe_natCast, Int.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
+  rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
+
+@[simp]
+theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
 
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
@@ -984,7 +988,7 @@ private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -993,5 +997,29 @@ def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
+
+/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+@[positivity Real.toNNReal _]
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
+    assertInstancesCommute
+    match (← core q(inferInstance) q(inferInstance) a) with
+    | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
+    | _ => failure
+  | _, _, _ => throwError "not Real.toNNReal"
+
+private alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
+
+/-- Extension for the `positivity` tactic: `Real.nnabs. -/
+@[positivity Real.nnabs _]
+meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
+    assertInstancesCommute
+    match (← core q(inferInstance) q(inferInstance) a).toNonzero with
+    | some pa => pure (.positive q(nnabs_pos_of_pos $pa))
+    | _ => failure
+  | _, _, _ => throwError "not Real.nnabs"
 
 end Mathlib.Meta.Positivity

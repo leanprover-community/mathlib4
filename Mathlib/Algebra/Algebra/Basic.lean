@@ -3,21 +3,25 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Int.CharZero
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Int.CharZero
 
 /-!
 # Further basic results about `Algebra`.
 
 This file could usefully be split further.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -73,7 +77,6 @@ end ULift
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
 instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
   algebraMap := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 
@@ -91,7 +94,6 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
 instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A where
   algebraMap := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 
@@ -115,6 +117,10 @@ def algebraMapSubmonoid (S : Type*) [Semiring S] [Algebra R S] (M : Submonoid R)
 theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M : Submonoid R}
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
   Set.mem_image_of_mem (algebraMap R S) x.2
+
+@[simp]
+lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R M = M :=
+  Submonoid.map_id M
 
 @[simp]
 lemma algebraMapSubmonoid_powers {S : Type*} [Semiring S] [Algebra R S] (r : R) :
@@ -322,6 +328,22 @@ lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
 
 end FaithfulSMul
 
+namespace algebraMap
+
+@[norm_cast, simp]
+theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
+  (FaithfulSMul.algebraMap_injective _ _).eq_iff
+
+@[norm_cast]
+theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  FaithfulSMul.algebraMap_eq_zero_iff _ _
+
+@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
+theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  coe_eq_zero_iff _ _ _
+
+end algebraMap
+
 lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
   have := algebraMap_comp_natCast R A
   ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩
@@ -402,23 +424,15 @@ instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semi
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
 
+-- see Note [lower instance priority]
+instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
+    [Algebra R A] [Algebra S A] :
+    SMulCommClass R S A where
+  smul_comm r s a := by
+    rw [Algebra.smul_def, mul_smul_comm, ← Algebra.smul_def]
+
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
-
-namespace LinearMap
-
-variable (R)
-
--- TODO: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
-a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
-  toFun f := f.toFun
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end LinearMap
 
 end IsScalarTower
 

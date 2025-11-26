@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.MonoidAlgebra.Lift
-import Mathlib.LinearAlgebra.Finsupp.LSum
+module
+
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Lift
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # Module structure on monoid algebras
@@ -15,6 +17,8 @@ import Mathlib.LinearAlgebra.Finsupp.LSum
 
 * `MonoidAlgebra.module`, `AddMonoidAlgebra.module`: lift a module structure to monoid algebras
 -/
+
+@[expose] public section
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
@@ -100,10 +104,6 @@ end ExtLemmas
 section MiscTheorems
 
 variable [Semiring k]
-
-/-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
-theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
-  Finsupp.smul_single' c a b
 
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
   simp

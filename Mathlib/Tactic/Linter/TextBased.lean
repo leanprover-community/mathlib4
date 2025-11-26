@@ -3,14 +3,17 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
-import Lake.Util.Casing
+public meta import Batteries.Data.String.Matcher
+public meta import Mathlib.Data.Nat.Notation
+public meta import Lake.Util.Casing
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
+
+public meta section
 
 /-!
 ## Text-based linters
@@ -38,15 +41,6 @@ An executable running all these linters is defined in `scripts/lint-style.lean`.
 open Lean.Linter System
 
 namespace Mathlib.Linter.TextBased
-
-/-- Different kinds of "broad imports" that are linted against. -/
-inductive BroadImports
-  /-- Importing the entire "Mathlib.Tactic" folder -/
-  | TacticFolder
-  /-- Importing any module in `Lake`, unless carefully measured
-  This has caused unexpected regressions in the past. -/
-  | Lake
-deriving BEq
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -155,13 +149,13 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
-  let parts := line.split (· == ' ')
+  let parts := line.splitToList (· == ' ')
   match parts with
     | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
-      let path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
+      let path := mkFilePath (filename.splitToList (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match errorCode with
@@ -247,10 +241,10 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.endPos && line.get (line.prev pos) == ' ' then
+    if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
-      fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
+      fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
 
@@ -309,7 +303,10 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   return (errors, if changes_made then some changed else none)
 
 /-- Enables the old Python-based style linters. -/
-register_option linter.pythonStyle : Bool := { defValue := true }
+-- TODO: these linters assume they are being run in `./scripts` and do not work on
+-- downstream projects. Fix this before re-enabling them by default.
+-- Or better yet: port them to Lean 4.
+register_option linter.pythonStyle : Bool := { defValue := false }
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
