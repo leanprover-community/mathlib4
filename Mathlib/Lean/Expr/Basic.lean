@@ -2,12 +2,14 @@
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
-Floris van Doorn, Edward Ayers, Arthur Paulino
+Floris van Doorn, Edward Ayers, Arthur Paulino, Thomas R. Murrills
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
-import Batteries.Tactic.Alias
-import Lean.Elab.Binders
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.Rewrite
+public import Batteries.Tactic.Alias
+public import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and related types
@@ -16,6 +18,8 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
+
+public section
 
 namespace Lean
 
@@ -219,6 +223,62 @@ where
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
 
+/--
+Returns `true` if `type` is an application of a constant `decl` for which `p decl` is true, or a
+forall with return type of the same form (i.e. of the form `∀ (x₀ : X₀) (x₁ : X₁) ⋯, decl ..` where
+`p decl`).
+
+Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
+-/
+@[inline] partial def isAppOrForallOfConstP (p : Name → Bool) (type : Expr) : Bool :=
+    match type.cleanupAnnotations.getAppFn' with
+    | .const n _ => p n
+    | .forallE _ _ body _ => isAppOrForallOfConstP p body
+    | _ => false
+
+/--
+Returns `true` if `type` is an application of a constant `declName`, or a
+forall with return type of the same form (i.e. of the form `∀ (x₀ : X₀) (x₁ : X₁) ⋯, declName ..`).
+
+Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata in applications.
+-/
+@[inline] partial def isAppOrForallOfConst (declName : Name) (type : Expr) : Bool :=
+  isAppOrForallOfConstP (· == declName) type
+
+/--
+Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
+`(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
+- the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
+-  `p Aᵢ` is `true`
+- The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that
+  `xᵢ : Aᵢ` is "unused".)
+
+Note that the argument to `p` may have loose bvars. This is a performance optimization.
+
+This function runs `cleanupAnnotations` on each expression before examining it.
+
+We see through `let`s, and do not increment the index when doing so. This behavior is compatible
+with `forallBoundedTelescope`.
+-/
+partial def getUnusedForallInstanceBinderIdxsWhere (p : Expr → Bool) (e : Expr) :
+    Array Nat :=
+  go e 0 #[]
+where
+  /-- Inspects `body`, and if it is a `.forallE` of an instance with type `type` such that `p type`
+  is `true` and the remainder of the type does not depend on it, pushes the `current` index onto
+  the accumulated array. -/
+  go (body : Expr) (current : Nat) (acc : Array Nat) : Array Nat :=
+    match body.cleanupAnnotations with
+    | .forallE _ type body bi => go body (current+1) <|
+      if bi.isInstImplicit && p type && !(body.hasLooseBVar 0) then
+        acc.push current
+      else
+        acc
+    /- See through `letE`, and just as in the interpretation of a bound provided to
+    `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
+    | .letE _ _ _ body _ => go body current acc
+    | _ => acc
+
 /-- Counts the immediate depth of a nested `let` expression. -/
 def letDepth : Expr → Nat
   | .letE _ _ _ b _ => b.letDepth + 1
@@ -368,16 +428,6 @@ def mapForallBinderNames : Expr → (Name → Name) → Expr
   | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
   | e, _ => e
 
-open Lean.Elab.Term
-/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
-def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
-  -- the only TermElabM thing we do in `addLocalVarInfo` is check inPattern,
-  -- which we assume is always false for this function
-  discard <| TermElabM.run do
-    match tk with
-    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
-    | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
-
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
 the projection expression `e.fieldName` -/
 def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
@@ -429,26 +479,6 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
 @[specialize]
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
-
-/--
-Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewrite (e eq : Expr) : MetaM Expr := do
-  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
-    | throwError "Expr.rewrite may not produce subgoals."
-  return eq'
-
-/--
-Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewriteType (e eq : Expr) : MetaM Expr := do
-  mkEqMP (← (← inferType e).rewrite eq) e
 
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
 return a `forall x, Not (p x)` and a proof for it.

@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # Multivariate polynomials over a ring
@@ -32,6 +34,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -57,11 +61,11 @@ variable (σ a a')
 
 @[simp]
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
-  RingHom.map_sub _ _ _
+  map_sub _ _ _
 
 @[simp]
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
-  RingHom.map_neg _ _
+  map_neg _ _
 
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=

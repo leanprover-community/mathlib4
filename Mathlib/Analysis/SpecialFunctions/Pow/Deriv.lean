@@ -4,18 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-import Mathlib.Analysis.Calculus.FDeriv.Extend
-import Mathlib.Analysis.Calculus.Deriv.Prod
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+public import Mathlib.Analysis.Calculus.FDeriv.Extend
+public import Mathlib.Analysis.Calculus.Deriv.Prod
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`
 
 We also prove differentiability and provide derivatives for the power functions `x ^ y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -667,6 +671,29 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
     simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
   case inr =>
     exact (isTheta_deriv_rpow_const_atTop hp).1
+
+variable {a : ℝ}
+
+theorem HasDerivWithinAt.const_rpow (ha : 0 < a) (hf : HasDerivWithinAt f f' s x) :
+    HasDerivWithinAt (a ^ f ·) (Real.log a * f' * a ^ f x) s x := by
+  convert (hasDerivWithinAt_const x s a).rpow hf ha using 1
+  ring
+
+theorem HasDerivAt.const_rpow (ha : 0 < a) (hf : HasDerivAt f f' x) :
+    HasDerivAt (a ^ f ·) (Real.log a * f' * a ^ f x) x := by
+  rw [← hasDerivWithinAt_univ] at *
+  exact hf.const_rpow ha
+
+theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s x)
+    (hxs : UniqueDiffWithinAt ℝ s x) :
+    derivWithin (a ^ f ·) s x = Real.log a * derivWithin f s x * a ^ f x :=
+  (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
+
+@[simp]
+theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
+    deriv (a ^ f ·) x = Real.log a * deriv f x * a ^ f x :=
+  (hf.hasDerivAt.const_rpow ha).deriv
+
 
 end deriv
 

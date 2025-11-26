@@ -3,9 +3,11 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Num.ZNum
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Num.ZNum
+public import Mathlib.Tactic.Ring
 
 /-!
 # Primality for binary natural numbers
@@ -22,6 +24,8 @@ to construct primality and non-primality proofs more efficiently than kernel com
 Nevertheless, sometimes proof by computational reflection requires natural number computations, and
 `Num` implements algorithms directly on binary natural numbers for this purpose.
 -/
+
+@[expose] public section
 
 
 namespace PosNum
@@ -60,7 +64,7 @@ def minFac : PosNum → PosNum
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   obtain - | n := n
-  · rfl
+  · simp [minFac]
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap
     · simp [← two_mul]

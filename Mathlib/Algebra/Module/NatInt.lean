@@ -3,8 +3,10 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Modules over `ℕ` and `ℤ`
@@ -25,6 +27,8 @@ This file concerns modules where the scalars are the natural numbers or the inte
 semimodule, module, vector space
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
@@ -35,7 +39,7 @@ variable {R S M M₂ : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
+variable [AddCommMonoid M]
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
   one_smul := one_nsmul
@@ -49,7 +53,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable (R M) [Semiring R] [AddCommGroup M]
+variable (M) [AddCommGroup M]
 
 instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul

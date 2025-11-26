@@ -3,12 +3,14 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -28,6 +30,8 @@ is not an issue mathematically. For this to be possible, however, we need `CharP
 able to import some part of `ZMod`.
 
 -/
+
+@[expose] public section
 
 
 namespace Fin
@@ -89,12 +93,12 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
   __ := Fin.addCommGroup n
   __ := Fin.instCommSemigroup n
   __ := Fin.instDistrib n
-  zero_mul := Fin.zero_mul'
-  mul_zero := Fin.mul_zero'
+  zero_mul := Fin.zero_mul
+  mul_zero := Fin.mul_zero
 
 instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
-  one_mul := Fin.one_mul'
-  mul_one := Fin.mul_one'
+  one_mul := Fin.one_mul
+  mul_one := Fin.mul_one
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
@@ -109,7 +113,7 @@ This is not a global instance, but can introduced locally using `open Fin.CommRi
 
 This is not an instance because the `binop%` elaborator assumes that
 there are no non-trivial coercion loops,
-but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+but this instance would introduce a coercion from `Nat` to `Fin n` and back.
 Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
 
 For example, for `x : Fin k` and `n : Nat`,

@@ -3,9 +3,13 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-! ### Induction principles for lists -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -40,14 +44,7 @@ theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α)
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
       append_singleton _ _ (reverseRecOn (motive := motive) xs nil append_singleton) := by
-  suffices ∀ ys (h : reverse (reverse xs) = ys),
-      reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
-        cast (by simp [(reverse_reverse _).symm.trans h])
-          (append_singleton _ x (reverseRecOn (motive := motive) ys nil append_singleton)) by
-    exact this _ (reverse_reverse xs)
-  intro ys hy
-  conv_lhs => unfold reverseRecOn
-  grind
+  grind [reverseRecOn]
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
@@ -167,7 +164,7 @@ theorem twoStepInduction_singleton {motive : (l : List α) → Sort*} (x : α) (
 theorem twoStepInduction_cons_cons {motive : (l : List α) → Sort*} (x y : α) (xs : List α)
     (nil : motive []) (singleton : ∀ x, motive [x])
     (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs)) :
-    twoStepInduction nil singleton cons_cons (x :: y :: xs)  =
+    twoStepInduction nil singleton cons_cons (x :: y :: xs) =
     cons_cons x y xs
     (twoStepInduction nil singleton cons_cons xs)
     (fun y => twoStepInduction nil singleton cons_cons (y :: xs)) := twoStepInduction.eq_3 ..

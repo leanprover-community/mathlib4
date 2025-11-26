@@ -3,11 +3,13 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Schnirelmann density
@@ -41,6 +43,8 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 * [Ruzsa, Imre, *Sumsets and structure*][ruzsa2009]
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -113,8 +117,7 @@ alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
-  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact h
+  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by gcongr
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
@@ -254,7 +257,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
-    rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this
+    rwa [← Nat.succ_le_iff, Nat.succ_pred hn.ne'] at this
   intro a b
   simp [hm'.ne']
 

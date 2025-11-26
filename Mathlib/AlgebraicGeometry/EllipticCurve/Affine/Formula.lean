@@ -3,7 +3,9 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 /-!
 # Negation and addition formulae for nonsingular points in affine coordinates
@@ -54,6 +56,8 @@ coordinates will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/P
 
 elliptic curve, affine, negation, doubling, addition, group law
 -/
+
+@[expose] public section
 
 open Polynomial
 
@@ -116,8 +120,6 @@ lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
 lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
-
-@[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
 lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
@@ -195,8 +197,6 @@ lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy
   congr 1
   rw [negY, evalEval_polynomialY]
   ring1
-
-@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
 
 end slope
 

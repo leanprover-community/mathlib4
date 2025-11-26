@@ -3,12 +3,14 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.StrictPositivity
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.Algebra.Star.Real
-import Mathlib.Topology.ContinuousMap.StarOrdered
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.Algebra.Star.Real
+public import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
 # The continuous functional calculus
@@ -137,6 +139,8 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 `IsSelfAdjoint a` or `0 ≤ a`. For the moment we provide a rudimentary tactic to deal with these
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
+
+@[expose] public section
 
 open Topology ContinuousMap
 
@@ -578,7 +582,7 @@ lemma cfc_map_polynomial (q : R[X]) (f : R → R) (a : A) (ha : p a := by cfc_ta
   | add q₁ q₂ hq₁ hq₂ =>
     simp only [eval_add, map_add, ← hq₁, ← hq₂, cfc_add a (q₁.eval <| f ·) (q₂.eval <| f ·)]
   | monomial n r _ =>
-    simp only [eval_mul, eval_C, eval_pow, eval_X, map_mul, aeval_C, map_pow, aeval_X]
+    simp only [eval_mul, eval_C, eval_X_pow, map_mul, aeval_C, map_pow, aeval_X]
     rw [cfc_const_mul .., cfc_pow _ (n + 1) _, ← smul_eq_mul, algebraMap_smul]
 
 lemma cfc_polynomial (q : R[X]) (a : A) (ha : p a := by cfc_tac) :
@@ -672,13 +676,13 @@ lemma CFC.spectrum_algebraMap_eq [Nontrivial A] (r : R) :
 include instCFC in
 lemma CFC.spectrum_zero_eq [Nontrivial A] :
     spectrum R (0 : A) = {0} := by
-  have : (0 : A) = algebraMap R A 0 := Eq.symm (RingHom.map_zero (algebraMap R A))
+  have : (0 : A) = algebraMap R A 0 := Eq.symm (map_zero (algebraMap R A))
   rw [this, spectrum_algebraMap_eq]
 
 include instCFC in
 lemma CFC.spectrum_one_eq [Nontrivial A] :
     spectrum R (1 : A) = {1} := by
-  have : (1 : A) = algebraMap R A 1 := Eq.symm (RingHom.map_one (algebraMap R A))
+  have : (1 : A) = algebraMap R A 1 := Eq.symm (map_one (algebraMap R A))
   rw [this, spectrum_algebraMap_eq]
 
 @[simp]
