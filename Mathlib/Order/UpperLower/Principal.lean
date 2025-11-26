@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Order.UpperLower.CompleteLattice
+module
+
+public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
 # Principal upper/lower sets
@@ -18,6 +20,8 @@ The results in this file all assume that the underlying type is equipped with at
 * `LowerSet.Iic`: Principal lower set. `Set.Iic` as a lower set.
 * `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as a lower set.
 -/
+
+@[expose] public section
 
 open Function Set
 

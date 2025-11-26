@@ -3,8 +3,10 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.RingTheory.Invariant.Defs
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+module
+
+public import Mathlib.RingTheory.Invariant.Defs
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 # Invariant Extensions of Rings
@@ -35,6 +37,8 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
   If `k` is a domain containing `B/Q`, then any `A/P`-algebra automorphism of `k` restricts to
   an automorphism of `B/Q`.
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -489,9 +493,9 @@ lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     (by rw [Polynomial.aeval_map_algebraMap, Polynomial.aeval_algebraMap_apply, H, map_zero])
   refine Polynomial.splits_of_splits_of_dvd (algebraMap (A ⧸ P) (B ⧸ Q)) ?_ ?_ this
   · exact (h₂.map (algebraMap A (A ⧸ P))).ne_zero
-  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
-      ← Polynomial.splits_map_iff, hp, MulSemiringAction.charpoly_eq]
-    exact Polynomial.splits_prod _ (fun _ _ ↦ Polynomial.splits_X_sub_C _)
+  · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
+      ← Polynomial.map_map, hp, MulSemiringAction.charpoly_eq, Polynomial.map_prod]
+    exact Polynomial.Splits.prod (fun _ _ ↦ (Polynomial.Splits.X_sub_C _).map _)
 
 attribute [local instance] Ideal.Quotient.field in
 include G in

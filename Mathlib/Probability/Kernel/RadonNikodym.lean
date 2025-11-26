@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.WithDensity
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.Density
+public import Mathlib.Probability.Kernel.WithDensity
 
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
@@ -67,6 +69,8 @@ Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter ENNReal
 

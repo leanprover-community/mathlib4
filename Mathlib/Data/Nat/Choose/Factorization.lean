@@ -3,10 +3,12 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Nat.Digits.Lemmas
-import Mathlib.Data.Nat.Factorization.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Data.Nat.Digits.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Factorization of Binomial Coefficients
@@ -25,6 +27,8 @@ bounds in binomial coefficients. These include:
 
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
+
+@[expose] public section
 
 open Finset List Finsupp
 
@@ -55,7 +59,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_factorization_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * (n)!.factorization p = n - (p.digits n).sum := by
-  simp only [factorization_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+  simp only [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
     ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
@@ -213,8 +217,8 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     exact
       lt_of_le_of_lt
         (add_le_add
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
             ((n - k) % p)))
         (by rwa [div_add_mod, div_add_mod, add_tsub_cancel_of_le hkn])
   · replace hn : n < p ^ i := by
