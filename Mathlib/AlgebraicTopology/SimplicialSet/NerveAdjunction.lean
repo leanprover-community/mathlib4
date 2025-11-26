@@ -3,11 +3,13 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
-import Mathlib.CategoryTheory.Limits.Presheaf
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
+public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.Presheaf
 /-!
 
 # The adjunction between the nerve and the homotopy category functor.
@@ -31,6 +33,8 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -296,24 +300,9 @@ end
 underlying refl prefunctors. -/
 theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
-  have eq₀ (x : X _⦋0⦌₂) : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
   have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
     congr((($hyp).map ⟨x, rfl, rfl⟩).1)
-  ext ⟨⟨n, hn⟩⟩ x
-  induction n using SimplexCategory.rec with | _ n
-  match n with
-  | 0 => apply eq₀
-  | 1 => apply eq₁
-  | 2 =>
-    apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
-    · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
-      refine congr(($(F.naturality pt.op) x).obj 0).symm.trans ?_
-      refine .trans ?_ congr(($(G.naturality pt.op) x).obj 0)
-      exact congr($(eq₀ _).obj 0)
-    · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
-      have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
-      have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
-      exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
+  exact IsStrictSegal.hom_ext eq₁
 
 /-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.app (X : SSet.Truncated.{u} 2) :
@@ -584,6 +573,21 @@ instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 noncomputable instance Monoidal : Monoidal hoFunctor :=
   Monoidal.ofChosenFiniteProducts hoFunctor
+
+open MonoidalCategory
+
+/-- An equivalence between the vertices of a simplicial set `X` and the
+objects of `hoFunctor.obj X`. -/
+def unitHomEquiv (X : SSet.{u}) :
+    (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
+  (SSet.unitHomEquiv X).trans <|
+    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+
+theorem unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
+    hoFunctor.unitHomEquiv X x = LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x := by
+  simp [unitHomEquiv]
+  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
+  rfl
 
 end hoFunctor
 

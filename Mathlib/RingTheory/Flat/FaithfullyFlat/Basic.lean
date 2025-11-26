@@ -3,8 +3,10 @@ Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.RingTheory.Flat.Stability
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Flat.Stability
 
 /-!
 # Faithfully flat modules
@@ -42,6 +44,8 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -101,11 +105,10 @@ instance rTensor_nontrivial
       Submodule.mem_annihilator_span_singleton, LinearMap.mem_ker, Submodule.liftQ_apply,
       LinearMap.flip_apply, LinearMap.lsmul_apply, I, inc] using hr
   have ne_top := iff_flat_and_proper_ideal R M |>.1 fl |>.2 I I_ne_top
-  refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ?_
-  exact False.elim <| ne_top <| Submodule.subsingleton_quotient_iff_eq_top.1 <|
-    Function.Injective.comp (g := LinearMap.rTensor M inc)
-      (fl.toFlat.rTensor_preserves_injective_linearMap inc injective_inc)
-      ((quotTensorEquivQuotSMul M I).symm.injective) |>.subsingleton
+  refine subsingleton_or_nontrivial _ |>.resolve_left fun rid => ne_top ?_
+  rw [← Submodule.Quotient.subsingleton_iff]
+  exact (fl.toFlat.rTensor_preserves_injective_linearMap inc injective_inc).comp
+    (quotTensorEquivQuotSMul M I).symm.injective |>.subsingleton
 
 instance lTensor_nontrivial
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
@@ -139,10 +142,8 @@ lemma iff_flat_and_rTensor_faithful :
     (congr (ULift.moduleEquiv : ULift (R ⧸ m) ≃ₗ[R] R ⧸ m)
       (LinearEquiv.refl R M)).symm.toEquiv.nontrivial
   have := (quotTensorEquivQuotSMul M m).toEquiv.symm.nontrivial
-  haveI H : Subsingleton (M ⧸ m • (⊤ : Submodule R M)) := by
-    rwa [Submodule.subsingleton_quotient_iff_eq_top]
-  rw [← not_nontrivial_iff_subsingleton] at H
-  contradiction
+  refine not_subsingleton (M ⧸ m • (⊤ : Submodule R M)) ?_
+  rwa [Submodule.Quotient.subsingleton_iff]
 
 lemma iff_flat_and_rTensor_reflects_triviality :
     FaithfullyFlat R M ↔
@@ -321,7 +322,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   -- Hence our goal ker l23 = range l12 follows from the claim that H = 0.
   let H := LinearMap.ker l23 ⧸ LinearMap.range (Submodule.inclusion complex)
   suffices triv_coh : Subsingleton H by
-    rw [Submodule.subsingleton_quotient_iff_eq_top, Submodule.range_inclusion,
+    rw [Submodule.Quotient.subsingleton_iff, Submodule.range_inclusion,
       Submodule.comap_subtype_eq_top] at triv_coh
     exact le_antisymm triv_coh complex
   -- Since `M` is faithfully flat, we need only to show that `H ⊗ M` is trivial.
@@ -329,7 +330,7 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
   let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _
   -- Note that `H ⊗ M` is isomorphic to `ker l12 ⊗ M ⧸ range ((range l12 ⊗ M) -> (ker l23 ⊗ M))`.
   -- So the problem is reduced to proving surjectivity of `range l12 ⊗ M → ker l23 ⊗ M`.
-  rw [e.toEquiv.subsingleton_congr, Submodule.subsingleton_quotient_iff_eq_top,
+  rw [e.toEquiv.subsingleton_congr, Submodule.Quotient.subsingleton_iff,
     LinearMap.range_eq_top]
   intro x
   induction x using TensorProduct.induction_on with
@@ -565,7 +566,7 @@ variable {S N : Type*} [CommRing S] [Algebra R S] [FaithfullyFlat R S]
 theorem _root_.IsBaseChange.map_smul_top_ne_top_iff_of_faithfullyFlat (hf : IsBaseChange S f)
     (I : Ideal R) :
     I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ ↔ I • (⊤ : Submodule R M) ≠ ⊤ := by
-  simpa only [← Submodule.subsingleton_quotient_iff_eq_top.not] using not_congr <|
+  simpa only [← Submodule.Quotient.subsingleton_iff.not] using not_congr <|
     (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
       hf.tensorEquiv _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (.refl R M) ≪≫ₗ
         AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ

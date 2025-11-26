@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.Galois.Notation
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Field
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.Galois.Notation
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Normal field extensions
@@ -17,6 +19,8 @@ In this file we define normal field extensions.
 
 - `Normal F K` where `K` is a field extension of `F`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -29,29 +33,31 @@ if the minimal polynomial of every element `x` in `K` splits in `K`, i.e. every 
 of `x` is in `K`. -/
 @[stacks 09HM]
 class Normal : Prop extends Algebra.IsAlgebraic F K where
-  splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
+  splits' (x : K) : Splits ((minpoly F x).map (algebraMap F K))
 
 variable {F K}
 
 theorem Normal.isIntegral (_ : Normal F K) (x : K) : IsIntegral F x :=
   Algebra.IsIntegral.isIntegral x
 
-theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
+theorem Normal.splits (_ : Normal F K) (x : K) : Splits ((minpoly F x).map (algebraMap F K)) :=
   Normal.splits' x
 
-theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+theorem normal_iff :
+    Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
     { isAlgebraic := fun x => (h x).1.isAlgebraic
       splits' := fun x => (h x).2 }⟩
 
-theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+theorem Normal.out :
+    Normal F K → ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   normal_iff.1
 
 variable (F K)
 
 instance normal_self : Normal F F where
   isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
-  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
+  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ by simp
 
 section NormalTower
 
@@ -66,7 +72,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
       ⟨hx.tower_top,
         Polynomial.splits_of_splits_of_dvd (algebraMap K E)
           (Polynomial.map_ne_zero (minpoly.ne_zero hx))
-          ((Polynomial.splits_map_iff (algebraMap F K) (algebraMap K E)).mpr hhx)
+          (map_map (algebraMap F K) (algebraMap K E) (minpoly F x) ▸ hhx)
           (minpoly.dvd_map_of_isScalarTower F K x)⟩
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
@@ -92,7 +98,7 @@ theorem Normal.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
   intro x
   rw [← g.apply_symm_apply x]
   refine ⟨(h (g.symm x)).1.map_of_comp_eq _ _ hcomp, ?_⟩
-  rw [← minpoly.map_eq_of_equiv_equiv hcomp, Polynomial.splits_map_iff, hcomp]
+  rw [← minpoly.map_eq_of_equiv_equiv hcomp, map_map, hcomp]
   exact Polynomial.splits_comp_of_splits _ _ (h (g.symm x)).2
 
 end NormalTower

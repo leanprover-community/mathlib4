@@ -3,18 +3,22 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Normed.Field.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Cauchy's bound on polynomial roots.
 
 The bound is given by `Polynomial.cauchyBound`, which for `a_n x^n + a_(n-1) x^(n - 1) + ⋯ + a_0` is
-is `1 + max_(0 ≤ i < n) a_i / a_n`.
+`1 + max_(0 ≤ i < n) a_i / a_n`.
 
 The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.norm_lt_cauchyBound`.
 -/
+
+@[expose] public section
 
 variable {K : Type*} [NormedDivisionRing K]
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Pi
-import Mathlib.RingTheory.Unramified.Field
+module
+
+public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Unramified.Field
 
 /-!
 # Étale algebras over fields
@@ -28,6 +30,8 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+
+@[expose] public section
 
 
 universe u
