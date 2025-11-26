@@ -446,7 +446,7 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y) :
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
 theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
     orderOf (x * y) ∣ orderOf x * orderOf y :=
-  dvd_trans h.orderOf_mul_dvd_lcm (lcm_dvd_mul _ _)
+  dvd_trans h.orderOf_mul_dvd_lcm (Nat.lcm_dvd_mul _ _)
 
 @[to_additive addOrderOf_add_eq_mul_addOrderOf_of_coprime]
 theorem orderOf_mul_eq_mul_orderOf_of_coprime (h : Commute x y)

@@ -5,11 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.Set.Lattice.Image
@@ -64,7 +64,7 @@ theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPer
 
 theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Commute f g) :
     minimalPeriod (f ∘ g) x ∣ minimalPeriod f x * minimalPeriod g x :=
-  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (lcm_dvd_mul _ _)
+  dvd_trans h.minimalPeriod_of_comp_dvd_lcm (Nat.lcm_dvd_mul _ _)
 
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Commute f g)
     (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
