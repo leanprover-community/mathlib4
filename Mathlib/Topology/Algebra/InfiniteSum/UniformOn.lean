@@ -130,11 +130,9 @@ lemma MultipliableUniformlyOn.mono {t : Set β}
 
 @[to_additive]
 lemma MultipliableUniformlyOn.congr {t : Set β} {f f' : ι → β → α}
-    (h : ∀ (i : ι), Set.EqOn (f i) (f' i) t)
-    (h2 : MultipliableUniformlyOn f t) : MultipliableUniformlyOn f' t := by
-  refine (h2.hasProdUniformlyOn.congr ?_).multipliableUniformlyOn
-  filter_upwards with n
-  exact eqOn_fun_finsetProd h n
+    (h : ∀ (i : ι), Set.EqOn (f i) (f' i) t) (h2 : MultipliableUniformlyOn f t) :
+    MultipliableUniformlyOn f' t :=
+  (h2.hasProdUniformlyOn.congr (.of_forall <| eqOn_fun_finsetProd h)).multipliableUniformlyOn
 
 end UniformlyOn
 
