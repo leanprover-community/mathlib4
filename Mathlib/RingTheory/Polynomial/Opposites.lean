@@ -41,7 +41,7 @@ def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
-  simp [opRingEquiv]
+  ext; simp [opRingEquiv, ← ofFinsupp_single]
 
 @[simp]
 theorem opRingEquiv_op_C (a : R) : opRingEquiv R (op (C a)) = C (op a) :=
@@ -81,7 +81,7 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
-  simp [opRingEquiv, coeff, Finsupp.equivMapDomain_eq_mapDomain, ← Finsupp.mapDomain_comp]
+  simp [opRingEquiv, coeff, Finsupp.mapDomain_mapRange, ← Finsupp.mapDomain_comp]
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by

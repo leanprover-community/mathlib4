@@ -154,11 +154,11 @@ theorem mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomia
   `p.support ⊆ {d | weight w d = m}`. While equal, the former has a
   convenient definitional reduction. -/
 theorem weightedHomogeneousSubmodule_eq_finsupp_supported (w : σ → M) (m : M) :
-    weightedHomogeneousSubmodule R w m = Finsupp.supported R R { d | weight w d = m } := by
+    weightedHomogeneousSubmodule R w m =
+      (Finsupp.supported R R { d | weight w d = m }).comap (coeffLinearEquiv R).toLinearMap := by
   ext x
-  rw [mem_supported, Set.subset_def]
-  simp only [Finsupp.mem_support_iff, mem_coe]
-  rfl
+  simp [mem_supported, Set.subset_def, IsWeightedHomogeneous]
+  simp [MvPolynomial, coeff]
 
 variable {R}
 
