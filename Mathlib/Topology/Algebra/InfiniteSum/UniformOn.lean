@@ -110,16 +110,13 @@ theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f s) (
   (h.exists.choose_spec.hasProd hx).multipliable
 
 @[to_additive]
-theorem MultipliableUniformlyOn.hasProdUniformlyOn [T2Space α] (h : MultipliableUniformlyOn f s) :
+theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn f s) :
     HasProdUniformlyOn f (∏' i, f i ·) s := by
   obtain ⟨g, hg⟩ := h.exists
-  simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-  exact hg.tendstoUniformlyOn.congr_right hg.tprod_eqOn.symm
-
-@[to_additive]
-theorem multipliableUniformlyOn_iff_hasProdUniformlyOn [T2Space α] :
-    MultipliableUniformlyOn f s ↔ HasProdUniformlyOn f (∏' i, f i ·) s :=
-  ⟨MultipliableUniformlyOn.hasProdUniformlyOn, HasProdUniformlyOn.multipliableUniformlyOn⟩
+  have hp := hg
+  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at hg ⊢
+  exact hg.congr_inseparable_right fun x hx =>
+    tendsto_nhds_unique_inseparable (hp.hasProd hx) (hp.hasProd hx).multipliable.hasProd
 
 @[to_additive]
 lemma HasProdUniformlyOn.mono {t : Set β}
@@ -223,7 +220,7 @@ converse is only true if the domain is locally compact. -/
 @[to_additive /-- If every `x ∈ s` has a neighbourhood within `s` on which `b ↦ ∑' i, f i b`
 converges uniformly, then the sum converges locally uniformly. Note that this is not a tautology,
 and the converse is only true if the domain is locally compact. -/]
-lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds [T2Space α]
+lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, MultipliableUniformlyOn f t) :
     MultipliableLocallyUniformlyOn f s :=
   (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
@@ -258,10 +255,11 @@ theorem MultipliableLocallyUniformlyOn.multipliable
   match h with | ⟨_, hg⟩ => (hg.hasProd hx).multipliable
 
 @[to_additive]
-theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn [T2Space α]
+theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn
     (h : MultipliableLocallyUniformlyOn f s) :
     HasProdLocallyUniformlyOn f (∏' i, f i ·) s :=
-  match h with | ⟨_, hg⟩ => hg.congr_right fun _ hb ↦ (hg.hasProd hb).tprod_eq.symm
+  h.elim fun _ hg => hg.congr_inseparable_right fun _ hx =>
+    tendsto_nhds_unique_inseparable (hg.hasProd hx) (hg.hasProd hx).multipliable.hasProd
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
@@ -269,7 +267,7 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
 @[to_additive]
-lemma MultipliableLocallyUniformlyOn_congr [T2Space α]
+lemma MultipliableLocallyUniformlyOn_congr
     {f f' : ι → β → α} (h : ∀ i, s.EqOn (f i) (f' i))
     (h2 : MultipliableLocallyUniformlyOn f s) : MultipliableLocallyUniformlyOn f' s := by
   apply HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
@@ -285,7 +283,7 @@ lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
   exact ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
 
 @[to_additive]
-theorem multipliableLocallyUniformlyOn_iff_hasProdLocallyUniformlyOn [T2Space α] :
+theorem multipliableLocallyUniformlyOn_iff_hasProdLocallyUniformlyOn :
     MultipliableLocallyUniformlyOn f s ↔ HasProdLocallyUniformlyOn f (∏' i, f i ·) s :=
   ⟨MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn,
     HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn⟩
@@ -371,12 +369,12 @@ theorem MultipliableUniformly.multipliable (h : MultipliableUniformly f) : Multi
   h.exists.choose_spec.hasProd.multipliable
 
 @[to_additive]
-theorem MultipliableUniformly.hasProdUniformly [T2Space α] (h : MultipliableUniformly f) :
-    HasProdUniformly f (∏' i, f i ·) := by
-  simpa [fun x ↦ (h.exists.choose_spec.hasProd (x := x)).tprod_eq] using h.exists.choose_spec
+theorem MultipliableUniformly.hasProdUniformly (h : MultipliableUniformly f) :
+    HasProdUniformly f (∏' i, f i ·) :=
+  hasProdUniformlyOn_univ_iff.1 (multipliableUniformlyOn_univ_iff.2 h).hasProdUniformlyOn
 
 @[to_additive]
-theorem multipliableUniformly_iff_hasProdUniformly [T2Space α] :
+theorem multipliableUniformly_iff_hasProdUniformly :
     MultipliableUniformly f ↔ HasProdUniformly f (∏' i, f i ·) :=
   ⟨MultipliableUniformly.hasProdUniformly, HasProdUniformly.multipliableUniformly⟩
 
@@ -454,11 +452,11 @@ lemma hasProdLocallyUniformly_of_forall_compact [LocallyCompactSpace β]
   simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
 
 @[to_additive]
-lemma multipliableLocallyUniformly_of_of_forall_exists_nhds [T2Space α]
+lemma multipliableLocallyUniformly_of_of_forall_exists_nhds
     (h : ∀ x, ∃ t ∈ 𝓝 x, MultipliableUniformlyOn f t) :
     MultipliableLocallyUniformly f :=
   hasProdLocallyUniformly_of_of_forall_exists_nhds
-    (by simpa only [multipliableUniformlyOn_iff_hasProdUniformlyOn] using h)
+    (fun x => (h x).imp fun _ ht => ⟨ht.1, ht.2.hasProdUniformlyOn⟩)
     |>.multipliableLocallyUniformly
 
 @[to_additive]
@@ -471,14 +469,14 @@ theorem MultipliableLocallyUniformly.multipliable
   h.choose_spec.hasProd.multipliable
 
 @[to_additive]
-theorem MultipliableLocallyUniformly.hasProdLocallyUniformly [T2Space α]
+theorem MultipliableLocallyUniformly.hasProdLocallyUniformly
     (h : MultipliableLocallyUniformly f) :
-    HasProdLocallyUniformly f (∏' i, f i ·) := by
-  obtain ⟨g, hg⟩ := h.exists
-  simpa [fun x ↦ (hg.hasProd (x := x)).tprod_eq]
+    HasProdLocallyUniformly f (∏' i, f i ·) :=
+  h.elim fun _ hg => hg.congr_inseparable_right fun _ =>
+    tendsto_nhds_unique_inseparable hg.hasProd hg.hasProd.multipliable.hasProd
 
 @[to_additive]
-theorem multipliableLocallyUniformly_iff_hasProdLocallyUniformly [T2Space α] :
+theorem multipliableLocallyUniformly_iff_hasProdLocallyUniformly :
     MultipliableLocallyUniformly f ↔ HasProdLocallyUniformly f (∏' i, f i ·) :=
   ⟨MultipliableLocallyUniformly.hasProdLocallyUniformly,
     HasProdLocallyUniformly.multipliableLocallyUniformly⟩
