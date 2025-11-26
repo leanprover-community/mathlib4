@@ -35,8 +35,6 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 -/
 
-#check MvPolynomial.eq_1
-
 noncomputable section
 
 section
@@ -324,3 +322,59 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
     simp [frobenius, Algebra.smul_def, mul_pow, ← map_pow, frobeniusEquiv_symm_pow]
 
 end
+
+/--
+info: @[defeq] theorem MvPolynomial.eq_1.{u_1, u_2} : ∀ (σ : Type u_1) (R : Type u_2) [inst : CommSemiring R],
+  MvPolynomial σ R = AddMonoidAlgebra R (σ →₀ ℕ) :=
+fun σ R [CommSemiring R] ↦ Eq.refl (MvPolynomial σ R)
+---
+info: -- Lean.declRangeExt extension: 0 new entries
+
+-- Lean.docStringExt extension: 0 new entries
+
+-- _private.Lean.DocString.Extension.0.Lean.inheritDocStringExt extension: 0 new entries
+
+-- Lean.versoDocStringExt extension: 0 new entries
+
+-- _private.Lean.Compiler.MetaAttr.0.Lean.declMetaExt extension: 0 new entries
+
+-- Lean.Compiler.inlineAttrs extension: 0 new entries
+
+-- Lean.projectionFnInfoExt extension: 0 new entries
+
+-- _private.Lean.AddDecl.0.Lean.privateConstKindsExt extension: 0 new entries
+
+-- Lean.Compiler.LCNF.baseExt extension: 0 new entries
+
+-- Lean.Compiler.LCNF.monoExt extension: 0 new entries
+
+-- Lean.IR.declMapExt extension: 0 new entries
+
+-- Lean.IR.UnreachableBranches.functionSummariesExt extension: 0 new entries
+
+-- Lean.Compiler.LCNF.Simp.ConstantFold.folderExt extension: 0 new entries
+
+-- Lean.Compiler.LCNF.specExtension extension: 0 new entries
+
+-- Lean.Compiler.LCNF.Specialize.specCacheExt extension: 0 new entries
+
+-- Lean.Compiler.LCNF.UnreachableBranches.functionSummariesExt extension: 0 new entries
+
+-- Lean.extraModUses extension: 0 new entries
+
+-- Lean.defeqAttr extension: 0 new entries
+
+-- Lean.Meta.congrKindsExt extension: 0 new entries
+
+-- Lean.Elab.Structural.eqnInfoExt extension: 0 new entries
+
+-- Lean.Server.userRpcProcedures extension: 0 new entries
+
+-- Lean.Elab.WF.eqnInfoExt extension: 0 new entries
+
+-- Lean.Elab.PartialFixpoint.eqnInfoExt extension: 0 new entries
+
+-- Lean.Meta.funIndInfoExt extension: 0 new entries
+-/
+#guard_msgs in
+whatsnew in #print MvPolynomial.eq_1
