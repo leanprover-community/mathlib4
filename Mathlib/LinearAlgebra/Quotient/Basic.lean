@@ -81,7 +81,7 @@ variable {p}
 instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
 
 @[deprecated (since := "2025-11-02")]
-alias subsingleton_quotient_iff_eq_top := Quotient.subsingleton_iff
+alias _root_.Submodule.subsingleton_quotient_iff_eq_top := Quotient.subsingleton_iff
 
 @[deprecated nontrivial_iff (since := "2025-11-02")]
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
