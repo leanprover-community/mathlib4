@@ -115,7 +115,7 @@ def none : Part α :=
 instance : Inhabited (Part α) :=
   ⟨none⟩
 
-@[simp, grind .]
+@[simp]
 theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
 
 @[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
