@@ -3,8 +3,10 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Topology.EMetricSpace.BoundedVariation
-import Mathlib.Data.Set.Operations
+module
+
+public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Data.Set.Operations
 
 /-!
 # Arc length
@@ -31,14 +33,23 @@ as the variation of `f` on the closed interval `[a, b]`. Equals zero when `b ≤
 noncomputable def arclength (a b : α) : ℝ≥0∞ :=
   eVariationOn f (Set.Icc a b)
 
---Fixme : does this exist already?
-theorem wf : WellFounded ((· < ·) : ℕ → ℕ → Prop) := sorry
-
 -- Fixme, does this exist already?
 theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset {α : Type*}
-  [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
-  {a u' : α} {s : Set α} (hu' : a < u') :
-  s ∈ nhdsWithin a (Set.Ici a) ↔ ∃ (u : α) (H : u ∈ Set.Ioc a u'), Set.Ico a u ⊆ s := by sorry
+    [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
+    {a u' : α} {s : Set α} (hu' : a < u') :
+  s ∈ nhdsWithin a (Set.Ici a) ↔ ∃ (u : α) (_ : u ∈ Set.Ioc a u'), Set.Ico a u ⊆ s := by
+  have ha : ∃ u, a < u := ⟨u', hu'⟩
+  have basis :=
+    nhdsGE_basis_of_exists_gt ha
+  constructor
+  · intro h
+    rcases basis.mem_iff.mp h with ⟨u, hu, hsub⟩
+    refine ⟨min u u', ⟨lt_min hu hu', min_le_right u u'⟩, ?_⟩
+    intro x hx
+    have hx' : x < u := hx.2.trans_le (min_le_left u u')
+    exact hsub ⟨hx.1, hx'⟩
+  · rintro ⟨u, ⟨hu_left, hu_right⟩, hsub⟩
+    exact basis.mem_iff.mpr ⟨u, hu_left, hsub⟩
 
 -- Fixme, this does not exist?
 section
@@ -46,9 +57,27 @@ open OrderDual
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E] {f : α → E}
          {s : Set α}
 
-theorem LocallyBoundedVariationOn.comp_ofDual
-  (hbdd : LocallyBoundedVariationOn f s) :
-  LocallyBoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := sorry
+theorem LocallyBoundedVariationOn.comp_ofDual (hbdd : LocallyBoundedVariationOn f s) :
+    LocallyBoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
+  intro a b ha hb
+  have ha' : ofDual a ∈ s := ha
+  have hb' : ofDual b ∈ s := hb
+  have h := hbdd (ofDual b) (ofDual a) hb' ha'
+  rw [BoundedVariationOn] at *
+  have h_eq :
+      eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Set.Icc a b) =
+      eVariationOn f (s ∩ Set.Icc (ofDual b) (ofDual a)) := by
+    calc
+      eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Set.Icc a b) =
+          eVariationOn (f ∘ ofDual) (ofDual ⁻¹' (s ∩ Set.Icc (ofDual b) (ofDual a))) := by
+        congr 1; ext x
+        simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_Icc]
+        constructor
+        · rintro ⟨hx, hax, hxb⟩; exact ⟨hx, hxb, hax⟩
+        · rintro ⟨hx, hxb, hax⟩; exact ⟨hx, hax, hxb⟩
+      _ = eVariationOn f (s ∩ Set.Icc (ofDual b) (ofDual a)) := by rw [eVariationOn.comp_ofDual]
+  rw [h_eq]
+  exact h
 
 end
 
@@ -71,7 +100,7 @@ theorem arclength_eq_supr (hab : a ≤ b) : arclength f a b =
         rw [h i (by linarith), h (i+1) (by linarith), edist_self]
       rw [this]; apply zero_le
     push_neg at h
-    obtain ⟨m, ⟨hmn, hma⟩, hmin⟩ := WellFounded.has_min wf {m | m ≤ n ∧ u m ≠ a} h
+    obtain ⟨m, ⟨hmn, hma⟩, hmin⟩ := WellFounded.has_min wellFounded_lt {m | m ≤ n ∧ u m ≠ a} h
     push_neg at hmin
     cases m with
     | zero =>
@@ -91,7 +120,7 @@ theorem arclength_eq_supr (hab : a ≤ b) : arclength f a b =
         exact ⟨_, ⟨hk.trans (m.le_succ.trans hmn), hmin⟩, hk.trans_lt m.lt_succ_self⟩
       refine le_iSup_of_le ?_ ?_
       · refine ⟨n - m, ⟨fun k ↦ u (m + k), ⟨?_, ?_⟩⟩⟩
-        · exact hu.comp (fun _ _ h ↦ add_le_add_left h _)
+        · exact Monotone.comp hu (fun {k₁ k₂} hk => Nat.add_le_add_left hk m)
         · exact ⟨fun k ↦ huab _, this m le_rfl, (huab _).1.lt_of_ne' hma⟩
       · dsimp only [Subtype.coe_mk]
         conv =>
@@ -257,21 +286,21 @@ theorem continuous_right_self_arclength
             _ ≤ _ := by refine le_add_of_nonneg_right (by simp)
         _ ≤ ∑ i ∈ Finset.range n, edist (f <| u (i+1)) (f <| u (i+1+1)) +
             (edist (f e) (f a) + edist (f e) (f <| u 1)) + ε/2  := by
-          refine add_le_add_right ?_ _
+          refine add_le_add_left ?_ (ε/2)
           rw [Finset.sum_range_succ', hea]
-          apply add_le_add_left (edist_triangle_left _ _ _)
+          apply add_le_add_right (edist_triangle_left _ _ _) _
         _ ≤ ∑ i ∈ Finset.range n, arclength f (u <| i+1) (u <| i+1+1) +
           (ε/2 + arclength f e (u 1)) + ε/2 := by
-          refine add_le_add_right ?_ (ε/2)
-          refine add_le_add (Finset.sum_le_sum <| fun i _ ↦
-            edist_le_arclength f <| hu (i+1).le_succ) ?_
-          refine add_le_add (le_of_lt <| hcb ⟨hae.le, hec⟩) <|
-            edist_le_arclength f <| min_le_left _ d
+            apply add_le_add_left
+            apply add_le_add
+            · apply Finset.sum_le_sum (fun i hi => edist_le_arclength f <| hu (i+1).le_succ)
+            apply add_le_add (le_of_lt <| hcb ⟨hae.le, hec⟩)
+              (edist_le_arclength f <| min_le_left _ d)
         _ = _ + (ε + arclength f e (u 1)) := by rw [add_assoc, add_right_comm, ENNReal.add_halves]
         _ ≤ _ + arclength f (u 0) (u 1) := by
           rw [hea, ← arclength_add f hae.le <| min_le_left _ d, add_comm ε]
           rw [←add_comm (arclength _ _ _),  ←add_assoc _ _ ε, ←add_assoc _ (arclength _ _ _)]
-          refine add_le_add_left (?_) _
+          refine add_le_add_right (?_) _
           push_neg at hac; exact hac.le
         _ = ∑ i ∈ Finset.range (n+1), arclength f (u i) (u <| i+1) := by rw [Finset.sum_range_succ']
         _ = arclength f (u 0) (u <| n+1) := arclength_sum f hu

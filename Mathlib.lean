@@ -6962,6 +6962,7 @@ public import Mathlib.Topology.DenseEmbedding
 public import Mathlib.Topology.DerivedSet
 public import Mathlib.Topology.DiscreteQuotient
 public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Topology.EMetricSpace.Arclength
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 public import Mathlib.Topology.EMetricSpace.Defs
