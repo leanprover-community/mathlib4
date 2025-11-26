@@ -28,11 +28,11 @@ Gaussian random variable
 public section
 
 
-open MeasureTheory ENNReal WithLp
+open MeasureTheory ENNReal WithLp Complex
 
 namespace ProbabilityTheory
 
-variable {Ω E F : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
+variable {Ω ι E F : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
 
 section Basic
 
@@ -168,7 +168,7 @@ end Prod
 
 section Pi
 
-variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
   [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 
@@ -186,7 +186,7 @@ lemma prodMk (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
   rw [this]
   exact hX.map _
 
-lemma toLp_comp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P := by
   simp_rw [← PiLp.continuousLinearEquiv_symm_apply p ℝ]
   exact hX.map_equiv _
@@ -199,21 +199,17 @@ end HasGaussianLaw
 
 section Independence
 
-open MeasureTheory ProbabilityTheory Finset WithLp Complex
-open scoped NNReal
-
-namespace ProbabilityTheory
-
-variable {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+variable {ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 section charFun
 
-lemma HasGaussianLaw.charFun_toLp_pi {X : ι → Ω → ℝ} [hX : HasGaussianLaw (fun ω ↦ (X · ω)) P]
+lemma HasGaussianLaw.charFun_toLp_pi {X : ι → Ω → ℝ} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P)
     (ξ : EuclideanSpace ℝ ι) :
     charFun (P.map (fun ω ↦ toLp 2 (X · ω))) ξ =
       exp (∑ i, ξ i * P[X i] * I - ∑ i, ∑ j, (ξ i : ℂ) * ξ j * (cov[X i, X j; P] / 2)) := by
   have := hX.isProbabilityMeasure
-  nth_rw 1 [IsGaussian.charFun_eq, covInnerBilin_apply_pi, EuclideanSpace.real_inner_eq]
+  nth_rw 1 [(hX.toLp_pi 2).isGaussian_map.charFun_eq', covarianceBilin_apply_pi,
+    EuclideanSpace.real_inner_eq]
   · simp_rw [ofReal_sum, Finset.sum_mul, ← mul_div_assoc, Finset.sum_div,
       integral_complex_ofReal, ← ofReal_mul]
     congrm exp (∑ i, Complex.ofReal (_ * ?_) * I - _)
