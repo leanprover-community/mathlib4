@@ -59,7 +59,7 @@ open scoped BoundedContinuousFunction NNReal Topology
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedSpace 𝕂 F] [SMulCommClass ℝ 𝕂 F]
+  [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {n : ℕ∞}
 
 variable (Ω F n) in
@@ -205,6 +205,12 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
     Module R 𝓓^{n}(Ω, F) := fast_instance%
   DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
 
+instance {R S} [Semiring R] [Semiring S] [Module R F] [Module S F] [SMulCommClass ℝ R F]
+    [SMulCommClass ℝ S F] [ContinuousConstSMul R F] [ContinuousConstSMul S F] [SMul R S]
+    [IsScalarTower R S F] :
+    IsScalarTower R S 𝓓^{n}(Ω, F) where
+  smul_assoc _ _ _ := by ext; simp
+
 end Module
 
 open ContDiffMapSupportedIn
@@ -217,14 +223,15 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
 
 variable (𝕜) in
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
-def ofSupportedInLM {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[simp] theorem ofSupportedInLM_apply {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
-    (f : 𝓓^{n}_{K}(E, F)) : ofSupportedInLM 𝕜 K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+@[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
 
 section Topology
@@ -291,38 +298,32 @@ theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω
 variable (𝕜) in
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a continuous
 linear map. -/
-def ofSupportedInCLM {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}(Ω, F) where
   toLinearMap := ofSupportedInLM 𝕜 K_sub_Ω
   cont := continuous_ofSupportedIn K_sub_Ω
 
-@[simp] theorem ofSupportedInCLM_apply {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
-    (f : 𝓓^{n}_{K}(E, F)) : ofSupportedInCLM 𝕜 K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+@[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
 
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
 continuous for every compact `K ⊆ Ω`. -/
-protected theorem continuous_iff_continuous_comp (f : 𝓓^{n}(Ω, F) →ₗ[ℝ] V) :
+protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+    [Module 𝕜 V] [IsScalarTower ℝ 𝕜 V] (f : 𝓓^{n}(Ω, F) →ₗ[𝕜] V) :
     Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
-      Continuous (f ∘ ofSupportedIn K_sub_Ω) := by
+      Continuous (f ∘ₗ ofSupportedInLM 𝕜 K_sub_Ω) := by
+  simp_rw [LinearMap.coe_comp, ← f.coe_restrictScalars ℝ, coe_ofSupportedInLM]
   rw [continuous_iff_le_induced]
-  have : @IsTopologicalAddGroup _ (induced f t) _ := topologicalAddGroup_induced _
-  have : @ContinuousSMul ℝ _ _ _ (induced f t) := continuousSMul_induced _
-  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced f t) := .induced _
+  have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
+    topologicalAddGroup_induced _
+  have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
+  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
-
--- TODO: generalize to `𝕜`-linear maps under the right assumptions
-/-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
-`𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
-precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
-continuous for every compact `K ⊆ Ω`. -/
-protected theorem continuous_iff_continuous_comp_LM (f : 𝓓^{n}(Ω, F) →ₗ[ℝ] V) :
-    Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
-      Continuous (f ∘ₗ ofSupportedInLM ℝ K_sub_Ω) :=
-  TestFunction.continuous_iff_continuous_comp f
 
 end Topology
 
