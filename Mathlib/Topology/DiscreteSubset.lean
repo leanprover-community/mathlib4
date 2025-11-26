@@ -286,9 +286,10 @@ theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι →
   simpa [biInter_finset_mem I] using fun i hi ↦ compl_mem_codiscrete_iff.mpr ⟨hs' i hi, hs i hi⟩
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
-theorem discreteTopology_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
+theorem discreteTopology_iUnion_fintype {ι : Type*} [Finite ι] {s : ι → Set X}
     (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
     DiscreteTopology (⋃ i, s i) := by
+  have := Fintype.ofFinite ι
   convert discreteTopology_biUnion_finset (I := .univ) (fun i _ ↦ hs i) (fun i _ ↦ hs' i) <;>
     simp
 
