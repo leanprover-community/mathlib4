@@ -145,9 +145,6 @@ theorem Splits.comp_X_add_C (a : L) {f : L[X]}
     (h : f.Splits) : (f.comp (X + C a)).Splits :=
   Splits.comp_of_degree_le_one (degree_X_add_C a).le h
 
-theorem Splits.comp_neg_X {f : L[X]} (h : f.Splits) : (f.comp (-X)).Splits :=
-  Splits.comp_of_degree_le_one (by rw [degree_neg, degree_X]) h
-
 variable (i)
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits (f.map i)) (hf0 : degree (f.map i) ≠ 0) :
