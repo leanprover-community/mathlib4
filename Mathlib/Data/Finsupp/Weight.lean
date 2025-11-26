@@ -213,29 +213,18 @@ def degree : (σ →₀ R) →+ R where
 theorem degree_def (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
-  simp [degree]
-  rw [Finset.sum_subset] <;> simp
-
-@[simp]
-theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree := degree.map_add _ _
-
-@[simp]
-theorem degree_sum {ι : Type*} [DecidableEq ι] {s : Finset ι} (f : ι → σ →₀ ℕ) :
-    (∑ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := map_sum degree f s
+  rw [degree_def, Finset.sum_subset] <;> simp
 
 @[simp]
 theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
   Finsupp.sum_single_index (h := fun _ => id) rfl
 
-@[simp]
-theorem degree_zero : degree (0 : σ →₀ R) = 0 := degree.map_zero
-
 lemma degree_eq_zero_iff {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
-  simp [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
-    DFunLike.ext_iff, coe_zero]
+  simp only [degree_def, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
+    DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
