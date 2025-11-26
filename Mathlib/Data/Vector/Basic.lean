@@ -206,6 +206,10 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
     rw [get_tail, get_ofFn]
     rfl
 
+theorem toList_tail : ∀ (v : Vector α n), v.tail.toList = v.toList.tail
+  | ⟨[], _⟩     => by rfl
+  | ⟨_ :: _, _⟩ => by rfl
+
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
   List.length_eq_zero_iff.mp v.2
