@@ -610,6 +610,9 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
   left_inv := by simp +contextual [Function.LeftInverse]
   right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.setOf_and]
 
+theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
+  ext; simp
+
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
