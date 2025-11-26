@@ -231,7 +231,7 @@ section RCLike
 variable [RCLike 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
     (L : (i : ι) → StrongDual 𝕜 (E i) →L[𝕜] StrongDual 𝕜 (E i) →L[𝕜] 𝕜)
 
--- open ContinuousLinearMap in
+#count_heartbeats in
 /-- Given `L i : (E i)' × (E i)' → 𝕜` a family of continuous bilinear forms,
 `diagonalStrongDual L` is a continuous bilinear form is the continuous bilinear form over
 `(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
@@ -245,7 +245,7 @@ def diagonalStrongDual : StrongDual 𝕜 (Π i, E i) →L[𝕜] StrongDual 𝕜 
     (fun c m n ↦ by simp [Finset.mul_sum])
     (fun x y z ↦ by simp [Finset.sum_add_distrib])
     (fun c m n ↦ by simp [Finset.mul_sum])
-  g.mkContinuous₂ (∑ i, ‖L i‖) <| by
+  LinearMap.mkContinuous₂ g (∑ i, ‖L i‖) <| by
     intro x y
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_sum_le, Finset.sum_mul, Finset.sum_mul]
