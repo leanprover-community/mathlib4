@@ -30,9 +30,13 @@ section UnitVectorAngles
 /-- Gets the orthogonal direction of one vector relative to another. -/
 noncomputable def ortho (y x : V) : V := x - (ℝ ∙ y).starProjection x
 
+lemma ortho_eq_sub_inner_of_norm_eq_one {x y : V} (hy : ‖y‖ = 1) :
+    ortho y x = x - inner ℝ y x • y := by
+  rw [ortho, Submodule.starProjection_unit_singleton _ hy]
+
 lemma inner_ortho_nonneg_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     0 ≤ ⟪x, ortho y x⟫ := by
-  rw [ortho, Submodule.starProjection_unit_singleton _ hy, inner_sub_right,
+  rw [ortho_eq_sub_inner_of_norm_eq_one hy, inner_sub_right,
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
@@ -45,8 +49,8 @@ lemma inner_normalize_ortho (x : V) {y : V} :
 lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
     (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
-  rw [NormedSpace.normalize, real_inner_smul_right, ortho, inner_sub_right,
-    Submodule.starProjection_unit_singleton _ hy, real_inner_smul_right]
+  rw [NormedSpace.normalize, real_inner_smul_right,
+    ortho_eq_sub_inner_of_norm_eq_one hy, inner_sub_right, real_inner_smul_right]
   by_cases h₁ : x = y
   · simp [*]
   by_cases h₂ : x = - y
@@ -81,7 +85,7 @@ lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ 
 lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
   rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle_of_norm_eq_one Hx Hy,
-    ortho, Submodule.starProjection_unit_singleton _ Hy]
+    ortho_eq_sub_inner_of_norm_eq_one Hy]
   by_cases hxy : x - ⟪x, y⟫ • y = 0
   · simp [hxy, real_inner_comm, ← sub_eq_zero]
   rw [NormedSpace.normalize, real_inner_smul_right, inner_sub_right, real_inner_smul_right,
@@ -136,8 +140,8 @@ lemma angle_le_angle_add_angle_of_norm_eq_one {x y z : V}
 lemma ortho_ne_zero_of_norm_eq_one_of_not_collinear {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
     (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ Real.pi) :
     ortho x y ≠ 0 := by
-  grind [ortho, Submodule.starProjection_unit_singleton, sub_eq_zero, abs, norm_smul,
-    Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
+  intro h; rw [ortho_eq_sub_inner_of_norm_eq_one hx, sub_eq_zero] at h
+  grind [abs, norm_smul, Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
     inner_eq_neg_mul_norm_iff_angle_eq_pi]
 
 lemma eq_of_norm_eq_of_angle_eq_zero {x y : V}
