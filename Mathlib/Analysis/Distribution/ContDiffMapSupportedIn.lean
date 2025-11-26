@@ -50,14 +50,15 @@ larger space of test functions.
 
 ## Notation
 
+In the `Distributions` scope, we introduce the following notations:
 - `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
-  which vanish outside of `K`. Scoped in `Distributions`.
+  which vanish outside of `K`.
 - `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`
-  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`. Scoped in `Distributions`.
+  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`.
 - `N[𝕜; F]_{K, n, i}` (or simply `N[𝕜]_{K, n, i}`): the `𝕜`-seminorm on `𝓓^{n}_{K}(E, F)`
-  given by the sup-norm of the `i`-th derivative. Scoped in `Distributions.Seminorm`.
+  given by the sup-norm of the `i`-th derivative.
 - `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
-  given by the sup-norm of the `i`-th derivative. Scoped in `Distributions.Seminorm`.
+  given by the sup-norm of the `i`-th derivative.
 
 ## Implementation details
 
