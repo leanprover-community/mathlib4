@@ -3,14 +3,17 @@ Copyright (c) 2023 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.Tactic.Measurability.Init
-import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.Measurability.Init
+public meta import Mathlib.Tactic.FunProp.Decl
 
 /-!
 # Measurability
 
 We define the `measurability` tactic using `aesop`. -/
+
+public meta section
 
 open Lean
 open Lean.Meta (MetaM)

@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Opposite
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Endomorphisms of a module
@@ -19,6 +21,8 @@ including the action of `Module.End` on the module we are considering endomorphi
 * `Module.End.instSemiring` and `Module.End.instRing`: the (semi)ring of endomorphisms formed by
   taking the additive structure above with composition as multiplication.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -189,8 +193,8 @@ end
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
-  smul_zero := LinearMap.map_zero
-  smul_add := LinearMap.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   add_smul := LinearMap.add_apply
   zero_smul := (LinearMap.zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
   one_smul _ := rfl

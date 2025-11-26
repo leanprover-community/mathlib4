@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Kaehler.Polynomial
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 
@@ -34,6 +36,8 @@ We actually develop these material for general extensions (i.e. surjection `P �
 apply them to infinitesimal smooth (or versal) extensions later.
 
 -/
+
+@[expose] public section
 
 open KaehlerDifferential Module MvPolynomial TensorProduct
 
@@ -509,7 +513,7 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
       change ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
-    map_add' := LinearMap.map_add (map R R S S')
+    map_add' := map_add (map R R S S')
     map_smul' := LinearMap.CompatibleSMul.map_smul (map R R S S') }
 
 variable {R S S' T}

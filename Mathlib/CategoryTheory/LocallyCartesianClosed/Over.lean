@@ -3,7 +3,9 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+module
+
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 /-!
 # Cartesian monoidal structure on slices induced by chosen pullbacks
@@ -39,6 +41,8 @@ import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
   the cartesian monoidal structures on slices.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -131,6 +135,7 @@ lemma tensorObj_ext {A : C} {Y Z : Over X} (f₁ f₂ : A ⟶ (Y ⊗ Z).left)
 @[simp]
 lemma tensorObj_left (Y Z : Over X) : (Y ⊗ Z).left = pullbackObj Y.hom Z.hom := rfl
 
+@[simp]
 lemma tensorObj_hom (Y Z : Over X) : (Y ⊗ Z).hom = snd Y.hom Z.hom ≫ Z.hom := rfl
 
 @[simp]
@@ -156,36 +161,38 @@ lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ fst R.hom (S ⊗ T).hom = fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom := by
+    (α_ R S T).hom.left ≫ fst R.hom (snd S.hom T.hom ≫ T.hom) =
+      fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom := by
   simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_hom_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom =
+    (α_ R S T).hom.left ≫ snd R.hom (snd S.hom T.hom ≫ T.hom) ≫ fst S.hom T.hom =
       fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom := by
   simpa only using congr_arg CommaMorphism.left (associator_hom_snd_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_snd (R S T : Over X) :
-    (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom =
+    (α_ R S T).hom.left ≫ snd R.hom (snd S.hom T.hom ≫ T.hom) ≫ snd S.hom T.hom =
       snd (R ⊗ S).hom T.hom := by
   simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_hom_snd_snd R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_fst (R S T : Over X) :
-    (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom = fst R.hom (S ⊗ T).hom := by
+    (α_ R S T).inv.left ≫ fst (snd R.hom S.hom ≫ S.hom) T.hom ≫ fst R.hom S.hom =
+      fst R.hom (S ⊗ T).hom := by
   simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_inv_fst_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom =
+    (α_ R S T).inv.left ≫ fst (snd R.hom S.hom ≫ S.hom) T.hom ≫ snd R.hom S.hom =
       snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom := by
   simpa only [snd_eq_snd', fst_eq_fst']
     using congr_arg CommaMorphism.left (associator_inv_fst_snd R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ snd (R ⊗ S).hom T.hom =
+    (α_ R S T).inv.left ≫ snd (snd R.hom S.hom ≫ S.hom) T.hom =
       snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom := by
   simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_inv_snd R S T)
 

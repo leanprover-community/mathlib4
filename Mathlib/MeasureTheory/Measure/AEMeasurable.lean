@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+module
+
+public import Mathlib.MeasureTheory.Measure.Trim
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 
 /-!
 # Almost everywhere measurable functions
@@ -13,6 +15,8 @@ A function is almost everywhere measurable if it coincides almost everywhere wit
 function. This property, called `AEMeasurable f μ`, is defined in the file `MeasureSpaceDef`.
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
