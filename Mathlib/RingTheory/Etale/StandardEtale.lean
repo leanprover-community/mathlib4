@@ -184,6 +184,9 @@ instance : Algebra.FormallyEtale R P.Ring := by
   exact ⟨⟨x + ε, hε⟩, by simpa, fun y hy ↦
     Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.2⟩))⟩
 
+instance : Algebra.Etale R P.Ring where
+  finitePresentation := .quotient (Submodule.fg_span (by simp))
+
 /-- An `AlgEquiv` between `P.Ring` and `R[X][Y]/⟨f, Yg-1⟩`,
 to not abuse the defeq between the two. -/
 def equivPolynomialQuotient :
@@ -240,9 +243,9 @@ lemma equivMvPolynomialQuotient_symm_apply :
 
 end StandardEtalePair
 
-variable (R S) in
 /-- An isomorphism to the standard etale algebra of a standard etale pair. -/
-structure StandardEtalePresentation extends P : StandardEtalePair R where
+structure StandardEtalePresentation (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] extends
+    P : StandardEtalePair R where
   /-- The image of X in a `StandardEtalePresentation`. -/
   x : S
   hasMap : P.HasMap x
@@ -287,6 +290,7 @@ lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
   simp
 
 /-- The `Algebra.SubmersivePresentation` associated to a standard etale presentation. -/
+@[simps map toPreSubmersivePresentation_toPresentation]
 def StandardEtalePresentation.toSubmersivePresentation :
     Algebra.SubmersivePresentation R S (Fin 2) (Fin 2) where
   __ := P.toPresentation
@@ -327,29 +331,18 @@ def StandardEtalePresentation.mapEquiv (e : S ≃ₐ[R] T) : StandardEtalePresen
 
 namespace Algebra
 
-variable (R S) in
 /-- The class of standard etale algebras,
 defined to be the existence of a `StandardEtalePresentation`. -/
-class IsStandardEtale where
+class IsStandardEtale (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] where
   nonempty_standardEtalePresentation : Nonempty (StandardEtalePresentation R S)
 
 attribute [instance] IsStandardEtale.nonempty_standardEtalePresentation
 
-instance (priority := low) [IsStandardEtale R S] : Algebra.FinitePresentation R S :=
-  IsStandardEtale.nonempty_standardEtalePresentation
-    |>.some.toPresentation.finitePresentation_of_isFinite
-
 instance (P : StandardEtalePair R) : IsStandardEtale R P.Ring :=
   ⟨⟨P, P.X, P.hasMap_X, by simpa [StandardEtalePair.lift_X_left] using Function.bijective_id⟩⟩
 
-instance (priority := low) [IsStandardEtale R S] : Algebra.FinitePresentation R S :=
-  IsStandardEtale.nonempty_standardEtalePresentation
-    |>.some.toPresentation.finitePresentation_of_isFinite
-
-instance (priority := low) [IsStandardEtale R S] : Algebra.FormallyEtale R S :=
+instance (priority := low) [IsStandardEtale R S] : Algebra.Etale R S :=
   .of_equiv IsStandardEtale.nonempty_standardEtalePresentation.some.equivRing.symm
-
-instance (priority := low) [IsStandardEtale R S] : Algebra.Etale R S where
 
 lemma IsStandardEtale.of_equiv (e : S ≃ₐ[R] T) [IsStandardEtale R S] : IsStandardEtale R T :=
   ⟨⟨IsStandardEtale.nonempty_standardEtalePresentation.some.mapEquiv e⟩⟩
