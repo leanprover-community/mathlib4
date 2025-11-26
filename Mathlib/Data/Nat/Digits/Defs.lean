@@ -3,10 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Order.Group.Nat
+module
+
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Ring.Defs
+import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
 /-!
 # Digits of a natural number
@@ -24,6 +28,8 @@ Also included is a bound on the length of `Nat.toDigits` from core.
 A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` where `a` and `b`
 are numerals is not yet ported.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -280,13 +286,8 @@ theorem digits_ne_nil_iff_ne_zero {b n : ℕ} : digits b n ≠ [] ↔ n ≠ 0 :=
   not_congr digits_eq_nil_iff_eq_zero
 
 theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
-    digits b n = (n % b) :: digits b (n / b) := by
-  rcases b with (_ | _ | b)
-  · rw [digits_zero_succ' w, Nat.mod_zero, Nat.div_zero, Nat.digits_zero_zero]
-  · norm_num at h
-  rcases n with (_ | n)
-  · norm_num at w
-  · simp only [digits_add_two_add_one]
+    digits b n = (n % b) :: digits b (n / b) :=
+  digits_def' h (Nat.pos_of_ne_zero w)
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
     (digits b m).getLast p = (digits b (m / b)).getLast q := by
@@ -441,8 +442,7 @@ lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
   | nil => simp [ofDigits]
   | cons hd tl =>
     refine Eq.trans (add_mul_div_left hd _ hpos) ?_
-    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add]
-    rfl
+    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add, List.tail_cons]
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
@@ -551,8 +551,8 @@ lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n)
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
-  toDigits_length _ _ _
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e := by
+  simpa [Nat.repr] using toDigits_length _ _ _
 
 /-! ### `norm_digits` tactic -/
 
@@ -569,8 +569,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
   subst h; exact Nat.digits_def' b2 n0
 
 theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
-  have b2 : 1 < b :=
-    lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
+  have b2 : 1 < b := by cutsat
   refine ⟨?_, b2, n0⟩
   rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
 

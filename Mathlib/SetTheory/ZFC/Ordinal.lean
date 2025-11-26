@@ -3,10 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GameAdd
-import Mathlib.Order.RelIso.Set
-import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.SetTheory.ZFC.Rank
+module
+
+public import Mathlib.Order.GameAdd
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Von Neumann ordinals
@@ -22,6 +23,8 @@ under `∈`.
 - `Ordinal.toZFSet` converts Lean's type-theoretic ordinals into ZFC ordinals. We prove that these
   two notions are order-isomorphic.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -65,6 +68,10 @@ theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
+
+protected theorem IsTransitive.iUnion {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}}
+    (hf : ∀ i, (f i).IsTransitive) : (⋃ i, f i).IsTransitive :=
+  sUnion' (by simpa)
 
 protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
@@ -154,8 +161,8 @@ theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔
     intro x y IH hx hy hxy
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
-    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y.toSet \ x.toSet) (Set.diff_nonempty.2 hyx)
-      have hmy : m ∈ y := show m ∈ y.toSet from Set.mem_of_mem_diff hm
+    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.diff_nonempty.2 hyx)
+      have hmy : m ∈ y := by simp only [Set.mem_diff, SetLike.mem_coe] at hm; exact hm.1
       have hmx : m ⊆ x := by
         intro z hzm
         by_contra hzx
@@ -302,7 +309,7 @@ theorem mk_toPSet (o : Ordinal) : .mk o.toPSet = o.toZFSet :=
   rfl
 
 theorem mem_toZFSet_iff {o : Ordinal} {x : ZFSet} : x ∈ o.toZFSet ↔ ∃ a < o, a.toZFSet = x := by
-  refine Quotient.inductionOn x fun x ↦ ?_
+  induction x
   rw [toZFSet, mk_eq, ZFSet.mk_mem_iff, mem_toPSet_iff]
   convert Iff.rfl
   rw [toZFSet, eq, PSet.Equiv.comm]

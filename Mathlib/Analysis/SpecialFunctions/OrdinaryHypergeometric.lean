@@ -3,8 +3,10 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.SpecificLimits.RCLike
+module
+
+public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra
@@ -48,6 +50,8 @@ See <https://en.wikipedia.org/wiki/Hypergeometric_function>.
 
 hypergeometric, gaussian, ordinary
 -/
+
+@[expose] public section
 
 open Nat FormalMultilinearSeries
 
@@ -140,7 +144,7 @@ variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 (-(k : 𝕂)) b c).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by omega)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by cutsat)
 
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a (-(k : 𝕂)) c).radius = ⊤ := by
@@ -150,7 +154,7 @@ theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by omega)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by cutsat)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
@@ -201,9 +205,9 @@ theorem ordinaryHypergeometricSeries_radius_eq_one
     convert Filter.Tendsto.norm this
     exact norm_one.symm
   have (k : ℕ) : (a + k)⁻¹ * (b + k)⁻¹ * (c + k) * ((1 : 𝕂) + k) =
-        (c + k) / (a + k) * ((1 + k) / (b + k)) := by field_simp
+        (c + k) / (a + k) * ((1 + k) / (b + k)) := by field
   simp_rw [this]
   apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
-  convert RCLike.tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
+  convert tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
 
 end RCLike

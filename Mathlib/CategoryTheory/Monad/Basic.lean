@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Monads
@@ -20,6 +22,8 @@ For the fact that monads are "just" monoids in the category of endofunctors, see
 `CategoryTheory.Monad.EquivMon`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
@@ -27,7 +31,7 @@ open Category
 
 universe v₁ u₁
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable (C : Type u₁) [Category.{v₁} C]
 
 /-- The data of a monad on C consists of an endofunctor T together with natural transformations

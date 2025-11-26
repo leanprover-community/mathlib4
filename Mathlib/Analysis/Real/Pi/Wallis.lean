@@ -3,7 +3,9 @@ Copyright (c) 2021 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-! # The Wallis formula for Pi
 
@@ -12,9 +14,9 @@ largely about analyzing the behaviour of the sequence `∫ x in 0..π, sin x ^ n
 See: https://en.wikipedia.org/wiki/Wallis_product
 
 The proof can be broken down into two pieces. The first step (carried out in
-`Analysis.SpecialFunctions.Integrals`) is to use repeated integration by parts to obtain an
-explicit formula for this integral, which is rational if `n` is odd and a rational multiple of `π`
-if `n` is even.
+`Mathlib/Analysis/SpecialFunctions/Integrals/Basic.lean`) is to use repeated integration by parts to
+obtain an explicit formula for this integral, which is rational if `n` is odd and a rational
+multiple of `π` if `n` is even.
 
 The second step, carried out here, is to estimate the ratio
 `∫ (x : ℝ) in 0..π, sin x ^ (2 * k + 1) / ∫ (x : ℝ) in 0..π, sin x ^ (2 * k)` and prove that
@@ -28,6 +30,8 @@ algebraic manipulation.
 * `Real.Wallis.W_le` and `Real.Wallis.le_W`: upper and lower bounds for `W n`.
 * `Real.tendsto_prod_pi_div_two`: the Wallis product formula.
 -/
+
+@[expose] public section
 
 
 open scoped Real Topology Nat

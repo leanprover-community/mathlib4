@@ -11,7 +11,8 @@ example : Nat → Nat → True := by
   intros; trivial
 
 /--
-info: Update with tactic error message: "No goals to be solved"
+info: Update with tactic error message: ⏎
+  [apply] "No goals to be solved"
 ---
 error: tactic '
   intro _ _

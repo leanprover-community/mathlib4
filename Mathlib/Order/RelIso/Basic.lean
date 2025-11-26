@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
@@ -30,6 +31,8 @@ isomorphisms.
 * `↪r`: `RelEmbedding`
 * `≃r`: `RelIso`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -661,17 +664,14 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
     rw [eq_of_heq h₂]
     rfl⟩
 
-@[simp]
 protected theorem cast_symm {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
     (h₂ : r ≍ s) : (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
   rfl
 
-@[simp]
 protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = α := rfl)
     (h₂ : r ≍ r := HEq.rfl) : RelIso.cast h₁ h₂ = RelIso.refl r :=
   rfl
 
-@[simp]
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
     {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : r ≍ s) (h₂' : s ≍ t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=

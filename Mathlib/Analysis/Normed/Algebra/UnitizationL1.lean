@@ -3,8 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-! # Unitization equipped with the $L^1$ norm
 
@@ -22,6 +25,8 @@ registered as an instance without the type synonym.
 One application of this is a straightforward proof that the quasispectrum of an element in a
 non-unital Banach algebra is compact, which can be established by passing to the unitization.
 -/
+
+@[expose] public section
 
 variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
 variable [NormedSpace 𝕜 A]
@@ -51,7 +56,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
   completeSpace_congr (uniformEquiv_unitization_addEquiv_prod 𝕜 A).isUniformEmbedding |>.mpr
-    CompleteSpace.prod
+    inferInstance
 
 variable {𝕜 A}
 
@@ -81,14 +86,14 @@ lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 
 variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 instance instUnitizationRing : Ring (WithLp 1 (Unitization 𝕜 A)) :=
-  inferInstanceAs (Ring (Unitization 𝕜 A))
+  (WithLp.equiv 1 (Unitization 𝕜 A)).ring
 
 @[simp]
 lemma unitization_mul (x y : WithLp 1 (Unitization 𝕜 A)) : ofLp (x * y) = ofLp x * ofLp y := rfl
 
 instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [IsScalarTower R 𝕜 A] :
     Algebra R (WithLp 1 (Unitization 𝕜 A)) :=
-  inferInstanceAs (Algebra R (Unitization 𝕜 A))
+  (WithLp.equiv 1 (Unitization 𝕜 A)).algebra R
 
 @[simp]
 lemma unitization_algebraMap (r : 𝕜) :
