@@ -35,6 +35,8 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 -/
 
+#check MvPolynomial.eq_1
+
 noncomputable section
 
 section
@@ -81,6 +83,7 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
 
 -- Suppose `F` has minimal total degree among the relations of `a`.
 variable {F : MvPolynomial ι k}
+
 variable (HF : ∀ F' : MvPolynomial ι k, F' ≠ 0 → F'.aeval a = 0 → F.totalDegree ≤ F'.totalDegree)
 
 include HF

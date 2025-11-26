@@ -59,13 +59,17 @@ def privateModule : Linter where run stx := do
       if !(← getEnv).constants.map₂.isEmpty then
         -- Exit if any declaration is public:
         for (decl, _) in (← getEnv).constants.map₂ do
-          if !isPrivateName decl then return
+          if !isPrivateName decl then
+            dbg_trace "found public declaration {decl}"
+            return
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
           "The current module only contains private declarations.\n\n\
           Consider adding `@[expose] public section` at the beginning of the module, \
           or selectively marking declarations as `public`."
+      else
+        dbg_trace "privateModule linter: imports-only module"
 
 initialize addLinter privateModule
 
