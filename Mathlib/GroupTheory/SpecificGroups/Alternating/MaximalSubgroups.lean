@@ -48,21 +48,14 @@ namespace Equiv.Perm
 
 theorem exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard
     {s : Set α} (hs : 2 < ncard s) :
-    ∃ g ∈ stabilizer (Perm α) s,  g.IsThreeCycle := by
+    ∃ g ∈ stabilizer (Perm α) s, g.IsThreeCycle := by
   rw [two_lt_ncard_iff] at hs
   obtain ⟨a, b, c, ha, hb, hc, hab, hac, hbc⟩ := hs
   use swap a b * swap a c
   refine ⟨?_, isThreeCycle_swap_mul_swap_same hab hac hbc⟩
-  rw [← stabilizer_compl]
-  rw [mem_stabilizer_set_iff_subset_smul_set sᶜ.toFinite, subset_smul_set_iff]
+  rw [mem_stabilizer_set_iff_subset_smul_set s.toFinite, subset_smul_set_iff]
   rintro _ ⟨x, hx, rfl⟩
-  simp only [mul_inv_rev, swap_inv, Perm.smul_def, Perm.coe_mul,
-    Function.comp_apply, mem_compl_iff]
-  rw [mem_compl_iff] at hx
-  suffices h : ∀ u ∈ s, x ≠ u by
-    rw [swap_apply_of_ne_of_ne (h a ha) (h b hb), swap_apply_of_ne_of_ne (h a ha) (h c hc)]
-    exact hx
-  grind  -- since x ∉ s, x ≠ u, for any u ∈ s
+  aesop
 
 theorem exists_mem_stabilizer_isThreeCycle
     (s : Set α) (hα : 4 < Nat.card α) :
@@ -70,13 +63,9 @@ theorem exists_mem_stabilizer_isThreeCycle
   rcases Nat.lt_or_ge 2 (ncard s) with hs | hs
   · exact exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard hs
   · suffices hs' : 2 < sᶜ.ncard by
-      obtain ⟨g, hg, hg'⟩ := exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard hs'
-      use g
-      rw [stabilizer_compl] at hg
-      exact ⟨hg, hg'⟩
-    rw [lt_iff_not_ge] at hα ⊢
-    intro hs'
-    apply hα
+      rw [← stabilizer_compl]
+      exact exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard hs'
+    contrapose! hα
     rw [← ncard_add_ncard_compl s]
     grind
 
@@ -84,7 +73,7 @@ theorem alternatingGroup_le_of_isPreprimitive (h4 : 4 < Nat.card α)
     (G : Subgroup (Perm α)) [hG' : IsPreprimitive G α] {s : Set α}
     (hG : stabilizer (Perm α) s ⊓ alternatingGroup α ≤ G) :
     alternatingGroup α ≤ G := by
-  -- We need to prove that alternating_group α ≤ ⊤
+  -- We need to prove that `alternating_group α ≤ ⊤`
   -- G contains a three_cycle
   obtain ⟨g, hg, hg3⟩ := exists_mem_stabilizer_isThreeCycle s h4
   -- By Jordan's theorem, it suffices to prove that G acts primitively
@@ -106,35 +95,24 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : (sᶜ : Set α).Nontrivi
       rw [← mem_stabilizer_iff, mem_stabilizer_set_iff_subset_smul_set s.toFinite]
       intro x hx
       exact ⟨x, hx, by simp [ofSubtype_apply_of_not_mem k (notMem_compl_iff.mpr hx)]⟩
-    have hminus_one_ne_one : (-1 : Units ℤ) ≠ 1 := Ne.symm (units_ne_neg_self 1)
     intro g
-    let g' := if sign g = 1
-      then ofSubtype g
-      else ofSubtype g * ofSubtype k
-    use! g'
-    · rw [mem_alternatingGroup]
-      rcases Int.units_eq_one_or (sign g) with hsg | hsg <;>
-      · simp only [g', if_true, hminus_one_ne_one, if_false, sign_ofSubtype,
-        sign_mul, mul_neg, mul_one, neg_neg, hsg, hk_sign]
-    · rw [mem_stabilizer_iff, Submonoid.mk_smul]
-      rcases Int.units_eq_one_or (sign g) with hsg | hsg
-      · simp only [g', hsg, if_true]
+    rcases Int.units_eq_one_or (sign g) with hsg | hsg
+    · use! ofSubtype g
+      · simp [mem_alternatingGroup, hsg]
+      · rw [mem_stabilizer_iff, Submonoid.mk_smul]
         exact ofSubtype_mem_stabilizer g
-      · simp only [g', hsg, hminus_one_ne_one, if_false, mul_smul, hks]
-        exact ofSubtype_mem_stabilizer g
-    · dsimp only [id_eq, ite_true, ite_false, eq_mpr_eq_cast, cast_eq]
-      rcases Int.units_eq_one_or (sign g) with hsg | hsg
-      · simp only [g', hsg, if_true]
-        ext x
-        simp
-      · simp only [g', hsg, hminus_one_ne_one, if_false]
-        ext x
-        simp only [toPerm_apply, SMul.smul_stabilizer_def]
-        simp only [Subgroup.mk_smul, Perm.smul_def, coe_mul, Function.comp_apply]
-        rw [ofSubtype_apply_of_not_mem k _]
-        · exact ofSubtype_apply_coe g x
-        · rw [notMem_compl_iff]; exact x.prop
-  -- ∃ k : equiv.perm (sᶜ : set α), equiv.perm.sign k = -1,
+      · aesop
+    use! ofSubtype g * ofSubtype k
+    · simp [mem_alternatingGroup, hk_sign, hsg]
+    · rw [mem_stabilizer_iff, Submonoid.mk_smul, mul_smul, hks]
+      exact ofSubtype_mem_stabilizer g
+    · ext x
+      simp only [toPerm_apply, SMul.smul_stabilizer_def, Subgroup.mk_smul, Perm.smul_def,
+        coe_mul, Function.comp_apply]
+      rw [ofSubtype_apply_of_not_mem k]
+      · exact ofSubtype_apply_coe g x
+      · simp
+  -- `∃ k : Equiv.Perm (sᶜ : Set α), Equiv.Perm.sign k = -1`,
   obtain ⟨a, ha, b, hb, hab⟩ := hs
   use Equiv.swap ⟨a, ha⟩ ⟨b, hb⟩
   rw [sign_swap _]
@@ -142,7 +120,6 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : (sᶜ : Set α).Nontrivi
 
 theorem stabilizer.isPreprimitive {s : Set α} (hs : (sᶜ : Set α).Nontrivial) :
     IsPreprimitive (stabilizer (alternatingGroup α) s) s := by
-  classical
   let φ : stabilizer (alternatingGroup α) s → Perm s := MulAction.toPerm
   let f : s →ₑ[φ] s := {
       toFun := id
@@ -170,7 +147,7 @@ theorem stabilizer_ne_top {s : Set α} (hs : s.Nonempty) (hsc : sᶜ.Nontrivial)
   rw [mem_compl_iff] at hb hc
   have hac : a ≠ c := ne_of_mem_of_not_mem ha hc
   have hab : a ≠ b := ne_of_mem_of_not_mem ha hb
-  intro h; apply hc
+  contrapose hc with h
   let g := Equiv.swap a b * Equiv.swap a c
   suffices g • s = s by
     rw [← this]
@@ -297,7 +274,7 @@ end MulAction.IsBlock
 
 namespace AlternatingGroup
 
-/- Here, we needs either that `Nat.card α` has at least `4` elements,
+/- Here, we need that `Nat.card α` has at least `4` elements,
 so that  either `t` has at least 3 elements, or `tᶜ` has at least 2.
 The condition is necessary, because the result is wrong when
 `α = {1, 2, 3}` and either `t = {1, 2}` or `t = {1}`. -/
