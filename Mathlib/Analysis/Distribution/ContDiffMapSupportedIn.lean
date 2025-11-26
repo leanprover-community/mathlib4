@@ -463,13 +463,11 @@ noncomputable def structureMapCLM (i : ℕ) :
   toLinearMap := structureMapLM 𝕜 n i
   cont := continuous_iInf_dom continuous_induced_dom
 
--- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
--- force `WithOrder` variants on people, but maybe this is not a good argument.
+@[simp]
 lemma structureMapCLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   simp [structureMapCLM, structureMapLM_apply_withOrder]
 
-@[simp]
 lemma structureMapCLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   simp [structureMapCLM, structureMapLM_apply]
@@ -514,27 +512,27 @@ In the scope `Distributions.Seminorm`, we denote them by `N[𝕜; F]_{K, n, i}`
 protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
   (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
 
+-- Note: If these end up conflicting with other seminorms (e.g `SchwartzMap.seminorm`),
+-- we may want to put them in a more specific scope.
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions.Seminorm] notation "N["𝕜"]_{"K","n","i"}" =>
+scoped[Distributions] notation "N["𝕜"]_{"K","n","i"}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ _ n K i
 
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions.Seminorm] notation "N["𝕜"]_{"K","i"}" =>
+scoped[Distributions] notation "N["𝕜"]_{"K","i"}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ _ ⊤ K i
 
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions.Seminorm] notation "N["𝕜";"F"]_{"K","n","i"}" =>
+scoped[Distributions] notation "N["𝕜";"F"]_{"K","n","i"}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ F n K i
 
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions.Seminorm] notation "N["𝕜";"F"]_{"K","i"}" =>
+scoped[Distributions] notation "N["𝕜";"F"]_{"K","i"}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ F ⊤ K i
-
-open scoped Distributions.Seminorm
 
 /-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the
 `ContDiffMapSupportedIn.seminorm k`for `k ≤ i`. -/
-protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
+protected noncomputable def supSeminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
   (Finset.Iic i).sup (ContDiffMapSupportedIn.seminorm 𝕜 E F n K)
 
 protected theorem withSeminorms :
@@ -547,7 +545,7 @@ protected theorem withSeminorms :
   exact this.congr_equiv (Equiv.sigmaUnique _ _).symm
 
 protected theorem withSeminorms' :
-    WithSeminorms (ContDiffMapSupportedIn.seminorm' 𝕜 E F n K) :=
+    WithSeminorms (ContDiffMapSupportedIn.supSeminorm 𝕜 E F n K) :=
   (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K).partial_sups
 
 variable {E F n K}
