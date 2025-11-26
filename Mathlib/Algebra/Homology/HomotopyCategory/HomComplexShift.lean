@@ -539,6 +539,21 @@ def shift (γ : Cocycle K L n) (a : ℤ) :
   Cocycle.mk (γ.1.shift a) _ rfl
     (by simp only [Cochain.δ_shift, δ_eq_zero, Cochain.shift_zero, smul_zero])
 
+/-- The additive equivalence `Cocycle K L n ≃+ Cocycle K L⟦a⟧ n'` when `n' + a = n`. -/
+@[simps]
+def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
+    Cocycle K L n ≃+ Cocycle K (L⟦a⟧) n' where
+  toFun γ := γ.rightShift a n' hn'
+  invFun γ := γ.rightUnshift n hn'
+  left_inv γ := by cat_disch
+  right_inv γ := by cat_disch
+  map_add' γ γ' := by cat_disch
+
+/-- The additive equivalence `K ⟶ L⟦n⟧ ≃+ Cocycle K L n`. -/
+@[simps! -isSimp apply symm_apply]
+def equivHomShift : (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
+  (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
+
 end Cocycle
 
 end CochainComplex.HomComplex

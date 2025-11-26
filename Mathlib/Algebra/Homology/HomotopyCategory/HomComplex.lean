@@ -599,7 +599,7 @@ instance : Coe (Cocycle F G n) (Cochain F G n) where
   coe x := x.1
 
 @[ext]
-lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
+lemma ext {z₁ z₂ : Cocycle F G n} (h : (z₁ : Cochain F G n) = z₂) : z₁ = z₂ :=
   Subtype.ext h
 
 instance : SMul R (Cocycle F G n) where
@@ -704,6 +704,28 @@ def diff : Cocycle K K 1 :=
     simp only [Cochain.zero_v, δ_v 1 2 rfl _ p q hpq _ _ rfl rfl, Cochain.diff_v,
       HomologicalComplex.d_comp_d, smul_zero, add_zero])
 
+variable (L n) in
+/-- The inclusion `Cocycle K L n →+ Cochain K L n`. -/
+@[simps]
+def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
+  toFun x := x
+  map_zero' := by simp
+  map_add' := by simp
+
+variable (L n) in
+/-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
+def isKernel (hm : n + 1 = m) :
+    IsLimit ((KernelFork.ofι (f := (HomComplex K L).d n m)
+      (AddCommGrpCat.ofHom (toCochainAddMonoidHom K L n))) (by cat_disch)) :=
+  Fork.IsLimit.mk _
+    (fun s ↦ AddCommGrpCat.ofHom
+      { toFun x := ⟨s.ι x, by
+          rw [mem_iff _ _ hm]
+          exact ConcreteCategory.congr_hom s.condition x⟩
+        map_zero' := by cat_disch
+        map_add' := by cat_disch })
+    (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
+
 end Cocycle
 
 variable {F G}
@@ -774,6 +796,80 @@ lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
 
 lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁ = f₂ :=
   (Cocycle.equivHom F G).injective (by ext1; exact h)
+
+/-- The cochain in `Cochain K L n` that is given by a single
+morphism `K.X p ⟶ L.X q` and is zero otherwise. (As we do not check
+that `p + n = q`, this will be the zero cochain when `p + n ≠ q`.) -/
+def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
+    Cochain K L n :=
+  Cochain.mk (fun p' q' _ =>
+    if h : p = p' ∧ q = q'
+      then (K.XIsoOfEq h.1).inv ≫ f ≫ (L.XIsoOfEq h.2).hom
+      else 0)
+
+@[simp]
+lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
+    (single f n).v p q hpq = f := by
+  dsimp [single]
+  rw [if_pos, id_comp, comp_id]
+  tauto
+
+lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hp' : p' ≠ p) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  rw [dif_neg]
+  intro h
+  exact hp' (by cutsat)
+
+/-- Variant of `single_v_eq_zero` where the assumption is `q' ≠ q` rather than `p' ≠ p`. -/
+lemma single_v_eq_zero' {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hq' : q' ≠ q) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  rw [dif_neg]
+  intro h
+  exact hq' (by cutsat)
+
+variable (K L) in
+@[simp]
+lemma single_zero (p q n : ℤ) :
+    (single (p := p) (q := q) 0 n : Cochain K L n) = 0 := by
+  ext p' q' hpq'
+  by_cases hp : p' = p
+  · subst hp
+    by_cases hq : q' = q
+    · subst hq
+      simp
+    · simp [single_v_eq_zero' _ _ _ _ _ hq]
+  · simp [single_v_eq_zero _ _ _ _ _ hp]
+
+lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
+    (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
+    δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
+  ext p'' q'' hpq''
+  rw [δ_v n m hm (single f n) p'' q'' (by cutsat) (q'' - 1) (p'' + 1) rfl (by cutsat),
+    add_v, units_smul_v]
+  congr 1
+  · by_cases h : p'' = p
+    · subst h
+      by_cases h : q = q'' - 1
+      · subst h
+        obtain rfl : q' = q'' := by cutsat
+        simp only [single_v]
+      · rw [single_v_eq_zero', single_v_eq_zero', zero_comp]
+        all_goals cutsat
+    · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero _ _ _ _ _ h, zero_comp]
+  · subst hm
+    by_cases h : q'' = q
+    · subst h
+      by_cases h : p'' = p'
+      · subst h
+        obtain rfl : p = p'' + 1 := by cutsat
+        simp
+      · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero, comp_zero, smul_zero]
+        cutsat
+    · simp only [single_v_eq_zero' _ _ _ _ _ h, comp_zero, smul_zero]
 
 end Cochain
 
