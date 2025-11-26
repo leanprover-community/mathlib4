@@ -122,13 +122,7 @@ private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
-  have : 0 ≤ 2 * f (x, y) :=
-    calc
-      0 = f (x, x) := (candidates_refl fA).symm
-      _ ≤ f (x, y) + f (y, x) := candidates_triangle fA
-      _ = f (x, y) + f (x, y) := by rw [candidates_symm fA]
-      _ = 2 * f (x, y) := by ring
-  linarith
+  grind [candidates_symm, candidates_triangle]
 
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
@@ -175,8 +169,8 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
   calc
-    f (x, y) - f (z, t) ≤ f (x, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
-    _ ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
+    f (x, y) - f (z, t) ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by
+      grind [candidates_triangle]
     _ = f (x, z) + f (t, y) := by simp [sub_eq_add_neg, add_assoc]
     _ ≤ maxVar X Y * dist x z + maxVar X Y * dist t y := by
       gcongr <;> apply candidates_dist_bound fA
