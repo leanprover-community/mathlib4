@@ -3,7 +3,9 @@ Copyright (c) 2025 Daniel Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Morrison
 -/
-import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 /-!
 # Interactions between finitely-supported functions and multilinear maps
@@ -14,6 +16,8 @@ import Mathlib.LinearAlgebra.Multilinear.DFinsupp
   supported maps.
 
 -/
+
+@[expose] public section
 
 universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}

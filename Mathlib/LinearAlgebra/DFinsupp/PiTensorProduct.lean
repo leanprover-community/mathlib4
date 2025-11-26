@@ -3,9 +3,11 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+module
+
+public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 /-!
 # Tensor products of finitely supported functions
@@ -17,6 +19,8 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DFinsupp`s 
 * `PiTensorProduct.dfinsupp`: the linear equivalence between a `PiTensorProduct` of `DFinsupp`s
   and the `DFinsupp` of the `PiTensorProduct`s.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

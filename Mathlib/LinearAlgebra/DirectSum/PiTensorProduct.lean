@@ -3,9 +3,11 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.PiTensorProduct
-import Mathlib.LinearAlgebra.DFinsupp.PiTensorProduct
-import Mathlib.Algebra.DirectSum.Module
+module
+
+public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.DFinsupp.PiTensorProduct
+public import Mathlib.Algebra.DirectSum.Module
 
 /-!
 # Tensor products of direct sums
@@ -17,6 +19,8 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DirectSum`s
 * `PiTensorProduct.directSum`: the linear equivalence between a `PiTensorProduct` of `DirectSum`s
   and the `DirectSum` of the `PiTensorProduct`s.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
