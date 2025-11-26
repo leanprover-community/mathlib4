@@ -34,7 +34,7 @@ section Group
 variable [Group α] {a b : α}
 
 /-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
-@[to_additive /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
+@[to_additive (attr := grind) /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
