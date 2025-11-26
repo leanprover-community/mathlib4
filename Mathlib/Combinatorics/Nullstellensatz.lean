@@ -275,7 +275,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   rw [hg, ← degree_degLexDegree,
     degree_mul_of_isRegular_right hi (by simp only [(Alon.monic_P ..).leadingCoeff_eq_one,
       isRegular_one]),
-    Alon.degree_P, degree_add, degree_degLexDegree, degree_single, ht'] at this
+    Alon.degree_P, map_add, degree_degLexDegree, degree_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
@@ -284,9 +284,9 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   intro hq
   obtain ⟨e, hq', hq⟩ := Alon.of_mem_P_support _ _ _ hq
   apply coeff_eq_zero_of_totalDegree_lt
-  rw [← Finsupp.degree]
+  rw [← Finsupp.degree_def]
   apply lt_of_add_lt_add_right (lt_of_le_of_lt this _)
-  rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_single]
+  rw [← hpq, map_add, add_lt_add_iff_left, hq, degree_single]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
 
