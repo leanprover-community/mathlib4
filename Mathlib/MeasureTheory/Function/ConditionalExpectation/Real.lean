@@ -259,13 +259,13 @@ theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
   have hfs_bound : ∀ n x, ‖fs n x‖ ≤ c := hf.norm_approxBounded_le hc
   have : μ[f * μ[g|m]|m] = f * μ[g|m] := by
     refine condExp_of_stronglyMeasurable hm (hf.mul stronglyMeasurable_condExp) ?_
-    exact integrable_condExp.bdd_mul' (hf.mono hm).aestronglyMeasurable hf_bound
+    exact integrable_condExp.bdd_mul (hf.mono hm).aestronglyMeasurable hf_bound
   rw [← this]
   refine tendsto_condExp_unique (fun n x => fs n x * g x) (fun n x => fs n x * (μ[g|m]) x) (f * g)
     (f * μ[g|m]) ?_ ?_ ?_ ?_ (c * ‖g ·‖) ?_ (c * ‖(μ[g|m]) ·‖) ?_ ?_ ?_ ?_
-  · exact fun n => hg.bdd_mul' ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
+  · exact fun n => hg.bdd_mul ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
-  · exact fun n => integrable_condExp.bdd_mul'
+  · exact fun n => integrable_condExp.bdd_mul
       ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
   · filter_upwards [hfs_tendsto] with x hx
@@ -283,7 +283,7 @@ theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     refine (condExp_stronglyMeasurable_simpleFunc_mul hm _ hg).trans ?_
     rw [condExp_of_stronglyMeasurable hm
       ((SimpleFunc.stronglyMeasurable _).mul stronglyMeasurable_condExp) _]
-    exact integrable_condExp.bdd_mul'
+    exact integrable_condExp.bdd_mul
       ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
 
