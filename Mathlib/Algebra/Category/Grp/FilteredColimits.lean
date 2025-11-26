@@ -3,8 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Category.MonCat.FilteredColimits
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Category.MonCat.FilteredColimits
 
 /-!
 # The forgetful functor from (commutative) (additive) groups preserves filtered colimits.
@@ -20,6 +22,8 @@ In particular, this implies that `forget GrpCat` preserves filtered colimits.
 Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -84,7 +88,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
   apply G.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
-  rw [MonoidHom.map_inv, MonoidHom.map_inv, inv_inj]
+  rw [map_inv, map_inv, inv_inj]
   exact hfg
 
 /-- Taking inverses in the colimit. See also `colimitInvAux`. -/

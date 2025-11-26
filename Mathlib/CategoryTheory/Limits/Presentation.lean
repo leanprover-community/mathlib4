@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # (Co)limit presentations
@@ -27,6 +29,8 @@ presentation of a colimit of objects that are equipped with presentations.)
 - Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
 
+@[expose] public section
+
 universe s t w v u
 
 namespace CategoryTheory.Limits
@@ -48,6 +52,11 @@ variable {J : Type w} [Category.{t} J] {X : C}
 namespace ColimitPresentation
 
 initialize_simps_projections ColimitPresentation (-isColimit)
+
+@[reassoc]
+lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
+    pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by
+  simp
 
 /-- The cocone associated to a colimit presentation. -/
 abbrev cocone (pres : ColimitPresentation J X) : Cocone pres.diag :=
@@ -124,6 +133,11 @@ variable {J : Type w} [Category.{t} J] {X : C}
 namespace LimitPresentation
 
 initialize_simps_projections LimitPresentation (-isLimit)
+
+@[reassoc]
+lemma w (pres : LimitPresentation J X) {i j : J} (f : i ⟶ j) :
+    pres.π.app i ≫ pres.diag.map f = pres.π.app j := by
+  simpa using (pres.π.naturality f).symm
 
 /-- The cone associated to a limit presentation. -/
 abbrev cone (pres : LimitPresentation J X) : Cone pres.diag :=

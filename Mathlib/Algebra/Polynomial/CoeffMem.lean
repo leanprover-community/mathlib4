@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Bounding the coefficients of the quotient and remainder of polynomials
@@ -16,6 +18,8 @@ be written as sums of products of coefficients of `p` and `q`.
 Precisely, we show that each summand needs at most one coefficient of `p` and `deg p` coefficients
 of `q`.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]

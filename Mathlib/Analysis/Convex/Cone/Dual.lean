@@ -3,10 +3,12 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
-import Mathlib.Analysis.LocallyConvex.Separation
-import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.Topology.Algebra.Module.PerfectPairing
+module
+
+public import Mathlib.Analysis.Convex.Cone.Basic
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The topological dual of a cone and Farkas' lemma
@@ -36,6 +38,8 @@ We prove the following theorems:
 * https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
 * https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation
 -/
+
+@[expose] public section
 
 assert_not_exists InnerProductSpace
 
