@@ -152,6 +152,10 @@ to learn about it as well!
 - `long_file_report.sh`
   Prints the list of the 10 longest Lean files in `Mathlib`.
   This output is automatically posted to zulip once a week.
+- `undocumented_tactics.lean`
+  Lists the tactics in Mathlib that do not have documentation.
+  Run `lake env lean undocumented_tactics.lean` for a report.
+  This script is also invoked by `technical-debt-metrics.sh` to report the count of undocumented tactics.
 
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.
