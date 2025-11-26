@@ -168,6 +168,10 @@ theorem measurableSet_le {f g : δ → α} (hf : Measurable f) (hg : Measurable 
     MeasurableSet { a | f a ≤ g a } :=
   hf.prodMk hg measurableSet_le'
 
+theorem Measurable.le' {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a => f a ≤ g a := by
+  fun_prop
+
 end PartialOrder
 
 section LinearOrder
@@ -231,6 +235,10 @@ theorem measurable_lt [SecondCountableTopology α] : Measurable fun p : α × α
 theorem measurableSet_lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { a | f a < g a } :=
   hf.prodMk hg measurableSet_lt'
+
+theorem Measurable.lt [SecondCountableTopology α] {f g : δ → α} (hf : Measurable f)
+    (hg : Measurable g) : Measurable fun a => f a < g a := by
+  fun_prop
 
 theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g : δ → α}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
