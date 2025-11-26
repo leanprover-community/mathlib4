@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-import Mathlib.Analysis.InnerProductSpace.Affine
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+public import Mathlib.Analysis.InnerProductSpace.Affine
 
 /-!
 # Altitudes of a simplex
@@ -26,6 +28,8 @@ This file defines the altitudes of a simplex and their feet.
 * <https://en.wikipedia.org/wiki/Altitude_(triangle)>
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -146,7 +150,7 @@ def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
     (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).altitudeFoot = s.altitudeFoot ∘ e.symm := by
   ext i
   simp only [altitudeFoot, reindex_points, Function.comp_apply]
-  exact orthogonalProjectionSpan_congr (s.range_reindex_faceOpposite e i) rfl
+  exact orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex e i) rfl
 
 @[simp] lemma ne_altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.points i ≠ s.altitudeFoot i := by
@@ -199,7 +203,7 @@ lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
 open Qq Mathlib.Meta.Positivity in
 /-- Extension for the `positivity` tactic: the height of a simplex is always positive. -/
 @[positivity height _ _]
-def evalHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
     assertInstancesCommute

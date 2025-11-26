@@ -3,13 +3,15 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Analysis.Convex.EGauge
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Seminorm
-import Mathlib.Tactic.Peel
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Analysis.Convex.EGauge
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -60,6 +62,8 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 - Prove a version of `Asymptotics.isBigO_One` for `IsBigOTVS`.
 
 -/
+
+@[expose] public section
 
 open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
@@ -300,6 +304,18 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f)
 
 lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
   g.isBigOTVS_comp
+
+lemma _root_.LinearMap.isBigOTVS_rev_comp (g : E →ₗ[𝕜] F) (hg : comap g (𝓝 0) ≤ 𝓝 0) :
+    f =O[𝕜; l] (g ∘ f) := by
+  constructor
+  intro U hU
+  rcases mem_comap.1 (hg hU) with ⟨V, hV, hgV⟩
+  use V, hV
+  filter_upwards with a
+  refine le_egauge_of_forall_ne_zero (mem_of_mem_nhds hV) fun c hc₀ hc ↦ ?_
+  apply egauge_le_of_mem_smul
+  grw [← hgV, ← (IsUnit.mk0 _ hc₀).preimage_smul_set]
+  exact hc
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by

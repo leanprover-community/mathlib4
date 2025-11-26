@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -31,6 +33,8 @@ inverse of an analytic open partial homeomorphism is analytic.
   power series `p` at a point, with invertible linear part, then the inverse also has a power series
   at the image point, given by `p.leftInv`.
 -/
+
+@[expose] public section
 
 open scoped Topology ENNReal
 

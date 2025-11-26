@@ -1,9 +1,11 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Rudy Peterson
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 
 /-!
 # Bind operation for multisets
@@ -17,6 +19,8 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.product`: Cartesian product of two multisets.
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 
@@ -83,6 +87,18 @@ theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.
   induction h with
   | zero => simp
   | cons hab hst ih => simpa using hab.add ih
+
+theorem filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
+    filter p (join S) = join (map (filter p) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
+
+theorem filterMap_join (S : Multiset (Multiset α)) (f : α → Option β) :
+    filterMap f (join S) = join (map (filterMap f) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
 
 /-! ### Bind -/
 
@@ -164,6 +180,40 @@ theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multise
 theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
     ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
   Multiset.induction_on m (by simp) (by simp +contextual)
+
+theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
+    filter p m = bind m (fun a => if p a then {a} else 0) := by
+  induction m using Multiset.induction with
+  | empty => simp
+  | cons a m ih => simp [filter_cons, ih]
+
+theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
+    bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
+  simp [filter_eq_bind, Multiset.bind_assoc]
+  apply Multiset.bind_congr; intro a ham
+  split_ifs <;> simp
+
+theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop) [DecidablePred p] :
+    filter p (bind m f) = bind m (fun a => filter p (f a)) := by
+  simp [bind, filter_join]
+
+theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
+    filterMap f m = bind m (fun a => ((f a).map singleton).getD 0) := by
+  induction m using Multiset.induction with
+  | empty => simp
+  | cons a m ih => simp [filterMap_cons, ih]
+
+theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
+    bind (filterMap f m) g = bind m (fun a => ((f a).map g).getD 0) := by
+  simp only [filterMap_eq_bind, Multiset.bind_assoc]
+  apply Multiset.bind_congr; intro a ham
+  cases f a with
+  | none => simp
+  | some b => simp
+
+theorem filterMap_bind (m : Multiset α) (f : α → Multiset β) (g : β → Option γ) :
+    filterMap g (bind m f) = bind m (fun a => filterMap g (f a)) := by
+  simp [bind, filterMap_join]
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
@@ -286,11 +336,20 @@ theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod
 
 variable {s t}
 
-@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
-  | (a, b) => by simp [product, and_left_comm]
+@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t
+  | (a, b) => by simp [SProd.sprod, product, and_left_comm]
 
 protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
+
+@[simp] lemma map_swap_product (s : Multiset α) (t : Multiset β) :
+    (s ×ˢ t).map Prod.swap = t ×ˢ s := by
+  induction s using Multiset.induction <;> simp_all
+
+lemma prod_map_product_eq_prod_prod {M : Type*} [CommMonoid M]
+    (s : Multiset α) (t : Multiset β) (f : α × β → M) :
+    ((s ×ˢ t).map f).prod = (s.map fun i ↦ (t.map fun j ↦ f (i, j)).prod).prod := by
+  induction s using Multiset.induction <;> simp_all
 
 end Product
 

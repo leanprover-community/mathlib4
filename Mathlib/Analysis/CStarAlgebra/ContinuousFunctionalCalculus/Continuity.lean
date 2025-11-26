@@ -3,10 +3,11 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Topology.MetricSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Topology.MetricSpace.UniformConvergence
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
 
@@ -61,6 +62,8 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
 
 -/
 
+@[expose] public section
+
 open scoped UniformConvergence NNReal
 open Filter Topology
 
@@ -84,7 +87,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
   open scoped ContinuousFunctionalCalculus in
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
-  have hf := h_tendsto.continuousOn hF
+  have hf := h_tendsto.continuousOn hF.frequently
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (spectrum R a)}
     rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
@@ -483,7 +486,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   open scoped NonUnitalContinuousFunctionalCalculus in
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
-  have hf := h_tendsto.continuousOn hF
+  have hf := h_tendsto.continuousOn hF.frequently
   have hf0 : f 0 = 0 := Eq.symm <|
     tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
     h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
