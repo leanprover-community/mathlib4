@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Tangent
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
@@ -20,6 +22,8 @@ and related notions.
 * `ContMDiff.contMDiff_tangentMap` states that the bundled derivative
   of a `Cⁿ` function is `Cᵐ` when `m + 1 ≤ n`.
 -/
+
+@[expose] public section
 
 open Set Function Filter ChartedSpace IsManifold Bundle
 
@@ -374,7 +378,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · exact differentiableAt_id.prodMk (differentiableAt_const _)
   simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
-    Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
+    Function.comp_def, map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1

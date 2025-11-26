@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 
 /-! # Conditional expectation
 
@@ -68,6 +70,8 @@ conditional expectation, conditional expected value
 
 -/
 
+@[expose] public section
+
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory
 
@@ -102,7 +106,7 @@ scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
 
 /-- Unexpander for `μ[f|m]` notation. -/
 @[app_unexpander MeasureTheory.condExp]
-def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $m $μ $f) => `($μ[$f|$m])
   | _ => throw ()
 
@@ -269,7 +273,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
-  rw [measureReal_univ_eq_one, inv_one, one_smul]
+  rw [probReal_univ, inv_one, one_smul]
 
 theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : MeasurableSpace α) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by

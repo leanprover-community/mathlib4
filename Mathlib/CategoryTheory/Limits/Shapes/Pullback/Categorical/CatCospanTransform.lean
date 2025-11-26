@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-! # Morphisms of categorical cospans.
 
@@ -25,6 +27,8 @@ H₁|   |H₂ |H₃
 with specified `CatCommSq`s expressing 2-commutativity of the squares. These
 transformations are used to encode 2-functoriality of categorical pullback squares.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 

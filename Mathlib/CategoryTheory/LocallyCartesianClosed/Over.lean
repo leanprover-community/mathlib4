@@ -3,7 +3,9 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+module
+
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 /-!
 # Cartesian monoidal structure on slices induced by chosen pullbacks
@@ -39,6 +41,8 @@ import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
   the cartesian monoidal structures on slices.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

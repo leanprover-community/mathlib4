@@ -3,13 +3,15 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.MulAction
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed spaces
@@ -17,6 +19,8 @@ import Mathlib.Analysis.Normed.MulAction
 In this file we define (semi)normed spaces and algebras. We also prove some theorems
 about these definitions.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 𝕜' E F α : Type*}
@@ -315,7 +319,7 @@ theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [Se
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine Isometry.of_dist_eq fun x y => ?_
-  rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
+  rw [dist_eq_norm, dist_eq_norm, ← map_sub, norm_algebraMap']
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }

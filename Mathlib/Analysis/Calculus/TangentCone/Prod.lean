@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.Calculus.TangentCone.Defs
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Product of sets with unique differentiability property
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Normed.Module.Basic
 In this file we prove that the product of two sets with unique differentiability property
 has the same property, see `UniqueDiffOn.prod`.
 -/
+
+@[expose] public section
 
 open Filter Set
 open scoped Topology
