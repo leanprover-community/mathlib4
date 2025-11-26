@@ -34,14 +34,20 @@ name was reserved.
 
 For example, Lean might reserve the name `foo.eq_1` in one module, but only add a declaration with
 the name `foo.eq_1` to the environment in some downstream module, when Lean attempts to
-realize the name.
+realize the name. If the original module is a `public import` of the downstream module, then this
+new declaration `foo.eq_1` will be added to the public scope, as it would be if it had been
+declared in the original module.
 
-If e.g. `simp` realized the public declaration `foo.eq_1` and added it to the environment in
-`M.Bar`, but `M.Bar` did not add any other public declarations, the linter should still fire.
-Ignoring reserved names ensures this.
+As such, if e.g. `simp` realized the public declaration `foo.eq_1` and added it to the environment
+in some downstream `M.Bar`, but `M.Bar` did not add any other public declarations, the linter
+should still fire on `M.Bar`. Ignoring reserved names ensures this.
 
 See also the type `Lean.ReservedNameAction`, invocations of `registerReservedNameAction` and
 `registerReservedNamePredicate` for examples, and the module `Lean.ResolveName` for further insight.
+
+Note that metaprograms should not add public declarations when run in private scopes. Doing so would
+likely be a bug in the metaprogram. As such, we do not perform further checks for automatically
+generated declarations such as those in `isAutoDecl`.
 -/
 
 meta section
