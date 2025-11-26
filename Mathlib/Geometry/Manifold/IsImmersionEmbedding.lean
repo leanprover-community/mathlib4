@@ -520,8 +520,6 @@ variable (I J n) in
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
 
-In other words, `f` is an immersion at each `x ∈ M`.
-
 Implicit in this definition is an abstract choice `F` of a complement of `E` in `E'`:
 being an immersion includes a choice of linear isomorphism between `E × F` and `E'`, which is where
 the choice of `F` enters. If you need stronger control over the complement `F`,
