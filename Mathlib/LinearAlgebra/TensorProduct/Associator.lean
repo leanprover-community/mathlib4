@@ -52,6 +52,8 @@ theorem lid_tmul (m : M) (r : R) : (TensorProduct.lid R M : R ⊗ M → M) (r �
 theorem lid_symm_apply (m : M) : (TensorProduct.lid R M).symm m = 1 ⊗ₜ m :=
   rfl
 
+theorem toLinearMap_symm_lid : (TensorProduct.lid R M).symm.toLinearMap = mk R R M 1 := rfl
+
 lemma includeRight_lid {S : Type*} [Semiring S] [Algebra R S] (m : R ⊗[R] M) :
     (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m =
       (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap) m := by
@@ -82,6 +84,8 @@ theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • 
 @[simp]
 theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
+
+theorem toLinearMap_symm_rid : (TensorProduct.rid R M).symm.toLinearMap = (mk R M R).flip 1 := rfl
 
 @[simp]
 theorem comm_trans_lid :
