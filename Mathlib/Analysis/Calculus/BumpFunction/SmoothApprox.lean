@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 
+public import Mathlib.Tactic.Linter.PrivateModule
+
 /-!
 # Density of smooth functions in the space of continuous functions
 

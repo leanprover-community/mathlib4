@@ -17,7 +17,7 @@ public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.PrivateModule
+--public import Mathlib.Tactic.Linter.PrivateModule
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -74,7 +74,6 @@ register_linter_set linter.mathlibStandardSet :=
   -- linter.checkInitImports -- disabled, not relevant downstream.
   linter.hashCommand
   linter.oldObtain
-  linter.privateModule
   linter.style.cases
   linter.style.induction
   linter.style.refine

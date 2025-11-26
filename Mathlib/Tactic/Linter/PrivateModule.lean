@@ -59,7 +59,7 @@ namespace Mathlib.Linter
 /-- The `privateModule` linter lints against nonempty modules that have only private declarations,
 and suggests adding `@[expose] public section` or selectively marking declarations as `public`. -/
 public register_option linter.privateModule : Bool := {
-  defValue := false
+  defValue := true
   descr := "Enable the `privateModule` linter, which lints against nonempty modules that have only \
     private declarations."
 }
@@ -76,12 +76,15 @@ def privateModule : Linter where run stx := do
     unless getLinterValue linter.privateModule (← getLinterOptions) do
       return
     if (← getEnv).header.isModule then
+      dbg_trace "privateModule linter is running"
       -- Don't lint an imports-only module:
       if !(← getEnv).constants.map₂.isEmpty then
         -- Exit if any declaration from the current module is public:
         for (decl, _) in (← getEnv).constants.map₂ do
           -- Ignore both private and reserved names; see implementation notes
-          if !isPrivateName decl && !isReservedName (← getEnv) decl then return
+          if !isPrivateName decl && !isReservedName (← getEnv) decl then
+            dbg_trace "found public declaration {decl}"
+            return
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
