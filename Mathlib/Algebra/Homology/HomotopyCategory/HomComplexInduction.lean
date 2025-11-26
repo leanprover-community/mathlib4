@@ -16,7 +16,7 @@ situation. Assume that `X n : Set (Cochain K L d)` is a sequence of subsets
 of `Cochain K L d`, and `φ n : X n → X (n + 1)` is a sequence of maps such
 that for a certain `p₀ : ℕ` and any `x : X n`, `φ n x` and `x` coincide
 up to the degree `p₀ + n`, then we construct a cochain
-`InductionUp.limitSequence` in `Cochain K L d` which coincide with the
+`InductionUp.limitSequence` in `Cochain K L d` which coincides with the
 `n`th-iteration of `φ` evaluated on `x₀` up to the degree `p₀ + n` for any `n : ℕ`.
 
 -/
