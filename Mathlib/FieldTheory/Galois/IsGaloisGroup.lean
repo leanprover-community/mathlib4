@@ -205,7 +205,7 @@ instance subgroup [hGKL : IsGaloisGroup G K L] :
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 @[simp]
-theorem finrank_fixedpoints_eq_card_subgroup [IsGaloisGroup G K L] :
+theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
     Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
   (card_eq_finrank H (FixedPoints.intermediateField H) L).symm
 
