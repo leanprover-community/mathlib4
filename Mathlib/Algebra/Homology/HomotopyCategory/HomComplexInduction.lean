@@ -60,7 +60,7 @@ lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
   | succ k hk =>
     intro p q hpq hp
     rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by cutsat)]
-    rfl
+    dsimp [sequence]
 
 /-- Assuming we have a sequence of subsets `X n : Set (Cochain K L d)` for all `n : ℕ`,
 a sequence of maps `φ n : X n → X (n + 1)` for `n : ℕ`, and an element `x₀ : X 0`,
