@@ -358,7 +358,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     · rw [← not_lt] at hB'
       apply hB'
       rwa [← Set.ncard_add_ncard_compl sᶜ, mul_two, add_lt_add_iff_left, compl_compl]
-      
+
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
