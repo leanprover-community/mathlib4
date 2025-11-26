@@ -59,7 +59,7 @@ open scoped BoundedContinuousFunction NNReal Topology ContDiff
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedSpace 𝕂 F] [SMulCommClass ℝ 𝕂 F]
+  [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {n k : ℕ∞}
 
 variable (Ω F n) in
@@ -211,6 +211,12 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
     Module R 𝓓^{n}(Ω, F) := fast_instance%
   DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
 
+instance {R S} [Semiring R] [Semiring S] [Module R F] [Module S F] [SMulCommClass ℝ R F]
+    [SMulCommClass ℝ S F] [ContinuousConstSMul R F] [ContinuousConstSMul S F] [SMul R S]
+    [IsScalarTower R S F] :
+    IsScalarTower R S 𝓓^{n}(Ω, F) where
+  smul_assoc _ _ _ := by ext; simp
+
 end Module
 
 open ContDiffMapSupportedIn
@@ -223,15 +229,16 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
 
 variable (𝕜) in
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
-def ofSupportedInLM {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 variable (𝕜) in
-@[simp] theorem ofSupportedInLM_apply {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
-    (f : 𝓓^{n}_{K}(E, F)) : ofSupportedInLM 𝕜 K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+@[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
 
 variable (𝕜 n k) in
@@ -340,35 +347,48 @@ variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
   [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V]
 
 variable (Ω F n) in
-/-- The original topology on `𝓓^{n}(E, F)`, defined as the supremum over all compacts of the
-topologies from each `𝓓^{n}_{K}(E, F)`. -/
+/-- The "original topology" on `𝓓^{n}(Ω, F)`, defined as the supremum over all compacts `K ⊆ Ω` of
+the topology on `𝓓^{n}_{K}(E, F)`. In other words, this topology makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
+
+Note that this has no reason to be a locally convex (or even vector space) topology. For this
+reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
+topology which is coarser than this original topology. See `TestFuntion.topologicalSpace`. -/
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
 
 variable (Ω F n) in
+/-- The canonical LF topology on `𝓓^{n}(Ω, F)`. This makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s **in the category of locally convex topological vector spaces**
+(over ℝ). See `TestFunction.continuous_iff_continuous_comp` for the corresponding universal
+property.
+
+More concretely, this is defined as the infimum of *all* locally convex topologies which are
+coarser than the "original topology" `TestFunction.originalTop`, which corresponds to taking
+the inductive limit in the category of topological spaces. -/
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
   sInf {t : TopologicalSpace 𝓓^{n}(Ω, F) | originalTop Ω F n ≤ t ∧
     @IsTopologicalAddGroup 𝓓^{n}(Ω, F) t _ ∧
     @ContinuousSMul ℝ 𝓓^{n}(Ω, F) _ _ t ∧
     @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
 
-noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) := by
-  apply topologicalAddGroup_sInf
-  exact fun t ⟨_, ht, _, _⟩ ↦ ht
+noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
+  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
 --TODO: deduce for `RCLike` field `𝕂`
-noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) := by
-  apply continuousSMul_sInf
-  exact fun t ⟨_, _, ht, _⟩ ↦ ht
+noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
+  continuousSMul_sInf fun _ ⟨_, _, ht, _⟩ ↦ ht
 
-noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) := by
-  apply LocallyConvexSpace.sInf
-  exact fun t ⟨_, _, _, ht⟩ ↦ ht
+noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) :=
+  .sInf fun _ ⟨_, _, _, ht⟩ ↦ ht
 
 theorem originalTop_le : originalTop Ω F n ≤ topologicalSpace Ω F n :=
   le_sInf fun _t ⟨ht, _⟩ ↦ ht
 
+/-- Fix a locally convex topology `t` on `𝓓^{n}(Ω, F)`. `t` is coarser than the canonical topology
+on `𝓓^{n}(Ω, F)` if and only if it is coarser than the "original topology" given by
+`TestFunction.originalTop`. -/
 theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
     [@IsTopologicalAddGroup _ t _] [@ContinuousSMul ℝ _ _ _ t]
     [@LocallyConvexSpace ℝ _ _ _ _ _ t] :
@@ -376,7 +396,7 @@ theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
   ⟨le_trans originalTop_le, fun H ↦ sInf_le ⟨H, inferInstance, inferInstance, inferInstance⟩⟩
 
 /-- For every compact `K ⊆ Ω`, the inclusion map `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
-continuous. We will show later that it is in fact a topological embedding. -/
+continuous. It is in fact a topological embedding, though this fact is not in Mathlib yet. -/
 theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     Continuous (ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
   rw [continuous_iff_coinduced_le]
@@ -385,27 +405,30 @@ theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω
 variable (𝕜) in
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a continuous
 linear map. -/
-def ofSupportedInCLM {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}(Ω, F) where
   toLinearMap := ofSupportedInLM 𝕜 K_sub_Ω
   cont := continuous_ofSupportedIn K_sub_Ω
 
-@[simp] theorem ofSupportedInCLM_apply {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
-    (f : 𝓓^{n}_{K}(E, F)) : ofSupportedInCLM 𝕜 K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+@[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
 
--- TODO: Should we spell it using `∘ₗ`?
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
 continuous for every compact `K ⊆ Ω`. -/
-protected theorem continuous_iff_continuous_comp (f : 𝓓^{n}(Ω, F) →ₗ[ℝ] V) :
+protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+    [Module 𝕜 V] [IsScalarTower ℝ 𝕜 V] (f : 𝓓^{n}(Ω, F) →ₗ[𝕜] V) :
     Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
-      Continuous (f ∘ ofSupportedIn K_sub_Ω) := by
+      Continuous (f ∘ₗ ofSupportedInLM 𝕜 K_sub_Ω) := by
+  simp_rw [LinearMap.coe_comp, ← f.coe_restrictScalars ℝ, coe_ofSupportedInLM]
   rw [continuous_iff_le_induced]
-  have : @IsTopologicalAddGroup _ (induced f t) _ := topologicalAddGroup_induced _
-  have : @ContinuousSMul ℝ _ _ _ (induced f t) := continuousSMul_induced _
-  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced f t) := .induced _
+  have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
+    topologicalAddGroup_induced _
+  have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
+  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 
