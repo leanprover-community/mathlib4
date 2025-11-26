@@ -60,24 +60,23 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
   obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
   exact ⟨u, hu1, by filter_upwards using hu2⟩
 
-/- The assumption T2Space can be dropped after the PR 31313 is merged. -/
 variable {ι : Type*} [AddCommMonoid α] {f : ι → β → α} {s : Set β} [UniformSpace α]
-  [ContinuousAdd α] [TopologicalSpace β] [T2Space α] {x : β}
+  [ContinuousAdd α] [TopologicalSpace β] {x : β}
 
 section Continuous
 
 /-- An infinite sum of continuous functions that converges uniformly on a set
 is continuous. -/
 theorem SummableUniformlyOn.continuousOn_tsum (hf : ∀ i, ContinuousOn (f i) s)
-    (h : SummableUniformlyOn f {s}) : ContinuousOn (fun x => ∑' n, f n x) s := by
-  have := hasSumUniformlyOn_iff_tendstoUniformlyOn.mp h.hasSumUniformlyOn s (Set.mem_singleton s)
+    (h : SummableUniformlyOn f s) : ContinuousOn (fun x => ∑' n, f n x) s := by
+  have := hasSumUniformlyOn_iff_tendstoUniformlyOn.mp h.hasSumUniformlyOn
   refine this.continuousOn ?_
   filter_upwards with _
   fun_prop
 
 /-- An infinite sum of continuous functions that converges uniformly is continuous. -/
 theorem SummableUniformlyOn.continuous_tsum (hf : ∀ i, Continuous (f i))
-    (h : SummableUniformlyOn f {univ}) : Continuous (fun x => ∑' n, f n x) := by
+    (h : SummableUniformlyOn f univ) : Continuous (fun x => ∑' n, f n x) := by
   simp_all only [← continuousOn_univ]
   exact SummableUniformlyOn.continuousOn_tsum hf h
 
@@ -108,15 +107,15 @@ open set `s`, and `∑ (derivWithin fₙ s) (z)` is summable uniformly on `s`, a
 differentiable, then `∑ fₙ` is differentiable at each point in `s`. -/
 theorem SummableUniformlyOn.hasDerivAt_tsum (hs : IsOpen s) (hx : x ∈ s)
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
-    (h : SummableUniformlyOn (fun n ↦ (derivWithin (f n) s)) {s})
+    (h : SummableUniformlyOn (fun n ↦ (derivWithin (f n) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
     HasDerivAt (fun z => ∑' (n : ι), f n z) (∑' (n : ι), derivWithin (f n) s x) x := by
   apply hasDerivAt_of_tendstoUniformlyOn hs _ _ (fun y hy ↦ (hf y hy).hasSum) hx
     (f' := fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a)
   · obtain ⟨g, hg⟩ := h
-    have : HasSumUniformlyOn (fun n ↦ derivWithin (f n) s) g {s}:= hg
-    apply (hasSumUniformlyOn_iff_tendstoUniformlyOn.mp hg s (Set.mem_singleton s)).congr_right
-    exact fun _ hb ↦ (this.tsum_eqOn (Set.mem_singleton s) hb).symm
+    have : HasSumUniformlyOn (fun n ↦ derivWithin (f n) s) g s := hg
+    apply (hasSumUniformlyOn_iff_tendstoUniformlyOn.mp hg).congr_right
+    exact fun _ hb ↦ (this.tsum_eqOn hb).symm
   · filter_upwards with t r hr using HasDerivAt.fun_sum
       (fun q hq ↦ ((hf2 q r hr).differentiableWithinAt.hasDerivWithinAt.hasDerivAt)
       (hs.mem_nhds hr))
@@ -143,7 +142,7 @@ open set `s`, and `∑ (derivWithin fₙ s) (z)` is summable uniformly on `s`, a
 differentiable, then `∑ fₙ` is differentiable on `s`. -/
 theorem SummableUniformlyOn.differentiableOn_tsum (hs : IsOpen s)
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
-    (h : SummableUniformlyOn (fun n ↦ (derivWithin (f n) s)) {s})
+    (h : SummableUniformlyOn (fun n ↦ (derivWithin (f n) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
     DifferentiableOn E (fun z => ∑' (n : ι), f n z) s := by
   intro x hx
@@ -166,7 +165,7 @@ theorem SummableLocallyUniformlyOn.differentiableOn_tsum (hs : IsOpen s)
 open set `s` is the sum of the derivatives of sequence of functions on the open set `s` -/
 theorem SummableUniformlyOn.derivWithin_tsum (hs : IsOpen s) (hx : x ∈ s)
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
-    (h : SummableUniformlyOn (fun n ↦ (derivWithin (f n) s)) {s})
+    (h : SummableUniformlyOn (fun n ↦ (derivWithin (f n) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
     derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x := by
   apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
@@ -189,7 +188,7 @@ open set `s`, and for each `1 ≤ k ≤ m`, the series of `k`-th iterated deriva
 `m`-th iterated derivatives. -/
 theorem SummableUniformlyOn.iteratedDerivWithin_tsum (m : ℕ) (hs : IsOpen s) (hx : x ∈ s)
     (hsum : ∀ t ∈ s, Summable (fun n : ι ↦ f n t))
-    (h : ∀ k, 1 ≤ k → k ≤ m → SummableUniformlyOn (fun n ↦ (iteratedDerivWithin k (f n) s)) {s})
+    (h : ∀ k, 1 ≤ k → k ≤ m → SummableUniformlyOn (fun n ↦ (iteratedDerivWithin k (f n) s)) s)
     (hf2 : ∀ n k r, k < m → r ∈ s → DifferentiableAt E (iteratedDerivWithin k (f n) s) r) :
     iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
   induction m generalizing x with
@@ -204,10 +203,9 @@ theorem SummableUniformlyOn.iteratedDerivWithin_tsum (m : ℕ) (hs : IsOpen s) (
     · intro r hr
       by_cases hm2 : m = 0
       · simp [hm2, hsum r hr]
-      · exact ((h m (by cutsat) (by cutsat)).summable (Set.mem_singleton s) hr).congr
-          (fun _ ↦ by simp)
+      · exact ((h m (by cutsat) (by cutsat)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableUniformlyOn.congr
-        (fun _ _ _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))
+        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))
 
 /-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
 open set `s`, and for each `1 ≤ k ≤ m`, the series of `k`-th iterated derivatives
@@ -241,12 +239,12 @@ iterated derivatives `∑ (iteratedDerivWithin k fₙ s) (z)` is summable unifor
 `fₙ` is in the class of `C^N`, then the series is also in `C^N`. -/
 theorem SummableUniformlyOn.contDiffOn_tsum {N : ℕ∞} (hs : IsOpen s)
     (hf : ∀ (n : ι), ContDiffOn E N (f n) s)
-    (h : ∀ (k : ℕ), k ≤ N → SummableUniformlyOn (fun n ↦ (iteratedDerivWithin k (f n) s)) {s}) :
+    (h : ∀ (k : ℕ), k ≤ N → SummableUniformlyOn (fun n ↦ (iteratedDerivWithin k (f n) s)) s) :
     ContDiffOn E N (fun (x : E) => ∑' (n : ι), f n x) s := by
   simp_all only [contDiffOn_iff_continuousOn_differentiableOn_deriv hs.uniqueDiffOn]
   have q (r : E) (hr : r ∈ s) : s ∈ 𝓝 r := by exact IsOpen.mem_nhds hs hr
   have hsum : ∀ t ∈ s, Summable fun (n : ι) => f n t := fun t ht =>
-    by simpa using SummableUniformlyOn.summable (h 0 (zero_le N)) (Set.mem_singleton s) ht
+    by simpa using SummableUniformlyOn.summable (h 0 (zero_le N)) ht
   constructor
   · intro m hm
     refine ContinuousOn.congr (f := fun x => ∑' n, iteratedDerivWithin m (f n) s x) ?_ ?_
@@ -265,9 +263,9 @@ theorem SummableUniformlyOn.contDiffOn_tsum {N : ℕ∞} (hs : IsOpen s)
     refine DifferentiableOn.congr (f := fun x => ∑' n, iteratedDerivWithin m (f n) s x) ?_ ?_
     · apply SummableUniformlyOn.differentiableOn_tsum hs ?_ ?_ ?_
       · intro y hy
-        exact SummableUniformlyOn.summable (h m hm.le) (Set.mem_singleton s) hy
+        exact SummableUniformlyOn.summable (h m hm.le) hy
       · apply SummableUniformlyOn.congr (f := fun n => iteratedDerivWithin (m + 1) (f n) s)
-        · intro a ha i x hx; rw [← iteratedDerivWithin_succ]
+        · intro a ha i; rw [← iteratedDerivWithin_succ]
         · exact h (m + 1) h'm
       · intro n r hr
         exact ((hf n).2 m hm).differentiableAt (q r hr)
