@@ -824,7 +824,7 @@ lemma fderivWithOrderCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 
 theorem seminorm_fderivLM {i : ℕ} (f : 𝓓_{K}(E, F)) :
     N[𝕜]_{K, i} (fderivLM 𝕜 f) = N[𝕜]_{K, i+1} f := by
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
-    structureMapCLM_apply, norm_iteratedFDeriv_fderiv]
+    norm_iteratedFDeriv_fderiv]
 
 /-- `fderivCLM 𝕜` is the continuous `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
 its derivative as an element of `𝓓_{K}(E, E →L[ℝ] F)`.
