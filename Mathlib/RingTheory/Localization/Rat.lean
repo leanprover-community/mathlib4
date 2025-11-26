@@ -9,7 +9,7 @@ public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.Localization.NumDen
 
 /-!
-# Ring-theoretic fractions in ℚ
+# Ring-theoretic fractions in `ℚ`
 -/
 
 @[expose] public section
