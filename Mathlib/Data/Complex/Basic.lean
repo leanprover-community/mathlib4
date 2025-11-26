@@ -626,7 +626,7 @@ theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
-  simp only [RingHom.map_neg, mul_neg, neg_re, normSq_neg]
+  simp only [map_neg, mul_neg, neg_re, normSq_neg]
   ring
 
 /-! ### Inversion -/

@@ -57,7 +57,7 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
             Complex.I * ⟪T (x + Complex.I • y), x + Complex.I • y⟫_ℂ -
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
-  simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
+  simp only [map_add, map_sub, inner_add_left, inner_add_right, map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
@@ -68,7 +68,7 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
             Complex.I * ⟪T (x + Complex.I • y), x + Complex.I • y⟫_ℂ +
           Complex.I * ⟪T (x - Complex.I • y), x - Complex.I • y⟫_ℂ) /
         4 := by
-  simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
+  simp only [map_add, map_sub, inner_add_left, inner_add_right, map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
@@ -311,8 +311,8 @@ theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
 
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :
     T.reApplyInnerSelf (c • x) = ‖c‖ ^ 2 * T.reApplyInnerSelf x := by
-  simp only [ContinuousLinearMap.map_smul, ContinuousLinearMap.reApplyInnerSelf_apply,
-    inner_smul_left, inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
+  simp only [map_smul, ContinuousLinearMap.reApplyInnerSelf_apply, inner_smul_left,
+    inner_smul_right, ← mul_assoc, mul_conj, ← ofReal_pow, ← smul_re,
     Algebra.smul_def (‖c‖ ^ 2) ⟪T x, x⟫, algebraMap_eq_ofReal]
 
 end ReApplyInnerSelf_Seminormed

@@ -451,7 +451,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
   have := two_mul_ω_pow odd leg3
   rw [mul_pow] at this
   have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
-  rw [coe, ← RingHom.map_pow, pow2, ← coe,
+  rw [coe, ← map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
   refine (IsUnit.of_mul_eq_one (M := X q) ↑((q + 1) / 2) ?_).mul_left_cancel this
   norm_cast

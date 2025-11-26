@@ -145,7 +145,7 @@ theorem tendsto_normSq_coprime_pair :
       rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
     · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
-      rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
+      rw [f_def, map_add, map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf

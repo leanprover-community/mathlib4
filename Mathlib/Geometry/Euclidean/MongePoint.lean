@@ -136,8 +136,8 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
         s.pointsWithCircumcenter (mongePointWeightsWithCircumcenter n) := by
   rw [mongePoint_eq_smul_vsub_vadd_circumcenter,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,
-    circumcenter_eq_affineCombination_of_pointsWithCircumcenter, affineCombination_vsub,
-    ← LinearMap.map_smul, weightedVSub_vadd_affineCombination]
+    circumcenter_eq_affineCombination_of_pointsWithCircumcenter, affineCombination_vsub, ← map_smul,
+    weightedVSub_vadd_affineCombination]
   congr with i
   rw [Pi.add_apply, Pi.smul_apply, smul_eq_mul, Pi.sub_apply]
   cases i <;>

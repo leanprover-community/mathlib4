@@ -339,7 +339,7 @@ protected theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S)
     c • f x = f (σ' c • x) := by simp
 
 @[simp]
-theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
+protected theorem map_eq_zero_iff (h : Function.Injective f) {x : M} : f x = 0 ↔ x = 0 :=
   _root_.map_eq_zero_iff f h
 
 variable (M M₂)

@@ -227,7 +227,7 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
       rw [f.map_add, mul_add, add_mul, add_mul]; abel
     _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
       rw [hf, hf, hf]
-    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
+    _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← map_sub, ← map_sub]
     _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.

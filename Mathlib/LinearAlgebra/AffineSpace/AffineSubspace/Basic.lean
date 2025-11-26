@@ -696,7 +696,7 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
-      rw [AffineMap.map_vadd, LinearMap.map_smul, AffineMap.linearMap_vsub]
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
 
 @[simp]

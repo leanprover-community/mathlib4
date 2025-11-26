@@ -133,7 +133,7 @@ def ofMulActionBasisAux :
     (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
   { e with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
+      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← map_smul e]
       congr 1
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
       · simp only [smul_zero]

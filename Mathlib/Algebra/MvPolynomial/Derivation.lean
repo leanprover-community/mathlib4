@@ -43,7 +43,7 @@ end
 theorem mkDerivationₗ_monomial (f : σ → A) (s : σ →₀ ℕ) (r : R) :
     mkDerivationₗ R f (monomial s r) =
       r • s.sum fun i k => monomial (s - Finsupp.single i 1) (k : R) • f i :=
-  sum_monomial_eq <| LinearMap.map_zero _
+  sum_monomial_eq <| map_zero _
 
 theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0 :=
   (mkDerivationₗ_monomial f _ _).trans (smul_zero _)

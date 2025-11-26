@@ -371,7 +371,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
-      simp only [ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.map_sub]
+      simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
       abel
     _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by

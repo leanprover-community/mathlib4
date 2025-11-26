@@ -464,7 +464,7 @@ def discr {R : Type*} [Ring R] (P : Cubic R) : R :=
 
 theorem discr_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     φ P.discr = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [discr, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+  simp only [discr, RingHom.map_add, map_sub, map_mul, map_pow, map_ofNat]
   rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 

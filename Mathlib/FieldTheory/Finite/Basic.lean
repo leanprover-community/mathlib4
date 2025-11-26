@@ -334,7 +334,7 @@ variable (R) [CommRing R] [Algebra K R]
     have : ExpChar R p := .prime hp
     simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
     exact add_pow_expChar_pow ..
-  commutes' _ := by simp [← RingHom.map_pow, pow_card]
+  commutes' _ := by simp [← map_pow, pow_card]
 
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 

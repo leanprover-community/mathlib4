@@ -112,7 +112,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   · use k
     change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, Module.End.commute_pow_left_of_commute h_comm_square,
-      LinearMap.comp_apply, hk, LinearMap.map_zero]
+      LinearMap.comp_apply, hk, map_zero]
   -- Unpack the information we have about `m₁`, `m₂`.
   simp only [Module.End.mem_maxGenEigenspace] at hm₁ hm₂
   obtain ⟨k₁, hk₁⟩ := hm₁
@@ -138,8 +138,8 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   -- Finish off with appropriate case analysis.
   rcases Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi | hj
   · rw [(hf_comm.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hf₁,
-      LinearMap.map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hf₂, LinearMap.map_zero]
+      map_zero]
+  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hf₂, map_zero]
 
 lemma lie_mem_maxGenEigenspace_toEnd
     {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎(L, χ₁, x)) (hm : m ∈ 𝕎(M, χ₂, x)) :

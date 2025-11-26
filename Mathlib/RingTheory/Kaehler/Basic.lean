@@ -521,7 +521,7 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination :
       Submodule.mkQ _ := by
   apply Finsupp.lhom_ext
   intro a b
-  conv_rhs => rw [← Finsupp.smul_single_one a b, LinearMap.map_smul]
+  conv_rhs => rw [← Finsupp.smul_single_one a b, map_smul]
   simp [KaehlerDifferential.derivationQuotKerTotal_apply]
 
 theorem KaehlerDifferential.kerTotal_eq :
@@ -712,7 +712,7 @@ noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[
 @[simp]
 theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
     KaehlerDifferential.mapBaseChange R A B (x ⊗ₜ y) = x • KaehlerDifferential.map R R A B y := by
-  conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', LinearMap.map_smul]
+  conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', map_smul]
   congr 1
   exact IsBaseChange.lift_eq _ _ _
 

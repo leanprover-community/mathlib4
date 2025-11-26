@@ -290,7 +290,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     obtain ⟨u, hu⟩ := H s.prop
     use x * u.inv
     dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
-    rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]
+    rw [map_mul, ← eq, ← hu, mul_assoc, ← map_mul]
     simp
 
 end at_units

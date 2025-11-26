@@ -40,7 +40,7 @@ theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absN
     (h : letI _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :
     ¬ (absNorm I).Coprime n := by
   intro h₁
-  rw [← RingHom.map_one (Ideal.Quotient.mk I), Ideal.Quotient.eq] at h
+  rw [← map_one (Ideal.Quotient.mk I), Ideal.Quotient.eq] at h
   obtain ⟨p, hp, h₂⟩ := Nat.exists_prime_and_dvd hI
   have : Fact (p.Prime) := ⟨hp⟩
   refine hp.not_dvd_one <| h₁ ▸ Nat.dvd_gcd h₂ ?_

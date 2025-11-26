@@ -140,7 +140,7 @@ theorem smulTower_apply (ij) : (b.smulTower c) ij = b ij.1 • c ij.2 := by
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
   ext ⟨i', j'⟩
-  rw [Basis.smulTower_repr, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_apply,
+  rw [Basis.smulTower_repr, map_smul, Basis.repr_self, Finsupp.smul_apply,
     Finsupp.single_apply]
   dsimp only
   split_ifs with hi

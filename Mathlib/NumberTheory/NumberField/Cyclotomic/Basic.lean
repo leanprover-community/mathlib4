@@ -501,7 +501,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     pB.basis.repr_self_apply] at h
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
-    LinearMap.map_smul, ← zsmul_one, ← pB.basis.coord_apply, LinearMap.map_smul,
+    map_smul, ← zsmul_one, ← pB.basis.coord_apply, map_smul,
     show 1 = pB.gen ^ (⟨0, by cutsat⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h

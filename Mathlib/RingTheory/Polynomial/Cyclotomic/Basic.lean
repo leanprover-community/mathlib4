@@ -72,8 +72,7 @@ theorem cyclotomic'_zero (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 0 R
 /-- The first modified cyclotomic polynomial is `X - 1`. -/
 @[simp]
 theorem cyclotomic'_one (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 1 R = X - 1 := by
-  simp only [cyclotomic', Finset.prod_singleton, RingHom.map_one,
-    IsPrimitiveRoot.primitiveRoots_one]
+  simp only [cyclotomic', Finset.prod_singleton, map_one, IsPrimitiveRoot.primitiveRoots_one]
 
 /-- The second modified cyclotomic polynomial is `X + 1` if the characteristic of `R` is not `2`. -/
 -- Cannot be @[simp] because `p` cannot be inferred by `simp`.
@@ -83,7 +82,7 @@ theorem cyclotomic'_two (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [CharP R
   have prim_root_two : primitiveRoots 2 R = {(-1 : R)} := by
     simp only [Finset.eq_singleton_iff_unique_mem, mem_primitiveRoots two_pos]
     exact ⟨IsPrimitiveRoot.neg_one p hp, fun x => IsPrimitiveRoot.eq_neg_one_of_two_right⟩
-  simp only [prim_root_two, Finset.prod_singleton, RingHom.map_neg, RingHom.map_one, sub_neg_eq_add]
+  simp only [prim_root_two, Finset.prod_singleton, map_neg, map_one, sub_neg_eq_add]
 
 /-- `cyclotomic' n R` is monic. -/
 theorem cyclotomic'.monic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :

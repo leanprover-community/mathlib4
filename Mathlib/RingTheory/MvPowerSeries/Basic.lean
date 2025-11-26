@@ -276,11 +276,11 @@ protected theorem mul_one : φ * 1 = φ :=
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
   ext fun n => by
-    classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
+    classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, map_add]
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
   ext fun n => by
-    classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
+    classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, map_add]
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
   ext1 n
@@ -425,7 +425,7 @@ def constantCoeff : MvPowerSeries σ R →+* R :=
     toFun := coeff (0 : σ →₀ ℕ)
     map_one' := coeff_zero_one
     map_mul' := fun φ ψ => by classical simp [coeff_mul]
-    map_zero' := LinearMap.map_zero _ }
+    map_zero' := map_zero _ }
 
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff (R := R) (0 : σ →₀ ℕ)) = constantCoeff :=
