@@ -245,11 +245,8 @@ theorem ite_ae_eq_of_measure_zero {γ} (f : α → γ) (g : α → γ) (s : Set 
 theorem ite_ae_eq_of_measure_compl_zero {γ} (f : α → γ) (g : α → γ)
     (s : Set α) [DecidablePred (· ∈ s)] (hs_zero : μ sᶜ = 0) :
     (fun x => ite (x ∈ s) (f x) (g x)) =ᵐ[μ] f := by
-  rw [← mem_ae_iff] at hs_zero
   filter_upwards [hs_zero]
-  intros
-  split_ifs
-  rfl
+  grind
 
 namespace Measure
 
