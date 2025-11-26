@@ -380,7 +380,7 @@ structure RiemannianMetric where
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
-/-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
+/-- `Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds.
 

@@ -650,6 +650,10 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
     (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
    rfl
+   
+theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
+  rfl
 
 /-- `baseChange` as a linear map.
 
@@ -668,6 +672,11 @@ def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A �
 lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
     (f ^ n).baseChange A = f.baseChange A ^ n :=
   map_pow (Module.End.baseChangeHom _ _ _) f n
+
+@[simp]
+theorem _root_.LinearEquiv.coe_baseChange (e : M ≃ₗ[R] N) :
+    (e.baseChange R A M N : (A ⊗[R] M →ₗ[A] A ⊗[R] N)) = LinearMap.baseChange A e :=
+  rfl
 
 @[simp]
 theorem _root_.LinearEquiv.baseChange_one :
