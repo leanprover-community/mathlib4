@@ -41,8 +41,6 @@ variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableS
 structure HasGaussianLaw (X : Ω → E) (P : Measure Ω) : Prop where
   protected isGaussian_map : IsGaussian (P.map X)
 
-attribute [instance] HasGaussianLaw.isGaussian_map
-
 lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : ∀ᵐ ω ∂P, X ω = Y ω) :
     HasGaussianLaw Y P where
   isGaussian_map := by
