@@ -193,7 +193,7 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
   obtain ⟨P, ⟨prime, x, rfl⟩, hP⟩ := (I.subset_union_prime_finite
     (associatedPrimes.finite A A) (f := id) 0 0 fun _ h _ _ ↦ h.isPrime).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
-  exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, r, Submodule.mem_annihilator.mpr <| by
+  exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
     simpa only [smul_eq_mul, mul_comm x] using hP, fun (h : x = 0) ↦ prime.ne_top <| by simp [h]⟩
 
 open LinearMap in
