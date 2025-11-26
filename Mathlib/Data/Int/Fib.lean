@@ -154,7 +154,7 @@ theorem gcd_fib (m n : ℤ) : gcd (fib m) (fib n) = Nat.fib (gcd m n) := by
   obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
   · obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
     · simp [Nat.fib_gcd]
-    · simp [fib_neg, gcd_neg, Int.gcd_natCast_natCast, Nat.fib_gcd, apply_ite]
+    · simp [fib_neg, Nat.fib_gcd, apply_ite]
   · obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
     · simp only [fib_neg, neg_gcd, Int.gcd_natCast_natCast, Nat.fib_gcd]
       split_ifs <;> simp
