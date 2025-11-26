@@ -3,9 +3,11 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
-import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
-import Mathlib.CategoryTheory.Closed.Cartesian
+module
+
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
+public import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
 # The section functor as a right adjoint to the star functor
