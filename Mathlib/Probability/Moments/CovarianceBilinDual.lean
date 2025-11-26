@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.Probability.Moments.Variance
 
@@ -327,6 +328,10 @@ lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceB
       ContinuousLinearMap.bilinearComp_apply, IsBoundedBilinearMap.toContinuousLinearMap_apply]
     exact real_inner_self_nonneg
   · simp [h]
+
+lemma isPosSemidef_covarianceBilinDual : (covarianceBilinDual μ).toBilinForm.IsPosSemidef where
+  eq := covarianceBilinDual_comm
+  nonneg := covarianceBilinDual_self_nonneg
 
 variable [CompleteSpace E] [IsFiniteMeasure μ]
 
