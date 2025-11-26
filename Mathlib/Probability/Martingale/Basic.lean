@@ -542,13 +542,11 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
     Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k • (f (k + 1) - f k)) 𝒢 μ := by
   have hξbdd : ∀ i, ∃ C, ∀ ω, ‖ξ i ω‖ ≤ C := fun i =>
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
-  have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k • (f (k + 1) - f k)) μ := by
-    choose C hC using hξbdd
-    refine fun m =>
-      integrable_finset_sum' _ fun i _ => Integrable.smul_of_top_right
-        ((hf.integrable _).sub (hf.integrable _))
-        (memLp_top_of_bound hξ.stronglyMeasurable.aestronglyMeasurable (C i)
-          (ae_of_all _ (hC i)))
+  choose C hC using hξbdd
+  have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k • (f (k + 1) - f k)) μ := fun m =>
+      integrable_finset_sum' _ fun i _ => Integrable.bdd_smul
+        ((hf.integrable _).sub (hf.integrable _)) (C i)
+        hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i))
   have hadp : Adapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k • (f (k + 1) - f k) := by
     intro m
     refine Finset.stronglyMeasurable_sum _ fun i hi => ?_
@@ -557,14 +555,13 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
       ((hf.adapted.stronglyMeasurable_le (Nat.succ_le_of_lt hi)).sub
         (hf.adapted.stronglyMeasurable_le hi.le))
   refine submartingale_of_condExp_sub_nonneg_nat hadp hint fun i => ?_
-  simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _),
-    Nat.Ico_succ_singleton, Finset.sum_singleton]
-  obtain ⟨C, hC⟩ := hξbdd i
+  simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _), Nat.succ_eq_add_one, Nat.Ico_succ_singleton,
+    Finset.sum_singleton]
   filter_upwards [hf.condExp_sub_nonneg i.le_succ,
     condExp_smul_of_aestronglyMeasurable_left (hξ i).aestronglyMeasurable
-    (((hf.integrable (i + 1)).sub (hf.integrable i)).smul_of_top_right
-      (memLp_top_of_bound hξ.stronglyMeasurable.aestronglyMeasurable C (ae_of_all _ hC)))
-    ((hf.integrable _).sub (hf.integrable _))] with ω hω1 hω2
+      (((hf.integrable (i + 1)).sub (hf.integrable i)).bdd_smul
+      (C i) hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i)))
+      ((hf.integrable _).sub (hf.integrable _))] with ω hω1 hω2
   simp only [Pi.zero_apply, Nat.succ_eq_add_one, Pi.smul_apply'] at hω1 hω2 ⊢
   grw [← smul_zero (0 : ℝ), hnonneg i ω, hω1, hω2]
   · exact hnonneg i ω

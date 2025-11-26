@@ -164,9 +164,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
-    refine le_antisymm ?_ zero_le'
-    rw [← h]
-    exact eVariationOn.mono f inter_subset_left
+    simpa [h] using eVariationOn.mono (s := s) f inter_subset_left
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
     (hfφ : HasConstantSpeedOnWith (f ∘ φ) s l) (hf : HasConstantSpeedOnWith f (φ '' s) l') ⦃x : ℝ⦄
