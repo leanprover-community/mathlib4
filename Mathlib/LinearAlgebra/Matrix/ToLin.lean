@@ -892,7 +892,7 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     LinearMap.toMatrix v₁ v₁ (DistribMulAction.toLinearMap R M₁ x) =
     Matrix.diagonal fun _ ↦ x := by
   ext
-  rw [LinearMap.toMatrix_apply, DistribMulAction.toLinearMap_apply, LinearEquiv.map_smul,
+  rw [LinearMap.toMatrix_apply, DistribMulAction.toLinearMap_apply, map_smul,
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
@@ -930,11 +930,11 @@ such as the trace form or norm map for algebras.
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
-    rw [map_zero, LinearEquiv.map_zero]
+    rw [map_zero, map_zero]
   map_one' := by
     rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by
-    rw [map_add, LinearEquiv.map_add]
+    rw [map_add, map_add]
   map_mul' x y := by
     rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
@@ -997,7 +997,7 @@ theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
   simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
-    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
+    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 
 theorem smulTower_leftMulMatrix_algebraMap (x : S) :
@@ -1112,7 +1112,7 @@ variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower 
 
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
-are `A`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+are `A`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
 `(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ..., x at j-th position, ..., 0) i)ᵢⱼ` and
 `m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
 
@@ -1145,7 +1145,7 @@ def endVecRingEquivMatrixEnd :
 
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
-are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+are `R`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
 `(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ..., x at j-th position, ..., 0) i)ᵢⱼ` and
 `m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
 
