@@ -462,7 +462,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
     refine Lp.induction p_ne_top.elim (motive := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
     · intro a s ms hμs
       -- We want to approximate `a • 𝟙ₛ`.
-      apply ne_of_lt at hμs
+      simp only [p_ne_top.out, ne_eq, false_or] at hμs
       rw [SeminormedAddCommGroup.mem_closure_iff]
       intro ε ε_pos
       have μs_pow_nonneg : 0 ≤ μ.real s ^ (1 / p.toReal) :=
@@ -483,10 +483,10 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       --   `= ‖a - b‖ * (μ s)^(1/p) + ε / 3`
       --   `< ε * (μ s)^(1/p) / (3 * (1 + (μ s)^(1/p))) + ε / 3`
       --   `≤ ε / 3 + ε / 3 < ε`.
-      refine ⟨indicatorConstLp p mt hμt b,
+      refine ⟨indicatorConstLp p mt (.inr hμt) b,
         ⟨1, fun _ ↦ ⟨b, b_mem⟩, fun _ ↦ ⟨t, ht⟩, by simp [key]⟩, ?_⟩
       rw [Lp.simpleFunc.coe_indicatorConst,
-        ← sub_add_sub_cancel _ (indicatorConstLp p ms hμs b), ← add_halves ε]
+        ← sub_add_sub_cancel _ (indicatorConstLp p ms (.inr hμs) b), ← add_halves ε]
       refine lt_of_le_of_lt (b := ε / 3 + ε / 3) (norm_add_le_of_le ?_ hst.le) (by linarith [ε_pos])
       rw [indicatorConstLp_sub, norm_indicatorConstLp p_ne_zero p_ne_top.elim]
       calc
