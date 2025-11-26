@@ -760,6 +760,14 @@ theorem inner_basisFun_real (x : EuclideanSpace ℝ ι) (i : ι) :
 
 theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι := rfl
 
+lemma inner_eq_sum_conj_mul (x y : EuclideanSpace 𝕜 ι) :
+    inner 𝕜 x y = ∑ i, starRingEnd 𝕜 (x i) * y i := by
+  nth_rw 1 [← (EuclideanSpace.basisFun ι 𝕜).sum_repr' x]
+  simp_rw [sum_inner, inner_smul_left, basisFun_inner]
+
+lemma real_inner_eq_sum_mul (x y : EuclideanSpace ℝ ι) :
+    inner ℝ x y = ∑ i, x i * y i := by simp [inner_eq_sum_conj_mul]
+
 end EuclideanSpace
 
 instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
