@@ -46,7 +46,7 @@ lemma subsingleton_of_isZero {G : GrpCat} (h : Limits.IsZero G) :
 
 @[to_additive]
 lemma isZero_iff_subsingleton {G : GrpCat} : Limits.IsZero G ↔ Subsingleton G :=
-    ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
+  ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
 
 end GrpCat
 
@@ -72,6 +72,6 @@ lemma subsingleton_of_isZero {G : CommGrpCat} (h : Limits.IsZero G) :
 
 @[to_additive]
 lemma isZero_iff_subsingleton {G : CommGrpCat} : Limits.IsZero G ↔ Subsingleton G :=
-    ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
+  ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
 
 end CommGrpCat
