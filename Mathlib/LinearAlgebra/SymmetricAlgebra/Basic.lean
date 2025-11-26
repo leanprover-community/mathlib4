@@ -149,7 +149,7 @@ end SymmetricAlgebra
 variable {A : Type*} [CommSemiring A] [Algebra R A] (f : M →ₗ[R] A)
 variable {R} {M}
 
-/-- Given a morphism `ι : M →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the
+/-- Given a morphism `f : M →ₗ[R] A`, `IsSymmetricAlgebra f` is a proposition saying that the
 algebra homomorphism from `SymmetricAlgebra R M` to `A` is bijective. -/
 def IsSymmetricAlgebra (f : M →ₗ[R] A) : Prop :=
   Function.Bijective (SymmetricAlgebra.lift f)
