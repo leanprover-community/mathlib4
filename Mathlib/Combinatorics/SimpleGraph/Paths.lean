@@ -329,6 +329,7 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   | cons hadj p =>
     simp_all [Walk.isPath_def]
 
+/-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
     [Fintype G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
@@ -342,6 +343,7 @@ lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : No
   have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
   cutsat
 
+/-- There exists a path of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
     [Fintype G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
