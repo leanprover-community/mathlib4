@@ -14,6 +14,8 @@ public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 public import Mathlib.Algebra.CharP.IntermediateField
 
+public import Mathlib.Tactic.Linter.PrivateModule
+
 /-!
 
 # Separably generated extensions
