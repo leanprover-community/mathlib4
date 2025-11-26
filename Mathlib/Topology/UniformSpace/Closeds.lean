@@ -129,15 +129,18 @@ theorem isOpen_inter_nonempty_of_isOpen {U : Set α} (hU : IsOpen U) :
   obtain ⟨y, hy, hxy⟩ := hs' hx₁
   exact ⟨y, hy, hVU hxy⟩
 
-theorem isClosed_powerset {F : Set α} (hF : IsClosed F) :
+/-- In the Hausdorff uniformity, the powerset of a closed set is closed. -/
+theorem _root_.IsClosed.powerset_hausdorff {F : Set α} (hF : IsClosed F) :
     IsClosed F.powerset := by
   simp_rw [Set.powerset, ← isOpen_compl_iff, Set.compl_setOf, ← Set.inter_compl_nonempty_iff]
   exact isOpen_inter_nonempty_of_isOpen hF.isOpen_compl
 
+@[deprecated (since := "2025-11-23")] alias isClosed_powerset := IsClosed.powerset_hausdorff
+
 theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   constructor
   · rw [← Set.powerset_empty]
-    exact isClosed_powerset isClosed_empty
+    exact isClosed_empty.powerset_hausdorff
   · simp_rw [isOpen_iff_mem_nhds, Set.mem_singleton_iff, forall_eq, nhds_eq_uniformity]
     filter_upwards [Filter.mem_lift' <| Filter.mem_lift' Filter.univ_mem] with F ⟨_, hF⟩
     simpa using hF
@@ -238,7 +241,7 @@ theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
 
 theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : Closeds α | (t : Set α) ⊆ s} :=
-  isClosed_induced (UniformSpace.hausdorff.isClosed_powerset hs)
+  isClosed_induced hs.powerset_hausdorff
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded {F : Closeds α | ↑F ⊆ t} :=
@@ -327,7 +330,7 @@ theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
 
 theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : Compacts α | (t : Set α) ⊆ s} :=
-  isClosed_induced (UniformSpace.hausdorff.isClosed_powerset hs)
+  isClosed_induced hs.powerset_hausdorff
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded {K : Compacts α | ↑K ⊆ t} :=
@@ -413,7 +416,7 @@ theorem isOpen_inter_nonempty_of_isOpen {s : Set α} (hs : IsOpen s) :
 
 theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
     IsClosed {t : NonemptyCompacts α | (t : Set α) ⊆ s} :=
-  isClosed_induced (UniformSpace.hausdorff.isClosed_powerset hs)
+  isClosed_induced hs.powerset_hausdorff
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
     TotallyBounded {K : NonemptyCompacts α | ↑K ⊆ t} :=
