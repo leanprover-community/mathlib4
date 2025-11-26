@@ -814,6 +814,11 @@ theorem cyclotomicRing_isIntegralClosure :
   · rintro ⟨y, rfl⟩
     exact IsIntegral.algebraMap ((IsCyclotomicExtension.integral {n} ℤ _).isIntegral _)
 
+
+
+
+
+
 end IsCyclotomicExtension.Rat
 
 namespace IsPrimitiveRoot
@@ -834,6 +839,9 @@ instance _root_.IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {n} 
     IsCyclotomicExtension {n} ℤ (𝓞 K) :=
   let _ := (zeta_spec (n) ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec n ℚ K).adjoinEquivRingOfIntegers
+
+@[deprecated (since := "2025-11-26")] alias _root_.IsCyclotomicExtension.ring_of_integers' :=
+  _root_.IsCyclotomicExtension.ringOfIntegers
 
 /-- The integral `PowerBasis` of `𝓞 K` given by a primitive root of unity, where `K` is a `n`-th
 cyclotomic extension of `ℚ`. -/
@@ -870,6 +878,17 @@ theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {n} ℚ K]
     hζ.subOneIntegralPowerBasis.gen =
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (NeZero.pos _)) (Subalgebra.one_mem _)⟩ := by
   simp [subOneIntegralPowerBasis]
+
+@[deprecated (since := "2025-11-26")] alias integralPowerBasis' := integralPowerBasis
+@[deprecated (since := "2025-11-26")] alias integralPowerBasis'_gen := integralPowerBasis_gen
+@[deprecated (since := "2025-11-26")] alias power_basis_int'_dim := integralPowerBasis_dim
+@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis' := subOneIntegralPowerBasis
+@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis'_gen :=
+  subOneIntegralPowerBasis_gen
+@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis'_gen_prime :=
+  subOneIntegralPowerBasis_gen
+@[deprecated (since := "2025-11-26")] alias subOneIntegralPowerBasis_gen_prime :=
+  subOneIntegralPowerBasis_gen
 
 end IsPrimitiveRoot
 
