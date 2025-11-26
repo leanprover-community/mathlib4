@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.Geometry.Manifold.SmoothApprox
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 public import Mathlib.Tactic.MoveAdd
 
 /-!
@@ -72,7 +72,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [B
 theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
     {ε : ℝ} (hε : 0 < ε) :
     ∃ g, HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧ eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
-  -- We use a standard ε/2 argument to deduce the result from the approximation for
+  -- We use a standard ε / 2 argument to deduce the result from the approximation for
   -- continuous compactly supported functions.
   have hε₂ : 0 < ε / 2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε / 2) := by positivity
@@ -83,5 +83,20 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
   grw [this, eLpNorm_sub_le (hf.aestronglyMeasurable.sub hg₄.aestronglyMeasurable)
     (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
     eLpNorm_sub_comm, hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
+
+theorem dense_hasCompactSupport_contDiff {p : ℝ≥0∞} (hp : p ≠ ⊤) [hp₂ : Fact (1 ≤ p)] :
+    Dense {f : Lp F p μ | ∃ (g : E → F), f =ᵐ[μ] g ∧ HasCompactSupport g ∧ ContDiff ℝ ∞ g} := by
+  intro f
+  refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
+  obtain ⟨g, hg₁, hg₂, hg₃⟩ := exist_eLpNorm_sub_le hp hp₂.out (Lp.memLp f) hε
+  have hg₄ : MemLp g p μ := hg₂.continuous.memLp_of_hasCompactSupport hg₁
+  use hg₄.toLp
+  use ⟨g, hg₄.coeFn_toLp, hg₁, hg₂⟩
+  rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
+    ← le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).eLpNorm_ne_top hε.le]
+  convert hg₃ using 1
+  apply eLpNorm_congr_ae
+  gcongr
+  exact hg₄.coeFn_toLp
 
 end MeasureTheory.MemLp
