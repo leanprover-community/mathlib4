@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Convergence of `p`-series on lattices
@@ -20,6 +22,8 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -215,8 +219,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
     refine hr.le.trans ?_
-    norm_num
-    exact Nat.one_le_iff_ne_zero.mpr hd
+    simpa [Nat.one_le_iff_ne_zero]
 
 /--
 Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that `d < r`.
@@ -253,7 +256,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
   have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
     L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
-  refine ((Metric.finite_isBounded_inter_isClosed
+  refine ((Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
     (Metric.isBounded_closedBall (x := (0 : E)) (r := 2 * ‖x‖)) H).preimage_embedding
     (.subtype _)).subset ?_
   intro t ht

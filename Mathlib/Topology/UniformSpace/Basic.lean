@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Rel
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.UniformSpace.Defs
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Rel
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.UniformSpace.Defs
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Basic results on uniform spaces
@@ -34,6 +36,8 @@ The formalization uses the books:
 
 But it makes a more systematic use of the filter library.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 open scoped SetRel Uniformity

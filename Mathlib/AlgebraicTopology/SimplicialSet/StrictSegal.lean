@@ -3,8 +3,10 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou, Johan Commelin, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
-import Mathlib.AlgebraicTopology.SimplicialSet.Path
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 
 /-!
 # Strict Segal simplicial sets
@@ -22,6 +24,8 @@ the nerve of its homotopy category.
 in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -198,8 +202,8 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -210,8 +214,8 @@ lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_le_castSucc j i hij]
 
 variable {i : Fin m} {j : Fin (m + 2)}

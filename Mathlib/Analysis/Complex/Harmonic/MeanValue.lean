@@ -3,12 +3,16 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.Harmonic.Analytic
-import Mathlib.Analysis.Complex.MeanValue
+module
+
+public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.Complex.MeanValue
 
 /-!
 # The Mean Value Property of Harmonic Functions on the Complex Plane
 -/
+
+@[expose] public section
 
 open InnerProductSpace Metric Real
 
