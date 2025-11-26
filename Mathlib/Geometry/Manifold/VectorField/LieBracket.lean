@@ -295,9 +295,10 @@ protected theorem _root_.Filter.EventuallyEq.mlieBracket_vectorField
 section
 
 variable {c : 𝕜}
-variable [IsManifold I 2 M] [CompleteSpace E]
+variable [IsManifold I 2 M]
 
 lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vectorField
+    [CompleteSpace E]
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x) :
     DifferentiableWithinAt 𝕜 (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I))
     ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
@@ -310,26 +311,26 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
     le_rfl).comp_mdifferentiableWithinAt _ this
 
--- (dφ)⁻¹∘d(φ⁻¹)⁻¹(W x) = W x
-variable (W x) in
-omit [CompleteSpace E] in
-lemma aux_computation :
+-- (dφ)⁻¹∘d(φ⁻¹)⁻¹ Y = Y
+lemma aux_computation (Y : TangentSpace I x) :
     letI φ := extChartAt I x
-    (mfderiv% φ x).inverse ((mfderiv[range I] φ.symm (φ x)).inverse (W (φ.symm (φ x)))) = W x := by
+    ((mfderiv% φ x).inverse.comp ((mfderiv[range I] φ.symm (φ x)).inverse) Y) = Y := by
   set φ := extChartAt I x
-  rw [extChartAt_to_inv x]
-  calc
-    _ = ((mfderiv% φ x).inverse.comp (mfderiv[range I] φ.symm (φ x)).inverse) (W x) := rfl
-    _ = (ContinuousLinearMap.id 𝕜 _) (W x) := by
-      congr
-      rw [← ContinuousLinearMap.IsInvertible.inverse_comp_of_left,
-        ← ContinuousLinearMap.inverse_id,
-        mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (mem_extChartAt_source x)]
-      exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
-    _ = W x := by simp
+  trans (ContinuousLinearMap.id 𝕜 _) Y; swap; · simp
+  rw [extChartAt_to_inv x, ← ContinuousLinearMap.IsInvertible.inverse_comp_of_left,
+    ← ContinuousLinearMap.inverse_id,
+    mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' (mem_extChartAt_source x)]
+  exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
 
--- superseded by the following lemma
-omit [CompleteSpace E] in
+variable (x W) in
+lemma aux_computation' :
+    letI φ := extChartAt I x
+    (mfderiv% φ x).inverse.comp
+      ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
+  rw [aux_computation, extChartAt_to_inv]
+
+-- superseded by the following lemma; investigate if the next proof can be cleaned up using
+-- ideas from this one!
 lemma _root_.mfderivWithin_target_extChartAt_symm :
     mfderiv[(extChartAt I x).target] (extChartAt I x).symm (extChartAt I x x) =
       ContinuousLinearMap.id 𝕜 _ := by
@@ -355,7 +356,6 @@ lemma _root_.mfderivWithin_target_extChartAt_symm :
   exact fderivWithin_id (uniqueDiffWithinAt_extChartAt_target x)
 
 -- TODO: clean up this proof (and add the version for `extChartAt`)
-omit [CompleteSpace E] in
 lemma _root_.mfderivWithin_range_extChartAt_symm :
     mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) =
       ContinuousLinearMap.id 𝕜 _ := by
@@ -387,13 +387,15 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
   exact final
 
 -- TODO: add pre-composition version also and move to the right location
-omit [IsManifold I 2 M] [CompleteSpace E] in
+omit [IsManifold I 2 M] in
 lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
     {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) :
     letI φ := extChartAt I x
     DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
   obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
   rwa [extChartAt_self_eq] at hf
+
+variable [CompleteSpace E]
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
@@ -429,7 +431,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
   -- TODO: clean up this computation, in particular the non-terminal simp
   simp [A, mfderivWithin, hf, mpullback]
-  simp only [← aux_computation x W, V', mpullbackWithin]
+  simp only [← aux_computation' x W, V', mpullbackWithin]
   congr
   have : (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse (V x) = V x := by
     rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
