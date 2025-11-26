@@ -120,7 +120,7 @@ namespace SimplicialCategory
 variable {J : Type*} [LinearOrder J]
 
 /-- The hom simplicial set of the simplicial category structure on `SimplicialThickening J` -/
-abbrev Hom (i j : SimplicialThickening J) : SSet := (nerve (i ⟶ j))
+abbrev Hom (i j : SimplicialThickening J) : SSet := nerve (i ⟶ j)
 
 /-- The identity of the simplicial category structure on `SimplicialThickening J` -/
 abbrev id (i : SimplicialThickening J) : 𝟙_ SSet ⟶ Hom i i :=
@@ -155,7 +155,8 @@ noncomputable instance (J : Type*) [LinearOrder J] :
   Hom := Hom
   id := id
   comp := comp
-  homEquiv {i j} := (nerveEquiv _).symm.trans (SSet.unitHomEquiv _).symm
+  homEquiv {i j} :=
+    nerveEquiv.symm.trans (SSet.unitHomEquiv (SimplicialCategory.Hom i j)).symm
 
 /-- Auxiliary definition for `SimplicialThickening.functorMap` -/
 def orderHom {J K : Type*} [LinearOrder J] [LinearOrder K] (f : J →o K) :
@@ -168,6 +169,8 @@ noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
   map f := ⟨⟨Set.image_mono f.1.1⟩⟩
+
+attribute [local simp] nerveMap_app
 
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of
