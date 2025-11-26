@@ -80,11 +80,8 @@ theorem SummableUniformly.continuous_tsum (hf : ∀ i, Continuous (f i))
 /-- An infinite sum of continuous functions that converges locally uniformly on a set
 is continuous. -/
 theorem SummableLocallyUniformlyOn.continuousOn_tsum (hf : ∀ i, ContinuousOn (f i) s)
-    (h : SummableLocallyUniformlyOn f s) : ContinuousOn (fun x => ∑' n, f n x) s := by
-  have := hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp h.hasSumLocallyUniformlyOn
-  refine this.continuousOn ?_
-  filter_upwards with _
-  fun_prop
+    (h : SummableLocallyUniformlyOn f s) : ContinuousOn (fun x => ∑' n, f n x) s :=
+  h.hasSumLocallyUniformlyOn.continuousOn <| .of_forall fun _ ↦ by fun_prop
 
 /-- An infinite sum of continuous functions that converges locally uniformly is continuous. -/
 theorem SummableLocallyUniformlyOn.continuous_tsum (hf : ∀ i, Continuous (f i))
