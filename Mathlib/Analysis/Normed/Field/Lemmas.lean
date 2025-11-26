@@ -80,8 +80,10 @@ lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   simp only [comap_comap, Function.comp_def, norm_inv]
 
 @[simp]
-lemma inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
+lemma inv_nhdsNE_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
   rw [← inv_cobounded₀, inv_inv]
+
+@[deprecated (since := "2025-11-26")] alias inv_nhdsWithin_ne_zero := inv_nhdsNE_zero
 
 lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
   inv_cobounded₀.le
@@ -89,8 +91,11 @@ lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :
 theorem tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
   tendsto_inv₀_cobounded'.mono_right inf_le_left
 
-lemma tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
-  inv_nhdsWithin_ne_zero.le
+lemma tendsto_inv₀_nhdsNE_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
+  inv_nhdsNE_zero.le
+
+@[deprecated (since := "2025-11-26")]
+alias tendsto_inv₀_nhdsWithin_ne_zero := tendsto_inv₀_nhdsNE_zero
 
 end Filter
 
@@ -120,17 +125,23 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
 instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
     IsTopologicalDivisionRing α where
 
-lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
-  (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
+lemma tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
+  tendsto_norm_cobounded_atTop.comp tendsto_inv₀_nhdsNE_zero
 
-lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
-    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
+@[deprecated (since := "2025-11-26")]
+alias NormedField.tendsto_norm_inv_nhdsNE_zero_atTop := tendsto_norm_inv_nhdsNE_zero_atTop
+
+lemma tendsto_zpow_nhdsNE_zero_cobounded {m : ℤ} (hm : m < 0) :
+    Tendsto (· ^ m) (𝓝[≠] 0) (cobounded α) := by
   obtain ⟨m, rfl⟩ := neg_surjective m
-  rw [neg_lt_zero] at hm
-  lift m to ℕ using hm.le
-  rw [Int.natCast_pos] at hm
-  simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
-  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
+  lift m to ℕ using by cutsat
+  simpa [Function.comp_def] using
+    (tendsto_pow_cobounded_cobounded (by cutsat)).comp tendsto_inv₀_nhdsNE_zero
+
+@[deprecated tendsto_zpow_nhdsNE_zero_cobounded (since := "2025-11-26")]
+lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
+    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop :=
+  tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 end NormedDivisionRing
 
@@ -181,8 +192,8 @@ protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0
   refine ⟨?_, continuousAt_zpow₀ _ _⟩
   contrapose!
   rintro ⟨rfl, hm⟩ hc
-  exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
-    (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop hm)
+  exact (hc.tendsto.mono_left nhdsWithin_le_nhds).not_tendsto (Metric.disjoint_nhds_cobounded _)
+    (tendsto_zpow_nhdsNE_zero_cobounded hm)
 
 @[simp]
 protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by

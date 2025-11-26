@@ -189,8 +189,9 @@ variable {G}
 @[to_additive]
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
+  have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete H.one_mem
+    nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -201,16 +202,17 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   exact (eq_of_div_eq_one this).symm
 
 @[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [DiscreteTopology H] :
-    Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  IsClosed.tendsto_coe_cofinite_of_discreteTopology inferInstance inferInstance
+lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
+    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
+ haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
+ IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
 
 @[to_additive]
 lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
+    (hf : Function.Injective f) (hf' : IsDiscrete (f.range : Set G)) :
     Tendsto f cofinite (cocompact _) := by
   replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
+  exact (f.range.tendsto_coe_cofinite_of_discrete hf').comp hf.tendsto_cofinite
 
 end IsTopologicalGroup
 
