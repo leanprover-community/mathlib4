@@ -193,10 +193,10 @@ f (x, y) = f a implies y = h.implicitFunction x
 -----
 
 (E × F) × E × G
-(E × F) × G × E
-E × F × G × E
-F × G × E × E
-(F × G) × E × E
+(E × E) × F × G
+E × F × G
+(E × F) × G
+E × F
 
 -/
 
@@ -206,6 +206,8 @@ F × G × E × E
 --   rw [Filter.eventually_congr hiff]
 --   exact Filter.Tendsto.eventually hf h
 
+
+-- move the following to Order.Filter.Prod
 theorem eventually_assoc_iff {α β γ : Type*}
     {f : Filter α} {g : Filter β} {h : Filter γ} {p : (α × β) × γ → Prop} :
     (∀ᶠ x : (α × β) × γ in (f ×ˢ g) ×ˢ h, p x) ↔
@@ -226,26 +228,20 @@ theorem eventually_swap4_prod_iff {α β γ δ : Type*}
 
 theorem implicitFunction_unique (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ xy in 𝓝 a, f xy = f a → xy.2 = h.implicitFunction xy.1 := by
-  have := h.implicitFunctionData.eq_implicitFunction_of_prodFun_eq
-  have hnhds :
-      𝓝 (h.implicitFunctionData.pt, h.implicitFunctionData.prodFun h.implicitFunctionData.pt) =
-        (𝓝 a.1 ×ˢ 𝓝 a.2) ×ˢ 𝓝 a.1 ×ˢ 𝓝 (f a) := by
-    rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
+  suffices H : ∀ᶠ x in 𝓝 a, ∀ᶠ y in 𝓝 (f a),
+      h.implicitFunctionData.prodFun x = (x.1, y) →
+        x = h.implicitFunctionData.implicitFunction x.1 y from by
+    filter_upwards [H] with xy hxy heq
+    rw [implicitFunction, implicitFunctionAux, ← hxy.self_of_nhds (by rw [← heq]; rfl)]
+  have huniq := h.implicitFunctionData.eq_implicitFunction_of_prodFun_eq
+  rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
       implicitFunctionData_leftFun_pt, implicitFunctionData_rightFun_pt, nhds_prod_eq, nhds_prod_eq,
-      nhds_prod_eq]
-  rw [hnhds, eventually_swap4_prod_iff] at this
-  replace := Filter.Eventually.diag_of_prod_left this
-  rw [eventually_assoc_symm_iff, ← nhds_prod_eq] at this
-  dsimp only at this
-  replace := this.curry
-  filter_upwards [this] with xy hxy heq
-  replace hxy := hxy.self_of_nhds
-  rw [implicitFunction, implicitFunctionAux, ← hxy]
-  rw [ImplicitFunctionData.prodFun_apply]
-  ext
-  · rfl
-  · rw [← heq]
-    rfl
+      nhds_prod_eq, eventually_swap4_prod_iff, eventually_assoc_symm_iff] at huniq
+  replace huniq := huniq.curry.diag_of_prod_left
+  rw [← nhds_prod_eq] at huniq
+  filter_upwards [huniq] with xy hxy
+  filter_upwards [hxy] with fa hfa heq
+  exact hfa heq
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
