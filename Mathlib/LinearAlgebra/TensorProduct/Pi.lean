@@ -70,7 +70,7 @@ def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
 @[simp]
 private lemma piRightInv_apply (x : N) (m : ∀ i, M i) :
     piRightInv R S N M (fun i ↦ x ⊗ₜ m i) = x ⊗ₜ m := by
-  simp only [piRightInv, lsum_apply, coeFn_sum, coe_comp, coe_proj, Finset.sum_apply,
+  simp only [piRightInv, lsum_apply, coe_sum, coe_comp, coe_proj, Finset.sum_apply,
     Function.comp_apply, Function.eval, AlgebraTensorModule.map_tmul, id_coe, id_eq, coe_single]
   rw [← tmul_sum]
   congr
