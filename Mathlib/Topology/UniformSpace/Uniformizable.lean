@@ -108,11 +108,8 @@ public instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace �
 
 end UniformSpace
 
-variable [t : TopologicalSpace α] [CompletelyRegularSpace α]
-
-public theorem CompletelyRegularSpace.exists_uniformSpace :
-    ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
-  ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩
+section TopologicalSpace
+variable [t : TopologicalSpace α]
 
 public theorem CompletelyRegularSpace.of_exists_uniformSpace
     (h : ∃ (u : UniformSpace α), u.toTopologicalSpace = t) :
@@ -120,6 +117,17 @@ public theorem CompletelyRegularSpace.of_exists_uniformSpace
   obtain ⟨u, rfl⟩ := h
   infer_instance
 
+section CompletelyRegularSpace
+variable [CompletelyRegularSpace α]
+
+public theorem CompletelyRegularSpace.exists_uniformSpace :
+    ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
+  ⟨uniformSpaceOfCompactR1.comap stoneCechUnit, isInducing_stoneCechUnit.eq_induced.symm⟩
+
+end CompletelyRegularSpace
+
 public theorem completelyRegularSpace_iff_exists_uniformSpace :
     CompletelyRegularSpace α ↔ ∃ (u : UniformSpace α), u.toTopologicalSpace = t :=
   ⟨@CompletelyRegularSpace.exists_uniformSpace α t, CompletelyRegularSpace.of_exists_uniformSpace⟩
+
+end TopologicalSpace
