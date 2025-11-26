@@ -263,7 +263,7 @@ Taylor series at `0` up to order `n`. This is an auxiliary lemma for
 Note that thanks to the geometric series, the derivative has a particularly simple form, and means
 that it is more convenient to avoid Taylor's theorem.
 -/
-lemma sum_range_sub_log_div_le_aux {y : ℝ} (n : ℕ) (hy₁ : -1 < y) (hy₂ : y < 1) :
+lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range {y : ℝ} (n : ℕ) (hy₁ : -1 < y) (hy₂ : y < 1) :
     HasDerivAt
       (fun x ↦ 1 / 2 * log ((1 + x) / (1 - x)) - (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)))
       ((y ^ 2) ^ n / (1 - y ^ 2)) y := by
@@ -296,7 +296,7 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   -- First step: compute the derivative of `F`
   have A : ∀ y ∈ Ioo (-1 : ℝ) 1, HasDerivAt F (F' y) y := by
     intro y hy
-    exact sum_range_sub_log_div_le_aux _ (by grind) (by grind)
+    exact hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range _ (by grind) (by grind)
   -- second step: show that the derivative of `F` is small
   have B : ∀ y ∈ Set.Icc (-|x|) |x|, ‖F' y‖ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := fun y hy ↦ by
     have : y ^ 2 ≤ x ^ 2 := sq_le_sq.2 (abs_le.2 hy)
@@ -326,7 +326,7 @@ lemma sum_range_le_log_div {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
   -- First step: compute the derivative of `F`
   have A : ∀ y ∈ Icc 0 x, HasDerivAt F (F' y) y := by
     intro y hy
-    exact sum_range_sub_log_div_le_aux _ (by grind) (by grind)
+    exact hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range _ (by grind) (by grind)
   -- It suffices to show that `F` is monotone on `[0, x]`
   suffices MonotoneOn F (Icc 0 x) by simpa [F] using this ⟨le_rfl, h₀⟩ ⟨h₀, le_rfl⟩ h₀
   -- Second step: show that the derivative of `F` is nonnegative; it has been computed already.
