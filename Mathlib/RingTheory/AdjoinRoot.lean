@@ -198,7 +198,7 @@ instance hasCoeT : CoeTC R (AdjoinRoot f) :=
 
 /-- Two `R`-`AlgHom` from `AdjoinRoot f` to the same `R`-algebra are the same iff
 they agree on `root f`. -/
-@[ext high] -- This should have higher precedence than `algHom_ext`.
+@[ext high] -- This should have higher precedence than `algHom_ext'`.
 theorem algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
     (h : g₁ (root f) = g₂ (root f)) : g₁ = g₂ :=
   Ideal.Quotient.algHom_ext R <| Polynomial.algHom_ext h
