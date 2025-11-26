@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 module
 
 public import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Vector.Defs
+public import Mathlib.Data.Vector.Defs
 
 /-!
 # Sums and products from lists
@@ -114,7 +114,7 @@ section Mul
 variable [Mul M] [One M] {n} {v : List.Vector M n} {a : M}
 
 @[to_additive (attr := simp)]
-theorem prod_cons {a} : (cons a v).toList.prod = a * v.toList.prod := rfl -- or `List.prod_cons`
+theorem prod_cons : (cons a v).toList.prod = a * v.toList.prod := rfl -- or `List.prod_cons`
 
 end Mul
 
