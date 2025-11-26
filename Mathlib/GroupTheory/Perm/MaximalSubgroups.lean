@@ -13,7 +13,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 /-! # Maximal subgroups of the symmetric groups
 
 * `Equiv.Perm.isCoatom_stabilizer`:
-  if neither `s : set α` nor its complementary subset is empty,
+  if neither `s : Set α` nor its complementary subset is empty,
   and the cardinality of `s` is not half of that of `α`,
   then `MulAction.stabilizer (Equiv.Perm α) s` is
   a maximal subgroup of the symmetric group `Equiv.Perm α`.
@@ -358,7 +358,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     · rw [← not_lt] at hB'
       apply hB'
       rwa [← Set.ncard_add_ncard_compl sᶜ, mul_two, add_lt_add_iff_left, compl_compl]
-
+      
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
