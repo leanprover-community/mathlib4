@@ -395,6 +395,24 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
   obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
   rwa [extChartAt_self_eq] at hf
 
+-- TODO: find a good name (and perhaps split into further lemmas)!
+lemma foobarbaz {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜, 𝕜) f s x) :
+    let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
+    let W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
+    letI s' : Set E := (extChartAt I x).symm ⁻¹' s ∩ range I
+    mpullback I 𝓘(𝕜, E) (extChartAt I x)
+        (fun x₀ ↦ (fderivWithin 𝕜 (f ∘ (extChartAt I x).symm) s' x₀) (V' x₀) • W' x₀) x =
+      (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x := by
+  -- TODO: clean up this computation, in particular remove the non-terminal simp
+  simp [mfderivWithin, hf, mpullback]
+  simp only [← aux_computation' x W, mpullbackWithin]
+  congr
+  have : (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse (V x) = V x := by
+    rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
+    exact ContinuousLinearMap.id_apply ..
+  convert this
+  exact extChartAt_to_inv x
+
 variable [CompleteSpace E]
 
 /--
@@ -413,9 +431,6 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   set W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
   set f' := f ∘ (extChartAt I x).symm
   set s' := (extChartAt I x).symm ⁻¹' s ∩ range I
-  change mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' (fun y ↦ f' y • W' y) s') x =
-    (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x +
-    f x • mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x
   -- Step 1: rewrite using lieBracketWithin_smul_right
   -- We need the coercion since on the nose `B` is a map `E → E`,
   -- whereas we need a map between tangent spaces.
@@ -429,16 +444,8 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   -- We prove the equality of each summand separately.
   rw [← Pi.add_def, mpullback_add_apply]; congr; swap
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
-  -- TODO: clean up this computation, in particular the non-terminal simp
-  simp [A, mfderivWithin, hf, mpullback]
-  simp only [← aux_computation' x W, V', mpullbackWithin]
-  congr
-  have : (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse (V x) = V x := by
-    rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
-    exact ContinuousLinearMap.id_apply ..
-  convert this
-  exact extChartAt_to_inv x
-
+  simp only [A]
+  exact foobarbaz hf
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
