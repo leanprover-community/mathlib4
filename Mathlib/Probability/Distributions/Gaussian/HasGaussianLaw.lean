@@ -28,7 +28,8 @@ Gaussian random variable
 public section
 
 
-open MeasureTheory ENNReal WithLp Complex
+open MeasureTheory WithLp Complex
+open scoped ENNReal
 
 namespace ProbabilityTheory
 
@@ -82,6 +83,22 @@ variable
   [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   (L : E →L[ℝ] F)
+
+/-- A Gaussian random variable has moments of all orders. -/
+lemma memLp [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P)
+    {p : ℝ≥0∞} (hp : p ≠ ∞) :
+    MemLp X p P := by
+  rw [← Function.id_comp X, ← memLp_map_measure_iff]
+  · exact hX.isGaussian_map.memLp_id _ p hp
+  · exact aestronglyMeasurable_id
+  · exact hX.aemeasurable
+
+lemma memLp_two [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
+    MemLp X 2 P := hX.memLp (by norm_num)
+
+lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
+    Integrable X P :=
+  memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
 
 lemma map (hX : HasGaussianLaw X P) : HasGaussianLaw (L ∘ X) P where
   isGaussian_map := by
@@ -202,34 +219,32 @@ section Independence
 variable {ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 section charFun
-
+set_option trace.Meta.Tactic.fun_prop true in
 lemma HasGaussianLaw.charFun_toLp_pi {X : ι → Ω → ℝ} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P)
     (ξ : EuclideanSpace ℝ ι) :
     charFun (P.map (fun ω ↦ toLp 2 (X · ω))) ξ =
       exp (∑ i, ξ i * P[X i] * I - ∑ i, ∑ j, (ξ i : ℂ) * ξ j * (cov[X i, X j; P] / 2)) := by
   have := hX.isProbabilityMeasure
   nth_rw 1 [(hX.toLp_pi 2).isGaussian_map.charFun_eq', covarianceBilin_apply_pi,
-    EuclideanSpace.real_inner_eq]
+    EuclideanSpace.real_inner_eq_sum_mul]
   · simp_rw [ofReal_sum, Finset.sum_mul, ← mul_div_assoc, Finset.sum_div,
       integral_complex_ofReal, ← ofReal_mul]
     congrm exp (∑ i, Complex.ofReal (_ * ?_) * I - _)
     rw [integral_map, eval_integral_piLp]
     · simp
-    · simp only [id_eq, PiLp.toLp_apply]
-      exact fun i ↦ HasGaussianLaw.integrable
-    · have := hX.aemeasurable
-      fun_prop
+    · simpa using fun i ↦ (hX.eval i).integrable
+    · exact (measurable_toLp 2 _).comp_aemeasurable hX.aemeasurable
     · exact aestronglyMeasurable_id
-  · exact fun i ↦ HasGaussianLaw.memLp_two
+  · exact fun i ↦ (hX.eval i).memLp_two
 
-lemma HasGaussianLaw.charFun_toLp_prodMk {X Y : Ω → ℝ} [hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P]
+lemma HasGaussianLaw.charFun_toLp_prodMk {X Y : Ω → ℝ} (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
     (ξ : WithLp 2 (ℝ × ℝ)) :
     charFun (P.map (fun ω ↦ toLp 2 (X ω, Y ω))) ξ =
       exp ((ξ.fst * P[X] + ξ.snd * P[Y]) * I -
         (ξ.fst ^ 2 * Var[X; P] +
           2 * ξ.fst * ξ.snd * cov[X, Y; P] + ξ.snd ^ 2 * Var[Y; P]) / 2) := by
   have := hXY.isProbabilityMeasure
-  nth_rw 1 [IsGaussian.charFun_eq, covInnerBilin_apply_prod]
+  nth_rw 1 [(hXY.toLp_prodMk 2).isGaussian_map.charFun_eq', covarianceBilin_apply_prod]
   · simp only [id_eq, prod_inner_apply, ofLp_fst, RCLike.inner_apply, conj_trivial, mul_comm,
     ofLp_snd, ofReal_add, ofReal_mul, add_div, integral_complex_ofReal, pow_two]
     rw [mul_comm (ξ.fst : ℂ), mul_comm (ξ.snd : ℂ)]
