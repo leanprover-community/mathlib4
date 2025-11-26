@@ -68,7 +68,7 @@ structure RegularMono (f : X ⟶ Y) where
 attribute [reassoc] RegularMono.w
 
 /-- Every regular monomorphism is a monomorphism. -/
-def RegularMono.mono (f : X ⟶ Y) (h : RegularMono f) : Mono f :=
+def RegularMono.mono {f : X ⟶ Y} (h : RegularMono f) : Mono f :=
   mono_of_isLimit_fork h.isLimit
 
 /-- Every isomorphism is a regular monomorphism. -/
