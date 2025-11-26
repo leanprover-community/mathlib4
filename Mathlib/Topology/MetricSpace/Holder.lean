@@ -161,7 +161,7 @@ theorem ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :
   hf.ediam_image_inter_le_of_le le_rfl
 
 /-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder, then it is
-`(C₁ ^ t₁ * C_₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`(C₁ ^ t₁ * C₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
 `t₁ + t₂ = 1`. -/
 lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (ht : t₁ + t₂ = 1) :
@@ -179,34 +179,34 @@ lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0} {A : Set X}
         ring
 
 /-- If a function is Hölder over a bounded set, then it is bounded. -/
-lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {s : Set X}
-    (hs : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ D) (hf : HolderOnWith C r f s) :
-    HolderOnWith (C * D ^ (r : ℝ)) 0 f s := by
+lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {A : Set X}
+    (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) :
+    HolderOnWith (C * D ^ (r : ℝ)) 0 f A := by
   intro x hx y hy
   simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
-  grw [hf x hx y hy, hs x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
+  grw [hf x hx y hy, hA x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
 
-/-- If a function is `r`-Hölder over a bounded set, then it is also `t`-Hölder when `t ≤ r`. -/
-lemma of_le {C D t : ℝ≥0} {s : Set X}
-    (hs : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ D) (hf : HolderOnWith C r f s) (htr : t ≤ r) :
-    HolderOnWith (C * D ^ (r - t : ℝ)) t f s := by
-  obtain rfl | ht := eq_zero_or_pos t
-  · simpa using hf.holderOnWith_zero_of_bounded hs
-  have hr : 0 < r := ht.trans_le htr
-  rw [← NNReal.coe_le_coe] at htr
+/-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder when `s ≤ r`. -/
+lemma of_le {C D s : ℝ≥0} {A : Set X}
+    (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) (hsr : s ≤ r) :
+    HolderOnWith (C * D ^ (r - s : ℝ)) s f A := by
+  obtain rfl | ht := eq_zero_or_pos s
+  · simpa using hf.holderOnWith_zero_of_bounded hA
+  have hr : 0 < r := ht.trans_le hsr
+  rw [← NNReal.coe_le_coe] at hsr
   rw [← NNReal.coe_pos] at hr
-  set θ₁ : ℝ≥0 := ⟨t/r, by positivity⟩
-  set θ₂ : ℝ≥0 := ⟨1 - t/r, by simpa using div_le_one_of_le₀ htr (by positivity)⟩
+  set θ₁ : ℝ≥0 := ⟨s/r, by positivity⟩
+  set θ₂ : ℝ≥0 := ⟨1 - s/r, by simpa using div_le_one_of_le₀ hsr (by positivity)⟩
   have hθ : θ₁ + θ₂ = 1 := by ext; simp [θ₁, θ₂]
-  have hθt : r * θ₁ + 0 * θ₂ = t := by ext; simp [θ₁, mul_div_cancel₀ _ hr.ne']
-  have hθC : C * D ^ (r - t : ℝ) = C ^ (θ₁ : ℝ) * (C * D ^ (r : ℝ)) ^ (θ₂ : ℝ) := by
+  have hθt : r * θ₁ + 0 * θ₂ = s := by ext; simp [θ₁, mul_div_cancel₀ _ hr.ne']
+  have hθC : C * D ^ (r - s : ℝ) = C ^ (θ₁ : ℝ) * (C * D ^ (r : ℝ)) ^ (θ₂ : ℝ) := by
     simp (discharger := positivity) only [NNReal.mul_rpow, ← mul_assoc,
       ← NNReal.rpow_add_of_nonneg, ← NNReal.rpow_mul, ← NNReal.coe_add, hθ, NNReal.coe_one,
       NNReal.rpow_one]
     congr
     simp [mul_sub, θ₂, mul_div_cancel₀ _ hr.ne']
   rw [hθC, ← hθt]
-  exact hf.interpolate (hf.holderOnWith_zero_of_bounded hs) hθ
+  exact hf.interpolate (hf.holderOnWith_zero_of_bounded hA) hθ
 
 lemma mono_const {C₁ C₂ : ℝ≥0} {A : Set X} (hf : HolderOnWith C₁ r f A)
     (hC : C₁ ≤ C₂) : HolderOnWith C₂ r f A := by
@@ -293,7 +293,7 @@ lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
   fun x₁ x₂ ↦ (hf x₁ x₂).trans (by gcongr)
 
 /-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder, then it is
-`(C₁ ^ t₁ * C_₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`(C₁ ^ t₁ * C₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
 `t₁ + t₂ = 1`. -/
 lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0}
     (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (ht : t₁ + t₂ = 1) :
@@ -306,10 +306,10 @@ lemma holderWith_zero_of_bounded {C D : ℝ≥0}
     HolderWith (C * D ^ (r : ℝ)) 0 f :=
   holderOnWith_univ.1 ((holderOnWith_univ.2 hf).holderOnWith_zero_of_bounded (fun x _ y _ ↦ h x y))
 
-/-- If a function is `r`-Hölder over a bounded space, then it is also `t`-Hölder when `t ≤ r`. -/
-lemma of_le {C D t : ℝ≥0} (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (htr : t ≤ r) :
-    HolderWith (C * D ^ (r - t : ℝ)) t f :=
-  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ h x y) htr)
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
+lemma of_le {C D s : ℝ≥0} (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (hsr : s ≤ r) :
+    HolderWith (C * D ^ (r - s : ℝ)) s f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ h x y) hsr)
 
 /-- If a function is `(C, r)`-Hölder and `(C, s)`-Hölder,
 then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that

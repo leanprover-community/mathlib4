@@ -158,30 +158,30 @@ lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
 when `s ≤ r`. See `HolderOnWith.exists_holderOnWith_of_le'`
 for the version in a pseudoemetric space. -/
 lemma HolderOnWith.exists_holderOnWith_of_le {X : Type*} [PseudoMetricSpace X]
-    {f : X → Y} {s : ℝ≥0} {t : Set X} (hf : ∃ C, HolderOnWith C r f t) (hs : s ≤ r)
-    (ht : IsBounded t) : ∃ C, HolderOnWith C s f t := by
+    {f : X → Y} {s : ℝ≥0} {A : Set X} (hf : ∃ C, HolderOnWith C r f A) (hs : s ≤ r)
+    (hA : IsBounded A) : ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
-  have : BoundedSpace t := boundedSpace_val_set_iff.2 ht
+  have : BoundedSpace A := boundedSpace_val_set_iff.2 hA
   exact MemHolder.of_le hf hs
 
 /-- If a function is `r`-Hölder over a bounded set,
 then it is also `s`-Hölder over this set when `s ≤ r`. See `HolderOnWith.exists_holderOnWith_of_le`
 for the version in a pseudometric space. -/
-lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {t : Set X}
-    (hf : ∃ C, HolderOnWith C r f t) (hs : s ≤ r)
-    (ht : ∀ ⦃x⦄, x ∈ t → ∀ ⦃y⦄, y ∈ t → edist x y ≤ D) :
-    ∃ C, HolderOnWith C s f t := by
+lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {A : Set X}
+    (hf : ∃ C, HolderOnWith C r f A) (hs : s ≤ r)
+    (hA : ∀ ⦃x⦄, x ∈ A → ∀ ⦃y⦄, y ∈ A → edist x y ≤ D) :
+    ∃ C, HolderOnWith C s f A := by
   simp_rw [← HolderWith.restrict_iff] at *
   letI := PseudoEMetricSpace.toPseudoMetricSpace
-    fun x y : t ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (ht x.2 y.2)
-  have : BoundedSpace t := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ ht x.2 y.2⟩
+    fun x y : A ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hA x.2 y.2)
+  have : BoundedSpace A := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ hA x.2 y.2⟩
   exact MemHolder.of_le hf hs
 
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,
 then it is locally `s`-Hölder for `r ≤ s ≤ t`. -/
-lemma HolderOnWith.exists_holderOnWith_of_le_of_le {s t : ℝ≥0} {u : Set X}
-    (hf₁ : ∃ C, HolderOnWith C r f u) (hf₂ : ∃ C, HolderOnWith C t f u)
-    (hrs : r ≤ s) (hst : s ≤ t) : ∃ C, HolderOnWith C s f u := by
+lemma HolderOnWith.exists_holderOnWith_of_le_of_le {s t : ℝ≥0} {A : Set X}
+    (hf₁ : ∃ C, HolderOnWith C r f A) (hf₂ : ∃ C, HolderOnWith C t f A)
+    (hrs : r ≤ s) (hst : s ≤ t) : ∃ C, HolderOnWith C s f A := by
   obtain ⟨C₁, hf₁⟩ := hf₁
   obtain ⟨C₂, hf₂⟩ := hf₂
   exact ⟨max C₁ C₂, hf₁.of_le_of_le hf₂ hrs hst⟩
