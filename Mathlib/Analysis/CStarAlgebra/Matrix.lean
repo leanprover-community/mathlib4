@@ -221,7 +221,7 @@ lemma l2_opNorm_toEuclideanCLM (A : Matrix n n 𝕜) :
 @[simp]
 lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
   set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
-  rw [← toEuclideanCLM_l2_opNorm]
+  rw [← l2_opNorm_toEuclideanCLM]
   refine le_antisymm ?_ ?_
   · refine T.opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
     refine (sq_le_sq₀ (by positivity) (by positivity)).mp ?_
