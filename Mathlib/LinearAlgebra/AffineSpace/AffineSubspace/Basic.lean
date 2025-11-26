@@ -639,7 +639,7 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
     (h_agree : s.EqOn f g) : f = g := by
-  simpa [h_span]  using eqOn_affineSpan h_agree
+  simpa [h_span] using eqOn_affineSpan h_agree
 
 end AffineMap
 
@@ -649,7 +649,7 @@ namespace AffineEquiv
 theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} (h_span : affineSpan k s = ⊤)
     (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
-  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
+  AffineEquiv.toAffineMap_inj.mp <| AffineMap.ext_on h_span h_agree
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
@@ -696,7 +696,7 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
-      rw [AffineMap.map_vadd, LinearMap.map_smul, AffineMap.linearMap_vsub]
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
 
 @[simp]
