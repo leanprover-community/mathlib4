@@ -178,14 +178,27 @@ instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
   (MaximalSpectrum.equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <|
     (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)
 
+variable {A}
+
 /-- An ideal in a commutative Noetherian ring consisting of zero divisors is annihilated by
 some nonzero element. This is not true in general for finitely generated modules in commutative
 rings, see https://math.stackexchange.com/q/1189814 and http://dx.doi.org/10.2140/pjm.1979.83.375
-(keywords: Property (A), Quentel's Condition (C)). -/
+(keywords: Property (A), Quentel's Condition (C)).
+
+It is also not true that every finitely generated module over every commutative Noetherian ring
+is annihilated by some nonzero element if each element is annihilated by some nonzero element,
+see https://math.stackexchange.com/a/3187153. -/
 theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
-  obtain ⟨P, ⟨prime, r, rfl⟩, hP⟩ := (I.subset_union_prime_finite
+  obtain ⟨P, ⟨prime, x, rfl⟩, hP⟩ := (I.subset_union_prime_finite
     (associatedPrimes.finite A A) (f := id) 0 0 fun _ h _ _ ↦ h.isPrime).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
   exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, r, Submodule.mem_annihilator.mpr <| by
-    simpa only [smul_eq_mul, mul_comm r] using hP, fun (h : r = 0) ↦ prime.ne_top <| by simp [h]⟩
+    simpa only [smul_eq_mul, mul_comm x] using hP, fun (h : x = 0) ↦ prime.ne_top <| by simp [h]⟩
+
+open LinearMap in
+theorem Ideal.exists_mem_ker_toSpanSingleton_eq_bot {I : Ideal A} [FaithfulSMul A I] :
+    ((I : Set A) ∩ nonZeroDivisors A).Nonempty := by
+  by_contra!
+  exact (bot_lt_annihilator_of_disjoint_nonZeroDivisors
+    (Set.disjoint_iff_inter_eq_empty.mpr this)).ne' <| by rwa [Module.annihilator_eq_bot]
