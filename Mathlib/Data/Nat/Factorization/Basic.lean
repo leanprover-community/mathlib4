@@ -488,48 +488,33 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
     · simp [h, succ_div_of_not_dvd, ih]
 
 theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
-    {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
+    {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
     ∃ c, a = c ^ n ∧ b = c ^ m := by
-  by_cases hn : n = 0
+  by_cases ha0 : a = 0
+  · symm at h
+    by_cases hm0 : m = 0
+    · simp_all
+    · use 0
+      simp_all
+  by_cases hn0 : n = 0
   · use b
     simp_all
-  have factorization_pow_eq := congrArg factorization h
-  rw [factorization_pow, factorization_pow] at factorization_pow_eq
-  let c_factorization := a.factorization.mapRange (· / n) (Nat.zero_div n)
-  let c := c_factorization.prod (· ^ ·)
+  let factors := a.factorization.mapRange (· / n) (Nat.zero_div n)
+  set c := factors.prod (· ^ ·) with hc
   use c
-  have factorization_eq_n_smul_c_factorization_of_eq_c_pow_n
-      x (hx : x ≠ 0) n (h : x.factorization = n • c_factorization) : x = c ^ n := by
-    suffices x.factorization = (c ^ n).factorization by
-      refine eq_of_factorization_eq hx ?_ (congrFun (congrArg DFunLike.coe this))
-      suffices c ≠ 0 from pow_ne_zero n this
-      simp [c, c_factorization]
-    convert h
-    rw [factorization_pow]
-    suffices c.factorization = c_factorization by rw [this]
-    unfold c
-    refine prod_pow_factorization_eq_self ?_
-    intro p p_mem
-    exact prime_of_mem_primeFactors (Finsupp.support_mapRange p_mem)
-  have mul_factorization_p_eq_and_n_dvd_a_factorization_p p :
-      m * a.factorization p = n * b.factorization p ∧ n ∣ a.factorization p := by
-    have := congr($factorization_pow_eq p)
-    exact ⟨this, hmn.symm.dvd_of_dvd_mul_left (Dvd.intro (b.factorization p) this.symm)⟩
-  constructor
-  · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n a ha n
-    ext p
-    exact (Nat.mul_div_cancel' (mul_factorization_p_eq_and_n_dvd_a_factorization_p p).2).symm
-  · apply factorization_eq_n_smul_c_factorization_of_eq_c_pow_n b hb m
-    ext p
-    simp only [coe_smul, Pi.smul_apply, mapRange_apply, smul_eq_mul, c_factorization]
-    obtain ⟨mul_factorization_p_eq, n_dvd_afp⟩ :=
-      mul_factorization_p_eq_and_n_dvd_a_factorization_p p
-    obtain ⟨k, afp_eq⟩ := n_dvd_afp
-    have n_pos := zero_lt_of_ne_zero hn
-    have := Nat.div_eq_of_eq_mul_right n_pos afp_eq
-    rw [this]
-    rw [afp_eq, Nat.mul_left_comm m n k] at mul_factorization_p_eq
-    exact Nat.mul_left_cancel n_pos mul_factorization_p_eq.symm
+  suffices ha : a = c ^ n by
+    refine ⟨ha, ?_⟩
+    apply Nat.pow_left_injective hn0
+    simp [← h, ha, Nat.pow_right_comm]
+  apply eq_of_factorization_eq ha0 (by simp [c, factors])
+  intro p
+  have foo (p) (hp : p ∈ factors.support) : Prime p := by
+    exact prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
+  rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
+  suffices n ∣ a.factorization p by
+    simp [factors, Nat.mul_div_cancel' this]
+  refine hmn.symm.dvd_of_dvd_mul_left ⟨b.factorization p, ?_⟩
+  simpa using congr(factorization $h p)
 
 theorem exists_eq_pow_of_pow_eq_pow
     {a b m n : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
