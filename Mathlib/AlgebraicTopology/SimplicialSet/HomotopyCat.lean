@@ -167,7 +167,8 @@ def OneTruncation₂.ofNerve₂.natIso :
         ComposableArrows.obj', Fin.zero_eta, Fin.isValue, ReflQuiv.comp_eq_comp, Nat.reduceAdd,
         op_map, Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
-      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
+      simp [nerveMap_app, nerveHomEquiv, ReflQuiv.isoOfEquiv,
+        ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
 end
 
