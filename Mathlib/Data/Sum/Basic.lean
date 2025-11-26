@@ -28,10 +28,7 @@ namespace Sum
 @[simp]
 theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
     Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
-  ext x
-  cases x with
-  | inl x => simp
-  | inr x => simp
+  grind
 
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
 attribute [simp] Sum.forall Sum.exists
@@ -47,29 +44,29 @@ theorem inr_injective : Function.Injective (inr : β → α ⊕ β) := fun _ _ �
 
 theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
     {x y : α ⊕ β} (h : x = y) :
-    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
+    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by grind
 
 section get
 
 variable {x : α ⊕ β}
 
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
-  cases x <;> simp
+  grind
 
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
-  cases x <;> simp
+  grind
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+    x.getLeft h₁ = x.getLeft?.get h₂ := by grind
 
 theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
+    x.getRight h₁ = x.getRight?.get h₂ := by grind
 
 @[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
-  rw [isLeft_iff, Option.isSome_iff_exists]; simp
+  grind
 
 @[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
-  rw [isRight_iff, Option.isSome_iff_exists]; simp
+  grind
 
 end get
 
@@ -78,12 +75,12 @@ open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_o
 @[simp]
 theorem update_elim_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : α}
     {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
-  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
+  update_eq_iff.2 ⟨by simp, by grind⟩
 
 @[simp]
 theorem update_elim_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : β}
     {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
-  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
+  update_eq_iff.2 ⟨by simp, by grind⟩
 
 @[simp]
 theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α}
@@ -93,7 +90,7 @@ theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α �
 @[simp]
 theorem update_inl_apply_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i j : α}
     {x : γ} : update f (inl i) x (inl j) = update (f ∘ inl) i x j := by
-  rw [← update_inl_comp_inl, Function.comp_apply]
+  grind
 
 @[simp]
 theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {x : γ} :
@@ -178,28 +175,24 @@ namespace LiftRel
 variable {r : α → γ → Prop} {s : β → δ → Prop} {x : α ⊕ β} {y : γ ⊕ δ}
   {a : α} {b : β} {c : γ} {d : δ}
 
-theorem isLeft_congr (h : LiftRel r s x y) : x.isLeft ↔ y.isLeft := by cases h <;> rfl
-theorem isRight_congr (h : LiftRel r s x y) : x.isRight ↔ y.isRight := by cases h <;> rfl
+theorem isLeft_congr (h : LiftRel r s x y) : x.isLeft ↔ y.isLeft := by grind
+theorem isRight_congr (h : LiftRel r s x y) : x.isRight ↔ y.isRight := by grind
 
-theorem isLeft_left (h : LiftRel r s x (inl c)) : x.isLeft := by cases h; rfl
-theorem isLeft_right (h : LiftRel r s (inl a) y) : y.isLeft := by cases h; rfl
-theorem isRight_left (h : LiftRel r s x (inr d)) : x.isRight := by cases h; rfl
-theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
+theorem isLeft_left (h : LiftRel r s x (inl c)) : x.isLeft := by grind
+theorem isLeft_right (h : LiftRel r s (inl a) y) : y.isLeft := by grind
+theorem isRight_left (h : LiftRel r s x (inr d)) : x.isRight := by grind
+theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by grind
 
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
-  rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, or_false, reduceCtorEq] at h₁
-  exact h₁
+  grind
 
 theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := exists_of_isLeft_left h₁ ((isLeft_congr h₁).mpr h₂)
 
 theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
-  rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, false_or, reduceCtorEq] at h₁
-  exact h₁
+  grind
 
 theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
