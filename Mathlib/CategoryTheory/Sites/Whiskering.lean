@@ -62,7 +62,7 @@ instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full
 variable {F} in
 /-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F ⋙ sheafToPresheaf J B` is fully
 faithful. -/
-def sheafComposeCompSheafToPresheafFullyFaithful (hF : F.FullyFaithful) :
+def fullyFaithfulSheafComposeCompSheafToPresheaf (hF : F.FullyFaithful) :
     (sheafCompose J F ⋙ sheafToPresheaf J B).FullyFaithful :=
   (fullyFaithfulSheafToPresheaf J A).comp (hF.whiskeringRight Cᵒᵖ)
 
@@ -74,9 +74,9 @@ instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
 
 variable {F} in
 /-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F` is fully faithful. -/
-def sheafComposeFullyFaithful (hF : F.FullyFaithful) :
+def fullyFaithfulSheafCompose (hF : F.FullyFaithful) :
     (sheafCompose J F).FullyFaithful :=
-  (sheafComposeCompSheafToPresheafFullyFaithful J hF).ofCompFaithful
+  (fullyFaithfulSheafComposeCompSheafToPresheaf J hF).ofCompFaithful
 
 instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms where
   reflects {G₁ G₂} f _ := by
