@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.MonoidAlgebra.Lift
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 
@@ -42,33 +43,37 @@ variable {S : Type*}
 
 instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
     NoZeroSMulDivisors R (MonoidAlgebra k G) :=
-  Finsupp.noZeroSMulDivisors
+  coeffEquiv.noZeroSMulDivisors _
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=
-  Finsupp.distribMulAction G k
+  coeffEquiv.distribMulAction _
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
-  Finsupp.module G k
+  coeffEquiv.module _
+
+variable (R) in
+/-- `MonoidAlgebra.coeff` as a linear equiv. -/
+@[simps!]
+def coeffLinearEquiv [Semiring R] [Semiring k] [Module R k] : MonoidAlgebra k G ≃ₗ[R] G →₀ k :=
+  coeffEquiv.linearEquiv _
 
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R (MonoidAlgebra k G) :=
-  Finsupp.faithfulSMul
+  coeffEquiv.faithfulSMul _
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
+
+TODO: Change the type to `DistribMulAction Gᵈᵐᵃ (MonoidAlgebra k G)` and then it can be an instance.
+TODO: Generalise to a group acting on another, instead of just the left multiplication action.
 -/
 def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (MonoidAlgebra k G) :=
-  Finsupp.comapDistribMulAction
+  have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := k)
+  coeffEquiv.distribMulAction _
 
 end SMul
 
-/-!
-#### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
-
-As `MonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
-We need bundled version of `Finsupp.single` with the right types to state these lemmas.
-It is good practice to have those, regardless of the `ext` issue.
--/
+/-! #### Copies of `ext` lemmas and bundled `single`s from `Finsupp` -/
 
 section ExtLemmas
 
@@ -83,8 +88,8 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid 
   Finsupp.distribMulActionHom_ext' h
 
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
-abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
-    k →ₗ[R] MonoidAlgebra k G := Finsupp.lsingle a
+def lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
+    k →ₗ[R] MonoidAlgebra k G := (coeffLinearEquiv _).symm.toLinearMap.comp <| Finsupp.lsingle a
 
 @[simp]
 lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
@@ -96,8 +101,7 @@ lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
 lemma lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
     ⦃f g : MonoidAlgebra k G →ₗ[R] N⦄
     (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
-    f = g :=
-  Finsupp.lhom_ext' H
+    f = g := DFunLike.coe_injective <| Finsupp.lhom_ext' H
 
 end ExtLemmas
 

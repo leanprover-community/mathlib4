@@ -39,26 +39,26 @@ variable [Semiring k]
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! +simpRhs apply symm_apply]
 protected noncomputable def opRingEquiv [Mul G] :
-    (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
-  { opAddEquiv.symm.trans <|
-      (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with
-    map_mul' := by
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
-      rw [← AddEquiv.coe_toAddMonoidHom]
-      refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
-        (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
-      ext
-      -- Porting note: `reducible` cannot be `local` so proof gets long.
-      simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply,
-        AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft,
-        AddMonoidHom.compl₂_apply, AddEquiv.toAddMonoidHom_eq_coe,
-        AddEquiv.coe_addMonoidHom_trans]
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        MulOpposite.opAddEquiv_symm_apply]
-      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G)]
-      simp }
+    (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ where
+  __ := opAddEquiv.symm.trans <|
+      (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv
+  map_mul' := by
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
+    rw [← AddEquiv.coe_toAddMonoidHom]
+    refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
+      (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
+    ext
+    -- Porting note: `reducible` cannot be `local` so proof gets long.
+    simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply,
+      AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft,
+      AddMonoidHom.compl₂_apply, AddEquiv.toAddMonoidHom_eq_coe,
+      AddEquiv.coe_addMonoidHom_trans]
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
+      MulOpposite.opAddEquiv_symm_apply]
+    rw [MulOpposite.unop_mul (α := MonoidAlgebra k G)]
+    simp
 
 theorem opRingEquiv_single [Mul G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
