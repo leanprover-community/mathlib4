@@ -125,16 +125,20 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
 instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
     IsTopologicalDivisionRing α where
 
-lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
+lemma tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   tendsto_norm_cobounded_atTop.comp tendsto_inv₀_nhdsNE_zero
 
-lemma NormedField.tendsto_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
-    Tendsto (· ^ m) (𝓝[≠] 0) (Bornology.cobounded α) := by
+@[deprecated (since := "2025-11-26")]
+alias NormedField.tendsto_norm_inv_nhdsNE_zero_atTop := tendsto_norm_inv_nhdsNE_zero_atTop
+
+lemma tendsto_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
+    Tendsto (· ^ m) (𝓝[≠] 0) (cobounded α) := by
   obtain ⟨m, rfl⟩ := neg_surjective m
   lift m to ℕ using by cutsat
   simpa [Function.comp_def] using (SeminormedRing.tendsto_pow_cobounded_cobounded
     (by cutsat)).comp tendsto_inv₀_nhdsNE_zero
 
+@[deprecated tendsto_zpow_nhdsNE_zero_atTop (since := "2025-11-26")]
 lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
     Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop :=
   tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_atTop hm)
