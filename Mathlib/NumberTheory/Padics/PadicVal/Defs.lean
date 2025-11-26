@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 module
 
+public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Factors
 
@@ -30,17 +31,24 @@ open Nat
 
 variable {p : ℕ}
 
-/-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
-that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
-def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
-  if h : p ≠ 1 ∧ 0 < n then Nat.find (finiteMultiplicity_iff.2 h) else 0
+theorem padicValNat_eq_emultiplicity {p n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
+    padicValNat p n = emultiplicity p n := by
+  rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp (pos_iff_ne_zero.mpr hn),
+    pow_dvd_iff_le_padicValNat hp (pos_iff_ne_zero.mpr hn)]
+  simp
+
+theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicValNat p n := by
+  rcases eq_or_ne p 1 with rfl | hp
+  · simp
+  · rcases eq_or_ne n 0 with rfl | hn
+    · simp
+    · simp [← padicValNat_eq_emultiplicity, *]
+
 
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
-    padicValNat p n = multiplicity p n := by
-  simp only [padicValNat, ne_eq, hp, not_false_eq_true, Nat.pos_iff_ne_zero.mpr hn, and_self,
-    ↓reduceDIte, multiplicity, emultiplicity,
-    finiteMultiplicity_iff.mpr ⟨hp, Nat.pos_iff_ne_zero.mpr hn⟩]
-  convert (WithTop.untopD_coe ..).symm
+    padicValNat p n = multiplicity p n :=
+  .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
+    padicValNat_eq_emultiplicity hp hn
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
