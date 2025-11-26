@@ -3,8 +3,10 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
@@ -41,6 +43,8 @@ did essentially all the theory under the assumption `IsUniformGroup G`.
 For this reason, you may find results stated under this assumption even though they may hold
 under either `IsRightUniformGroup G` or `IsLeftUniformGroup G`.
 -/
+
+@[expose] public section
 
 assert_not_exists Cauchy
 
@@ -220,6 +224,17 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
     (hg : UniformContinuous g) : UniformContinuous fun x => f x * g x := by
   have : UniformContinuous fun x => f x / (g x)⁻¹ := hf.div hg.inv
   simp_all
+
+@[to_additive]
+theorem Finset.uniformContinuous_prod {α β ι : Type*} [UniformSpace α] [CommGroup α]
+    [IsUniformGroup α] [UniformSpace β] {f : ι → β → α} (s : Finset ι)
+    (h : ∀ i ∈ s, UniformContinuous (f i)) :
+    UniformContinuous (∏ i ∈ s, f i ·) := by
+  induction s using Finset.cons_induction with
+  | empty => simpa using uniformContinuous_const
+  | cons a s ha ih =>
+    simp_rw [Finset.mem_cons, forall_eq_or_imp] at h
+    simpa [Finset.prod_cons] using h.1.mul (ih h.2)
 
 @[to_additive]
 theorem uniformContinuous_mul : UniformContinuous fun p : α × α => p.1 * p.2 :=

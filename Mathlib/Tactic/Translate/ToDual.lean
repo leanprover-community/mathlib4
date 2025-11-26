@@ -3,7 +3,9 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
-import Mathlib.Tactic.Translate.Core
+module
+
+public meta import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -20,6 +22,8 @@ Known limitations:
   are dual to eachother. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ToDual
 open Lean Meta Elab Command Std Translate
@@ -62,14 +66,14 @@ theorem max_comm' {α} [LinearOrder α] (x y : α) : max x y = max y x := max_co
 ```
 
 Use the `(reorder := ...)` syntax to reorder the arguments compared to the dual declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
-the fifth argument before the third argument. For example, this is used to tag `LE.le`
-with `(reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
+This is specified using cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments
+`α` and `β` with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. For example, this is used when tagging `LE.le`
+with `to_dual self (reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
 
-Use the `to_dual self` syntax to use the lemma as its own dual. This is often
-combined with the `(reorder := ...)` syntax, because a lemma is usually dual to itself only
-up to some reordering of its arguments.
+Use the `to_dual self` syntax to mark the lemma as its own dual. This is needed if the lemma is
+its own dual, up to a reordering of its arguments. `to_dual self` (and `to_dual existing`) tries to
+autogenerate the `(reorder := ...)` argument, so it is usually not necessary to give it explicitly.
 
 Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
@@ -96,20 +100,8 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/-- An extension that stores all the declarations that need their arguments reordered when
-applying `@[to_dual]`. It is applied using the `to_dual (reorder := ...)` syntax. -/
-initialize reorderAttr : NameMapExtension (List (List Nat)) ←
-  registerNameMapExtension _
-
-@[inherit_doc to_dual_relevant_arg]
-initialize relevantArgAttr : NameMapExtension Nat ←
-  registerNameMapAttribute {
-    name := `to_dual_relevant_arg
-    descr := "Auxiliary attribute for `to_dual` stating \
-      which arguments are the types with a dual structure."
-    add := fun
-    | _, `(attr| to_dual_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
-    | _, _ => throwUnsupportedSyntax }
+@[inherit_doc TranslateData.argInfoAttr]
+initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
 @[inherit_doc to_dual_dont_translate]
 initialize dontTranslateAttr : NameMapExtension Unit ←
@@ -177,11 +169,7 @@ def abbreviationDict : Std.HashMap String String := .ofList []
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr := ignoreArgsAttr
-  reorderAttr := reorderAttr
-  relevantArgAttr := relevantArgAttr
-  dontTranslateAttr := dontTranslateAttr
-  translations := translations
+  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true
@@ -191,7 +179,7 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
 

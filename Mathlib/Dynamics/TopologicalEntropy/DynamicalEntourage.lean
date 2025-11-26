@@ -3,9 +3,11 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Dynamical entourages
@@ -34,6 +36,8 @@ Add product of entourages.
 In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
 these dynamical entourages.
 -/
+
+@[expose] public section
 
 namespace Dynamics
 

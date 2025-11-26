@@ -3,13 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Real.Sqrt
 
 /-!
   # Norm on the complex numbers
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -323,7 +327,7 @@ theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    simp_rw [← RingHom.map_sub, norm_conj]; exact hi j hj⟩
+    simp_rw [← map_sub, norm_conj]; exact hi j hj⟩
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
 noncomputable def cauSeqConj (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖) :=
