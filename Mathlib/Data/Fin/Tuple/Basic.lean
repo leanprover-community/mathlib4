@@ -865,6 +865,10 @@ lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
     p.removeNth f i = f (p.succAbove i) :=
   rfl
 
+lemma removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
+    i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
+  rfl
+
 @[simp] lemma removeNth_insertNth (p : Fin (n + 1)) (a : α p) (f : ∀ i, α (succAbove p i)) :
     removeNth p (insertNth p a f) = f := by ext; unfold removeNth; simp
 
