@@ -32,7 +32,7 @@ on intervals.
 
 * `IsClosed.Icc_subset_of_forall_mem_nhdsWithin` : “Continuous induction” principle;
   if `s ∩ [a, b]` is closed, `a ∈ s`, and for each `x ∈ [a, b) ∩ s` some of its right neighborhoods
-  is included `s`, then `[a, b] ⊆ s`.
+  is included in `s`, then `[a, b] ⊆ s`.
 * `IsClosed.Icc_subset_of_forall_exists_gt`, `IsClosed.mem_of_ge_of_forall_exists_gt` : two
   other versions of the “continuous induction” principle.
 * `ContinuousOn.StrictMonoOn_of_InjOn_Ioo` :
@@ -209,7 +209,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
     (hb : b ∈ s) : Icc a b ⊆ s :=
   hs.2.Icc_subset ha hb
 
-/-- If preconnected set in a linear order space is unbounded below and above, then it is the whole
+/-- If a preconnected set in a linear order space is unbounded below and above, then it is the whole
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
@@ -503,7 +503,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
 
-/-- This lemmas characterizes when a subset `s` of a densely ordered conditionally complete linear
+/-- This lemma characterizes when a subset `s` of a densely ordered conditionally complete linear
 order is totally disconnected with respect to the order topology: between any two distinct points
 of `s` must lie a point not in `s`. -/
 lemma isTotallyDisconnected_iff_lt {s : Set α} :
@@ -612,35 +612,35 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioo_subset_Icc_self)
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
-`b` are two points of this set, then `f` sends `s` to a superset of `Icc (f x) (f y)`. -/
+`b` are two points of this set, then `f` sends `s` to a superset of `Icc (f a) (f b)`. -/
 theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (Icc (f a) (f b)) :=
   hs.isPreconnected.intermediate_value ha hb hf
 
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
-`b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
+`b` are two points of this set, then `f` sends `s` to a superset of `[f a, f b]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
     (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     SurjOn f s (uIcc (f a) (f b)) := by
   rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 
-/-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
-`at_bot` is surjective. -/
+/-- A continuous function which tends to `Filter.atTop` along `Filter.atTop` and to `Filter.atBot`
+along `Filter.atBot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>
   mem_range_of_exists_le_of_exists_ge hf (h_bot.eventually (eventually_le_atBot p)).exists
     (h_top.eventually (eventually_ge_atTop p)).exists
 
-/-- A continuous function which tendsto `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
-along `atBot` is surjective. -/
+/-- A continuous function which tends to `Filter.atBot` along `Filter.atTop` and to `Filter.atTop`
+along `Filter.atBot` is surjective. -/
 theorem Continuous.surjective' {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atBot atTop)
     (h_bot : Tendsto f atTop atBot) : Function.Surjective f :=
   Continuous.surjective (α := αᵒᵈ) hf h_top h_bot
 
 /-- If a function `f : α → β` is continuous on a nonempty interval `s`, its restriction to `s`
-tends to `at_bot : Filter β` along `at_bot : Filter ↥s` and tends to `Filter.atTop : Filter β` along
-`Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is surjective. We formulate the
-conclusion as `Function.surjOn f s Set.univ`. -/
+tends to `Filter.atBot : Filter β` along `Filter.atBot : Filter ↥s` and tends to
+`Filter.atTop : Filter β` along `Filter.atTop : Filter ↥s`, then the restriction of `f` to `s` is
+surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atBot)
     (htop : Tendsto (fun x : s => f x) atTop atTop) : SurjOn f s univ :=
