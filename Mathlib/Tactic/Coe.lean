@@ -3,8 +3,10 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
-import Lean.Elab.ElabRules
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.ElabRules
 
 /-!
 # Additional coercion notation
@@ -17,6 +19,8 @@ Defines notation for coercions.
 3. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
+
+public meta section
 
 open Lean Meta
 

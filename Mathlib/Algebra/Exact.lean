@@ -3,10 +3,11 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
 
@@ -25,6 +26,8 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 
 * add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
+
+@[expose] public section
 
 variable {R M M' N N' P P' : Type*}
 
@@ -278,7 +281,7 @@ lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
 
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
-  forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
+  forall_congr' fun _ => iff_congr (map_eq_zero_iff _ h) Iff.rfl
 
 namespace Exact
 

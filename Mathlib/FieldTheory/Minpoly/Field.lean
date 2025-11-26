@@ -3,11 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -17,6 +19,8 @@ and derives some well-known properties, amongst which the fact that minimal poly
 are irreducible, and uniquely determined by their defining property.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Set Function minpoly
@@ -262,12 +266,12 @@ variable (A)
 /-- The minimal polynomial of `0` is `X`. -/
 @[simp]
 theorem zero : minpoly A (0 : B) = X := by
-  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, RingHom.map_zero] using eq_X_sub_C B (0 : A)
+  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, map_zero] using eq_X_sub_C B (0 : A)
 
 /-- The minimal polynomial of `1` is `X - 1`. -/
 @[simp]
 theorem one : minpoly A (1 : B) = X - 1 := by
-  simpa only [RingHom.map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
+  simpa only [map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
 
 end Ring
 
@@ -301,7 +305,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
     rw [← root hx zero_root]
-    exact RingHom.map_zero _
+    exact map_zero _
   · rintro rfl
     simp
 
