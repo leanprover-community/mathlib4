@@ -630,7 +630,7 @@ def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
 lemma touchpoint_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
     (i : Fin (m + 1)) :
     (s.reindex e).touchpoint signs i = s.touchpoint (signs.map e.symm.toEmbedding) (e.symm i) :=
-  orthogonalProjectionSpan_congr (s.range_reindex_faceOpposite _ _) (s.excenter_reindex _ _)
+  orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex _ _) (s.excenter_reindex _ _)
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
