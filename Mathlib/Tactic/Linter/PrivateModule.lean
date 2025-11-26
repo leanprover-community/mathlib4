@@ -38,9 +38,9 @@ realize the name. If the original module is a `public import` of the downstream 
 new declaration `foo.eq_1` will be added to the public scope, as it would be if it had been
 declared in the original module.
 
-As such, if e.g. `simp` realized the public declaration `foo.eq_1` and added it to the environment
-in some downstream `M.Bar`, but `M.Bar` did not add any other public declarations, the linter
-should still fire on `M.Bar`. Ignoring reserved names ensures this.
+As such, if e.g. `simp` realized the public declaration `foo.eq_1` in some module `M.Bar`
+downstream of the module in which `foo` was declared, but `M.Bar` did not add any other public
+declarations, the linter should still fire on `M.Bar`. Ignoring reserved names ensures this.
 
 See also the type `Lean.ReservedNameAction`, invocations of `registerReservedNameAction` and
 `registerReservedNamePredicate` for examples, and the module `Lean.ResolveName` for further insight.
