@@ -201,7 +201,7 @@ variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S P] [IsScalarTower 
   [Module S Q] [IsScalarTower R S Q]
   {α : M →ₗ[R] P} {β : N →ₗ[R] Q}
   (ibcM : IsBaseChange S α) (ibcN : IsBaseChange S β)
-  {ι θ : Type*} [DecidableEq ι] [Fintype ι] [DecidableEq θ] [Fintype θ]
+  {ι θ : Type*} [DecidableEq ι] [Fintype ι] [Fintype θ]
   (b : Module.Basis ι R M) (c : Module.Basis θ R N)
 
 theorem linearMapLeftRightHom_toMatrix (f : M →ₗ[R] N) :
@@ -243,18 +243,4 @@ theorem det_endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R]
 
 end determinant
 
-=======
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
-
-theorem « end » {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    IsBaseChange S (endHom j) := by
-  apply of_equiv <|
-      (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
-  intro f
-  ext p
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
-
-end End
-
->>>>>>> master
 end IsBaseChange

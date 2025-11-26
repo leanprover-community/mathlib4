@@ -215,13 +215,13 @@ variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
-    ibc.endomHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
+    ibc.endHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, endomHom_comp_apply, toDualHom_comp_apply]
+  | tmul x => simp [transvection.apply, endHom_comp_apply, toDualHom_comp_apply]
 
 end LinearMap.transvection
 
@@ -464,7 +464,7 @@ theorem det [Module.Free R V] [Module.Finite R V]
     rw [RingHom.algebraMap_toAlgebra]
     simp only [vM, γ, Function.comp_apply]
     apply MvPolynomial.aeval_X
-  rw [← hf, ← hv, ← IsBaseChange.transvection, det_endomHom, det_ofDomain]
+  rw [← hf, ← hv, ← IsBaseChange.transvection, det_endHom, det_ofDomain]
   rw [map_add, map_one, add_right_inj, toDualHom_comp_apply]
 
 /-- Determinant of a transvection.
