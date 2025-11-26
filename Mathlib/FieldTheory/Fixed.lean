@@ -203,7 +203,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul',
     ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
-    ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
+    ← MulSemiringActionHom.coe_polynomial, ← map_smul, smul_polynomial,
     MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
