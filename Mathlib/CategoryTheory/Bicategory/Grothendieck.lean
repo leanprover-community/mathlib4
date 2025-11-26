@@ -99,10 +99,10 @@ instance categoryStruct : CategoryStruct (∫ F) where
   Hom X Y := Hom X Y
   id X := {
     base := 𝟙 X.base
-    fiber := (F.mapId ⟨X.base⟩).hom.toNatTrans.app X.fiber }
+    fiber := (F.mapId ⟨X.base⟩).hom.app X.fiber }
   comp {X _ _} f g := {
     base := f.base ≫ g.base
-    fiber := (F.mapComp f.base.toLoc g.base.toLoc).hom.toNatTrans.app X.fiber ≫
+    fiber := (F.mapComp f.base.toLoc g.base.toLoc).hom.app X.fiber ≫
       (F.map g.base.toLoc).toFunctor.map f.fiber ≫ g.fiber }
 
 instance (X : ∫ F) : Inhabited (Hom X X) :=
@@ -174,7 +174,7 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     fiber := (α.app ⟨a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
     base := f.1
-    fiber := (α.naturality f.1.toLoc).inv.toNatTrans.app a.fiber ≫
+    fiber := (α.naturality f.1.toLoc).inv.app a.fiber ≫
       (α.app ⟨b.base⟩).toFunctor.map f.2 }
   map_id a := by
     ext
@@ -252,11 +252,11 @@ instance categoryStruct : CategoryStruct (∫ᶜ F) where
   Hom X Y := Hom X Y
   id X := {
     base := 𝟙 X.base
-    fiber := (F.mapId ⟨op X.base⟩).inv.toNatTrans.app X.fiber }
+    fiber := (F.mapId ⟨op X.base⟩).inv.app X.fiber }
   comp {_ _ Z} f g := {
     base := f.base ≫ g.base
     fiber := f.fiber ≫ (F.map f.base.op.toLoc).toFunctor.map g.fiber ≫
-      (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.toNatTrans.app Z.fiber }
+      (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.app Z.fiber }
 
 instance (X : ∫ᶜ F) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
@@ -330,7 +330,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
   map {a b} f := {
     base := f.1
     fiber := (α.app ⟨op a.base⟩).toFunctor.map f.2 ≫
-      (α.naturality f.1.op.toLoc).hom.toNatTrans.app b.fiber }
+      (α.naturality f.1.op.toLoc).hom.app b.fiber }
   map_id a := by
     ext1
     · dsimp
@@ -347,7 +347,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
         Iso.inv_hom_id_app]
       simp only [assoc]
       simp_rw [← reassoc_of% Cat.Hom.comp_map]
-      rw [(α.naturality f.base.op.toLoc).hom.toNatTrans.naturality_assoc]
+      rw [(α.naturality f.base.op.toLoc).hom.naturality_assoc]
 
 
 @[simp]

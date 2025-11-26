@@ -122,6 +122,11 @@ def _root_.CategoryTheory.NatTrans.toCatHom₂ {C D : Type u} [Category.{v} C]
 abbrev _root_.CategoryTheory.Cat.Hom₂.app {C D : Cat.{v, u}} {F G : C ⟶ D} (η : F ⟶ G) (X : C) :
     F.toFunctor.obj X ⟶ G.toFunctor.obj X := η.toNatTrans.app X
 
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Cat.Hom₂.naturality {C D : Cat.{v, u}} {F G : C ⟶ D} (η : F ⟶ G)
+    {X Y : C} (f : X ⟶ Y) : F.toFunctor.map f ≫ η.app Y = η.app X ≫ G.toFunctor.map f :=
+  η.toNatTrans.naturality f
+
 instance instCategory {X Y : Cat.{v, u}} : Category (X ⟶ Y) where
   id F := NatTrans.toCatHom₂ (𝟙 F.toFunctor)
   comp η₁ η₂ := NatTrans.toCatHom₂ (η₁.toNatTrans ≫ η₂.toNatTrans)
@@ -241,6 +246,7 @@ theorem Hom₂.comp_app {C D : Cat.{v, u}} {F G H : C ⟶ D} (α : F ⟶ G) (β 
 theorem Hom₂.eqToHom_toNatTrans {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F = G) :
   (eqToHom h).toNatTrans = eqToHom congr(($h).toFunctor) := by cases h; simp
 
+@[simp]
 theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
     (eqToHom h).app X = eqToHom congr(($h).toFunctor.obj X) := by
   simp [Hom₂.app]
