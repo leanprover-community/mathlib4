@@ -161,15 +161,15 @@ variable {s : Set α}
 
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is an open ball
 centered at `x` and intersecting `s` only at `x`. -/
-theorem exists_ball_inter_eq_singleton_of_mem_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
+theorem exists_ball_inter_eq_singleton_of_mem_discrete (hs : IsDiscrete s) {x : α} (hx : x ∈ s) :
     ∃ ε > 0, Metric.ball x ε ∩ s = {x} :=
-  nhds_basis_ball.exists_inter_eq_singleton_of_mem_discrete hx
+  nhds_basis_ball.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 /-- Given a point `x` in a discrete subset `s` of a pseudometric space, there is a closed ball
 of positive radius centered at `x` and intersecting `s` only at `x`. -/
-theorem exists_closedBall_inter_eq_singleton_of_discrete [DiscreteTopology s] {x : α} (hx : x ∈ s) :
+theorem exists_closedBall_inter_eq_singleton_of_discrete (hs : IsDiscrete s) {x : α} (hx : x ∈ s) :
     ∃ ε > 0, Metric.closedBall x ε ∩ s = {x} :=
-  nhds_basis_closedBall.exists_inter_eq_singleton_of_mem_discrete hx
+  nhds_basis_closedBall.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 end Metric
 

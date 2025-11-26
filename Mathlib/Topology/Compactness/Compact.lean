@@ -920,8 +920,9 @@ theorem isCompact_iff_isCompact_univ : IsCompact s ↔ IsCompact (univ : Set s) 
 theorem isCompact_iff_compactSpace : IsCompact s ↔ CompactSpace s :=
   isCompact_iff_isCompact_univ.trans isCompact_univ_iff
 
-theorem IsCompact.finite (hs : IsCompact s) (hs' : DiscreteTopology s) : s.Finite :=
-  finite_coe_iff.mp (@finite_of_compact_of_discrete _ _ (isCompact_iff_compactSpace.mp hs) hs')
+theorem IsCompact.finite (hs : IsCompact s) (hs' : IsDiscrete s) : s.Finite :=
+  finite_coe_iff.mp (@finite_of_compact_of_discrete _ _
+    (isCompact_iff_compactSpace.mp hs) hs'.to_subtype)
 
 theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite) :
     ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot :=

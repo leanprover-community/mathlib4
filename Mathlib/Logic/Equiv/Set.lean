@@ -623,18 +623,7 @@ theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α �
     [∀ j, Decidable (p j)] :
     (fun i : α => if h : p i then (Function.update v j x) (e.symm ⟨i, h⟩) else w i) =
       Function.update (fun i : α => if h : p i then v (e.symm ⟨i, h⟩) else w i) (e j) x := by
-  ext i
-  by_cases h : p i
-  · rw [dif_pos h, Function.update_apply_equiv_apply, Equiv.symm_symm,
-      Function.update_apply, Function.update_apply, dif_pos h]
-    have h_coe : (⟨i, h⟩ : Subtype p) = e j ↔ i = e j :=
-      Subtype.ext_iff.trans (by rw [Subtype.coe_mk])
-    simp [h_coe]
-  · have : i ≠ e j := by
-      contrapose! h
-      have : p (e j : α) := (e j).2
-      rwa [← h] at this
-    simp [h, this]
+  grind
 
 section Swap
 

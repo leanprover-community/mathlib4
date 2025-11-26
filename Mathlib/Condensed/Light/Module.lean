@@ -46,7 +46,7 @@ abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
 /-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
-@[simps!]
+@[simps! obj_val_map map_val_app]
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
   sheafCompose _ (CategoryTheory.forget _)
 

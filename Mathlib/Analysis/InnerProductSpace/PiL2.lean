@@ -448,8 +448,7 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
-  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr]
-  rfl
+  simp [← Basis.equivFun_apply]
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]

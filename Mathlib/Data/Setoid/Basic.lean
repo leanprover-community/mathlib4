@@ -196,6 +196,12 @@ theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
 theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
   rfl
 
+@[simp] lemma mk_eq_top {r : α → α → Prop} (iseqv) : mk r iseqv = ⊤ ↔ r = ⊤ := by
+  simp [eq_iff_rel_eq]
+
+@[simp] lemma mk_eq_bot {r : α → α → Prop} (iseqv) : mk r iseqv = ⊥ ↔ r = (· = ·) := by
+  simp [eq_iff_rel_eq]
+
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]

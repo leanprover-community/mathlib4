@@ -47,9 +47,12 @@ syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 It uses cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments `α` and `β`
 with each other and the fifth and the sixth argument, and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
-`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
+`≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `a ^ n` to `n • a`.
+
+If the translated declaration already exists (i.e. when using `existing` or `self`), this is
+inferred automatically using the function `guessReorder`.
 -/
-syntax reorderOption := &"reorder" " := " ((ident <|> num)+),+
+syntax reorderOption := &"reorder" " := " ((ident <|> num)+),*
 /--
 the `(relevant_arg := ...)` option tells which argument to look at to determine whether to
 translate this constant. This is inferred automatically using the function `findRelevantArg`,
@@ -127,6 +130,13 @@ register_option linter.translateExisting : Bool := {
   defValue := true
   descr := "Linter used by translate attributes that checks whether the user correctly specified
     that the translated declaration already exists" }
+
+/-- Linter used by translate attributes that checks if the given reorder is
+    equal to the automatically generated name -/
+register_option linter.translateReorder : Bool := {
+  defValue := true
+  descr := "Linter used by translate attributes that checks if the given reorder is \
+    equal to the automatically generated one" }
 
 @[inherit_doc translate_change_numeral]
 initialize changeNumeralAttr : NameMapExtension (List Nat) ←
@@ -236,7 +246,7 @@ structure Config : Type where
   we check whether the given name can be auto-generated. -/
   allowAutoName : Bool := false
   /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder : List (List Nat) := []
+  reorder? : Option (List (List Nat)) := none
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg? : Option Nat := none
   /-- The attributes which we want to give to the original and translated declaration.
@@ -605,8 +615,8 @@ using the transforms dictionary.
 
 `pre` is the declaration that got the translation attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : Name) :
-    Name → CoreM Unit := fun src ↦ do
+partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cfg : Config)
+    (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -633,13 +643,13 @@ partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : N
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
-    transformDeclAux t cfg pre tgt_pre n
+    transformDeclAux t reorder cfg pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre do
-      transformDeclAux t cfg pre tgt_pre n
+      transformDeclAux t reorder cfg pre tgt_pre n
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
-      transformDeclAux t cfg pre tgt_pre n
+      transformDeclAux t reorder cfg pre tgt_pre n
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot translate the name.
   if !pre.isPrefixOf src then
@@ -649,7 +659,7 @@ partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : N
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
-      updateDecl t tgt srcDecl cfg.reorder cfg.dontTranslate
+      updateDecl t tgt srcDecl reorder cfg.dontTranslate
     else
       updateDecl t tgt srcDecl [] []
   let value ← match trgDecl with
@@ -807,6 +817,108 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
     trace[translate_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
 
+/-- Try to determine the value of the `(reorder := ...)` option that would be needed to translate
+type `e₁` to type `e₂`. If there is no good guess, default to `[]`.
+The heuristic that we use is to compare the conclusions of `e₁` and `e₂`,
+and to observe which variables are swapped. -/
+def guessReorder (src tgt : Expr) : List (List Nat) := Id.run do
+  let mut n := 0; let mut src := src; let mut tgt := tgt
+  while isDepForall src && isDepForall tgt do
+    src := src.bindingBody!
+    tgt := tgt.bindingBody!
+    n := n + 1
+  -- We substitute the loose bound variables with (numbered) free variables,
+  -- so that we can keep track of them more easily.
+  let vars := Array.ofFn (n := n) (.fvar ⟨.num .anonymous ·⟩)
+  src := src.instantiateRev vars
+  tgt := tgt.instantiateRev vars
+  let mut some map := go src tgt (.replicate n none) | return []
+  -- Compute the list of cycles representing the permutation `map`.
+  let mut perm := []
+  for h : i in 0...n do
+    let mut some j := map[i] | continue
+    if i = j then continue
+    let mut cycle := [i, j]
+    repeat do
+      let some j' := map[j] | return [] -- If the permutation is malformed, return `[]`.
+       -- To avoid computing the same cycle multiple times, and to avoid infinite loops,
+       -- we erase visited elements from `map`.
+      map := map.set! j none
+      if j' = i then break
+      j := j'
+      cycle := cycle ++ [↑j]
+    perm := cycle :: perm
+  return perm
+where
+  /-- Determine whether the given expression is a forall with a dependency.
+  If it has no dependency, then we can treat it as the conclusion. -/
+  isDepForall : Expr → Bool
+    | .forallE _ _ b _ => b.hasLooseBVar 0 || isDepForall b
+    | _ => false
+  /-- Determine for each `i : Fin n` to what `j : Fin n` it should get translated. -/
+  go (src tgt : Expr) {n : Nat} (map : Vector (Option (Fin n)) n) :
+      Option (Vector (Option (Fin n)) n) := do
+    match src, tgt with
+    | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => go d₁ d₂ map >>= go b₁ b₂
+    | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => go d₁ d₂ map >>= go b₁ b₂
+    | .mdata _ e₁       , .mdata _ e₂        => go e₁ e₂ map
+    | .letE _ t₁ v₁ b₁ _, .letE _ t₂ v₂ b₂ _ => go t₁ t₂ map >>= go v₁ v₂ >>= go b₁ b₂
+    | .app f₁ a₁        , .app f₂ a₂         => go f₁ f₂ map >>= go a₁ a₂
+    | .proj _ _ e₁      , .proj _ _ e₂       => go e₁ e₂ map
+    | .fvar ⟨.num _ i₁⟩  , .fvar ⟨.num _ i₂⟩  =>
+      if h : i₂ < n then
+        if let some i₂' := map[i₁]! then
+          guard (i₂ == i₂') -- If `i₂ ≠ i₂'`, it's not clear what `i₁` should be translated to.
+          some map
+        else
+          some <| map.set! i₁ (some ⟨i₂, h⟩)
+      else
+        panic! "index {i₂} is out of bounds ({n})"
+    /- To avoid false positives, we do a sanity check to make sure that the two expressions are
+    indeed of the same shape. Note that we cannot check for `e₁ == e₁`, because the universes
+    in `e₁` and `e₂` might be different (because we decide only later whether to swap them). -/
+    | .lit _, .lit _ | .bvar _, .bvar _ | .sort _, .sort _ | .const .., .const .. => some map
+    | _, _ => none
+
+/-- Verify that the type of `srcDecl` translates to that of `tgtDecl`.
+Also try to autogenerate the `reorder` option for this translation. -/
+partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config) :
+    MetaM (List (List Nat)) := withoutExporting do
+  let mut srcDecl ← getConstInfo src
+  let tgtDecl ← getConstInfo tgt
+  unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
+    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
+      universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
+  let srcType ← applyReplacementForall t cfg.dontTranslate srcDecl.type
+  let reorder' := guessReorder srcType tgtDecl.type
+  trace[translate_detail] "The guessed reorder is {reorder'}"
+  let reorder ←
+    if let some reorder := cfg.reorder? then
+      -- check whether the permutations are equal by running both on `(0...=max).toArray`
+      if let some max := reorder.flatten.max? then
+        if reorder'.flatten.max? == max then
+          let range : Array Nat := (0...=max).toArray
+          if range.permute! reorder == range.permute! reorder' then
+            Linter.logLintIf linter.translateReorder cfg.ref m!"\
+              `{t.attrName}` correctly autogenerated the `(reorder := ...)` argument for {src}.\n\
+              You may remove the `(reorder := ...)` argument."
+      pure reorder
+    else
+      pure reorder'
+  let srcType ← reorderForall reorder srcType
+  if 0 ∈ reorder.flatten then
+    srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
+  -- instantiate both types with the same universes. `instantiateLevelParams` does some
+  -- normalization, so we apply it to both types.
+  let srcType := srcType.instantiateLevelParams
+    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  let tgtType := tgtDecl.type.instantiateLevelParams
+    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
+  unless ← withReducible <| isDefEq srcType tgtType do
+    throwError "`{t.attrName}` validation failed: expected{indentExpr srcType}\nbut '{tgt}' has \
+      type{indentExpr tgtType}"
+  return reorder
+
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
 def proceedFieldsAux (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
@@ -878,7 +990,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     MetaM.run' <| forallTelescope (← getConstInfo declName).type fun xs _ => do
     let argNames ← xs.mapM (·.fvarId!.getUserName)
     let mut attrs := #[]
-    let mut reorder := []
+    let mut reorder? := none
     let mut relevantArg? := none
     let mut dontTranslate := []
     for opt in opts do
@@ -886,18 +998,19 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       | `(bracketedOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(bracketedOption| (reorder := $[$[$reorders]*],*)) =>
-        for cycle in reorders do
+        if reorder?.isSome then
+          throwErrorAt opt "cannot specify `reorder` multiple times"
+        reorder? ← reorders.toList.mapM fun cycle => do
           if h : cycle.size = 1 then
-            throwErrorAt cycle[0] "\
+            throwErrorAt cycle[0].raw "\
               invalid cycle `{cycle[0]}`, a cycle must have at least 2 elements.\n\
               `(reorder := ...)` uses cycle notation to specify a permutation.\n\
               For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
               and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
               the fifth argument before the third argument."
-          let cycle ← cycle.toList.mapM (elabArgStx declName argNames xs)
-          reorder := cycle :: reorder
+          cycle.toList.mapM (elabArgStx declName argNames xs)
       | `(bracketedOption| (relevant_arg := $n)) =>
-        if let some arg := relevantArg? then
+        if relevantArg?.isSome then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
         else
           if let `($_:hole) := n then
@@ -915,7 +1028,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
       throwError "invalid `(attr := ...)` after `self`, \
         as there is only one declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
-    trace[translate_detail] "attributes: {attrs}; reorder arguments: {reorder}"
+    trace[translate_detail] "attributes: {attrs}; reorder arguments: {reorder?}"
     let doc ← doc.mapM fun
       | `(str|$doc:str) => open Linter in do
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
@@ -949,7 +1062,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     return {
       trace := !stx[1].isNone
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
-      doc, attrs, reorder, relevantArg?, dontTranslate, existing, self
+      doc, attrs, reorder?, relevantArg?, dontTranslate, existing, self
       ref := match tgt with | some tgt => tgt.raw | none => stx[0] }
   | _ => throwUnsupportedSyntax
 
@@ -1046,30 +1159,8 @@ the body using the `translations` dictionary.
 -/
 partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
     (argInfo : ArgInfo := {}) : CoreM (Array Name) := withDeclNameForAuxNaming tgt do
-  transformDeclAux t cfg src tgt src
+  transformDeclAux t argInfo.reorder cfg src tgt src
   copyMetaData t cfg src tgt argInfo
-
-/-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (t : TranslateData) (src tgt : Name) (reorder : List (List Nat))
-    (dont : List Nat) : MetaM Unit := withoutExporting do
-  let mut srcDecl ← getConstInfo src
-  let tgtDecl ← getConstInfo tgt
-  if 0 ∈ reorder.flatten then
-    srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
-  unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
-    throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
-      universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-  -- instantiate both types with the same universes. `instantiateLevelParams` applies some
-  -- normalization, so we have to apply it to both types.
-  let type := srcDecl.type.instantiateLevelParams
-    srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let tgtType := tgtDecl.type.instantiateLevelParams
-    tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let type ← reorderForall reorder <| ← applyReplacementForall t dont <| ← unfoldAuxLemmas type
-  -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
-  unless ← withReducible <| isDefEq type tgtType do
-    throwError "`{t.attrName}` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
-      type{indentExpr tgtType}"
 
 /-- `addTranslationAttr src cfg` adds a translation attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
@@ -1087,9 +1178,10 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- If `tgt` is not in the environment, the translation to `tgt` was added only for
     -- translating the namespace, and `src` wasn't actually tagged.
     if (← getEnv).contains tgt then
-      if cfg.reorder != [] || cfg.relevantArg?.isSome then
-        MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
-        let argInfo := { reorder := cfg.reorder, relevantArg := cfg.relevantArg?.getD 0 }
+      if cfg.reorder?.isSome || cfg.relevantArg?.isSome then
+        discard <| withOptions (·.set `linter.translateReorder false) <| MetaM.run' <|
+          checkExistingType t src tgt cfg
+        let argInfo := { reorder := cfg.reorder?.getD [], relevantArg := cfg.relevantArg?.getD 0 }
         insertTranslation t src tgt argInfo false
         return #[tgt]
       throwError
@@ -1105,10 +1197,13 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
            `@[{t.attrName} existing]`."
       else
         "The translated declaration doesn't exist. Please remove the option `existing`."
-  if alreadyExists then
-    MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
+  let reorder ←
+    if alreadyExists then
+      MetaM.run' <| checkExistingType t src tgt cfg
+    else
+      pure (cfg.reorder?.getD [])
   let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
-  let argInfo := { reorder := cfg.reorder, relevantArg }
+  let argInfo := { reorder, relevantArg }
   insertTranslation t src tgt argInfo alreadyExists
   let nestedNames ←
     if alreadyExists then

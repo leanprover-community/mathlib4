@@ -259,11 +259,11 @@ variable [Finite G]
 instance normal : Normal (FixedPoints.subfield G F) F where
   isAlgebraic x := (isIntegral G F x).isAlgebraic
   splits' x :=
-    (Polynomial.splits_id_iff_splits _).1 <| by
+    by
       cases nonempty_fintype G
       rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
         Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
-      exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _
+      exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
 
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
@@ -290,7 +290,7 @@ end FixedPoints
 theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [CommSemiring R]
     [Semiring A] [Algebra R A] [CommRing B] [IsDomain B] [Algebra R B] :
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
-  have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
+  have : LinearIndependent B (LinearMap.ltoFun R A B B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
         AlgHom.ext fun _ => DFunLike.ext_iff.1 hfg _ :
       _)
