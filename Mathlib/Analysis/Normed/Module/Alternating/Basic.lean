@@ -541,8 +541,7 @@ def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
       apply Finset.sum_le_card_nsmul
       rintro i -
       grw [le_opNorm]
-      simp? [mul_left_comm (‖g‖ ^ _), Fintype.prod_eq_mul_prod_compl i] says
-        simp only [Fintype.prod_eq_mul_prod_compl i, Function.update_self, mul_left_comm (‖g‖ ^ _)]
+      simp only [Fintype.prod_eq_mul_prod_compl i, Function.update_self, mul_left_comm (‖g‖ ^ _)]
       grw [dg.le_opNorm, mul_assoc]
       gcongr
       rw [← Finset.card_singleton i, ← Finset.card_compl, ← Finset.prod_const,
