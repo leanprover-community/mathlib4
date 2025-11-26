@@ -34,7 +34,7 @@ open scoped Topology
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 open Filter in
-lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a) :
+lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a := by cfc_tac) :
     Tendsto (fun p : ℝ => cfc (fun x => p⁻¹ * (x ^ p - 1)) a) (𝓝[>] 0) (𝓝 (CFC.log a)) := by
   refine tendsto_cfc_fun ?tendsto ?cont
   case cont =>
@@ -81,5 +81,6 @@ lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
     grind
 
 @[gcongr]
-lemma CFC.log_le_log {a b : A} (ha : IsStrictlyPositive a) (hab : a ≤ b) : log a ≤ log b :=
+lemma CFC.log_le_log {a b : A} (hab : a ≤ b) (ha : IsStrictlyPositive a := by cfc_tac) :
+    log a ≤ log b :=
   log_monotoneOn ha (ha.of_le hab) hab
