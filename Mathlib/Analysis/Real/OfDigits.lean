@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Tactic.Rify
