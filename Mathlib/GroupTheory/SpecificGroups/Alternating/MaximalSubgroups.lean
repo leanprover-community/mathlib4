@@ -118,7 +118,9 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : (sᶜ : Set α).Nontrivi
   rw [sign_swap _]
   simp [← Function.Injective.ne_iff Subtype.coe_injective, hab]
 
-theorem stabilizer.isPreprimitive {s : Set α} (hs : (sᶜ : Set α).Nontrivial) :
+/-- In the alternating group, the stabilizer of a set acts
+primitively on that set if the complement is nontrivial. -/
+theorem stabilizer_isPreprimitive {s : Set α} (hs : (sᶜ : Set α).Nontrivial) :
     IsPreprimitive (stabilizer (alternatingGroup α) s) s := by
   let φ : stabilizer (alternatingGroup α) s → Perm s := MulAction.toPerm
   let f : s →ₑ[φ] s := {
@@ -128,13 +130,17 @@ theorem stabilizer.isPreprimitive {s : Set α} (hs : (sᶜ : Set α).Nontrivial)
   rw [isPreprimitive_congr (stabilizer.surjective_toPerm hs) hf]
   infer_instance
 
-theorem stabilizer.isPreprimitive' {s : Set α} (hsc : sᶜ.Nontrivial)
+/-- A subgroup of the alternating group that contains
+the stabilizer of a set acts primitively on that set
+if the complement is nontrivial. -/
+theorem stabilizer_subgroup_isPreprimitive {s : Set α} (hsc : sᶜ.Nontrivial)
     {G : Subgroup (alternatingGroup α)} (hG : stabilizer (alternatingGroup α) s ≤ G) :
     IsPreprimitive (stabilizer G s) s :=
-  have := stabilizer.isPreprimitive hsc
-  let φ (g : stabilizer (alternatingGroup α) s) : stabilizer G s := ⟨⟨g, hG g.prop⟩, g.prop⟩
-  let f : s →ₑ[φ] s :=
-    { toFun := id
+  have := stabilizer_isPreprimitive hsc
+  let φ (g : stabilizer (alternatingGroup α) s) : stabilizer G s :=
+      ⟨⟨g, hG g.prop⟩, g.prop⟩
+  let f : s →ₑ[φ] s := {
+      toFun := id
       map_smul' _ _ := rfl }
   IsPreprimitive.of_surjective (f := f) Function.surjective_id
 
@@ -186,7 +192,7 @@ theorem subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le
       toFun := Subtype.val
       map_smul' := fun m x => by simp only [φ', SMul.smul_stabilizer_def] }
     exact hB.preimage f'
-  apply stabilizer.isPreprimitive'
+  apply stabilizer_subgroup_isPreprimitive
   · rwa [compl_compl]
   · rwa [stabilizer_compl]
 
@@ -228,7 +234,7 @@ theorem subsingleton_of_stabilizer_alternatingGroup_lt_of_subset
       toFun := Subtype.val
       map_smul' := fun ⟨m, _⟩ x => by simp [φ'] }
     exact hB.preimage f'
-  exact stabilizer.isPreprimitive' hs (le_of_lt hG)
+  exact stabilizer_subgroup_isPreprimitive hs (le_of_lt hG)
 
 theorem compl_subset_of_stabilizer_alternatingGroup_le_of_not_subset_of_not_subset_compl
     {s B : Set α} {G : Subgroup (alternatingGroup α)} (hG : stabilizer (alternatingGroup α) s ≤ G)
