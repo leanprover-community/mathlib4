@@ -243,6 +243,7 @@ end StandardEtalePair
 variable (R S) in
 /-- An isomorphism to the standard etale algebra of a standard etale pair. -/
 structure StandardEtalePresentation extends P : StandardEtalePair R where
+  /-- The image of X in a `StandardEtalePresentation`. -/
   x : S
   hasMap : P.HasMap x
   lift_bijective : Function.Bijective (P.lift x hasMap)
