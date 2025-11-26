@@ -3,8 +3,9 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
-import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
+module
+
+public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
 /-!
 # Exponentiable morphisms
@@ -25,6 +26,8 @@ the pushforward functor along `f`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -32,8 +35,6 @@ namespace CategoryTheory
 open Category MonoidalCategory Functor Adjunction
 
 open ChosenPullbacksAlong
-
-attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
 
 variable {C : Type u} [Category.{v} C]
 
