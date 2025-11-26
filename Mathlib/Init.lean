@@ -68,7 +68,6 @@ register_linter_set linter.mathlibStandardSet :=
   -- linter.checkInitImports -- disabled, not relevant downstream.
   linter.hashCommand
   linter.oldObtain
-  linter.privateModule
   linter.style.cases
   linter.style.induction
   linter.style.refine
