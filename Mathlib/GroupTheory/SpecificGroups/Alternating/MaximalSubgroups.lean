@@ -378,12 +378,10 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
     {s : Set α} (h0 : s.Nontrivial) (hs : ncard s < ncard sᶜ)
     {G : Subgroup (alternatingGroup α)} (hG : stabilizer (alternatingGroup α) s < G) :
     IsPreprimitive G α := by
-
   have h1 : sᶜ.Nontrivial := by
     rw [← not_subsingleton_iff, ← ncard_le_one_iff_subsingleton, not_le]
     apply lt_of_le_of_lt _ hs
     exact h0.nonempty.ncard_pos
-
   -- G acts transitively
   have : IsPretransitive G α := by
     have hG' : stabilizer (alternatingGroup α) s ≤ G := le_of_lt hG
@@ -400,14 +398,12 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
       simp only [mem_stabilizer_iff]
       rw [← Subgroup.coe_mk G g hg, ← Subgroup.smul_def, ← mem_stabilizer_iff, h]
       exact Subgroup.mem_top _
-
   apply IsPreprimitive.mk
   -- We reduce to proving that a block which is not a subsingleton is `univ`.
   intro B hB
   unfold IsTrivialBlock
   rw [or_iff_not_imp_left]
   intro hB'
-
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `s.ncard  < sᶜ.ncard`.
@@ -420,19 +416,16 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
     apply hsc.eq_univ_of_card_lt
     rw [← ncard_add_ncard_compl s, mul_two]
     simpa only [add_lt_add_iff_right]
-
   -- Step 2 : A block contained in `sᶜ` is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton :=
     IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_alternatingGroup_le h0
       (HasSubset.Subset.ssubset_of_ne hBsc (by aesop)) -- uses Step 1
       (le_of_lt hG) hB
-
  -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) :
       B.Subsingleton :=
     IsBlock.subsingleton_of_stabilizer_alternatingGroup_lt_of_subset hB_not_le_sc h1 hG hBs hB
-
   -- Step 4 : sᶜ ⊆ B : A block which is not a subsingleton contains `sᶜ`.
   have hsc_le_B : sᶜ ⊆ B := by
     apply IsBlock.compl_subset_of_stabilizer_alternatingGroup_le_of_not_subset_of_not_subset_compl
@@ -442,7 +435,6 @@ theorem isPreprimitive_of_stabilizer_lt (h4 : 4 ≤ Nat.card α)
       add_le_add_iff_left, Nat.succ_le_iff]
     apply lt_of_le_of_lt _ hs
     rwa [Nat.succ_le_iff, one_lt_ncard]
-
   -- Conclusion of the proof : `B = univ`
   rw [eq_univ_iff_forall]
   intro x
