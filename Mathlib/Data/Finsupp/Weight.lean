@@ -210,6 +210,8 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
+theorem degree_def (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
+
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
   simp [degree]
   rw [Finset.sum_subset] <;> simp
