@@ -784,6 +784,85 @@ protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α →
     (hg : StronglyMeasurable g) : StronglyMeasurable fun x => ite (p x) (f x) (g x) :=
   StronglyMeasurable.piecewise hp hf hg
 
+protected theorem IndexedPartition.piecewise {s : ι → Set α}
+    (hs : IndexedPartition s) {_ : MeasurableSpace α} (hm : ∀ i, MeasurableSet (s i))
+    {f : ι → α → β} [TopologicalSpace β] (hf : ∀ i, StronglyMeasurable (f i)) :
+    StronglyMeasurable (hs.piecewise f) := by
+  by_cases Fi : Finite ι
+  · refine ⟨fun n => SimpleFunc.IndexedPartition.piecewise hs hm (fun i => (hf i).approx n),
+      fun x => ?_⟩
+    simp [SimpleFunc.IndexedPartition.piecewise, IndexedPartition.piecewise_apply,
+      StronglyMeasurable.tendsto_approx]
+  · simp only [not_finite_iff_infinite] at Fi
+    obtain ⟨e, _⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
+    let he := Equiv.bijective e
+    let r (n : ℕ) : Fin (n + 1) → Set α := fun i =>
+      if i < n then s (e i)
+      else (⋃ (i : Fin n), s (e i))ᶜ
+    have R (n : ℕ) : IndexedPartition (r n) :=
+      { eq_of_mem {a i j} hai haj := by
+          by_cases hi : i < n
+          · by_cases hj : j < n
+            · simp_all only [compl_iUnion, ↓reduceIte, r]
+              exact Fin.ext_iff.mpr (he.1 (hs.eq_of_mem hai haj))
+            · simp_all only [compl_iUnion, ↓reduceIte, mem_iInter, mem_compl_iff, not_lt, r]
+              exact (haj ⟨i, hi⟩ hai).elim
+          · have : i = n := by grind
+            suffices j = n by grind
+            by_contra
+            have : j < n := by grind
+            simp_all only [compl_iUnion, lt_self_iff_false, ↓reduceIte, mem_iInter, mem_compl_iff,
+              not_false_eq_true, r]
+            exact hai ⟨j, this⟩ haj
+        some i := by
+          by_cases hi : i < n
+          · exact hs.some (e i)
+          · exact hs.some (e (n + 1))
+        some_mem i := by
+          by_cases hi : i < n
+          · simp [r, hi]
+          · simp [r, hi, hs.mem_iff_index_eq]; grind
+        index a := by
+          by_cases hi : (hs.index a) ∈ {m | m < n}.image e
+          · have : e.invFun (hs.index a) < n + 1 := by
+              simp only [Set.mem_image] at hi
+              obtain ⟨m ,hm⟩ := hi
+              simp [← hm.2]
+              grind
+            exact ⟨e.invFun (hs.index a), this⟩
+          · exact ⟨n, by linarith⟩
+        mem_index a := by
+          by_cases hi : (hs.index a) ∈ {m | m < n}.image e
+          · have : e.invFun (hs.index a) < n := by
+              simp only [Set.mem_image] at hi
+              obtain ⟨m ,hm⟩ := hi
+              simp [← hm.2]; grind
+            simp only [compl_iUnion, hi, ↓reduceDIte, r, this]
+            simp only [↓reduceIte, Equiv.invFun_as_coe, Equiv.apply_symm_apply]
+            exact hs.mem_index a
+          · simp only [compl_iUnion, hi, ↓reduceDIte, lt_self_iff_false, ↓reduceIte, mem_iInter,
+              mem_compl_iff, r]
+            intro m hm; simp only [hs.mem_iff_index_eq] at hm
+            exact hi (({m | m < n}.mem_image e (hs.index a)).mpr (Exists.intro m.1 ⟨m.2, hm.symm⟩))
+      }
+    refine ⟨fun n => SimpleFunc.IndexedPartition.piecewise (R n)
+      (fun i => ?_) (fun i => (hf (e i)).approx n), fun x => ?_⟩
+    · by_cases hin : i < n
+      · simpa [r, hin] using hm (e i)
+      · simp only [r, hin]; exact MeasurableSet.compl (MeasurableSet.iUnion (fun m => hm (e m)))
+    · simp only [SimpleFunc.IndexedPartition.piecewise, SimpleFunc.coe_mk,
+        IndexedPartition.piecewise_apply]
+      have : ∀ᶠ n in atTop, e ((R n).index x) = hs.index x := by
+        obtain ⟨y, hy⟩ := he.2 (hs.index x)
+        refine eventually_atTop.mpr ⟨y + 1, fun b hb => ?_⟩
+        have : y = (⟨y, by linarith⟩ : Fin (b + 1)).1 := by simp
+        rw [← hy, EmbeddingLike.apply_eq_iff_eq, this, ← Fin.ext_iff, ← (R b).mem_iff_index_eq]
+        have : y < b := by linarith
+        simp [r, this, hs.mem_iff_index_eq, hy]
+      have : ∀ᶠ n in atTop, (hf (hs.index x)).approx n x = (hf (e ((R n).index x))).approx n x := by
+        filter_upwards [this] with n hn; congr; exact hn.symm
+      exact (Filter.tendsto_congr' this).mp (by simp [StronglyMeasurable.tendsto_approx])
+
 @[measurability]
 theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g : α → γ} {g' : γ → β}
     {mα : MeasurableSpace α} {mγ : MeasurableSpace γ} [TopologicalSpace β]

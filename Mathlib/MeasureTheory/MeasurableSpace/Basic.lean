@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Data.Setoid.Partition
 
 /-!
 # Measurable spaces and measurable functions
@@ -289,6 +290,14 @@ protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : Meas
   intro t ht
   rw [piecewise_preimage]
   exact hs.ite (hf ht) (hg ht)
+
+@[measurability, fun_prop]
+protected theorem Measurable.IndexedPartition.piecewise {ι : Type*} {s : ι → Set α} [Countable ι]
+    (hms : ∀ i, MeasurableSet (s i)) {f : ι → α → β} (hs : IndexedPartition s)
+    (hmf : ∀ i, Measurable (f i)) : Measurable (hs.piecewise f) := by
+  refine fun t ht => ?_
+  rw [IndexedPartition.piecewise_preimage]
+  exact MeasurableSet.iUnion (fun i => (hms i).inter (measurableSet_preimage (hmf i) ht))
 
 /-- This is slightly different from `Measurable.piecewise`. It can be used to show
 `Measurable (ite (x=0) 0 1)` by
