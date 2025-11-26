@@ -35,8 +35,6 @@ open Category MonoidalCategory Functor Adjunction
 
 open ChosenPullbacksAlong
 
-attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
-
 variable {C : Type u} [Category.{v} C]
 
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
