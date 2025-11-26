@@ -4,9 +4,7 @@ import Mathlib.Init
 import Mathlib.Tactic.Linter.PrivateModule
 public import Lean.Elab.Command
 
-public section
-
-
+@[expose] public section
 
 open Lean
 
@@ -17,7 +15,7 @@ elab "#show_new_reserved" : command => do
     if isReservedName (← getEnv) c then reserved := reserved.push c
   logInfo m!"reserved names: {reserved}"
 
-@[expose] def foo := true
+def foo := true
 
 -- `foo.eq_1` is reserved:
 /-- info: true -/
