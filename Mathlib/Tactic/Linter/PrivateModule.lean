@@ -58,7 +58,7 @@ def privateModule : Linter where run stx := do
       if !(← getEnv).constants.map₂.isEmpty then
         -- Exit if any declaration is public:
         for (decl, _) in (← getEnv).constants.map₂ do
-          if !isPrivateName decl then return
+          if !isPrivateName decl && !isReservedName (← getEnv) decl then
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
