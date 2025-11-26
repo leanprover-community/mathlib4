@@ -164,8 +164,8 @@ variable {f : M →ₗ[R] A} (h : IsSymmetricAlgebra f)
 
 section equiv
 
-/-- For `ι : M →ₗ[R] A`, construst the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
-from `IsSymmetricAlgebra ι`. -/
+/-- For `f : M →ₗ[R] A`, construst the algebra isomorphism `SymmetricAlgebra R M ≃ₐ[R] A`
+from `IsSymmetricAlgebra f`. -/
 noncomputable def equiv : SymmetricAlgebra R M ≃ₐ[R] A :=
   .ofBijective (SymmetricAlgebra.lift f) h
 
