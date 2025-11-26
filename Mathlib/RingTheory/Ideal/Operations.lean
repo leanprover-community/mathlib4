@@ -3,17 +3,23 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Tactic.Order
 
 /-!
 # More operations on modules and ideals
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
@@ -116,6 +122,13 @@ theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : 
   rw [Submodule.mem_comap] at hx ⊢
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
+
+lemma comap_smul'' {f : M →ₗ[R] M'} (hf : Function.Injective f) {p : Submodule R M'}
+    (hp : p ≤ LinearMap.range f) {I : Ideal R} :
+    Submodule.comap f (I • p) = I • Submodule.comap f p := by
+  refine le_antisymm ?_ (by simp)
+  conv_lhs => rw [← Submodule.map_comap_eq_self hp, ← Submodule.map_smul'']
+  rw [Submodule.comap_map_eq_of_injective hf]
 
 variable {I}
 
@@ -1015,6 +1028,11 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
+theorem IsPrime.notMem_of_isCoprime_of_mem {I : Ideal R} [I.IsPrime] {x y : R} (h : IsCoprime x y)
+    (hx : x ∈ I) : y ∉ I := fun hy ↦
+  have ⟨a, b, e⟩ := h
+  Ideal.IsPrime.one_notMem ‹_› (e ▸ I.add_mem (I.mul_mem_left a hx) (I.mul_mem_left b hy))
+
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union
@@ -1104,11 +1122,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases HI : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j
     · specialize ih hp.2 hn HI
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · left
-        exact ih
-      · right
-        left
-        exact ih
+      · order
+      · order
       · right
         right
         exact ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
