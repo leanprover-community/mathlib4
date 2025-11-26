@@ -41,7 +41,7 @@ section
 variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
 
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
-@[simps (notRecursive := [])] -- notRecursive to generate simp lemmas like `id_fst` and `comp_snd`
+@[simps id_fst id_snd comp_fst comp_snd Hom]
 instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
