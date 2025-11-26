@@ -6,7 +6,6 @@ Authors: Sina Hazratpour
 module
 
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
-public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 
 /-!
 # Exponentiable morphisms
