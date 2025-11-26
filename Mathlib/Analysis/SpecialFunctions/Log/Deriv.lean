@@ -263,7 +263,7 @@ Taylor series at `0` up to order `n`. This is an auxiliary lemma for
 Note that thanks to the geometric series, the derivative has a particularly simple form, and means
 that it is more convenient to avoid Taylor's theorem.
 -/
-lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range 
+lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
     {y : ℝ} (n : ℕ) (hy₁ : -1 < y) (hy₂ : y < 1) :
     HasDerivAt
       (fun x ↦ 1 / 2 * log ((1 + x) / (1 - x)) - (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)))
