@@ -51,7 +51,7 @@ theorem mkₐ_surjective (c : RingCon A) :
 
 @[simp, norm_cast]
 theorem coe_algebraMap (c : RingCon A) (s : S) :
-    (algebraMap S A s : c.Quotient) = algebraMap S _ s :=
+    (algebraMap S A s : c.Quotient) = algebraMap S c.Quotient s :=
   rfl
 
 end RingCon

@@ -543,7 +543,7 @@ variable (c)
 
 /-- The **first isomorphism theorem for algebra morphisms**. -/
 noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
-    (ker f.toRingHom).Quotient ≃ₐ[R] f.range where
+    (ker (f : M →+* P)).Quotient ≃ₐ[R] f.range where
   __ := AlgHom.codRestrict (kerLiftₐ f) _ _
   __ := quotientKerEquivRangeS f.toRingHom
 
@@ -551,7 +551,7 @@ theorem quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     quotientKerEquivRangeₐ f x = ⟨f x, AlgHom.mem_range_self f x⟩ :=
   rfl
 
--- simp issue
+@[simp]
 theorem coe_quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     (quotientKerEquivRangeₐ f x : P) = f x := by
   rfl
@@ -579,20 +579,20 @@ variable (R)
 
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
-    (RingCon.ker (factorₐ R h).toRingHom).Quotient ≃ₐ[R] d.Quotient :=
+    (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
   { quotientQuotientEquivQuotient c d h with
     commutes' _ := by rfl }
 
--- simp issue
+@[simp]
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :
     quotientQuotientEquivQuotientₐ R h ⟦⟦x⟧⟧ = ⟦x⟧ := rfl
 
--- simp issue
+@[simp]
 theorem quotientQuotientEquivQuotientₐ_coe_coe {c d : RingCon M} (h : c ≤ d) (x : M) :
     quotientQuotientEquivQuotientₐ R h ↑(x : c.Quotient) = x :=
   quotientQuotientEquivQuotientₐ_mk_mk R h x
 
--- simp issue
+@[simp]
 theorem quotientQuotientEquivQuotientₐ_symm_mk {c d : RingCon M} (h : c ≤ d) (x : M) :
     (quotientQuotientEquivQuotientₐ R h).symm ⟦x⟧ = ⟦⟦x⟧⟧ :=
   rfl

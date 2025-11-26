@@ -140,8 +140,8 @@ theorem ext'' {c d : RingCon R} (H : c.toSetoid = d.toSetoid) : c = d :=
 
 /-- Two ring congruence relations are equal iff their underlying binary
 relations are equal. -/
+@[simp]
 theorem coe_inj {c d : RingCon R} : ⇑c = ⇑d ↔ c = d := DFunLike.coe_fn_eq
-
 
 variable {R R' F : Type*} [Add R] [Add R']
     [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
