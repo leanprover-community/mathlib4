@@ -73,12 +73,7 @@ instance : HasZeroObject CommGrpCat :=
 @[to_additive]
 lemma subsingleton_of_isZero {G : CommGrpCat} (h : Limits.IsZero G) :
     Subsingleton G := by
-  apply subsingleton_of_forall_eq 1 (fun g ↦ ?_)
-  rcases h.1 (CommGrpCat.of (G × G)) with ⟨uniq⟩
-  have : ofHom (MonoidHom.inl G G) g= ofHom (MonoidHom.inr G G) g:= by
-    rw [IsZero.eq_of_src h (ofHom (MonoidHom.inl G G)) (ofHom (MonoidHom.inr G G))]
-  simp only [hom_ofHom, MonoidHom.inl_apply, MonoidHom.inr_apply, Prod.mk.injEq] at this
-  exact this.1
+  (h.iso (isZero_of_subsingleton <| .of PUnit)).commGroupIsoToMulEquiv.subsingleton
 
 @[to_additive]
 lemma isZero_iff_subsingleton {G : CommGrpCat} : Limits.IsZero G ↔ Subsingleton G :=
