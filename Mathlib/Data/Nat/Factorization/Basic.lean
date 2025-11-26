@@ -508,8 +508,8 @@ theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
     simp [← h, ha, Nat.pow_right_comm]
   apply eq_of_factorization_eq ha0 (by simp [c, factors])
   intro p
-  have foo (p) (hp : p ∈ factors.support) : Prime p := by
-    exact prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
+  have foo (p) (hp : p ∈ factors.support) : Prime p :=
+    prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
   rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
   suffices n ∣ a.factorization p by
     simp [factors, Nat.mul_div_cancel' this]
