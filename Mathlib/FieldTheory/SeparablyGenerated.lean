@@ -43,10 +43,9 @@ open MvPolynomial
 open scoped IntermediateField
 
 variable {k K ι : Type*} [Field k] [Field K] [Algebra k K] (p : ℕ) (hp : p.Prime)
-variable {a : ι → K} (n : ι) (ha : IntermediateField.adjoin k (Set.range a) = ⊤)
-variable (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i)
 variable (H : ∀ s : Finset K,
   LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (· ^ p) (s : Set K))
+variable {a : ι → K} (n : ι)
 
 namespace MvPolynomial
 
@@ -78,12 +77,14 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
   congr
   aesop
 
-variable {F : MvPolynomial ι k} (hF0 : F ≠ 0) (hFa : F.aeval a = 0)
+-- Suppose `F` has minimal total degree among the relations of `a`.
+variable {F : MvPolynomial ι k}
 variable (HF : ∀ F' : MvPolynomial ι k, F' ≠ 0 → F'.aeval a = 0 → F.totalDegree ≤ F'.totalDegree)
 
-include hF0 hFa HF in
+include HF
+
 /-- If `F` has minimal total degree among the relations of `a`, then `F` is irreducible. -/
-theorem irreducible_of_forall_totalDegree_le : Irreducible F := by
+lemma irreducible_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) : Irreducible F := by
   refine ⟨fun h' ↦ (h'.map (aeval a)).ne_zero hFa, fun q₁ q₂ e ↦ ?_⟩
   wlog h₁ : aeval a q₁ = 0 generalizing q₁ q₂
   · exact .symm (this q₂ q₁ (e.trans (mul_comm ..)) <| by simpa [h₁, hFa] using congr(aeval a $e))
@@ -94,7 +95,6 @@ theorem irreducible_of_forall_totalDegree_le : Irreducible F := by
   rw [totalDegree_eq_zero_iff_eq_C.mp this] at ne
   simpa using ne.2
 
-include HF in
 theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
     (σ : ι →₀ ℕ) (hσ : σ ∈ F.support) (i : ι) (hσi : σ i ≠ 0) :
     (toPolynomialAdjoinImageCompl F a i).coeff (σ i) ≠ 0 := by
@@ -123,8 +123,7 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
     simp_rw [← H, ← AlgHom.comp_apply]
     congr; ext; simp
 
-include hFa HF in
-theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (i : ι)
+theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (i : ι)
     (hi : i ∈ F.vars) : IsAlgebraic (Algebra.adjoin k (a '' {i}ᶜ)) (a i) := by
   classical
   have ⟨σ, hσ, hσi⟩ := (mem_vars i).mp hi
@@ -133,8 +132,8 @@ theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (i : ι)
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
   rw [h, Polynomial.coeff_zero]
 
-include hF0 hFa HF hp H in
-theorem exists_mem_support_not_dvd_of_forall_totalDegree_le :
+include hp H in
+theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
     ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by
   by_contra!
   have (σ) (hσ : σ ∈ F.support) : ∃ σ', σ = p • σ' := by
@@ -179,10 +178,12 @@ end MvPolynomial
 
 open IntermediateField
 
+section
+
 variable [ExpChar k p]
 
-include hp ha' H in
-open Set in
+include hp H
+
 /--
 Suppose `k` has chararcteristic `p` and `a₁,...,aₙ` is a transcendental basis of `K/k`.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
@@ -190,7 +191,8 @@ Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly indepe
 
 Then some subset of `a₁,...,aₙ₊₁` forms a transcedental basis that `a₁,...,aₙ₊₁` are separable over.
 -/
-lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow :
+lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
+    (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
       IsSeparable (adjoin k (a '' {i}ᶜ)) (a i) := by
   have ha'' : ¬ AlgebraicIndependent k a := fun h ↦
@@ -201,10 +203,10 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow :
   let F := totalDegree.argminOn _ HF
   obtain ⟨hF0, hFa⟩ := totalDegree.argminOn_mem _ HF
   replace HF f h₁ h₂ := totalDegree.argminOn_le _ (a := f) (.intro h₁ h₂) HF
-  have hFirr : Irreducible F := irreducible_of_forall_totalDegree_le hF0 hFa HF
-  obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H hF0 hFa HF
+  have hFirr : Irreducible F := irreducible_of_forall_totalDegree_le HF hF0 hFa
+  obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H HF hF0 hFa
   have hσi : σ i ≠ 0 := by aesop
-  have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le hFa HF i <|
+  have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le HF hFa i <|
     (mem_vars i).mpr ⟨σ, hσ, by simpa⟩
   have Hi := ha'.of_isAlgebraic_adjoin_image_compl _ i _ alg
   refine ⟨i, Hi, ?_⟩
@@ -228,22 +230,19 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow :
     (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
     Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
 
-include hp H in
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     (s : Set ι) (n : ι) (ha : IsTranscendenceBasis k fun i : s ↦ a i) (hn : n ∉ s) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : ↥(insert n s \ {i}) ↦ a j) ∧
       IsSeparable (adjoin k (a '' (insert n s \ {i}))) (a i) := by
   let e₁ : {j : ↥(insert n s) // j ≠ ⟨n, by simp⟩} ≃ ↑s :=
     ⟨fun x ↦ ⟨x, by aesop⟩, fun x ↦ ⟨⟨x, by aesop⟩, by aesop⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
-  obtain ⟨i, hi, hi'⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp
-    (a := fun i : ↥(insert n s) ↦ a i) ⟨n, by simp⟩ (ha.comp_equiv e₁) H
+  obtain ⟨i, hi, hi'⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp H
+    (a := fun i : ↥(insert n s) ↦ a i) ⟨n, by simp⟩ (ha.comp_equiv e₁)
   let e₂ : {j // j ≠ i} ≃ ↥(insert n s \ {i.1}) := ⟨fun x ↦ ⟨x, x.1.2, fun h ↦ x.2 (Subtype.ext h)⟩,
     fun x ↦ ⟨⟨x, x.2.1⟩, fun h ↦ x.2.2 congr($h.1)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
   have : a '' (insert n s \ {i.1}) = (a ·.1) '' {i}ᶜ := by aesop
   refine ⟨i, hi.comp_equiv e₂.symm, by convert hi'⟩
 
-include hp ha ha' H in
-open Set in
 /--
 Suppose `k` has chararcteristic `p` and `K/k` is generated by `a₁,...,aₙ₊₁`,
 where `a₁,...aₙ` forms a transcendental basis.
@@ -253,10 +252,12 @@ Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly indepe
 Then some subset of `a₁,...,aₙ₊₁` forms a separable transcedental basis.
 -/
 @[stacks 0H71]
-lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top :
+lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top
+    (ha : IntermediateField.adjoin k (Set.range a) = ⊤)
+    (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
       Algebra.IsSeparable (adjoin k (a '' {i}ᶜ)) K := by
-  have ⟨i, hi⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp n ha' H
+  have ⟨i, hi⟩ := exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow p hp H n ha'
   refine ⟨i, hi.1, ?_⟩
   rw [← separableClosure.eq_top_iff, ← (restrictScalars_injective k).eq_iff,
     restrictScalars_top, eq_top_iff, ← ha, adjoin_le_iff]
@@ -265,7 +266,6 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
   · exact hi.2
   · exact isSeparable_algebraMap (F := adjoin k (a '' {i}ᶜ)) ⟨_, subset_adjoin _ _ ⟨x, ne, rfl⟩⟩
 
-include hp H in
 /--
 Suppose `k` has chararcteristic `p` and `K/k` is finitely generated.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
@@ -294,6 +294,8 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_fg
   · obtain rfl | ne := eq_or_ne n i
     exacts [hi₂, le_restrictScalars_separableClosure _ (subset_adjoin _ _ ⟨.inl rfl, ne⟩)]
 
+end
+
 /-- Any finitely generated extension over perfect fields are separably generated. -/
 lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
     [PerfectField k] (Hfg : IntermediateField.FG (F := k) (E := K) ⊤) :
@@ -303,7 +305,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_perfectField
   · obtain ⟨s, hs⟩ := Hfg
     have : Algebra.IsAlgebraic (Algebra.adjoin k (s : Set K)) K := by
       rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
-      refine Algebra.isIntegral_of_surjective topEquiv.surjective
+      exact Algebra.isIntegral_of_surjective topEquiv.surjective
     obtain ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := k) (s : Set K)
     lift t to Finset K using s.finite_toSet.subset hts
     have : Algebra.IsAlgebraic (IntermediateField.adjoin k (t : Set K)) K := by
