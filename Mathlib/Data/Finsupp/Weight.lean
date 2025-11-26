@@ -205,35 +205,35 @@ end CanonicallyOrderedAddCommMonoid
 variable {R : Type*} [AddCommMonoid R]
 
 /-- The degree of a finsupp function. -/
-def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
+def degree : (σ →₀ R) →+ R where
+  toFun := fun d => ∑ i ∈ d.support, d i
+  map_zero' := by simp
+  map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
-  rw [degree, Finset.sum_subset] <;> simp
+  simp [degree]
+  rw [Finset.sum_subset] <;> simp
 
 @[simp]
-theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
-  sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree := degree.map_add _ _
 
 @[simp]
 theorem degree_sum {ι : Type*} [DecidableEq ι] {s : Finset ι} (f : ι → σ →₀ ℕ) :
-    (∑ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := by
-  refine s.induction rfl ?_
-  intro a s hs hs'
-  rw [Finset.sum_insert hs, Finset.sum_insert hs, degree_add, hs']
+    (∑ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := map_sum degree f s
 
 @[simp]
 theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
   Finsupp.sum_single_index (h := fun _ => id) rfl
 
 @[simp]
-theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
+theorem degree_zero : degree (0 : σ →₀ R) = 0 := degree.map_zero
 
 lemma degree_eq_zero_iff {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
-  simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
-    DFunLike.ext_iff, coe_zero, Pi.zero_apply]
+  simp [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
+    DFunLike.ext_iff, coe_zero]
 
 theorem le_degree {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
@@ -247,7 +247,7 @@ theorem le_degree {R : Type*}
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
-  simp only [degree, weight_apply, smul_eq_mul, mul_one, Finsupp.sum]
+  simp [weight_apply, smul_eq_mul, mul_one]
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by
