@@ -26,6 +26,8 @@ the pushforward functor along `f`.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
