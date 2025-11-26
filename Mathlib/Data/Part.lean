@@ -413,19 +413,12 @@ theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔
     fun ⟨_, h⟩ => mem_assert _ h⟩
 
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
-  dsimp [assert]
-  cases h' : f h
-  simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
-  apply Function.hfunext
-  · simp only [h, h', exists_prop_of_true]
-  · simp
+  ext
+  simp_all
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
-  dsimp [assert, none]; congr
-  · simp only [h, not_false_iff, exists_prop_of_false]
-  · apply Function.hfunext
-    · simp only [h, not_false_iff, exists_prop_of_false]
-    simp at *
+  ext
+  simp_all
 
 theorem mem_bind {f : Part α} {g : α → Part β} : ∀ {a b}, a ∈ f → b ∈ g a → b ∈ f.bind g
   | _, _, ⟨h, rfl⟩, ⟨h₂, rfl⟩ => ⟨⟨h, h₂⟩, rfl⟩
