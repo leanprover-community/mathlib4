@@ -371,8 +371,8 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
     rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
   have : MDiffAt[range I] φ.symm (φ x) :=
     mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
-  have final : fderivWithin 𝕜 ((extChartAt I x) ∘ φ.symm) (range I) (φ x) =
-      ContinuousLinearMap.id 𝕜 (TangentSpace 𝓘(𝕜, E) (φ x)) := by
+  -- Should this also be a separate lemma?
+  have final : fderivWithin 𝕜 ((extChartAt I x) ∘ φ.symm) (range I) (φ x) = .id 𝕜 _ := by
     rw [eq_nhd.fderivWithin_eq hx]
     exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
   simp only [mfderivWithin, this, ↓reduceIte,
@@ -431,15 +431,15 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   set W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
   set f' := f ∘ (extChartAt I x).symm
   set s' := (extChartAt I x).symm ⁻¹' s ∩ range I
-  -- Step 1: rewrite using lieBracketWithin_smul_right
+  -- We begin by rewriting using `lieBracketWithin_smul_right`.
   -- We need the coercion since on the nose `B` is a map `E → E`,
   -- whereas we need a map between tangent spaces.
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
   let B (x₀) : TangentSpace 𝓘(𝕜, E) x₀ := f' x₀ • lieBracketWithin 𝕜 V' W' s' x₀
   trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
-  · simp only [mpullback_apply, ]
+  · simp only [mpullback_apply]
     congr
-    apply lieBracketWithin_smul_right (V := V') hf.differentiableWithinAt_comp_extChartAt_symm
+    exact lieBracketWithin_smul_right (V := V') hf.differentiableWithinAt_comp_extChartAt_symm
       hW.differentiableWithinAt_mpullbackWithin_vectorField hs
   -- We prove the equality of each summand separately.
   rw [← Pi.add_def, mpullback_add_apply]; congr; swap
