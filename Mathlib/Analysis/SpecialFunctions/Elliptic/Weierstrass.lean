@@ -293,7 +293,7 @@ lemma not_continuousAt_℘ (x : ℂ) (hx : x ∈ L.lattice) : ¬ ContinuousAt L.
   eta_expand
   simp_rw [← L.℘Except_add ⟨x, hx⟩]
   intro H
-  apply NormedField.not_continuousAt_zpow_zero (𝕜 := ℂ) (-2) (by decide)
+  apply (NormedField.continuousAt_zpow (n := -2) (x := (0 : ℂ))).not.mpr (by simp)
   simpa [Function.comp_def] using
     (((H.sub ((L.differentiableOn_℘Except x).differentiableAt (x := x)
       (L.isOpen_compl_lattice_diff.mem_nhds (by simp))).continuousAt).add
