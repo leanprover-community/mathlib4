@@ -41,7 +41,7 @@ instance : HasZeroObject GrpCat :=
 
 @[to_additive]
 lemma subsingleton_of_isZero {G : GrpCat} (h : Limits.IsZero G) :
-    Subsingleton G := by
+    Subsingleton G :=
   (h.iso (isZero_of_subsingleton <| .of PUnit)).groupIsoToMulEquiv.subsingleton
 
 @[to_additive]
@@ -67,7 +67,7 @@ instance : HasZeroObject CommGrpCat :=
 
 @[to_additive]
 lemma subsingleton_of_isZero {G : CommGrpCat} (h : Limits.IsZero G) :
-    Subsingleton G := by
+    Subsingleton G :=
   (h.iso (isZero_of_subsingleton <| .of PUnit)).commGroupIsoToMulEquiv.subsingleton
 
 @[to_additive]
