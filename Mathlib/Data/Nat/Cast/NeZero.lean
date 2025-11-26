@@ -17,7 +17,7 @@ open Nat
 
 namespace NeZero
 
-theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := by have := NeZero.ne n; cutsat
+theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := by have := NeZero.ne n; lia
 
 lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] : (n : R) ≠ 0 := h.out
 

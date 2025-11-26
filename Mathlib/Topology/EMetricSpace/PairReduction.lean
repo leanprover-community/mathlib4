@@ -146,7 +146,7 @@ lemma pow_logSizeRadius_le_card_le_logSizeRadius (ha : 1 < a) (ht : t ∈ V) :
     simp
   have h := Nat.find_min (exists_radius_le t V ha c) this
   simp only [ENNReal.natCast_sub, Nat.cast_one, not_and, not_le] at h
-  exact (h (by omega)).le
+  exact (h (by lia)).le
 
 /-- A structure for carrying the data of `logSizeBallSeq` -/
 structure logSizeBallStruct (T : Type*) where
@@ -285,7 +285,7 @@ lemma card_finset_logSizeBallSeq_le (hJ : J.Nonempty) (i : ℕ) :
   | succ i ih =>
     by_cases h : (logSizeBallSeq J hJ a c i).finset.Nonempty
     · have := card_finset_logSizeBallSeq_add_one_lt hJ i h
-      omega
+      lia
     apply le_trans <| Finset.card_le_card (finset_logSizeBallSeq_add_one_subset hJ i)
     suffices #(logSizeBallSeq J hJ a c i).finset = 0 by simp [this]
     rwa [← not_ne_iff, Finset.card_ne_zero.not]

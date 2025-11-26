@@ -180,7 +180,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     cases eq_zero_or_eq_zero_of_smul_eq_zero this
     · linarith
     · contradiction
-  obtain rfl : n = 0 := by cutsat
+  obtain rfl : n = 0 := by lia
   simpa using h
 
 /-- The sum of the angles of a possibly degenerate triangle (where one of the
