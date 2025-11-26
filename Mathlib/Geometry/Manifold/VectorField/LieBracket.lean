@@ -511,7 +511,7 @@ lemma mlieBracketWithin_add_left
     mlieBracketWithin I (V + V₁) W s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V₁ W s x := by
   simp only [mlieBracketWithin_apply]
-  rw [← ContinuousLinearMap.map_add, mpullbackWithin_add, lieBracketWithin_add_left]
+  rw [← map_add, mpullbackWithin_add, lieBracketWithin_add_left]
   · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
   · exact hV₁.differentiableWithinAt_mpullbackWithin_vectorField
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs

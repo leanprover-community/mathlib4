@@ -187,20 +187,20 @@ def liftAux (f : X → CommutatorRing L) :=
 
 theorem liftAux_map_smul (f : X → L) (t : R) (a : lib R X) :
     liftAux R f (t • a) = t • liftAux R f a :=
-  NonUnitalAlgHom.map_smul _ t a
+  map_smul _ t a
 
 theorem liftAux_map_add (f : X → L) (a b : lib R X) :
     liftAux R f (a + b) = liftAux R f a + liftAux R f b :=
-  NonUnitalAlgHom.map_add _ a b
+  map_add _ a b
 
 theorem liftAux_map_mul (f : X → L) (a b : lib R X) :
     liftAux R f (a * b) = ⁅liftAux R f a, liftAux R f b⁆ :=
-  NonUnitalAlgHom.map_mul _ a b
+  map_mul _ a b
 
 theorem liftAux_spec (f : X → L) (a b : lib R X) (h : FreeLieAlgebra.Rel R X a b) :
     liftAux R f a = liftAux R f b := by
   induction h with
-  | lie_self a' => simp only [liftAux_map_mul, NonUnitalAlgHom.map_zero, lie_self]
+  | lie_self a' => simp only [liftAux_map_mul, map_zero, lie_self]
   | leibniz_lie a' b' c' =>
     simp only [liftAux_map_mul, liftAux_map_add, sub_add_cancel, lie_lie]
   | smul b' _ h₂ => simp only [liftAux_map_smul, h₂]
