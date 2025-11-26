@@ -68,6 +68,9 @@ noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]
 
+theorem CommSemiring.finrank_self (R) [CommSemiring R] : Module.finrank R R = 1 :=
+  finrank_eq_of_rank_eq (rank_self R)
+
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank R M = 1 ↔ finrank R M = 1 :=
   Cardinal.toNat_eq_one.symm
 
