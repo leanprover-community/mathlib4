@@ -820,7 +820,9 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
       simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
         one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
 
-theorem fderivCLM_apply (f : 𝓢(E, F)) : fderivCLM 𝕜 f = fderiv ℝ f := rfl
+@[simp]
+theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
+  rfl
 
 theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
   f.differentiableAt.hasFDerivAt

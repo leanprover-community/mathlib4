@@ -81,7 +81,7 @@ open LineDeriv
 /--
 The line derivative is additive, `∂_{v} (x + y) = ∂_{v} x + ∂_{v} y` for all `x y : E`.
 -/
-class LineDerivAddGroup (V : Type u) (E : Type v) (F : outParam (Type w))
+class LineDerivAdd (V : Type u) (E : Type v) (F : outParam (Type w))
   [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] where
   lineDerivOp_add (v : V) (x y : E) : ∂_{v} (x + y) = ∂_{v} x + ∂_{v} y
 
@@ -89,7 +89,7 @@ class LineDerivAddGroup (V : Type u) (E : Type v) (F : outParam (Type w))
 The line derivative commutes with scalar multiplication, `∂_{v} (r • x) = r • ∂_{v} x` for all
 `r : R` and `x : E`.
 -/
-class LineDerivModule (R : Type*) (V : Type u) (E : Type v) (F : outParam (Type w))
+class LineDerivSMul (R : Type*) (V : Type u) (E : Type v) (F : outParam (Type w))
   [SMul R E] [SMul R F] [LineDeriv V E F] where
   lineDerivOp_smul (v : V) (r : R) (x : E) : ∂_{v} (r • x) = r • ∂_{v} x
 
@@ -104,15 +104,15 @@ attribute [fun_prop] ContinuousLineDeriv.continuous_lineDerivOp
 
 namespace LineDeriv
 
-export LineDerivAddGroup (lineDerivOp_add)
-export LineDerivModule (lineDerivOp_smul)
+export LineDerivAdd (lineDerivOp_add)
+export LineDerivSMul (lineDerivOp_smul)
 export ContinuousLineDeriv (continuous_lineDerivOp)
 
 section lineDerivOpCLM
 
 variable [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
   [TopologicalSpace E] [TopologicalSpace F]
-  [LineDeriv V E F] [LineDerivAddGroup V E F] [LineDerivModule R V E F] [ContinuousLineDeriv V E F]
+  [LineDeriv V E F] [LineDerivAdd V E F] [LineDerivSMul R V E F] [ContinuousLineDeriv V E F]
 
 variable (R E) in
 /-- The line derivative as a continuous linear map. -/
@@ -133,7 +133,7 @@ section iteratedLineDerivOp
 variable [LineDeriv V E E]
 variable {n : ℕ} (m : Fin n → V)
 
-theorem iteratedLineDerivOp_add [AddCommGroup E] [LineDerivAddGroup V E E] (x y : E) :
+theorem iteratedLineDerivOp_add [AddCommGroup E] [LineDerivAdd V E E] (x y : E) :
     ∂^{m} (x + y) = ∂^{m} x + ∂^{m} y := by
   induction n with
   | zero =>
@@ -141,7 +141,7 @@ theorem iteratedLineDerivOp_add [AddCommGroup E] [LineDerivAddGroup V E E] (x y 
   | succ n IH =>
     simp_rw [iteratedLineDerivOp_succ_left, IH, lineDerivOp_add]
 
-theorem iteratedLineDerivOp_smul [SMul R E] [LineDerivModule R V E E] (r : R) (x : E) :
+theorem iteratedLineDerivOp_smul [SMul R E] [LineDerivSMul R V E E] (r : R) (x : E) :
     ∂^{m} (r • x) = r • ∂^{m} x := by
   induction n with
   | zero =>
@@ -161,7 +161,7 @@ theorem continuous_iteratedLineDerivOp [ContinuousLineDeriv V E E] {n : ℕ} (m 
     exact (continuous_lineDerivOp _).comp (IH _)
 
 variable [Ring R] [AddCommGroup E] [Module R E]
-  [LineDerivAddGroup V E E] [LineDerivModule R V E E] [ContinuousLineDeriv V E E]
+  [LineDerivAdd V E E] [LineDerivSMul R V E E] [ContinuousLineDeriv V E E]
 
 variable (R E) in
 /-- The iterated line derivative as a continuous linear map. -/
