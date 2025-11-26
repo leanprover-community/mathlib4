@@ -215,33 +215,24 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
 
+lemma toEuclideanCLM_l2_opNorm (A : Matrix n n 𝕜) :
+    ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ = ‖A‖ := rfl
+
 @[simp]
 lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
   set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
-  change ‖T‖ = ‖v‖
+  rw [← toEuclideanCLM_l2_opNorm]
   refine le_antisymm ?_ ?_
-  · refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) (fun x ↦ ?_)
-    have hnorm_sq : ‖T x‖ ^ 2 = ∑ i, ‖v i * (ofLp x) i‖ ^ 2 := by
-      simpa [T, Matrix.mulVec_diagonal] using (EuclideanSpace.norm_sq_eq (x := T x))
-    have hsum : ∑ i, ‖v i * (ofLp x) i‖ ^ 2 ≤ ‖v‖ ^ 2 * ∑ i, ‖(ofLp x) i‖ ^ 2 := by
-      rw [Finset.mul_sum]
-      refine (Finset.sum_le_sum (fun i _ => ?_))
-      · rw [← mul_pow, sq_le_sq₀ (by positivity) (by positivity)]
-        calc
-        _ ≤ ‖v i‖ * ‖x.ofLp i‖ := norm_mul_le (v i) (x.ofLp i)
-        _ ≤ ‖v‖ * ‖x.ofLp i‖ := mul_le_mul_of_nonneg_right (norm_le_pi_norm v i) (by positivity)
+  · refine T.opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
     refine (sq_le_sq₀ (by positivity) (by positivity)).mp ?_
-    nlinarith [hnorm_sq, EuclideanSpace.norm_sq_eq (x := x), hsum]
-  · refine (pi_norm_le_iff_of_nonneg ((norm_nonneg T))).mpr fun i ↦ ?_
-    have hT_apply : T (toLp 2 (Pi.single i (1 : 𝕜))) = toLp 2 (Pi.single i (v i)) := by
-      simpa [T, Matrix.mulVec_diagonal, Pi.single_mul, mul_comm] using
-        toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))
-    calc
-    _ = ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ := by
-      rw [hT_apply, EuclideanSpace.toLp_single, EuclideanSpace.norm_single]
-    _ ≤ ‖T‖ * ‖toLp 2 (Pi.single i 1)‖ := T.le_opNorm (toLp 2 (Pi.single i (1 : 𝕜)))
-    _ = _ := by
-      rw [EuclideanSpace.toLp_single, EuclideanSpace.norm_single, norm_one, mul_one]
+    simp only [(T x).norm_sq_eq, ofLp_toEuclideanCLM, mulVec_diagonal, norm_mul, T]
+    calc _ ≤ _ := Finset.sum_le_sum fun i _ ↦ by grw [mul_pow, norm_le_pi_norm v i]
+      _ = _ := by simp [mul_pow, EuclideanSpace.norm_sq_eq x, Finset.mul_sum]
+  · refine (pi_norm_le_iff_of_nonneg (norm_nonneg T)).mpr fun i ↦ ?_
+    calc _ = ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ := by
+          rw [toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))]
+          simp
+      _ ≤ _ := by grw [T.le_opNorm]; simp
 
 @[simp]
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
