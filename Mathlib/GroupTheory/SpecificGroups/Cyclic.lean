@@ -660,7 +660,7 @@ theorem CommSimple_is_Finite : Finite α := by
     have hmemg2 : g ^ 2 ∈ H := by
       refine (Subgroup.mem_zpowers_iff).mpr ?_
       exact ⟨1 , by simp⟩
-    rw [hbot] at hmemg2 ; exact hng hmemg2
+    rw [hbot] at hmemg2; exact hng hmemg2
   have := IsSimpleGroup.eq_bot_or_eq_top_of_normal (H := H) (by exact Subgroup.normal_of_comm H)
   rcases this <;> contradiction
 
