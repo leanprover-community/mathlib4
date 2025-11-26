@@ -15,9 +15,16 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 In this file we provide two different ways to extend a continuous linear map defined on a dense
 subspace to the entire Banach space.
 
-* `ContinuousLinearMap.extend`: Extend from a dense subspace using `IsUniformInducing`
-* `ContinuousLinearMap.extendOfNorm`: Extend from a continuous linear map that is a dense map into
-the domain together with a norm estimate.
+* `ContinuousLinearMap.extend`: Extend `f : E →SL[σ₁₂] F` to a continuous linear map
+`Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map that is `IsUniformInducing`.
+* `LinearMap.extendOfNorm`: Extend `f : E →ₛₗ[σ₁₂] F` to a continuous linear map
+`Eₗ →SL[σ₁₂] F`, where `e : E →ₗ[𝕜] Eₗ` is a dense map and we have the norm estimate
+`‖f x‖ ≤ C * ‖e x‖` for all `x : E`.
+
+Moreover, we can extend a linear equivalence:
+* `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
+equivalence between Banach spaces with two dense maps `e₁` and `e₂` and the corresponding norm
+estimates.
 
 -/
 
@@ -176,7 +183,7 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜
 variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
 /-- Extension of a linear map `f : E →ₛₗ[σ₁₂] F` to a continuous linear map `Eₗ →SL[σ₁₂] F`,
-where `E` is a normed space and `F` a complete normed space, using a dense map `e : E →L[𝕜] Eₗ`
+where `E` is a normed space and `F` a complete normed space, using a dense map `e : E →ₗ[𝕜] Eₗ`
 together with a bound `‖f x‖ ≤ C * ‖e x‖` for all `x : E`. -/
 def extendOfNorm : Eₗ →SL[σ₁₂] F := (f.compLeftInverse e).extend (LinearMap.range e).subtypeL
 
@@ -224,3 +231,65 @@ theorem opNorm_extendOfNorm_le (h_dense : DenseRange e) {C : ℝ} (hC : 0 ≤ C)
 end NormedField
 
 end LinearMap
+
+namespace LinearEquiv
+
+variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+  [AddCommGroup E] [NormedAddCommGroup Eₗ] [AddCommGroup F] [NormedAddCommGroup Fₗ]
+  [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
+  [CompleteSpace Eₗ] [CompleteSpace Fₗ]
+
+variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
+
+/-- Extension of a linear equivalence `f : E ≃ₛₗ[σ₁₂] F` to a continuous linear equivalence
+`Eₗ ≃SL[σ₁₂] Fₗ`, where `E` and `F` are normed spaces and `Eₗ` and `Fₗ` are Banach spaces,
+using dense maps `e₁ : E →ₗ[𝕜₁] Eₗ` and `e₂ : F →ₗ[𝕜₂] F₂` together with bounds
+`‖e₂ (f x)‖ ≤ C * ‖e₁ x‖` for all `x : E` and `‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖` for all `x : F`. -/
+def extend (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
+    (h_dense₂ : DenseRange e₂) (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) :
+    Eₗ ≃SL[σ₁₂] Fₗ where
+  __ := (e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁
+  invFun := (e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂
+  left_inv := by
+    apply h_dense₁.induction (P := fun x => ((e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂)
+      ((((e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁)) x) = x)
+    · intro x ⟨y, hxy⟩
+      rw [← hxy, LinearMap.extendOfNorm_eq h_dense₁ h_norm₁, LinearMap.coe_comp, coe_coe,
+        Function.comp_apply, LinearMap.extendOfNorm_eq h_dense₂ h_norm₂, LinearMap.coe_comp,
+        coe_coe, Function.comp_apply, symm_apply_apply]
+    · refine isClosed_eq ?_ continuous_id
+      exact (ContinuousLinearMap.cont _).comp (ContinuousLinearMap.cont _)
+  right_inv := by
+    apply h_dense₂.induction (P := fun x => ((e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁)
+      ((((e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂)) x) = x)
+    · intro x ⟨y, hxy⟩
+      rw [← hxy, LinearMap.extendOfNorm_eq h_dense₂ h_norm₂, LinearMap.coe_comp, coe_coe,
+        Function.comp_apply, LinearMap.extendOfNorm_eq h_dense₁ h_norm₁, LinearMap.coe_comp,
+        coe_coe, Function.comp_apply, apply_symm_apply]
+    · refine isClosed_eq ?_ continuous_id
+      exact (ContinuousLinearMap.cont _).comp (ContinuousLinearMap.cont _)
+  continuous_invFun := ContinuousLinearMap.continuous _
+
+theorem extend_eq (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
+    (h_dense₂ : DenseRange e₂) (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : E) :
+    f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ h_norm₂ (e₁ x) = e₂ (f x) :=
+  LinearMap.extendOfNorm_eq h_dense₁ h_norm₁ x
+
+theorem extend_symm_eq (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
+    (h_dense₂ : DenseRange e₂) (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : F) :
+    (f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ h_norm₂).symm (e₂ x) = e₁ (f.symm x) :=
+  LinearMap.extendOfNorm_eq h_dense₂ h_norm₂ x
+
+theorem norm_extend_le (C : ℝ) (h_dense₁ : DenseRange e₁) (h_norm₁ : ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
+    (h_dense₂ : DenseRange e₂) (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Eₗ) :
+    ‖(f.extend e₁ e₂ h_dense₁ ⟨C, h_norm₁⟩ h_dense₂ h_norm₂) x‖ ≤ C * ‖x‖ :=
+  LinearMap.norm_extendOfNorm_apply_le h_dense₁ _ h_norm₁ _
+
+theorem norm_extend_symm_le (C : ℝ) (h_dense₁ : DenseRange e₁)
+    (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_dense₂ : DenseRange e₂)
+    (h_norm₂ : ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Fₗ) :
+    ‖(f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ ⟨C, h_norm₂⟩).symm x‖ ≤ C * ‖x‖ :=
+  LinearMap.norm_extendOfNorm_apply_le h_dense₂ _ h_norm₂ _
+
+end LinearEquiv
