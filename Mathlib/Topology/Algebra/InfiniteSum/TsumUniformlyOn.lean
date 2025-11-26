@@ -68,11 +68,8 @@ section Continuous
 /-- An infinite sum of continuous functions that converges uniformly on a set
 is continuous. -/
 theorem SummableUniformlyOn.continuousOn_tsum (hf : ∀ i, ContinuousOn (f i) s)
-    (h : SummableUniformlyOn f s) : ContinuousOn (fun x => ∑' n, f n x) s := by
-  have := hasSumUniformlyOn_iff_tendstoUniformlyOn.mp h.hasSumUniformlyOn
-  refine this.continuousOn ?_
-  filter_upwards with _
-  fun_prop
+    (h : SummableUniformlyOn f s) : ContinuousOn (fun x => ∑' n, f n x) s :=
+  h.hasSumUniformlyOn.tendstoUniformlyOn.continuousOn <| .of_forall fun _ ↦ by fun_prop
 
 /-- An infinite sum of continuous functions that converges uniformly is continuous. -/
 theorem SummableUniformlyOn.continuous_tsum (hf : ∀ i, Continuous (f i))
