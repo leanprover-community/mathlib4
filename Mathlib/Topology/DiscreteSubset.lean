@@ -248,7 +248,7 @@ lemma mem_codiscrete' {S : Set X} :
 
 lemma compl_mem_codiscrete_iff {S : Set X} :
     Sᶜ ∈ codiscrete X ↔ IsClosed S ∧ DiscreteTopology ↑S := by
-  rw [mem_codiscrete, compl_compl, isClosed_and_discrete_iff]
+  rw [mem_codiscrete, compl_compl, ← isDiscrete_iff_discreteTopology, isClosed_and_discrete_iff]
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
@@ -273,7 +273,7 @@ variable [T1Space X]
 lemma codiscrete_le_cofinite : codiscrete X ≤ cofinite := by
   intro s hs
   rw [← compl_compl s, compl_mem_codiscrete_iff]
-  exact ⟨hs.isClosed, hs.to_subtype.instDiscreteTopology⟩
+  exact ⟨hs.isClosed, hs.isDiscrete.to_subtype⟩
 
 lemma Set.Finite.compl_mem_codiscrete {S : Set X} (hs : S.Finite) : Sᶜ ∈ codiscrete X :=
   codiscrete_le_cofinite (by simpa)
