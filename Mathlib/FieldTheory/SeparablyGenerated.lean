@@ -33,7 +33,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 section
 
@@ -68,7 +68,7 @@ theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
 theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : Irreducible F) (i : ι)
     (H : AlgebraicIndependent k fun x : {j | j ≠ i} ↦ a x) :
     Irreducible (toPolynomialAdjoinImageCompl F a i) := by
-  have : a '' {i}ᶜ = Set.range (fun x : {j | j ≠ i} ↦ a x) := by aesop
+  have : a '' {i}ᶜ = Set.range (fun x : {j | j ≠ i} ↦ a x) := by ext; simp
   delta toPolynomialAdjoinImageCompl
   convert hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
     (Polynomial.mapAlgEquiv (H.aevalEquiv.trans
@@ -195,9 +195,10 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : {j // j ≠ i} ↦ a j) ∧
       IsSeparable (adjoin k (a '' {i}ᶜ)) (a i) := by
+  have : a '' {n}ᶜ = Set.range (ι := { i // i ≠ n }) (a ·) := by aesop
   have ha'' : ¬ AlgebraicIndependent k a := fun h ↦
     ((AlgebraicIndepOn.insert_iff (show n ∉ {n}ᶜ by simp)).mp
-      (by simpa [Set.insert_def, eq_or_ne])).2 (by convert ha'.isAlgebraic.isAlgebraic _ <;> aesop)
+      (by simpa [Set.insert_def, eq_or_ne])).2 (by convert ha'.isAlgebraic.isAlgebraic _)
   have HF : {F : MvPolynomial ι k | F ≠ 0 ∧ F.aeval a = 0}.Nonempty := by
     simpa [algebraicIndependent_iff, and_comm] using ha''
   let F := totalDegree.argminOn _ HF
@@ -240,7 +241,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     (a := fun i : ↥(insert n s) ↦ a i) ⟨n, by simp⟩ (ha.comp_equiv e₁)
   let e₂ : {j // j ≠ i} ≃ ↥(insert n s \ {i.1}) := ⟨fun x ↦ ⟨x, x.1.2, fun h ↦ x.2 (Subtype.ext h)⟩,
     fun x ↦ ⟨⟨x, x.2.1⟩, fun h ↦ x.2.2 congr($h.1)⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
-  have : a '' (insert n s \ {i.1}) = (a ·.1) '' {i}ᶜ := by aesop
+  have : a '' (insert n s \ {i.1}) = (a ·.1) '' {i}ᶜ := by ext; aesop
   refine ⟨i, hi.comp_equiv e₂.symm, by convert hi'⟩
 
 /--
