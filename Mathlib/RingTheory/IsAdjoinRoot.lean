@@ -731,7 +731,7 @@ theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
 abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
     IsAdjoinRoot E (minpoly F α) :=
-  mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα hα₂)
+  mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα.isAlgebraic hα₂)
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement

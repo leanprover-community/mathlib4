@@ -424,9 +424,20 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
+@[to_additive] lemma Subsingleton.units_of_isUnit (h : ∀ a : M, IsUnit a → a = 1) :
+    Subsingleton Mˣ := subsingleton_of_forall_eq 1 fun u ↦ Units.ext <| h u u.isUnit
+
+variable [Subsingleton Mˣ]
+
+@[to_additive] lemma Units.eq_one (u : Mˣ) : u = 1 := Subsingleton.elim ..
+@[to_additive] lemma IsUnit.eq_one : IsUnit a → a = 1 := by rintro ⟨u, rfl⟩; simp [u.eq_one]
+
+@[deprecated (since := "2025-11-19")] alias units_eq_one := Units.eq_one
+
 @[to_additive (attr := simp)]
-lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
-  ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
+lemma isUnit_iff_eq_one : IsUnit a ↔ a = 1 where
+  mp := IsUnit.eq_one
+  mpr := by rintro rfl; exact isUnit_one
 
 end Monoid
 

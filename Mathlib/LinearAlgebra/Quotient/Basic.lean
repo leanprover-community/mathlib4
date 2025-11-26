@@ -70,13 +70,27 @@ theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarT
 
 end Module
 
+variable {p}
+
+@[simp] protected lemma nontrivial_iff : Nontrivial (M ⧸ p) ↔ p ≠ ⊤ :=
+  QuotientAddGroup.nontrivial_iff.trans (by simp)
+
+@[simp] protected lemma subsingleton_iff : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
+  QuotientAddGroup.subsingleton_iff.trans (by simp)
+
+instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
+
+@[deprecated (since := "2025-11-02")]
+alias subsingleton_quotient_iff_eq_top := Quotient.subsingleton_iff
+
+@[deprecated nontrivial_iff (since := "2025-11-02")]
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, notMem_s⟩ := SetLike.exists_of_lt h
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using notMem_s
 
-theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) :=
-  nontrivial_of_lt_top p h.lt_top
+@[deprecated nontrivial_iff (since := "2025-11-02")]
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.2 h
 
 end Quotient
 
@@ -92,25 +106,10 @@ instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
   Fintype.ofSubsingleton 0
 
-variable {p}
-
-theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
-  constructor
-  · rintro h
-    refine eq_top_iff.mpr fun x _ => ?_
-    have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
-    rwa [sub_zero] at this
-  · rintro rfl
-    infer_instance
-
-instance [Subsingleton M] : Subsingleton (M ⧸ p) :=
-  Submodule.subsingleton_quotient_iff_eq_top.mpr (Subsingleton.elim _ _)
-
+variable {p} in
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
-  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
+  ⟨fun ⟨h⟩ => Quotient.subsingleton_iff.mp (@Unique.instSubsingleton _ h),
     by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
-
-variable (p)
 
 noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _

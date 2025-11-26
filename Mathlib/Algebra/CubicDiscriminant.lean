@@ -415,8 +415,7 @@ section Split
 theorem splits_iff_card_roots (ha : P.a ≠ 0) :
     Splits (P.toPoly.map φ) ↔ (map φ P).roots.card = 3 := by
   replace ha : (map φ P).a ≠ 0 := (map_ne_zero φ).mpr ha
-  nth_rw 1 [← RingHom.id_comp φ]
-  rw [roots, ← splits_map_iff, ← map_toPoly, Polynomial.splits_iff_card_roots,
+  rw [roots, ← map_toPoly, Polynomial.splits_iff_card_roots,
     ← ((degree_eq_iff_natDegree_eq <| ne_zero_of_a_ne_zero ha).1 <| degree_of_a_ne_zero ha : _ = 3)]
 
 theorem splits_iff_roots_eq_three (ha : P.a ≠ 0) :
@@ -465,7 +464,7 @@ def discr {R : Type*} [Ring R] (P : Cubic R) : R :=
 
 theorem discr_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     φ P.discr = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [discr, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+  simp only [discr, RingHom.map_add, map_sub, map_mul, map_pow, map_ofNat]
   rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 

@@ -822,9 +822,8 @@ lemma genEigenspace_inf_le_add
     rw [LinearMap.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
   obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by cutsat
-  · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁,
-      LinearMap.map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]
+  · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁, map_zero]
+  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, map_zero]
 
 lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)

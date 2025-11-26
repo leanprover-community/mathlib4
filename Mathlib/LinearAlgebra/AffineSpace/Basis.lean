@@ -141,8 +141,8 @@ noncomputable def coord (i : ι) : P →ᵃ[k] k where
   toFun q := 1 - (b.basisOf i).sumCoords (q -ᵥ b i)
   linear := -(b.basisOf i).sumCoords
   map_vadd' q v := by
-    rw [vadd_vsub_assoc, LinearMap.map_add, vadd_eq_add, LinearMap.neg_apply,
-      sub_add_eq_sub_sub_swap, add_comm, sub_eq_add_neg]
+    rw [vadd_vsub_assoc, map_add, vadd_eq_add, LinearMap.neg_apply, sub_add_eq_sub_sub_swap,
+      add_comm, sub_eq_add_neg]
 
 @[simp]
 theorem linear_eq_sumCoords (i : ι) : (b.coord i).linear = -(b.basisOf i).sumCoords :=
@@ -155,7 +155,7 @@ theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := 
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
-  simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, sub_zero,
+  simp only [coord, Basis.coe_sumCoords, map_zero, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 
 @[simp]
@@ -248,7 +248,7 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by ext; simp only [LinearMap.map_add, Pi.add_apply, neg_add]
+      map_add' := fun v w => by ext; simp only [map_add, Pi.add_apply, neg_add]
       map_smul' := fun t v => by ext; simp }
   map_vadd' p v := by ext; simp
 

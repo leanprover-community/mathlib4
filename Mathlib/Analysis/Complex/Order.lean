@@ -71,6 +71,16 @@ theorem nonpos_iff {z : ℂ} : z ≤ 0 ↔ z.re ≤ 0 ∧ z.im = 0 :=
 theorem neg_iff {z : ℂ} : z < 0 ↔ z.re < 0 ∧ z.im = 0 :=
   lt_def
 
+theorem sq_nonneg_iff {z : ℂ} : 0 ≤ z ^ 2 ↔ z.im = 0 := by
+  rw [nonneg_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, eq_comm,
+    mul_eq_zero_iff_right two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]
+  exact ⟨by aesop, fun h ↦ by simpa [h] using sq_nonneg z.re⟩
+
+theorem sq_nonpos_iff {z : ℂ} : z ^ 2 ≤ 0 ↔ z.re = 0 := by
+  rw [nonpos_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, mul_eq_zero_iff_right
+    two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]
+  exact ⟨by aesop, fun h ↦ by simpa [h] using sq_nonneg z.im⟩
+
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal]
 

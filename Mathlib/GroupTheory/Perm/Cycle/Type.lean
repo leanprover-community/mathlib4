@@ -153,6 +153,9 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = #σ.support := by
   | base_cycles σ hσ => rw [hσ.cycleType, Multiset.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType_mul, sum_add, hσ, hτ, hd.card_support_mul]
 
+theorem sum_cycleType_le (σ : Perm α) : σ.cycleType.sum ≤ Fintype.card α :=
+  σ.sum_cycleType ▸ Finset.card_le_univ σ.support
+
 theorem card_fixedPoints (σ : Equiv.Perm α) :
     Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
   rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
@@ -219,6 +222,10 @@ theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] 
   exact fun c ↦ ⟨fun hc h ↦ Or.resolve_left (hp.elim.eq_one_or_self_of_dvd c (hc h))
        (Nat.ne_of_lt' (one_lt_of_mem_cycleType h)),
      fun hc h ↦ by rw [hc h]⟩
+
+theorem cycleType_of_pow_prime_eq_one {σ : Perm α} {p : ℕ} [Fact (Nat.Prime p)] (hσ : σ ^ p = 1) :
+    σ.cycleType = Multiset.replicate σ.cycleType.card p :=
+  Multiset.eq_replicate.mpr ⟨rfl, pow_prime_eq_one_iff.mp hσ⟩
 
 theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : #σ.support < 2 * orderOf σ) : σ.IsCycle := by
@@ -332,6 +339,23 @@ theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
     rw [hd.cycleType_mul, hc.cycleType, g'1, cycleType_one, add_zero]
   contrapose! hn2 with g'1
   grw [← (c * g').support.card_le_univ, hd.card_support_mul, two_le_card_support_of_ne_one g'1]
+
+theorem sign_of_cycleType_eq_replicate {σ : Perm α} {n : ℕ} (hn : 0 < n)
+    (hσ : σ.cycleType = Multiset.replicate σ.cycleType.card n) :
+    sign σ = if Odd n then 1 else
+      (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / n) := by
+  rw [sign_of_cycleType', hσ, Multiset.map_replicate, Multiset.prod_replicate]
+  obtain h | h := Nat.even_or_odd n
+  · rw [if_neg (Nat.not_odd_iff_even.mpr h), h.neg_one_pow, σ.card_fixedPoints,
+      Nat.sub_sub_self σ.sum_cycleType_le,
+      show σ.cycleType.sum = σ.cycleType.card * n by rw [hσ]; simp,
+        Nat.mul_div_cancel _ hn]
+  · rw [if_pos h, h.neg_one_pow, neg_neg, one_pow]
+
+theorem sign_of_pow_two_eq_one {σ : Perm α} (hσ : σ ^ 2 = 1) :
+    sign σ = (-1) ^ ((Fintype.card α - Fintype.card (Function.fixedPoints σ)) / 2) := by
+  rw [sign_of_cycleType_eq_replicate zero_lt_two (cycleType_of_pow_prime_eq_one hσ),
+    if_neg (Nat.not_odd_iff.mpr rfl)]
 
 end CycleType
 

@@ -65,7 +65,7 @@ then it has as many roots (counting multiplicity) as its degree. -/
 def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k}
     (hf : (f.1.map i).Splits) : Fin f.1.natDegree ≃ (f.1.map i).roots.toEnumFinset :=
   .symm <| Finset.equivFinOfCardEq <| by
-    rwa [← splits_id_iff_splits, splits_iff_card_roots,
+    rwa [splits_iff_card_roots,
       ← Multiset.card_toEnumFinset, f.2.natDegree_map] at hf
 
 lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f ∈ s) :
@@ -188,8 +188,8 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           simp⟩
 
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
-  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, ← splits_id_iff_splits, Monics.map_eq_prod]
-  exact splits_prod _ fun _ _ ↦ (splits_id_iff_splits _).mpr (splits_X_sub_C _)
+  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
+  exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
 

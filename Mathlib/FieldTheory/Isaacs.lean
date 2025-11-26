@@ -46,7 +46,8 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
     apply splits_of_splits_of_dvd _
       (Finset.prod_ne_zero_iff.mpr fun _ _ ↦ minpoly.ne_zero <| (alg.isIntegral).1 _)
-      ((splits_map_iff _ _).mp <| SplittingField.splits p) (Finset.dvd_prod_of_mem _ hs)
+      (map_map (algebraMap F K) (algebraMap K p.SplittingField) _ ▸ SplittingField.splits p)
+      (Finset.dvd_prod_of_mem _ hs)
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F
   let FS := adjoin F (S : Set E)
   let Ω := FS →ₐ[F] K'

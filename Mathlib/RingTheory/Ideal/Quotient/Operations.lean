@@ -344,7 +344,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
   algebraMap := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
   smul_def' := fun _ x =>
     Quotient.inductionOn' x fun _ =>
-      ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
+      ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
   commutes' := by rintro r ⟨x⟩; exact congr_arg (⟦·⟧) (Algebra.commutes r x)
 
 instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
@@ -691,7 +691,7 @@ theorem algebraMap_quotient_injective {R} [CommRing R] {I : Ideal A} [I.IsTwoSid
     Function.Injective (algebraMap (R ⧸ I.comap (algebraMap R A)) (A ⧸ I)) := by
   rintro ⟨a⟩ ⟨b⟩ hab
   replace hab := Quotient.eq.mp hab
-  rw [← RingHom.map_sub] at hab
+  rw [← map_sub] at hab
   exact Quotient.eq.mpr hab
 
 variable (R₁)
@@ -722,9 +722,21 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] 
   ext
   rfl
 
+@[simp]
+lemma comap_map_quotientMk (I J : Ideal R) [I.IsTwoSided] :
+    (J.map <| Ideal.Quotient.mk I).comap (Ideal.Quotient.mk I) = I ⊔ J := by
+  ext x
+  simp only [mem_comap, mem_quotient_iff_mem_sup, sup_comm]
+
 lemma comap_map_mk {I J : Ideal R} [I.IsTwoSided] (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
-  ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
+  simpa
+
+lemma isPrime_map_quotientMk_of_isPrime {I : Ideal R} [I.IsTwoSided] {p : Ideal R}
+    [p.IsPrime] (hIP : I ≤ p) : (p.map (Ideal.Quotient.mk I)).IsPrime := by
+  apply Ideal.map_isPrime_of_surjective
+  · exact Quotient.mk_surjective
+  · simpa
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange

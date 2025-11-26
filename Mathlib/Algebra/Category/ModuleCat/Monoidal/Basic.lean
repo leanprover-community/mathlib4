@@ -135,7 +135,7 @@ theorem leftUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   ext x
   dsimp
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
-  rw [LinearMap.map_smul]
+  rw [map_smul]
   rfl
 
 theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
@@ -146,7 +146,7 @@ theorem rightUnitor_naturality {M N : SemimoduleCat R} (f : M ⟶ N) :
   ext x
   dsimp
   erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
-  rw [LinearMap.map_smul]
+  rw [map_smul]
   rfl
 
 theorem triangle (M N : SemimoduleCat.{u} R) :

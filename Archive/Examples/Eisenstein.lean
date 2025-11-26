@@ -57,7 +57,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
       rw [this, ← map_ofNat C, Polynomial.map_C, ne_eq, C_eq_zero, eq_zero_iff_mem,
       CharP.ker_intAlgebraMap_eq_span 3, span_singleton_pow, mem_span_singleton]
       norm_num
-    rw [hfq, ← modByMonicHom_apply, LinearMap.map_add]
+    rw [hfq, ← modByMonicHom_apply, map_add]
     convert zero_add _
     · rw [← LinearMap.mem_ker, mem_ker_modByMonic hq_monic]
       rw [pow_two, ← sub_mul]

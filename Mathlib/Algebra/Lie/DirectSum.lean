@@ -196,7 +196,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' (of L j x), toModule R ι L' f' (of L i y)⁆ by
         intro i y
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
-        simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
+        simp only [map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
       intro i j y x

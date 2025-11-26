@@ -263,7 +263,7 @@ of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
 theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
     (x : L) : algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
   have hx := Algebra.IsSeparable.isIntegral K x
-  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
+  rw [norm_eq_norm_adjoin K x, map_pow, ← adjoin.powerBasis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L

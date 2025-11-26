@@ -7,6 +7,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
@@ -27,6 +28,23 @@ universe u u' v w x y z
 variable {R R' S M M' : Type*}
 
 namespace LinearMap
+
+section toFunAsLinearMap
+
+variable {R M N A : Type*} [Semiring R] [Semiring A]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N] [SMulCommClass R A N]
+
+variable (R M N A) in
+/-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` has
+commuting `R`-module and `A`-module structures. -/
+def ltoFun : (M →ₗ[R] N) →ₗ[A] (M → N) where
+  toFun f := f.toFun
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp] lemma ltoFun_apply {f : M →ₗ[R] N} : ltoFun R M N A f = f := rfl
+
+end toFunAsLinearMap
 
 section SMul
 

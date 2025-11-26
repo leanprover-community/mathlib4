@@ -107,11 +107,17 @@ namespace Con
 
 section
 
-variable [Mul M] [Mul N] [Mul P] (c : Con M)
+variable [Mul M] [Mul N] [Mul P] {c d : Con M}
 
 @[to_additive]
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
+
+@[to_additive] lemma toSetoid_injective : Injective (toSetoid (M := M)) :=
+  fun c d ↦ by cases c; congr!
+
+@[to_additive (attr := simp)] lemma toSetoid_inj : c.toSetoid = d.toSetoid ↔ c = d :=
+  toSetoid_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive
@@ -123,6 +129,8 @@ instance : FunLike (Con M) M (M → Prop) where
     rcases y with ⟨⟨y, _⟩, _⟩
     have : x = y := h
     subst x; rfl
+
+variable (c)
 
 @[to_additive (attr := simp)]
 theorem rel_eq_coe (c : Con M) : c.r = c :=
@@ -168,12 +176,6 @@ theorem ext' {c d : Con M} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 @[to_additive (attr := ext) /-- Extensionality rule for additive congruence relations. -/]
 theorem ext {c d : Con M} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
-
-/-- The map sending a congruence relation to its underlying equivalence relation is injective. -/
-@[to_additive /-- The map sending an additive congruence relation to its underlying equivalence
-relation is injective. -/]
-theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
-  ext <| Setoid.ext_iff.1 H
 
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive /-- Two additive congruence relations are equal iff their underlying binary relations
@@ -375,6 +377,15 @@ operations. -/
   operations. -/]
 theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
+
+@[to_additive (attr := simp)] lemma toSetoid_top : (⊤ : Con M).toSetoid = ⊤ := rfl
+@[to_additive (attr := simp)] lemma toSetoid_bot : (⊥ : Con M).toSetoid = ⊥ := rfl
+
+@[to_additive (attr := simp)]
+lemma toSetoid_eq_top : c.toSetoid = ⊤ ↔ c = ⊤ := by rw [← toSetoid_top, toSetoid_inj]
+
+@[to_additive (attr := simp)]
+lemma toSetoid_eq_bot : c.toSetoid = ⊥ ↔ c = ⊥ := by rw [← toSetoid_bot, toSetoid_inj]
 
 /-- Definition of the infimum of two congruence relations. -/
 @[to_additive /-- Definition of the infimum of two additive congruence relations. -/]
