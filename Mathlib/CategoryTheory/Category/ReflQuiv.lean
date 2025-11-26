@@ -368,7 +368,7 @@ namespace adj
 variable {V W : Type*} [ReflQuiver W] [ReflQuiver V]
   {C D : Type*} [Category C] [Category D]
 
-/-- Given a reflexiver quiver `V` and a category `C`, this is the bijection
+/-- Given a reflexive quiver `V` and a category `C`, this is the bijection
 between functors `Cat.FreeRefl V ⥤ C` and refl functors `V ⥤rq C`. -/
 @[simps]
 def homEquiv : (Cat.FreeRefl V ⥤ C) ≃ V ⥤rq C where
