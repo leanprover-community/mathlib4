@@ -188,8 +188,7 @@ theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 := b
   | algebraMap => simp_rw [contractLeft_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, hx, hy, add_zero]
   | ι_mul _ _ hx =>
-    rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, LinearMap.map_smul,
-      mul_zero, sub_zero, sub_self]
+    rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, map_smul, mul_zero, sub_zero, sub_self]
 
 /-- This is [grinberg_clifford_2016][] Theorem 13 -/
 theorem contractRight_contractRight (x : CliffordAlgebra Q) : x⌊d⌊d = 0 := by
@@ -201,7 +200,7 @@ theorem contractLeft_comm (x : CliffordAlgebra Q) : d⌋(d'⌋x) = -(d'⌋(d⌋x
   | algebraMap => simp_rw [contractLeft_algebraMap, map_zero, neg_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy, neg_add]
   | ι_mul _ _ hx =>
-    simp only [contractLeft_ι_mul, map_sub, LinearMap.map_smul]
+    simp only [contractLeft_ι_mul, map_sub, map_smul]
     rw [neg_sub, sub_sub_eq_add_sub, hx, mul_neg, ← sub_eq_add_neg]
 
 /-- This is [grinberg_clifford_2016][] Theorem 14 -/
@@ -293,7 +292,7 @@ theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
   | algebraMap => simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
   | add _ _ hx hy => rw [map_add, map_add, map_add, map_add, hx, hy]
   | ι_mul _ _ hx =>
-    simp only [contractLeft_ι_mul, changeForm_ι_mul, map_sub, LinearMap.map_smul]
+    simp only [contractLeft_ι_mul, changeForm_ι_mul, map_sub, map_smul]
     rw [← hx, contractLeft_comm, ← sub_add, sub_neg_eq_add, ← hx]
 
 theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)

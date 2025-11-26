@@ -63,7 +63,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
         _ ⊆ x⁻¹ • f ⁻¹' (x • U) := Set.smul_set_mono (Set.preimage_mono h)
         _ = f ⁻¹' (x⁻¹ • x • U) := by
           ext
-          simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, LinearMap.map_smul]
+          simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, map_smul]
         _ ⊆ f ⁻¹' U := by rw [inv_smul_smul₀ x_ne _]
     -- Using this inclusion, it suffices to show that `x⁻¹ • V` is in `𝓝 0`, which is trivial.
     refine mem_of_superset ?_ this
@@ -156,7 +156,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   have h'' : f (u n) ∈ V := by
     simp only [Set.image_subset_iff] at h'
     specialize h' (n : 𝕜') h1 (Set.mem_range_self n)
-    simp only [Set.mem_preimage, LinearMap.map_smulₛₗ, map_natCast] at h'
+    simp only [Set.mem_preimage, map_smulₛₗ, map_natCast] at h'
     rcases h' with ⟨y, hy, h'⟩
     apply_fun fun y : F => (n : 𝕜')⁻¹ • y at h'
     simp only [hn', inv_smul_smul₀, Ne, Nat.cast_eq_zero, not_false_iff] at h'

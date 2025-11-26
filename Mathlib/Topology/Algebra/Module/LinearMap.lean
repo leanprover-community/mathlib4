@@ -188,7 +188,7 @@ protected theorem map_smulₛₗ (f : M₁ →SL[σ₁₂] M₂) (c : R₁) (x :
   (toLinearMap _).map_smulₛₗ _ _
 
 protected theorem map_smul [Module R₁ M₂] (f : M₁ →L[R₁] M₂) (c : R₁) (x : M₁) :
-    f (c • x) = c • f x := by simp only [RingHom.id_apply, ContinuousLinearMap.map_smulₛₗ]
+    f (c • x) = c • f x := by simp only [RingHom.id_apply, map_smulₛₗ]
 
 @[simp]
 theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M₁] [SMul R M₂]
@@ -585,7 +585,7 @@ instance applySMulCommClass : SMulCommClass R₁ (M₁ →L[R₁] M₁) M₁ whe
   smul_comm r e m := (e.map_smul r m).symm
 
 instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁ where
-  smul_comm := ContinuousLinearMap.map_smul
+  smul_comm := map_smul
 
 instance continuousConstSMul_apply : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨ContinuousLinearMap.continuous⟩
@@ -960,8 +960,7 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
     [ContinuousConstSMul R₃ M₃] (h : M₂ →SL[σ₂₃] M₃) (c : R₂) (f : M →SL[σ₁₂] M₂) :
     h.comp (c • f) = σ₂₃ c • h.comp f := by
   ext x
-  simp only [coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply,
-    ContinuousLinearMap.map_smulₛₗ]
+  simp only [coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply, map_smulₛₗ]
 
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) where
   smul_add a f g := ext fun x => smul_add a (f x) (g x)

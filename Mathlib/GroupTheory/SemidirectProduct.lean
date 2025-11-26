@@ -139,7 +139,7 @@ theorem inl_aut (g : G) (n : N) : (inl (φ g n) : N ⋊[φ] G) = inr g * inl n *
   ext <;> simp
 
 theorem inl_aut_inv (g : G) (n : N) : (inl ((φ g)⁻¹ n) : N ⋊[φ] G) = inr g⁻¹ * inl n * inr g := by
-  rw [← MonoidHom.map_inv, inl_aut, inv_inv]
+  rw [← map_inv, inl_aut, inv_inv]
 
 @[simp]
 theorem mk_eq_inl_mul_inr (g : G) (n : N) : (⟨n, g⟩ : N ⋊[φ] G) = inl n * inr g := by ext <;> simp

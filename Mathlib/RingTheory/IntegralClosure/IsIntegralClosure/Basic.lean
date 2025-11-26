@@ -376,21 +376,21 @@ theorem algebraMap_mk' (x : B) (hx : IsIntegral R x) : algebraMap A B (mk' A x h
 
 @[simp]
 theorem mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
-  algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_one]
+  algebraMap_injective A R B <| by rw [algebraMap_mk', map_one]
 
 @[simp]
 theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
-  algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_zero]
+  algebraMap_injective A R B <| by rw [algebraMap_mk', map_zero]
 
 @[simp]
 theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (hx.add hy) = mk' A x hx + mk' A y hy :=
-  algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
+  algebraMap_injective A R B <| by simp only [algebraMap_mk', map_add]
 
 @[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (hx.mul hy) = mk' A x hx * mk' A y hy :=
-  algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]
+  algebraMap_injective A R B <| by simp only [algebraMap_mk', map_mul]
 
 @[simp]
 theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
@@ -417,10 +417,10 @@ then `S` maps (uniquely) into an integral closure `B / A / R`. -/
 noncomputable def lift : S →ₐ[R] A where
   toFun x := mk' A (algebraMap S B x) (IsIntegral.algebraMap
     (Algebra.IsIntegral.isIntegral (R := R) x))
-  map_one' := by simp only [RingHom.map_one, mk'_one]
-  map_zero' := by simp only [RingHom.map_zero, mk'_zero]
+  map_one' := by simp only [map_one, mk'_one]
+  map_zero' := by simp only [map_zero, mk'_zero]
   map_add' x y := by simp_rw [← mk'_add, map_add]
-  map_mul' x y := by simp_rw [← mk'_mul, RingHom.map_mul]
+  map_mul' x y := by simp_rw [← mk'_mul, map_mul]
   commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap]
 
 @[simp]

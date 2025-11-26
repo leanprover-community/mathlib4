@@ -211,7 +211,7 @@ noncomputable def toOpen (U : Opens (PrimeSpectrum.Top R)) :
   { toFun := fun f =>
     ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
       ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
-    map_add' := fun f g => Subtype.ext <| funext fun x ↦ LinearMap.map_add _ _ _
+    map_add' := fun f g => Subtype.ext <| funext fun x ↦ map_add _ _ _
     map_smul' := fun r m => by
       simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
         RingHom.id_apply]

@@ -266,12 +266,12 @@ variable (A)
 /-- The minimal polynomial of `0` is `X`. -/
 @[simp]
 theorem zero : minpoly A (0 : B) = X := by
-  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, RingHom.map_zero] using eq_X_sub_C B (0 : A)
+  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, map_zero] using eq_X_sub_C B (0 : A)
 
 /-- The minimal polynomial of `1` is `X - 1`. -/
 @[simp]
 theorem one : minpoly A (1 : B) = X - 1 := by
-  simpa only [RingHom.map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
+  simpa only [map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
 
 end Ring
 
@@ -305,7 +305,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
     rw [← root hx zero_root]
-    exact RingHom.map_zero _
+    exact map_zero _
   · rintro rfl
     simp
 

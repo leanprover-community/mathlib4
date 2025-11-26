@@ -908,8 +908,8 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
   { toFun := to_fun,
     invFun := inv_fun,
-    map_mul' := RingHom.map_mul _
-    map_add' := RingHom.map_add _
+    map_mul' := map_mul _
+    map_add' := map_add _
     left_inv := inv.1
     right_inv := inv.2 }
 

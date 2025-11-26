@@ -1214,7 +1214,7 @@ open UniqueFactorizationMonoid
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   ext n
   induction n using recOnPosPrimePosCoprime with
-  | zero => rw [ZeroHom.map_zero, ZeroHom.map_zero]
+  | zero => rw [map_zero, map_zero]
   | one => simp
   | prime_pow p n hp hn =>
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']

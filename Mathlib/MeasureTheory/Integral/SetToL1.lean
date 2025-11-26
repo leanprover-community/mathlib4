@@ -500,7 +500,7 @@ theorem setToL1_smul (hT : DominatedFinMeasAdditive μ T C)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) (f : α →₁[μ] E) :
     setToL1 hT (c • f) = c • setToL1 hT f := by
   rw [setToL1_eq_setToL1' hT h_smul, setToL1_eq_setToL1' hT h_smul]
-  exact ContinuousLinearMap.map_smul _ _ _
+  exact map_smul _ _ _
 
 theorem setToL1_simpleFunc_indicatorConst (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s < ∞) (x : E) :
@@ -690,7 +690,7 @@ theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
 theorem setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
   rw [Pi.zero_def, setToFun_eq hT (integrable_zero _ _ _)]
   simp only [← Pi.zero_def]
-  rw [Integrable.toL1_zero, ContinuousLinearMap.map_zero]
+  rw [Integrable.toL1_zero, map_zero]
 
 @[simp]
 theorem setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :

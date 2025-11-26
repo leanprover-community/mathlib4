@@ -59,7 +59,7 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
   · intro hx
     exact (injective_iff_map_eq_zero (algebraMap (R ⧸ p) (S ⧸ P))).mp h _ hx
   · intro hx
-    rw [hx, RingHom.map_zero]
+    rw [hx, map_zero]
 
 variable [Algebra R S]
 
@@ -274,7 +274,7 @@ instance instFaithfulSMul : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   rintro ⟨a⟩ ⟨b⟩ hab
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
-  rw [RingHom.map_sub]
+  rw [map_sub]
   exact Quotient.eq.mp hab
 
 variable {p} in

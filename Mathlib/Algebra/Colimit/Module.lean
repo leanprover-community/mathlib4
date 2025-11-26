@@ -99,11 +99,11 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
     ∃ i x, of R ι G f i x = z :=
   Nonempty.elim (by infer_instance) fun ind : ι ↦
     Quotient.inductionOn' z fun z ↦
-      DirectSum.induction_on z ⟨ind, 0, LinearMap.map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
+      DirectSum.induction_on z ⟨ind, 0, map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ ↦
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
-          rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          rw [map_add, of_f, of_f, ihx, ihy]
           rfl ⟩
 
 theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimit G f) :

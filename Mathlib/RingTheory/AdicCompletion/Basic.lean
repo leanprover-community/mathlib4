@@ -239,10 +239,10 @@ namespace AdicCompletion
 `∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
 def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
-  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
+  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, map_zero]
   add_mem' hf hg m n hmn := by
-    rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
-  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
+    rw [Pi.add_apply, Pi.add_apply, map_add, hf hmn, hg hmn]
+  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, map_smul, hf hmn]
 
 instance : Zero (AdicCompletion I M) where
   zero := ⟨0, by simp⟩

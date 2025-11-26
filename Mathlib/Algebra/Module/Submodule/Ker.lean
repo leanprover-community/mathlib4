@@ -157,7 +157,7 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
   monotone' n m w x h := by
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
-    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, LinearMap.map_zero]
+    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
 
 end AddCommMonoid
 

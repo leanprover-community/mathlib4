@@ -588,7 +588,7 @@ theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
     have : g x = evalCLM ℝ x g := rfl
     rw [this, ← h]
     simp
-  simp only [this, ContinuousLinearMap.map_zero] at h
+  simp only [this, map_zero] at h
   specialize h (volume.restrict (Icc (0 : ℝ) 1)).extensionToBoundedFunctions
   simp_rw [toFunctions_toMeasure_continuousPart _ _ MeasurableSet.univ] at h
   simp at h

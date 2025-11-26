@@ -60,8 +60,8 @@ This generalizes `Function.End.applyMulAction`. -/
 instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
     DistribMulAction (AddMonoid.End α) α where
   smul := (· <| ·)
-  smul_zero := AddMonoidHom.map_zero
-  smul_add := AddMonoidHom.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

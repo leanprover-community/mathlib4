@@ -37,10 +37,10 @@ variable {G R : Type*} [Group G] [Semiring R]
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
   smul := (· <| ·)
-  smul_zero := RingEquiv.map_zero
-  smul_add := RingEquiv.map_add
-  smul_one := RingEquiv.map_one
-  smul_mul := RingEquiv.map_mul
+  smul_zero := map_zero
+  smul_add := map_add
+  smul_one := map_one
+  smul_mul := map_mul
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

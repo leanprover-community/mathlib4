@@ -237,12 +237,12 @@ def dual (I : FractionalIdeal B⁰ L) :
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp
       (IsIntegral.algebraMap (B := L) (discr_isIntegral K hb))
     refine ⟨y * x, mem_nonZeroDivisors_iff_ne_zero.mpr (mul_ne_zero ?_ hx), fun z hz ↦ ?_⟩
-    · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, RingHom.map_zero,
+    · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, map_zero,
         ← (algebraMap K L).map_zero, (algebraMap K L).injective.ne_iff]
       exact discr_not_zero_of_basis K b
     · convert isIntegral_discr_mul_of_mem_traceDual I hb hx' hz using 1
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
-      · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
+      · rw [Algebra.smul_def, map_mul, hy, ← Algebra.smul_def]⟩
 
 end FractionalIdeal
 
@@ -729,7 +729,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
     have : trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
       rw [← algebraMap_intTrace (A := A)]
       exact ⟨intTrace A B z, this z hz, rfl⟩
-    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
+    rwa [mul_comm, ← smul_eq_mul, ← map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
@@ -887,7 +887,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
     have : Algebra.trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
       rw [← Algebra.algebraMap_intTrace (A := A)]
       exact ⟨Algebra.intTrace A B z, this z hz, rfl⟩
-    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
+    rwa [mul_comm, ← smul_eq_mul, ← map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain]

@@ -174,7 +174,7 @@ def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
     refine fun f ↦ le_antisymm ?_ ?_
     · simpa only [norm_one, mul_one] using le_opNorm f 1
     · refine opNorm_le_bound' f (norm_nonneg <| f 1) (fun x _ ↦ ?_)
-      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), ContinuousLinearMap.map_smul,
+      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), map_smul,
         norm_smul, mul_comm, (by rfl : ring_lmap_equiv_selfₗ 𝕜 E f = f 1)]
 
 end RingEquiv
