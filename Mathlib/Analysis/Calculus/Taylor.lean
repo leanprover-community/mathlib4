@@ -86,7 +86,7 @@ theorem taylorWithin_succ (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ : ℝ) :
 theorem taylorWithinEval_succ (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : ℝ) :
     taylorWithinEval f (n + 1) s x₀ x = taylorWithinEval f n s x₀ x +
       (((n + 1 : ℝ) * n !)⁻¹ * (x - x₀) ^ (n + 1)) • iteratedDerivWithin (n + 1) f s x₀ := by
-  simp_rw [taylorWithinEval, taylorWithin_succ, LinearMap.map_add, PolynomialModule.comp_eval]
+  simp_rw [taylorWithinEval, taylorWithin_succ, map_add, PolynomialModule.comp_eval]
   congr
   simp only [Polynomial.eval_sub, Polynomial.eval_X, Polynomial.eval_C,
     PolynomialModule.eval_single, mul_inv_rev]
