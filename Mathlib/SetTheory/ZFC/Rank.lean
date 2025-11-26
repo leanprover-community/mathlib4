@@ -140,6 +140,10 @@ variable {x y : ZFSet.{u}}
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift _ fun _ _ => PSet.rank_congr
 
+@[simp]
+theorem rank_mk (x : PSet) : rank (.mk x) = x.rank :=
+  rfl
+
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
 
