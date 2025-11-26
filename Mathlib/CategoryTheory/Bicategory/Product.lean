@@ -54,7 +54,7 @@ def sectL (B : Type u₁) [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategor
 
 /-- `sectR b C` is the strictly unitary pseudofunctor `C ⥤ B × C` given by `Y ↦ (b, Y)`. -/
 @[simps!]
-def sectR {B : Type u₁} [Bicategory.{w₁, v₁} B] (b : B) {C : Type u₂} [Bicategory.{w₂, v₂} C] :
+def sectR {B : Type u₁} [Bicategory.{w₁, v₁} B] (b : B) (C : Type u₂) [Bicategory.{w₂, v₂} C] :
     StrictlyUnitaryPseudofunctor C (B × C) := .mk'
   { obj Y := (b, Y)
     map f := 𝟙 b ×ₘ f
