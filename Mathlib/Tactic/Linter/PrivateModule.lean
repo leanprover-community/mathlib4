@@ -54,6 +54,7 @@ def privateModule : Linter where run stx := do
     unless getLinterValue linter.privateModule (← getLinterOptions) do
       return
     if (← getEnv).header.isModule then
+      dbg_trace "privateModule linter is running"
       -- Don't lint an imports-only module:
       if !(← getEnv).constants.map₂.isEmpty then
         -- Exit if any declaration is public:
