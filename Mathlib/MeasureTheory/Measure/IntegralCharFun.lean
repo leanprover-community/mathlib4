@@ -71,7 +71,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     swap
     · intro x hx
       simp_rw [mul_comm y]
-      exact (hasDerivAt_mul_const _).hasDerivWithinAt
+      exact hasDerivAt_mul_const _
     simp only [Function.comp_apply, ofReal_mul, real_smul, intervalIntegral.integral_const_mul,
       mul_neg] at h
     rw [← h, ← mul_assoc]

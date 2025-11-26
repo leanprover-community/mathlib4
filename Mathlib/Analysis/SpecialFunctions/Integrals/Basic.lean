@@ -532,7 +532,7 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       congr! 5
       rw [← sq, ← sq, cos_sq']
     _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n :=
-      integral_comp_mul_deriv (fun x _ => (hasDerivAt_sin x).hasDerivWithinAt) continuousOn_cos hc
+      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
   See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
@@ -566,7 +566,7 @@ theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
       rw [← sq, ← sq, sin_sq]
     _ = ∫ x in b..a, cos x ^ n * (↑1 - cos x ^ 2) ^ m * -sin x := by congr; ext; ring
     _ = ∫ u in cos b..cos a, u ^ n * (↑1 - u ^ 2) ^ m :=
-      integral_comp_mul_deriv (fun x _ => (hasDerivAt_cos x).hasDerivWithinAt)
+      integral_comp_mul_deriv (fun x _ => hasDerivAt_cos x)
         continuousOn_sin.neg hc
 
 /-- The integral of `sin x * cos x`, given in terms of cos².
@@ -611,7 +611,7 @@ theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) 
   calc
     _ = ∫ x in sin (-(π / 2)).. sin (π / 2), √(1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
     _ = ∫ x in (-(π / 2))..(π / 2), √(1 - sin x ^ 2 : ℝ) * cos x :=
-          (integral_comp_mul_deriv (fun x _ => (hasDerivAt_sin x).hasDerivWithinAt) continuousOn_cos
+          (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
             (by fun_prop)).symm
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
           refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
