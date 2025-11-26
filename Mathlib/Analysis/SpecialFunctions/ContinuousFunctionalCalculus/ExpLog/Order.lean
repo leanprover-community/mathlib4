@@ -74,14 +74,8 @@ lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
       intro a ha
       simp only [ha, ↓reduceIte, f, ← smul_eq_mul]
       rw [cfc_smul _ (hf := by fun_prop (disch := grind -abstractProof)),
-        cfc_sub _ _ (hf := by fun_prop (disch := grind -abstractProof))]
-      rw [cfc_const_one ..]
-      congr -- this should be factored out into it's own lemma, then we can `rw` with it
-      · rw [CFC.rpow_def, cfc_nnreal_eq_real ..]
-        refine cfc_congr ?_
-        intro x hx
-        simp only [NNReal.coe_rpow, coe_toNNReal']
-        grind [= max_eq_left]
+        cfc_sub _ _ (hf := by fun_prop (disch := grind -abstractProof)),
+        cfc_const_one .., rpow_eq_cfc_real ..]
     refine MonotoneOn.congr (fun a ha b hb hab ↦ ?_) hf
     gcongr
     grind
