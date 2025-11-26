@@ -18,7 +18,7 @@ This file provides some API for handling them, especially in the context of a gr
 
 * `Nat.Combination α n` is the set of all `Finset α` with cardinality `n`.
 
-* `Nat.Combination.card` proves that the `Nat.Card`-cardinality
+* `Nat.Combination.card` proves that the `Nat.card`-cardinality
 of this set is equal to `(Nat.card α).choose n`.
 
 * `Nat.Combination.subMulAction`:
@@ -78,17 +78,14 @@ theorem eq_iff_subset : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : n.Combination α, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
-    rw [← not_lt, ← ENat.add_lt_add_iff_left (k := 1) (ENat.coe_ne_top _), not_lt]
-    rwa [← Set.encard_singleton b, Set.encard_add_encard_compl,
-      Set.encard_singleton, Set.encard_univ, add_comm,
-      ENat.add_one_le_iff (ENat.coe_ne_top _)]
+    rwa [← (Set.encard_add_encard_compl {b}).trans (Set.encard_univ α), Set.encard_singleton,
+      add_comm, ENat.lt_add_one_iff' (ENat.coe_ne_top n)] at hα
   obtain ⟨s, has, has', hs⟩ :=
     Set.exists_superset_subset_encard_eq (s := {a}) (by simp [Ne.symm hab]) (by simpa) ha'
-  simp only [Set.singleton_subset_iff, Set.subset_compl_singleton_iff] at has has'
-  letI : Set.Finite s := Set.finite_of_encard_eq_coe hs
-  use ⟨Set.Finite.toFinset this, by
-      rw [mem_iff, ←ENat.coe_inj, ← hs, this.encard_eq_coe_toFinset_card]⟩
-  simp [has, has']
+  have : Set.Finite s := Set.finite_of_encard_eq_coe hs
+  exact ⟨⟨Set.Finite.toFinset this, by
+    rwa [mem_iff, ← ENat.coe_inj, ← this.encard_eq_coe_toFinset_card]⟩,
+      by simpa using has, by simpa using has'⟩
 
 variable (α n) in
 /-- `Nat.Combination α n` as a `SubMulAction` of `Finset α`. -/
@@ -118,17 +115,12 @@ theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
     {g : G} (hg : (AddAction.toPerm g : Equiv.Perm α) ≠ 1) :
     ∃ s : n.Combination α, g +ᵥ s ≠ s := by
-  have : ∃ (a : α), (g +ᵥ a : α) ≠ a := by
-    by_contra! h
-    apply hg
-    ext a
-    simpa only using h a
+  have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using hg
   obtain ⟨a, ha⟩ := this
   obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
   use s
-  intro h
-  apply has'
-  rwa [← h, ← mem_coe_iff, coe_vadd, vadd_mem_vadd_finset_iff, mem_coe_iff]
+  contrapose! has'
+  rwa [← has', ← mem_coe_iff, coe_vadd, vadd_mem_vadd_finset_iff, mem_coe_iff]
 
 theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
