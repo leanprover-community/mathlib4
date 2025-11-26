@@ -5,12 +5,10 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.Order.Fin.Basic
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.SuppressCompilation
-
 /-!
 # Composable arrows
 
@@ -878,13 +876,11 @@ def opEquivalence : (ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n 
 
 end ComposableArrows
 
-variable {C}
-
 section
 
 open ComposableArrows
 
-variable {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
+variable {C} {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/

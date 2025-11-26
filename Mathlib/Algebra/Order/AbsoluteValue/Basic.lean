@@ -184,12 +184,8 @@ lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   · simp [Subsingleton.eq_zero (n : R)]
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [Nat.cast_succ]
-    calc
-      abv (n + 1) ≤ abv n + abv 1 := abv.add_le ..
-      _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
-      _ ≤ n + 1 := add_le_add_right hn 1
+  | succ n ih =>
+  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 

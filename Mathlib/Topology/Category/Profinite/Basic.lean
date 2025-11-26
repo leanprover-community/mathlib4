@@ -42,6 +42,7 @@ universe v u
 open CategoryTheory Topology CompHausLike
 
 /-- The type of profinite topological spaces. -/
+@[to_additive self]
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite

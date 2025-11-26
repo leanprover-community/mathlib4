@@ -211,9 +211,9 @@ instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) w
 
 -- We can't just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
-/-- `HasFiniteWidePullbacks` represents a choice of wide pullback
-for every finite collection of morphisms
--/
+/-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
+finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same
+codomain. -/
 class HasFiniteWidePullbacks : Prop where
   /-- `C` has all wide pullbacks for any Finite `J` -/
   out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
@@ -223,9 +223,9 @@ instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWide
   haveI := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
 
-/-- `HasFiniteWidePushouts` represents a choice of wide pushout
-for every finite collection of morphisms
--/
+/-- A category `HasFiniteWidePushouts` if it has all colimits of shape `WidePushoutShape J` for
+finite `J`, i.e. if it has a wide pushout for every finite collection of morphisms with the same
+domain. -/
 class HasFiniteWidePushouts : Prop where
   /-- `C` has all wide pushouts for any Finite `J` -/
   out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C

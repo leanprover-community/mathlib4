@@ -56,8 +56,7 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
 + `Unitization.isQuasiregular_inr_iff`: `a : A` is quasiregular if and only if it is quasiregular
   in `Unitization R A` (via the coercion `Unitization.inr`).
 + `Unitization.quasispectrum_eq_spectrum_inr`: the quasispectrum of `a` in a non-unital `R`-algebra
-  `A` is precisely the spectrum of `a` in the unitization.
-  in `Unitization R A` (via the coercion `Unitization.inr`).
+  `A` is precisely the spectrum of `a` in `Unitization R A` (via the coercion `Unitization.inr`).
 -/
 
 /-- A type synonym for non-unital rings where an alternative monoid structure is introduced.

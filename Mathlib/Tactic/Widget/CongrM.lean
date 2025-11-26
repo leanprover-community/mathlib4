@@ -6,7 +6,6 @@ Authors: Patrick Massot
 
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.CongrM
-import Batteries.Lean.Position
 
 /-! # CongrM widget
 
@@ -22,7 +21,8 @@ open Lean Meta Server ProofWidgets
 /-- Return the link text and inserted text above and below of the congrm widget. -/
 @[nolint unusedArguments]
 def makeCongrMString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (_ : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    (_ : SelectInsertParams) :
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   let subexprPos := getGoalLocations pos
   unless goalType.isAppOf ``Eq || goalType.isAppOf ``Iff do
     throwError "The goal must be an equality or iff."
@@ -50,6 +50,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `congrm` call with holes specified by selecting
 subexpressions in the goal. -/
 elab stx:"congrm?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo CongrMSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

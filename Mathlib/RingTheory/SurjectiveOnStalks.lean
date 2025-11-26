@@ -42,7 +42,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
   constructor
   · intro H y
     obtain ⟨a, ha⟩ := H (IsLocalization.mk' _ y (1 : P.primeCompl))
-    obtain ⟨a, t, rfl⟩ := IsLocalization.mk'_surjective (P.comap f).primeCompl a
+    obtain ⟨a, t, rfl⟩ := IsLocalization.exists_mk'_eq (P.comap f).primeCompl a
     rw [Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq,
       Submonoid.coe_one, one_mul, IsLocalization.eq_iff_exists P.primeCompl] at ha
     obtain ⟨c, hc⟩ := ha
@@ -151,7 +151,7 @@ lemma surjectiveOnStalks_of_isLocalization
     [Algebra R S] [IsLocalization M S] :
     SurjectiveOnStalks (algebraMap R S) := by
   refine surjectiveOnStalks_of_exists_div fun s ↦ ?_
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M s
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M s
   exact ⟨x, s, IsLocalization.map_units S s, IsLocalization.mk'_spec' S x s⟩
 
 lemma SurjectiveOnStalks.baseChange

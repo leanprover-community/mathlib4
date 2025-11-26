@@ -94,9 +94,7 @@ theorem copy_eq (f : A →⋆* B) (f' : A → B) (h : f' = f) : f.copy f' h = f 
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A →* B) (h) :
-    ((⟨f, h⟩ : A  →⋆* B) : A → B) = f :=
-  rfl
+theorem coe_mk (f : A →* B) (h) : ((⟨f, h⟩ : A →⋆* B) : A → B) = f := rfl
 
 section Id
 

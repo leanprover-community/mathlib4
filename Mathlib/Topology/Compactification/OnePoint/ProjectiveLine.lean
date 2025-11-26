@@ -162,7 +162,7 @@ def parabolicFixedPoint (g : GL (Fin 2) K) : OnePoint K :=
 lemma IsParabolic.smul_eq_self_iff {g : GL (Fin 2) K} (hg : g.IsParabolic) [NeZero (2 : K)]
     {c : OnePoint K} : g • c = c ↔ c = parabolicFixedPoint g := by
   rcases hg with ⟨hg, hdisc⟩
-  rw [disc_fin_two, trace_fin_two, det_fin_two] at hdisc
+  rw [discr_fin_two, trace_fin_two, det_fin_two] at hdisc
   cases c with
   | infty => by_cases h : g 1 0 = 0 <;> simp [parabolicFixedPoint, smul_infty_eq_ite, h]
   | coe c =>
@@ -195,18 +195,18 @@ lemma IsElliptic.smul_ne_self [LinearOrder K] [IsStrictOrderedRing K]
   | infty =>
     rw [Ne, smul_infty_eq_self_iff]
     refine fun h ↦ not_le_of_gt hg ?_
-    have : g.val.disc = (g 0 0 - g 1 1) ^ 2 := by
-      simp only [disc_fin_two, trace_fin_two, det_fin_two]
+    have : g.val.discr = (g 0 0 - g 1 1) ^ 2 := by
+      simp only [discr_fin_two, trace_fin_two, det_fin_two]
       grind
     rw [this]
     apply sq_nonneg
   | coe c =>
     refine fun h ↦ not_le_of_gt hg ?_
-    have : g.val.disc = (2 * g 1 0 * c + (g 1 1 + -g 0 0)) ^ 2 := by
+    have : g.val.discr = (2 * g 1 0 * c + (g 1 1 + -g 0 0)) ^ 2 := by
       replace h : g 1 0 * (c * c) + (g 1 1 + -g 0 0) * c + -g 0 1 = 0 := by
         simpa [← fixpointPolynomial_aeval_eq_zero_iff, fixpointPolynomial, sq, sub_eq_add_neg]
           using h
-      simp only [← discrim_eq_sq_of_quadratic_eq_zero h, disc_fin_two, discrim, trace_fin_two,
+      simp only [← discrim_eq_sq_of_quadratic_eq_zero h, discr_fin_two, discrim, trace_fin_two,
         det_fin_two]
       grind
     rw [this]

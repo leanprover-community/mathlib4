@@ -124,9 +124,6 @@ lemma prodMk {g : α → γ} (hf : EventuallyConst f l) (hg : EventuallyConst g 
     EventuallyConst (fun x ↦ (f x, g x)) l :=
   hf.comp₂ Prod.mk hg
 
-@[deprecated (since := "2025-03-10")]
-alias Filter.EventuallyConst.prod_mk := prodMk
-
 @[to_additive]
 lemma mul [Mul β] {g : α → β} (hf : EventuallyConst f l) (hg : EventuallyConst g l) :
     EventuallyConst (f * g) l :=

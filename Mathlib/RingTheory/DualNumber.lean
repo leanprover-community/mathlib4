@@ -104,7 +104,7 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
   refine (eq_or_ne I ⊤).symm.imp_left fun ht ↦ ?_
   have hd : ∀ x ∈ I, ε ∣ x := by
     intro x hxI
-    rcases isUnit_or_isNilpotent x with hx|hx
+    rcases isUnit_or_isNilpotent x with hx | hx
     · exact absurd (Ideal.eq_top_of_isUnit_mem _ hxI hx) ht
     · rwa [← isNilpotent_iff_eps_dvd]
   have hd' : ∀ x ∈ I, x ≠ 0 → ∃ r, ε = r * x := by
@@ -148,10 +148,10 @@ instance [DivisionRing K] : IsPrincipalIdealRing K[ε] where
 
 lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
     ∃ c, a * c = b ∨ b * c = a := by
-  rcases isUnit_or_isNilpotent a with ha|ha
+  rcases isUnit_or_isNilpotent a with ha | ha
   · lift a to K[ε]ˣ using ha
     exact ⟨a⁻¹ * b, by simp⟩
-  rcases isUnit_or_isNilpotent b with hb|hb
+  rcases isUnit_or_isNilpotent b with hb | hb
   · lift b to K[ε]ˣ using hb
     exact ⟨b⁻¹ * a, by simp⟩
   rw [isNilpotent_iff_eps_dvd] at ha hb
@@ -159,7 +159,7 @@ lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
   obtain ⟨y, rfl⟩ := hb
   suffices ∃ c, fst x * fst c = fst y ∨ fst y * fst c = fst x by
     simpa [TrivSqZeroExt.ext_iff] using this
-  rcases eq_or_ne (fst x) 0 with hx|hx
+  rcases eq_or_ne (fst x) 0 with hx | hx
   · refine ⟨ε, Or.inr ?_⟩
     simp [hx]
   refine ⟨inl ((fst x)⁻¹ * fst y), ?_⟩

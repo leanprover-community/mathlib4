@@ -430,3 +430,24 @@ lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
     · exact ⟨⊥, by grind [iSup_le_iff, Ideal.IsPrime.ne_top]⟩
     · obtain ⟨M, hM, hIM⟩ := exists_le_maximal I I_top
       exact ⟨M, iSup_mono' (fun hI ↦ ⟨hM, primeHeight_mono hIM⟩)⟩
+
+section isLocalization
+
+variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
+
+lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
+    (h : ∀ (P : Ideal R) [P.IsMaximal], Ring.KrullDimLE n (Rₚ P)) :
+    Ring.KrullDimLE n R := by
+  simp_rw [Ring.krullDimLE_iff] at h ⊢
+  nontriviality R
+  rw [← Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim]
+  refine (WithBot.coe_le_coe).mpr (iSup₂_le_iff.mpr fun P hP ↦ ?_)
+  rw [← Ideal.height_eq_primeHeight, ← WithBot.coe_le_coe]
+  rw [← IsLocalization.AtPrime.ringKrullDim_eq_height P (Rₚ P)]
+  exact h P
+
+end isLocalization

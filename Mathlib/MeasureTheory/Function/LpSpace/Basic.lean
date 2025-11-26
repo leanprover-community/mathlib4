@@ -538,11 +538,11 @@ theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type*} [MeasurableSpace β]
 
 namespace Lp
 
-/-! ### Composition with a measure preserving function -/
+/-! ### Composition with a measure-preserving function -/
 
 variable {β : Type*} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
 
-/-- Composition of an `L^p` function with a measure preserving function is an `L^p` function. -/
+/-- Composition of an `L^p` function with a measure-preserving function is an `L^p` function. -/
 def compMeasurePreserving (f : α → β) (hf : MeasurePreserving f μ μb) :
     Lp E p μb →+ Lp E p μ where
   toFun g := ⟨g.1.compMeasurePreserving f hf, g.1.compMeasurePreserving_mem_Lp g.2 hf⟩

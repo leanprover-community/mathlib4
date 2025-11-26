@@ -682,7 +682,7 @@ instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite
   pi.isInvInvariant _
 
 /-!
-### Measure preserving equivalences
+### Measure-preserving equivalences
 
 In this section we prove that some measurable equivalences (e.g., between `Fin 1 → α` and `α` or
 between `Fin 2 → α` and `α × α`) preserve measure or volume. These lemmas can be used to prove that

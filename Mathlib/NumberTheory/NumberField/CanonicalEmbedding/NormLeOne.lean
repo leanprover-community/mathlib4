@@ -64,7 +64,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
   7.1. We prove first that
     `normAtAllPlaces⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K)`, see
     `subset_interior_normLeOne` (Note that here again we identify `realSpace K` with its image
-    in `mixedSpace K`). The main argument is that `expMapBasis` is a partial homeomorphism
+    in `mixedSpace K`). The main argument is that `expMapBasis` is an open partial homeomorphism
     and that `interior (paramSet K)` is a subset of its source, so its image by `expMapBasis`
     is still open.
 
@@ -208,7 +208,7 @@ variable {K}
 The component of `expMap` at the place `w`.
 -/
 @[simps]
-def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
+def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
   toFun := fun x ↦ Real.exp ((w.mult : ℝ)⁻¹ * x)
   invFun := fun x ↦ w.mult * Real.log x
   source := Set.univ
@@ -240,19 +240,19 @@ variable [NumberField K]
 The map from `realSpace K → realSpace K` whose components is given by `expMap_single`. It is, in
 some respect, a right inverse of `logMap`, see `logMap_expMap`.
 -/
-def expMap : PartialHomeomorph (realSpace K) (realSpace K) :=
-  PartialHomeomorph.pi fun w ↦ expMap_single w
+def expMap : OpenPartialHomeomorph (realSpace K) (realSpace K) :=
+  OpenPartialHomeomorph.pi fun w ↦ expMap_single w
 
 variable (K)
 
 theorem expMap_source :
     expMap.source = (Set.univ : Set (realSpace K)) := by
-  simp_rw [expMap, PartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_source, expMap_single,
     Set.pi_univ Set.univ]
 
 theorem expMap_target :
     expMap.target = Set.univ.pi fun (_ : InfinitePlace K) ↦ Set.Ioi 0 := by
-  simp_rw [expMap, PartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
+  simp_rw [expMap, OpenPartialHomeomorph.pi_toPartialEquiv, PartialEquiv.pi_target, expMap_single]
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
@@ -300,7 +300,7 @@ theorem logMap_expMap {x : realSpace K}
 theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
     ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
       Real.log (|Algebra.norm ℚ x| : ℚ) := by
-  simp_rw [← prod_eq_abs_norm, Real.log_prod _ _ (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
+  simp_rw [← prod_eq_abs_norm, Real.log_prod (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
     Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
 /--
@@ -311,7 +311,7 @@ abbrev fderiv_expMap (x : realSpace K) : realSpace K →L[ℝ] realSpace K :=
     (.proj w)
 
 theorem hasFDerivAt_expMap (x : realSpace K) : HasFDerivAt expMap (fderiv_expMap x) x := by
-  simpa [expMap, fderiv_expMap, hasFDerivAt_pi', PartialHomeomorph.pi_apply,
+  simpa [expMap, fderiv_expMap, hasFDerivAt_pi', OpenPartialHomeomorph.pi_apply,
     ContinuousLinearMap.proj_pi] using
     fun w ↦ (hasDerivAt_expMap_single w _).hasFDerivAt.comp x (hasFDerivAt_apply w x)
 
@@ -460,8 +460,8 @@ The map that sends `x : realSpace K` to
 `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i` where `|ηᵢ|` denote the vector of `realSpace K` given
 by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`, see `expMapBasis_apply'`.
 -/
-def expMapBasis : PartialHomeomorph (realSpace K) (realSpace K) :=
-  (completeBasis K).equivFunL.symm.toHomeomorph.transPartialHomeomorph expMap
+def expMapBasis : OpenPartialHomeomorph (realSpace K) (realSpace K) :=
+  (completeBasis K).equivFunL.symm.toHomeomorph.transOpenPartialHomeomorph expMap
 
 variable (K)
 

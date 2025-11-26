@@ -19,7 +19,7 @@ non-negative function with `v 0 = 0` and `c ≥ 0`.
 ## Main Definitions and Results
 * `Polynomial.gaussNorm` is the supremum of the set of all values of `v (p.coeff i) * c ^ i`
   for all `i` in the support of `p`, where `p` is a polynomial in `R[X]`, `v : R → ℝ` is a function
-  and `c` is a  real number.
+  and `c` is a real number.
 * `Polynomial.gaussNorm_coe_powerSeries`: if `v` is a non-negative function with `v 0 = 0` and `c`
   is nonnegative, the Gauss norm of a polynomial is equal to its Gauss norm as a power series.
 * `Polynomial.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is

@@ -5,7 +5,7 @@ Authors: Paul Lezeau, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
-import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 

@@ -776,7 +776,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
         calc
           _ ≤ N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by
             rw [u_succ]; exact (hF (u n) (Pu n)).2.2
-          _ ≤ _ := by rw [pow_succ', mul_assoc]; exact mul_le_mul_left' IH _
+          _ ≤ _ := by grw [pow_succ', mul_assoc, IH]
     have C : Tendsto (fun n : ℕ => ((N : ℝ≥0∞) / (N + 1)) ^ n * μ s) atTop (𝓝 (0 * μ s)) := by
       apply ENNReal.Tendsto.mul_const _ (Or.inr (measure_lt_top μ s).ne)
       apply ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one

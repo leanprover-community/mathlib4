@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Integrals and the continuous functional calculus

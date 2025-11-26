@@ -191,7 +191,7 @@ theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rf
 @[simp]
 theorem zsmul_apply (r : ℤ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
 
-instance instAddCommGroup : AddCommGroup (α →ᵇ β) :=
+instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
@@ -289,7 +289,7 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
-instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
+instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
@@ -347,7 +347,7 @@ instance : IntCast (α →ᵇ R) :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
-instance instRing : Ring (α →ᵇ R) :=
+instance instRing : Ring (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
     coe_intCast
@@ -525,13 +525,14 @@ instance instInf : Min (α →ᵇ β) where
 
 @[simp, norm_cast] lemma coe_inf (f g : α →ᵇ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g := rfl
 
-instance instSemilatticeSup : SemilatticeSup (α →ᵇ β) :=
+instance instSemilatticeSup : SemilatticeSup (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
-instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) :=
+instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.semilatticeInf _ coe_inf
 
-instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice _ coe_sup coe_inf
+instance instLattice : Lattice (α →ᵇ β) := fast_instance%
+  DFunLike.coe_injective.lattice _ coe_sup coe_inf
 
 @[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := rfl
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
@@ -544,12 +545,8 @@ instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
 
-instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) :=
-  { add_le_add_left := by
-      intro f g h₁ h t
-      simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_add, Pi.add_apply,
-        add_le_add_iff_left]
-      exact h₁ _ }
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) where
+  add_le_add_left f g h₁ h t := by simpa using h₁ _
 
 end NormedLatticeOrderedGroup
 

@@ -27,6 +27,9 @@ import Mathlib.Tactic.Simproc.Factors
 Some tests of unported extensions are still commented out.
 -/
 
+-- The default is very low, and we want to test performance on large numbers.
+set_option exponentiation.threshold 2000
+
 -- set_option profiler true
 -- set_option trace.profiler true
 -- set_option trace.Tactic.norm_num true
@@ -431,6 +434,11 @@ example : ⌈(-1 : R)⌉ = -1 := by norm_num
 example : ⌈(2 : R)⌉ = 2 := by norm_num
 example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
 example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+
+example : Int.fract (2 : R) = 0 := by norm_num
+example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
 
 end floor
 

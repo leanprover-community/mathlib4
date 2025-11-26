@@ -92,7 +92,7 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
 theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
-    (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (add_le_add_left h _)
+    (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,

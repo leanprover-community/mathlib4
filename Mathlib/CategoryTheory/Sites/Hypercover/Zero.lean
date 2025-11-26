@@ -69,6 +69,9 @@ def singleton (f : S ⟶ T) : PreZeroHypercover.{w} T where
 lemma presieve₀_singleton (f : S ⟶ T) : (singleton f).presieve₀ = .singleton f := by
   simp [singleton, presieve₀, Presieve.ofArrows_pUnit]
 
+instance (f : S ⟶ T) : Unique (PreZeroHypercover.singleton f).I₀ :=
+  inferInstanceAs <| Unique PUnit
+
 /-- Pullback of a pre-`0`-hypercover along a morphism. The components are `pullback f (E.f i)`. -/
 @[simps]
 noncomputable
@@ -101,22 +104,33 @@ base. -/
 def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i)) :
     PreZeroHypercover.{max w w'} T where
   I₀ := Σ (i : E.I₀), (F i).I₀
-  X := fun ⟨i, j⟩ ↦ (F i).X j
-  f := fun ⟨i, j⟩ ↦ (F i).f j ≫ E.f i
+  X ij := (F ij.1).X ij.2
+  f ij := (F ij.1).f ij.2 ≫ E.f ij.1
 
-/-- Replace the indexing type of a pre-`0`-hypercover. -/
+/-- Restrict the indexing type to `ι` by precomposing with a function `ι → E.I₀`. -/
 @[simps]
-def reindex (E : PreZeroHypercover.{w} T) {ι : Type w'} (e : ι ≃ E.I₀) :
+def restrictIndex (E : PreZeroHypercover.{w} T) {ι : Type w'} (f : ι → E.I₀) :
     PreZeroHypercover.{w'} T where
   I₀ := ι
-  X := E.X ∘ e
-  f i := E.f (e i)
+  X := E.X ∘ f
+  f i := E.f (f i)
 
 @[simp]
-lemma presieve₀_reindex {ι : Type w'} (e : ι ≃ E.I₀) : (E.reindex e).presieve₀ = E.presieve₀ := by
+lemma presieve₀_restrictIndex_equiv {ι : Type w'} (e : ι ≃ E.I₀) :
+    (E.restrictIndex e).presieve₀ = E.presieve₀ := by
   refine le_antisymm (fun Y g ⟨i⟩ ↦ ⟨e i⟩) fun Y g ⟨i⟩ ↦ ?_
   obtain ⟨i, rfl⟩ := e.surjective i
   exact ⟨i⟩
+
+/-- Replace the indexing type of a pre-`0`-hypercover. -/
+@[simps!]
+def reindex (E : PreZeroHypercover.{w} T) {ι : Type w'} (e : ι ≃ E.I₀) :
+    PreZeroHypercover.{w'} T :=
+  E.restrictIndex e
+
+@[simp]
+lemma presieve₀_reindex {ι : Type w'} (e : ι ≃ E.I₀) : (E.reindex e).presieve₀ = E.presieve₀ := by
+  simp [reindex]
 
 /-- Pairwise intersection of two pre-`0`-hypercovers. -/
 @[simps!]
@@ -213,6 +227,71 @@ instance : Category (PreZeroHypercover S) where
   id E := Hom.id E
   comp f g := f.comp g
 
+lemma Hom.ext' {E : PreZeroHypercover.{w} S} {F : PreZeroHypercover.{w'} S}
+    {f g : E.Hom F} (hs : f.s₀ = g.s₀) (hh : ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by rw [hs])) :
+    f = g := by
+  cases f
+  cases g
+  simp only at hs
+  cat_disch
+
+lemma Hom.ext'_iff {E : PreZeroHypercover.{w} S} {F : PreZeroHypercover.{w'} S}
+    {f g : E.Hom F} :
+    f = g ↔ ∃ (hs : f.s₀ = g.s₀), ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by rw [hs]) :=
+  ⟨fun h ↦ h ▸ by simp, fun ⟨hs, hh⟩ ↦ Hom.ext' hs hh⟩
+
+/-- Constructor for isomorphisms of pre-`0`-hypercovers. -/
+@[simps]
+def isoMk {S : C} {E F : PreZeroHypercover.{w} S}
+    (s₀ : E.I₀ ≃ F.I₀) (h₀ : ∀ i, E.X i ≅ F.X (s₀ i))
+    (w₀ : ∀ i, (h₀ i).hom ≫ F.f _ = E.f _ := by cat_disch) :
+    E ≅ F where
+  hom.s₀ := s₀
+  hom.h₀ i := (h₀ i).hom
+  inv.s₀ := s₀.symm
+  inv.h₀ i := eqToHom (by simp) ≫ (h₀ _).inv
+  inv.w₀ i := by
+    obtain ⟨i, rfl⟩ := s₀.surjective i
+    simp only [← cancel_epi (h₀ i).hom, w₀, Category.assoc, Equiv.symm_apply_apply,
+      eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id_assoc]
+    rw [← CategoryTheory.eqToHom_naturality _ (by simp)]
+    simp
+  hom_inv_id := Hom.ext' (by ext; simp) (fun i ↦ by simp)
+  inv_hom_id := Hom.ext' (by ext; simp) (fun i ↦ by simp)
+
+@[simp]
+lemma hom_inv_s₀_apply {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : E.I₀) :
+    e.inv.s₀ (e.hom.s₀ i) = i :=
+  congr($(e.hom_inv_id).s₀ i)
+
+@[simp]
+lemma inv_hom_s₀_apply {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
+    e.hom.s₀ (e.inv.s₀ i) = i :=
+  congr($(e.inv_hom_id).s₀ i)
+
+@[reassoc (attr := simp)]
+lemma hom_inv_h₀ {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : E.I₀) :
+    e.hom.h₀ i ≫ e.inv.h₀ (e.hom.s₀ i) = eqToHom (by simp) := by
+  obtain ⟨hs, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
+  simpa using hh i
+
+@[reassoc (attr := simp)]
+lemma inv_hom_h₀ {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
+    e.inv.h₀ i ≫ e.hom.h₀ (e.inv.s₀ i) = eqToHom (by simp) := by
+  obtain ⟨hs, hh⟩ := Hom.ext'_iff.mp e.inv_hom_id
+  simpa using hh i
+
+instance {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : E.I₀) :
+    IsIso (e.hom.h₀ i) := by
+  use e.inv.h₀ (e.hom.s₀ i) ≫ eqToHom (by simp)
+  rw [hom_inv_h₀_assoc, eqToHom_trans, eqToHom_refl, Category.assoc,
+    ← eqToHom_naturality _ (by simp), inv_hom_h₀_assoc]
+  simp
+
+instance {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
+    IsIso (e.inv.h₀ i) :=
+  .of_isIso_fac_right (inv_hom_h₀ e i)
+
 end Category
 
 section Functoriality
@@ -231,7 +310,29 @@ lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
 
 end Functoriality
 
-variable {F : PreZeroHypercover.{w'} S} {G : PreZeroHypercover.{w''} S}
+/-- Pullback symmetry isomorphism. -/
+@[simps]
+noncomputable def pullbackIso {S T : C} (f : S ⟶ T) (E : PreZeroHypercover.{w} T)
+    [∀ (i : E.I₀), HasPullback f (E.f i)] [∀ (i : E.I₀), HasPullback (E.f i) f] :
+    E.pullback₁ f ≅ E.pullback₂ f where
+  hom.s₀ := id
+  hom.h₀ i := (pullbackSymmetry _ _).hom
+  inv.s₀ := id
+  inv.h₀ i := (pullbackSymmetry _ _).inv
+  hom_inv_id := by
+    apply Hom.ext (by rfl)
+    simp only [heq_eq_eq]
+    ext i
+    simp
+  inv_hom_id := by
+    apply Hom.ext (by rfl)
+    simp only [heq_eq_eq]
+    ext i
+    simp
+
+section
+
+variable (F : PreZeroHypercover.{w'} S) {G : PreZeroHypercover.{w''} S}
 
 /-- The left inclusion into the disjoint union. -/
 @[simps]
@@ -245,6 +346,7 @@ def sumInr : F.Hom (E.sum F) where
   s₀ := Sum.inr
   h₀ _ := 𝟙 _
 
+variable {E F} in
 /-- To give a refinement of the disjoint union, it suffices to give refinements of both
 components. -/
 @[simps]
@@ -254,7 +356,90 @@ def sumLift (f : E.Hom G) (g : F.Hom G) : (E.sum F).Hom G where
     | .inl i => f.h₀ i
     | .inr i => g.h₀ i
 
+variable [∀ (i : E.I₀) (j : F.I₀), HasPullback (E.f i) (F.f j)]
+
+/-- First projection from the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interFst : Hom (inter E F) E where
+  s₀ i := i.1
+  h₀ _ := pullback.fst _ _
+
+/-- Second projection from the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interSnd : Hom (inter E F) F where
+  s₀ i := i.2
+  h₀ _ := pullback.snd _ _
+  w₀ i := by simp [← pullback.condition]
+
+variable {E F} in
+/-- Universal property of the intersection of two pre-`0`-hypercovers. -/
+@[simps]
+noncomputable
+def interLift (f : G.Hom E) (g : G.Hom F) :
+    G.Hom (E.inter F) where
+  s₀ i := ⟨f.s₀ i, g.s₀ i⟩
+  h₀ i := pullback.lift (f.h₀ i) (g.h₀ i) (by simp)
+
+end
+
 end PreZeroHypercover
+
+/-- The pre-`0`-hypercover associated to a presieve `R`. It is indexed by the morphisms in `R`. -/
+@[simps -isSimp]
+def Presieve.preZeroHypercover {S : C} (R : Presieve S) : PreZeroHypercover.{max u v} S where
+  I₀ := R.uncurry
+  X i := i.1.1
+  f i := i.1.2
+
+@[simp]
+lemma Presieve.presieve₀_preZeroHypercover {S : C} (R : Presieve S) :
+    R.preZeroHypercover.presieve₀ = R := by
+  refine le_antisymm ?_ ?_
+  · rintro - - ⟨i⟩
+    exact i.2
+  · intro Y f h
+    let i : R.uncurry := ⟨⟨Y, f⟩, h⟩
+    exact .mk i
+
+lemma Presieve.exists_eq_preZeroHypercover {S : C} (R : Presieve S) :
+    ∃ (E : PreZeroHypercover.{max u v} S), R = E.presieve₀ :=
+  ⟨R.preZeroHypercover, by simp⟩
+
+/-- The deduplication of a pre-`0`-hypercover `E` in universe `w` to a pre-`0`-hypercover in
+universe `max u v`. This is indexed by the morphisms of `E`. -/
+@[simps! -isSimp]
+def PreZeroHypercover.shrink {S : C} (E : PreZeroHypercover.{w} S) :
+    PreZeroHypercover.{max u v} S :=
+  E.presieve₀.preZeroHypercover
+
+@[simp]
+lemma PreZeroHypercover.presieve₀_shrink {S : C} (E : PreZeroHypercover.{w} S) :
+    E.shrink.presieve₀ = E.presieve₀ :=
+  E.presieve₀.presieve₀_preZeroHypercover
+
+lemma PreZeroHypercover.shrink_eq_shrink_of_presieve₀_eq_presieve₀ {S : C}
+    {E F : PreZeroHypercover.{w} S} (h : E.presieve₀ = F.presieve₀) :
+    E.shrink = F.shrink := by
+  rw [shrink, shrink, h]
+
+lemma PreZeroHypercover.presieve₀_eq_presieve₀_iff {S : C} {E F : PreZeroHypercover.{w} S} :
+    E.presieve₀ = F.presieve₀ ↔ E.shrink = F.shrink := by
+  refine ⟨fun h ↦ shrink_eq_shrink_of_presieve₀_eq_presieve₀ h, fun h ↦ ?_⟩
+  rw [← E.presieve₀_shrink, ← F.presieve₀_shrink, h]
+
+/-- `E` refines its deduplication. -/
+def PreZeroHypercover.toShrink {S : C} (E : PreZeroHypercover.{w} S) : E.Hom E.shrink where
+  s₀ i := ⟨⟨_, E.f i⟩, .mk i⟩
+  h₀ i := 𝟙 _
+
+/-- The deduplication of `E` refines `E`. -/
+noncomputable
+def PreZeroHypercover.fromShrink {S : C} (E : PreZeroHypercover.{w} S) : E.shrink.Hom E where
+  s₀ i := (Presieve.ofArrows_surj _ _ i.2).choose
+  h₀ i := eqToHom (Presieve.ofArrows_surj _ _ i.2).choose_spec.1.symm
+  w₀ i := (Presieve.ofArrows_surj _ _ i.2).choose_spec.2.symm
 
 namespace Precoverage
 
@@ -339,6 +524,26 @@ def add (E : ZeroHypercover.{w} J S) {T : C} (f : T ⟶ S)
   __ := E.toPreZeroHypercover.add f
   mem₀ := by rwa [PreZeroHypercover.presieve₀_add]
 
+/-- If `L` is a finer precoverage than `K`, any `0`-hypercover wrt. `K` is in particular
+a `0`-hypercover wrt. to `L`. -/
+@[simps toPreZeroHypercover]
+def weaken {K L : Precoverage C} {X : C} (E : Precoverage.ZeroHypercover K X) (h : K ≤ L) :
+    Precoverage.ZeroHypercover L X where
+  __ := E
+  mem₀ := h _ E.mem₀
+
+instance (K : Precoverage C) [K.HasPullbacks] {X Y : C} (E : K.ZeroHypercover X) (f : Y ⟶ X) :
+    E.presieve₀.HasPullbacks f :=
+  K.hasPullbacks_of_mem _ E.mem₀
+
+instance {X Y : C} (E : PreZeroHypercover X) (f : Y ⟶ X) [E.presieve₀.HasPullbacks f]
+    (i : E.I₀) : HasPullback (E.f i) f :=
+  E.presieve₀.hasPullback f ⟨i⟩
+
+instance {X Y : C} (E : PreZeroHypercover X) (f : Y ⟶ X) [E.presieve₀.HasPullbacks f]
+    (i : E.I₀) : HasPullback f (E.f i) :=
+  hasPullback_symmetry (E.f i) f
+
 variable (J) in
 /-- A morphism of `0`-hypercovers is a morphism of the underlying pre-`0`-hypercovers. -/
 abbrev Hom (E : ZeroHypercover.{w} J S) (F : ZeroHypercover.{w'} J S) :=
@@ -349,6 +554,15 @@ instance : Category (ZeroHypercover.{w} J S) where
   Hom := Hom J
   id _ := PreZeroHypercover.Hom.id _
   comp := PreZeroHypercover.Hom.comp
+
+/-- An isomorphism in `0`-hypercovers is an isomorphism of the underlying pre-`0`-hypercovers. -/
+@[simps]
+def isoMk {E F : ZeroHypercover.{w} J S} (e : E.toPreZeroHypercover ≅ F.toPreZeroHypercover) :
+    E ≅ F where
+  hom := e.hom
+  inv := e.inv
+  hom_inv_id := e.hom_inv_id
+  inv_hom_id := e.inv_hom_id
 
 section Functoriality
 
@@ -365,6 +579,60 @@ def map (F : C ⥤ D) (E : ZeroHypercover.{w} J S) (h : J ≤ K.comap F) :
 
 end Functoriality
 
+/--
+A `w`-`0`-hypercover `E` is `w'`-small if there exists an indexing type `ι` in `Type w'` and a
+restriction map `ι → E.I₀` such that the restriction of `E` to `ι` is still covering.
+
+Note: This is weaker than `E.I₀` being `w'`-small. For example, every Zariski cover of
+`X : Scheme.{u}` is `u`-small, because `X` itself suffices as indexing type.
+-/
+protected class Small (E : ZeroHypercover.{w} J S) where
+  exists_restrictIndex_mem (E) : ∃ (ι : Type w') (f : ι → E.I₀), (E.restrictIndex f).presieve₀ ∈ J S
+
+instance (E : ZeroHypercover.{w} J S) [Small.{w'} E.I₀] : ZeroHypercover.Small.{w'} E where
+  exists_restrictIndex_mem := ⟨_, (equivShrink E.I₀).symm, by simp [E.mem₀]⟩
+
+/-- The `w'`-index type of a `w'`-small `0`-hypercover. -/
+def Small.Index (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] : Type w' :=
+  (Small.exists_restrictIndex_mem E).choose
+
+/-- The index restriction function of a small `0`-hypercover. -/
+noncomputable def Small.restrictFun (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
+    Index E → E.I₀ :=
+  (Small.exists_restrictIndex_mem E).choose_spec.choose
+
+lemma Small.mem₀ (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
+    (E.restrictIndex <| Small.restrictFun E).presieve₀ ∈ J S :=
+  (Small.exists_restrictIndex_mem E).choose_spec.choose_spec
+
+instance (E : ZeroHypercover.{w} J S) : ZeroHypercover.Small.{max u v} E where
+  exists_restrictIndex_mem := by
+    obtain ⟨ι, Y, f, h⟩ := E.presieve₀.exists_eq_ofArrows
+    have (Z : C) (g : Z ⟶ S) (hg : Presieve.ofArrows Y f g) :
+        ∃ (j : E.I₀) (h : Z = E.X j), g = eqToHom h ≫ E.f j := by
+      obtain ⟨j⟩ : E.presieve₀ g := by rwa [h]
+      use j, rfl
+      simp
+    choose j h₁ h₂ using this
+    refine ⟨ι, fun i ↦ j _ _ (.mk i), ?_⟩
+    convert E.mem₀
+    exact le_antisymm (fun Z g ⟨i⟩ ↦ ⟨_⟩) (h ▸ fun Z g ⟨i⟩ ↦ .mk' i (h₁ _ _ _) (h₂ _ _ _))
+
+/-- Restrict a `w'`-small `0`-hypercover to a `w'`-`0`-hypercover. -/
+@[simps toPreZeroHypercover]
+noncomputable
+def restrictIndexOfSmall (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] :
+    ZeroHypercover.{w'} J S where
+  __ := E.toPreZeroHypercover.restrictIndex (Small.restrictFun E)
+  mem₀ := Small.mem₀ E
+
+instance (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] {T : C} (f : T ⟶ S)
+    [IsStableUnderBaseChange J] [∀ (i : E.I₀), HasPullback f (E.f i)] :
+    ZeroHypercover.Small.{w'} (E.pullback₁ f) := by
+  use Small.Index E, Small.restrictFun E
+  have _ (i) : HasPullback f (E.restrictIndexOfSmall.f i) := by dsimp; infer_instance
+  exact ((restrictIndexOfSmall.{w'} E).pullback₁ f).mem₀
+
 end ZeroHypercover
 
 lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
@@ -372,6 +640,26 @@ lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
   refine ⟨fun hR ↦ ?_, fun ⟨𝒰, hR⟩ ↦ hR ▸ 𝒰.mem₀⟩
   obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   use ⟨⟨ι, Y, f⟩, hR⟩
+
+lemma le_of_zeroHypercover {J K : Precoverage C}
+    (h : ∀ ⦃X : C⦄ ⦃E : ZeroHypercover.{max u v} J X⦄, E.presieve₀ ∈ K X) :
+    J ≤ K := by
+  intro X R hR
+  obtain ⟨E, rfl⟩ := R.exists_eq_preZeroHypercover
+  exact h (E := ⟨E, hR⟩)
+
+/-- A precoverage is `w`-small, if every `0`-hypercover is `w`-small. -/
+class Small (J : Precoverage C) : Prop where
+  zeroHypercoverSmall : ∀ {S : C} (E : ZeroHypercover.{max u v} J S), ZeroHypercover.Small.{w'} E
+
+instance (J : Precoverage C) [Small.{w} J] {S : C} (E : ZeroHypercover.{w'} J S) :
+    ZeroHypercover.Small.{w} E := by
+  have : ZeroHypercover.Small.{w} (ZeroHypercover.restrictIndexOfSmall.{max u v} E) :=
+    Small.zeroHypercoverSmall _
+  let E' := ZeroHypercover.restrictIndexOfSmall.{w}
+    (ZeroHypercover.restrictIndexOfSmall.{max u v} E)
+  use E'.I₀, ZeroHypercover.Small.restrictFun _ ∘ ZeroHypercover.Small.restrictFun _
+  exact E'.mem₀
 
 end Precoverage
 

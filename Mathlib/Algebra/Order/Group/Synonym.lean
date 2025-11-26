@@ -9,7 +9,7 @@ import Mathlib.Order.Synonym
 /-!
 # Group structure on the order type synonyms
 
-Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
+Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
 
 
@@ -221,12 +221,14 @@ instance [h : CommGroup α] : CommGroup (Lex α) := h
 @[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl
 
-@[to_additive (attr := simp)] lemma toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := .rfl
+@[to_additive (attr := simp)]
+theorem toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem ofLex_one [One α] : (ofLex 1 : α) = 1 := rfl
 
-@[to_additive (attr := simp)] lemma ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := .rfl
+@[to_additive (attr := simp)]
+theorem ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem toLex_mul [Mul α] (a b : α) : toLex (a * b) = toLex a * toLex b := rfl
@@ -257,3 +259,129 @@ theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
+
+/-! ### Colexicographical order -/
+
+
+@[to_additive]
+instance [h : One α] : One (Colex α) := h
+
+@[to_additive]
+instance [h : Mul α] : Mul (Colex α) := h
+
+@[to_additive]
+instance [h : Inv α] : Inv (Colex α) := h
+
+@[to_additive]
+instance [h : Div α] : Div (Colex α) := h
+
+@[to_additive (attr := to_additive) (reorder := 1 2) Colex.instSMul]
+instance Colex.instPow [h : Pow α β] : Pow (Colex α) β := h
+
+@[to_additive (attr := to_additive) (reorder := 1 2) Colex.instSMul']
+instance Colex.instPow' [h : Pow α β] : Pow α (Colex β) := h
+
+@[to_additive]
+instance [h : Semigroup α] : Semigroup (Colex α) := h
+
+@[to_additive]
+instance [h : CommSemigroup α] : CommSemigroup (Colex α) := h
+
+@[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Colex α) :=
+  inferInstanceAs <| IsLeftCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Colex α) :=
+  inferInstanceAs <| IsRightCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Colex α) :=
+  inferInstanceAs <| IsCancelMul α
+
+@[to_additive]
+instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Colex α) := h
+
+@[to_additive]
+instance [h : RightCancelSemigroup α] : RightCancelSemigroup (Colex α) := h
+
+@[to_additive]
+instance [h : MulOneClass α] : MulOneClass (Colex α) := h
+
+@[to_additive]
+instance [h : Monoid α] : Monoid (Colex α) := h
+
+@[to_additive]
+instance [h : CommMonoid α] : CommMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : LeftCancelMonoid α] : LeftCancelMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : RightCancelMonoid α] : RightCancelMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : CancelMonoid α] : CancelMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : CancelCommMonoid α] : CancelCommMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : InvolutiveInv α] : InvolutiveInv (Colex α) := h
+
+@[to_additive]
+instance [h : DivInvMonoid α] : DivInvMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : DivisionMonoid α] : DivisionMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Colex α) := h
+
+@[to_additive]
+instance [h : Group α] : Group (Colex α) := h
+
+@[to_additive]
+instance [h : CommGroup α] : CommGroup (Colex α) := h
+
+@[to_additive (attr := simp)]
+theorem toColex_one [One α] : toColex (1 : α) = 1 := rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_eq_one [One α] {a : α} : toColex a = 1 ↔ a = 1 := .rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_one [One α] : (ofColex 1 : α) = 1 := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_eq_one [One α] {a : Colex α} : ofColex a = 1 ↔ a = 1 := .rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_mul [Mul α] (a b : α) : toColex (a * b) = toColex a * toColex b := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_mul [Mul α] (a b : Colex α) : ofColex (a * b) = ofColex a * ofColex b := rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_inv [Inv α] (a : α) : toColex a⁻¹ = (toColex a)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_inv [Inv α] (a : Colex α) : ofColex a⁻¹ = (ofColex a)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem toColex_div [Div α] (a b : α) : toColex (a / b) = toColex a / toColex b := rfl
+
+@[to_additive (attr := simp)]
+theorem ofColex_div [Div α] (a b : Colex α) : ofColex (a / b) = ofColex a / ofColex b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toColex_smul]
+theorem toColex_pow [Pow α β] (a : α) (b : β) : toColex (a ^ b) = toColex a ^ b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul]
+theorem ofColex_pow [Pow α β] (a : Colex α) (b : β) : ofColex (a ^ b) = ofColex a ^ b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toColex_smul']
+theorem pow_toColex [Pow α β] (a : α) (b : β) : a ^ toColex b = a ^ b := rfl
+
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul']
+theorem pow_ofColex [Pow α β] (a : α) (b : Colex β) : a ^ ofColex b = a ^ b := rfl

@@ -73,7 +73,7 @@ structure Path (N : ℕ) where
   nonempty : cells ≠ []
   head_first_row : (cells.head nonempty).1 = 0
   last_last_row : (cells.getLast nonempty).1 = Fin.last (N + 1)
-  valid_move_seq : cells.Chain' Adjacent
+  valid_move_seq : cells.IsChain Adjacent
 
 /-- The first monster on a path, or `none`. -/
 noncomputable def Path.firstMonster (p : Path N) (m : MonsterData N) : Option (Cell N) :=
@@ -197,7 +197,7 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
       have hi' : i - 1 < i := by omega
       exact of_decide_eq_false (List.not_of_lt_findIdx hi') this
     have ha : Adjacent p.cells[i - 1] p.cells[i] := by
-      convert List.chain'_iff_get.1 p.valid_move_seq (i - 1) ?_
+      convert List.isChain_iff_get.1 p.valid_move_seq (i - 1) ?_
       · simp [Nat.sub_add_cancel hi]
       · omega
     exact ha.le_of_lt h
@@ -223,7 +223,7 @@ lemma Path.findFstEq_fst (p : Path N) (r : Fin (N + 2)) : (p.findFstEq r).1 = r 
   simpa using h
 
 lemma find?_eq_eq_find?_le {l : List (Cell N)} {r : Fin (N + 2)} (hne : l ≠ [])
-    (hf : (l.head hne).1 ≤ r) (ha : l.Chain' Adjacent) :
+    (hf : (l.head hne).1 ≤ r) (ha : l.IsChain Adjacent) :
     l.find? (fun c ↦ c.1 = r) = l.find? (fun c ↦ r ≤ c.1) := by
   induction l
   case nil => simp at hne
@@ -234,7 +234,7 @@ lemma find?_eq_eq_find?_le {l : List (Cell N)} {r : Fin (N + 2)} (hne : l ≠ []
       simp only [h, decide_false, Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, h']
       rcases tail with ⟨⟩ | ⟨htail, ttail⟩
       · simp
-      · simp only [List.chain'_cons_cons] at ha
+      · simp only [List.isChain_cons_cons] at ha
         rcases ha with ⟨ha1, ha2⟩
         simp only [List.head_cons] at hf
         simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.head_cons, ha2, true_implies] at hi
@@ -292,7 +292,7 @@ def Path.tail (p : Path N) : Path N where
     · exact p.last_last_row
   valid_move_seq := by
     split_ifs
-    · exact List.Chain'.tail p.valid_move_seq
+    · exact List.IsChain.tail p.valid_move_seq
     · exact p.valid_move_seq
 
 lemma Path.tail_induction {motive : Path N → Prop} (ind : ∀ p, motive p.tail → motive p)
@@ -338,7 +338,8 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
   induction p using Path.tail_induction
   case base p h0 =>
     have hl := p.one_lt_length_cells
-    have adj : Adjacent p.cells[0] p.cells[1] := List.chain'_iff_get.1 p.valid_move_seq 0 (by omega)
+    have adj : Adjacent p.cells[0] p.cells[1] :=
+      List.isChain_iff_get.1 p.valid_move_seq 0 (by omega)
     simp_rw [Adjacent, Nat.dist] at adj
     have hc0 : (p.cells[0].1 : ℕ) = 0 := by
       convert Fin.ext_iff.1 p.head_first_row
@@ -384,7 +385,7 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
     simp [List.getElem_zero, head_first_row, hr] at h
   simp_rw [cells.find?_eq_head_dropWhile_not hd, Option.get_some]
   rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1)),
-    List.chain'_append] at valid_move_seq
+    List.isChain_append] at valid_move_seq
   have ha := valid_move_seq.2.2
   simp only [List.head?_eq_head hd', List.getLast?_eq_getLast ht, Option.mem_def,
     Option.some.injEq, forall_eq'] at ha
@@ -421,7 +422,7 @@ def Path.ofFn {m : ℕ} (f : Fin m → Cell N) (hm : m ≠ 0)
   last_last_row := by
     simp [Fin.last, List.getLast_ofFn, hl]
   valid_move_seq := by
-    rwa [List.chain'_ofFn]
+    rwa [List.isChain_ofFn]
 
 lemma Path.ofFn_cells {m : ℕ} (f : Fin m → Cell N) (hm : m ≠ 0)
     (hf : (f ⟨0, Nat.pos_of_ne_zero hm⟩).1 = 0)
@@ -446,7 +447,7 @@ def Path.reflect (p : Path N) : Path N where
     rw [List.getLast_map]
     exact p.last_last_row
   valid_move_seq := by
-    refine List.chain'_map_of_chain' _ ?_ p.valid_move_seq
+    refine List.isChain_map_of_isChain _ ?_ p.valid_move_seq
     intro x y h
     simp_rw [Adjacent, Nat.dist, Cell.reflect, Fin.rev] at h ⊢
     omega

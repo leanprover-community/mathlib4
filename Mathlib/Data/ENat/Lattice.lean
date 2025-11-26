@@ -145,7 +145,7 @@ lemma sSup_mul : sSup s * a = ⨆ b ∈ s, b * a := by
   simp_rw [mul_comm, mul_sSup]
 
 lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
-  refine (le_iInf fun x ↦ (mul_le_mul_left' (iInf_le ..) a)).antisymm ?_
+  refine (le_iInf fun x ↦ by grw [iInf_le]).antisymm ?_
   obtain ⟨b, hb⟩ := ENat.exists_eq_iInf f
   rw [← hb, iInf_le_iff]
   exact fun x h ↦ h _
@@ -177,7 +177,7 @@ lemma iInf_mul_of_ne (ha₀ : a ≠ 0) : (⨅ i, f i) * a = ⨅ i, f i * a :=
 lemma add_iSup [Nonempty ι] (f : ι → ℕ∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ⊤
   · simp
-  refine le_antisymm ?_ <| iSup_le fun i ↦ add_le_add_left (le_iSup ..) _
+  refine le_antisymm ?_ <| iSup_le fun i ↦ by grw [← le_iSup]
   refine add_le_of_le_tsub_left_of_le (le_iSup_of_le (Classical.arbitrary _) le_self_add) ?_
   exact iSup_le fun i ↦ ENat.le_sub_of_add_le_left ha <| le_iSup (a + f ·) i
 

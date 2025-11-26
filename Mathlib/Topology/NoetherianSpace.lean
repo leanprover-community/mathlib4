@@ -213,7 +213,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
   have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
     rw [Set.compl_eq_univ_diff]
-    refine le_antisymm (Set.diff_subset_diff le_top <| subset_refl _) ?_
+    refine le_antisymm (Set.diff_subset_diff le_top subset_rfl) ?_
     rw [← Set.compl_eq_univ_diff]
     refine Set.compl_subset_iff_union.mpr (le_antisymm le_top ?_)
     rw [Set.union_comm, ← Set.sUnion_eq_iUnion, ← Set.sUnion_insert]

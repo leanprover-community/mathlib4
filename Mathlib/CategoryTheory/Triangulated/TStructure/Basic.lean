@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 /-!
 # t-structures on triangulated categories
 
-This files introduces the notion of t-structure on (pre)triangulated categories.
+This file introduces the notion of t-structure on (pre)triangulated categories.
 
 The first example of t-structure shall be the canonical t-structure on the
 derived category of an abelian category (TODO).
@@ -26,7 +26,7 @@ use depending on the context.
 
 ## TODO
 
-* define functors `t.truncLE n : C ⥤ C`,`t.truncGE n : C ⥤ C` and the
+* define functors `t.truncLE n : C ⥤ C`, `t.truncGE n : C ⥤ C` and the
   associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
 * define the heart of `t` and show it is an abelian category

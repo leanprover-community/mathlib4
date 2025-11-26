@@ -31,12 +31,13 @@ structure sheaf so that `Proj` is a locally ringed space. In this file we will p
 equipped with this structure sheaf is a scheme. We achieve this by using an affine cover by basic
 open sets in `Proj`, more specifically:
 
-1. We prove that `Proj` can be covered by basic open sets at homogeneous element of positive degree.
+1. We prove that `Proj` can be covered by basic open sets at homogeneous elements of positive
+    degree.
 2. We prove that for any homogeneous element `f : A` of positive degree `m`, `Proj.T | (pbo f)` is
     homeomorphic to `Spec.T A⁰_f`:
   - forward direction `toSpec`:
     for any `x : pbo f`, i.e. a relevant homogeneous prime ideal `x`, send it to
-    `A⁰_f ∩ span {g / 1 | g ∈ x}` (see `ProjIsoSpecTopComponent.IoSpec.carrier`). This ideal is
+    `A⁰_f ∩ span {g / 1 | g ∈ x}` (see `ProjIsoSpecTopComponent.ToSpec.carrier`). This ideal is
     prime, the proof is in `ProjIsoSpecTopComponent.ToSpec.toFun`. The fact that this function
     is continuous is found in `ProjIsoSpecTopComponent.toSpec`
   - backward direction `fromSpec`:
@@ -99,10 +100,10 @@ open DirectSum SetLike.GradedMonoid Localization
 
 open Finset hiding mk_zero
 
-variable {R A : Type*}
-variable [CommRing R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A)
-variable [GradedAlgebra 𝒜]
+variable {A σ : Type*}
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable (𝒜 : ℕ → σ)
+variable [GradedRing 𝒜]
 
 open TopCat TopologicalSpace
 
@@ -221,7 +222,7 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f :=
       rintro _ ⟨x, rfl⟩
       obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
       rw [ToSpec.preimage_basicOpen]
-      exact (pbo x.num).2.preimage continuous_subtype_val }
+      exact (pbo (x.num : A)).2.preimage continuous_subtype_val }
 
 variable {𝒜} in
 lemma toSpec_preimage_basicOpen {f} (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
@@ -233,7 +234,7 @@ end
 
 namespace FromSpec
 
-open GradedAlgebra SetLike
+open GradedRing SetLike
 
 open Finset hiding mk_zero
 
@@ -245,7 +246,7 @@ variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 open Lean Meta Elab Tactic
 
 macro "mem_tac_aux" : tactic =>
-  `(tactic| first | exact pow_mem_graded _ (Submodule.coe_mem _) | exact natCast_mem_graded _ _ |
+  `(tactic| first | exact pow_mem_graded _ (SetLike.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
 
 macro "mem_tac" : tactic =>
@@ -424,7 +425,7 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
   fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
     fun h => by
-    simpa only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
+    simpa only [proj_apply, decompose_of_mem_ne 𝒜 (SetLike.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as a homogeneous ideal.
@@ -530,7 +531,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
       HomogeneousLocalization.mk
         ⟨m * i, ⟨decompose 𝒜 a i ^ m,
-          smul_eq_mul m i ▸ SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+          smul_eq_mul m i ▸ SetLike.pow_mem_graded _ (SetLike.coe_mem _)⟩,
           ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
   Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
     Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by

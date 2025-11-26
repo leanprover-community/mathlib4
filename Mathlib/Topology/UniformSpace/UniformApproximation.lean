@@ -28,7 +28,7 @@ Uniform limit, uniform convergence, tends uniformly to
 
 noncomputable section
 
-open Topology Uniformity Filter Set Uniform
+open Topology Uniformity Filter SetRel Set Uniform
 
 variable {α β ι : Type*} [TopologicalSpace α] [UniformSpace β]
 variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
@@ -46,10 +46,10 @@ theorem continuousWithinAt_of_locally_uniform_approx_of_continuousWithinAt (hx :
   have A : ∀ᶠ y in 𝓝[s] x, (f y, F y) ∈ u₂ := Eventually.mono tx hF
   have B : ∀ᶠ y in 𝓝[s] x, (F y, F x) ∈ u₂ := Uniform.continuousWithinAt_iff'_left.1 hFc h₂
   have C : ∀ᶠ y in 𝓝[s] x, (f y, F x) ∈ u₁ :=
-    (A.and B).mono fun y hy => u₂₁ (prodMk_mem_compRel hy.1 hy.2)
+    (A.and B).mono fun y hy => u₂₁ (prodMk_mem_comp hy.1 hy.2)
   have : (F x, f x) ∈ u₁ :=
-    u₂₁ (prodMk_mem_compRel (refl_mem_uniformity h₂) (hsymm (A.self_of_nhdsWithin hx)))
-  exact C.mono fun y hy => u₁₀ (prodMk_mem_compRel hy this)
+    u₂₁ (prodMk_mem_comp (refl_mem_uniformity h₂) (hsymm (A.self_of_nhdsWithin hx)))
+  exact C.mono fun y hy => u₁₀ <| prodMk_mem_comp hy this
 
 /-- A function which can be locally uniformly approximated by functions which are continuous at
 a point is continuous at this point. -/
@@ -144,7 +144,7 @@ theorem tendsto_comp_of_locally_uniform_limit_within (h : ContinuousWithinAt f s
   rcases hunif u₁ h₁ with ⟨s, sx, hs⟩
   have A : ∀ᶠ n in p, g n ∈ s := hg sx
   have B : ∀ᶠ n in p, (f x, f (g n)) ∈ u₁ := hg (Uniform.continuousWithinAt_iff'_right.1 h h₁)
-  exact B.mp <| A.mp <| hs.mono fun y H1 H2 H3 => u₁₀ (prodMk_mem_compRel H3 (H1 _ H2))
+  exact B.mp <| A.mp <| hs.mono fun y H1 H2 H3 => u₁₀ <| prodMk_mem_comp H3 <| H1 _ H2
 
 /-- If `Fₙ` converges locally uniformly on a neighborhood of `x` to a function `f` which is
 continuous at `x`, and `gₙ` tends to `x`, then `Fₙ (gₙ)` tends to `f x`. -/

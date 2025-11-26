@@ -16,10 +16,10 @@ import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 We introduce a typeclass `ModelCategory C` expressing that `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" and "weak equivalences"
-with satisfy the axioms of (closed) model categories as they appear for example
+which satisfy the axioms of (closed) model categories as they appear for example
 in *Simplicial Homotopy Theory* by Goerss and Jardine. We also provide an
 alternate constructor `ModelCategory.mk'` which uses a formulation of the axioms
-using weak factorizations systems.
+using weak factorization systems.
 
 As a given category `C` may have several model category structures, it is advisable
 to define only local instances of `ModelCategory`, or to set these instances on type synonyms.
@@ -40,7 +40,7 @@ open CategoryTheory Limits
 variable (C : Type u) [Category.{v} C]
 
 /-- A model category is a category equipped with classes of morphisms named cofibrations,
-fibrations and weak equivalences which satisfies the axioms CM1/CM2/CM3/CM4/CM5
+fibrations and weak equivalences which satisfy the axioms CM1/CM2/CM3/CM4/CM5
 of (closed) model categories. -/
 class ModelCategory where
   categoryWithFibrations : CategoryWithFibrations C := by infer_instance
@@ -113,7 +113,7 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
-using weak factorizations systems. -/
+using weak factorization systems. -/
 def mk' [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]

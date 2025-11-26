@@ -208,8 +208,7 @@ theorem Right.mul_lt_mul [MulLeftMono α]
 @[to_additive (attr := gcongr high) add_le_add]
 theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
-    a * c ≤ b * d :=
-  (mul_le_mul_left' h₂ _).trans (mul_le_mul_right' h₁ d)
+    a * c ≤ b * d := by grw [h₁, h₂]
 
 @[to_additive]
 theorem mul_le_mul_three [MulLeftMono α]

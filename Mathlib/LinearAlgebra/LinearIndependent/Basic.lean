@@ -209,7 +209,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
     LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) :=
-  li.comp (fun _ ↦ ⟨_, _⟩) <| by intro; aesop
+  li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
 section Indexed
 
@@ -279,9 +279,6 @@ open LinearMap Finsupp
 theorem LinearIndepOn.id_imageₛ {s : Set M} {f : M →ₗ[R] M'} (hs : LinearIndepOn R id s)
     (hf_inj : Set.InjOn f (span R s)) : LinearIndepOn R id (f '' s) :=
   id_image <| hs.map_injOn f (by simpa using hf_inj)
-
-@[deprecated (since := "2025-02-14")] alias
-    LinearIndependent.image_subtypeₛ := LinearIndepOn.id_imageₛ
 
 end union
 
@@ -491,7 +488,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
     LinearIndepOn R id (f '' s) :=
   hs.id_imageₛ <| LinearMap.injOn_of_disjoint_ker le_rfl hf_inj
 
--- See, for example, Keith Conrad's note
+-- See, for example, Keith Conrad's note [ConradLinearChar]
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]

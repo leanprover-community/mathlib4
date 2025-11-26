@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 

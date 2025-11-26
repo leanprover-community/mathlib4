@@ -40,29 +40,17 @@ nonrec theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasDerivAtFilter f₂ f₂' x L) : HasDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁', f₂') x L :=
   hf₁.prodMk hf₂
 
-@[deprecated (since := "2025-03-09")]
-alias HasDerivAtFilter.prod := HasDerivAtFilter.prodMk
-
 nonrec theorem HasDerivWithinAt.prodMk (hf₁ : HasDerivWithinAt f₁ f₁' s x)
     (hf₂ : HasDerivWithinAt f₂ f₂' s x) : HasDerivWithinAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') s x :=
   hf₁.prodMk hf₂
-
-@[deprecated (since := "2025-03-09")]
-alias HasDerivWithinAt.prod := HasDerivWithinAt.prodMk
 
 nonrec theorem HasDerivAt.prodMk (hf₁ : HasDerivAt f₁ f₁' x) (hf₂ : HasDerivAt f₂ f₂' x) :
     HasDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
   hf₁.prodMk hf₂
 
-@[deprecated (since := "2025-03-09")]
-alias HasDerivAt.prod := HasDerivAt.prodMk
-
 nonrec theorem HasStrictDerivAt.prodMk (hf₁ : HasStrictDerivAt f₁ f₁' x)
     (hf₂ : HasStrictDerivAt f₂ f₂' x) : HasStrictDerivAt (fun x => (f₁ x, f₂ x)) (f₁', f₂') x :=
   hf₁.prodMk hf₂
-
-@[deprecated (since := "2025-03-09")]
-alias HasStrictDerivAt.prod := HasStrictDerivAt.prodMk
 
 end CartesianProduct
 

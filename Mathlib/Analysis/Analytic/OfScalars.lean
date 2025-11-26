@@ -249,8 +249,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   refine radius_eq_top_of_summable_norm _ fun r' ↦ ?_
   by_cases hrz : r' = 0
   · apply Summable.comp_nat_add (k := 1)
-    simp [hrz]
-    exact (summable_const_iff 0).mpr rfl
+    simpa [hrz] using (summable_const_iff 0).mpr rfl
   · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
@@ -269,7 +268,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   rw [← coe_zero, coe_le_coe]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
   contrapose! this
-  apply not_summable_of_ratio_norm_eventually_ge one_lt_two
+  apply not_summable_of_ratio_norm_eventually_ge ENNReal.one_lt_two
   · contrapose! hc
     apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
     rw [not_frequently] at hc

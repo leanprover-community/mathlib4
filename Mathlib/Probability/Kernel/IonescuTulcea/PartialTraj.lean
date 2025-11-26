@@ -345,7 +345,7 @@ lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0�
   refine Measurable.lintegral_kernel_prod_left' <| hf.comp ?_
   simp only [updateFinset, measurable_pi_iff]
   intro i
-  by_cases h : i ∈ Iic b <;> simp [h] <;> fun_prop
+  by_cases h : i ∈ Iic b <;> simp only [h, ↓reduceDIte] <;> fun_prop
 
 /-- Integrating `f` against `partialTraj κ a b` and then against `partialTraj κ b c` is the same
 as integrating `f` against `partialTraj κ a c`. -/

@@ -886,8 +886,8 @@ lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y
 lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
 
-/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
-@[to_additive toReal_coe_nnnorm /-- The non negative norm seen as an `ENNReal` and
+/-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
+@[to_additive toReal_coe_nnnorm /-- The nonnegative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm. -/]
 theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
 
@@ -929,6 +929,10 @@ theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
 
 @[to_additive]
 theorem edist_one_eq_enorm (x : E) : edist x 1 = ‖x‖ₑ := by rw [edist_eq_enorm_div, div_one]
+
+@[to_additive]
+lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+  rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
 
 @[to_additive]
 theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by

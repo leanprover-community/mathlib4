@@ -19,7 +19,7 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+assert_not_exists IsOrderedRing MonoidWithZero
 
 open Set Function
 

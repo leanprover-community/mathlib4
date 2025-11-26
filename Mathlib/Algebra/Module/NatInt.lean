@@ -35,7 +35,7 @@ variable {R S M M₂ : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
+variable [AddCommMonoid M]
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
   one_smul := one_nsmul
@@ -49,7 +49,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable (R M) [Semiring R] [AddCommGroup M]
+variable (M) [AddCommGroup M]
 
 instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul

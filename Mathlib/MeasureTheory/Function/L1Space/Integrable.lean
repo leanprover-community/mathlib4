@@ -613,7 +613,7 @@ theorem integrable_of_norm_sub_le {f₀ f₁ : α → β} {g : α → ℝ} (hf�
     intro a ha
     calc
       ‖f₁ a‖ ≤ ‖f₀ a‖ + ‖f₀ a - f₁ a‖ := norm_le_insert _ _
-      _ ≤ ‖f₀ a‖ + g a := add_le_add_left ha _
+      _ ≤ ‖f₀ a‖ + g a := by gcongr
   Integrable.mono' (hf₀_i.norm.add hg_i) hf₁_m this
 
 lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurable f μ)
@@ -641,9 +641,6 @@ theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ)
         calc
           max ‖f x‖ ‖g x‖ ≤ ‖f x‖ + ‖g x‖ := max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
           _ ≤ ‖‖f x‖ + ‖g x‖‖ := le_abs_self _⟩
-
-@[deprecated (since := "2025-03-05")]
-alias Integrable.prod_mk := Integrable.prodMk
 
 theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → ε} [IsFiniteMeasure μ]
     (hfq : MemLp f q μ) : Integrable f μ :=

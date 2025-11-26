@@ -59,7 +59,7 @@ General algebra:
     localization: 'Localization'
     local ring: 'IsLocalRing'
     Noetherian ring: 'IsNoetherianRing'
-    ordered ring: 'OrderedRing'
+    # ordered ring: 'OrderedRing'
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
@@ -362,6 +362,7 @@ Analysis:
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
+    First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'

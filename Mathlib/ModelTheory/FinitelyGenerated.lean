@@ -315,7 +315,7 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     intro S S' h
     apply Subtype.eq
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg ((closure L) ∘ Finset.toSet) h
+    exact congr_arg (closure L ∘ SetLike.coe) h
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

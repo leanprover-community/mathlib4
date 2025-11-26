@@ -133,7 +133,7 @@ theorem toMultiset_inf : toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 @[simp]
-theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f∪ toMultiset g :=
+theorem toMultiset_sup : toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g :=
   Multiset.toDFinsupp_injective <| by simp
 
 end DFinsupp

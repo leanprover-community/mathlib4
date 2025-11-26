@@ -163,8 +163,8 @@ instance sequentialFunctor_final : (sequentialFunctor J).Final where
       ⟨StructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, List.getLast_singleton', reduceCtorEq]
+    simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
+      not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : j.right ≤ i.right
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
@@ -214,8 +214,8 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
       ⟨CostructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, List.getLast_singleton', reduceCtorEq]
+    simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
+      not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : (unop i.left) ≤ (unop j.left)
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))

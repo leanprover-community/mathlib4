@@ -15,9 +15,9 @@ import Mathlib.CategoryTheory.Shift.Linear
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
 
-universe w v u
+universe t w v u
 
-variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Abelian C] [Linear R C]
+variable (R : Type t) [Ring R] (C : Type u) [Category.{v} C] [Abelian C] [Linear R C]
   [HasDerivedCategory.{w} C]
 
 namespace DerivedCategory

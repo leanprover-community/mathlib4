@@ -169,7 +169,10 @@ Note that the actual function used in the definition of `circleIntegral` is
 `(deriv (circleMap c R) θ) • f (circleMap c R θ)`. Integrability of this function is equivalent
 to integrability of `f ∘ circleMap c R` whenever `R ≠ 0`. -/
 def CircleIntegrable (f : ℂ → E) (c : ℂ) (R : ℝ) : Prop :=
-  IntervalIntegrable (fun θ : ℝ => f (circleMap c R θ)) volume 0 (2 * π)
+  IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π)
+
+theorem circleIntegrable_def (f : ℂ → E) (c : ℂ) (R : ℝ) : CircleIntegrable f c R ↔
+    IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π) := Iff.rfl
 
 @[simp]
 theorem circleIntegrable_const (a : E) (c : ℂ) (R : ℝ) : CircleIntegrable (fun _ => a) c R :=

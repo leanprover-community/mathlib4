@@ -200,6 +200,9 @@ instance IsSFiniteKernel.comap (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Me
     IsSFiniteKernel (comap κ g hg) :=
   ⟨⟨fun n => Kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
 
+lemma comap_comp_right (κ : Kernel α β) {f : δ → γ} (hf : Measurable f) (hg : Measurable g) :
+    comap κ (g ∘ f) (hg.comp hf) = (comap κ g hg).comap f hf := by ext; simp
+
 lemma comap_map_comm (κ : Kernel β γ) {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) :
     comap (map κ g) f hf = map (comap κ f hf) g := by

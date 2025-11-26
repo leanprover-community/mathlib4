@@ -216,7 +216,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
 
 theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
-    p x ∈ Function.fixedPoints g ↔ x ∈ Function.fixedPoints g :=  by
+    p x ∈ Function.fixedPoints g ↔ x ∈ Function.fixedPoints g := by
   simp only [Subgroup.mem_centralizer_singleton_iff] at hp
   simp only [Function.mem_fixedPoints_iff]
   rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]

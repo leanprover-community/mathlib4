@@ -170,7 +170,8 @@ theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
   induction i generalizing y with
   | zero => simp
   | succ i ih =>
-    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
+    rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply',
+      iterate_succ_apply]
 
 section CharP
 

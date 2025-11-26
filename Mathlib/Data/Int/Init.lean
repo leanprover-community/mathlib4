@@ -29,8 +29,6 @@ variable {a b c d m n : ℤ}
 
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 
-@[deprecated (since := "2025-03-07")] alias neg_nonpos_iff_nonneg := Int.neg_nonpos_iff
-
 /-! ### succ and pred -/
 
 /-- Immediate successor of an integer: `succ n = n + 1` -/
@@ -59,7 +57,7 @@ lemma neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 
 @[norm_cast] lemma natCast_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
-  cases n; cases h; simp [natCast_succ]
+  grind
 
 lemma lt_succ_self (a : ℤ) : a < succ a := by unfold succ; cutsat
 
@@ -107,7 +105,7 @@ where
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
   | n + 1 => by
-    refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
+    refine cast (by cutsat) (pred _ (Int.le_of_lt ?_) (neg n))
     cutsat
 
 variable {z b zero succ pred}
@@ -143,13 +141,7 @@ end inductionOn'
 @[elab_as_elim]
 protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
     (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
-  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_
-  · intro
-    exact base
-  · intro k hle hi _
-    exact succ k hle (hi hle)
-  · intro k hle _ hle'
-    cutsat
+  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_ <;> grind
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
@@ -197,8 +189,6 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 /-! ### mod -/
 
 @[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
-
-@[deprecated (since := "2025-04-16")] alias add_emod_eq_add_mod_right := add_emod_eq_add_emod_right
 
 lemma div_le_iff_of_dvd_of_pos (hb : 0 < b) (hba : b ∣ a) : a / b ≤ c ↔ a ≤ b * c :=
   ediv_le_iff_of_dvd_of_pos hb hba

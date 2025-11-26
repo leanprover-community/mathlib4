@@ -381,7 +381,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       a.r j - δ ≤ ‖a.c i - a.c j‖ := A
       _ ≤ ‖a.c i - d‖ + ‖d - a.c j‖ := by simp only [← dist_eq_norm, dist_triangle]
       _ ≤ ‖a.c i - d‖ + (a.r j - 1) := by
-        apply add_le_add_left
+        gcongr
         have A : 0 ≤ 1 - 2 / ‖a.c j‖ := by simpa [div_le_iff₀ (zero_le_two.trans_lt hj)] using hj.le
         rw [← one_smul ℝ (a.c j), hd, ← sub_smul, norm_smul, norm_sub_rev, Real.norm_eq_abs,
           abs_of_nonneg A, sub_mul]

@@ -425,9 +425,8 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
       image_preimage_eq_inter_range]
     exact image_mono ht
   · refine ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono ?_
-    simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
-      image_subset_iff]
-    exact subset_refl _
+    simpa only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
+      image_subset_iff] using subset_rfl
 
 theorem map_biInf_comap {ι β} {I : Set ι} (hI : I.Nonempty) {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i ∈ I, comap f (m i)) = ⨅ i ∈ I, map f (comap f (m i)) := by

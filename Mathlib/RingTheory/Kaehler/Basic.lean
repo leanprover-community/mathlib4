@@ -364,7 +364,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   In Mathlib 3, it was slow but not this slow. -/
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
-    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
+    (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := inferInstance
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
@@ -458,8 +458,8 @@ instance KaehlerDifferential.finite [EssFiniteType R S] :
   refine ⟨⟨s, top_le_iff.mp ?_⟩⟩
   rw [← span_range_derivation, Submodule.span_le]
   rintro _ ⟨x, rfl⟩
-  have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
-      .D _ _ x ∈ Submodule.span S s.toSet := by
+  have : ∀ x ∈ adjoin R (EssFiniteType.finset R S : Set S),
+      .D _ _ x ∈ Submodule.span S (s : Set Ω[S⁄R]) := by
     intro x hx
     refine adjoin_induction ?_ ?_ ?_ ?_ hx
     · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)

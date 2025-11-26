@@ -488,10 +488,8 @@ variable (f)
 
 section
 
-/--
-`HasWideEqualizer f` represents a particular choice of limiting cone for the parallel family of
-morphisms `f`.
--/
+/-- A family `f` of parallel morphisms has a wide equalizer if the diagram `parallelFamily f` has a
+limit. -/
 abbrev HasWideEqualizer :=
   HasLimit (parallelFamily f)
 
@@ -574,15 +572,14 @@ end
 
 section
 
-/-- `HasWideCoequalizer f g` represents a particular choice of colimiting cocone
-for the parallel family of morphisms `f`.
--/
+/-- A family `f` of parallel morphisms has a wide coequalizer if the diagram `parallelFamily f` has
+a colimit. -/
 abbrev HasWideCoequalizer :=
   HasColimit (parallelFamily f)
 
 variable [HasWideCoequalizer f]
 
-/-- If a wide coequalizer of `f`, we can access an arbitrary choice of such by
+/-- If a wide coequalizer of `f` exists, we can access an arbitrary choice of such by
     saying `wideCoequalizer f`. -/
 abbrev wideCoequalizer : C :=
   colimit (parallelFamily f)
@@ -660,11 +657,13 @@ end
 
 variable (C)
 
-/-- `HasWideEqualizers` represents a choice of wide equalizer for every family of morphisms -/
+/-- A category `HasWideEqualizers` if it has all limits of shape `WalkingParallelFamily J`, i.e.
+if it has a wide equalizer for every family of parallel morphisms. -/
 abbrev HasWideEqualizers :=
   ∀ J, HasLimitsOfShape (WalkingParallelFamily.{w} J) C
 
-/-- `HasWideCoequalizers` represents a choice of wide coequalizer for every family of morphisms -/
+/-- A category `HasWideCoequalizers` if it has all colimits of shape `WalkingParallelFamily J`, i.e.
+if it has a wide coequalizer for every family of parallel morphisms. -/
 abbrev HasWideCoequalizers :=
   ∀ J, HasColimitsOfShape (WalkingParallelFamily.{w} J) C
 

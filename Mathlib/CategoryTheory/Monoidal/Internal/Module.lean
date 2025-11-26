@@ -104,7 +104,7 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
-    rw [compr₂_apply, compr₂_apply, hom_comp, LinearMap.comp_apply]
+    rw [compr₂ₛₗ_apply, compr₂ₛₗ_apply, hom_comp, LinearMap.comp_apply]
     -- Porting note: this `dsimp` does nothing
     -- dsimp [AlgCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --    LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
@@ -123,8 +123,8 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     --   LinearMap.compr₂_apply, Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply,
     --   AlgCat.coe_comp]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    erw [compr₂_apply, compr₂_apply]
-    rw [ModuleCat.hom_comp, LinearMap.comp_apply]
+    erw [compr₂_apply, compr₂ₛₗ_apply]
+    simp [ModuleCat.hom_comp, LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     dsimp
@@ -133,7 +133,7 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
-    dsimp only [compr₂_apply, TensorProduct.mk_apply]
+    dsimp only [compr₂ₛₗ_apply, TensorProduct.mk_apply]
     rw [hom_comp, LinearMap.comp_apply, hom_comp, LinearMap.comp_apply, hom_comp,
         LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]

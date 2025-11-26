@@ -57,9 +57,9 @@ theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom h p
 
-theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
-    [Nontrivial A] (p : ℕ) [CharP R p] : CharP A p :=
-  charP_of_injective_algebraMap (algebraMap R A).injective p
+theorem charP_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] (p : ℕ) [CharP R p] : CharP A p :=
+  charP_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) p
 
 /-- If a ring homomorphism `R →+* A` is injective and `R` has characteristic zero
 then so does `A`. -/
@@ -113,6 +113,10 @@ as `R`. -/
 lemma expChar_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom h q
+
+theorem ExpChar.of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
+    [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
+  expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
 
 /-!
 As an application, a `ℚ`-algebra has characteristic zero.

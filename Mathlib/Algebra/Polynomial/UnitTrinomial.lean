@@ -215,10 +215,10 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · exact fun h => h.2.ne rfl
-  · refine ⟨?_, add_lt_add_left key n⟩
+  · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
   · exact fun h => h.1.ne (add_comm k n)
-  · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
+  · constructor <;> gcongr
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
   · grind
@@ -254,7 +254,7 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     at hmul
   have hadd := congr_arg (eval 1) h
   rw [eval_mul, eval_mul, mirror_eval_one, mirror_eval_one, ← sq, ← sq, hp, hq] at hadd
-  simp only [eval_add, eval_C_mul, eval_pow, eval_X, one_pow, mul_one, trinomial_def] at hadd
+  simp only [eval_add, eval_C_mul, eval_X_pow, one_pow, mul_one, trinomial_def] at hadd
   rw [add_assoc, add_assoc, add_comm (u : ℤ), add_comm (x : ℤ), add_assoc, add_assoc] at hadd
   simp only [add_sq', add_assoc, add_right_inj, ← Units.val_pow_eq_pow_val, Int.units_sq] at hadd
   rw [mul_assoc, hmul, ← mul_assoc, add_right_inj,

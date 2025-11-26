@@ -778,8 +778,7 @@ theorem restrict_le_restrict_subset {i j : Set α} (hi₁ : MeasurableSet i) (hi
     subset_le_of_restrict_le_restrict v w hi₁ hi₂ (Set.Subset.trans hk₂ hij)
 
 theorem le_restrict_empty : v ≤[∅] w := by
-  intro j _
-  rw [restrict_empty, restrict_empty]
+  simp
 
 theorem le_restrict_univ_iff_le : v ≤[Set.univ] w ↔ v ≤ w := by
   simp
@@ -910,7 +909,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
   [AddLeftMono M] [ContinuousAdd M]
 
 instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
-  ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
+  ⟨fun _ _ _ h i hi => by dsimp; grw [h i hi]⟩
 
 end
 

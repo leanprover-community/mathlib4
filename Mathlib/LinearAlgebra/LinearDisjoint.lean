@@ -265,7 +265,7 @@ theorem of_linearDisjoint_fg_left
     (H : ∀ M' : Submodule R S, M' ≤ M → M'.FG → M'.LinearDisjoint N) :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨M', hM, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
@@ -278,7 +278,7 @@ theorem of_linearDisjoint_fg_right
     (H : ∀ N' : Submodule R S, N' ≤ N → N'.FG → M.LinearDisjoint N') :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨N', hN, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_right_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_right_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)

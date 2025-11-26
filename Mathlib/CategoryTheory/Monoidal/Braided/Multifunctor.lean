@@ -101,11 +101,11 @@ we phrase the forward hexagon identity as an equality of natural transformations
 same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
-            funtor₁₂₃                         (X₁ ⊗ X₂) ⊗ X₃
-associtator/          \ secondMap₁             /           \
+            functor₁₂₃                        (X₁ ⊗ X₂) ⊗ X₃
+associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃'    functor₂₁₃          X₁ ⊗ (X₂ ⊗ X₃)    (X₂ ⊗ X₁) ⊗ X₃
- firsMap₂ |            |secondMap₂            |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₂₃₁     functor₂₁₃'         (X₂ ⊗ X₃) ⊗ X₁    X₂ ⊗ (X₁ ⊗ X₃)
   firstMap₃\           / secondMap₃            \            /
@@ -157,11 +157,11 @@ we phrase the reverse hexagon identity as an equality of natural transformations
 same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
-            funtor₁₂₃'                        X₁ ⊗ (X₂ ⊗ X₃)
-associtator/          \ secondMap₁             /           \
+            functor₁₂₃'                       X₁ ⊗ (X₂ ⊗ X₃)
+associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃    functor₁₃₂'          (X₁ ⊗ X₂) ⊗ X₃    X₁ ⊗ (X₃ ⊗ X₂)
- firsMap₂ |            |secondMap₂            |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₃₁₂'    functor₁₃₂          X₃ ⊗ (X₁ ⊗ X₂)    (X₁ ⊗ X₃) ⊗ X₂
   firstMap₃\           / secondMap₃            \            /
@@ -226,4 +226,18 @@ def ofBifunctor : BraidedCategory C where
   hexagon_reverse X Y Z :=
     (NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app hexagon_reverse X) Y) Z)
 
-end CategoryTheory.BraidedCategory
+end BraidedCategory
+
+open BraidedCategory
+
+/--
+Alternative constructor for symmetric categories, where the symmetry of the braiding is phrased
+as an equality of natural transformation of bifunctors.
+-/
+def SymmetricCategory.ofCurried [BraidedCategory C]
+    (h : (curriedBraidingNatIso C).hom ≫ (flipFunctor _ _ _).map (curriedBraidingNatIso C).hom =
+      𝟙 _) :
+    SymmetricCategory C where
+  symmetry X Y := NatTrans.congr_app (NatTrans.congr_app h X) Y
+
+end CategoryTheory

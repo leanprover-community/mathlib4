@@ -295,7 +295,21 @@ lemma isConstructible_preimage_iff_of_isOpenEmbedding {s : Set Y} (hf : IsOpenEm
     using hs.image_of_isOpenEmbedding hf hfcomp
   mpr := .preimage_of_isOpenEmbedding hf
 
+lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X} (hU : IsOpenCover U)
+    (h₁ : ∀ i, IsRetrocompact (X := X) (U i)) (h₂ : ∀ i, IsQuasiSeparated (α := X) (U i)) :
+    QuasiSeparatedSpace X where
+  inter_isCompact V₁ V₂ ho₁ hc₁ ho₂ hc₂ := by
+    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).2) (by simp [hU.iSup_set_eq_univ])
+    convert t.isCompact_biUnion fun i _ ↦ h₂ i _ _ Set.inter_subset_left ((U i).2.inter ho₁)
+      (h₁ i hc₁ ho₁) Set.inter_subset_left ((U i).2.inter ho₂) (h₁ i hc₂ ho₂)
+    apply subset_antisymm
+    · rintro x ⟨hx₁, hx₂⟩
+      obtain ⟨i, hi, hxi⟩ := Set.mem_iUnion₂.mp (ht hx₁)
+      exact Set.mem_iUnion₂.mpr ⟨i, hi, by simpa [*]⟩
+    · aesop (add simp Set.subset_def)
+
 section CompactSpace
+
 variable [CompactSpace X] {P : ∀ s : Set X, IsConstructible s → Prop} {B : Set (Set X)}
   {b : ι → Set X}
 

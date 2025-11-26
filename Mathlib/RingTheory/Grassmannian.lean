@@ -67,7 +67,7 @@ attribute [instance] Grassmannian.finite_quotient Grassmannian.projective_quotie
 
 namespace Grassmannian
 
-@[inherit_doc] scoped notation "G("k", "M"; "R")" => Grassmannian R M k
+@[inherit_doc] scoped notation "G(" k ", " M "; " R ")" => Grassmannian R M k
 
 variable {R M k}
 

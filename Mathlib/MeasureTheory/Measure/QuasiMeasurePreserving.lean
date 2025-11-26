@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
-# Quasi Measure Preserving Functions
+# Quasi-Measure-Preserving Functions
 
 A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`.
@@ -116,7 +116,7 @@ theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h
     f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
   EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
 
-/-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
+/-- The preimage of a null measurable set under a (quasi-)measure-preserving map is a null
 measurable set. -/
 theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullMeasurableSet s μb)
     (hf : QuasiMeasurePreserving f μa μb) : NullMeasurableSet (f ⁻¹' s) μa :=

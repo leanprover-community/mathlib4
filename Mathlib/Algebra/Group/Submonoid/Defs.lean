@@ -180,7 +180,7 @@ protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M wher
 
 variable {S : Submonoid M}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 
@@ -228,11 +228,11 @@ theorem mem_bot {x : M} : x ∈ (⊥ : Submonoid M) ↔ x = 1 :=
 theorem mem_top (x : M) : x ∈ (⊤ : Submonoid M) :=
   Set.mem_univ x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : Submonoid M) : Set M) = Set.univ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
 
@@ -244,7 +244,7 @@ instance : Min (Submonoid M) :=
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
@@ -460,24 +460,6 @@ instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_in
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
-
-/-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
-@[to_additive
-  /-- An `AddSubmonoid` of a left cancellative unital additive magma inherits left cancellation. -/]
-instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
-  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
-
-/-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
-@[to_additive
-  /-- An `AddSubmonoid` of a right cancellative unital additive magma inherits right
-  cancellation. -/]
-instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
-  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
-
-/-- A submonoid of a cancellative unital magma inherits cancellation. -/
-@[to_additive
-/-- An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation. -/]
-instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]

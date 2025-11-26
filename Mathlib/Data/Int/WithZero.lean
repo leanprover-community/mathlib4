@@ -46,27 +46,23 @@ def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤᵐ⁰ →*₀ ℝ≥0 where
     erw [toAdd_one, zpow_zero]
   map_mul' x y := by
     by_cases hxy : x * y = 0
-    · rcases zero_eq_mul.mp (Eq.symm hxy) with hx | hy
-      --either x = 0 or y = 0
-      · rw [dif_pos hxy, dif_pos hx, MulZeroClass.zero_mul]
-      · rw [dif_pos hxy, dif_pos hy, MulZeroClass.mul_zero]
+    · rcases mul_eq_zero.mp hxy with hx | hy
+      -- either x = 0 or y = 0
+      · rw [dif_pos hxy, dif_pos hx, zero_mul]
+      · rw [dif_pos hxy, dif_pos hy, mul_zero]
     · obtain ⟨hx, hy⟩ := mul_ne_zero_iff.mp hxy
-      --  x Equiv≠ 0 and y ≠ 0
+      -- x ≠ 0 and y ≠ 0
       rw [dif_neg hxy, dif_neg hx, dif_neg hy, ← zpow_add' (Or.inl he), ← toAdd_mul]
       congr
       rw [← WithZero.coe_inj, WithZero.coe_mul, coe_unzero hx, coe_unzero hy, coe_unzero hxy]
 
 theorem toNNReal_pos_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤᵐ⁰} (hx : x = 0) :
     toNNReal he x = 0 := by
-  simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-  split_ifs; rfl
+  simp [toNNReal, hx]
 
 theorem toNNReal_neg_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤᵐ⁰} (hx : x ≠ 0) :
     toNNReal he x = e ^ (WithZero.unzero hx).toAdd := by
-  simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-  split_ifs
-  · tauto
-  · rfl
+  simp [toNNReal, hx]
 
 /-- `toNNReal` sends nonzero elements to nonzero elements. -/
 theorem toNNReal_ne_zero {e : ℝ≥0} {m : ℤᵐ⁰} (he : e ≠ 0) (hm : m ≠ 0) : toNNReal he m ≠ 0 := by

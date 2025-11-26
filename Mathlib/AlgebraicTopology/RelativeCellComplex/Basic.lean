@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
-all of which consists in attaching cells. Here, we allow a different
+all of which consist in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
 CW-complexes are defined in the file `Mathlib/Topology/CWComplex/Abstract/Basic.lean`
 by requiring that at the `n`th step, we attach `n`-disks along their

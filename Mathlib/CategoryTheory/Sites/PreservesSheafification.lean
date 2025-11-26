@@ -287,7 +287,7 @@ instance : PreservesSheafification J F := by
 end
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-example {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → Type (max v u)}
+instance {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → Type (max v u)}
     [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{max v u} D FD]
     [PreservesLimits (forget D)]
     [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
@@ -295,7 +295,7 @@ example {D : Type*} [Category.{max v u} D] {FD : D → D → Type*} {CD : D → 
     [∀ (J : MulticospanShape.{max v u, max v u}),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan J) D]
     [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) :=
-  instPreservesSheafification _ _
+  inferInstance
 
 end GrothendieckTopology
 

@@ -21,7 +21,7 @@ for constructing sub(pre)sheaves of the sheaf of dependent functions.
 ## Future work
 Obviously there's more to do:
 * sections of a fiber bundle
-* various classes of smooth and structure preserving functions
+* various classes of smooth and structure-preserving functions
 * functions into spaces with algebraic structure, which the sections inherit
 -/
 

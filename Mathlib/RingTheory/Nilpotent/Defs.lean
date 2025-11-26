@@ -193,7 +193,7 @@ end IsReduced
 
 instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R :=
-  ⟨fun _ ⟨_, hn⟩ => pow_eq_zero hn⟩
+  ⟨fun _ ⟨_, hn⟩ => eq_zero_of_pow_eq_zero hn⟩
 
 instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
     IsReduced R :=

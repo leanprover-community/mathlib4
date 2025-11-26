@@ -54,7 +54,7 @@ theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, Measurab
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
     fun _ => μ.real (s j) := by
-  rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
+  rw [Filtration.filtrationOfSet_eq_natural (β := fun _ ↦ ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
 

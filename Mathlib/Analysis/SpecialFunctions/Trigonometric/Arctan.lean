@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # The `arctan` function.
 
-Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+Inequalities, identities and `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)`
 and the whole line.
 
 The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
@@ -156,18 +156,19 @@ theorem arcsin_eq_arctan (h : x ∈ Ioo (-(1 : ℝ)) 1) :
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 
-@[mono]
+@[gcongr, mono]
 theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 
+@[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[gcongr]
+@[deprecated arctan_strictMono (since := "2025-10-20")]
 lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
 
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
 
-@[gcongr]
+@[deprecated arctan_mono (since := "2025-10-20")]
 lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
   arctan_strictMono.monotone hxy
 
@@ -355,8 +356,8 @@ theorem continuous_arctan : Continuous arctan :=
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 
-/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)

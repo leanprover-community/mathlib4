@@ -310,7 +310,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-#  The "longFile" linter
+# The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).

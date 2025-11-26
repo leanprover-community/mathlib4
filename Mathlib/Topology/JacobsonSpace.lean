@@ -135,7 +135,7 @@ lemma JacobsonSpace.discreteTopology [JacobsonSpace X]
       closure_subset_iff_isClosed, ← (closedPoints X).biUnion_of_singleton]
     exact h.isClosed_biUnion fun _ ↦ id
   have inst : Finite X := Set.finite_univ_iff.mp (this ▸ h)
-  rw [← forall_open_iff_discrete]
+  rw [discreteTopology_iff_forall_isOpen]
   intro s
   rw [← isClosed_compl_iff, ← sᶜ.biUnion_of_singleton]
   refine sᶜ.toFinite.isClosed_biUnion fun x _ ↦ ?_

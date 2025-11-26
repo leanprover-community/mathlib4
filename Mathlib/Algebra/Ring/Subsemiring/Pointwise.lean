@@ -47,7 +47,7 @@ theorem pointwise_smul_def {a : M} (S : Subsemiring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : M) (S : Subsemiring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 

@@ -20,9 +20,7 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v
-
-variable {α : Type u} {γ : Type v}
+variable {α β γ : Type*}
 
 section
 
@@ -685,15 +683,9 @@ theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α
   eq_empty_of_subset_empty fun b hb =>
     not_isTop b fun x => hb (mem_univ x)
 
-@[deprecated (since := "2025-04-18")]
-alias NoMaxOrder.upperBounds_univ := NoTopOrder.upperBounds_univ
-
 @[simp]
 theorem NoBotOrder.lowerBounds_univ [NoBotOrder α] : lowerBounds (univ : Set α) = ∅ :=
   @NoTopOrder.upperBounds_univ αᵒᵈ _ _
-
-@[deprecated (since := "2025-04-18")]
-alias NoMinOrder.lowerBounds_univ := NoBotOrder.lowerBounds_univ
 
 @[simp]
 theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]
@@ -861,7 +853,7 @@ end
 
 section Preorder
 
-variable [Preorder α] {s : Set α} {a b : α}
+variable [Preorder α] [Preorder β] {s : Set α} {t : Set β} {a b : α}
 
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
@@ -882,6 +874,20 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     x ≤ b := hb.1 hx
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
+
+@[simp] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
+
+@[simp] lemma lowerBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [lowerBounds, Prod.le_def, forall_and])
+
+lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
+    IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+lemma IsGLB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsGLB s a) (hb : IsGLB t b) :
+    IsGLB (s ×ˢ t) (a, b) := by simp_all +contextual [IsGLB, IsGreatest, upperBounds]
 
 end Preorder
 

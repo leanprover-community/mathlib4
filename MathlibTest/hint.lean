@@ -10,71 +10,70 @@ import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
-  • 🎉 linarith
+  [apply] 🎉 linarith
 -/
 #guard_msgs in
 example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-  • 🎉 exact f p
-  • norm_num
-    Remaining subgoals:
-    ⊢ Q
+  [apply] 🎉 exact f p
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ Q
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
 
 /--
 info: Try these:
-  • 🎉 simp_all only [and_self]
-  • norm_num
-    Remaining subgoals:
-    ⊢ Q ∧ P ∧ R
+  [apply] 🎉 simp_all only [and_self]
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ Q ∧ P ∧ R
 -/
 #guard_msgs in
 example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-  • 🎉 linarith
+  [apply] 🎉 linarith
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-  • 🎉 ring
+  [apply] 🎉 ring
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
 
 /--
 info: Try these:
-  • 🎉 decide
-  • ring_nf
-    Remaining subgoals:
-    ⊢ Nat.Prime 37
-  • norm_num
-    Remaining subgoals:
-    ⊢ Nat.Prime 37
+  [apply] 🎉 decide
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ Nat.Prime 37
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ Nat.Prime 37
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-  • 🎉 aesop
-  • ring_nf
-    Remaining subgoals:
-    ⊢ ∃ x, P x ∧ 0 ≤ x
-  • norm_num
-    Remaining subgoals:
-    ⊢ ∃ x, P x
-  • simp_all only [zero_le,
-      and_true]
-    Remaining subgoals:
-    ⊢ ∃ x, P x
+  [apply] 🎉 aesop
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ ∃ x, P x ∧ 0 ≤ x
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ ∃ x, P x
+  [apply] simp_all only [zero_le, and_true]
+  Remaining subgoals:
+  ⊢ ∃ x, P x
 -/
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
@@ -93,7 +92,7 @@ register_hint long_trivial
 
 /--
 info: Try these:
-  • 🎉 long_trivial
+  [apply] 🎉 long_trivial
 -/
 #guard_msgs in
 example : True := by
@@ -101,31 +100,41 @@ example : True := by
 
 end multiline_hint
 
+section finiteness
+/--
+info: Try these:
+  [apply] 🎉 finiteness
+-/
+#guard_msgs in
+open ENNReal in
+example : (1 : ℝ≥0∞) < ∞ := by hint
+end finiteness
+
 section tauto_set
 
 register_hint tauto_set
 
 /--
 info: Try these:
-  • 🎉 tauto_set
+  [apply] 🎉 tauto_set
 -/
 #guard_msgs in
 example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by hint
 
 /--
 info: Try these:
-  • aesop
-    Remaining subgoals:
-    ⊢ False
-  • ring_nf
-    Remaining subgoals:
-    ⊢ 2 ≤ 1
-  • norm_num
-    Remaining subgoals:
-    ⊢ False
-  • simp_all only [Nat.not_ofNat_le_one]
-    Remaining subgoals:
-    ⊢ False
+  [apply] aesop
+  Remaining subgoals:
+  ⊢ False
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ 2 ≤ 1
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ False
+  [apply] simp_all only [Nat.not_ofNat_le_one]
+  Remaining subgoals:
+  ⊢ False
 ---
 warning: declaration uses 'sorry'
 -/
@@ -137,7 +146,7 @@ end tauto_set
 section compute_degree
 /--
 info: Try these:
-  • 🎉 compute_degree
+  [apply] 🎉 compute_degree
 -/
 #guard_msgs in
 open Polynomial in
@@ -153,28 +162,27 @@ this test no longer reports `field_simp` amongst the successful tactics.
 
 /--
 info: Try these:
-  • 🎉 exact
-      Units.divp_add_divp_same a b u₁
-  • ring_nf
-    Remaining subgoals:
-    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  • abel_nf
-    Remaining subgoals:
-    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  • norm_num
-    Remaining subgoals:
-    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  [apply] 🎉 exact Units.divp_add_divp_same a b u₁
+  [apply] ring_nf
+  Remaining subgoals:
+  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  [apply] abel_nf
+  Remaining subgoals:
+  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
 #guard_msgs in
 example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint
 end field_simp
 
-section finiteness
+-- This test was originally here to ensure `finiteness` closed the goal,
+-- but apparently `tauto_set` also works.
 /--
 info: Try these:
-  • 🎉 finiteness
+  [apply] 🎉 tauto_set
 -/
 #guard_msgs in
 open ENNReal in
 example : (1 : ℝ≥0∞) < ∞ := by hint
-end finiteness

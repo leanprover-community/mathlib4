@@ -66,9 +66,6 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
 theorem coe_succEmb : ⇑(succEmb n) = Fin.succ :=
   rfl
 
-@[deprecated (since := "2025-04-12")]
-alias val_succEmb := coe_succEmb
-
 attribute [simp] castSucc_inj
 
 /-- `Fin.castLE` as an `Embedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type. -/

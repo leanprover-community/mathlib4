@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Degenerate simplices
@@ -121,6 +121,15 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
   rw [SimplexCategory.isIso_iff_of_epi]
   exact le_antisymm h (SimplexCategory.len_le_of_epi f)
 
+lemma mono_of_nonDegenerate (x : X.nonDegenerate n)
+    {m : SimplexCategory} (f : ⦋n⦌ ⟶ m)
+    (y : X.obj (op m)) (hy : X.map f.op y = x) :
+    Mono f := by
+  have := X.isIso_of_nonDegenerate x (factorThruImage f) (y := X.map (image.ι f).op y) (by
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp, image.fac f, hy])
+  rw [← image.fac f]
+  infer_instance
+
 namespace unique_nonDegenerate
 
 /-!
@@ -231,5 +240,122 @@ lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
     by simp [α]⟩
 
 end
+
+namespace Subcomplex
+
+variable {X} (A : X.Subcomplex)
+
+lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
+    x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
+  rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
+  constructor
+  · rintro ⟨m, hm, f, _, y, rfl⟩
+    exact ⟨m, hm, f, inferInstance, y.val, rfl⟩
+  · obtain ⟨x, hx⟩ := x
+    rintro ⟨m, hm, f, _, ⟨y, rfl⟩⟩
+    refine ⟨m, hm, f, inferInstance, ⟨y, ?_⟩, rfl⟩
+    have := isSplitEpi_of_epi f
+    simpa [Set.mem_preimage, ← op_comp, ← FunctorToTypes.map_comp_apply,
+      IsSplitEpi.id, op_id, FunctorToTypes.map_id_apply] using A.map (section_ f).op hx
+
+lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
+    x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
+  rw [mem_nonDegenerate_iff_notMem_degenerate,
+    mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
+
+lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
+    A ≤ B ↔ ∀ (n : ℕ) (x : X.nonDegenerate n), x.val ∈ A.obj _ → x.val ∈ B.obj _ := by
+  constructor
+  · aesop
+  · rintro h ⟨n⟩ x hx
+    induction n using SimplexCategory.rec with | _ n =>
+    obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
+    simp only [Subpresheaf.toPresheaf_obj, Subtype.ext_iff,
+      Subpresheaf.toPresheaf_map_coe] at ha'
+    subst ha'
+    rw [mem_nonDegenerate_iff] at ha
+    exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
+
+lemma eq_top_iff_contains_nonDegenerate :
+    A = ⊤ ↔ ∀ (n : ℕ), X.nonDegenerate n ⊆ A.obj _ := by
+  simpa using le_iff_contains_nonDegenerate ⊤ A
+
+lemma degenerate_eq_top_iff (n : ℕ) :
+    degenerate A n = ⊤ ↔ (X.degenerate n ⊓ A.obj _) = A.obj _ := by
+  constructor
+  · intro h
+    ext x
+    simp only [Set.inf_eq_inter, Set.mem_inter_iff, and_iff_right_iff_imp]
+    intro hx
+    simp [← A.mem_degenerate_iff ⟨x, hx⟩, h, Set.top_eq_univ, Set.mem_univ]
+  · intro h
+    simp only [Set.inf_eq_inter, Set.inter_eq_right] at h
+    ext x
+    simpa [A.mem_degenerate_iff] using h x.prop
+
+variable (X) in
+lemma iSup_ofSimplex_nonDegenerate_eq_top :
+    ⨆ (x : Σ (p : ℕ), X.nonDegenerate p), ofSimplex x.2.val = ⊤ := by
+  rw [eq_top_iff_contains_nonDegenerate]
+  intro n x hx
+  simp only [Subpresheaf.iSup_obj, Set.mem_iUnion, Sigma.exists,
+    Subtype.exists, exists_prop]
+  exact ⟨n, x, hx, mem_ofSimplex_obj x⟩
+
+end Subcomplex
+
+section
+
+variable {X} {Y : SSet.{u}}
+
+lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n) (f : X ⟶ Y) :
+    f.app _ x ∈ Y.degenerate n := by
+  obtain ⟨m, hm, g, y, rfl⟩ := hx
+  exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
+
+lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
+    X.degenerate n ⊆ (f.app _)⁻¹' (Y.degenerate n) :=
+  fun _ hx ↦ degenerate_app_apply hx f
+
+lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
+    (f.app _)'' (X.degenerate n) ⊆ Y.degenerate n := by
+  simpa using degenerate_le_preimage f n
+
+lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
+    f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
+  constructor
+  · intro hy
+    simpa [← FunctorToTypes.comp] using degenerate_app_apply hy (inv f)
+  · exact fun hx ↦ degenerate_app_apply hx f
+
+lemma nonDegenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
+    f.app _ x ∈ Y.nonDegenerate n ↔ x ∈ X.nonDegenerate n := by
+  simp [mem_nonDegenerate_iff_notMem_degenerate,
+    degenerate_iff_of_isIso]
+
+attribute [local simp] nonDegenerate_iff_of_isIso in
+/-- The bijection on nondegenerate simplices induced by an isomorphism
+of simplicial sets. -/
+@[simps]
+def nonDegenerateEquivOfIso (e : X ≅ Y) {n : ℕ} :
+    X.nonDegenerate n ≃ Y.nonDegenerate n where
+  toFun := fun ⟨x, hx⟩ ↦ ⟨e.hom.app _ x, by aesop⟩
+  invFun := fun ⟨y, hy⟩ ↦ ⟨e.inv.app _ y, by aesop⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+end
+
+variable {X} in
+lemma degenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n⦌) :
+    f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
+  rw [← degenerate_iff_of_isIso (Subcomplex.toRange f) x,
+    Subcomplex.mem_degenerate_iff]
+  simp
+
+variable {X} in
+lemma nonDegenerate_iff_of_mono {Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (x : X _⦋n⦌) :
+    f.app _ x ∈ Y.nonDegenerate n ↔ x ∈ X.nonDegenerate n := by
+  simp [mem_nonDegenerate_iff_notMem_degenerate, degenerate_iff_of_mono]
 
 end SSet

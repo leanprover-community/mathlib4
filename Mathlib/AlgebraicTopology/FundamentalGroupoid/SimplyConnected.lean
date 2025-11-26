@@ -51,8 +51,6 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
-attribute [local instance] Path.Homotopic.setoid
-
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
@@ -70,8 +68,6 @@ instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [Con
       FundamentalGroupoid.punitEquivDiscretePUnit⟩
 
 end SimplyConnectedSpace
-
-attribute [local instance] Path.Homotopic.setoid
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/

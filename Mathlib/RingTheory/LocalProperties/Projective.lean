@@ -165,7 +165,7 @@ theorem Module.projective_of_localization_maximal'
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
   · intro r m
-    obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl r
+    obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
     apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
     dsimp

@@ -8,7 +8,7 @@ import Lean.Elab.Command
 import Mathlib.Init
 
 /-!
-#  The `#find_syntax` command
+# The `#find_syntax` command
 
 The `#find_syntax` command takes as input a string `str` and retrieves from the environment
 all the candidates for `syntax` terms that contain the string `str`.

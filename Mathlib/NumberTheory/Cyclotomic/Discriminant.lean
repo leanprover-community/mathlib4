@@ -109,7 +109,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
       rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by cutsat)] at this
-      exact absurd (pow_eq_zero h) this
+      exact absurd (eq_zero_of_pow_eq_zero h) this
 
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`

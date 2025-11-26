@@ -85,24 +85,6 @@ lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zer
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
-
-@[deprecated Fintype.card_Iic (since := "2025-03-28")]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
-
-@[deprecated Fintype.card_Iio (since := "2025-03-28")]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
-
 @[deprecated Finset.Icc_succ_left_eq_Ioc (since := "2025-04-24")]
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
   ext x
@@ -151,7 +133,7 @@ lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ 
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_right_eq_Ico_succ_right (since := "2025-04-24")]
+@[deprecated Finset.insert_Ico_right_eq_Ico_succ (since := "2025-04-24")]
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 
@@ -166,7 +148,7 @@ lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b :=
   simp only [mem_insert, mem_Icc]
   cutsat
 
-@[deprecated Finset.insert_Icc_eq_Icc_succ_right (since := "2025-04-24")]
+@[deprecated Finset.insert_Icc_right_eq_Icc_succ (since := "2025-04-24")]
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   ext x
   simp only [mem_insert, mem_Icc]

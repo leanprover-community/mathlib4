@@ -514,6 +514,7 @@ variable [Module 𝕜 α] [Module 𝕜 β]
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
 -- This is not specific to products and should be generalised!
+@[simps!]
 def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_id

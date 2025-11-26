@@ -182,6 +182,11 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
     exact Set.mem_biUnion hP (hx h')
 
+theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
+  (biUnion_associatedPrimes_eq_zero_divisors R R).trans <| by
+    ext; simp [← nonZeroDivisorsLeft_eq_nonZeroDivisors, and_comm]
+
 variable {R M}
 
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :

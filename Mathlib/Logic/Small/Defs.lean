@@ -84,8 +84,8 @@ lemma small_max (α : Type v) : Small.{max w v} α :=
 
 instance small_zero (α : Type) : Small.{w} α := small_max α
 
-instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
-  small_lift.{v, v+1} α
+instance (priority := 100) small_succ (α : Type v) : Small.{v + 1} α :=
+  small_lift.{v, v + 1} α
 
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift

@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Batteries.Logic
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Algebra.Regular.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.OfNat
-import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -25,7 +26,7 @@ The file does not contain any lemmas except for
 * axioms of typeclasses restated in the root namespace;
 * lemmas required for instances.
 
-For basic lemmas about these classes see `Algebra.Group.Basic`.
+For basic lemmas about these classes see `Mathlib/Algebra/Group/Basic.lean`.
 
 We register the following instances:
 
@@ -50,20 +51,6 @@ variable {G : Type*}
 section Mul
 
 variable [Mul G]
-
-/-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive /-- `leftAdd g` denotes left addition by `g` -/]
-def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
-
-/-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive /-- `rightAdd g` denotes right addition by `g` -/]
-def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
-
-attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
-attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
-
-attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
-attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
 
 /-- A mixin for left cancellative multiplication. -/
 @[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
@@ -227,10 +214,16 @@ attribute [to_additive] CommSemigroup
 
 section CommMagma
 
-variable [CommMagma G]
+variable [CommMagma G] {a : G}
 
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
+
+@[simp] lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
+
+@[simp] lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that
@@ -264,7 +257,7 @@ end CommMagma
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
-library_note "lower cancel priority" /--
+library_note2 «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -308,27 +301,36 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 /-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
 
-/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
-`1 * a = a` and `a * 1 = a` for all `a : M`. -/
-class MulOneClass (M : Type u) extends One M, Mul M where
-  /-- One is a left neutral element for multiplication -/
-  protected one_mul : ∀ a : M, 1 * a = a
-  /-- One is a right neutral element for multiplication -/
-  protected mul_one : ∀ a : M, a * 1 = a
+/-- Bundling an `Add` and `Zero` structure together without any axioms about their
+compatibility. See `AddZeroClass` for the additional assumption that 0 is an identity. -/
+class AddZero (M : Type*) extends Zero M, Add M
+
+/-- Bundling a `Mul` and `One` structure together without any axioms about their
+compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. -/
+@[to_additive, ext]
+class MulOne (M : Type*) extends One M, Mul M
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type u) extends Zero M, Add M where
+class AddZeroClass (M : Type u) extends AddZero M where
   /-- Zero is a left neutral element for addition -/
   protected zero_add : ∀ a : M, 0 + a = a
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
 
-attribute [to_additive] MulOneClass
+
+/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
+`1 * a = a` and `a * 1 = a` for all `a : M`. -/
+@[to_additive]
+class MulOneClass (M : Type u) extends MulOne M where
+  /-- One is a left neutral element for multiplication -/
+  protected one_mul : ∀ a : M, 1 * a = a
+  /-- One is a right neutral element for multiplication -/
+  protected mul_one : ∀ a : M, a * 1 = a
 
 @[to_additive (attr := ext)]
 theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
+  rintro @⟨@⟨⟨one₁⟩, ⟨mul₁⟩⟩, one_mul₁, mul_one₁⟩ @⟨@⟨⟨one₂⟩, ⟨mul₂⟩⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
   -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
   -- congr
   suffices one₁ = one₂ by cases this; rfl
@@ -368,7 +370,7 @@ include hn ha
 
 end
 
-library_note "forgetful inheritance"/--
+library_note2 «forgetful inheritance» /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
@@ -569,7 +571,7 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 
 attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZeroClass.toAdd
+attribute [instance 50] AddZero.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
@@ -808,7 +810,7 @@ independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
 * Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
-  where `α` non commutative.
+  where `α` noncommutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all
   `a`.
 

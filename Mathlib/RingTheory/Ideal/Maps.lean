@@ -608,11 +608,9 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
           rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
-    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
-      Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
-        Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
-          Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+    (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <| by
+      rintro _ ⟨_, ⟨r, hri, rfl⟩, _, ⟨s, hsj, rfl⟩, rfl⟩
+      simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
@@ -786,7 +784,7 @@ theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
   have := Ideal.bot_prime (α := S)
   inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
-/-- The kernel of a homomorphism to a field is a maximal ideal. -/
+/-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
     [FunLike F R K] [RingHomClass F R K] (f : F)
     (hf : Function.Surjective f) : (ker f).IsMaximal :=

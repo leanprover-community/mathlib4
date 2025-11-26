@@ -276,7 +276,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
       Ideal.span {y} * J := by
   refine (ClassGroup.mk0_eq_mk0_iff_exists_fraction_ring (FractionRing R)).trans ⟨?_, ?_⟩
   · rintro ⟨z, hz, h⟩
-    obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.mk'_surjective R⁰ z
+    obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.exists_mk'_eq R⁰ z
     refine ⟨x, y, ?_, mem_nonZeroDivisors_iff_ne_zero.mp hy, ?_⟩
     · rintro hx; apply hz
       rw [hx, IsFractionRing.mk'_eq_div, map_zero, zero_div]

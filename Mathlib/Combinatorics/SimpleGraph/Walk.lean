@@ -33,6 +33,9 @@ walks
 
 -/
 
+-- TODO: split
+set_option linter.style.longFile 1700
+
 open Function
 
 universe u v w
@@ -607,25 +610,32 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   rw [add_comm ({v} : Multiset V)]
   simp only [← add_assoc, add_tsub_cancel_right]
 
-theorem chain_adj_support {u v w : V} (h : G.Adj u v) :
-    ∀ (p : G.Walk v w), List.Chain G.Adj u p.support
-  | nil => List.Chain.cons h List.Chain.nil
-  | cons h' p => List.Chain.cons h (chain_adj_support h' p)
+theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
+    ∀ (p : G.Walk v w), List.IsChain G.Adj (u :: p.support)
+  | nil => .cons_cons h (.singleton _)
+  | cons h' p => .cons_cons h (isChain_adj_cons_support h' p)
 
-theorem chain'_adj_support {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Adj p.support
-  | nil => List.Chain.nil
-  | cons h p => chain_adj_support h p
+@[deprecated (since := "2025-09-24")] alias chain_adj_support := isChain_adj_cons_support
 
-theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
-    List.Chain G.DartAdj d p.darts := by
+theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
+  | nil => .singleton _
+  | cons h p => isChain_adj_cons_support h p
+
+@[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
+
+theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
+    List.IsChain G.DartAdj (d :: p.darts) := by
   induction p generalizing d with
-  | nil => exact List.Chain.nil
-  | cons h' p ih => exact List.Chain.cons h (ih rfl)
+  | nil => exact .singleton _
+  | cons h' p ih => exact .cons_cons h (ih rfl)
 
-theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
-  | nil => trivial
+theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
+  | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
-  | cons h p => chain_dartAdj_darts (by rfl) p
+  | cons h p => isChain_dartAdj_cons_darts (by rfl) p
+
+@[deprecated (since := "2025-09-24")] alias chain_dartAdj_darts := isChain_dartAdj_cons_darts
+@[deprecated (since := "2025-09-24")] alias chain'_dartAdj_darts := isChain_dartAdj_darts
 
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
@@ -790,6 +800,21 @@ lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n �
 
 @[deprecated (since := "2025-06-10")]
 alias getVert_eq_support_get? := getVert_eq_support_getElem?
+
+lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
+    p.getVert n = p.support.getD n v := by
+  by_cases h : n ≤ p.length
+  · simp [← getVert_eq_support_getElem? p h]
+  grind [getVert_of_length_le, length_support]
+
+theorem getVert_comp_val_eq_get_support {u v : V} (p : G.Walk u v) :
+    p.getVert ∘ Fin.val = p.support.get := by
+  grind [getVert_eq_support_getElem, length_support]
+
+theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
+    Set.range p.getVert = Set.range p.support.get :=
+  Set.ext fun _ ↦ ⟨by grind [Set.range_list_get, getVert_mem_support],
+    fun ⟨n, _⟩ ↦ ⟨n, by grind [getVert_eq_support_getElem, length_support]⟩⟩
 
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
@@ -1311,8 +1336,6 @@ variable {H : SimpleGraph V}
 theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
   induction p <;> simp [*]
 
-@[deprecated (since := "2025-03-17")] alias transfer_eq_map_of_le := transfer_eq_map_ofLE
-
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
   induction p <;> simp [*]
@@ -1353,6 +1376,33 @@ theorem reverse_transfer (hp) :
   induction p with
   | nil => simp
   | cons _ _ ih => simp only [transfer_append, Walk.transfer, reverse_cons, ih]
+
+/-! ### Inducing a walk -/
+
+variable {s : Set V}
+
+variable (s) in
+/-- A walk in `G` which is fully contained in a set `s` of vertices lifts to a walk of `G[s]`. -/
+protected def induce {u v : V} :
+    ∀ (w : G.Walk u v) (hw : ∀ x ∈ w.support, x ∈ s),
+      (G.induce s).Walk ⟨u, hw _ w.start_mem_support⟩ ⟨v, hw _ w.end_mem_support⟩
+  | .nil, hw => .nil
+  | .cons (v := u') huu' w, hw => .cons (induce_adj.2 huu') <| w.induce <| by simp_all
+
+@[simp] lemma induce_nil (hw) : (.nil : G.Walk u u).induce s hw = .nil := rfl
+
+@[simp] lemma induce_cons (huu' : G.Adj u u') (w : G.Walk u' v) (hw) :
+    (w.cons huu').induce s hw = .cons (induce_adj.2 huu') (w.induce s <| by simp_all) := rfl
+
+@[simp] lemma support_induce {u v : V} :
+    ∀ (w : G.Walk u v) (hw), (w.induce s hw).support = w.support.attachWith _ hw
+  | .nil, hw => rfl
+  | .cons (v := u') hu w, hw => by simp [support_induce]
+
+@[simp] lemma map_induce {u v : V} :
+    ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
+  | .nil, hw => rfl
+  | .cons (v := u') huu' w, hw => by simp [map_induce]
 
 end Walk
 

@@ -98,8 +98,6 @@ end ContinuousMap
 
 namespace Path.Homotopic
 
-attribute [local instance] Path.Homotopic.setoid
-
 local infixl:70 " ⬝ " => Quotient.comp
 
 section Pi

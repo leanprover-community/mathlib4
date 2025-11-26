@@ -136,7 +136,7 @@ def isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization
     simp only [← this, map_id, comp_id, Iso.inv_hom_id_app_assoc]
 
 /-- If `L` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
-then `e.hom` makes `G` a poinwise left Kan extension of `F` along `L`. -/
+then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L`. -/
 noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y ↦

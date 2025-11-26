@@ -109,6 +109,9 @@ theorem vonMangoldt_sum {n : ℕ} : ∑ i ∈ n.divisors, Λ i = Real.log n := b
     sum_union (disjoint_divisors_filter_isPrimePow hab), ha, hb, Nat.cast_mul,
     Real.log_mul (cast_ne_zero.2 (pos_of_gt ha').ne') (cast_ne_zero.2 (pos_of_gt hb').ne')]
 
+-- access notation `ζ` and `μ`
+open scoped zeta Moebius
+
 @[simp]
 theorem vonMangoldt_mul_zeta : Λ * ζ = log := by
   ext n; rw [coe_mul_zeta_apply, vonMangoldt_sum]; rfl

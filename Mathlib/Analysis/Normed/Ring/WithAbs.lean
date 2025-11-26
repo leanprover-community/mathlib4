@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # WithAbs
@@ -51,6 +52,26 @@ instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
 /-- The canonical (semiring) equivalence between `WithAbs v` and `R`. -/
 def equiv : WithAbs v ≃+* R := RingEquiv.refl _
 
+/-- The canonical (semiring) equivalence between `WithAbs v` and `WithAbs w`, for any two
+absolute values `v` and `w` on `R`. -/
+def equivWithAbs (v w : AbsoluteValue R S) : WithAbs v ≃+* WithAbs w :=
+    (WithAbs.equiv v).trans <| (WithAbs.equiv w).symm
+
+theorem equivWithAbs_symm (v w : AbsoluteValue R S) :
+    (equivWithAbs v w).symm = equivWithAbs w v := rfl
+
+@[simp]
+theorem equiv_equivWithAbs_symm_apply {v w : AbsoluteValue R S} {x : WithAbs w} :
+    equiv v ((equivWithAbs v w).symm x) = equiv w x := rfl
+
+@[simp]
+theorem equivWithAbs_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
+    equivWithAbs v w ((equiv v).symm x) = (equiv w).symm x := rfl
+
+@[simp]
+theorem equivWithAbs_symm_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
+    (equivWithAbs v w).symm ((equiv w).symm x) = (equiv v).symm x := rfl
+
 end semiring
 
 section more_instances
@@ -92,8 +113,17 @@ variable {R' : Type*} [CommSemiring R] [Semiring R'] [Algebra R R']
 instance instAlgebra_left (v : AbsoluteValue R S) : Algebra (WithAbs v) R' :=
   inferInstanceAs <| Algebra R R'
 
+theorem algebraMap_left_apply (v : AbsoluteValue R S) (x : WithAbs v) :
+    algebraMap (WithAbs v) R' x = algebraMap R R' (WithAbs.equiv v x) := rfl
+
 instance instAlgebra_right (v : AbsoluteValue R' S) : Algebra R (WithAbs v) :=
   inferInstanceAs <| Algebra R R'
+
+theorem algebraMap_right_apply (v : AbsoluteValue R' S) (x : R) :
+    algebraMap R (WithAbs v) x = WithAbs.equiv v (algebraMap R R' x) := rfl
+
+theorem equiv_algebraMap_apply (v : AbsoluteValue R S) (w : AbsoluteValue R' S) (x : WithAbs v) :
+    equiv w (algebraMap (WithAbs v) (WithAbs w) x) = algebraMap R R' (equiv v x) := rfl
 
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
 to `R'`. -/
@@ -102,3 +132,19 @@ def algEquiv (v : AbsoluteValue R' S) : (WithAbs v) ≃ₐ[R] R' := AlgEquiv.ref
 end algebra
 
 end WithAbs
+
+namespace AbsoluteValue
+
+variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
+  [Nontrivial L] [Semiring S] (w : AbsoluteValue L S) (v : AbsoluteValue K S)
+
+/-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+class LiesOver : Prop where
+  comp_eq' : w.comp (algebraMap K L).injective = v
+
+variable [w.LiesOver v]
+
+theorem LiesOver.comp_eq : w.comp (algebraMap K L).injective = v := LiesOver.comp_eq'
+
+end AbsoluteValue

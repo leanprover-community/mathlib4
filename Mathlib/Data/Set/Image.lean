@@ -880,9 +880,6 @@ theorem rangeFactorization_coe (f : ι → β) (a : ι) : (rangeFactorization f 
 @[simp]
 theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
 
-theorem rangeFactorization_surjective : Surjective (rangeFactorization f) :=
-  fun ⟨_, ⟨i, rfl⟩⟩ => ⟨i, rfl⟩
-
 @[deprecated (since := "2025-08-18")] alias surjective_onto_range := rangeFactorization_surjective
 
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by

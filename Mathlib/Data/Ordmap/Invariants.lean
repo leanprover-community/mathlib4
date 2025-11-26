@@ -105,7 +105,7 @@ theorem size_eq_realSize : ∀ {t : Ordnode α}, Sized t → size t = realSize t
 
 @[simp]
 theorem Sized.size_eq_zero {t : Ordnode α} (ht : Sized t) : size t = 0 ↔ t = nil := by
-  cases t <;> [simp;simp [ht.1]]
+  cases t <;> [simp; simp [ht.1]]
 
 theorem Sized.pos {s l x r} (h : Sized (@node α s l x r)) : 0 < s := by
   rw [h.1]; apply Nat.le_add_left

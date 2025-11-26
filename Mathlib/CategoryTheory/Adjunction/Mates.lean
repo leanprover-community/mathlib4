@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Emily Riehl
+Authors: Bhavik Mehta, Emily Riehl, Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Functor.TwoSquare
 import Mathlib.CategoryTheory.HomCongr
-
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -328,7 +327,7 @@ variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₃ β =
       conjugateEquiv adj₁ adj₃ (β ≫ α) := by
@@ -344,7 +343,7 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     assoc, whiskerRight_comp, whiskerLeft_comp, vComp_app, map_id] at vcompd ⊢
   rw [vcompd]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
@@ -495,5 +494,50 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
     Functor.comp_map, Functor.id_map, id_comp, whiskerRight_twice, Iso.inv_hom_id_assoc,
     comp_id] at vcompb
   simpa [mateEquiv]
+
+lemma conjugateEquiv_associator_hom
+    {L₀₁ : A ⥤ B} {R₁₀ : B ⥤ A} {L₁₂ : B ⥤ C} {R₂₁ : C ⥤ B}
+    {L₂₃ : C ⥤ D} {R₃₂ : D ⥤ C} (adj₀₁ : L₀₁ ⊣ R₁₀) (adj₁₂ : L₁₂ ⊣ R₂₁)
+    (adj₂₃ : L₂₃ ⊣ R₃₂) :
+    conjugateEquiv (adj₀₁.comp (adj₁₂.comp adj₂₃)) ((adj₀₁.comp adj₁₂).comp adj₂₃)
+      (associator _ _ _).hom = (associator _ _ _).hom := by
+  ext X
+  simp only [comp_obj, conjugateEquiv_apply_app, Adjunction.comp_unit_app, id_obj,
+    Functor.comp_map, Category.assoc, ← map_comp, associator_hom_app, map_id,
+    Adjunction.comp_counit_app, Category.id_comp]
+  simp
+
+lemma conjugateEquiv_leftUnitor_hom
+    {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
+    conjugateEquiv adj (id.comp adj) (leftUnitor L).hom =
+      (rightUnitor R).inv := by
+  cat_disch
+
+lemma conjugateEquiv_rightUnitor_hom
+    {L : A ⥤ B} {R : B ⥤ A} (adj : L ⊣ R) :
+    conjugateEquiv adj (adj.comp id) (rightUnitor L).hom =
+      (leftUnitor R).inv := by
+  cat_disch
+
+lemma conjugateEquiv_whiskerLeft
+    {L₁ L₂ : B ⥤ C} {R₁ R₂ : C ⥤ B} {L : A ⥤ B} {R : B ⥤ A}
+    (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj : L ⊣ R) (τ : L₂ ⟶ L₁) :
+    conjugateEquiv (adj.comp adj₁) (adj.comp adj₂) (whiskerLeft L τ) =
+      whiskerRight (conjugateEquiv adj₁ adj₂ τ) R := by
+  ext X
+  have h₁ := congr_map (R₂ ⋙ R) (τ.naturality (adj.counit.app (R₁.obj X)))
+  have h₂ := congr_map R (adj₂.unit_naturality (adj.counit.app (R₁.obj X)))
+  simp only [comp_obj, id_obj, Functor.map_comp] at h₁ h₂
+  simp [← reassoc_of% h₁, reassoc_of% h₂]
+
+lemma conjugateEquiv_whiskerRight
+    {L₁ L₂ : A ⥤ B} {R₁ R₂ : B ⥤ A} {L : B ⥤ C} {R : C ⥤ B}
+    (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj : L ⊣ R) (τ : L₂ ⟶ L₁) :
+    conjugateEquiv (adj₁.comp adj) (adj₂.comp adj) (whiskerRight τ L) =
+      whiskerLeft R (conjugateEquiv adj₁ adj₂ τ) := by
+  ext X
+  simp only [comp_obj, conjugateEquiv_apply_app, comp_unit_app, id_obj, Functor.whiskerRight_app,
+    Functor.comp_map, comp_counit_app, ← map_comp, assoc, Functor.whiskerLeft_app]
+  simp
 
 end CategoryTheory

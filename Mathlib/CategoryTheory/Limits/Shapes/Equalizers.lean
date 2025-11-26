@@ -171,6 +171,40 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
     walkingParallelPairOpEquiv.counitIso.app (op one) = Iso.refl (op one) :=
   rfl
 
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_zero :
+    walkingParallelPairOpEquiv.unitIso.hom.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_one :
+    walkingParallelPairOpEquiv.unitIso.hom.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_zero :
+    walkingParallelPairOpEquiv.unitIso.inv.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_one :
+    walkingParallelPairOpEquiv.unitIso.inv.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op one) = 𝟙 (op one) :=
+  rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
+  rfl
+
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C}
 
@@ -667,6 +701,11 @@ def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 
+/-- Two coforks of the form `ofπ` are isomorphic whenever their `π`'s are equal. -/
+def CoforkOfπ.ext {P : C} {π π' : Y ⟶ P} (w : f ≫ π = g ≫ π) (w' : f ≫ π' = g ≫ π') (h : π = π') :
+    Cofork.ofπ π w ≅ Cofork.ofπ π' w' :=
+  Cofork.ext (Iso.refl _) (by simp [h])
+
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
   Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by simp)
@@ -702,9 +741,8 @@ variable (f g)
 
 section
 
-/-- `HasEqualizer f g` represents a particular choice of limiting cone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have an equalizer if the diagram `parallelPair f g` has a
+limit. -/
 abbrev HasEqualizer :=
   HasLimit (parallelPair f g)
 
@@ -716,7 +754,7 @@ noncomputable abbrev equalizer : C :=
   limit (parallelPair f g)
 
 /-- If an equalizer of `f` and `g` exists, we can access the inclusion
-equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
+`equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
 noncomputable abbrev equalizer.ι : equalizer f g ⟶ X :=
   limit.π (parallelPair f g) zero
 
@@ -851,9 +889,8 @@ theorem equalizer.isoSourceOfSelf_inv :
 
 section
 
-/-- `HasCoequalizer f g` represents a particular choice of colimiting cocone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have a coequalizer if the diagram `parallelPair f g` has a
+colimit. -/
 abbrev HasCoequalizer :=
   HasColimit (parallelPair f g)
 
@@ -1057,11 +1094,13 @@ end Comparison
 
 variable (C)
 
-/-- `HasEqualizers` represents a choice of equalizer for every pair of morphisms -/
+/-- A category `HasEqualizers` if it has all limits of shape `WalkingParallelPair`, i.e. if it has
+an equalizer for every parallel pair of morphisms. -/
 abbrev HasEqualizers :=
   HasLimitsOfShape WalkingParallelPair C
 
-/-- `HasCoequalizers` represents a choice of coequalizer for every pair of morphisms -/
+/-- A category `HasCoequalizers` if it has all colimits of shape `WalkingParallelPair`, i.e. if it
+has a coequalizer for every parallel pair of morphisms. -/
 abbrev HasCoequalizers :=
   HasColimitsOfShape WalkingParallelPair C
 

@@ -741,7 +741,7 @@ def isColimitCocone : IsColimit (cocone f g) :=
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
     exact congr_fun s.condition t)) (fun _ => rfl) (fun _ => rfl) (fun s m h₁ h₂ => by
-      ext ⟨x₁|x₂⟩
+      ext ⟨x₁ | x₂⟩
       · exact congr_fun h₁ x₁
       · exact congr_fun h₂ x₂)
 
@@ -863,6 +863,11 @@ lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
   · rintro ⟨s, rfl, rfl⟩
     apply Rel'.inl_inr
 
+instance mono_inr [Mono f] : Mono (inr f g) := by
+  rw [mono_iff_injective]
+  intro x₂ y₂ h
+  simpa using (Pushout.quot_mk_eq_iff f g (Sum.inr x₂) (Sum.inr y₂)).1 h
+
 end Pushout
 
 variable {f g}
@@ -889,6 +894,30 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
+
+lemma pushoutCocone_inr_mono_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    [Mono f] : Mono c.inr := by
+  change Mono ((Pushout.inr f g) ≫
+    ((Cocones.forget _).mapIso
+      (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc
+        (Pushout.isColimitCocone f g)) (by simp))).inv)
+  infer_instance
+
+lemma pushoutCocone_inr_injective_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    (h₁ : Function.Injective f) : Function.Injective c.inr := by
+  rw [← mono_iff_injective] at h₁ ⊢
+  exact pushoutCocone_inr_mono_of_isColimit hc
+
+instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
+
+instance [Mono f] : Mono (pushout.inr f g) :=
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+
+instance [Mono g] : Mono (pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (pushoutIsPushout f g))
 
 end Pushout
 

@@ -966,12 +966,7 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} 
     ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
-  constructor
-  · rintro ⟨i, a, h, rfl⟩
-    exact h
-  · intro h
-    obtain ⟨i, a⟩ := x
-    exact ⟨i, a, h, rfl⟩
+  grind
 
 theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σ a, X a)) = ⋃ a, range (Sigma.mk a) :=
   Set.ext fun x =>
@@ -1160,14 +1155,6 @@ theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
   exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
-
-theorem pairwise_iUnion₂ {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
-    (r : α → α → Prop) (h : ∀ s ∈ S, s.Pairwise r) : (⋃ s ∈ S, s).Pairwise r := by
-  simp only [Set.Pairwise, Set.mem_iUnion, exists_prop, forall_exists_index, and_imp]
-  intro x S hS hx y T hT hy hne
-  obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
-  exact h U hU (hSU hx) (hTU hy) hne
-
 end Directed
 
 end Set

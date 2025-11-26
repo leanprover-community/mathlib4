@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.Basic
 /-!
 # Integrals with a measure derived from probability mass functions.
 
-This files connects `PMF` with `integral`. The main result is that the integral (i.e. the expected
+This file connects `PMF` with `integral`. The main result is that the integral (i.e. the expected
 value) with regard to a measure derived from a `PMF` is a sum weighted by the `PMF`.
 
 It also provides the expected value for specific probability mass functions.

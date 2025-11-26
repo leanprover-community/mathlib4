@@ -265,6 +265,10 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
+theorem ofSupportFinite_support {f : α → M} (hf : f.support.Finite) :
+    (ofSupportFinite f hf).support = hf.toFinset := by
+  ext; simp [ofSupportFinite_coe]
+
 instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 

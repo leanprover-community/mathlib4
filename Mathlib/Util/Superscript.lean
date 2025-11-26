@@ -71,7 +71,7 @@ otherwise it will parse only 1. If successful, it passes the result to `k` as an
 where `a..b` is a token and `b..c` is whitespace.
 -/
 partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := true)
-    (k : Array (String.Pos × String.Pos × String.Pos) → ParserState → ParserState) :
+    (k : Array (String.Pos.Raw × String.Pos.Raw × String.Pos.Raw) → ParserState → ParserState) :
     ParserFn := fun c s =>
   let start := s.pos
   let s := takeWhile1Fn p errorMsg c s
@@ -124,7 +124,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     let mut newStr := ""
     -- This consists of a sorted array of `(from, to)` pairs, where indexes `from+i` in `newStr`
     -- such that `from+i < from'` for the next element of the array, are mapped to `to+i`.
-    let mut aligns := #[((0 : String.Pos), start)]
+    let mut aligns := #[((0 : String.Pos.Raw), start)]
     for (start, stopTk, stopWs) in toks do
       let mut pos := start
       while pos < stopTk do
@@ -140,10 +140,10 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     let ictx := mkInputContext newStr "<superscript>"
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
     let rec /-- Applies the alignment mapping to a position. -/
-    align (pos : String.Pos) :=
+    align (pos : String.Pos.Raw) :=
       let i := partitionPoint aligns (·.1 ≤ pos)
       let (a, b) := aligns[i - 1]!
-      pos - a + b
+      pos.unoffsetBy a |>.offsetBy b
     let s := { s with pos := align s'.pos, errorMsg := s'.errorMsg }
     if s.hasError then return s
     let rec
@@ -216,7 +216,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
     let some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
-    .ok ⟨s⟩)
+    .ok s.asString)
   match transformed with
   | .error err =>
     -- TODO: this only appears if the caller explicitly calls the pretty-printer

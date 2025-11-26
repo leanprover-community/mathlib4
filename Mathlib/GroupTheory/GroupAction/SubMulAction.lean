@@ -348,7 +348,6 @@ variable (p : SubMulAction R M)
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
 @[to_additive]
 instance mulAction' : MulAction S p where
-  smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 

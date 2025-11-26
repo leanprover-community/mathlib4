@@ -542,9 +542,9 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
-      gcongr
-      simp_rw [← mul_assoc]
-      exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      · gcongr
+        simp_rw [← mul_assoc]
+        exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
       dsimp [enorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *

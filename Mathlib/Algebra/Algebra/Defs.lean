@@ -258,7 +258,6 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
-  rcases Q with @⟨⟨Q⟩⟩
   congr
 
 /-- An auxiliary lemma used to prove theorems of the form
@@ -385,7 +384,7 @@ instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
-  toSMul := Mul.toSMul _
+  toSMul := instSMulOfMul
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl

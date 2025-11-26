@@ -208,6 +208,7 @@ instance instFloorDiv : FloorDiv α (∀ i, π i) where
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
   zero_floorDiv a := by ext i; exact zero_floorDiv a
 
+@[push ←]
 lemma floorDiv_def (f : ∀ i, π i) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ∀ i, π i) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 

@@ -91,7 +91,7 @@ include S
 
 theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
   smul_tmul a _ _ := by
-    obtain ⟨r, s, rfl⟩ := mk'_surjective S a
+    obtain ⟨r, s, rfl⟩ := exists_mk'_eq S a
     rw [← (map_units A s).smul_left_cancel]
     simp_rw [algebraMap_smul, smul_tmul', ← smul_assoc, smul_tmul, ← smul_assoc, smul_mk'_self,
       algebraMap_smul, smul_tmul]

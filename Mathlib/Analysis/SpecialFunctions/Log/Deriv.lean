@@ -76,7 +76,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
   rcases hx.lt_or_gt with hx | hx
   · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
       apply ContDiffAt.comp
-      apply A _ (Left.neg_pos_iff.mpr hx)
+      · apply A _ (Left.neg_pos_iff.mpr hx)
       apply contDiffAt_id.neg
     convert this
     ext x

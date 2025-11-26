@@ -46,8 +46,8 @@ theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠
     x ^ 2 / (x - 1) ^ 2 + y ^ 2 / (y - 1) ^ 2 + z ^ 2 / (z - 1) ^ 2 ≥ 1 := by
   obtain ⟨a, b, c, ha, hb, hc, rfl, rfl, rfl⟩ := subst_abc h
   obtain ⟨m, n, rfl, rfl⟩ : ∃ m n, b = c - m ∧ a = c - m - n := by use c - b, b - a; simp
-  have hm_ne_zero : m ≠ 0 := by contrapose! hy; simp [field]; assumption
-  have hn_ne_zero : n ≠ 0 := by contrapose! hx; simp [field]; assumption
+  have hm_ne_zero : m ≠ 0 := by contrapose! hy; simpa [field]
+  have hn_ne_zero : n ≠ 0 := by contrapose! hx; simpa [field]
   have hmn_ne_zero : m + n ≠ 0 := by contrapose! hz; field_simp; linarith
   have hc_sub_sub : c - (c - m - n) = m + n := by abel
   rw [ge_iff_le, ← sub_nonneg]

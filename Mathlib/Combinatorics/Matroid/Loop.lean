@@ -476,8 +476,6 @@ lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
 
 lemma isColoop_iff_mem_coloops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
 
-@[deprecated (since := "2025-04-01")] alias isColoop_iff_mem_loops := isColoop_iff_mem_coloops
-
 @[simp]
 lemma dual_loops : M✶.loops = M.coloops := rfl
 

@@ -49,8 +49,6 @@ to the domain of definition of the (partial) left adjoint of `F`. -/
 def leftAdjointObjIsDefined : ObjectProperty C :=
   fun X ↦ IsCorepresentable (F ⋙ coyoneda.obj (op X))
 
-@[deprecated (since := "2025-03-05")] alias LeftAdjointObjIsDefined := leftAdjointObjIsDefined
-
 lemma leftAdjointObjIsDefined_iff (X : C) :
     F.leftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
 
@@ -102,6 +100,20 @@ lemma partialLeftAdjointHomEquiv_map_comp {X X' : F.PartialLeftAdjointSource} {Y
       by exact f ≫ F.partialLeftAdjointHomEquiv g := by
   rw [partialLeftAdjointHomEquiv_comp, partialLeftAdjointHomEquiv_map, assoc,
     ← partialLeftAdjointHomEquiv_comp, id_comp]
+
+@[reassoc]
+lemma partialLeftAdjointHomEquiv_symm_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
+    (f : X.obj ⟶ F.obj Y) (g : Y ⟶ Y') :
+    F.partialLeftAdjointHomEquiv.symm f ≫ g = F.partialLeftAdjointHomEquiv.symm (f ≫ F.map g) :=
+  CorepresentableBy.homEquiv_symm_comp ..
+
+@[reassoc]
+lemma partialLeftAdjointHomEquiv_comp_symm {X X' : F.PartialLeftAdjointSource} {Y : D}
+    (f : X'.obj ⟶ F.obj Y) (g : X ⟶ X') :
+    F.partialLeftAdjointMap g ≫ F.partialLeftAdjointHomEquiv.symm f =
+    F.partialLeftAdjointHomEquiv.symm (g ≫ f) := by
+  rw [Equiv.eq_symm_apply, partialLeftAdjointHomEquiv_comp, partialLeftAdjointHomEquiv_map,
+    assoc, ← partialLeftAdjointHomEquiv_comp, id_comp, Equiv.apply_symm_apply]
 
 /-- Given `F : D ⥤ C`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ D`. -/
 @[simps]
@@ -243,6 +255,20 @@ lemma partialRightAdjointHomEquiv_map_comp {X : C} {Y Y' : F.PartialRightAdjoint
       F.partialRightAdjointHomEquiv f ≫ g := by
   rw [partialRightAdjointHomEquiv_comp, partialRightAdjointHomEquiv_map,
     ← assoc, ← partialRightAdjointHomEquiv_comp, comp_id]
+
+@[reassoc]
+lemma partialRightAdjointHomEquiv_comp_symm {X X' : C} {Y : F.PartialRightAdjointSource}
+    (f : F.obj X' ⟶ Y.obj) (g : X ⟶ X') :
+    g ≫ F.partialRightAdjointHomEquiv.symm f =
+      F.partialRightAdjointHomEquiv.symm (F.map g ≫ f) :=
+  RepresentableBy.comp_homEquiv_symm ..
+
+@[reassoc]
+lemma partialRightAdjointHomEquiv_symm_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
+    (f : F.obj X ⟶ Y.obj) (g : Y ⟶ Y') :
+    F.partialRightAdjointHomEquiv.symm f ≫ F.partialRightAdjointMap g =
+      F.partialRightAdjointHomEquiv.symm (f ≫ g) := by
+  simp [Equiv.eq_symm_apply, partialRightAdjointHomEquiv_map_comp]
 
 /-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ C`. -/
 @[simps]

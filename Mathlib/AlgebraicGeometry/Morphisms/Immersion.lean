@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
 
@@ -18,6 +19,9 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
+- `isImmersion_iff_exists_of_quasiCompact`:
+  A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
+  an open immersion followed by a closed immersion.
 
 -/
 
@@ -27,7 +31,7 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is an immersion if
 1. the underlying map of topological spaces is an embedding
@@ -35,25 +39,25 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 3. the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
 class IsImmersion (f : X ⟶ Y) : Prop extends IsPreimmersion f where
-  isLocallyClosed_range : IsLocallyClosed (Set.range f.base)
+  isLocallyClosed_range : IsLocallyClosed (Set.range f)
 
-lemma Scheme.Hom.isLocallyClosed_range (f : X.Hom Y) [IsImmersion f] :
-    IsLocallyClosed (Set.range f.base) :=
+lemma Scheme.Hom.isLocallyClosed_range (f : X ⟶ Y) [IsImmersion f] :
+    IsLocallyClosed (Set.range f) :=
   IsImmersion.isLocallyClosed_range
 
 /--
 Given an immersion `f : X ⟶ Y`, this is the biggest open set `U ⊆ Y` containing the image of `X`
 such that `X` is closed in `U`.
 -/
-def Scheme.Hom.coborderRange (f : X.Hom Y) [IsImmersion f] : Y.Opens :=
-  ⟨coborder (Set.range f.base), f.isLocallyClosed_range.isOpen_coborder⟩
+def Scheme.Hom.coborderRange (f : X ⟶ Y) [IsImmersion f] : Y.Opens :=
+  ⟨coborder (Set.range f), f.isLocallyClosed_range.isOpen_coborder⟩
 
 /--
 The first part of the factorization of an immersion `f : X ⟶ Y` to a closed immersion
 `f.liftCoborder : X ⟶ f.coborderRange` and a dominant open immersion `f.coborderRange.ι`.
 -/
 noncomputable
-def Scheme.Hom.liftCoborder (f : X.Hom Y) [IsImmersion f] : X ⟶ f.coborderRange :=
+def Scheme.Hom.liftCoborder (f : X ⟶ Y) [IsImmersion f] : X ⟶ f.coborderRange :=
   IsOpenImmersion.lift f.coborderRange.ι f (by simpa using subset_coborder)
 
 /--
@@ -61,9 +65,21 @@ Any (locally-closed) immersion can be factored into
 a closed immersion followed by a (dominant) open immersion.
 -/
 @[reassoc (attr := simp)]
-lemma Scheme.Hom.liftCoborder_ι (f : X.Hom Y) [IsImmersion f] :
+lemma Scheme.Hom.liftCoborder_ι (f : X ⟶ Y) [IsImmersion f] :
     f.liftCoborder ≫ f.coborderRange.ι = f :=
   IsOpenImmersion.lift_fac _ _ _
+
+lemma Scheme.Hom.liftCoborder_preimage [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
+    f.liftCoborder ⁻¹ᵁ U = f ⁻¹ᵁ f.coborderRange.ι ''ᵁ U := by
+  conv_rhs => enter [1]; rw [← f.liftCoborder_ι]
+  rw [Scheme.Hom.comp_preimage, Scheme.Hom.preimage_image_eq]
+
+lemma liftCoborder_app [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
+    f.liftCoborder.app U = f.app (f.coborderRange.ι ''ᵁ U) ≫
+      X.presheaf.map (eqToHom <| f.liftCoborder_preimage U).op := by
+  rw [Scheme.Hom.congr_app (f.liftCoborder_ι).symm (f.coborderRange.ι ''ᵁ U)]
+  simp [Scheme.Hom.app_eq f.liftCoborder (f.coborderRange.ι.preimage_image_eq U),
+    ← Functor.map_comp_assoc, - Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
 instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
   have : IsPreimmersion (f.liftCoborder ≫ f.coborderRange.ι) := by
@@ -72,7 +88,7 @@ instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
   refine .of_isPreimmersion _ ?_
   convert isClosed_preimage_val_coborder
   apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.injective
-  rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, f.liftCoborder_ι]
+  rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, f.liftCoborder_ι]
   exact (Set.image_preimage_eq_of_subset (by simpa using subset_coborder)).symm
 
 instance [IsImmersion f] : IsDominant f.coborderRange.ι := by
@@ -85,37 +101,38 @@ lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
 
 namespace IsImmersion
 
-instance : IsLocalAtTarget @IsImmersion := by
-  suffices IsLocalAtTarget (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
+instance : IsZariskiLocalAtTarget @IsImmersion := by
+  suffices IsZariskiLocalAtTarget
+      (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
     isImmersion_eq_inf ▸ inferInstance
-  apply (config := { allowSynthFailures := true }) topologically_isLocalAtTarget'
+  apply (config := { allowSynthFailures := true }) topologically_isZariskiLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
       change IsIso i at hi
       change IsLocallyClosed _
-      simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp,
+      simpa only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp,
         Set.range_eq_univ.mpr i.surjective, Set.image_univ]
     · intro X Y Z i hi f hf
       change IsIso i at hi
       change IsLocallyClosed _
-      simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
+      simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
       refine hf.image i.homeomorph.isInducing ?_
       rw [Set.range_eq_univ.mpr i.surjective]
       exact isOpen_univ.isLocallyClosed
   · simp_rw [Set.range_restrictPreimage]
     exact fun _ _ _ hU _ ↦ hU.isLocallyClosed_iff_coe_preimage
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
+instance (priority := 900) (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f where
+instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isClosedEmbedding.2.isLocallyClosed
 
 instance : MorphismProperty.IsMultiplicative @IsImmersion where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
     refine { __ := inferInstanceAs (IsPreimmersion (f ≫ g)), isLocallyClosed_range := ?_ }
-    simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
+    simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
     exact f.isLocallyClosed_range.image g.isEmbedding.isInducing g.isLocallyClosed_range
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion f]
@@ -132,18 +149,6 @@ lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ 
   ⟨fun _ ↦ ⟨_, f.liftCoborder, f.coborderRange.ι, inferInstance, inferInstance, f.liftCoborder_ι⟩,
     fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
-theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g]
-    [IsImmersion (f ≫ g)] : IsImmersion f where
-  __ := IsPreimmersion.of_comp f g
-  isLocallyClosed_range := by
-    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.injective]
-    have := (f ≫ g).isLocallyClosed_range.preimage g.base.hom.2
-    simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] using this
-
-theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
-    IsImmersion (f ≫ g) ↔ IsImmersion f :=
-  ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
-
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intro X Y Y' S f g f' g' H hg
@@ -157,6 +162,19 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsI
     rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
       (by simpa using H.w.symm)]
     infer_instance
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (Limits.pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ ‹_›
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (Limits.pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ ‹_›
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsImmersion f] : IsImmersion (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsImmersion f] :
+    IsImmersion (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
 
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/
@@ -172,6 +190,23 @@ instance : IsImmersion (pullback.diagonal f) := by
   rwa [morphismRestrict_ι, H, ← Scheme.topIso_hom,
     MorphismProperty.cancel_left_of_respectsIso (P := @IsImmersion)] at this
 
+/-- The map `X ×[S] Y ⟶ X ×[T] Y` induced by any `S ⟶ T` is always an immersion. -/
+instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) :
+    IsImmersion (pullback.mapDesc f g i) :=
+  MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i) inferInstance
+
+instance : MorphismProperty.HasOfPostcompProperty @IsImmersion ⊤ :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsImmersion _)
+
+lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion (f ≫ g)] :
+    IsImmersion f :=
+  MorphismProperty.HasOfPostcompProperty.of_postcomp (W' := ⊤) _ g trivial ‹_›
+
+theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
+    IsImmersion (f ≫ g) ↔ IsImmersion f :=
+  ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
+
 instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
   convert inferInstanceAs (IsImmersion (pullback.diagonal (terminal.from X)))
@@ -180,6 +215,42 @@ instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
 instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=
   MorphismProperty.of_isPullback (P := @IsImmersion)
     (isPullback_equalizer_prod f g).flip inferInstance
+
+instance [IsImmersion f] : IsImmersion f.toImage :=
+  have : IsImmersion (f.toImage ≫ f.imageι) := by simpa
+  IsImmersion.of_comp f.toImage f.imageι
+
+open Scheme in
+/--
+If `f : X ⟶ Y` is a quasi-compact immersion, then `X` is the pullback of the
+closed immersion `im f ⟶ Y` and an open immersion `U ⟶ Y`.
+-/
+lemma isPullback_toImage_liftCoborder [IsImmersion f] [QuasiCompact f] :
+    IsPullback f.toImage f.liftCoborder f.imageι f.coborderRange.ι := by
+  refine (isPullback_of_isClosedImmersion _ _ _ _ (by simp) ?_).flip
+  rw [Hom.imageι, IdealSheafData.ker_subschemeι]
+  ext U : 2
+  simp only [IdealSheafData.ideal_comap_of_isOpenImmersion, Opens.ι_appIso, Iso.refl_inv,
+    Hom.ker_apply, RingHom.comap_ker, ← CommRingCat.hom_comp]
+  dsimp [Opens.toScheme_presheaf_obj]
+  rw [RingHomCompTriple.comp_eq, liftCoborder_app,
+    CommRingCat.hom_comp, RingHom.ker_comp_of_injective]
+  rw [← ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  infer_instance
+
+instance [IsImmersion f] [QuasiCompact f] : IsOpenImmersion f.toImage :=
+  MorphismProperty.of_isPullback (IsImmersion.isPullback_toImage_liftCoborder f).flip inferInstance
+
+variable {f} in
+/--
+A quasi-compact morphism is a (locally-closed) immersion if and only if it can be factored into
+an open immersion followed by a closed immersion.
+-/
+lemma isImmersion_iff_exists_of_quasiCompact [QuasiCompact f] :
+    IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ Z) (g₂ : Z ⟶ Y),
+      IsOpenImmersion g₁ ∧ IsClosedImmersion g₂ ∧ g₁ ≫ g₂ = f :=
+  ⟨fun _ ↦ ⟨_, f.toImage, f.imageι, inferInstance, inferInstance, f.toImage_imageι⟩,
+    fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
 end IsImmersion
 

@@ -19,18 +19,18 @@ namespace Nat
 
 open Function
 
-theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a := by
-  simp only [forall_const, gcd_add_self_right, Periodic]
+theorem periodic_gcd (a : ℕ) : Periodic (gcd a) a :=
+  a.gcd_add_self_right
 
-theorem periodic_coprime (a : ℕ) : Periodic (Coprime a) a := by
-  simp only [coprime_add_self_right, forall_const, Periodic]
+theorem periodic_coprime (a : ℕ) : Periodic (Coprime a) a :=
+  fun _ ↦ eq_iff_iff.mpr coprime_add_self_right
 
-theorem periodic_mod (a : ℕ) : Periodic (fun n => n % a) a := by
-  simp only [forall_const, add_mod_right, Periodic]
+theorem periodic_mod (a : ℕ) : Periodic (fun n => n % a) a :=
+  (add_mod_right · a)
 
 theorem _root_.Function.Periodic.map_mod_nat {α : Type*} {f : ℕ → α} {a : ℕ} (hf : Periodic f a) :
     ∀ n, f (n % a) = f n := fun n => by
-  conv_rhs => rw [← Nat.mod_add_div n a, mul_comm, ← Nat.nsmul_eq_mul, hf.nsmul]
+  conv_rhs => rw [← n.mod_add_div a, mul_comm, ← Nat.nsmul_eq_mul, hf.nsmul]
 
 section Multiset
 
@@ -44,7 +44,7 @@ theorem filter_multiset_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [
     multiset_Ico_map_mod n, ← map_count_True_eq_filter_card, ← map_count_True_eq_filter_card,
     map_map]
   congr; funext n
-  exact (Function.Periodic.map_mod_nat pp n).symm
+  exact (pp.map_mod_nat n).symm
 
 end Multiset
 
@@ -56,7 +56,7 @@ open Finset
 equal to the number naturals below `a` for which `p a` is true. -/
 theorem filter_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
     (pp : Periodic p a) : ((Ico n (n + a)).filter p).card = a.count p :=
-  filter_multiset_Ico_card_eq_of_periodic n a p pp
+  n.filter_multiset_Ico_card_eq_of_periodic a p pp
 
 end Finset
 

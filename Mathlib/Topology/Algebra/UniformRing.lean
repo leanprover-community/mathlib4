@@ -13,8 +13,8 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 /-!
 # Completion of topological rings:
 
-This files endows the completion of a topological ring with a ring structure.
-More precisely the instance `UniformSpace.Completion.ring` builds a ring structure
+This file endows the completion of a topological ring with a ring structure.
+More precisely, the instance `UniformSpace.Completion.ring` builds a ring structure
 on the completion of a ring endowed with a compatible uniform structure in the sense of
 `IsUniformAddGroup`. There is also a commutative version when the original ring is commutative.
 Moreover, if a topological ring is an algebra over a commutative semiring, then so is its
@@ -29,7 +29,7 @@ the main constructions deal with continuous ring morphisms.
 
 * `UniformSpace.Completion.extensionHom`: extends a continuous ring morphism from `R`
   to a complete separated group `S` to `Completion R`.
-* `UniformSpace.Completion.mapRingHom` : promotes a continuous ring morphism
+* `UniformSpace.Completion.mapRingHom`: promotes a continuous ring morphism
   from `R` to `S` into a continuous ring morphism from `Completion R` to `Completion S`.
 
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.

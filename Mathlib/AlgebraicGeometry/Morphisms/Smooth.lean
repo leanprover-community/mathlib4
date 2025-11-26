@@ -136,19 +136,19 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     [hf : IsSmoothOfRelativeDimension n f] [hg : IsSmoothOfRelativeDimension m g] :
     IsSmoothOfRelativeDimension (n + m) (f ≫ g) where
   exists_isStandardSmoothOfRelativeDimension x := by
-    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f.base x)
+    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f x)
     obtain ⟨U₁', V₁', hx₁', e₁', hf₁'⟩ := hf.exists_isStandardSmoothOfRelativeDimension x
     obtain ⟨r, s, hx₁, e₁, hf₁⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine
       (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).right
       (isStandardSmoothOfRelativeDimension_localizationPreserves n).away
       x V₂ U₁' V₁' V₁' hx₁' hx₁' e₁' hf₁' hfx₂
     have e : X.basicOpen s ≤ (f ≫ g) ⁻¹ᵁ U₂ :=
-      le_trans e₁ <| f.preimage_le_preimage_of_le <| le_trans (Y.basicOpen_le r) e₂
+      le_trans e₁ <| f.preimage_mono <| le_trans (Y.basicOpen_le r) e₂
     have heq : (f ≫ g).appLE U₂ (X.basicOpen s) e = g.appLE U₂ V₂ e₂ ≫
         CommRingCat.ofHom (algebraMap Γ(Y, V₂) Γ(Y, Y.basicOpen r)) ≫
           f.appLE (Y.basicOpen r) (X.basicOpen s) e₁ := by
       rw [RingHom.algebraMap_toAlgebra, CommRingCat.ofHom_hom,
-        g.appLE_map_assoc, Scheme.appLE_comp_appLE]
+        g.appLE_map_assoc, Scheme.Hom.appLE_comp_appLE]
     refine ⟨U₂, ⟨X.basicOpen s, V₁'.2.basicOpen s⟩, hx₁, e, heq ▸ ?_⟩
     apply IsStandardSmoothOfRelativeDimension.comp ?_ hf₂
     haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := V₂.2.isLocalization_basicOpen r

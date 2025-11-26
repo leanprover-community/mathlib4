@@ -56,8 +56,6 @@ def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where
   source' := rfl
   target' := rfl
 
-attribute [local instance] Path.Homotopic.setoid
-
 /-- The homotopy path class of 0 → 1 in `ULift I` -/
 def uhpath01 : @fromTop (TopCat.of <| ULift.{u} I) (ULift.up (0 : I)) ⟶ fromTop (ULift.up 1) :=
   ⟦upath01⟧
@@ -67,8 +65,6 @@ end unitInterval
 namespace ContinuousMap.Homotopy
 
 open unitInterval (uhpath01)
-
-attribute [local instance] Path.Homotopic.setoid
 
 section Casts
 
@@ -209,8 +205,6 @@ namespace FundamentalGroupoidFunctor
 open CategoryTheory
 
 open scoped FundamentalGroupoid
-
-attribute [local instance] Path.Homotopic.setoid
 
 variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 

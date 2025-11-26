@@ -51,7 +51,6 @@ variable {R : Type*} [CommRing R] [CompatibleRing R]
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
     (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by
-  let _ := compatibleRingOfRing (FreeCommRing α)
   rw [termOfFreeCommRing]
   conv_rhs => rw [← Classical.choose_spec (exists_term_realize_eq_freeCommRing p)]
   induction Classical.choose (exists_term_realize_eq_freeCommRing p) with

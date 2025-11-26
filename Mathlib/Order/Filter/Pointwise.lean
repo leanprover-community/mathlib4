@@ -467,7 +467,6 @@ scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
 /-- `Filter α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive /-- `Filter α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
-  mul := (· * ·)
   mul_assoc _ _ _ := map₂_assoc mul_assoc
 
 /-- `Filter α` is a `CommSemigroup` under pointwise operations if `α` is. -/
@@ -482,8 +481,6 @@ variable [MulOneClass α] [MulOneClass β]
 /-- `Filter α` is a `MulOneClass` under pointwise operations if `α` is. -/
 @[to_additive /-- `Filter α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Filter α) where
-  one := 1
-  mul := (· * ·)
   one_mul := map₂_left_identity one_mul
   mul_one := map₂_right_identity mul_one
 

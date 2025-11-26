@@ -109,11 +109,12 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
   algebraMap := singleOneRingHom.comp (algebraMap k A)
   smul_def' := fun r a => by
     ext
-    rw [Finsupp.coe_smul]
-    simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
+    dsimp
+    rw [single_one_mul_apply, Algebra.smul_def]
   commutes' := fun r f => by
-    refine Finsupp.ext fun _ => ?_
-    simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
+    ext
+    dsimp
+    rw [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
 
 /-- `Finsupp.single 1` as an `AlgHom` -/
 @[to_additive (dont_translate := k A) (attr := simps! apply) /--
