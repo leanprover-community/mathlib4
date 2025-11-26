@@ -135,13 +135,15 @@ noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
   Lex.linearOrder (ι := ιᵒᵈ)
 
-theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [WellFoundedLT ι] [∀ i, LinearOrder (β i)]
+theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
     {x y : Lex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
-  simp_rw [← not_lt, not_iff_not, lex_lt_iff_of_unique]
+  simp_rw [le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex_inj, funext_iff, Unique.forall_iff,
+    ofLex_apply]
 
-theorem colex_le_iff_of_unique [Unique ι] [LinearOrder ι] [WellFoundedGT ι] [∀ i, LinearOrder (β i)]
+theorem colex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
     {x y : Colex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
-  simp_rw [← not_lt, not_iff_not, colex_lt_iff_of_unique]
+  simp_rw [le_iff_lt_or_eq, colex_lt_iff_of_unique, ← ofColex_inj, funext_iff, Unique.forall_iff,
+    ofColex_apply]
 
 section Lex
 

@@ -83,9 +83,8 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
     (DFunLike.coe_injective (F := DFinsupp α))
 
 theorem lex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
-    x ≤ y ↔ x default ≤ y default := by
-  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
-    DFunLike.ext_iff, Unique.forall_iff]
+    x ≤ y ↔ x default ≤ y default :=
+  Pi.lex_le_iff_of_unique
 
 section LinearOrder
 

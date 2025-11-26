@@ -87,9 +87,8 @@ instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
 theorem lex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
-    x ≤ y ↔ x default ≤ y default := by
-  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
-    DFunLike.ext_iff, Unique.forall_iff]
+    x ≤ y ↔ x default ≤ y default :=
+  Pi.lex_le_iff_of_unique
 
 theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
   intro a b h
