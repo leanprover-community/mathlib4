@@ -150,7 +150,7 @@ def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
     (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).altitudeFoot = s.altitudeFoot ∘ e.symm := by
   ext i
   simp only [altitudeFoot, reindex_points, Function.comp_apply]
-  exact orthogonalProjectionSpan_congr (s.range_reindex_faceOpposite e i) rfl
+  exact orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex e i) rfl
 
 @[simp] lemma ne_altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.points i ≠ s.altitudeFoot i := by
