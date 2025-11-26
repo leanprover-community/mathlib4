@@ -112,10 +112,12 @@ lemma scaleRoots_zero (p : R[X]) :
   · exact (h₁ h₂.ge).elim
   · rfl
 
+-- TODO rename
 @[simp]
 lemma one_scaleRoots (r : R) :
     (1 : R[X]).scaleRoots r = 1 := by ext; simp
 
+-- TODO rename
 @[simp]
 lemma X_add_C_scaleRoots (r s : R) : (X + C r).scaleRoots s = (X + C (r * s)) := by
   nontriviality R
@@ -127,6 +129,7 @@ section CommSemiring
 
 variable [Semiring S] [CommSemiring R] [Semiring A] [Field K]
 
+-- TODO rename
 theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s : S)
     (hsa : Commute (f s) a) (hf : ∀ s₁ s₂, Commute (f s₁) (f s₂)) :
     eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
@@ -147,23 +150,28 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
         exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi)
     _ = f s ^ p.natDegree * eval₂ f a p := by simp [← Finset.mul_sum, eval₂_eq_sum, sum_def]
 
+-- TODO rename
 theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
   scaleRoots_eval₂_mul_of_commute f r s (mul_comm _ _) fun _ _ ↦ mul_comm _ _
 
+-- TODO rename
 theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (hr : eval₂ f r p = 0) :
     eval₂ f (f s * r) (scaleRoots p s) = 0 := by rw [scaleRoots_eval₂_mul, hr, mul_zero]
 
+-- TODO rename
 lemma scaleRoots_eval_mul (p : R[X]) (r s : R) :
     eval (s * r) (p.scaleRoots s) = s ^ p.natDegree * eval r p :=
   scaleRoots_eval₂_mul _ _ _
 
+-- TODO rename
 theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
     aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
   rw [aeval_def, scaleRoots_eval₂_mul_of_commute, ← aeval_def, ha, mul_zero]
   · apply Algebra.commutes
   · intros; rw [Commute, SemiconjBy, ← map_mul, ← map_mul, mul_comm]
 
+-- TODO rename
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
@@ -173,6 +181,7 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 
+-- TODO rename
 theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra R K]
     (inj : Function.Injective (algebraMap R K)) {p : R[X]} {r s : R}
     (hr : aeval (algebraMap R K r / algebraMap R K s) p = 0) (hs : s ∈ nonZeroDivisors R) :
@@ -184,6 +193,7 @@ lemma scaleRoots_mul (p : R[X]) (r s) :
     p.scaleRoots (r * s) = (p.scaleRoots r).scaleRoots s := by
   ext; simp [mul_pow, mul_assoc]
 
+-- TODO rename
 /-- Multiplication and `scaleRoots` commute up to a power of `r`. The factor disappears if we
 assume that the product of the leading coeffs does not vanish. See `Polynomial.mul_scaleRoots'`. -/
 lemma mul_scaleRoots (p q : R[X]) (r : R) :
@@ -210,10 +220,12 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
         simp only [← e, mul_assoc, mul_comm (r ^ (_ - a)), ← pow_add]
         rw [add_comm (_ - _), tsub_add_tsub_comm ha hb]
 
+-- TODO rename
 lemma mul_scaleRoots' (p q : R[X]) (r : R) (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     (p * q).scaleRoots r = p.scaleRoots r * q.scaleRoots r := by
   rw [← mul_scaleRoots, natDegree_mul' h, tsub_self, pow_zero, one_smul]
 
+-- TODO rename
 lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
     (p * q).scaleRoots r = p.scaleRoots r * q.scaleRoots r := by
   by_cases hp : p = 0; · simp [hp]
@@ -221,6 +233,7 @@ lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
   apply mul_scaleRoots'
   simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
 
+-- TODO rename
 lemma pow_scaleRoots' (p : R[X]) (r : R) (n : ℕ)
     (hp : p.leadingCoeff ^ n ≠ 0) :
     (p ^ n).scaleRoots r = p.scaleRoots r ^ n := by
@@ -231,6 +244,7 @@ lemma pow_scaleRoots' (p : R[X]) (r : R) (n : ℕ)
     · refine mt (by simp +contextual [pow_succ]) hp
     · rwa [leadingCoeff_pow' (mt (by simp +contextual [pow_succ]) hp), ← pow_succ]
 
+-- TODO rename
 lemma pow_scaleRoots_of_isReduced [IsReduced R] (p : R[X]) (r : R) (n : ℕ) :
     (p ^ n).scaleRoots r = p.scaleRoots r ^ n := by
   by_cases hp : p = 0
@@ -239,6 +253,7 @@ lemma pow_scaleRoots_of_isReduced [IsReduced R] (p : R[X]) (r : R) (n : ℕ) :
   · simp [hn]
   exact pow_scaleRoots' _ _ _ (by simp_all)
 
+-- TODO rename
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
@@ -312,6 +327,7 @@ end CommSemiring
 
 section Ring
 
+-- TODO rename
 @[simp]
 lemma X_sub_C_scaleRoots [Ring R] (r s : R) :
     (X - C r).scaleRoots s = (X - C (r * s)) := by
