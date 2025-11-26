@@ -194,6 +194,12 @@ theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
     (Filter.EventuallyEq.trans (by rw [condExpL1_congr_ae hm h])
       (condExp_ae_eq_condExpL1 hm g).symm)
 
+/-- Conditional expectation is invariant (a.e.) under the commutativity of `inf` on
+measurable spaces: `μ[f|m₁ ⊓ m₂] =ᵐ[μ] μ[f|m₂ ⊓ m₁]`. -/
+theorem condExp_inf_comm {m₁ m₂ : MeasurableSpace α} :
+    μ[f|m₁ ⊓ m₂] =ᵐ[μ] μ[f|m₂ ⊓ m₁] := by
+  simp [inf_comm]
+
 lemma condExp_congr_ae_trim (hm : m ≤ m₀) (hfg : f =ᵐ[μ] g) :
     μ[f|m] =ᵐ[μ.trim hm] μ[g|m] :=
   StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm
