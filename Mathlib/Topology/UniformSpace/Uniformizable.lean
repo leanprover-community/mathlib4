@@ -20,7 +20,7 @@ TODO: Explain proofs
 
 ## Main Results
 
-* `UniformSpace.completelyRegularSpace`: Uniform spaces are completely regular
+* `UniformSpace.toCompletelyRegularSpace`: Uniform spaces are completely regular
 * `CompletelyRegularSpace.exists_uniformSpace`: Completely regular spaces are uniformizable
 * `CompletelyRegularSpace.of_exists_uniformSpace`: Uniformizable spaces are completely regular
 * `completelyRegularSpace_iff_exists_uniformSpace`: A space is completely regular
