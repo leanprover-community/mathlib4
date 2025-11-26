@@ -602,34 +602,18 @@ section CommGroup
 
 variable [CommGroup α]
 
-@[simp]
-lemma finiteCyclic_iff_finiteCarrier (g : α) :
-    Finite (Subgroup.zpowers g) = ((Subgroup.zpowers g) : Set α).Finite := by
-  rfl
-
-lemma finite_finOrder_zpow (g : α) (hp : ¬orderOf g = 0) :
-    Finite (Subgroup.zpowers g) := by
-  simp_all only [orderOf_eq_zero_iff, not_not, finiteCyclic_iff_finiteCarrier, finite_zpowers]
-
-theorem odd_not_mem_of_g_two {g : α} (horder : orderOf g = 0) :
+theorem not_mem_pow_of_order_two {g : α} (horder : orderOf g = 0) :
     g ∉ (Subgroup.zpowers (g ^ 2)) := by
-  intro hgmem
-  rcases hgmem with ⟨z, hz⟩
+  rintro ⟨z, hz⟩
   have hz' : g ^ (2 * z) = g ^ (1 : ℤ) := by simpa [zpow_mul, zpow_ofNat] using hz
-  have hz1 : g ^ (2 * z - 1 : ℤ) = 1 := by
-    have h := congrArg (fun x : α => x * g⁻¹) hz'
-    simpa [zpow_add, sub_eq_add_neg] using h
-  have hdiv : ((orderOf g) : ℤ) ∣ (2 * z - 1) :=
-    (orderOf_dvd_iff_zpow_eq_one (x := g) (i := 2 * z - 1)).mpr hz1
-  have hdiv0 : (0 : ℤ) ∣ (2 * z - 1) := by simpa [horder] using hdiv
-  rcases hdiv0 with ⟨k, hk⟩
-  have hz_eq : (2 * z - 1 : ℤ) = 0 := by simpa using hk
+  have hz1_new : 2 * z = 1 := by
+    have finj : Function.Injective (fun n : ℤ => g ^ n) := by
+      simp_all only [orderOf_eq_zero_iff,
+      zpow_one, injective_zpow_iff_not_isOfFinOrder, not_false_eq_true]
+    exact finj hz'
   have h21 : (2 : ℤ) ∣ (1 : ℤ) := by
-    have := congrArg (fun t : ℤ => t + 1) hz_eq
-    have z_odd : 2 * z = (1 : ℤ) := by
-      simpa [sub_eq_add_neg] using this
-    exact ⟨z, by simpa [mul_comm] using z_odd.symm⟩
-  simp_all only [zero_mul, Int.reduceDvd]
+    exact dvd_of_mul_right_eq z hz1_new
+  simp_all
 
 end CommGroup
 
@@ -646,49 +630,39 @@ instance (priority := 100) isCyclic : IsCyclic α := by
   exact ⟨⟨g, (Subgroup.eq_top_iff' _).1 this⟩⟩
 
 /-- A commutative simple group is a finite group. -/
-theorem comm_simple_is_finite : Finite α := by
+theorem CommSimple_is_Finite : Finite α := by
   obtain ⟨g, hg⟩ :=
     (isCyclic_iff_exists_zpowers_eq_top : IsCyclic α  ↔ _).mp (by infer_instance)
   by_contra hnf
-  have horder : orderOf g = 0 := by
-    by_contra h0
-    have hfin : Finite (Subgroup.zpowers g) := by exact finite_finOrder_zpow g h0
-    haveI : Finite ((⊤ : Subgroup α)) := by simpa [hg] using hfin
-    have hfinG : Finite α  :=
-      Finite.of_surjective (Subtype.val : (⊤ : Subgroup α ) → α)
-      (by intro x; exact ⟨⟨x, trivial⟩, rfl⟩)
-    exact hnf hfinG
+  have horder : ¬IsOfFinOrder g := by
+    intro h
+    simp_all only [not_finite_iff_infinite, ← Set.infinite_univ_iff, ← finite_zpowers,
+      Subgroup.coe_top, Set.Finite.not_infinite]
   let H : Subgroup α  := Subgroup.zpowers (g ^ 2)
-  have Hnorm : H.Normal := by exact Subgroup.normal_of_comm H
   have hneq_Top : H ≠ ⊤ := by
     intro htop
     have h1 : g ^ 1 ∈ Subgroup.zpowers g := by exact Subgroup.npow_mem_zpowers g 1
     have hn1 : g ^ 1 ∉ H := by
-      simpa [H] using odd_not_mem_of_g_two (g := g) horder
+      simpa [H] using not_mem_pow_of_order_two (g := g) (by exact orderOf_eq_zero_iff.mpr horder)
     simp_all only [Subgroup.mem_top]
   have hneq_bot : H ≠ ⊥ := by
     intro hbot
-    have ne : g ^ 2 ≠ (1 : α) := by
+    have hng : g ^ 2 ≠ (1 : α) := by
       by_contra he
-      have hh : orderOf g = 2 := by
-        refine orderOf_eq_prime_iff.mpr ?_
-        constructor
-        · exact he
-        · intro hg1
-          have ho1 : orderOf g = 1 := by simp [hg1]
-          have : (0 : ℕ) = 1 := by simpa [← horder] using ho1
-          exact Nat.zero_ne_one this
-      have h02 : (0 : ℕ) = 2 := by simpa [← horder] using hh
-      exact (by decide : (0 : ℕ) ≠ 2) h02
+      have hg2 : orderOf g = 2 := by
+        refine orderOf_eq_prime_iff.mpr ?_; aesop
+      have h02 : (0 : ℕ) = 2 := by
+        simp [orderOf_eq_zero_iff.mpr horder] at hg2
+      simp_all only [ne_eq, bot_ne_top, not_false_eq_true, OfNat.zero_ne_ofNat]
     have hmemg2 : g ^ 2 ∈ H := by
       refine (Subgroup.mem_zpowers_iff).mpr ?_
       exact ⟨1 , by simp⟩
-    rw [hbot] at hmemg2 ; exact ne hmemg2
-  have := IsSimpleGroup.eq_bot_or_eq_top_of_normal (H := H) Hnorm
+    rw [hbot] at hmemg2 ; exact hng hmemg2
+  have := IsSimpleGroup.eq_bot_or_eq_top_of_normal (H := H) (by exact Subgroup.normal_of_comm H)
   rcases this <;> contradiction
 
 @[to_additive]
-theorem prime_card [Finite α] : (Nat.card α).Prime := by
+theorem prime_card_of_Finite [Finite α] : (Nat.card α).Prime := by
   have h0 : 0 < Nat.card α := Nat.card_pos
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   rw [Nat.prime_def]
@@ -711,9 +685,9 @@ theorem prime_card [Finite α] : (Nat.card α).Prime := by
     exact Subgroup.mem_zpowers _
 
 /-- a new `prime_card` theorem which dosen't assume the finiteness -/
-theorem prime_card_without_Finite : (Nat.card α).Prime := by
-  letI := comm_simple_is_finite (α := α)
-  apply IsSimpleGroup.prime_card
+theorem prime_card : (Nat.card α).Prime := by
+  letI := CommSimple_is_Finite (α := α)
+  apply IsSimpleGroup.prime_card_of_Finite
 
 end CommSimpleGroup
 
@@ -722,7 +696,7 @@ end IsSimpleGroup
 @[to_additive]
 theorem Group.is_simple_iff_prime_card [Finite α] [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
-  ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
+  ⟨fun h ↦ h.prime_card_of_Finite, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
 theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
@@ -870,13 +844,13 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 
 /-- The isomprphism from `ZMod p` with `p` a prime number to any commutative simple group. -/
-theorem comm_simple_iso_ZMod_prime [CommGroup α] [IsSimpleGroup α] :
+theorem CommSimple_iso_ZMod_p [CommGroup α] [IsSimpleGroup α] :
     ∃ p : ℕ , Nonempty (Additive α ≃+ ZMod p) := by
   have hcyc : IsCyclic α  := by infer_instance
   rcases (isCyclic_iff_exists_zpowers_eq_top.mp hcyc) with ⟨g, hg⟩
   let p : ℕ := orderOf g
   have orderG : Nat.card α  = p := by exact Eq.symm (orderOf_eq_card_of_zpowers_eq_top hg)
-  have FinG : Finite α  := by exact IsSimpleGroup.comm_simple_is_finite
+  have FinG : Finite α  := by exact IsSimpleGroup.CommSimple_is_Finite
   have hp : Nat.Prime p := by rw [← orderG]; apply IsSimpleGroup.prime_card
   use p ; refine Nonempty.intro ?_ ; rw [← orderG]
   have e : ZMod (Nat.card α) ≃+ Additive α := by
