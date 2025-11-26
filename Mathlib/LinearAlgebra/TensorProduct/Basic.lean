@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Bilinear
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.Algebra.Module.Submodule.Bilinear
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Tactic.Abel
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -35,6 +37,8 @@ bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is sh
 
 bilinear, tensor, tensor product
 -/
+
+@[expose] public section
 
 section Semiring
 
@@ -299,10 +303,10 @@ instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul
 
 protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
-  AddMonoidHom.map_zero _
+  map_zero _
 
 protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x + r • y :=
-  AddMonoidHom.map_add _ _ _
+  map_add _ _ _
 
 protected theorem zero_smul (x : M ⊗[R] N) : (0 : R'') • x = 0 :=
   have : ∀ (r : R'') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
@@ -559,7 +563,7 @@ theorem lift.tmul' (x y) : (lift f').1 (x ⊗ₜ y) = f' x y :=
 
 theorem ext' {g h : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = h (x ⊗ₜ y)) : g = h :=
   LinearMap.ext fun z =>
-    TensorProduct.induction_on z (by simp_rw [LinearMap.map_zero]) H fun x y ihx ihy => by
+    TensorProduct.induction_on z (by simp_rw [map_zero]) H fun x y ihx ihy => by
       rw [g.map_add, h.map_add, ihx, ihy]
 
 theorem lift.unique {g : M ⊗[R] N →ₛₗ[σ₁₂] P₂} (H : ∀ x y, g (x ⊗ₜ y) = f' x y) : g = lift f' :=
@@ -666,10 +670,17 @@ theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₛₗ[σ₁₂] P�
   ext w x y z
   exact H w x y z
 
-/-- Two semilinear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
-form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
+/-- Two semilinear maps `(M ⊗ N) ⊗ (P ⊗ Q) → P₂` which agree on all elements of the
+form `(m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)` are equal. -/
 theorem ext_fourfold' {φ ψ : M ⊗[R] N ⊗[R] (P ⊗[R] Q) →ₛₗ[σ₁₂] P₂}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
+  ext m n p q
+  exact H m n p q
+
+/-- Two semilinear maps `M ⊗ (N ⊗ P) ⊗ Q → P₂` which agree on all elements of the
+form `m ⊗ₜ (n ⊗ₜ p) ⊗ₜ q` are equal. -/
+theorem ext_fourfold'' {φ ψ : M ⊗[R] (N ⊗[R] P) ⊗[R] Q →ₛₗ[σ₁₂] P₂}
+    (H : ∀ w x y z, φ (w ⊗ₜ (x ⊗ₜ y) ⊗ₜ z) = ψ (w ⊗ₜ (x ⊗ₜ y) ⊗ₜ z)) : φ = ψ := by
   ext m n p q
   exact H m n p q
 
@@ -750,6 +761,8 @@ open LinearMap
 /-- The tensor product of a pair of linear maps between modules. -/
 def map (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) : M ⊗[R] N →ₛₗ[σ₁₂] M₂ ⊗[R₂] N₂ :=
   lift <| comp (compl₂ (mk _ _ _) g) f
+
+@[inherit_doc] scoped[RingTheory.LinearMap] infix:70 " ⊗ₘ " => TensorProduct.map
 
 @[simp]
 theorem map_tmul (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) (m : M) (n : N) :
@@ -966,12 +979,20 @@ theorem congr_symm (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N
 @[simp] theorem congr_refl_refl : congr (.refl R M) (.refl R N) = .refl R _ :=
   LinearEquiv.toLinearMap_injective <| ext' fun _ _ ↦ rfl
 
-theorem congr_trans {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
-    {σ₃₁ : R₃ →+* R} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
-    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
-    (f₂ : M₂ ≃ₛₗ[σ₂₃] M₃) (g₂ : N₂ ≃ₛₗ[σ₂₃] N₃) (f₁ : M ≃ₛₗ[σ₁₂] M₂) (g₁ : N ≃ₛₗ[σ₁₂] N₂) :
-    congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
+section congr_congr
+variable {σ₃₂ : R₃ →+* R₂} [RingHomInvPair σ₂₃ σ₃₂] [RingHomInvPair σ₃₂ σ₂₃]
+  {σ₃₁ : R₃ →+* R} [RingHomInvPair σ₁₃ σ₃₁] [RingHomInvPair σ₃₁ σ₁₃]
+  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
+  (f₂ : M₂ ≃ₛₗ[σ₂₃] M₃) (g₂ : N₂ ≃ₛₗ[σ₂₃] N₃) (f₁ : M ≃ₛₗ[σ₁₂] M₂) (g₁ : N ≃ₛₗ[σ₁₂] N₂)
+
+theorem congr_trans : congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
   LinearEquiv.toLinearMap_injective <| map_comp _ _ _ _
+
+theorem congr_congr (x : M ⊗[R] N) :
+    congr f₂ g₂ (congr f₁ g₁ x) = congr (f₁.trans f₂) (g₁.trans g₂) x :=
+  DFunLike.congr_fun (congr_trans ..).symm x
+
+end congr_congr
 
 theorem congr_mul (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (f' : M ≃ₗ[R] M) (g' : N ≃ₗ[R] N) :
     congr (f * f') (g * g') = congr f g * congr f' g' := congr_trans _ _ _ _
@@ -992,6 +1013,12 @@ lemma map_bijective {f : M →ₗ[R] N} {g : P →ₗ[R] Q}
     (hf : Function.Bijective f) (hg : Function.Bijective g) :
     Function.Bijective (map f g) :=
   (TensorProduct.congr (.ofBijective f hf) (.ofBijective g hg)).bijective
+
+universe u in
+instance {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N] [Small.{u} M] [Small.{u} N] : Small.{u} (M ⊗[R] N) :=
+  ⟨_, ⟨(TensorProduct.congr
+    (Shrink.linearEquiv R M) (Shrink.linearEquiv R N)).symm.toEquiv⟩⟩
 
 end TensorProduct
 

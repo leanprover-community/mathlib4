@@ -3,11 +3,15 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.EssentiallySmall
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+module
+
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Separating and detecting sets
@@ -54,8 +58,10 @@ See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.
 
 -/
 
+@[expose] public section
 
-universe w v₁ v₂ u₁ u₂
+
+universe w' w v₁ v₂ u₁ u₂
 
 open CategoryTheory.Limits Opposite
 
@@ -307,6 +313,20 @@ lemma IsCoseparating.mk_of_exists_mono
   rw [← cancel_mono j]
   exact Fan.IsLimit.hom_ext hc _ _
     (fun i ↦ by simpa using h _ (hs i) (j ≫ c.proj i))
+
+lemma IsSeparating.mk_of_exists_colimitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
+    P.IsSeparating := by
+  intro X Y f g h
+  obtain ⟨J, _, ⟨p⟩⟩ := hP X
+  exact p.isColimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
+
+lemma IsCoseparating.mk_of_exists_limitsOfShape
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.limitsOfShape J X) :
+    P.IsCoseparating := by
+  intro X Y f g h
+  obtain ⟨J, _, ⟨p⟩⟩ := hP Y
+  exact p.isLimit.hom_ext (fun j ↦ h _ (p.prop_diag_obj _) _)
 
 variable (P)
 

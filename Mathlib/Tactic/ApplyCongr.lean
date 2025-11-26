@@ -3,8 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Allen, Kim Morrison
 -/
+module
 
-import Mathlib.Tactic.Conv
+public meta import Mathlib.Tactic.Conv
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.
@@ -14,6 +15,8 @@ It is particularly useful when the automatically generated congruence lemmas
 are not of the optimal shape. An example, described in the doc-string is
 rewriting inside the operand of a `Finset.sum`.
 -/
+
+public meta section
 
 open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
 

@@ -3,10 +3,12 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Differentiability of sum of functions
@@ -20,6 +22,8 @@ version.
 
 -/
 
+@[expose] public section
+
 open Set Metric TopologicalSpace Function Filter
 
 open scoped Topology NNReal
@@ -29,12 +33,12 @@ section UniformlyOn
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 theorem HasSumUniformlyOn.of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
-    (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) {s} :=  by
+    (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) s :=  by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn, tendstoUniformlyOn_tsum hu hfu]
 
 theorem HasSumUniformlyOn.of_norm_le_summable_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
     (hu : Summable u) {s : Set β} (hfu : ∀ᶠ n in cofinite, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
-    HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) {s} := by
+    HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) s := by
   simp [hasSumUniformlyOn_iff_tendstoUniformlyOn,
     tendstoUniformlyOn_tsum_of_cofinite_eventually hu hfu]
 

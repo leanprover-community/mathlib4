@@ -3,9 +3,11 @@ Copyright (c) 2022 Sebastian Monnet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Krull topology
@@ -55,6 +57,8 @@ all intermediate fields `E` with `E/K` finite dimensional.
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 /-- Given a field extension `L/K`, `finiteExts K L` is the set of
@@ -68,19 +72,10 @@ subsets `Gal(L/E)` of `Gal(L/K)`, where `E/K` is finite. -/
 def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgroup Gal(L/K)) :=
   IntermediateField.fixingSubgroup '' finiteExts K L
 
-@[deprecated (since := "2025-03-16")]
-alias IntermediateField.finiteDimensional_bot := IntermediateField.instFiniteSubtypeMemBot
-
-@[deprecated (since := "2025-03-12")]
-alias IntermediateField.fixingSubgroup.bot := IntermediateField.fixingSubgroup_bot
-
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L`. -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
   ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot⟩
-
-@[deprecated (since := "2025-03-16")]
-alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
 
 /-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `Gal(L/K)` whose sets
 are `Gal(L/E)` for intermediate fields `E` with `E/K` finite dimensional. -/
@@ -125,7 +120,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     rw [IntermediateField.mem_fixingSubgroup_iff]
     intro x hx
     change σ (g (σ⁻¹ x)) = x
-    have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp; rw [← AlgEquiv.invFun_eq_symm]; rfl⟩
+    have h_in_F : σ⁻¹ x ∈ F := ⟨x, hx, by dsimp⟩
     have h_g_fix : g (σ⁻¹ x) = σ⁻¹ x := by
       rw [Subgroup.mem_carrier, IntermediateField.mem_fixingSubgroup_iff F g] at hg
       exact hg (σ⁻¹ x) h_in_F
@@ -246,9 +241,6 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
 theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set Gal(L/K)) :=
   (totallySeparatedSpace_iff _).mp inferInstance
-
-@[deprecated (since := "2025-04-03")]
-alias krullTopology_totallyDisconnected := krullTopology_isTotallySeparated
 
 end TotallySeparated
 

@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -17,6 +19,8 @@ The main defs are `divByMonic` and `modByMonic`.
 The compatibility between these is given by `modByMonic_add_div`.
 We also define `rootMultiplicity`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -76,6 +80,23 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
         (lt_add_of_le_of_pos (le_mul_of_one_le_right (Nat.zero_le _) hnp)
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
+
+/-- See `Polynomial.eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le`
+for the other multiplication order. That version, unlike this one, requires commutativity. -/
+lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {p q : R[X]}
+    (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
+    q = p * C q.leadingCoeff := by
+  obtain ⟨r, rfl⟩ := hdvd
+  obtain rfl | hr := eq_or_ne r 0
+  · simp
+  have : r.natDegree = 0 := by simpa [hp.natDegree_mul' hr] using hdeg
+  rw [eq_C_of_natDegree_eq_zero this]
+  simp [leadingCoeff_monic_mul hp]
+
+lemma eq_of_monic_of_dvd_of_natDegree_le {p q : R[X]} (hp : p.Monic)
+    (hq : q.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) : q = p := by
+  rw [eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdvd hdeg]
+  simp [hq]
 
 end Semiring
 
@@ -431,15 +452,15 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = ∑ i ∈ Icc (n + 1) p.natDegree, a ^ (i - (n + 1)) * p.coeff i := by
   wlog h : p.natDegree ≤ n generalizing n
   · refine Nat.decreasingInduction' (fun n hn _ ih ↦ ?_) (le_of_not_ge h) ?_
-    · rw [coeff_divByMonic_X_sub_C_rec, ih, eq_comm, Icc_eq_cons_Ioc (Nat.succ_le.mpr hn),
+    · rw [coeff_divByMonic_X_sub_C_rec, ih, eq_comm, Icc_eq_cons_Ioc (Nat.succ_le_iff.mpr hn),
           sum_cons, Nat.sub_self, pow_zero, one_mul, mul_sum]
       congr 1; refine sum_congr ?_ fun i hi ↦ ?_
-      · ext; simp [Nat.succ_le]
+      · ext; simp [Nat.succ_le_iff]
       rw [← mul_assoc, ← pow_succ', eq_comm, i.sub_succ', Nat.sub_add_cancel]
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
     · exact this _ le_rfl
-  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_ge, sum_empty]
+  rw [Icc_eq_empty (Nat.lt_succ_iff.mpr h).not_ge, sum_empty]
   nontriviality R
   by_cases hp : p.natDegree = 0
   · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]
@@ -663,6 +684,17 @@ lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = - (p %ₘ q) := by
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
   simp [sub_eq_add_neg, add_modByMonic, neg_modByMonic]
 
+lemma mul_modByMonic (p₁ p₂ q : R[X]) : (p₁ * p₂) %ₘ q = (p₁ %ₘ q) * (p₂ %ₘ q) %ₘ q := by
+  by_cases! h : ¬ q.Monic
+  · simp [Polynomial.modByMonic_eq_of_not_monic _ h]
+  apply Polynomial.modByMonic_eq_of_dvd_sub h
+  have : p₁ * p₂ - p₁ %ₘ q * (p₂ %ₘ q) = (p₁ %ₘ q) * (p₂ - p₂ %ₘ q) + p₂ * (p₁ - p₁ %ₘ q) := by ring
+  rw [this]
+  apply dvd_add
+  all_goals
+  · apply dvd_mul_of_dvd_right
+    simp [Polynomial.modByMonic_eq_sub_mul_div _ h]
+
 lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
     (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t = (p.comp (X + C t)).trailingCoeff := by
   obtain rfl | hp := eq_or_ne p 0
@@ -704,6 +736,11 @@ lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
   rw [le_rootMultiplicity_iff hpq, pow_add]
   gcongr <;> apply pow_rootMultiplicity_dvd
 
+lemma rootMultiplicity_le_rootMultiplicity_of_dvd {p q : R[X]} (hq : q ≠ 0) (hpq : p ∣ q) (x : R) :
+    p.rootMultiplicity x ≤ q.rootMultiplicity x := by
+  obtain ⟨_, rfl⟩ := hpq
+  exact Nat.le_of_add_right_le <| le_rootMultiplicity_mul x hq
+
 lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
 
@@ -714,7 +751,7 @@ lemma rootMultiplicity_eq_natTrailingDegree' : p.rootMultiplicity 0 = p.natTrail
   refine le_antisymm ?_ ?_
   · rw [rootMultiplicity_le_iff h, map_zero, sub_zero, X_pow_dvd_iff, not_forall]
     exact ⟨p.natTrailingDegree,
-      fun h' ↦ trailingCoeff_nonzero_iff_nonzero.2 h <| h' <| Nat.lt.base _⟩
+      fun h' ↦ trailingCoeff_nonzero_iff_nonzero.2 h <| h' <| Nat.lt_add_one _⟩
   · rw [le_rootMultiplicity_iff h, map_zero, sub_zero, X_pow_dvd_iff]
     exact fun _ ↦ coeff_eq_zero_of_lt_natTrailingDegree
 
@@ -742,6 +779,19 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
       have h₂ : degree (X - C x) = 0 := degree_eq_zero_of_isUnit h
       rw [h₁] at h₂; exact absurd h₂ (by decide))
     fun hgu => by rw [hg, degree_mul, degree_X_sub_C, degree_eq_zero_of_isUnit hgu, add_zero]
+
+lemma _root_.Irreducible.not_isRoot_of_natDegree_ne_one
+    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : R} : ¬p.IsRoot x :=
+  fun hr ↦ hdeg <| natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hi hr
+
+lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
+    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
+  le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
+
+lemma _root_.Irreducible.subsingleton_isRoot [IsLeftCancelMulZero R]
+    (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
+  fun _ hx ↦ (subsingleton_isRoot_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some <|
+    degree_eq_one_of_irreducible_of_root hi hx) hx
 
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
@@ -783,24 +833,9 @@ lemma associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
     (associated_of_dvd_of_natDegree_le hpq · (natDegree_le_natDegree h₁.ge))
 
 lemma eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]}
-    (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
+    (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
     q = C q.leadingCoeff * p := by
-  obtain ⟨r, hr⟩ := hdiv
-  obtain rfl | hq := eq_or_ne q 0; · simp
-  have rzero : r ≠ 0 := fun h => by simp [h, hq] at hr
-  rw [hr, natDegree_mul'] at hdeg; swap
-  · rw [hp.leadingCoeff, one_mul, leadingCoeff_ne_zero]
-    exact rzero
-  rw [mul_comm, @eq_C_of_natDegree_eq_zero _ _ r] at hr
-  · convert hr
-    convert leadingCoeff_C (coeff r 0) using 1
-    rw [hr, leadingCoeff_mul_monic hp]
-  · exact (add_right_inj _).1 (le_antisymm hdeg <| Nat.le.intro rfl)
-
-lemma eq_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]} (hp : p.Monic)
-    (hq : q.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) : q = p := by
-  convert eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg
-  rw [hq.leadingCoeff, C_1, one_mul]
+  rw [mul_comm, ← eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdvd hdeg]
 
 end CommRing
 

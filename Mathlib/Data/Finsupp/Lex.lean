@@ -3,15 +3,19 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.DFinsupp.Lex
+public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Lexicographic order on finitely supported functions
 
 This file defines the lexicographic order on `Finsupp`.
 -/
+
+@[expose] public section
 
 
 variable {α N : Type*}
@@ -80,8 +84,7 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) wh
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
-  lt := (· < ·)
-  le := (· ≤ ·)
+  __ := Lex.partialOrder
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
 theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
@@ -139,7 +142,7 @@ section Left
 variable [AddLeftStrictMono N]
 
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
-  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
+  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_right ha _⟩⟩
 
 instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
   addLeftMono_of_addLeftStrictMono _
@@ -151,8 +154,7 @@ section Right
 variable [AddRightStrictMono N]
 
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
-  ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
-    ⟨a, fun j ja ↦ congr_arg (· + f j) (lta j ja), add_lt_add_right ha _⟩⟩
+  ⟨fun f _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr($(lta j ja) + f j), add_lt_add_left ha _⟩⟩
 
 instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
   addRightMono_of_addRightStrictMono _
