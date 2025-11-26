@@ -49,66 +49,21 @@ def congr (e : V ≃ₗ[R] W) :
   LinearEquiv.congrLeft R R e
 
 /-- `LinearMap.baseChange` for `Module.Dual`. -/
-def baseChange (f : Module.Dual R V) :
-    Module.Dual A (A ⊗[R] V) :=
-  (AlgebraTensorModule.rid R A A).toLinearMap.comp (LinearMap.baseChange A f)
+def baseChange : Module.Dual R V →ₗ[R] Module.Dual A (A ⊗[R] V) :=
+  (AlgebraTensorModule.rid R A A).compRight R ∘ₗ LinearMap.baseChangeHom R A V R
 
 @[simp]
 theorem baseChange_apply_tmul (f : Module.Dual R V) (a : A) (v : V) :
-    f.baseChange A (a ⊗ₜ v) = (f v) • a := by
-  simp [baseChange]
-
-@[simp]
-theorem baseChange_add (f g : Module.Dual R V) :
-    (f + g).baseChange A = f.baseChange A + g.baseChange A := by
-  unfold baseChange; aesop
-
-@[simp]
-theorem baseChange_smul (r : R) (f : Module.Dual R V) :
-    (r • f).baseChange A = r • f.baseChange A := by
-  unfold baseChange
-  ext x
-  simp [LinearMap.baseChange_smul, ← TensorProduct.tmul_smul, mul_smul]
-
-/-- `Module.Dual.baseChange` as a linear map. -/
-def baseChangeHom :
-    Module.Dual R V →ₗ[R] Module.Dual A (A ⊗[R] V) where
-  toFun := baseChange A
-  map_add' := baseChange_add A
-  map_smul' := baseChange_smul A
-
-@[simp]
-theorem baseChangeHom_apply (f : Module.Dual R V) :
-    baseChangeHom A f = f.baseChange A :=
+    f.baseChange A (a ⊗ₜ v) = (f v) • a :=
   rfl
 
-section group
+variable {B : Type*} [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
-variable {R : Type*} [CommRing R]
-  {V : Type*} [AddCommGroup V] [Module R V]
-  (A : Type*) [CommRing A] [Algebra R A]
-
-theorem baseChange_sub (f g : Module.Dual R V) :
-    baseChange A (f - g) = baseChange A f - baseChange A g := by
-  unfold baseChange; aesop
-
-theorem baseChange_neg (f : Module.Dual R V) :
-    baseChange A (-f) = -(baseChange A f) := by
-  unfold baseChange; aesop
-
-end group
-
-section comp
-
-variable (B : Type*) [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-
-theorem baseChange_comp (f : Module.Dual R V) :
+theorem baseChange_baseChange (f : Module.Dual R V) :
     ((f.baseChange A).baseChange B) =
       (congr (TensorProduct.AlgebraTensorModule.cancelBaseChange R A B B V)).symm
        (f.baseChange B) := by
   ext; simp [congr, congrLeft]
-
-end comp
 
 end Module.Dual
 
