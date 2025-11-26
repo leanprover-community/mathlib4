@@ -27,7 +27,7 @@ We define the trace / Killing form in this file and prove some basic properties.
 ## Main definitions
 
 * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-  on `L` called the trace Form.
+  on `L` called the trace form.
 * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
   representation of a Lie algebra vanishes.
 * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
@@ -47,7 +47,7 @@ open Set Module
 namespace LieModule
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
-the trace Form. See also `killingForm`. -/
+the trace form. See also `killingForm`. -/
 noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
@@ -120,7 +120,7 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
     shiftedGenWeightSpace.toEnd_eq, shiftedGenWeightSpace.toEnd_eq,
     ← LinearEquiv.conj_comp, LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp,
     LinearMap.sub_comp, map_sub, map_sub, map_sub, LinearMap.comp_smul, LinearMap.smul_comp,
-    LinearMap.comp_id, LinearMap.id_comp, LinearMap.map_smul, LinearMap.map_smul,
+    LinearMap.comp_id, LinearMap.id_comp, map_smul, map_smul,
     trace_toEnd_genWeightSpace, trace_toEnd_genWeightSpace,
     LinearMap.comp_smul, LinearMap.smul_comp, LinearMap.id_comp, map_smul, map_smul,
     LinearMap.trace_id, ← traceForm_apply_apply, h₁, h₂, sub_zero, sub_eq_zero] at this

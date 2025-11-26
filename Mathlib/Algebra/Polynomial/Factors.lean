@@ -202,6 +202,14 @@ protected theorem Splits.neg {f : R[X]} (hf : Splits f) : Splits (-f) := by
 theorem splits_neg_iff {f : R[X]} : Splits (-f) ↔ Splits f :=
   ⟨fun hf ↦ neg_neg f ▸ hf.neg, .neg⟩
 
+theorem Splits.comp_neg_X {f : R[X]} (hf : f.Splits) : (f.comp (-X)).Splits := by
+  refine Submonoid.closure_induction ?_ (by simp)
+    (fun f g _ _ hf hg ↦ mul_comp_neg_X f g ▸ hf.mul hg) hf
+  · rintro f (⟨a, rfl⟩ | ⟨a, rfl⟩)
+    · simp
+    · rw [add_comp, X_comp, C_comp, neg_add_eq_sub, ← neg_sub]
+      exact (X_sub_C a).neg
+
 end Ring
 
 section CommRing
@@ -226,10 +234,6 @@ theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
 
 theorem Splits.comp_X_sub_C {f : R[X]} (hf : f.Splits) (a : R) : (f.comp (X - C a)).Splits :=
   hf.comp_of_natDegree_le_one_of_monic (natDegree_sub_C.trans_le natDegree_X_le) (monic_X_sub_C a)
-
-theorem Splits.comp_neg_X {f : R[X]} (hf : f.Splits) : (f.comp (-X)).Splits :=
-  hf.comp_of_natDegree_le_one_of_invertible (by simp [natDegree_X_le])
-    (have := invertibleOne (α := R); have := invertibleNeg (1 : R); by simpa)
 
 variable [IsDomain R]
 
