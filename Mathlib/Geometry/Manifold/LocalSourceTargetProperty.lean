@@ -85,9 +85,9 @@ structure LocalPresentationAt (f : M → N) (x : M)
   property : P f domChart codChart
 
 variable (I I' n) in
-/-- A property of smooth functions `M → N` which is local at both the source and target:
-a property `P` is local at `x` iff there exist charts `φ` and `ψ` of `M` and `N` around
-`x` and `f x`, respectively, such that `f` satisfies the property w.r.t. `φ` and `ψ`.
+/-- The induced property by a local property `P`: it is satisfied for `f` at `x` iff there exist
+charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that `f` satisfies `P`
+w.r.t. `φ` and `ψ`.
 
 The motivating example are smooth immersions and submersions: the corresponding condition is that
 `f` look like the inclusion `u ↦ (u, 0)` (resp. a projection `(u, v) ↦ u`)
