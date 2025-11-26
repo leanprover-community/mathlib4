@@ -65,11 +65,9 @@ abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
 scoped infixr:70 " ×ₘ " => Prod.mkHom
 
 /-- Analogue of `Prod.mk.injEq` in this setting. -/
-@[simp]
 lemma mkHom_eq {X₁ X₂ : C} {Y₁ Y₂ : D} (f f' : X₁ ⟶ X₂) (g g' : Y₁ ⟶ Y₂) :
     f ×ₘ g = f' ×ₘ g' ↔ (f = f' ∧ g = g') :=
   Prod.hom_ext_iff
-
 
 end Prod
 
