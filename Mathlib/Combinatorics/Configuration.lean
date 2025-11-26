@@ -3,9 +3,11 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.LinearAlgebra.Matrix.Rank
-import Mathlib.LinearAlgebra.Projectivization.Constructions
+module
+
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.LinearAlgebra.Matrix.Rank
+public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
@@ -30,6 +32,8 @@ Together, these four statements say that any two of the following properties imp
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
 -/
+
+@[expose] public section
 
 
 open Finset

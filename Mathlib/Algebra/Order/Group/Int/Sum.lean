@@ -3,9 +3,11 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Int.Interval
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Int.Interval
 
 /-!
 # Sharp bounds for sums of bounded finsets of integers
@@ -15,6 +17,8 @@ a sharper upper bound than `#s * c`, because the elements are distinct.
 
 This file provides these sharp bounds, both in the upper-bounded and analogous lower-bounded cases.
 -/
+
+@[expose] public section
 
 
 namespace Finset

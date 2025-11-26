@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 
@@ -18,6 +20,8 @@ tangent bundle but rather as a purely algebraic theory that provides a purely al
 of the Lie algebra for a Lie group. This theory coincides with the usual tangent bundle in the
 case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
+
+@[expose] public section
 
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -109,8 +113,8 @@ namespace Derivation
 variable {I}
 
 /-- The evaluation at a point as a linear map. -/
-def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[𝕜] PointDerivation I x :=
-  (ContMDiffFunction.evalAt I x).compDer
+def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩]
+  PointDerivation I x := (ContMDiffFunction.evalAt I x).compDer
 
 theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
   rfl

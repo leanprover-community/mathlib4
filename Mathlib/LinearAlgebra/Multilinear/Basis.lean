@@ -3,8 +3,10 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Eric Wieser, Daniel Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Multilinear.Finsupp
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 
 /-!
 #import Mathlib.LinearAlgebra.Basis.Defs
@@ -14,6 +16,9 @@ This file proves lemmas about the action of multilinear maps on basis vectors an
 basis for multilinear maps given bases on the domain and codomain.
 
 -/
+
+@[expose] public section
+
 
 open MultilinearMap
 
