@@ -46,7 +46,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
-* The set where `LiftSourceTargetPropertyAt` holds is open.
+* The set where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * `IsImmersionAt.prodMap`: the product of two immersions is an immersion.

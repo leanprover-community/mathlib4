@@ -152,7 +152,6 @@ lemma congr_iff (hP : IsLocalSourceTargetProperty P) {f g : M → N}
     P f φ ψ ↔ P g φ ψ :=
   ⟨hP.congr hfg, hP.congr hfg.symm⟩
 
--- XXX: should `OpenPartialHomeomorph.restr_source'` be tagged with grind?
 /-- If `P` is a local property, by monotonicity w.r.t. restricting `domChart`,
 if `f` is continuous at `x`, to prove `LiftSourceTargetPropertyAt I I' n f x P`
 we need not check the condition `f '' domChart.source ⊆ codChart.source`. -/
@@ -191,7 +190,7 @@ lemma congr_of_eventuallyEq (hP : IsLocalSourceTargetProperty P)
 /-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
 and `f` and `g` are eventually equal near `x`,
 then `f` has property `P` at `x` if and only if `g` has property `P` at `x`. -/
-lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[nhds x] g) :
+lemma congr_iff_of_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[nhds x] g) :
     LiftSourceTargetPropertyAt I I' n f x P ↔ LiftSourceTargetPropertyAt I I' n g x P :=
   ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
 
