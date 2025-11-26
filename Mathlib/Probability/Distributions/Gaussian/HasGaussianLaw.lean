@@ -28,12 +28,12 @@ Gaussian random variable
 public section
 
 
-open MeasureTheory WithLp Complex
+open MeasureTheory WithLp Complex Finset
 open scoped ENNReal
 
-namespace ProbabilityTheory
-
 variable {Ω ι E F : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
+
+namespace ProbabilityTheory
 
 section Basic
 
@@ -214,9 +214,72 @@ end SpecificMaps
 
 end HasGaussianLaw
 
+end ProbabilityTheory
+
 section Independence
 
 variable {ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
+section Diagonal
+
+namespace ContinuousLinearMap
+
+variable [DecidableEq ι] {𝕜 : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+
+section RCLike
+
+variable [RCLike 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+    (L : (i : ι) → StrongDual 𝕜 (E i) →L[𝕜] StrongDual 𝕜 (E i) →L[𝕜] 𝕜)
+
+-- open ContinuousLinearMap in
+/-- Given `L i : (E i)' × (E i)' → 𝕜` a family of continuous bilinear forms,
+`diagonalStrongDual L` is a continuous bilinear form is the continuous bilinear form over
+`(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
+`∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`. -/
+@[expose]
+noncomputable
+def diagonalStrongDual : StrongDual 𝕜 (Π i, E i) →L[𝕜] StrongDual 𝕜 (Π i, E i) →L[𝕜] 𝕜 :=
+  letI g : LinearMap.BilinForm 𝕜 (StrongDual 𝕜 (Π i, E i)) := LinearMap.mk₂ 𝕜
+    (fun x y ↦ ∑ i, L i (x ∘L (single 𝕜 E i)) (y ∘L (single 𝕜 E i)))
+    (fun x y z ↦ by simp [Finset.sum_add_distrib])
+    (fun c m n ↦ by simp [Finset.mul_sum])
+    (fun x y z ↦ by simp [Finset.sum_add_distrib])
+    (fun c m n ↦ by simp [Finset.mul_sum])
+  g.mkContinuous₂ (∑ i, ‖L i‖) <| by
+    intro x y
+    simp only [LinearMap.mk₂_apply, g]
+    grw [norm_sum_le, Finset.sum_mul, Finset.sum_mul]
+    gcongr with i _
+    grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_single_le_one]
+    simp
+
+lemma diagonalStrongDual_apply (x y : StrongDual 𝕜 (Π i, E i)) :
+    diagonalStrongDual L x y = ∑ i, L i (x ∘L (.single 𝕜 E i)) (y ∘L (.single 𝕜 E i)) := rfl
+
+lemma toBilinForm_diagonalStrongDual_apply (x y : StrongDual 𝕜 (Π i, E i)) :
+    (diagonalStrongDual L).toBilinForm x y =
+    ∑ i, (L i).toBilinForm (x ∘L (.single 𝕜 E i)) (y ∘L (.single 𝕜 E i)) := rfl
+
+end RCLike
+
+section Real
+
+variable [∀ i, NormedSpace ℝ (E i)]
+  {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
+
+lemma isPosSemidef_diagonalStrongDual (hL : ∀ i, (L i).toBilinForm.IsPosSemidef) :
+    (diagonalStrongDual L).toBilinForm.IsPosSemidef where
+  eq x y := by
+    simp_rw [toBilinForm_diagonalStrongDual_apply, fun i ↦ (hL i).eq]
+  nonneg x := by
+    rw [toBilinForm_diagonalStrongDual_apply]
+    exact Finset.sum_nonneg fun i _ ↦ (hL i).nonneg _
+
+end Real
+
+end ContinuousLinearMap
+
+namespace ProbabilityTheory
 
 open ContinuousLinearMap in
 lemma iIndepFun.hasGaussianLaw {E : ι → Type*}
@@ -226,33 +289,36 @@ lemma iIndepFun.hasGaussianLaw {E : ι → Type*}
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
   isGaussian_map := by
     have := hX.isProbabilityMeasure
+    have (i : ι) := (h i).isGaussian_map
     obtain hι | hι := isEmpty_or_nonempty ι
-    · have : P.map (fun ω ↦ fun x ↦ X x ω) = .dirac hι.elim := by
+    · have : Subsingleton (Π i, E i) := inferInstance
+      have : P.map (fun ω ↦ fun x ↦ X x ω) = .dirac hι.elim := by
         ext s -
         apply Subsingleton.set_cases (p := fun s ↦ Measure.map _ _ s = _)
         · simp
         simp only [measure_univ]
-        exact @measure_univ _ _ _ (Measure.isProbabilityMeasure_map (by fun_prop))
+        exact @measure_univ _ _ _ (Measure.isProbabilityMeasure_map
+          (by nontriviality (Π i, E i); exact not_subsingleton (Π i, E i) this |>.elim))
       rw [this]
       infer_instance
     classical
     rw [isGaussian_iff_gaussian_charFunDual]
     refine ⟨fun i ↦ ∫ ω, X i ω ∂P, .diagonalStrongDual (fun i ↦ covarianceBilinDual (P.map (X i))),
-      ContinuousBilinForm.isPosSemidef_diagonalStrongDual
+      isPosSemidef_diagonalStrongDual
         (fun i ↦ isPosSemidef_covarianceBilinDual), fun L ↦ ?_⟩
     rw [(iIndepFun_iff_charFunDual_pi _).1 hX]
-    · simp only [← sum_single_apply E (fun i ↦ ∫ ω, X i ω ∂P), map_sum, ofReal_sum, sum_mul,
-      ContinuousBilinForm.diagonalStrongDual_apply, sum_div, ← sum_sub_distrib, exp_sum]
+    · simp only [← LinearMap.sum_single_apply E (fun i ↦ ∫ ω, X i ω ∂P), map_sum, ofReal_sum,
+        sum_mul, diagonalStrongDual_apply, sum_div, ← sum_sub_distrib, exp_sum]
       congr with i
-      rw [IsGaussian.charFunDual_eq, integral_complex_ofReal,
+      rw [(h i).isGaussian_map.charFunDual_eq, integral_complex_ofReal,
         ContinuousLinearMap.integral_comp_id_comm, covarianceBilinDual_self_eq_variance,
         integral_map]
       · simp
-      · exact HasGaussianLaw.aemeasurable
+      · exact (h i).aemeasurable
       · exact aestronglyMeasurable_id
       · exact IsGaussian.memLp_two_id
       · exact IsGaussian.integrable_id
-    · exact fun i ↦ HasGaussianLaw.aemeasurable
+    · exact fun i ↦ (h i).aemeasurable
 
 open ContinuousLinearMap in
 lemma HasGaussianLaw.iIndepFun_of_cov {E : ι → Type*}
