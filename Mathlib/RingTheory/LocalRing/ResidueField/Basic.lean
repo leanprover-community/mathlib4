@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Action.End
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+module
+
+public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 We prove basic properties of the residue field of a local ring.
 
 -/
+
+@[expose] public section
 
 variable {R S T : Type*}
 
@@ -127,8 +131,8 @@ noncomputable def mapEquiv (f : R ≃+* S) :
   invFun := map (f.symm : S →+* R)
   left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
   right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
-  map_mul' := RingHom.map_mul _
-  map_add' := RingHom.map_add _
+  map_mul' := map_mul _
+  map_add' := map_add _
 
 @[simp]
 theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
@@ -187,13 +191,8 @@ end FiniteDimensional
 
 end ResidueField
 
-theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) := by
-  constructor
-  intro a ha
-  by_contra h
-  rw [residue_def, Ideal.Quotient.eq_zero_iff_mem.mpr ((IsLocalRing.mem_maximalIdeal _).mpr h)]
-    at ha
-  exact ha.ne_zero rfl
+@[deprecated (since := "2025-10-06")]
+  alias isLocalHom_residue := instIsLocalHomResidueFieldRingHomResidue
 
 end
 

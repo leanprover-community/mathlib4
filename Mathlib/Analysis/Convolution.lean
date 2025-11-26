@@ -3,13 +3,15 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Convolution of functions
@@ -34,7 +36,7 @@ has compact support (in which case the other function only needs to be locally i
 We still need to prove the properties for other pairs of conditions (e.g. both functions are
 rapidly decreasing)
 
-# Design Decisions
+## Design Decisions
 
 We use a bilinear map `L` to "multiply" the two functions in the integrand.
 This generality has several advantages
@@ -48,7 +50,7 @@ This generality has several advantages
 * We need to support the case where at least one of the functions is vector-valued, but if we use
   `smul` to multiply the functions, that would be an asymmetric definition.
 
-# Main Definitions
+## Main Definitions
 * `MeasureTheory.convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`
   is the convolution of `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
 * `MeasureTheory.ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x`
@@ -56,7 +58,7 @@ This generality has several advantages
 * `MeasureTheory.ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g`
   is well-defined at each point.
 
-# Main Results
+## Main Results
 * `HasCompactSupport.hasFDerivAt_convolution_right` and
   `HasCompactSupport.hasFDerivAt_convolution_left`: we can compute the total derivative
   of the convolution as a convolution with the total derivative of the right (left) function.
@@ -70,14 +72,14 @@ Versions of these statements for functions depending on a parameter are also giv
   whose support tends to a small neighborhood around `0`, the convolution tends to the right
   argument. This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
-# Notation
+## Notation
 The following notations are localized in the scope `Convolution`:
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
 * `f ⋆ g := f ⋆[lsmul ℝ ℝ] g`
 
-# To do
+## To do
 * Existence and (uniform) continuity of the convolution if
   one of the maps is in `ℒ^p` and the other in `ℒ^q` with `1 / p + 1 / q = 1`.
   This might require a generalization of `MeasureTheory.MemLp.smul` where `smul` is generalized
@@ -88,6 +90,8 @@ The following notations are localized in the scope `Convolution`:
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere (this likely requires changes in `to_additive`)
 -/
+
+@[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open Bornology ContinuousLinearMap Metric Topology
@@ -541,13 +545,12 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     ContinuousOn (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (s ×ˢ univ) := by
   /- First get rid of the case where the space is not locally compact. Then `g` vanishes everywhere
   and the conclusion is trivial. -/
-  by_cases H : ∀ p ∈ s, ∀ x, g p x = 0
+  by_cases! H : ∀ p ∈ s, ∀ x, g p x = 0
   · apply (continuousOn_const (c := 0)).congr
     rintro ⟨p, x⟩ ⟨hp, -⟩
     apply integral_eq_zero_of_ae (Eventually.of_forall (fun y ↦ ?_))
     simp [H p hp _]
   have : LocallyCompactSpace G := by
-    push_neg at H
     rcases H with ⟨p, hp, x, hx⟩
     have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
     have B : Continuous (g p) := by
@@ -810,7 +813,7 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
     exact ((dist_triangle _ _ _).trans_lt (add_lt_add hx'.out hki)).trans_eq (add_halves δ)
   have := dist_convolution_le (add_pos h2ε h2ε).le hφi hnφi hiφi hmgi h1
   refine ((dist_triangle _ _ _).trans_lt (add_lt_add_of_le_of_lt this hgi)).trans_eq ?_
-  field_simp; ring_nf
+  ring
 
 end NormedAddCommGroup
 
@@ -1341,19 +1344,17 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
     · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),
-        ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
+        map_zero, ContinuousLinearMap.zero_apply]
     · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
           indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
     · rw [indicator_of_notMem (notMem_Ioo_of_ge ht),
-          indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)),
-          ContinuousLinearMap.map_zero]
+          indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)), map_zero]
   · convert (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
-    · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
+    · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), map_zero]
       rw [notMem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
-       ContinuousLinearMap.zero_apply]
+    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), map_zero, ContinuousLinearMap.zero_apply]
 
 theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]
     [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)

@@ -3,12 +3,14 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Full monoidal subcategories
@@ -24,6 +26,8 @@ braided/symmetric structure.
 ## TODO
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -116,7 +120,7 @@ instance [MonoidalPreadditive C] : MonoidalPreadditive P.FullSubcategory :=
 variable (R : Type*) [Ring R] [Linear R C]
 
 instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R P.FullSubcategory :=
-  monoidalLinearOfFaithful R P.ι
+  .ofFaithful R P.ι
 
 end
 
@@ -166,7 +170,7 @@ section Symmetric
 variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory P.FullSubcategory :=
-  symmetricCategoryOfFaithful P.ι
+  .ofFaithful P.ι
 
 end Symmetric
 
@@ -203,8 +207,5 @@ theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
 end Closed
 
 end ObjectProperty
-
-@[deprecated (since := "2025-03-05")]
-alias MonoidalCategory.MonoidalPredicate := ObjectProperty.IsMonoidal
 
 end CategoryTheory
