@@ -64,7 +64,7 @@ noncomputable def isColimit :
 
 /-- A colimit multicofork attached to a `MulticoequalizerDiagram`
 structure in the complete lattice of subcomplexes of a simplicial set.
-In this variant, we assume that the index type `ι` has a linear order which allows
+In this variant, we assume that the index type `ι` has a linear order. This allows
 to consider only the "relations" given by tuples `(i, j)` such that `i < j`. -/
 noncomputable def isColimit' [LinearOrder ι] :
     IsColimit (h.multicofork.toLinearOrder.map toSSetFunctor) :=
