@@ -24,8 +24,24 @@ This linter lints against nonempty modules that have only private declarations, 
 declarations are added. By linting (only) the `eoi` token, we can capture all constants defined in
 the file.
 
-Note that private declarations are exactly those which satisfy `isPrivateName`, whether private due
-to an explicit `private` or due to not being made `public`.
+Note that private declarations from the current module are exactly those which satisfy
+`isPrivateName`, whether private due to an explicit `private` or due to not being made `public`.
+
+We also do not count declarations which satisfy `isReservedName` as public declarations *from the
+current module*. While they might indeed be public, the declarations associated with reserved names
+are generated automatically and lazily, sometimes in downstream modules from the one in which the
+name was reserved.
+
+For example, Lean might reserve the name `foo.eq_1` in one module, but only add a declaration with
+the name `foo.eq_1` to the environment in some downstream module, when Lean attempts to
+realize the name.
+
+If e.g. `simp` realized the public declaration `foo.eq_1` and added it to the environment in
+`M.Bar`, but `M.Bar` did not add any other public declarations, the linter should still fire.
+Ignoring reserved names ensures this.
+
+See also the type `Lean.ReservedNameAction`, invocations of `registerReservedNameAction` and
+`registerReservedNamePredicate` for examples, and the module `Lean.ResolveName` for further insight.
 -/
 
 meta section
@@ -56,8 +72,9 @@ def privateModule : Linter where run stx := do
     if (← getEnv).header.isModule then
       -- Don't lint an imports-only module:
       if !(← getEnv).constants.map₂.isEmpty then
-        -- Exit if any declaration is public:
+        -- Exit if any declaration from the current module is public:
         for (decl, _) in (← getEnv).constants.map₂ do
+          -- Ignore both private and reserved names; see implementation notes
           if !isPrivateName decl && !isReservedName (← getEnv) decl then return
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
