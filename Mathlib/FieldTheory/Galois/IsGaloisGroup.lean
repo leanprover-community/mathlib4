@@ -267,7 +267,8 @@ section IsGaloisGroup
 
 variable [hGKL : IsGaloisGroup G K L]
 
-@[simp]
+-- this can't be a simp-lemma since the left-hand side is not in simp normal form
+-- and if the theorem was `fixingSubgroup G Set.univ = ⊥` then `K` couldn't be inferred
 theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
   have := hGKL.faithful
   ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MulAction.fixedBy_eq_univ_iff_eq_one
