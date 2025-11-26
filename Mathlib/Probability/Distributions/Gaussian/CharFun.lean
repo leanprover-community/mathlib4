@@ -34,7 +34,7 @@ We also specialize these statements in the case of Hilbert spaces, with
 Gaussian measure, characteristic function
 -/
 
-@[expose] public section
+public section
 
 
 open Complex MeasureTheory WithLp NormedSpace ContinuousLinearMap
