@@ -175,7 +175,7 @@ abbrev ofAlgHom : R →ₐ[S] AdjoinRoot p := Algebra.algHom S R <| AdjoinRoot p
 
 variable {p}
 
-@[ext]
+@[ext high] -- This should have higher precedence than `RingHom.ext`.
 lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (of p))
     (hRoot : f (root p) = g (root p)) : f = g := by
   apply Ideal.Quotient.ringHom_ext
@@ -183,7 +183,7 @@ lemma ringHom_ext {f g : AdjoinRoot p →+* T} (hAlg : f.comp (of p) = g.comp (o
   · simpa using congr($(hAlg) x)
   · simpa
 
-@[ext]
+@[ext high] -- This should have higher precedence than `AlgHom.ext`.
 lemma algHom_ext' {f g : AdjoinRoot p →ₐ[S] T}
     (hAlg : f.comp (ofAlgHom S p) = g.comp (ofAlgHom S p))
     (hRoot : f (root p) = g (root p)) : f = g := by
@@ -198,7 +198,7 @@ instance hasCoeT : CoeTC R (AdjoinRoot f) :=
 
 /-- Two `R`-`AlgHom` from `AdjoinRoot f` to the same `R`-algebra are the same iff
 they agree on `root f`. -/
-@[ext]
+@[ext high] -- This should have higher precedence than `algHom_ext`.
 theorem algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
     (h : g₁ (root f) = g₂ (root f)) : g₁ = g₂ :=
   Ideal.Quotient.algHom_ext R <| Polynomial.algHom_ext h
@@ -425,6 +425,28 @@ lemma map_comp_map (f : R →+* S) (g : S →+* T) (p : R[X]) (q : S[X]) (r : T[
     (map g q r hg).comp (map f p q hf) =
       map (g.comp f) p r
         (hg.trans <| by simpa [Polynomial.map_map] using Polynomial.map_dvd g hf) := by ext <;> simp
+
+/-- `AdjoinRoot.map` as a `RingEquiv`. -/
+def mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h : Associated (p.map f) q) :
+    AdjoinRoot p ≃+* AdjoinRoot q :=
+  .ofRingHom
+    (map f p q h.symm.dvd)
+    (map f.symm q p <| by
+      -- FIXME: Coercion hell
+      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
+          (RingHomClass.toRingHom f) = .id _ := by ext; exact f.symm_apply_apply _
+      simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
+    (by ext <;> simp) (by ext <;> simp)
+
+@[simp] lemma coe_mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h) :
+    ⇑(mapRingEquiv f p q h) = map f p q h.symm.dvd := rfl
+
+@[simp] lemma symm_mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h) :
+    (mapRingEquiv f p q h).symm = mapRingEquiv f.symm q p (by
+      -- FIXME: Coercion hell
+      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
+          (RingHomClass.toRingHom f) = .id _ := by ext; exact f.symm_apply_apply _
+      simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable [CommRing U] [Algebra R S] [Algebra R T] [Algebra R U]
 

@@ -539,7 +539,6 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
   _root_.map_dvd (mapRingHom f)
 
---TODO rename to `map_dvd_map`
 lemma associated_map_map (f : R →+* S) {x y : R[X]} :
     Associated x y → Associated (x.map f) (y.map f) := .map (mapRingHom f)
 
