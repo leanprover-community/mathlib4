@@ -3,10 +3,12 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.Finsupp.WellFounded
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.Data.Finsupp.Notation
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials
@@ -49,6 +51,8 @@ injective whenever `n ≤ m`, and then transfer the results to any Fintype `σ`.
 `MvPolynomial.injective_esymmAlgHom` and `MvPolynomial.esymmAlgHom_surjective`.
 
 -/
+
+@[expose] public section
 
 variable {σ τ R : Type*} {n m k : ℕ}
 
@@ -292,7 +296,8 @@ lemma esymmAlgHom_fin_bijective (n : ℕ) :
   rw [← AlgHom.mem_range]
   obtain rfl | h0 := eq_or_ne p 0
   · exact Subalgebra.zero_mem _
-  induction' he : p.supDegree toLex using WellFoundedLT.induction with t ih generalizing p; subst he
+  induction he : p.supDegree toLex using WellFoundedLT.induction generalizing p with | _ t ih
+  subst he
   let t := Finsupp.equivFunOnFinite.symm (invAccumulate n n <| ↑(ofLex <| p.supDegree toLex))
   have hd :
       (esymmAlgHomMonomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex := by
@@ -328,12 +333,18 @@ lemma esymmAlgHom_surjective (hn : Fintype.card σ ≤ n) :
   rw [← rename_esymmAlgHom (Fintype.equivFin σ).symm, AlgHom.coe_comp]
   exact (AlgEquiv.surjective _).comp (esymmAlgHom_fin_surjective R hn)
 
+variable (σ) in
 /-- If the cardinality of `σ` is `n`, then `esymmAlgHom σ R n` is an isomorphism. -/
 @[simps! apply]
 noncomputable def esymmAlgEquiv (hn : Fintype.card σ = n) :
     MvPolynomial (Fin n) R ≃ₐ[R] symmetricSubalgebra σ R :=
   AlgEquiv.ofBijective (esymmAlgHom σ R n)
     ⟨esymmAlgHom_injective R hn.ge, esymmAlgHom_surjective R hn.le⟩
+
+lemma esymmAlgEquiv_symm_apply (hn : Fintype.card σ = n) (i : Fin n) :
+    (esymmAlgEquiv σ R hn).symm ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ = X i := by
+  apply_fun esymmAlgHom σ R n using esymmAlgHom_injective R hn.ge
+  simp_rw [esymmAlgEquiv, AlgEquiv.ofBijective_apply_symm_apply, esymmAlgHom, aeval_X]
 
 end CommRing
 

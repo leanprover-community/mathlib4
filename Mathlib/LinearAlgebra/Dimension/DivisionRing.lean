@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
 Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.RankNullity
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
 # Dimension of vector spaces
@@ -25,6 +27,8 @@ For vector spaces (i.e. modules over a field), we have
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -89,7 +93,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
       simpa [add_eq_zero_iff_eq_neg] using LinearMap.ext_iff.1 eq
   refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
-  · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,
+  · rw [← range_eq_top, eq_top_iff, LinearMap.range_codRestrict, ← map_le_iff_le_comap,
       Submodule.map_top, range_subtype]
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)

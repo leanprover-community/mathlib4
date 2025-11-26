@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+module
+
+public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
 /-!
 # Translation and scaling of integral curves
@@ -22,6 +24,8 @@ This file mirrors `Mathlib/Analysis/ODE/Transform`.
 integral curve, vector field
 -/
 
+@[expose] public section
+
 open Function Set
 
 variable
@@ -36,7 +40,7 @@ section Translation
 
 lemma IsMIntegralCurveOn.comp_add (hγ : IsMIntegralCurveOn γ v s) (dt : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
-  intros t ht
+  intro t ht
   rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivWithinAt.comp t (hγ (t + dt) ht) _ subset_rfl
   refine ⟨(continuous_add_right _).continuousWithinAt, ?_⟩
@@ -124,7 +128,7 @@ section Scaling
 
 lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
-  intros t ht
+  intro t ht
   rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_right _).continuousWithinAt, ?_⟩ subset_rfl

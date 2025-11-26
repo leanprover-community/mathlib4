@@ -3,9 +3,16 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Markus Himmel
 -/
-import Mathlib.SetTheory.Game.Birthday
-import Mathlib.SetTheory.Game.Impartial
-import Mathlib.SetTheory.Nimber.Basic
+module
+
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.SetTheory.Game.Impartial
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Specific.Nim` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nim and the Sprague-Grundy theorem
@@ -28,6 +35,8 @@ moves. We expose `toLeftMovesNim` and `toRightMovesNim` to conveniently convert 
 `o` into a left or right move of `nim o`, and vice versa.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -48,13 +57,6 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
     fun x => nim ((enumIsoToType o).symm x).val⟩
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
-
-@[deprecated "you can use `rw [nim]` directly" (since := "2025-01-23")]
-theorem nim_def (o : Ordinal) : nim o =
-    ⟨o.toType, o.toType,
-      fun x => nim ((enumIsoToType o).symm x).val,
-      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
-  rw [nim]
 
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl

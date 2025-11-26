@@ -3,11 +3,13 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.Identities
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # q-expansions of modular forms
@@ -37,7 +39,9 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   the graded ring of all modular forms?)
 -/
 
-open ModularForm Complex Filter UpperHalfPlane Function
+@[expose] public section
+
+open ModularForm Complex Filter UpperHalfPlane Function Matrix.SpecialLinearGroup
 
 open scoped Real MatrixGroups CongruenceSubgroup
 
@@ -53,7 +57,7 @@ namespace SlashInvariantFormClass
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
     Periodic (f ∘ ofComplex) n := by
   intro w
-  by_cases hw : 0 < im w
+  by_cases! hw : 0 < im w
   · have : 0 < im (w + n) := by simp only [add_im, natCast_im, add_zero, hw]
     simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
     convert SlashInvariantForm.vAdd_width_periodic n k 1 f ⟨w, hw⟩ using 2
@@ -61,7 +65,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
       ofReal_natCast, add_comm]
   · have : im (w + n) ≤ 0 := by simpa only [add_im, natCast_im, add_zero, not_lt] using hw
     simp only [comp_apply, ofComplex_apply_of_im_nonpos this,
-      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+      ofComplex_apply_of_im_nonpos hw]
 
 /--
 The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of
@@ -80,14 +84,14 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-theorem differentiableAt_comp_ofComplex [ModularFormClass F Γ k] {z : ℂ} (hz : 0 < im z) :
+theorem differentiableAt_comp_ofComplex [ModularFormClass F Γ k]
+      {z : ℂ} (hz : 0 < im z) :
     DifferentiableAt ℂ (f ∘ ofComplex) z :=
   mdifferentiableAt_iff_differentiableAt.mp ((holo f _).comp z (mdifferentiableAt_ofComplex hz))
 
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] :
-    BoundedAtFilter I∞ (f ∘ ofComplex) := by
-  simpa only [SlashAction.slash_one, ModularForm.toSlashInvariantForm_coe]
-    using (ModularFormClass.bdd_at_infty f 1).comp_tendsto tendsto_comap_im_ofComplex
+theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] [Γ.FiniteIndex] :
+    BoundedAtFilter I∞ (f ∘ ofComplex) :=
+  (ModularFormClass.bdd_at_infty f).comp_tendsto tendsto_comap_im_ofComplex
 
 theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
@@ -113,12 +117,12 @@ def qExpansion : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0
 
 lemma qExpansion_coeff (m : ℕ) :
-    (qExpansion n f).coeff ℂ m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0 := by
+    (qExpansion n f).coeff m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0 := by
   simp [qExpansion]
 
 lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
-    HasSum (fun m : ℕ ↦ (qExpansion n f).coeff ℂ m • q ^ m) (cuspFunction n f q) := by
+    HasSum (fun m : ℕ ↦ (qExpansion n f).coeff m • q ^ m) (cuspFunction n f q) := by
   simp only [qExpansion_coeff]
   have hdiff : DifferentiableOn ℂ (cuspFunction n f) (Metric.ball 0 1) := by
     refine fun z hz ↦ (differentiableAt_cuspFunction n f ?_).differentiableWithinAt
@@ -128,7 +132,7 @@ lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
   rw [sub_zero, smul_eq_mul, smul_eq_mul, mul_right_comm, smul_eq_mul, mul_assoc]
 
 lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
-    HasSum (fun m : ℕ ↦ (qExpansion n f).coeff ℂ m • 𝕢 n τ ^ m) (f τ) := by
+    HasSum (fun m : ℕ ↦ (qExpansion n f).coeff m • 𝕢 n τ ^ m) (f τ) := by
   simpa only [eq_cuspFunction n f] using
     hasSum_qExpansion_of_abs_lt n f (τ.norm_qParam_lt_one n)
 
@@ -139,10 +143,10 @@ TODO: Maybe get rid of this and instead define a general API for converting `Pow
 `FormalMultilinearSeries`.
 -/
 def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
-  fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
+  fun m ↦ (qExpansion n f).coeff m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
 
 lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
-    ‖qExpansionFormalMultilinearSeries n f m‖ = ‖(qExpansion n f).coeff ℂ m‖ := by
+    ‖qExpansionFormalMultilinearSeries n f m‖ = ‖(qExpansion n f).coeff m‖ := by
   rw [qExpansionFormalMultilinearSeries,
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
@@ -171,9 +175,9 @@ open ModularFormClass
 
 namespace CuspFormClass
 
-theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] : ZeroAtFilter I∞ (f ∘ ofComplex) := by
-  simpa only [SlashAction.slash_one, toSlashInvariantForm_coe]
-    using (zero_at_infty f 1).comp tendsto_comap_im_ofComplex
+theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] [Γ.FiniteIndex] :
+    ZeroAtFilter I∞ (f ∘ ofComplex) :=
+  (zero_at_infty f).comp tendsto_comap_im_ofComplex
 
 theorem cuspFunction_apply_zero [NeZero n] [CuspFormClass F Γ(n) k] :
     cuspFunction n f 0 = 0 :=

@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -21,6 +23,8 @@ coalgebras over `G`.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -131,9 +135,7 @@ def forget (F : C ⥤ C) : Algebra F ⥤ C where
 /-- An algebra morphism with an underlying isomorphism hom in `C` is an algebra isomorphism. -/
 theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
-      h := by
-        rw [IsIso.eq_comp_inv f.1, Category.assoc, ← f.h]
-        simp }, by cat_disch, by cat_disch⟩⟩
+      h := by simp }, by cat_disch, by cat_disch⟩⟩
 
 instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
 
@@ -473,8 +475,7 @@ def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   counitIso := AlgCoalgEquiv.counitIso adj
   functor_unitIso_comp A := by
     ext
-    -- Porting note: why doesn't `simp` work here?
-    exact Category.comp_id _
+    simp
 
 end Adjunction
 

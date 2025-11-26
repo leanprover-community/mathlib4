@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Short exact short complexes
@@ -13,6 +15,8 @@ A short complex `S : ShortComplex C` is short exact (`S.ShortExact`) when it is 
 `S.f` is a mono and `S.g` is an epi.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -103,8 +107,6 @@ lemma ShortExact.map_of_exact (hS : S.ShortExact)
     [PreservesFiniteColimits F] : (S.map F).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g
-  have := preserves_mono_of_preservesLimit F S.f
-  have := preserves_epi_of_preservesColimit F S.g
   exact hS.map F
 
 end

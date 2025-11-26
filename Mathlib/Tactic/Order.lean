@@ -3,10 +3,15 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
-import Mathlib.Tactic.Order.Preprocessing
-import Mathlib.Tactic.Order.Graph.Basic
-import Mathlib.Tactic.Order.Graph.Tarjan
+module
+
+public meta import Mathlib.Tactic.ByContra
+public meta import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Tactic.Order.Preprocessing
+public meta import Mathlib.Tactic.Order.ToInt
+public meta import Mathlib.Tactic.Order.Graph.Basic
+public meta import Mathlib.Tactic.Order.Graph.Tarjan
+public meta import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `order` tactic
@@ -139,6 +144,8 @@ For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices
 and `bot_le`, respectively.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.Order
 
 open Lean Qq Elab Meta Tactic
@@ -214,45 +221,16 @@ def updateGraphWithNltInfSup (g : Graph) (idxToAtom : Std.HashMap Nat Expr)
       break
   return g
 
-/-- Supported order types: linear, partial, and preorder. -/
-inductive OrderType
-| lin | part | pre
-deriving BEq
-
-instance : ToString OrderType where
-  toString
-  | .lin => "linear order"
-  | .part => "partial order"
-  | .pre => "preorder"
-
-/-- Find the "best" instance of an order on a given type. A linear order is preferred over a partial
-order, and a partial order is preferred over a preorder. -/
-def findBestOrderInstance (type : Expr) : MetaM <| Option OrderType := do
-  if (← synthInstance? (← mkAppM ``LinearOrder #[type])).isSome then
-    return some .lin
-  if (← synthInstance? (← mkAppM ``PartialOrder #[type])).isSome then
-    return some .part
-  if (← synthInstance? (← mkAppM ``Preorder #[type])).isSome then
-    return some .pre
-  return none
-
 /-- Necessary for tracing below. -/
 local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
 
-/-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
-or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
-elab "order" : tactic => focus do
-  let g ← getMainGoal
-  let some g ← g.falseOrByContra | return
+/-- Core of the `order` tactic. -/
+def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) : MetaM Unit := do
   g.withContext do
-    let TypeToAtoms ← collectFacts
+    let TypeToAtoms ← collectFacts only? hyps negGoal
     for (type, (idxToAtom, facts)) in TypeToAtoms do
       let some orderType ← findBestOrderInstance type | continue
-      let facts : Array AtomicFact ← match orderType with
-      | .pre => preprocessFactsPreorder facts
-      | .part => preprocessFactsPartial facts idxToAtom
-      | .lin => preprocessFactsLinear facts idxToAtom
       trace[order] "Working on type {← ppExpr type} ({orderType})"
       let atomsMsg := String.intercalate "\n" <| Array.toList <|
         ← idxToAtom.toArray.sortDedup.mapM
@@ -260,18 +238,62 @@ elab "order" : tactic => focus do
       trace[order] "Collected atoms:\n{atomsMsg}"
       let factsMsg := String.intercalate "\n" (facts.map toString).toList
       trace[order] "Collected facts:\n{factsMsg}"
-      let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
-      graph ← updateGraphWithNltInfSup graph idxToAtom facts
+      let facts ← replaceBotTop facts idxToAtom
+      let processedFacts : Array AtomicFact ← preprocessFacts facts idxToAtom orderType
+      let factsMsg := String.intercalate "\n" (processedFacts.map toString).toList
+      trace[order] "Processed facts:\n{factsMsg}"
+      let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
+      graph ← updateGraphWithNltInfSup graph idxToAtom processedFacts
       if orderType == .pre then
-        let some pf ← findContradictionWithNle graph idxToAtom facts | continue
+        let some pf ← findContradictionWithNle graph idxToAtom processedFacts | continue
         g.assign pf
         return
-      else
-        let some pf ← findContradictionWithNe graph idxToAtom facts | continue
+      if let some pf ← findContradictionWithNe graph idxToAtom processedFacts then
         g.assign pf
         return
+      -- if fast procedure failed and order is linear, we try `omega`
+      if orderType == .lin then
+        let ⟨u, type⟩ ← getLevelQ' type
+        let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
+        -- Here we only need to translate the hypotheses,
+        -- since the goal will remain to derive `False`.
+        let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
+        let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
+          match factNat with
+          | .eq _ _ proof => some proof
+          | .ne _ _ proof => some proof
+          | .le _ _ proof => some proof
+          | .nle _ _ proof => some proof
+          | .lt _ _ proof => some proof
+          | .nlt _ _ proof => some proof
+          | _ => none
+        try
+          Omega.omega factsExpr.toList g
+          return
+        catch _ => pure ()
     throwError ("No contradiction found.\n\n" ++
       "Additional diagnostic information may be available using " ++
       "the `set_option trace.order true` command.")
+
+/-- Args for the `order` tactic. -/
+syntax orderArgs := (&" only")? (" [" term,* "]")?
+
+/-- `order_core` is the part of the `order` tactic that tries to find a contradiction. -/
+syntax (name := order_core) "order_core" orderArgs ident : tactic
+
+open Syntax in
+elab_rules : tactic
+  | `(tactic| order_core $[only%$o]? $[[$args,*]]? $order_neg_goal) => withMainContext do
+    let negGoal ← elabTerm order_neg_goal none
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `order)
+    commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args negGoal
+
+/-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
+or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
+macro "order" args:orderArgs : tactic => `(tactic|
+  · intros
+    by_contra! _order_neg_goal
+    order_core $args _order_neg_goal
+)
 
 end Mathlib.Tactic.Order

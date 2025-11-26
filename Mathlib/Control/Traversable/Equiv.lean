@@ -3,9 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Logic.Equiv.Defs
-import Batteries.Tactic.SeqFocus
+module
+
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Transferring `Traversable` instances along isomorphisms
@@ -23,6 +25,8 @@ This file allows to transfer `Traversable` instances along isomorphisms.
 * `Equiv.isLawfulTraversable`: `Equiv.traverse` as a lawful traversable functor.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -30,7 +34,6 @@ namespace Equiv
 
 section Functor
 
--- Porting note: `parameter` doesn't seem to work yet.
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 variable [Functor t]
 
@@ -57,9 +60,11 @@ protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (
   simp [Equiv.map, Function.comp_def]
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
-  -- Porting note: why is `_inst` required here?
-  let _inst := Equiv.functor eqv; {
-    map_const := fun {_ _} => rfl
+  -- Add the instance to the local context (since `Equiv.functor` is not an instance).
+  -- Although it can be found by unification, Lean prefers to synthesize instances and
+  -- then check that they are defeq to the instance found by unification.
+  let _inst := Equiv.functor eqv
+  { map_const := fun {_ _} => rfl
     id_map := Equiv.id_map eqv
     comp_map := Equiv.comp_map eqv }
 
@@ -135,9 +140,8 @@ protected theorem naturality (f : α → F β) (x : t' α) :
 equivalences to `t'`, with the traversable functor structure given by
 `Equiv.traversable`. -/
 protected theorem isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
-  -- Porting note: Same `_inst` local variable problem.
-  let _inst := Equiv.traversable eqv; {
-    toLawfulFunctor := Equiv.lawfulFunctor eqv
+  let _inst := Equiv.traversable eqv
+  { toLawfulFunctor := Equiv.lawfulFunctor eqv
     id_traverse := Equiv.id_traverse eqv
     comp_traverse := Equiv.comp_traverse eqv
     traverse_eq_map_id := Equiv.traverse_eq_map_id eqv

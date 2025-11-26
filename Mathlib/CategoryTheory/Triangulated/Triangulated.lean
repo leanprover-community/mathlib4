@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # Triangulated Categories
@@ -12,6 +14,8 @@ This file contains the definition of triangulated categories, which are
 pretriangulated categories which satisfy the octahedron axiom.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -30,8 +34,6 @@ namespace Triangulated
 
 variable {C}
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2188
-set_option genInjectivity false in
 /-- An octahedron is a type of datum whose existence is asserted by the octahedron axiom (TR 4). -/
 @[stacks 05QK]
 structure Octahedron
@@ -49,7 +51,6 @@ structure Octahedron
   comm₃ : v₁₃ ≫ m₃ = v₂₃
   comm₄ : w₁₃ ≫ u₁₂⟦1⟧' = m₃ ≫ w₂₃
   mem : Triangle.mk m₁ m₃ (w₂₃ ≫ v₁₂⟦1⟧') ∈ distTriang C
-gen_injective_theorems% Octahedron
 
 instance (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)

@@ -3,11 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Symmetric powers
@@ -28,6 +30,8 @@ symmetric powers
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 open List (Vector)
 open Function
@@ -39,6 +43,7 @@ show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
+deriving [DecidableEq α] → DecidableEq _
 
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
@@ -46,11 +51,6 @@ def Sym (α : Type*) (n : ℕ) :=
 
 instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -463,7 +463,6 @@ theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.appe
 
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
-  ext
   simp [append, add_comm]
 
 @[simp, norm_cast]
@@ -482,7 +481,7 @@ def oneEquiv : α ≃ Sym α 1 where
     (fun l ↦ l.1.head <| List.length_pos_iff.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
-      exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
+      exact List.eq_of_mem_singleton (List.Perm.mem_iff perm |>.mp <| List.head_mem _)
   right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.

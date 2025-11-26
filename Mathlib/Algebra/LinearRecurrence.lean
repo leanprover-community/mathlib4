@@ -3,8 +3,10 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.LinearAlgebra.Dimension.Constructions
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Linear recurrence
@@ -34,6 +36,8 @@ This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -97,7 +101,6 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h
   · dsimp only
     rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
     congr with k
-    have : n - E.order + k < n := by omega
     rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
     simp
 

@@ -3,20 +3,22 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.Cotangent
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 
 # Equivalent conditions for DVR
 
 In `IsDiscreteValuationRing.TFAE`, we show that the following are equivalent for a
-noetherian local domain that is not a field `(R, m, k)`:
+Noetherian local domain that is not a field `(R, m, k)`:
 - `R` is a discrete valuation ring
 - `R` is a valuation ring
-- `R` is a dedekind domain
+- `R` is a Dedekind domain
 - `R` is integrally closed with a unique prime ideal
 - `m` is principal
 - `dimₖ m/m² = 1`
@@ -24,6 +26,8 @@ noetherian local domain that is not a field `(R, m, k)`:
 
 Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version without `¬ IsField R`.
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) [CommRing R]
@@ -56,8 +60,9 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
       intro b hb
       exact Irreducible.associated_of_dvd hx' (hf₁ b hb) ((H b).mp (hf₁ b hb).1)
     clear hr₁ hr₂ hf₁
-    induction' f using Multiset.induction with fa fs fh
-    · exact (hf₂ rfl).elim
+    induction f using Multiset.induction with
+    | empty => exact (hf₂ rfl).elim
+    | cons fa fs fh => ?_
     rcases eq_or_ne fs ∅ with (rfl | hf')
     · use 1
       rw [pow_one, Multiset.prod_cons, Multiset.empty_eq_zero, Multiset.prod_zero, mul_one]
@@ -130,7 +135,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
         (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
-      by_contra h; apply hx
+      contrapose! hx with h
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
       have hk' : x * algebraMap R K m = algebraMap R K k := by
@@ -148,11 +153,11 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     · rwa [Submodule.span_le, Set.singleton_subset_iff]
 
 /--
-Let `(R, m, k)` be a noetherian local domain (possibly a field).
+Let `(R, m, k)` be a Noetherian local domain (possibly a field).
 The following are equivalent:
 0. `R` is a PID
 1. `R` is a valuation ring
-2. `R` is a dedekind domain
+2. `R` is a Dedekind domain
 3. `R` is integrally closed with at most one non-zero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² ≤ 1`
@@ -182,8 +187,8 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
     intro H
     constructor
     intro I J
-    by_cases hI : I = ⊥; · subst hI; left; exact bot_le
-    by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
+    by_cases hI : I = ⊥; · order
+    by_cases hJ : J = ⊥; · order
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
     exact (le_total m n).imp Ideal.pow_le_pow_right Ideal.pow_le_pow_right
@@ -191,10 +196,10 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
 
 /--
 The following are equivalent for a
-noetherian local domain that is not a field `(R, m, k)`:
+Noetherian local domain that is not a field `(R, m, k)`:
 0. `R` is a discrete valuation ring
 1. `R` is a valuation ring
-2. `R` is a dedekind domain
+2. `R` is a Dedekind domain
 3. `R` is integrally closed with a unique non-zero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² = 1`

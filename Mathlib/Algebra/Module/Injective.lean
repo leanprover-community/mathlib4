@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Module.Shrink
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Logic.Small.Basic
-import Mathlib.RingTheory.Ideal.Defs
+module
+
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Logic.Small.Basic
+public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # Injective modules
@@ -31,6 +33,8 @@ import Mathlib.RingTheory.Ideal.Defs
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
 
 -/
+
+@[expose] public section
 
 assert_not_exists ModuleCat
 
@@ -90,7 +94,6 @@ theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain
       a.toLinearPMap ⟨x, ha⟩ = b.toLinearPMap ⟨x, hb⟩) :
     a = b := by
   rcases a with ⟨a, a_le, e1⟩
-  rcases b with ⟨b, b_le, e2⟩
   congr
   exact LinearPMap.ext domain_eq to_fun_eq
 
@@ -174,9 +177,9 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
           map_smul' := fun r x => by
             have eq1 : r • _ = (r • x).1 := congr_arg (r • ·) x.2.choose_spec
-            rw [← LinearMap.map_smul, ← (r • x).2.choose_spec] at eq1
+            rw [← map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
-            rw [← Fact.out (p := Function.Injective i) eq1, LinearMap.map_smul] }
+            rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
       le := le_refl _
       is_extension := fun m => by
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
@@ -196,8 +199,8 @@ theorem extensionOfMax_is_max :
   fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
     ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec.eq_of_ge
 
--- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
--- right hand side is substituted in directly
+-- Auxiliary definition: Lean looks for an instance of `Max (Type u)` if we would write
+-- `(x : (extensionOfMax i f).domain ⊔ (Submodule.span R {y}))`, so we encapsulate the cast instead.
 abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
@@ -331,7 +334,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
             ↑(r • ExtensionOfMaxAdjoin.fst i a) + (r • ExtensionOfMaxAdjoin.snd i a) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
-        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, LinearMap.map_smul,
+        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, map_smul,
           LinearPMap.map_smul, ← smul_add]
         congr }
   is_extension m := by

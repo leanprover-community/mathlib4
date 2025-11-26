@@ -3,11 +3,13 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.GroupTheory.OreLocalization.OreSet
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -16,7 +18,7 @@ import Mathlib.Algebra.Group.Basic
 This file defines the localization of a monoid over a left Ore set and proves its universal
 mapping property.
 
-## Notations
+## Notation
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
 subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and
@@ -32,6 +34,8 @@ a denominator `s : S`.
 localization, Ore, non-commutative
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 
@@ -149,8 +153,8 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
 
 /-- A function or predicate over `X` and `S` can be lifted to `X[S⁻¹]` if it is invariant
 under expansion on the left. -/
-@[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localizaton if it is
-invariant under expansion on the left. -/]
+@[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localization if it
+is invariant under expansion on the left. -/]
 def liftExpand {C : Sort*} (P : X → S → C)
     (hP : ∀ (r : X) (t : R) (s : S) (ht : t * s ∈ S), P r s = P (t • r) ⟨t * s, ht⟩) :
     X[S⁻¹] → C :=
@@ -305,17 +309,17 @@ theorem oreDiv_mul_char (r₁ r₂ : R) (s₁ s₂ : S) (r' : R) (s' : S) (huv :
     r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) := by
   with_unfolding_all exact smul'_char r₁ r₂ s₁ s₂ s' r' huv
 
-/-- Another characterization lemma for the scalar multiplication on the Ore localizaion delivering
+/-- Another characterization lemma for the scalar multiplication on the Ore localization delivering
 Ore witnesses and conditions bundled in a sigma type. -/
 @[to_additive /-- Another characterization lemma for the vector addition on the
-  Ore localizaion delivering Ore witnesses and conditions bundled in a sigma type. -/]
+  Ore localization delivering Ore witnesses and conditions bundled in a sigma type. -/]
 def oreDivSMulChar' (r₁ : R) (r₂ : X) (s₁ s₂ : S) :
     Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r' • r₂ /ₒ (s' * s₁) :=
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_smul_oreDiv⟩
 
-/-- Another characterization lemma for the multiplication on the Ore localizaion delivering
+/-- Another characterization lemma for the multiplication on the Ore localization delivering
 Ore witnesses and conditions bundled in a sigma type. -/
-@[to_additive /-- Another characterization lemma for the addition on the Ore localizaion delivering
+@[to_additive /-- Another characterization lemma for the addition on the Ore localization delivering
   Ore witnesses and conditions bundled in a sigma type. -/]
 def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
     Σ' r' : R, Σ' s' : S, s' * r₁ = r' * s₂ ∧ r₁ /ₒ s₁ * (r₂ /ₒ s₂) = r' * r₂ /ₒ (s' * s₁) :=
@@ -474,9 +478,9 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
-        simp only [← hf, MonoidHom.map_mul]
+        simp only [← hf, map_mul]
       conv_rhs =>
-        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
+        rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp

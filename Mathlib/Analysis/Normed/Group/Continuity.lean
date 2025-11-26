@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Metrizable.Uniformity
-import Mathlib.Topology.Sequences
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Sequences
 
 /-!
 # Continuity of the norm on (semi)groups
@@ -15,6 +17,8 @@ import Mathlib.Topology.Sequences
 
 normed group
 -/
+
+@[expose] public section
 
 variable {𝓕 α ι κ E F G : Type*}
 
@@ -97,12 +101,14 @@ instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
+  enorm_zero := by simp [enorm_eq_nnnorm]
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
-  mul_comm := by simp [mul_comm]
+  __ := NormedGroup.toENormedMonoid
+  __ := ‹NormedCommGroup E›
 
 end Instances
 

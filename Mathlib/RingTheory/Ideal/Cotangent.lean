@@ -3,15 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.Filtration
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Nakayama
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 # The module `I ⧸ I ^ 2`
@@ -24,10 +26,12 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 -/
 
+@[expose] public section
+
 
 namespace Ideal
 
--- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
+-- Universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
@@ -35,24 +39,10 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
--- The `AddCommGroup, Module (R ⧸ I), Inhabited, Module S, IsScalarTower, IsNoetherian` instances
--- should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving Inhabited, AddCommGroup, Module (R ⧸ I)
 
-instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
-
-instance cotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
-
-instance : Inhabited I.Cotangent := ⟨0⟩
-
-instance Cotangent.moduleOfTower : Module S I.Cotangent :=
-  Submodule.Quotient.module' _
-
-instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
-  Submodule.Quotient.isScalarTower _ _
-
-instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
+deriving instance Module S, IsScalarTower S S' for Cotangent I
+variable [IsNoetherian R I] in deriving instance IsNoetherian R for Cotangent I
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps! -isSimp apply]
@@ -232,10 +222,11 @@ variable (R : Type*) [CommRing R] [IsLocalRing R]
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 
-instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
+instance : Module (ResidueField R) (CotangentSpace R) :=
+  inferInstanceAs <| Module (R ⧸ maximalIdeal R) _
 
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
-  Module.IsTorsionBySet.isScalarTower _
+  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _

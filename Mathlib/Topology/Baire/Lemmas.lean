@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Baire spaces
@@ -25,6 +27,8 @@ covered by a countable union of closed sets, then the union of their interiors i
 
 We also prove that in Baire spaces, the `residual` sets are exactly those containing a dense Gδ set.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -171,18 +175,27 @@ theorem dense_iUnion_interior_of_closed [Countable ι] {f : ι → Set X} (hc : 
     (hU : ⋃ i, f i = univ) : Dense (⋃ i, interior (f i)) :=
   IsGδ.univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
 
+variable [Nonempty X]
+
 /-- One of the most useful consequences of Baire theorem: if a countable union of closed sets
 covers the space, then one of the sets has nonempty interior. -/
-theorem nonempty_interior_of_iUnion_of_closed [Nonempty X] [Countable ι] {f : ι → Set X}
+theorem nonempty_interior_of_iUnion_of_closed [Countable ι] {f : ι → Set X}
     (hc : ∀ i, IsClosed (f i)) (hU : ⋃ i, f i = univ) : ∃ i, (interior <| f i).Nonempty := by
   simpa using (dense_iUnion_interior_of_closed hc hU).nonempty
 
 /-- In a nonempty Baire space, any dense `Gδ` set is not meagre. -/
-theorem not_isMeagre_of_isGδ_of_dense [Nonempty X] {s : Set X} (hs : IsGδ s) (hd : Dense s) :
+theorem not_isMeagre_of_isGδ_of_dense {s : Set X} (hs : IsGδ s) (hd : Dense s) :
     ¬ IsMeagre s := by
   intro h
   rcases (mem_residual).1 h with ⟨t, hts, htG, hd'⟩
   rcases (hd.inter_of_Gδ hs htG hd').nonempty with ⟨x, hx₁, hx₂⟩
   exact hts hx₂ hx₁
+
+/-- In a nonempty Baire space, a residual set is not meagre. -/
+theorem not_isMeagre_of_mem_residual {s : Set X} (hs : s ∈ residual X) :
+    ¬ IsMeagre s := by
+  rcases (mem_residual (X := X)).1 hs with ⟨t, ht_sub, htGδ, ht_dense⟩
+  intro hs_meagre
+  exact not_isMeagre_of_isGδ_of_dense (X := X) htGδ ht_dense (hs_meagre.mono ht_sub)
 
 end BaireTheorem

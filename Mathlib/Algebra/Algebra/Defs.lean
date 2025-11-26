@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Algebras over commutative semirings
@@ -80,6 +82,8 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 -/
 
+@[expose] public section
+
 assert_not_exists Field Finset Module.End
 
 universe u v w u₁ v₁
@@ -102,6 +106,10 @@ end Prio
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
+
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Subsingleton R] : Subsingleton A :=
+  (algebraMap R A).codomain_trivial
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
@@ -254,8 +262,13 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
-  rcases Q with @⟨⟨Q⟩⟩
   congr
+
+/-- An auxiliary lemma used to prove theorems of the form
+`RingHom.X (algebraMap R S) ↔ Algebra.X R S`. -/
+lemma _root_.toAlgebra_algebraMap [Algebra R S] :
+    (algebraMap R S).toAlgebra = ‹_› :=
+  algebra_ext _ _ fun _ ↦ rfl
 
 -- see Note [lower instance priority]
 instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
@@ -363,6 +376,9 @@ packaged as an `R`-linear map.
 protected def linearMap : R →ₗ[R] A :=
   { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
 
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η" => Algebra.linearMap _ _
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η[" R "]" => Algebra.linearMap R _
+
 @[simp]
 theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=
   rfl
@@ -375,7 +391,7 @@ instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
-  toSMul := Mul.toSMul _
+  toSMul := instSMulOfMul
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
@@ -405,10 +421,18 @@ end Semiring
 
 end Algebra
 
-@[norm_cast]
-theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
-    [SMul A C] [IsScalarTower A B C] (a : A) (b : B) : (a • b : B) = a • (b : C) := calc
-  ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
-  _ = a • (b • 1) := smul_assoc ..
-  _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
+section algebraMap
 
+variable {A B : Type*} (a : A) (b : B) (C : Type*)
+  [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+
+@[norm_cast]
+theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a • (b : C) := by
+  simp [Algebra.algebraMap_eq_smul_one]
+
+@[norm_cast]
+theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
+    (a • b : B) = a • (b : C) := by
+  simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
+
+end algebraMap

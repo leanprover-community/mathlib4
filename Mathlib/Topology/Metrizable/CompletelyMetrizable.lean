@@ -3,13 +3,15 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Topology.MetricSpace.Gluing
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Topology.MetricSpace.Gluing
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Completely metrizable spaces
 
-A topological space is completely metrizable if one can endow it mith a `MetricSpace` structure
+A topological space is completely metrizable if one can endow it with a `MetricSpace` structure
 which makes it complete and gives the same topology. This typeclass allows to state theorems
 which do not require a `MetricSpace` structure to make sense without introducing such a structure.
 It is in particular useful in measure theory, where one often assumes that a space is a
@@ -29,6 +31,8 @@ This can be done by writing `letI := upgradeIsCompletelyMetrizable X`, which wil
 an `UpgradedIsCompletelyMetrizableSpace X` instance. This class is a convenience class and
 no instance should be registered for it.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 

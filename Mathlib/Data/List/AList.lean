@@ -3,7 +3,9 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.Sigma
+module
+
+public import Mathlib.Data.List.Sigma
 
 /-!
 # Association Lists
@@ -31,6 +33,8 @@ provides ways to access, modify, and combine `AList`s.
 * <https://en.wikipedia.org/wiki/Association_list>
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -73,6 +77,10 @@ def keys (s : AList β) : List α :=
 theorem keys_nodup (s : AList β) : s.keys.Nodup :=
   s.nodupKeys
 
+@[simp]
+theorem keys_mk (l : List (Sigma β)) (h) : (AList.mk l h).keys = l.keys :=
+  rfl
+
 /-! ### mem -/
 
 
@@ -85,6 +93,10 @@ theorem mem_keys {a : α} {s : AList β} : a ∈ s ↔ a ∈ s.keys :=
 
 theorem mem_of_perm {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) : a ∈ s₁ ↔ a ∈ s₂ :=
   (p.map Sigma.fst).mem_iff
+
+@[simp]
+theorem mem_mk {l : List (Sigma β)} {h} {x : α} : x ∈ AList.mk l h ↔ x ∈ l.keys :=
+  .rfl
 
 /-! ### empty -/
 
@@ -152,7 +164,7 @@ theorem mem_lookup_iff {a : α} {b : β a} {s : AList β} :
 
 theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) :
     s₁.lookup a = s₂.lookup a :=
-  perm_dlookup _ s₁.nodupKeys s₂.nodupKeys p
+  perm_dlookup _ s₁.nodupKeys p
 
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome

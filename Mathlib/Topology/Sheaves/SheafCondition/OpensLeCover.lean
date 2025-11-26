@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
+module
+
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Another version of the sheaf condition.
@@ -30,6 +32,8 @@ like `pairwise_intersections` and `equalizer_products`.
 * This is the definition Lurie uses in [Spectral Algebraic Geometry][LurieSAG].
 -/
 
+@[expose] public section
+
 
 universe w
 
@@ -50,11 +54,7 @@ namespace SheafCondition
 -/
 def OpensLeCover : Type w :=
   ObjectProperty.FullSubcategory fun V : Opens X ↦ ∃ i, V ≤ U i
-
--- The following instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Category (OpensLeCover U) := ObjectProperty.FullSubcategory.category _
+deriving Category
 
 instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=
   ⟨⟨⊥, let ⟨i⟩ := h; ⟨i, bot_le⟩⟩⟩

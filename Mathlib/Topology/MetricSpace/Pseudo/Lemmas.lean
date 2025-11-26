@@ -1,15 +1,19 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Constructions
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.UniformSpace.Compact
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Extra lemmas about pseudo-metric spaces
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set
 open scoped NNReal Topology
@@ -51,8 +55,6 @@ variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 
 lemma isClosed_closedBall : IsClosed (closedBall x ε) :=
   isClosed_le (continuous_id.dist continuous_const) continuous_const
-
-@[deprecated (since := "2025-02-11")] alias isClosed_ball := isClosed_closedBall
 
 lemma isClosed_sphere : IsClosed (sphere x ε) :=
   isClosed_eq (continuous_id.dist continuous_const) continuous_const

@@ -3,12 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Module.End
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Module.End
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Preadditive categories
@@ -42,6 +44,8 @@ is simplified to `f ≫ g`.
 
 additive, preadditive, Hom group, Ab-category, Ab-enriched
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -186,9 +190,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
-/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
-the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
-to make use of them -/
+/-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
@@ -196,8 +198,6 @@ instance {X : C} : Semiring (End X) :=
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
     right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
 
-/-- Porting note: It looks like Ring's parent classes changed in
-Lean 4 so the previous instance needed modification. Was following my nose here. -/
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with

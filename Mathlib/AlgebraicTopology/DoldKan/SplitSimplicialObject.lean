@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
-import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
 
@@ -18,6 +20,8 @@ when `C` is a preadditive category with finite coproducts, and get an isomorphis
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category CategoryTheory.Preadditive
@@ -74,9 +78,9 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   rw [ne_comm]
   change ¬(A.epiComp (SimplexCategory.σ i).op).EqId
   rw [IndexSet.eqId_iff_len_eq]
-  have h := SimplexCategory.len_le_of_epi (inferInstance : Epi A.e)
+  have h := SimplexCategory.len_le_of_epi A.e
   dsimp at h ⊢
-  omega
+  cutsat
 
 /-- If a simplicial object `X` in an additive category is split,
 then `PInfty` vanishes on all the summands of `X _⦋n⦌` which do

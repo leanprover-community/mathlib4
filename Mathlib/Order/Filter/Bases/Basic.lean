@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Basic results on filter bases
@@ -20,7 +22,7 @@ to `B.filter` if and only if it contains an element of `B`.
 
 Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → Set α`,
 the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by `p`
-(ie. `s '' setOf p`) defines a filter basis `h.filterBasis`.
+(i.e. `s '' setOf p`) defines a filter basis `h.filterBasis`.
 
 If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
 and `s : ι → Set α` as above) means that a set belongs to `l` if and
@@ -67,6 +69,8 @@ machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can he
 
 ## Main statements
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -173,6 +177,9 @@ protected theorem generate (B : FilterBasis α) : generate B.sets = B.filter := 
     exact GenerateSets.superset (GenerateSets.basic V_in) h
   · rw [le_generate_iff]
     apply mem_filter_of_mem
+
+lemma ker_filter (F : FilterBasis α) : F.filter.ker = ⋂₀ F.sets := by
+  aesop (add simp [ker, FilterBasis.filter])
 
 end FilterBasis
 
@@ -539,7 +546,7 @@ theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟
 theorem disjoint_principal_left {f : Filter α} {s : Set α} : Disjoint (𝓟 s) f ↔ sᶜ ∈ f := by
   rw [disjoint_comm, disjoint_principal_right]
 
-@[simp 1100] -- Porting note: higher priority for linter
+@[simp high] -- This should fire before `disjoint_principal_left` and `disjoint_principal_right`.
 theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t) ↔ Disjoint s t := by
   rw [← subset_compl_iff_disjoint_left, disjoint_principal_left, mem_principal]
 

@@ -3,10 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Relation of morphism properties with limits
@@ -23,6 +26,8 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 `IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -190,13 +195,13 @@ theorem pullback_snd [IsStableUnderBaseChange P]
     P (pullback.snd f g) :=
   of_isPullback (IsPullback.of_hasPullback f g) H
 
-theorem baseChange_obj [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
+theorem baseChange_obj [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [∀ {W} (h : W ⟶ S), HasPullback h f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
 
-theorem baseChange_map [HasPullbacks C]
-    [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
+theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
+    [∀ {W} (h : W ⟶ S), HasPullback h f] {X Y : Over S} (g : X ⟶ Y)
     (H : P g.left) : P ((Over.pullback f).map g).left := by
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
@@ -499,6 +504,19 @@ lemma colimitsOfShape_colimMap {X Y : J ⥤ C}
     W.colimitsOfShape J (colimMap f) :=
   ⟨_, _, _, _, _, colimit.isColimit Y, _, hf⟩
 
+attribute [local instance] IsCofiltered.isConnected in
+variable {W} in
+lemma colimitsOfShape.of_isColimit
+    {J : Type*} [Preorder J] [OrderBot J] {F : J ⥤ C}
+    {c : Cocone F} (hc : IsColimit c) (h : ∀ (j : J), W (F.map (homOfLE bot_le : ⊥ ⟶ j))) :
+    W.colimitsOfShape J (c.ι.app ⊥) :=
+  .mk' _ _ _ _ (isColimitConstCocone J (F.obj ⊥)) hc
+    { app k := F.map (homOfLE bot_le)
+      naturality _ _ _ := by
+        dsimp
+        rw [Category.id_comp, ← Functor.map_comp]
+        rfl} h _ (by simp)
+
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
 class IsStableUnderColimitsOfShape : Prop where
@@ -534,7 +552,7 @@ protected lemma colimMap [W.IsStableUnderColimitsOfShape J] {X Y : J ⥤ C}
   colimitsOfShape_le
 
 variable (C J) in
-lemma IsStableUnderColimitsOfShape.isomorphisms :
+instance IsStableUnderColimitsOfShape.isomorphisms :
     (isomorphisms C).IsStableUnderColimitsOfShape J where
   condition F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j)) φ hφ := by
     have := NatIso.isIso_of_isIso_app f
@@ -543,6 +561,16 @@ lemma IsStableUnderColimitsOfShape.isomorphisms :
       h₂.hom_ext (by simp [hφ])⟩
 
 end ColimitsOfShape
+
+/-- The condition that a property of morphisms is stable by filtered colimits. -/
+@[pp_with_univ]
+class IsStableUnderFilteredColimits (W : MorphismProperty C) : Prop where
+  isStableUnderColimitsOfShape (J : Type w') [Category.{w} J] [IsFiltered J] :
+    W.IsStableUnderColimitsOfShape J := by infer_instance
+
+attribute [instance] IsStableUnderFilteredColimits.isStableUnderColimitsOfShape
+
+instance : IsStableUnderFilteredColimits.{w, w'} (isomorphisms C) where
 
 section Coproducts
 
@@ -740,7 +768,7 @@ lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
   ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
 
 /-- If `P` is multiplicative and stable under base change, having the of-postcomp property
-wrt. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
+w.r.t. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
 lemma hasOfPostcompProperty_iff_le_diagonal [P.IsStableUnderBaseChange]
     [P.IsMultiplicative] {Q : MorphismProperty C} [Q.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty Q ↔ Q ≤ P.diagonal := by
@@ -818,6 +846,17 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
   exact H ..
 
 end Universally
+
+variable (P : MorphismProperty C)
+
+/-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`
+exist. -/
+protected class HasPullbacks : Prop where
+  hasPullback {X Y S : C} {f : X ⟶ S} (g : Y ⟶ S) : P f → HasPullback f g := by infer_instance
+
+instance [HasPullbacks C] : P.HasPullbacks where
+
+alias hasPullback := HasPullbacks.hasPullback
 
 end MorphismProperty
 

@@ -3,12 +3,14 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.UniformSpace.Completion
+module
+
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The completion of a metric space
@@ -18,6 +20,8 @@ here that the uniform space completion of a metric space inherits a metric space
 by extending the distance to the completion and checking that it is indeed a distance, and that
 it defines the same uniformity as the already defined uniform structure on the completion
 -/
+
+@[expose] public section
 
 
 open Set Filter UniformSpace Metric
@@ -100,9 +104,9 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         exact isClosed_le continuous_const Completion.uniformContinuous_dist.continuous
       · intro x y
         rw [Completion.dist_eq]
-        by_cases h : ε ≤ dist x y
+        by_cases! h : ε ≤ dist x y
         · exact Or.inl h
-        · have Z := hε (not_le.1 h)
+        · have Z := hε h
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
     simp only [not_le.mpr hxy, false_or] at this
@@ -124,11 +128,8 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
-      have I := ht this
-      simp? [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
-        simp only [Real.dist_eq, mem_setOf_eq, preimage_setOf_eq, Completion.dist_self,
-          Completion.dist_comm, zero_sub, abs_neg, r] at I
-      exact lt_of_le_of_lt (le_abs_self _) I
+      exact lt_of_le_of_lt (le_abs_self _)
+        (by simpa [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] using ht this)
     grind
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
