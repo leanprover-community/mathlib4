@@ -190,8 +190,9 @@ theorem isTree_iff_existsUnique_path :
 lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2
 
-theorem IsAcyclic.isPath_iff_isChain [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
      p.IsPath ↔ List.IsChain (· ≠ ·) p.edges := by
+  classical
   refine ⟨fun h ↦ (edges_nodup_of_support_nodup <| p.isPath_def.mp h).isChain, fun h ↦ ?_⟩
   induction p with
   | nil => simp
@@ -214,7 +215,7 @@ theorem IsAcyclic.isPath_iff_isChain [DecidableEq V] (hG : G.IsAcyclic) {v w : V
       have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
       simp [this, snd_takeUntil head.ne]
 
-theorem IsAcyclic.isPath_iff_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
     p.IsPath ↔ p.IsTrail :=
   ⟨IsPath.isTrail, fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain⟩
 
