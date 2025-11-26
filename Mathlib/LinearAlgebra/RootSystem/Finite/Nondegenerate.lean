@@ -205,6 +205,10 @@ theorem posRootForm_posForm_pos_of_ne_zero {x : P.rootSpan S} (hx : x ≠ 0) :
     exact ⟨Finset.mem_univ i, mul_self_pos.mpr hi⟩
   exact Finset.sum_pos' (fun i a ↦ mul_self_nonneg ((P.coroot'In S i) x)) this
 
+lemma posRootForm_rootFormIn_posDef : (P.RootFormIn S).toQuadraticMap.PosDef := by
+  intro x hx
+  simpa using P.posRootForm_posForm_pos_of_ne_zero S hx
+
 lemma posRootForm_posForm_anisotropic :
     (P.posRootForm S).posForm.toQuadraticMap.Anisotropic :=
   fun _ hx ↦ Classical.byContradiction fun h ↦
