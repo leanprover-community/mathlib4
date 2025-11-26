@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
 /-!
@@ -41,12 +41,6 @@ noncomputable def fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (_ : p + 
     Cochain ((singleFunctor C p).obj X) K n :=
   Cochain.single ((HomologicalComplex.singleObjXSelf (.up ℤ) p X).hom ≫ f) n
 
-variable (X K) in
-@[simp]
-lemma fromSingleMk_zero (p q n : ℤ) (h : p + n = q) :
-    fromSingleMk (X := X) (K := K) 0 h = 0 := by
-  simp [fromSingleMk]
-
 @[simp]
 lemma fromSingleMk_v {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     (fromSingleMk f h).v p q h =
@@ -71,7 +65,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
 to `X ⟶ K.X q` when `p + n = q`. -/
 noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
-    Cochain ((singleFunctor C p).obj X) K n ≃ (X ⟶ K.X q) where
+    Cochain ((singleFunctor C p).obj X) K n ≃+ (X ⟶ K.X q) where
   toFun α := (HomologicalComplex.singleObjXSelf (.up ℤ) p X).inv ≫ α.v p q h
   invFun f := fromSingleMk f h
   left_inv α := by
@@ -80,6 +74,28 @@ noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     · aesop
     · exact (HomologicalComplex.isZero_single_obj_X _ _ _ _ hp).eq_of_src _ _
   right_inv f := by simp
+  map_add' := by simp
+
+variable (X K) in
+@[simp]
+lemma fromSingleMk_zero (p q n : ℤ) (h : p + n = q) :
+    fromSingleMk (X := X) (K := K) 0 h = 0 :=
+  (fromSingleEquiv h (X := X)).symm.map_zero
+
+@[simp]
+lemma fromSingleMk_add {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
+    fromSingleMk (f + g) h = fromSingleMk f h + fromSingleMk g h :=
+  (fromSingleEquiv h).symm.map_add _ _
+
+@[simp]
+lemma fromSingleMk_sub {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
+    fromSingleMk (f - g) h = fromSingleMk f h - fromSingleMk g h :=
+  (fromSingleEquiv h).symm.map_sub _ _
+
+@[simp]
+lemma fromSingleMk_neg {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
+    fromSingleMk (-f) h = -fromSingleMk f h :=
+  (fromSingleEquiv h).symm.map_neg _
 
 lemma fromSingleMk_surjective {p n : ℤ} (α : Cochain ((singleFunctor C p).obj X) K n)
     (q : ℤ) (h : p + n = q) :
@@ -139,6 +155,45 @@ lemma fromSingleMk_surjective {p n : ℤ} (α : Cocycle ((singleFunctor C p).obj
   rw [← hf, Cochain.δ_fromSingleMk _ _ _ q' (by cutsat)] at hα
   replace hα := Cochain.congr_v hα p q' (by cutsat)
   exact ⟨f, by simpa using hα, by ext : 1; assumption⟩
+
+lemma fromSingleMk_add {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) (hg : g ≫ K.d q q' = 0) :
+    fromSingleMk (f + g) h q' hq' (by simp [hf, hg]) =
+      fromSingleMk f h q' hq' hf + fromSingleMk g h q' hq' hg := by
+  cat_disch
+
+lemma fromSingleMk_sub {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) (hg : g ≫ K.d q q' = 0) :
+    fromSingleMk (f - g) h q' hq' (by simp [hf, hg]) =
+      fromSingleMk f h q' hq' hf - fromSingleMk g h q' hq' hg := by
+  cat_disch
+
+lemma fromSingleMk_neg {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0) :
+    fromSingleMk (-f) h q' hq' (by simp [hf]) = - fromSingleMk f h q' hq' hf := by
+  cat_disch
+
+variable (X K) in
+@[simp]
+lemma fromSingleMk_zero {p q : ℤ} {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') :
+    fromSingleMk (0 : X ⟶ K.X q) h q' hq' (by simp) = 0 := by
+  cat_disch
+
+lemma fromSingleMk_mem_coboundaries_iff {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
+    (q' : ℤ) (hq' : q + 1 = q') (hf : f ≫ K.d q q' = 0)
+    (q'' : ℤ) (hq'' : q'' + 1 = q) :
+    fromSingleMk f h q' hq' hf ∈ coboundaries _ _ _ ↔
+      ∃ (g : X ⟶ K.X q''), g ≫ K.d q'' q = f := by
+  rw [mem_coboundaries_iff _ (n -1) (by simp)]
+  constructor
+  · rintro ⟨α, hα⟩
+    obtain ⟨g, hg⟩ := Cochain.fromSingleMk_surjective α q'' (by cutsat)
+    refine ⟨g, ?_⟩
+    rw [← hg, fromSingleMk_coe, Cochain.δ_fromSingleMk _ _ _ _ h] at hα
+    exact (Cochain.fromSingleEquiv h).symm.injective hα
+  · rintro ⟨g, rfl⟩
+    exact ⟨Cochain.fromSingleMk g (by cutsat), Cochain.δ_fromSingleMk _ _ _ _ h⟩
 
 /-- Constructor for cocycles to a single complex. -/
 @[simps!]

@@ -51,6 +51,18 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
     rintro α ⟨m, hm, β, hβ⟩
     exact ⟨m, hm, -β, by aesop⟩
 
+variable {K L n} in
+lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
+    α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
+  simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+  constructor
+  · rintro ⟨m', hm', β, hβ⟩
+    obtain rfl : m = m' := by cutsat
+    exact ⟨β, hβ⟩
+  · rintro ⟨β, hβ⟩
+    exact ⟨m, hm, β, hβ⟩
+
 /-- The type of cohomology classes of degree `n` in the complex of morphisms
 from `K` to `L`. -/
 def CohomologyClass : Type v := Cocycle K L n ⧸ coboundaries K L n

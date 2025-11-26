@@ -103,6 +103,86 @@ noncomputable def extEquivCohomologyClass :
       (by rw [HomologicalComplex.mem_quasiIso_iff]; infer_instance)).trans
     CochainComplex.HomComplex.CohomologyClass.equivOfIsKInjective.{w}.symm
 
+lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
+    (x : Cocycle ((singleFunctor C 0).obj X) R.cochainComplex n) :
+    (R.extEquivCohomologyClass.symm (.mk x)).hom =
+      DerivedCategory.Q.map (Cocycle.equivHomShift.symm x) ≫
+        inv (DerivedCategory.Q.map (R.ι'⟦(n : ℤ)⟧')) ≫
+        (DerivedCategory.Q.commShiftIso (n : ℤ)).hom.app _ := by
+  simp [extEquivCohomologyClass, CohomologyClass.equivOfIsKInjective_apply,
+    Ext.hom, Ext.homEquiv]
+  erw [SmallShiftedHom.postcompEquiv_symm_apply, SmallShiftedHom.equiv_comp]
+  simp [ShiftedHom.map, ShiftedHom.comp, ShiftedHom.mk₀, shiftFunctorAdd'_zero_add_inv_app,
+    shiftFunctorZero']
+  rw [← Functor.map_comp, Iso.inv_hom_id_app]
+  dsimp
+  rw [Functor.map_id, Category.comp_id]
+  congr 1
+  simp [← Functor.map_comp]
+
+@[simp]
+lemma extEquivCohomologyClass_symm_add
+    (x y : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :
+    R.extEquivCohomologyClass.symm (x + y) =
+      R.extEquivCohomologyClass.symm x + R.extEquivCohomologyClass.symm y := by
+  have := HasDerivedCategory.standard C
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  obtain ⟨y, rfl⟩ := y.mk_surjective
+  ext
+  simp [← CohomologyClass.mk_add, extEquivCohomologyClass_symm_mk_hom]
+
+/-- If `R` is an injective resolution of `Y`, then `Ext X Y n` identify
+to the type of cohomology classes of degree `n` from `(singleFunctor C 0).obj X`
+to `R.cochainComplex`. -/
+noncomputable def extAddEquivCohomologyClass :
+    Ext X Y n ≃+ CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n :=
+  AddEquiv.symm
+    { toEquiv := (R.extEquivCohomologyClass (X := X) (Y := Y) (n := n)).symm
+      map_add' := by simp }
+
+@[simp]
+lemma extEquivCohomologyClass_symm_sub
+    (x y : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :
+    R.extEquivCohomologyClass.symm (x - y) =
+      R.extEquivCohomologyClass.symm x - R.extEquivCohomologyClass.symm y :=
+  R.extAddEquivCohomologyClass.symm.map_sub _ _
+
+@[simp]
+lemma extEquivCohomologyClass_symm_neg
+    (x : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :
+    R.extEquivCohomologyClass.symm (-x) =
+      -R.extEquivCohomologyClass.symm x :=
+  R.extAddEquivCohomologyClass.symm.map_neg _
+
+@[simp]
+lemma extEquivCohomologyClass_symm_zero :
+    (R.extEquivCohomologyClass (X := X) (n := n)).symm 0 = 0 :=
+  R.extAddEquivCohomologyClass.symm.map_zero
+
+@[simp]
+lemma extEquivCohomologyClass_add (x y : Ext X Y n) :
+    R.extEquivCohomologyClass (x + y) =
+      R.extEquivCohomologyClass x + R.extEquivCohomologyClass y :=
+  R.extAddEquivCohomologyClass.map_add _ _
+
+@[simp]
+lemma extEquivCohomologyClass_sub (x y : Ext X Y n) :
+    R.extEquivCohomologyClass (x - y) =
+      R.extEquivCohomologyClass x - R.extEquivCohomologyClass y :=
+  R.extAddEquivCohomologyClass.map_sub _ _
+
+@[simp]
+lemma extEquivCohomologyClass_neg (x : Ext X Y n) :
+    R.extEquivCohomologyClass (-x) =
+      -R.extEquivCohomologyClass x :=
+  R.extAddEquivCohomologyClass.map_neg _
+
+variable (X n) in
+@[simp]
+lemma extEquivCohomologyClass_zero :
+    R.extEquivCohomologyClass (0 : Ext X Y n) = 0 :=
+  R.extAddEquivCohomologyClass.map_zero
+
 /-- Given an injective resolution `R` of an object `Y` of an abelian category,
 this is a constructor for elements in `Ext X Y n` which takes as an input
 a "cocycle" `f : X ⟶ R.cocomplex.X n`. -/
@@ -112,6 +192,63 @@ noncomputable def extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n 
   R.extEquivCohomologyClass.symm
     (.mk (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
       m (by cutsat) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])))
+
+@[simp]
+lemma extEquivCohomologyClass_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) :
+    R.extEquivCohomologyClass (R.extMk f m hm hf) =
+      (.mk (Cocycle.fromSingleMk (f ≫ (R.cochainComplexXIso n n rfl).inv) (zero_add _)
+        m (by cutsat) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) := by
+  simp [extMk]
+
+noncomputable def add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) (hg : g ≫ R.cocomplex.d n m = 0) :
+    R.extMk f m hm hf + R.extMk g m hm hg =
+      R.extMk (f + g) m hm (by simp [hf, hg]) := by
+  simp only [extMk, Preadditive.add_comp]
+  rw [Cocycle.fromSingleMk_add _ _ _ _ _
+    (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])
+    (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hg])]
+  simp
+
+noncomputable def sub_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) (hg : g ≫ R.cocomplex.d n m = 0) :
+    R.extMk f m hm hf - R.extMk g m hm hg =
+      R.extMk (f - g) m hm (by simp [hf, hg]) := by
+  dsimp [extMk]
+  simp only [Preadditive.sub_comp]
+  rw [Cocycle.fromSingleMk_sub _ _ _ _ _
+    (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])
+    (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hg])]
+  simp
+
+noncomputable def neg_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) :
+    -R.extMk f m hm hf = R.extMk (-f) m hm (by simp [hf]) := by
+  dsimp [extMk]
+  simp only [Preadditive.neg_comp]
+  rw [Cocycle.fromSingleMk_neg _ _ _ _
+    (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf])]
+  simp
+
+@[simp]
+noncomputable def extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
+    R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
+  simp [extMk]
+
+lemma extMk_eq_zero_iff (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0)
+    (p : ℕ) (hp : p + 1 = n) :
+    R.extMk f m hm hf = 0 ↔
+      ∃ (g : X ⟶ R.cocomplex.X p), g ≫ R.cocomplex.d p n = f := by
+  simp only [← R.extEquivCohomologyClass.apply_eq_iff_eq,
+    extEquivCohomologyClass_extMk, extEquivCohomologyClass_zero,
+    CohomologyClass.mk_eq_zero_iff]
+  rw [Cocycle.fromSingleMk_mem_coboundaries_iff _ _ _ _ _ p (by cutsat),
+    R.cochainComplex_d _ _ _ _ rfl rfl]
+  exact ⟨fun ⟨g, hg⟩ ↦ ⟨g ≫ (R.cochainComplexXIso p p rfl).hom,
+      by simp only [← cancel_mono (R.cochainComplexXIso n n rfl).inv, Category.assoc, hg]⟩,
+    fun ⟨g, hg⟩ ↦ ⟨g ≫ (R.cochainComplexXIso p p rfl).inv, by simp [← hg]⟩⟩
 
 lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
     ∃ (f : X ⟶ R.cocomplex.X n) (hf : f ≫ R.cocomplex.d n m = 0),
