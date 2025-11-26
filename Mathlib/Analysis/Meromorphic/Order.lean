@@ -174,7 +174,7 @@ lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x <
         simpa using this.tendsto
       · filter_upwards [self_mem_nhdsWithin] with y hy
         simpa [sub_eq_zero] using hy
-    apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop m_neg) this
+    exact (tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded m_neg)).comp this
   apply A.congr'
   filter_upwards [hg] with z hz using by simp [hz]
 
