@@ -233,35 +233,48 @@ variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
   [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V]
 
 variable (Ω F n) in
-/-- The original topology on `𝓓^{n}(E, F)`, defined as the supremum over all compacts of the
-topologies from each `𝓓^{n}_{K}(E, F)`. -/
+/-- The "original topology" on `𝓓^{n}(Ω, F)`, defined as the supremum over all compacts `K ⊆ Ω` of
+the topology on `𝓓^{n}_{K}(E, F)`. In other words, this topology makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
+
+Note that this has no reason to be a locally convex (or even vector space) topology. For this
+reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
+topology which is coarser than this original topology. See `TestFuntion.topologicalSpace`. -/
 noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
   ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
     coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
 
 variable (Ω F n) in
+/-- The canonical LF topology on `𝓓^{n}(Ω, F)`. This makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s **in the category of locally convex topological vector spaces**
+(over ℝ). See `TestFunction.continuous_iff_continuous_comp` for the corresponding universal
+property.
+
+More concretely, this is defined as the infimum of *all* locally convex topologies which are
+coarser than the "original topology" `TestFunction.originalTop`, which corresponds to taking
+the inductive limit in the category of topological spaces. -/
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
   sInf {t : TopologicalSpace 𝓓^{n}(Ω, F) | originalTop Ω F n ≤ t ∧
     @IsTopologicalAddGroup 𝓓^{n}(Ω, F) t _ ∧
     @ContinuousSMul ℝ 𝓓^{n}(Ω, F) _ _ t ∧
     @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
 
-noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) := by
-  apply topologicalAddGroup_sInf
-  exact fun t ⟨_, ht, _, _⟩ ↦ ht
+noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
+  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
 --TODO: deduce for `RCLike` field `𝕂`
-noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) := by
-  apply continuousSMul_sInf
-  exact fun t ⟨_, _, ht, _⟩ ↦ ht
+noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
+  continuousSMul_sInf fun _ ⟨_, _, ht, _⟩ ↦ ht
 
-noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) := by
-  apply LocallyConvexSpace.sInf
-  exact fun t ⟨_, _, _, ht⟩ ↦ ht
+noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) :=
+  .sInf fun _ ⟨_, _, _, ht⟩ ↦ ht
 
 theorem originalTop_le : originalTop Ω F n ≤ topologicalSpace Ω F n :=
   le_sInf fun _t ⟨ht, _⟩ ↦ ht
 
+/-- Fix a locally convex topology `t` on `𝓓^{n}(Ω, F)`. `t` is coarser than the canonical topology
+on `𝓓^{n}(Ω, F)` if and only if it is coarser than the "original topology" given by
+`TestFunction.originalTop`. -/
 theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
     [@IsTopologicalAddGroup _ t _] [@ContinuousSMul ℝ _ _ _ t]
     [@LocallyConvexSpace ℝ _ _ _ _ _ t] :
@@ -269,7 +282,7 @@ theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
   ⟨le_trans originalTop_le, fun H ↦ sInf_le ⟨H, inferInstance, inferInstance, inferInstance⟩⟩
 
 /-- For every compact `K ⊆ Ω`, the inclusion map `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
-continuous. We will show later that it is in fact a topological embedding. -/
+continuous. It is in fact a topological embedding, though this fact is not in Mathlib yet. -/
 theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     Continuous (ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
   rw [continuous_iff_coinduced_le]
@@ -287,7 +300,6 @@ def ofSupportedInCLM {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (f : 𝓓^{n}_{K}(E, F)) : ofSupportedInCLM 𝕜 K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
   rfl
 
--- TODO: Should we spell it using `∘ₗ`?
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
@@ -301,6 +313,16 @@ protected theorem continuous_iff_continuous_comp (f : 𝓓^{n}(Ω, F) →ₗ[ℝ
   have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced f t) := .induced _
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
+
+-- TODO: generalize to `𝕜`-linear maps under the right assumptions
+/-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
+`𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
+precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
+continuous for every compact `K ⊆ Ω`. -/
+protected theorem continuous_iff_continuous_comp_LM (f : 𝓓^{n}(Ω, F) →ₗ[ℝ] V) :
+    Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+      Continuous (f ∘ₗ ofSupportedInLM ℝ K_sub_Ω) :=
+  TestFunction.continuous_iff_continuous_comp f
 
 end Topology
 
