@@ -378,13 +378,14 @@ theorem exists_lt_iInf_of_lt_iInf_of_finite
     simpa using ht x hx
   | @insert b s _ hs hrec =>  -- insert case
     have hb : (b ∈ Y) := hsY (mem_insert b s)
-    let X' := leSublevelOn X (fun x ↦ f x b) t
+    let X' := {x ∈ X | f x b ≤ t}
+   -- let X' := leSublevelOn X (fun x ↦ f x b) t
     rcases Set.eq_empty_or_nonempty X' with X'_e | X'_ne
-    · simp only [X', leSublevelOn_empty_iff] at X'_e
+    · simp only [sep_eq_empty_iff_mem_false, not_le, X'] at X'_e
       use b, hb
     -- the nonempty case
-    have hX'X : X' ⊆ X := leSublevelOn_subset
-    have kX' : IsCompact X' := isCompact_leSublevelOn _ _ _ (hfy b hb) kX
+    have hX'X : X' ⊆ X := sep_subset X _
+    have kX' : IsCompact X' := (hfy b hb).isCompact_leSublevelOn kX t
     have cX' : Convex ℝ X' := hfy' b hb t
     specialize hrec X'_ne kX'
       (fun y hy ↦ LowerSemicontinuousOn.mono (hfy y hy) hX'X)
@@ -458,17 +459,21 @@ theorem minimax
   -- when `Y` is not empty
   rw [← forall_lt_iff_le]
   intro t ht
-  have : ⋂ y ∈ Y, leSublevelOn X (fun x ↦ f x y) t = ∅ := by
-    rw [inter_leSublevelOn_empty_iff _ _ ne_X]
+  have : ⋂ y ∈ Y, {x ∈ X | f x y ≤ t} = ∅ := by
+    apply Set.eq_empty_of_forall_notMem
     intro x hx
-    by_contra! H
+    simp only [mem_iInter, mem_setOf_eq] at hx
     rw [lt_isGLB_iff hinf_sup] at ht
     obtain ⟨c, hc, htc⟩ := ht
     simp [mem_lowerBounds] at hc
-    specialize hc x hx
-    apply not_le.mpr  htc (le_trans hc _)
-    simpa [isLUB_le_iff (hsup_y x hx), mem_upperBounds] using H
-  rw [inter_leSublevelOn_empty_iff_exists_finset_inter t ne_Y kX hfy] at this
+    have hxX : x ∈ X := by
+      obtain ⟨y, hy⟩ := ne_Y
+      exact (hx y hy).1
+    specialize hc x hxX
+    apply not_le.mpr htc (le_trans hc _)
+    rw [isLUB_le_iff (hsup_y x hxX), mem_upperBounds]
+    aesop
+  rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
   obtain ⟨s, hs⟩ := this
   have hs' (x) (hx : x ∈ X) :
       ∃ y ∈ Subtype.val '' (s : Set Y), t < f x y := by
@@ -550,17 +555,18 @@ theorem minimax' : (⨅ x ∈ X, ⨆ y ∈ Y, f x y) = ⨆ y ∈ Y, ⨅ x ∈ X,
   · simp [biInf_const ne_X]
   rw [← forall_lt_iff_le]
   intro t ht
-  have : ⋂ y ∈ Y, leSublevelOn X (fun x ↦ f x y) t = ∅ := by
-    rw [inter_leSublevelOn_empty_iff _ _ ne_X]
+  have : ⋂ y ∈ Y, {x ∈ X | f x y ≤ t} = ∅ := by
+    apply Set.eq_empty_of_forall_notMem
     intro x hx
-    by_contra! H
+    simp only [mem_iInter, mem_setOf_eq] at hx
     rw [lt_iInf_iff] at ht
     obtain ⟨c, htc, hc⟩ := ht
     apply not_le.mpr htc
     simp only [le_iInf_iff] at hc
-    apply le_trans (hc x hx)
-    simpa only [iSup_le_iff]
-  rw [inter_leSublevelOn_empty_iff_exists_finset_inter t ne_Y kX hfy] at this
+    apply le_trans (hc x ?_) (by aesop)
+    obtain ⟨y, hy⟩ := ne_Y
+    exact (hx y hy).1
+  rw [LowerSemicontinuousOn.inter_leSublevelOn_empty_iff_exists_finset_inter kX ne_Y hfy] at this
   obtain ⟨s, hs⟩ := this
   have hs' (x) (hx : x ∈ X) :
       ∃ y ∈ Subtype.val '' (s : Set Y), t < f x y := by
