@@ -49,8 +49,8 @@ theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε
   have hε' : 0 < ε' := by positivity
   have hε₂ : ENNReal.ofReal ε' * μ (tsupport f) ^ (1 / p.toReal) ≤ ENNReal.ofReal ε := by
     rw [← ofReal_toReal hs₁, ofReal_rpow_of_pos hs₂, ← ofReal_mul hε'.le,
-        ofReal_le_ofReal_iff hε.le, ε'_def, mul_assoc, ← Real.rpow_add hs₂, neg_add_cancel,
-        Real.rpow_zero, mul_one]
+      ofReal_le_ofReal_iff hε.le, ε'_def, mul_assoc, ← Real.rpow_add hs₂, neg_add_cancel,
+      Real.rpow_zero, mul_one]
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε') (by fun_prop)
     (by intro; positivity)
   refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd' μ hp h₁.measurableSet hε'.le ?_
@@ -74,8 +74,8 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
     ∃ g, HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧ eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   -- We use a standard ε/2 argument to deduce the result from the approximation for
   -- continuous compactly supported functions.
-  have hε₂ : 0 < ε/2 := by positivity
-  have hε₂' : 0 < ENNReal.ofReal (ε/2) := by positivity
+  have hε₂ : 0 < ε / 2 := by positivity
+  have hε₂' : 0 < ENNReal.ofReal (ε / 2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
   obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := hg₁.exist_eLpNorm_sub_le_of_continuous μ hp hε₂ hg₃
   refine ⟨g', hg'₁, hg'₂, ?_⟩
