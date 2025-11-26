@@ -87,7 +87,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
   open scoped ContinuousFunctionalCalculus in
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
-  have hf := h_tendsto.continuousOn hF
+  have hf := h_tendsto.continuousOn hF.frequently
   by_cases ha : p a
   · let s : Set X := {x | ContinuousOn (F x) (spectrum R a)}
     rw [← tendsto_comap'_iff (i := ((↑) : s → X)) (by simpa)]
@@ -486,7 +486,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
   open scoped NonUnitalContinuousFunctionalCalculus in
   obtain (rfl | hl) := l.eq_or_neBot
   · simp
-  have hf := h_tendsto.continuousOn hF
+  have hf := h_tendsto.continuousOn hF.frequently
   have hf0 : f 0 = 0 := Eq.symm <|
     tendsto_nhds_unique (tendsto_const_nhds.congr' <| .symm hF0) <|
     h_tendsto.tendsto_at (quasispectrum.zero_mem R a)
