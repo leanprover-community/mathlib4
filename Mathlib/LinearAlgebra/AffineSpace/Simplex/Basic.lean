@@ -245,18 +245,18 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
-lemma range_reindex_face {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
+lemma range_face_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
     {fs : Finset (Fin (n + 1))} {n' : ℕ} (h : #fs = n' + 1) :
     Set.range ((s.reindex e).face h).points =
       Set.range (s.face (fs := fs.map e.symm.toEmbedding) (h ▸ Finset.card_map _)).points := by
   simp only [range_face_points, reindex_points, Set.image_comp]
   simp
 
-lemma range_reindex_faceOpposite {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
+lemma range_faceOpposite_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
     (e : Fin (m + 1) ≃ Fin (n + 1)) (i : Fin (n + 1)) :
     Set.range ((s.reindex e).faceOpposite i).points =
       Set.range (s.faceOpposite (e.symm i)).points := by
-  rw [faceOpposite, range_reindex_face]
+  rw [faceOpposite, range_face_reindex]
   simp [Equiv.image_compl]
 
 section restrict
