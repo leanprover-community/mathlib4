@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Pointed cones
@@ -229,7 +228,6 @@ end OrderedAddCommGroup
 
 section Salient
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
-open Pointwise
 
 /-- A pointed cone is salient iff the intersection of the cone with its negative
 is the set `{0}`. -/
