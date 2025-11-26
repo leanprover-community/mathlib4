@@ -32,10 +32,6 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
 
-## TODO
-
-* Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
-
 -/
 
 @[expose] public section
@@ -218,6 +214,29 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
+
+lemma l2_opNorm_toEuclideanCLM (A : Matrix n n 𝕜) :
+    ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ = ‖A‖ := rfl
+
+@[simp]
+lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
+  set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
+  rw [← l2_opNorm_toEuclideanCLM]
+  refine le_antisymm ?_ ?_
+  · refine T.opNorm_le_bound (norm_nonneg _) fun x ↦ ?_
+    refine (sq_le_sq₀ (by positivity) (by positivity)).mp ?_
+    simp only [(T x).norm_sq_eq, ofLp_toEuclideanCLM, mulVec_diagonal, norm_mul, T]
+    calc _ ≤ _ := Finset.sum_le_sum fun i _ ↦ by grw [mul_pow, norm_le_pi_norm v i]
+      _ = _ := by simp [mul_pow, EuclideanSpace.norm_sq_eq x, Finset.mul_sum]
+  · refine (pi_norm_le_iff_of_nonneg (norm_nonneg T)).mpr fun i ↦ ?_
+    calc _ = ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ := by
+          rw [toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))]
+          simp
+      _ ≤ _ := by grw [T.le_opNorm]; simp
+
+@[simp]
+lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
+  Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
