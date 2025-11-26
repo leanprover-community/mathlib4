@@ -50,7 +50,7 @@ variable {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D)
 
 /-- Given a functor `C ⥤ D`, we obtain a morphism `nerve C ⟶ nerve D` of simplicial sets. -/
 @[simps -isSimp]
-def nerveMap : nerve C ⟶ nerve D :=
+def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : nerve C ⟶ nerve D :=
   { app := fun _ => (F.mapComposableArrows _).obj }
 
 lemma nerveMap_app_mk₀ (x : C) :

@@ -84,15 +84,15 @@ namespace IsAlgClosed
 
 variable {k}
 
-theorem splits [IsAlgClosed k] (p : k[X]) : (p.map (RingHom.id k)).Splits :=
-  (IsAlgClosed.factors p).map (RingHom.id k)
+theorem splits [IsAlgClosed k] (p : k[X]) : p.Splits :=
+  IsAlgClosed.factors p
 
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
 -/
 @[stacks 09GR "(4) ⟹ (3)"]
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
-  exists_root_of_splits _ (IsAlgClosed.splits p) hp
+  exists_root_of_splits _ ((IsAlgClosed.splits p).map <| .id k) hp
 
 theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by
   have : degree (X ^ n - C x) ≠ 0 := by
@@ -239,7 +239,7 @@ theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsD
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
-  exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
+  exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
 theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [IsDomain K]
     [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Bijective f :=
@@ -304,8 +304,7 @@ theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebr
   isAlgebraic := inferInstance
   isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
     have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
-    exists_root_of_splits _ (splits_of_splits_of_dvd _ (map_monic_ne_zero monic)
-      ((splits_id_iff_splits _).mpr <| h g monic irred) dvd) <|
+    Splits.exists_eval_eq_zero (Splits.of_dvd (h g monic irred) (map_monic_ne_zero monic) dvd) <|
         degree_ne_of_natDegree_ne p_irred.natDegree_pos.ne'
 
 namespace IsAlgClosed
