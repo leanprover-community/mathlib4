@@ -814,7 +814,7 @@ lemma genEigenspace_inf_le_add
   replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
     (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
       (Algebra.commute_algebraMap_left μ₁ _)
-  rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
+  rw [this, h.add_pow', LinearMap.coe_sum, Finset.sum_apply]
   constructor
   · simpa only [Nat.cast_add] using add_le_add hlk₁ hlk₂
   refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
