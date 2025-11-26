@@ -215,7 +215,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
 
-lemma toEuclideanCLM_l2_opNorm (A : Matrix n n 𝕜) :
+lemma l2_opNorm_toEuclideanCLM (A : Matrix n n 𝕜) :
     ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ = ‖A‖ := rfl
 
 @[simp]
