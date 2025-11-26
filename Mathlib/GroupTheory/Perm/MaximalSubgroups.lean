@@ -341,7 +341,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   unfold IsTrivialBlock
   rw [or_iff_not_imp_left]
   intro hB'
-
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `Nat.card s < Nat.card sᶜ`.
@@ -358,7 +357,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     · rw [← not_lt] at hB'
       apply hB'
       rwa [← Set.ncard_add_ncard_compl sᶜ, mul_two, add_lt_add_iff_left, compl_compl]
-
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
@@ -369,7 +367,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s ) :
       B.Subsingleton :=
     IsBlock.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs hB
-
   -- NB: `grind` proves the two arguments
   have hsc_le_B : sᶜ ⊆ B :=
     IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl (le_of_lt hG)
