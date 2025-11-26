@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Order.GameAdd
 public import Mathlib.Order.RelIso.Set
-public import Mathlib.SetTheory.ZFC.Basic
+public import Mathlib.SetTheory.Ordinal.Arithmetic
+public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann ordinals
@@ -292,7 +293,7 @@ theorem mem_toPSet_iff {o : Ordinal} {x : PSet} : x ∈ o.toPSet ↔ ∃ a < o, 
 @[simp]
 theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
   rw [toPSet, PSet.rank]
-  conv_rhs => rw [← iSup_succ o]
+  conv_rhs => rw [← _root_.iSup_succ o]
   convert (enumIsoToType o).symm.iSup_comp (g := fun x ↦ Order.succ x.1.toPSet.rank)
   rw [rank_toPSet]
 termination_by o
@@ -309,9 +310,9 @@ theorem mk_toPSet (o : Ordinal) : .mk o.toPSet = o.toZFSet :=
   rfl
 
 theorem mem_toZFSet_iff {o : Ordinal} {x : ZFSet} : x ∈ o.toZFSet ↔ ∃ a < o, a.toZFSet = x := by
-  induction x
+  induction x using Quotient.ind
   rw [toZFSet, mk_eq, ZFSet.mk_mem_iff, mem_toPSet_iff]
-  convert Iff.rfl
+  congr!
   rw [toZFSet, eq, PSet.Equiv.comm]
 
 @[simp]
@@ -319,7 +320,7 @@ theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o :=
   rank_toPSet o
 
 @[simp]
-theorem toSet_toZFSet {o : Ordinal} : o.toZFSet.toSet = toZFSet '' Iio o := by
+theorem coe_toZFSet {o : Ordinal} : o.toZFSet = toZFSet '' Iio o := by
   ext
   simp [mem_toZFSet_iff]
 
