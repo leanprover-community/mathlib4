@@ -578,6 +578,7 @@ theorem parts_partition {σ : Perm α} :
     σ.partition.parts = σ.cycleType + Multiset.replicate (Fintype.card α - #σ.support) 1 :=
   rfl
 
+set_option linter.unusedFintypeInType false in -- False positive
 theorem filter_parts_partition_eq_cycleType {σ : Perm α} :
     ((partition σ).parts.filter fun n => 2 ≤ n) = σ.cycleType := by
   rw [parts_partition, filter_add, Multiset.filter_eq_self.2 fun _ => two_le_of_mem_cycleType,

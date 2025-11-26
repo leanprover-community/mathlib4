@@ -73,6 +73,11 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
 end List
 
 section Fintype
+
+-- `Fintype.ofFinite` depends on this file, so the `unusedFintypeInType` linter
+-- makes no sense yet.
+set_option linter.unusedFintypeInType false
+
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Sort*} {S : ∀ i, Setoid (α i)} {β : Sort*}
 
 /-- Choice-free induction principle for quotients indexed by a finite type.
