@@ -136,7 +136,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
     refine ⟨a, ha₁, ?_⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
-    rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
+    rwa [← sub_eq_zero, ← map_sub] at ha₂
   tfae_have 1 → 3
   | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
     obtain ⟨a₀, rfl⟩ := hφ a₀
