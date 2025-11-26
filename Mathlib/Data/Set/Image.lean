@@ -11,7 +11,6 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff
 public import Mathlib.Data.Set.Inclusion
-public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Images and preimages of sets
