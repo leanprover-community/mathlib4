@@ -33,6 +33,17 @@ a denominator `s : S`.
 ## Tags
 localization, Ore, non-commutative
 
+## Implementation detail
+
+Some of the declarations are marked reducible to avoid diamonds with
+`Mathlib/Algebra/Module/LocalizedModule/Basic.lean`. This causes a significant performance
+regression, most notabaly in `Mathlib/AlgebraicGeometry/AffineSpace.lean`.
+Also see https://github.com/leanprover-community/mathlib4/pull/31862.
+
+We shall investigate if there are ways to improve performances. For example by introducing
+typeclasses to unify the two constructions on this and `LocalizedModule`, or by marking some
+downstream constructions (e.g. `Spec.structureSheaf`) as irreducible.
+
 -/
 
 @[expose] public section
