@@ -291,9 +291,11 @@ lemma congr_of_eventuallyEq (hf : IsImmersionAtOfComplement F I J n f x) (hfg : 
 
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
-lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
-  ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
+lemma congr_iff_of_eventuallyEq (hfg : f =ᶠ[𝓝 x] g) :
+    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x := by
+  simpa only [IsImmersionAtOfComplement_def] using
+    LiftSourceTargetPropertyAt.congr_iff_of_eventuallyEq
+      isLocalSourceTargetProperty_immersionAtProp hfg
 
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F :=
   small_of_injective <| hf.equiv.injective.comp (Prod.mk_right_injective 0)
