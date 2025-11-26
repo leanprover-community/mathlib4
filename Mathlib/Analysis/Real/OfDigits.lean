@@ -123,9 +123,10 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by cutsat),
       Fin.val_ofNat, Nat.div_add_mod]
 
-theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
+theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
+  have := NeZero.pos b
   have := ofDigits_digits_sum_eq (b := b) hx n
   have h_le := Nat.lt_floor_add_one (b ^ n * x)
   rw [← this] at h_le
@@ -146,7 +147,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
     HasSum (ofDigitsTerm (digits x b)) x := by
   rw [hasSum_iff_tendsto_nat_of_summable_norm (by exact summable_ofDigitsTerm.abs)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds
-    (le_sum_ofDigitsTerm_digits hb hx) (sum_ofDigitsTerm_digits_le hx)
+    (le_sum_ofDigitsTerm_digits hx) (sum_ofDigitsTerm_digits_le hx)
   convert tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
   · simp
   · simp [abs_of_nonneg, inv_lt_one_iff₀, hb]
