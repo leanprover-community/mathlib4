@@ -1332,6 +1332,10 @@ instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite 
     · rw [compl_subset_comm]
       apply subset_toMeasurable
 
+theorem cofinite_le_ae : μ.cofinite ≤ ae μ := by
+  intro s hs
+  simp_all [mem_cofinite, mem_ae_iff]
+
 end Measure
 
 open Measure
