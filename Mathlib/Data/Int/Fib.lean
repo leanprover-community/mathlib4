@@ -154,17 +154,13 @@ theorem gcd_fib (m n : ℤ) : gcd (fib m) (fib n) = Nat.fib (gcd m n) := by
   obtain ⟨m, (rfl | rfl)⟩ := m.eq_nat_or_neg
   · obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
     · simp [Nat.fib_gcd]
-    · simp only [gcd_neg, Int.gcd_natCast_natCast, fib_natCast, Nat.fib_gcd, fib_neg_natCast,
-        reduceNeg]
-      rcases neg_one_pow_eq_or ℤ (n + 1) with (h | h) <;> simp [h]
+    · simp only [fib_neg, gcd_neg, Int.gcd_natCast_natCast, Nat.fib_gcd]
+      split_ifs <;> simp
   · obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
-    · simp only [neg_gcd, Int.gcd_natCast_natCast, fib_natCast, Nat.fib_gcd, fib_neg_natCast,
-        reduceNeg]
-      rcases neg_one_pow_eq_or ℤ (m + 1) with (h | h) <;> simp [h]
-    · simp only [gcd_neg, neg_gcd, Int.gcd_natCast_natCast, Nat.fib_gcd,
-        fib_neg_natCast, reduceNeg]
-      rcases neg_one_pow_eq_or ℤ (n + 1) with (h | h) <;>
-        rcases neg_one_pow_eq_or ℤ (m + 1) with (h' | h') <;> simp [h, h']
+    · simp only [fib_neg, neg_gcd, Int.gcd_natCast_natCast, Nat.fib_gcd]
+      split_ifs <;> simp
+    · simp only [fib_neg, gcd_neg, neg_gcd, Int.gcd_natCast_natCast, Nat.fib_gcd]
+      split_ifs <;> simp
 
 private theorem fib_natCast_dvd {m : ℕ} {n : ℤ} (h : (m : ℤ) ∣ n) : fib m ∣ fib n := by
   rwa [← gcd_eq_left_iff_dvd (by simp), gcd_fib, ← fib_natCast, (gcd_eq_left_iff_dvd (by simp)).mpr]
