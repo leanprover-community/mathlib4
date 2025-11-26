@@ -386,8 +386,8 @@ end ContinuousSMul
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [LinearOrder 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-  [Field 𝕜] [IsStrictOrderedRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 open scoped Topology
 open Filter
