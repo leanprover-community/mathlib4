@@ -5,8 +5,10 @@ Authors: Etienne Marion, Rémy Degenne, Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
-public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+import Mathlib.MeasureTheory.Function.Holder
 
 /-!
 # Pull-out property of the conditional expectation
@@ -33,7 +35,7 @@ We specialize this statement to the cases where `B` is scalar multiplication and
 conditional expectation, pull-out, bilinear map
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
