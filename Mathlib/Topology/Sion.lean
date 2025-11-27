@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Quasiconvex
-public import Mathlib.Analysis.Convex.SaddlePoint
+public import Mathlib.Order.SaddlePoint
 public import Mathlib.Topology.Instances.EReal.Lemmas
 public import Mathlib.Topology.Sublevel
 
