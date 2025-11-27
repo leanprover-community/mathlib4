@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.RingTheory.Smooth.Kaehler
-import Mathlib.RingTheory.Etale.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Exact
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
+public import Mathlib.RingTheory.Smooth.Kaehler
+public import Mathlib.RingTheory.Etale.Basic
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -27,13 +29,13 @@ We also provide the corresponding instances for standard smooth algebras as coro
 We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 -/
 
-universe u
+@[expose] public section
 
 namespace Algebra
 
-section
-
 variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]
+
+section
 
 open Extension Module MvPolynomial
 
@@ -238,6 +240,53 @@ theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
 
 end SubmersivePresentation
 
+section LocalizationAway
+
+variable (r : R) [IsLocalization.Away r S]
+
+instance : Module.Free S (Generators.localizationAway S r).toExtension.Cotangent :=
+  inferInstanceAs <|
+    Module.Free S ((SubmersivePresentation.localizationAway S r).toExtension.Cotangent)
+
+variable (S) in
+/-- The image of `g * X - 1` in `I/I²` if `I` is the kernel of the canonical presentation
+of the localization of `S` away from `g`. -/
+noncomputable
+abbrev Generators.cMulXSubOneCotangent : (Generators.localizationAway S r).toExtension.Cotangent :=
+  Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩
+
+lemma Generators.cMulXSubOneCotangent_eq :
+    cMulXSubOneCotangent S r = Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
+  rfl
+
+lemma SubmersivePresentation.basisCotangent_localizationAway_apply (x : Unit) :
+    (SubmersivePresentation.localizationAway S r).basisCotangent x =
+      Generators.cMulXSubOneCotangent S r :=
+  basisCotangent_apply _ _
+
+variable (S) in
+/--
+The basis of `(g * X - 1) / (g * X - 1)²` given by the image of `g * X - 1`.
+
+This is def-eq to `(SubmersivePresentation.localizationAway T g).basisCotangent`, but
+```
+(SubmersivePresentation.localizationAway T g).toExtension =
+  (Generators.localizationAway T g).toExtension
+```
+is not reducibly def-eq. Hence using the general `SubmersivePresentation.basisCotangent` leads
+to `erw` hell.
+-/
+noncomputable
+def Generators.basisCotangentAway (r : R) [IsLocalization.Away r S] :
+    Module.Basis Unit S (localizationAway S r).toExtension.Cotangent :=
+  (SubmersivePresentation.localizationAway S r).basisCotangent
+
+lemma Generators.basisCotangentAway_apply (x : Unit) :
+    basisCotangentAway S r x = cMulXSubOneCotangent S r :=
+  SubmersivePresentation.basisCotangent_apply _ _
+
+end LocalizationAway
+
 /-- If `S` is `R`-standard smooth, `Ω[S⁄R]` is a free `S`-module. -/
 instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
     Module.Free S Ω[S⁄R] := by
@@ -267,11 +316,9 @@ instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
 
 end
 
-variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
-
 instance (priority := 900) [IsStandardSmooth R S] : Smooth R S where
   formallySmooth := by
-    rw [Algebra.FormallySmooth.iff_subsingleton_and_projective]
+    rw [Algebra.formallySmooth_iff]
     exact ⟨inferInstance, inferInstance⟩
 
 /-- If `S` is `R`-standard smooth of relative dimension zero, it is étale. -/
@@ -280,6 +327,6 @@ instance (priority := 900) [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R
   formallyEtale :=
     have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
     have : FormallyUnramified R S := ⟨inferInstance⟩
-    Algebra.FormallyEtale.of_unramified_and_smooth
+    .of_formallyUnramified_and_formallySmooth
 
 end Algebra

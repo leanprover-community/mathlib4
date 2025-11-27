@@ -3,10 +3,12 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.IsNormal
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.Order.IsNormal
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 ### Topology of ordinals
@@ -22,6 +24,8 @@ We prove some miscellaneous results involving the order topology of ordinals.
 * `Ordinal.enumOrd_isNormal_iff_isClosed`: The function enumerating the ordinals of a set is
   normal iff the set is closed.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -146,7 +150,7 @@ theorem isClosed_iff_bsup :
   rw [isClosed_iff_iSup]
   refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
-  · rw [← Ordinal.sup, ← bsup_eq_sup]
+  · rw [← bsup_eq_iSup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 

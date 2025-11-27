@@ -3,14 +3,15 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
+module
 
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
-import Mathlib.CategoryTheory.Category.ReflQuiv
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.CategoryTheory.Category.Cat.Terminal
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.CategoryTheory.Category.ReflQuiv
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.CategoryTheory.Category.Cat.Terminal
 
 /-!
 
@@ -35,6 +36,8 @@ In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we sh
 nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
 -/
+
+@[expose] public section
 
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
@@ -164,7 +167,8 @@ def OneTruncation₂.ofNerve₂.natIso :
         ComposableArrows.obj', Fin.zero_eta, Fin.isValue, ReflQuiv.comp_eq_comp, Nat.reduceAdd,
         op_map, Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
-      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
+      simp [nerveMap_app, nerveHomEquiv, ReflQuiv.isoOfEquiv,
+        ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
 end
 
@@ -324,6 +328,11 @@ def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFun
 end
 
 end
+
+/-- For a simplicial set `X`, the underlying type of `hoFunctor.obj X` is equivalent to `X _⦋0⦌`. -/
+def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
+  (Quotient.equiv.{u,u} _).trans (Quotient.equiv _)
+
 section
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus

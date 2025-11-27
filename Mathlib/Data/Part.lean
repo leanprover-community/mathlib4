@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Partial values of a type
@@ -17,9 +19,7 @@ a proof of the domain.
 for some `a : α`, while the domain of `o : Part α` doesn't have to be decidable. That means you can
 translate back and forth between a partial value with a decidable domain and an option, and
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
-In current mathlib, `Part ℕ`, aka `PartENat`, is used to move decidability of the order to
-decidability of `PartENat.find` (which is the smallest natural satisfying a predicate, or `∞` if
-there's none).
+
 ## Main declarations
 `Option`-like declarations:
 * `Part.none`: The partial value whose domain is `False`.
@@ -41,6 +41,8 @@ Other:
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -411,19 +413,12 @@ theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔
     fun ⟨_, h⟩ => mem_assert _ h⟩
 
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
-  dsimp [assert]
-  cases h' : f h
-  simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
-  apply Function.hfunext
-  · simp only [h, h', exists_prop_of_true]
-  · simp
+  ext
+  simp_all
 
 theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none := by
-  dsimp [assert, none]; congr
-  · simp only [h, not_false_iff, exists_prop_of_false]
-  · apply Function.hfunext
-    · simp only [h, not_false_iff, exists_prop_of_false]
-    simp at *
+  ext
+  simp_all
 
 theorem mem_bind {f : Part α} {g : α → Part β} : ∀ {a b}, a ∈ f → b ∈ g a → b ∈ f.bind g
   | _, _, ⟨h, rfl⟩, ⟨h₂, rfl⟩ => ⟨⟨h, h₂⟩, rfl⟩
@@ -620,7 +615,7 @@ theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·)
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 
 @[to_additive]
-theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (·⁻¹) a := rfl
 
 @[to_additive]
 theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
