@@ -5,12 +5,10 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.Lean.Expr.Basic
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -27,8 +25,12 @@ and constructions
 * `RegularMono f → Mono f`
 as well as the dual definitions/constructions for regular epimorphisms.
 
-Additionally, we give the construction
-* `RegularEpi f ⟶ StrongEpi f`.
+Additionally, we give the constructions
+* `RegularEpi f → EffectiveEpi f`, from which it can be deduced that regular epimorphisms are
+  strong.
+* `regularEpiOfEffectiveEpi`: constructs a `RegularEpi f` instance from `EffectiveEpi f` and
+  `HasPullback f f`.
+
 
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
@@ -311,6 +313,49 @@ noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f 
   w := pullback.condition
   isColimit := hc
 
+/-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
+def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
+    EffectiveEpiStruct f where
+  desc _ h := Cofork.IsColimit.desc RegularEpi.isColimit _ (h _ _ RegularEpi.w)
+  fac _ _ := Cofork.IsColimit.π_desc' RegularEpi.isColimit _ _
+  uniq _ _ _ hg := Cofork.IsColimit.hom_ext RegularEpi.isColimit (hg.trans
+    (Cofork.IsColimit.π_desc' _ _ _).symm)
+
+instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
+  ⟨⟨effectiveEpiStructOfRegularEpi f⟩⟩
+
+/-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
+theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
+    (hc : IsColimit (Cofork.ofπ f pullback.condition)) : EffectiveEpi f :=
+  let _ := regularEpiOfKernelPair f hc
+  inferInstance
+
+@[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
+
+/-- An effective epi which has a kernel pair is a regular epi. -/
+noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+    [EffectiveEpi f] : RegularEpi f where
+  W := pullback f f
+  left := pullback.fst f f
+  right := pullback.snd f f
+  w := pullback.condition
+  isColimit := {
+    desc := fun s ↦ EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+      simp only [Cofork.app_one_eq_π]
+      rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
+      simp)
+    fac := by
+      intro s j
+      have := EffectiveEpi.fac f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+          simp only [Cofork.app_one_eq_π]
+          rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
+          simp)
+      simp only [Functor.const_obj_obj, Cofork.app_one_eq_π] at this
+      cases j with
+      | zero => simp [this]
+      | one => simp [this]
+    uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
+
 /-- Every split epimorphism is a regular epimorphism. -/
 instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
@@ -364,19 +409,9 @@ def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
     RegularEpi k :=
   regularOfIsPushoutSndOfRegular comm.symm (PushoutCocone.flipIsColimit t)
 
+@[deprecated "No replacement" (since := "2025-11-20")]
 instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] : StrongEpi f :=
-  StrongEpi.mk'
-    (by
-      intro A B z hz u v sq
-      have : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ u = RegularEpi.right ≫ u := by
-        apply (cancel_mono z).1
-        simp only [Category.assoc, sq.w, RegularEpi.w_assoc]
-      obtain ⟨t, ht⟩ := RegularEpi.desc' f u this
-      exact
-        CommSq.HasLift.mk'
-          ⟨t, ht,
-            (cancel_epi f).1
-              (by simp only [← Category.assoc, ht, ← sq.w])⟩)
+  inferInstance
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=
