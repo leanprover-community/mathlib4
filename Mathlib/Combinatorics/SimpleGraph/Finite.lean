@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Sym.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Sym.Card
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -37,6 +39,8 @@ or `card_verts`.
 * Given instances `DecidableRel G.Adj` and `Fintype V`, then the graph
   is locally finite, too.
 -/
+
+@[expose] public section
 
 
 open Finset Function
@@ -203,6 +207,22 @@ theorem degree_eq_zero_iff_notMem_support : G.degree v = 0 ↔ v ∉ G.support :
 @[deprecated (since := "2025-05-23")]
 alias degree_eq_zero_iff_not_mem_support := degree_eq_zero_iff_notMem_support
 
+@[simp]
+theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.neighborSet v)]
+    [Subsingleton V] : G.degree v = 0 := by
+  have := G.degree_pos_iff_exists_adj v
+  simp_all [subsingleton_iff_forall_eq v]
+
+theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
+    G.degree v = 1 ↔ ∃! w : V, G.Adj v w := by
+  rw [degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
+  simp only [mem_neighborFinset]
+
+theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
+    (h : G.degree v ≠ 0) : Nontrivial V := by
+  by_contra!
+  simp_all [degree_eq_zero_of_subsingleton]
+
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
@@ -357,11 +377,10 @@ variable {G} in
 /-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
 lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
     (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
-  by_cases hne : Nonempty V
+  by_cases! hne : Nonempty V
   · apply le_minDegree_of_forall_le_degree
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
-  · push_neg at hne
-    simp
+  · simp
 
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
 theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
@@ -405,10 +424,9 @@ lemma maxDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.maxDegree = 0 :=
 degree. -/
 theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀ v, G.degree v ≤ k) :
     G.maxDegree ≤ k := by
-  by_cases hV : IsEmpty V
+  by_cases! hV : IsEmpty V
   · simp
-  · push_neg at hV
-    obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
+  · obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
 
 @[simp]
@@ -417,10 +435,9 @@ lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
 
 @[simp]
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
-  by_cases he : IsEmpty V
+  by_cases! he : IsEmpty V
   · simp
-  · push_neg at he
-    exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
+  · exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
 
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=

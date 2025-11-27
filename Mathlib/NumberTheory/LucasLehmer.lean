@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
-import Mathlib.NumberTheory.Fermat
-import Mathlib.RingTheory.Fintype
+module
+
+public import Mathlib.NumberTheory.Fermat
+public import Mathlib.RingTheory.Fintype
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes
@@ -29,6 +31,8 @@ The tactic for certified computation of Lucas-Lehmer residues was provided by Ma
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.
 -/
+
+@[expose] public section
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
@@ -78,7 +82,7 @@ alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
 
 /-- Extension for the `positivity` tactic: `mersenne`. -/
 @[positivity mersenne _]
-def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -447,9 +451,9 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
   have := two_mul_ω_pow odd leg3
   rw [mul_pow] at this
   have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
-  rw [coe, ← RingHom.map_pow, pow2, ← coe,
+  rw [coe, ← map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
-  refine (isUnit_of_mul_eq_one (2 : X q) ((q + 1) / 2 : ℕ) ?_).mul_left_cancel this
+  refine (IsUnit.of_mul_eq_one (M := X q) ↑((q + 1) / 2) ?_).mul_left_cancel this
   norm_cast
   simp [Nat.mul_div_cancel' odd.add_one.two_dvd]
 
@@ -594,7 +598,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
-/-- If `2^p-1` is prime then the Lucas-Lehmer test holds, `s(p-2) % (2^p-1) = 0. -/
+/-- If `2^p - 1` is prime then the Lucas-Lehmer test holds, `s (p - 2) % (2^p - 1) = 0`. -/
 theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime) :
     LucasLehmerTest p := by
   have : Fact (mersenne p).Prime := ⟨‹_›⟩
@@ -655,13 +659,14 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
       Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
-def sModNatTR (q k : ℕ) : ℕ :=
+meta def sModNatTR (q k : ℕ) : ℕ :=
   go k (4 % q)
 where
   /-- Helper function for `sMod''`. -/
   go : ℕ → ℕ → ℕ
   | 0, acc => acc
   | n + 1, acc => go n ((acc ^ 2 + (q - 2)) % q)
+termination_by structural x => x
 
 /--
 Generalization of `sModNat` with arbitrary base case,
@@ -700,7 +705,7 @@ lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p -
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
     (h : Nat.ble 1 (sModNatTR (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
-  rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
+  rw [Nat.ble_eq, Nat.succ_le_iff, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
     ← sModNatTR_eq_sModNat]
   simpa using h
@@ -716,7 +721,7 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 /-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
 `sMod'` function. -/
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
-def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
+meta def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!

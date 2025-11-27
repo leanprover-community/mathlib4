@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.LinearAlgebra.Finsupp.Span
+module
+
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Lie submodules of a Lie algebra
@@ -24,6 +26,8 @@ use it to define various important operations, notably the Lie span of a subset 
 
 lie algebra, lie submodule, lie ideal, lattice structure
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -402,7 +406,7 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨆ i, p i) : Submodule R M) = ⨆ i, (p i : Submodule R M) := by
   rw [iSup, sSup_toSubmodule]; ext; simp [Submodule.mem_sSup, Submodule.mem_iSup]
 
-/-- The set of Lie submodules of a Lie module form a complete lattice. -/
+/-- The Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
   { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
       sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with
@@ -439,43 +443,22 @@ variable {N N'}
   rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
     ← disjoint_iff]
 
-@[deprecated disjoint_toSubmodule (since := "2025-04-03")]
-theorem disjoint_iff_toSubmodule :
-    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := disjoint_toSubmodule.symm
-
 @[simp] lemma codisjoint_toSubmodule :
     Codisjoint (N : Submodule R M) (N' : Submodule R M) ↔ Codisjoint N N' := by
   rw [codisjoint_iff, codisjoint_iff, ← toSubmodule_inj, sup_toSubmodule,
     top_toSubmodule, ← codisjoint_iff]
 
-@[deprecated codisjoint_toSubmodule (since := "2025-04-03")]
-theorem codisjoint_iff_toSubmodule :
-    Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) :=
-  codisjoint_toSubmodule.symm
-
 @[simp] lemma isCompl_toSubmodule :
     IsCompl (N : Submodule R M) (N' : Submodule R M) ↔ IsCompl N N' := by
   simp [isCompl_iff]
-
-@[deprecated isCompl_toSubmodule (since := "2025-04-03")]
-theorem isCompl_iff_toSubmodule :
-    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := isCompl_toSubmodule.symm
 
 @[simp] lemma iSupIndep_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
     iSupIndep (fun i ↦ (N i : Submodule R M)) ↔ iSupIndep N := by
   simp [iSupIndep_def, ← disjoint_toSubmodule]
 
-@[deprecated iSupIndep_toSubmodule (since := "2025-04-03")]
-theorem iSupIndep_iff_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := iSupIndep_toSubmodule.symm
-
 @[simp] lemma iSup_toSubmodule_eq_top {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, (N i : Submodule R M) = ⊤ ↔ ⨆ i, N i = ⊤ := by
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
-
-@[deprecated iSup_toSubmodule_eq_top (since := "2025-04-03")]
-theorem iSup_eq_top_iff_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
-    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := iSup_toSubmodule_eq_top.symm
 
 instance : Add (LieSubmodule R L M) where add := max
 

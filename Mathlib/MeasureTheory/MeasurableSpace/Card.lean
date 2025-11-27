@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Violeta Hernández Palacios
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.SetTheory.Cardinal.Ordinal
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.SetTheory.Cardinal.Continuum
+public import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinal of sigma-algebras
@@ -24,6 +26,8 @@ construction is parameterized by an ordinal `< ω₁`, and the cardinality bound
 each step of the construction. We show in `MeasurableSpace.generateMeasurable_eq_rec` that this
 indeed generates this sigma-algebra.
 -/
+
+@[expose] public section
 
 
 universe u v

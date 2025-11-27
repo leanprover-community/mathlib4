@@ -3,16 +3,20 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Data.DFinsupp.Order
-import Mathlib.Data.DFinsupp.NeLocus
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Data.DFinsupp.Order
+public import Mathlib.Data.DFinsupp.NeLocus
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Lexicographic order on finitely supported dependent functions
 
 This file defines the lexicographic order on `DFinsupp`.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} {α : ι → Type*}
@@ -106,9 +110,8 @@ instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (
     (DFunLike.coe_injective (F := DFinsupp α))
 
 theorem lex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
-    x ≤ y ↔ x default ≤ y default := by
-  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
-    DFunLike.ext_iff, Unique.forall_iff]
+    x ≤ y ↔ x default ≤ y default :=
+  Pi.lex_le_iff_of_unique
 
 theorem colex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
@@ -116,7 +119,7 @@ theorem colex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : C
 
 section LinearOrder
 
-variable [H : ∀ i, LinearOrder (α i)]
+variable [∀ i, LinearOrder (α i)]
 
 /-- Auxiliary helper to case split computably. There is no need for this to be public, as it
 can be written with `Or.by_cases` on `lt_trichotomy` once the instances below are constructed. -/

@@ -3,15 +3,19 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.DFinsupp.Lex
+public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Lexicographic order on finitely supported functions
 
 This file defines the lexicographic order on `Finsupp`.
 -/
+
+@[expose] public section
 
 
 variable {α N : Type*}
@@ -105,8 +109,7 @@ instance Colex.partialOrder [PartialOrder N] : PartialOrder (Colex (α →₀ N)
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
-  lt := (· < ·)
-  le := (· ≤ ·)
+  __ := Lex.partialOrder
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
 /-- The linear order on `Finsupp`s obtained by the colexicographic ordering. -/
@@ -116,9 +119,8 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
   __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
 
 theorem lex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
-    x ≤ y ↔ x default ≤ y default := by
-  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
-    DFunLike.ext_iff, Unique.forall_iff]
+    x ≤ y ↔ x default ≤ y default :=
+  Pi.lex_le_iff_of_unique
 
 theorem colex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
@@ -186,7 +188,7 @@ section Left
 variable [AddLeftStrictMono N]
 
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
-  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
+  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_right ha _⟩⟩
 
 instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (α →₀ N)) :=
   Lex.addLeftStrictMono (α := αᵒᵈ)
@@ -204,8 +206,7 @@ section Right
 variable [AddRightStrictMono N]
 
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
-  ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
-    ⟨a, fun j ja ↦ congr_arg (· + f j) (lta j ja), add_lt_add_right ha _⟩⟩
+  ⟨fun f _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr($(lta j ja) + f j), add_lt_add_left ha _⟩⟩
 
 instance Colex.addRightStrictMono : AddRightStrictMono (Colex (α →₀ N)) :=
   Lex.addRightStrictMono (α := αᵒᵈ)
