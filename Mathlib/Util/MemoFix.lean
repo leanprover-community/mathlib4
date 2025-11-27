@@ -16,7 +16,7 @@ public import Mathlib.Init
 variable {α β : Type}
 
 @[noinline]
-private def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
+def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
 
 unsafe def memoFixImpl [Nonempty β] (f : (α → β) → (α → β)) : α → β := unsafeBaseIO do
   let cache : IO.Ref (Lean.PtrMap α β) ← ST.mkRef Lean.mkPtrMap
