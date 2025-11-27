@@ -240,19 +240,38 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
+private abbrev strongRecAux {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
+    ∀ n : ℕ, ∀ m < n, p m
+  | 0, _, h => by simp at h
+  | n + 1, m, hmn => H _ fun l hlm ↦
+      strongRecAux H n l (Nat.lt_of_lt_of_le hlm <| le_of_lt_succ hmn)
+
 /-- Recursion principle based on `<`. -/
 @[elab_as_elim]
-protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m, m < n → p m) → p n) : ∀ n : ℕ, p n
-  | n => H n fun m _ ↦ Nat.strongRec' H m
+protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) : p n :=
+  H n <| strongRecAux H n
+
+private lemma strongRecAux_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) (n : ℕ) :
+    ∀ m (lt : m < n), strongRecAux H n m lt = H m (strongRecAux H m) :=
+  n.strongRec' fun n ih m hmn ↦ by
+    obtain _ | n := n
+    · cases hmn
+    refine congrArg (H _) ?_
+    ext l hlm
+    exact (ih _ n.lt_succ_self _ _).trans (ih _ hmn _ _).symm
+
+lemma strongRec'_spec {p : ℕ → Sort*} (H : ∀ n, (∀ m < n, p m) → p n) :
+    n.strongRec' H = H n fun m _ ↦ m.strongRec' H :=
+  congrArg (H n) <| by ext m lt; apply strongRecAux_spec
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
-def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
+def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m < n, P m) → P n) : P n :=
   Nat.strongRec' h n
 
 lemma strongRecOn'_beta {P : ℕ → Sort*} {h} :
-    (strongRecOn' n h : P n) = h n fun m _ ↦ (strongRecOn' m h : P m) := by
-  simp only [strongRecOn']; rw [Nat.strongRec']
+    (strongRecOn' n h : P n) = h n fun m _ ↦ (strongRecOn' m h : P m) :=
+  strongRec'_spec _
 
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
@@ -273,11 +292,11 @@ def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
-    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+    (h : ∀ n, (∀ m < n, p m) → p n) : p n :=
   Nat.strongRecOn n h
 
 protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
-    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a :=
+    (hi : ∀ n, (∀ m ≤ n, p m) → p (n + 1)) : p a :=
   Nat.caseStrongRecOn a hz hi
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
