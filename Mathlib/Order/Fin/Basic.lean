@@ -317,16 +317,16 @@ def orderIsoSubtype : Fin n ≃o {i // i < n} :=
 /-- `Fin.cast` as an `OrderIso`.
 
 `castOrderIso eq i` embeds `i` into an equal `Fin` type. -/
-@[simps]
+@[simps!]
 def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
 
 @[simp]
-lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
+lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := rfl
 
 @[simp]
-lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
+lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := rfl
 
 /-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
 apply a generic lemma about `cast`. -/

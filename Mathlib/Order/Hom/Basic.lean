@@ -443,11 +443,16 @@ infixl:25 " ↪o " => OrderEmbedding
 
 namespace OrderEmbedding
 
-instance [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
+section LE
 
-instance [LE α] [LE β] : OrderHomClass (α ↪o β) α β := RelEmbedding.instRelHomClass
+variable [LE α] [LE β]
 
-instance [LE α] [LE β] : EmbeddingLike (α ↪o β) α β := RelEmbedding.instEmbeddingLike
+instance : Inhabited (α ↪o α) := RelEmbedding.instInhabited _
+instance : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
+instance : OrderHomClass (α ↪o β) α β := RelEmbedding.instRelHomClass
+instance : EmbeddingLike (α ↪o β) α β := RelEmbedding.instEmbeddingLike
+
+end LE
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def _root_.RelEmbedding.orderEmbeddingOfLTEmbedding {α β} [PartialOrder α] [PartialOrder β]
@@ -637,10 +642,9 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
+instance : Inhabited (α ≃o α) := RelIso.instInhabited _
 instance : FunLike (α ≃o β) α β := RelIso.instFunLike
-
 instance : EquivLike (α ≃o β) α β := RelIso.instEquivLike
-
 instance : OrderHomClass (α ≃o β) α β := RelIso.instRelHomClass
 
 @[simp]
