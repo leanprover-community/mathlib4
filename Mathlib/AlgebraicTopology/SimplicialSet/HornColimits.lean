@@ -137,7 +137,7 @@ lemma multicoequalizerDiagram :
       (ι := ({i}ᶜ : Set (Fin (n +1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
       (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
   iSup_eq := by rw [horn_eq_iSup]
-  min_eq j k := by
+  eq_inf j k := by
     rw [stdSimplex.face_inter_face]
     congr
     aesop
@@ -198,19 +198,19 @@ noncomputable def desc : (horn 3 1 : SSet) ⟶ X :=
 
 @[reassoc (attr := simp)]
 lemma ι₀_desc : ι₀ ≫ desc f₀ f₂ f₃ h₁₂ h₁₃ h₂₃ = f₀ := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso 0).inv, ← Category.assoc,
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} 0).inv, ← Category.assoc,
     horn.faceSingletonComplIso_inv_ι]
   exact (horn.isColimit 1).fac _ (.right ⟨0, by simp⟩)
 
 @[reassoc (attr := simp)]
 lemma ι₂_desc : ι₂ ≫ desc f₀ f₂ f₃ h₁₂ h₁₃ h₂₃ = f₂ := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso 2).inv, ← Category.assoc,
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} 2).inv, ← Category.assoc,
     horn.faceSingletonComplIso_inv_ι]
   exact (horn.isColimit 1).fac _ (.right ⟨2, by simp⟩)
 
 @[reassoc (attr := simp)]
 lemma ι₃_desc : ι₃ ≫ desc f₀ f₂ f₃ h₁₂ h₁₃ h₂₃ = f₃ := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso 3).inv, ← Category.assoc,
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} 3).inv, ← Category.assoc,
     horn.faceSingletonComplIso_inv_ι]
   exact (horn.isColimit 1).fac _ (.right ⟨3, by simp⟩)
 
@@ -269,19 +269,19 @@ noncomputable def desc : (horn 3 2 : SSet) ⟶ X :=
 
 @[reassoc (attr := simp)]
 lemma ι₀_desc : ι₀ ≫ desc f₀ f₁ f₃ h₀₂ h₁₂ h₂₃ = f₀ := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso 0).inv, ← Category.assoc,
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} 0).inv, ← Category.assoc,
     horn.faceSingletonComplIso_inv_ι]
   exact (horn.isColimit 2).fac _ (.right ⟨0, by simp⟩)
 
 @[reassoc (attr := simp)]
 lemma ι₁_desc : ι₁ ≫ desc f₀ f₁ f₃ h₀₂ h₁₂ h₂₃ = f₁ := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso 1).inv, ← Category.assoc,
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} 1).inv, ← Category.assoc,
     horn.faceSingletonComplIso_inv_ι]
   exact (horn.isColimit 2).fac _ (.right ⟨1, by simp⟩)
 
 @[reassoc (attr := simp)]
 lemma ι₃_desc : ι₃ ≫ desc f₀ f₁ f₃ h₀₂ h₁₂ h₂₃ = f₃ := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso 3).inv, ← Category.assoc,
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} 3).inv, ← Category.assoc,
     horn.faceSingletonComplIso_inv_ι]
   exact (horn.isColimit 2).fac _ (.right ⟨3, by simp⟩)
 
