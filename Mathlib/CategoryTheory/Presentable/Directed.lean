@@ -77,9 +77,9 @@ namespace Diagram
 variable {J κ}
 
 /-- Given a `κ`-bounded diagram `D` in a category `J`, an object `e : J`
-is terminal if for any object `j` of `D`, there is a unique morphism `j ⟶ e` in `D`,
-that these unique morphisms are compatible with precomposition with morphisms in `D`,
-and that `𝟙 e` belongs to `D`. -/
+is terminal if `𝟙 e` belongs to `D` and for any object `j` of `D`,
+there is a unique morphism `j ⟶ e` in `D`, such that these unique morphisms
+are compatible with precomposition with morphisms in `D`. -/
 structure IsTerminal (D : Diagram J κ) (e : J) where
   prop_id : D.W (𝟙 e)
   /-- the unique map to the terminal object in the diagram -/
@@ -251,7 +251,7 @@ def Diagram.iSup {ι : Type*} (D : ι → Diagram J κ) (hι : HasCardinalLT ι 
 variable {J κ} in
 /-- The union of two `κ`-bounded diagrams. -/
 @[simps]
-def Diagram.max (D₁ D₂ : Diagram J κ) :
+def Diagram.sup (D₁ D₂ : Diagram J κ) :
     Diagram J κ where
   W := D₁.W ⊔ D₂.W
   P := D₁.P ⊔ D₂.P
@@ -324,13 +324,13 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
       (D x.1).isTerminal.lift x.2.2 ≫ u x.1
     have hD {i : ι} : ¬ (D i).P m := fun hi ↦ (hm₀ i).false ((D i).isTerminal.lift hi)
     let D₀ := Diagram.iSup (fun i ↦ (D i).toDiagram) hι
-    let D₁ := D₀.max (.single m)
+    let D₁ := D₀.sup (.single m)
     let D₂ : Diagram J κ :=
       { W := D₁.W ⊔ .ofHoms φ
         P := D₁.P
         src := by
-          simp only [Diagram.max_W, Diagram.iSup_W, Diagram.single_W, Diagram.max_P, Pi.sup_apply,
-            Diagram.iSup_P, iSup_apply, iSup_Prop_eq, Diagram.single_P,
+          simp only [Diagram.sup_W, Diagram.iSup_W, Diagram.single_W, Diagram.sup_P,
+            Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq, Diagram.single_P,
             ObjectProperty.singleton_iff, sup_Prop_eq, D₁, D₀]
           rintro _ _ _ ((hf | ⟨⟨⟩⟩) | ⟨i, j, hj⟩)
           · simp only [MorphismProperty.iSup_iff] at hf
@@ -339,8 +339,8 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
           · exact Or.inr rfl
           · exact Or.inl ⟨i, hj⟩
         tgt := by
-          simp only [Diagram.max_W, Diagram.iSup_W, Diagram.single_W, Diagram.max_P, Pi.sup_apply,
-            Diagram.iSup_P, iSup_apply, iSup_Prop_eq, Diagram.single_P,
+          simp only [Diagram.sup_W, Diagram.iSup_W, Diagram.single_W, Diagram.sup_P,
+            Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq, Diagram.single_P,
             ObjectProperty.singleton_iff, sup_Prop_eq, D₁, D₀]
           rintro _ _ _ ((hf | ⟨⟨⟩⟩) | ⟨i, j, hj⟩)
           · simp only [MorphismProperty.iSup_iff] at hf
@@ -352,7 +352,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
           ((hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP)))) hκ
         hP := D₁.hP }
     have hD₂ {f : m ⟶ m} (hf : D₂.W f) : f = 𝟙 _ := by
-      simp only [Diagram.max_W, Diagram.iSup_W, Diagram.single_W, D₁, D₀, D₂] at hf
+      simp only [Diagram.sup_W, Diagram.iSup_W, Diagram.single_W, D₁, D₀, D₂] at hf
       obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
       · simp only [MorphismProperty.iSup_iff] at hf
         obtain ⟨i, hi⟩ := hf
@@ -365,7 +365,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
     let he : D₂.IsTerminal m := by
       have H {i : ι} {j : J} (hj : (D i).P j) {f : j ⟶ m} (hf : D₂.W f) :
           f = φ ⟨i, ⟨_, hj⟩⟩ := by
-        simp only [Diagram.max_W, Diagram.iSup_W, Diagram.single_W, D₁, D₀, D₂] at hf
+        simp only [Diagram.sup_W, Diagram.iSup_W, Diagram.single_W, D₁, D₀, D₂] at hf
         obtain ((hf | ⟨⟨⟩⟩) | ⟨⟨i', j, hj'⟩⟩) := hf
         · simp only [MorphismProperty.iSup_iff] at hf
           obtain ⟨i, hf⟩ := hf
@@ -374,14 +374,14 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
         · apply hm
       refine .ofExistsUnique ?_ ?_ ?_ ?_
       · exact Or.inl (Or.inr ⟨⟨⟩⟩)
-      · simp only [Diagram.max_P, Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq,
-          Diagram.single_P, ObjectProperty.singleton_iff, sup_Prop_eq, Diagram.max_W,
+      · simp only [Diagram.sup_P, Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq,
+          Diagram.single_P, ObjectProperty.singleton_iff, sup_Prop_eq, Diagram.sup_W,
           Diagram.iSup_W, Diagram.single_W, D₁, D₀, D₂]
         rintro j (⟨i, hi⟩ | rfl)
         · exact ⟨φ ⟨i, _, hi⟩, Or.inr (.mk _)⟩
         · exact ⟨𝟙 _, Or.inl (Or.inr ⟨⟨⟩⟩)⟩
       · intro j hj l₁ l₂ hl₁ hl₂
-        simp only [Diagram.max_P, Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq,
+        simp only [Diagram.sup_P, Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq,
           Diagram.single_P, ObjectProperty.singleton_iff, sup_Prop_eq, D₁, D₀, D₂] at hj
         obtain (⟨i, hj⟩ | rfl) := hj
         · obtain rfl := H hj hl₁
@@ -401,7 +401,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
         isTerminal := he
         uniq_terminal j hj := by
           have := hj.prop
-          simp only [Diagram.max_P, Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq,
+          simp only [Diagram.sup_P, Pi.sup_apply, Diagram.iSup_P, iSup_apply, iSup_Prop_eq,
             Diagram.single_P, ObjectProperty.singleton_iff, sup_Prop_eq, D₁, D₀, D₂] at this
           obtain (⟨i, hi⟩ | rfl) := this
           · exfalso
@@ -424,7 +424,7 @@ lemma final_functor : (functor J κ).Final := by
       by simpa using IsFiltered.coeq_condition (f₁ ≫ t) (f₂ ≫ t)⟩
   have h₁ : ¬ (D.P m₁) := fun h₁ ↦ hm₀.false (u ≫ D.isTerminal.lift h₁)
   let φ (x : Subtype D.P) : x.1 ⟶ m₁ := D.isTerminal.lift x.2 ≫ t ≫ u
-  let D₀ := D.toDiagram.max (.single m₁)
+  let D₀ := D.toDiagram.sup (.single m₁)
   let D₁ : Diagram J κ :=
     { W := D₀.W ⊔ .ofHoms φ
       P := D₀.P
@@ -487,7 +487,6 @@ lemma aux :
     functor J κ, final_functor J κ hJ⟩
 
 end exists_cardinal_directed
-
 
 /-!
 The previous lemma `IsCardinalFiltered.exists_cardinal_directed.aux`

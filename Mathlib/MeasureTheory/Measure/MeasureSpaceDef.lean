@@ -406,6 +406,10 @@ function. -/
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 
+/-- A function is `m`-`AEMeasurable` with respect to a measure `μ` if it coincides almost everywhere
+with a `m`-measurable function. -/
+scoped[MeasureTheory] notation "AEMeasurable[" m "]" => @AEMeasurable _ _ _ m
+
 add_aesop_rules safe tactic
   (rule_sets := [Measurable])
   (index := [target @AEMeasurable ..])
