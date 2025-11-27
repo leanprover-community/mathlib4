@@ -323,7 +323,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     intro i hi
     rw [Finset.mem_range] at hi
     apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by lia)).coeff_eq_zero
-    simp only [Finsupp.degree_zero]
+    simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
   simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
