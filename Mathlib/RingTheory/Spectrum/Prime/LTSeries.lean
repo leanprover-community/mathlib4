@@ -3,7 +3,9 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+module
+
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 /-!
 # Lemmas about `LTSeries` in the prime spectrum
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
   Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
@@ -74,11 +78,13 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
     x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
-  induction' n with n hn generalizing p
-  · use RelSeries.singleton _ p.last
+  induction n generalizing p with
+  | zero =>
+    use RelSeries.singleton _ p.last
     simp only [RelSeries.singleton_toFun, hx, RelSeries.singleton_length, RelSeries.head,
       RelSeries.last_singleton, and_true, true_and]
     rw [show 0 = Fin.last p.length from Fin.zero_eq_mk.mpr hp, RelSeries.last]
+  | succ n hn => ?_
   by_cases h0 : n = 0
   · use p
     have h1 : 1 = Fin.last p.length := by

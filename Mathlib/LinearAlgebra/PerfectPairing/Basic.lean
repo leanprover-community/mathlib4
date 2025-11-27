@@ -3,7 +3,9 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Perfect pairings
@@ -19,6 +21,8 @@ A perfect pairing of two (left) modules may be defined either as:
 In this file we provide a definition `IsPerfPair` corresponding to 1 above, together with logic
 to connect 1 and 2.
 -/
+
+@[expose] public section
 
 open Function Module
 
@@ -37,14 +41,14 @@ class IsPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   bijective_left (p) : Bijective p
   bijective_right (p) : Bijective p.flip
 
-/-- Given a perfect pairing between `M`and `N`, we may interchange the roles of `M` and `N`. -/
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected lemma IsPerfPair.flip (hp : p.IsPerfPair) : p.flip.IsPerfPair where
   bijective_left := IsPerfPair.bijective_right p
   bijective_right := IsPerfPair.bijective_left p
 
 variable [p.IsPerfPair]
 
-/-- Given a perfect pairing between `M`and `N`, we may interchange the roles of `M` and `N`. -/
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 instance flip.instIsPerfPair : p.flip.IsPerfPair := .flip ‹_›
 
 variable (p)
@@ -52,7 +56,7 @@ variable (p)
 /-- Turn a perfect pairing between `M` and `N` into an isomorphism between `M` and the dual of `N`.
 -/
 noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
-  .ofBijective { toFun := _, map_add' x y := by ext; simp, map_smul' r x := by ext; simp } <|
+  .ofBijective { toFun := _, map_add' x y := by simp, map_smul' r x := by simp } <|
     IsPerfPair.bijective_left p
 
 @[simp] lemma toLinearMap_toPerfPair (x : M) : p.toPerfPair x = p x := rfl
@@ -141,10 +145,6 @@ variable {R M N}
 
 namespace PerfectPairing
 
-@[deprecated (since := "2025-04-20")] alias toLin := toLinearMap
-@[deprecated (since := "2025-04-20")] alias bijectiveLeft := bijective_left
-@[deprecated (since := "2025-04-20")] alias bijectiveRight := bijective_right
-
 set_option linter.deprecated false in
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear form. -/
@@ -186,8 +186,6 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
 set_option linter.deprecated false in
 @[deprecated "No replacement" (since := "2025-05-27")]
 lemma toLinearMap_apply (p : PerfectPairing R M N) (x : M) : p.toLinearMap x = p x := rfl
-
-@[deprecated (since := "2025-04-20")] alias toLin_apply := toLinearMap_apply
 
 set_option linter.deprecated false in
 @[deprecated "No replacement" (since := "2025-05-27")]
@@ -314,8 +312,8 @@ variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]
 
 variable (p) in
 /-- Given a perfect pairing `p` between `M` and `N`, we say a pair of submodules `U` in `M` and
-`V` in `N` are perfectly complementary wrt `p` if their dual annihilators are complementary, using
-`p` to identify `M` and `N` with dual spaces. -/
+`V` in `N` are perfectly complementary w.r.t. `p` if their dual annihilators are complementary,
+using `p` to identify `M` and `N` with dual spaces. -/
 structure IsPerfectCompl (U : Submodule R M) (V : Submodule R N) : Prop where
   isCompl_left : IsCompl U (V.dualAnnihilator.map p.toPerfPair.symm)
   isCompl_right : IsCompl V (U.dualAnnihilator.map p.flip.toPerfPair.symm)

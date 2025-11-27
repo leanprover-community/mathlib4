@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.TypeVec
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.TypeVec
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 
@@ -17,6 +19,8 @@ Features:
 * `f <$$> x`    : notation for map
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -199,13 +203,8 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     cases i <;> rfl
   · intros
     simp +unfoldPartialApp only [map_map, TypeVec.comp]
-    -- Porting note: proof was
-    -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
-    -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
-    suffices (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
-            ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd)) by
-      rw [this.1, this.2]
-    constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
+    apply iff_of_eq -- Switch to `eq` so we can use `ext`
+    congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 
 end LiftPLastPredIff
 

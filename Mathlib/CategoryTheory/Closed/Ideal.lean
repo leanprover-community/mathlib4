@@ -3,29 +3,33 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Subterminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Subterminal
 
 /-!
 # Exponential ideals
 
-An exponential ideal of a cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
-`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring theoretic ideals. We
+An exponential ideal of a Cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
+`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring-theoretic ideals. We
 define the notion here for inclusion functors `i : D ⥤ C` rather than explicit subcategories to
 preserve the principle of equivalence.
 
-We additionally show that if `C` is cartesian closed and `i : D ⥤ C` is a reflective functor, the
+We additionally show that if `C` is Cartesian closed and `i : D ⥤ C` is a reflective functor, the
 following are equivalent.
 * The left adjoint to `i` preserves binary (equivalently, finite) products.
 * `i` is an exponential ideal.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -114,7 +118,7 @@ open Limits in
 finite chosen products. -/
 -- Note: This is not an instance as one might already have a (different) `CartesianMonoidalCategory`
 -- instance on `D` (as for example with sheaves).
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
@@ -185,11 +189,18 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
 variable [ExponentialIdeal i]
 
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
-itself cartesian closed.
--/
-def cartesianClosedOfReflective : CartesianClosed D where
+itself Cartesian closed.
+
+To allow for better control of definitional equality, this construction
+takes in an explicit choice of lift of the essential image of `i` to `D`, in the form of a functor
+`l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
+`l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
+to the respective exponential objects in `C`. -/
+def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
+    CartesianClosed D where
   closed := fun B =>
-    { rightAdj := i ⋙ exp (i.obj B) ⋙ reflector i
+    { rightAdj := i.essImage.lift (i ⋙ exp (i.obj B))
+        (fun X ↦ ExponentialIdeal.exp_closed (i.obj_mem_essImage X) _) ⋙ l
       adj := by
         apply (exp.adjunction (i.obj B)).restrictFullyFaithful i.fullyFaithfulOfReflective
           i.fullyFaithfulOfReflective
@@ -200,7 +211,21 @@ def cartesianClosedOfReflective : CartesianClosed D where
             apply asIso (prodComparison i B X)
           · dsimp [asIso]
             rw [prodComparison_natural_whiskerLeft]
-        · apply (exponentialIdealReflective i _).symm }
+        · exact (i.essImage.liftCompιIso _ _).symm.trans <|
+            (Functor.isoWhiskerLeft _ φ.symm).trans (Functor.associator _ _ _).symm }
+
+/-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
+itself Cartesian closed.
+
+Unlike `cartesianClosedOfReflective'` this construction lifts exponential objects in `C` to
+exponential objects in `D` by applying the reflector to them, even though they already lie in the
+essential image of `i`; if you need better control over definitional equality, use
+`cartesianClosedOfReflective'` instead. -/
+def cartesianClosedOfReflective : CartesianClosed D :=
+  cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
+    (NatIso.ofComponents (fun X ↦
+      have := Functor.essImage.unit_isIso X.2
+      (asIso ((reflectorAdjunction i).unit.app X.obj)).symm))
 
 variable [BraidedCategory C]
 

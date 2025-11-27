@@ -3,7 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
+module
+
+public import Mathlib.Algebra.Module.Submodule.Ker
 
 /-!
 
@@ -30,6 +32,8 @@ The construction here is adapted from the proof in Djoković's paper
 
 -/
 
+@[expose] public section
+
 open Function Submodule
 
 namespace LinearMap
@@ -52,8 +56,8 @@ theorem iterateMapComap_le_succ (K : Submodule R N) (h : K.map f ≤ K.map i) (n
     simp_rw [iterateMapComap, iterate_succ', Function.comp_apply]
     calc
       _ ≤ (f.iterateMapComap i n K).map i := map_comap_le _ _
-      _ ≤ (((f.iterateMapComap i n K).map f).comap f).map i := map_mono (le_comap_map _ _)
-      _ ≤ _ := map_mono (comap_mono ih)
+      _ ≤ (((f.iterateMapComap i n K).map f).comap f).map i := by grw [← le_comap_map]
+      _ ≤ _ := by gcongr; exact ih
 
 /-- If `f` is surjective, `i` is injective, and there exists some `m` such that
 `LinearMap.iterateMapComap f i m K = LinearMap.iterateMapComap f i (m + 1) K`,

@@ -3,7 +3,9 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -15,6 +17,8 @@ of `ℕ∞`.
 
 Uniformize API between analytic and meromorphic functions
 -/
+
+@[expose] public section
 
 open Filter  Set
 open scoped Topology
@@ -81,7 +85,7 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   unfold analyticOrderAt
   split_ifs with h
   · simp only [ENat.top_ne_coe, false_iff]
-    contrapose! h
+    contrapose h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
     exact ⟨n, h⟩
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
@@ -114,9 +118,6 @@ lemma AnalyticAt.analyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
 
 @[deprecated (since := "2025-05-03")]
 alias AnalyticAt.order_ne_top_iff := AnalyticAt.analyticOrderAt_ne_top
-
-@[deprecated (since := "2025-02-03")]
-alias AnalyticAt.order_neq_top_iff := AnalyticAt.analyticOrderAt_ne_top
 
 lemma analyticOrderAt_eq_zero : analyticOrderAt f z₀ = 0 ↔ ¬ AnalyticAt 𝕜 f z₀ ∨ f z₀ ≠ 0 := by
   by_cases hf : AnalyticAt 𝕜 f z₀
@@ -176,7 +177,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           hfh.filter_mono nhdsWithin_le_nhds] with z hz hf' hf''
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
-        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
+        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by cutsat), ← hf']
 
 @[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_analyticOrderAt
 

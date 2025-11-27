@@ -3,16 +3,20 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Nat.Prime.Infinite
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.Data.Nat.Prime.Infinite
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Prime numbers
 
 This file contains some results about prime numbers which depend on finiteness of sets.
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -103,9 +107,9 @@ protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :
 lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFactors := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  induction' k with k ih
-  · simp
-  · rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
+  induction k with
+  | zero => simp
+  | succ k ih => rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
 
 lemma primeFactors_pow (n : ℕ) (hk : k ≠ 0) : (n ^ k).primeFactors = n.primeFactors := by
   cases k

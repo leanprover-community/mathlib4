@@ -3,13 +3,15 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Ira Fesefeldt
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.Iterate
-import Mathlib.Order.Part
-import Mathlib.Order.Preorder.Chain
-import Mathlib.Order.ScottContinuity
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Order.Iterate
+public import Mathlib.Order.Part
+public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Order.ScottContinuity
 
 /-!
 # Omega Complete Partial Orders
@@ -54,7 +56,9 @@ supremum helps define the meaning of recursive procedures.
 * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
 
-assert_not_exists OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid
 
 universe u v
 variable {ι : Sort*} {α β γ δ : Type*}
@@ -72,6 +76,9 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
+
+/-- See note [partially-applied ext lemmas]. -/
+@[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
@@ -421,9 +428,7 @@ instance : OmegaCompletePartialOrder (α × β) where
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
-theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := by
-  apply eq_of_forall_ge_iff; rintro ⟨z₁, z₂⟩
-  simp [ωSup_le_iff, forall_and]
+theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := rfl
 
 end Prod
 
@@ -584,8 +589,7 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
-  · intro i
-    intro y hy
+  · intro i y hy
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩

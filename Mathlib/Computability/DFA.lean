@@ -3,10 +3,12 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Chris Wong
 -/
-import Mathlib.Computability.Language
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Deterministic Finite Automata
@@ -43,6 +45,8 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -126,7 +130,6 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
-  have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
                     x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
@@ -154,7 +157,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
-    rw [List.flatten, evalFrom_of_append, ha, hx]
+    rw [List.flatten_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)

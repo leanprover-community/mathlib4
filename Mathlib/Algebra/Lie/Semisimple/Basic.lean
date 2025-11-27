@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Semisimple.Defs
-import Mathlib.Order.BooleanGenerators
+module
+
+public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.Order.BooleanGenerators
 
 /-!
 # Semisimple Lie algebras
@@ -17,7 +19,7 @@ about simple and semisimple Lie algebras.
 
 * `LieAlgebra.IsSemisimple.instHasTrivialRadical`: A semisimple Lie algebra has trivial radical.
 * `LieAlgebra.IsSemisimple.instBooleanAlgebra`:
-  The lattice of ideals in a semisimple Lie algebra is a boolean algebra.
+  The lattice of ideals in a semisimple Lie algebra is a Boolean algebra.
   In particular, this implies that the lattice of ideals is atomistic:
   every ideal is a direct sum of atoms (simple ideals) in a unique way.
 * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
@@ -28,6 +30,8 @@ about simple and semisimple Lie algebras.
 
 lie algebra, radical, simple, semisimple
 -/
+
+@[expose] public section
 
 section Irreducible
 

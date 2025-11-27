@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.GCD.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -15,7 +17,7 @@ This file defines the equivalence relation `a ≡ b [MOD n]` on the natural numb
 and proves basic properties about it such as the Chinese Remainder Theorem
 `modEq_and_modEq_iff_modEq_mul`.
 
-## Notations
+## Notation
 
 `a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
@@ -24,7 +26,9 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
-assert_not_exists OrderedAddCommMonoid Function.support
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Function.support
 
 namespace Nat
 
@@ -90,8 +94,10 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 
 namespace ModEq
 
-theorem self_mul_add : ModEq m (m * a + b) b := by
-  simp [Nat.ModEq]
+theorem modulus_mul_add : m * a + b ≡ b [MOD m] := by simp [Nat.ModEq]
+
+@[deprecated (since := "2025-10-16")]
+alias self_mul_add := modulus_mul_add
 
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
   modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
@@ -141,6 +147,10 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_left_cancel h
 
+@[simp]
+protected theorem add_iff_left (h : a ≡ b [MOD n]) : a + c ≡ b + d [MOD n] ↔ c ≡ d [MOD n] :=
+  ⟨h.add_left_cancel, h.add⟩
+
 protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     a ≡ b [MOD n] := by
   rw [add_comm a, add_comm b] at h₂
@@ -148,6 +158,10 @@ protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b 
 
 protected theorem add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_right_cancel h
+
+@[simp]
+protected theorem add_iff_right (h : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] ↔ a ≡ b [MOD n] :=
+  ⟨h.add_right_cancel, (.add · h)⟩
 
 protected lemma sub' (h : c ≤ a ↔ d ≤ b) (hab : a ≡ b [MOD n]) (hcd : c ≡ d [MOD n]) :
     a - c ≡ b - d [MOD n] := by
@@ -215,25 +229,100 @@ theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (
 
 end ModEq
 
+@[simp]
+theorem modulus_modEq_zero : n ≡ 0 [MOD n] := by simp [ModEq]
+
+@[simp]
+theorem add_modEq_left_iff : a + b ≡ a [MOD n] ↔ n ∣ b := by
+  simp [modEq_iff_dvd, Int.natCast_dvd_natCast]
+
+@[simp]
+theorem add_modEq_right_iff : a + b ≡ b [MOD n] ↔ n ∣ a := by
+  rw [add_comm, add_modEq_left_iff]
+
+@[simp]
+theorem left_modEq_add_iff : a ≡ a + b [MOD n] ↔ n ∣ b := by
+  rw [ModEq.comm, add_modEq_left_iff]
+
+@[simp]
+theorem right_modEq_add_iff : b ≡ a + b [MOD n] ↔ n ∣ a := by
+  rw [ModEq.comm, add_modEq_right_iff]
+
+@[simp]
+theorem add_modulus_modEq_iff : a + n ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modulus_add_modEq_iff : n + a ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
+  rw [add_comm, add_modulus_modEq_iff]
+
+@[simp]
+theorem modEq_add_modulus_iff : a ≡ b + n [MOD n] ↔ a ≡ b [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modEq_modulus_add_iff : a ≡ n + b [MOD n] ↔ a ≡ b [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem add_mul_modulus_modEq_iff : a + b * n ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem mul_modulus_add_modEq_iff : b * n + a ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, add_mul_modulus_modEq_iff]
+
+@[simp]
+theorem modEq_add_mul_modulus_iff : a ≡ b + c * n [MOD n] ↔ a ≡ b [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modEq_mul_modulus_add_iff : a ≡ b * n + c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, modEq_add_mul_modulus_iff]
+
+@[simp]
+theorem add_modulus_mul_modEq_iff : a + n * b ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modulus_mul_add_modEq_iff : n * b + a ≡ c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, add_modulus_mul_modEq_iff]
+
+@[simp]
+theorem modEq_add_modulus_mul_iff : a ≡ b + n * c [MOD n] ↔ a ≡ b [MOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modEq_modulus_mul_add_iff : a ≡ n * b + c [MOD n] ↔ a ≡ c [MOD n] := by
+  rw [add_comm, modEq_add_modulus_mul_iff]
+
+@[simp]
+theorem sub_modulus_modEq_iff (h : n ≤ a) : a - n ≡ b [MOD n] ↔ a ≡ b [MOD n] := by
+  rw [← add_modulus_modEq_iff, Nat.sub_add_cancel h]
+
+@[simp]
+theorem modEq_sub_modulus_iff (h : n ≤ b) : a ≡ b - n [MOD n] ↔ a ≡ b [MOD n] := by
+  rw [← modEq_add_modulus_iff, Nat.sub_add_cancel h]
+
 lemma modEq_sub (h : b ≤ a) : a ≡ b [MOD a - b] := (modEq_of_dvd <| by rw [Int.ofNat_sub h]).symm
 
 lemma modEq_one : a ≡ b [MOD 1] := modEq_of_dvd <| one_dvd _
 
 @[simp] lemma modEq_zero_iff : a ≡ b [MOD 0] ↔ a = b := by rw [ModEq, mod_zero, mod_zero]
 
-@[simp] lemma add_modEq_left : n + a ≡ a [MOD n] := by rw [ModEq, add_mod_left]
+lemma add_modEq_left : n + a ≡ a [MOD n] := by simp
 
-@[simp] lemma add_modEq_right : a + n ≡ a [MOD n] := by rw [ModEq, add_mod_right]
+lemma add_modEq_right : a + n ≡ a [MOD n] := by simp
 
 namespace ModEq
 
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
   (le_total a b).elim id fun h3 =>
     Nat.le_of_sub_eq_zero
-      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by omega))
+      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by cutsat))
 
 theorem add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
-  le_of_lt_add (add_modEq_right.trans h1) (by omega)
+  le_of_lt_add (add_modEq_right.trans h1) (by cutsat)
 
 theorem dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
   simp only [← modEq_zero_iff_dvd]
@@ -451,7 +540,7 @@ theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     dsimp
     rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,
       two_mul_odd_div_two (Nat.odd_mul_odd hm1 hn1), Nat.mul_sub, mul_one, ←
-      Nat.add_sub_assoc (by omega), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
+      Nat.add_sub_assoc (by cutsat), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
 
 theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2
@@ -463,7 +552,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by omega)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by cutsat)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=

@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 
@@ -24,6 +26,8 @@ about `sl₂`.
   natural number if the representation is finite-dimensional.
 
 -/
+
+@[expose] public section
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -72,7 +76,7 @@ lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
 variable {R}
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
-primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
+primitive if it is a simultaneous eigenvector for the action of both `h` and `e`, and the eigenvalue
 for `e` is zero. -/
 structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop where
   ne_zero : m ≠ 0
@@ -81,7 +85,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a simultaneous
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
-lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
+lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
     HasPrimitiveVectorWith t m μ  where
   ne_zero := hm

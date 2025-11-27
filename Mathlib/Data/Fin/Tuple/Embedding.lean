@@ -3,8 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Order.Fin.Basic
 
 /-! # Constructions of embeddings of `Fin n` into a type
 
@@ -23,6 +25,8 @@ import Mathlib.Order.Fin.Basic
   into an embedding `Fin (m + n) ↪ α` if they have disjoint ranges
 
 -/
+
+@[expose] public section
 
 open Function.Embedding Fin Set Nat
 
@@ -66,7 +70,7 @@ theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
   simp [snoc, init]
 
 theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} {i : Fin n} :
-    snoc x ha i.castSucc  = x i := by
+    snoc x ha i.castSucc = x i := by
   rw [coe_snoc, Fin.snoc_castSucc]
 
 theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} :
@@ -108,10 +112,10 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
         · simp [hj] at hij; exact False.elim (h hij.symm)
         · rw [eq_one_of_ne_zero j hj] }
   left_inv e := by
-    ext i; simp
+    ext i
     by_cases hi : i = 0
-    · rw [if_pos hi, hi]
-    · rw [if_neg hi, Fin.eq_one_of_ne_zero i hi]
+    · simp [hi]
+    · simp [Fin.eq_one_of_ne_zero i hi]
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
 def embFinTwo {a b : α} (h : a ≠ b) : Fin 2 ↪ α :=
