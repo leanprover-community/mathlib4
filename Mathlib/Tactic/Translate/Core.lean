@@ -282,8 +282,7 @@ They are expanded until they are applied to one more argument than the maximum i
 It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
 def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
-    (post := fun e => return .done e) fun e ↦
+  let e₂ ← Meta.transform e (skipConstInApp := true) fun e ↦
     e.withApp fun f args ↦ do
     match f with
     | .proj n i s =>
@@ -300,7 +299,7 @@ def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
       if info.reorder.isEmpty then
         -- no need to expand if nothing needs reordering
         return .continue
-      let needed_n := info.reorder.flatten.foldr Nat.max 0 + 1
+      let needed_n := info.reorder.flatten.foldl Nat.max 0 + 1
       if needed_n ≤ args.size then
         return .continue
       else
@@ -394,79 +393,56 @@ def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FV
   let e' := aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
-  e'.forEach fun
-    | .const n .. => do
-      if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
-        executeReservedNameAction n
-    | _ => pure ()
+  e'.getUsedConstants.forM fun n => do
+    if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
+      executeReservedNameAction n
   return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
-  Lean.Expr.replaceRec fun r e ↦ Id.run do
+  memoFix fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
-    match e with
-    | .const n₀ ls₀ => do
-      let n₁ := findPrefixTranslation env n₀ t
-      let swapUniv := (t.argInfoAttr.find? env n₀).elim false (·.reorder.any (·.contains 0))
-      let ls₁ : List Level := if swapUniv then ls₀.swapFirstTwo else ls₀
-      if trace then
-        if n₀ != n₁ then
-          dbg_trace s!"changing {n₀} to {n₁}"
-        if swapUniv then
-          dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
-      return some <| .const n₁ ls₁
-    | .app g x => do
-      let mut gf := g.getAppFn
-      if gf.isBVar && x.isLit then
-        if trace then
-          dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
-        return some <| g.app x
-      let mut gAllArgs := e.getAppArgs
-      let some nm := gf.constName? | return mkAppN (← r gf) (← gAllArgs.mapM r)
-      -- e = `(nm y₁ .. yₙ x)
-      /- Test if the head should not be replaced. -/
-      let { reorder, relevantArg } := t.argInfoAttr.find? env nm |>.getD {}
-      if h : relevantArg < gAllArgs.size then
-        if let some fxd := shouldTranslate env t gAllArgs[relevantArg] dontTranslate then
+    if !(e matches .const .. | .app ..) then
+      e.traverseChildren r
+    else e.withApp fun f args ↦ do
+      let .const n₀ ls₀ := f | return mkAppN (← r f) (← args.mapM r)
+      -- Replace numeral `1` with `0` when required
+      if t.changeNumeral then
+        if let some numeralArgs := changeNumeralAttr.find? env n₀ then
+          if let some firstArg := args[0]? then
+            if shouldTranslate env t firstArg dontTranslate |>.isNone then
+              -- In this case, we still update all arguments of `g` that are not numerals,
+              -- since all other arguments can contain subexpressions like
+              -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+              if trace then
+                dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
+                  However, we will still recurse into all the non-numeral arguments."
+              let args := numeralArgs.foldl (·.modify · changeNumeral) args
+              return mkAppN f (← args.mapM r)
+      let some n₁ := findTranslation? env t n₀ <|> do
+        let n₁ := findPrefixTranslation env n₀ t; guard (n₀ != n₁); some n₁
+        | return mkAppN f (← args.mapM r)
+      let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
+      -- Use `relevantArg` to test if the head should be translated.
+      if h : relevantArg < args.size then
+        if let some fxd := shouldTranslate env t args[relevantArg] dontTranslate then
           if trace then
             match fxd with
-            | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
+            | .inl fxd => dbg_trace s!"The application of {n₀} contains the fixed type \
               {fxd}, so it is not changed."
-            | .inr _ => dbg_trace s!"The application of {nm} contains a fixed \
+            | .inr _ => dbg_trace s!"The application of {n₀} contains a fixed \
               variable so it is not changed."
-        else
-          gf ← r gf
-          /- Test if arguments should be reordered. -/
-          if !reorder.isEmpty then
-            gAllArgs := gAllArgs.permute! reorder
-            if trace then
-              dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
-      else
-        gf ← r gf
-      /- Do not replace numerals in specific types. -/
-      if let some changedArgNrs := changeNumeralAttr.find? env nm then
-        let firstArg := gAllArgs[0]!
-        if shouldTranslate env t firstArg dontTranslate |>.isNone then
-          if trace then
-            dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
-              However, we will still recurse into all the non-numeral arguments."
-          -- In this case, we still update all arguments of `g` that are not numerals,
-          -- since all other arguments can contain subexpressions like
-          -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-          gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
-            if changedArgNrs.contains argNr then
-              changeNumeral arg
-            else
-              arg
-      return mkAppN gf (← gAllArgs.mapM r)
-    | .proj n₀ idx e => do
-      let n₁ := findPrefixTranslation env n₀ t
+          return mkAppN f (← args.mapM r)
+      let swapUniv := reorder.any (·.contains 0)
+      let ls₁ := if swapUniv then ls₀.swapFirstTwo else ls₀
+      let args := args.permute! reorder
       if trace then
-        dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
-          replace type with {n₁}"
-      return some <| .proj n₁ idx <| ← r e
-    | _ => return none
+        dbg_trace s!"changing {n₀} to {n₁}"
+        if swapUniv then
+          dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
+        unless reorder.isEmpty do
+          dbg_trace s!"reordering the arguments of {n₀} using the cyclic permutations {reorder}"
+      return mkAppN (.const n₁ ls₁) (← args.mapM r)
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
@@ -551,7 +527,7 @@ def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : List (List Nat)) (dont : List Nat) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
-  if 0 ∈ reorder.flatten then
+  if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
     renameBinderNames t decl.type
@@ -608,15 +584,15 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
     else
       l
 
-/-- Transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
-using the transforms dictionary.
+/-- Translate the declaration `src` and recursively all declarations `pre._proof_i`
+occurring in `src` using the `translations` dictionary.
 
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
 
 `pre` is the declaration that got the translation attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cfg : Config)
-    (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src : Name)
+    (reorder : List (List Nat) := []) (dontTranslate : List Nat := []) : CoreM Unit := do
   let env ← getEnv
   trace[translate_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -643,13 +619,13 @@ partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cf
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldAuxLemmas srcDecl
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
-    transformDeclAux t reorder cfg pre tgt_pre n
+    transformDeclRec t ref pre tgt_pre n
   if let some value := srcDecl.value? then
     for n in findAuxDecls value pre do
-      transformDeclAux t reorder cfg pre tgt_pre n
+      transformDeclRec t ref pre tgt_pre n
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
-      transformDeclAux t reorder cfg pre tgt_pre n
+      transformDeclRec t ref pre tgt_pre n
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot translate the name.
   if !pre.isPrefixOf src then
@@ -657,11 +633,7 @@ partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cf
   -- now transform the source declaration
   -- expose target body when source body is exposed
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
-  let trgDecl : ConstantInfo ← MetaM.run' <|
-    if src == pre then
-      updateDecl t tgt srcDecl reorder cfg.dontTranslate
-    else
-      updateDecl t tgt srcDecl [] []
+  let trgDecl ← MetaM.run' <| updateDecl t tgt srcDecl reorder dontTranslate
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
@@ -703,7 +675,7 @@ partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cf
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
-  addDeclarationRangesFromSyntax tgt (← getRef) cfg.ref
+  addDeclarationRangesFromSyntax tgt (← getRef) ref
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   if defeqAttr.hasTag (← getEnv) src then
@@ -906,7 +878,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     else
       pure reorder'
   let srcType ← reorderForall reorder srcType
-  if 0 ∈ reorder.flatten then
+  if reorder.any (·.contains 0) then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   -- instantiate both types with the same universes. `instantiateLevelParams` does some
   -- normalization, so we apply it to both types.
@@ -1153,15 +1125,6 @@ partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (ar
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes t cfg.ref cfg.attrs src tgt argInfo
 
-/--
-Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
-the body using the `translations` dictionary.
--/
-partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
-    (argInfo : ArgInfo := {}) : CoreM (Array Name) := withDeclNameForAuxNaming tgt do
-  transformDeclAux t argInfo.reorder cfg src tgt src
-  copyMetaData t cfg src tgt argInfo
-
 /-- `addTranslationAttr src cfg` adds a translation attribute to `src` with configuration `cfg`.
 See the attribute implementation for more details.
 It returns an array with names of translated declarations (usually 1, but more if there are nested
@@ -1214,7 +1177,9 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       copyMetaData t cfg src tgt argInfo
     else
       -- tgt doesn't exist, so let's make it
-      transformDecl t cfg src tgt argInfo
+      withDeclNameForAuxNaming tgt <|
+        transformDeclRec t cfg.ref src tgt src argInfo.reorder cfg.dontTranslate
+      copyMetaData t cfg src tgt argInfo
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
   pushInfoLeaf <| .ofTermInfo {
