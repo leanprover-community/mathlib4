@@ -47,9 +47,9 @@ theorem sum_range_sin_mul_add (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
   | zero => simp
   | succ n ih =>
     simp [Finset.sum_range_succ, ih, field]
-    have : 2 * sin (↑n * x / 2) * sin ((↑n - 1) * x / 2 + a)
+    have : 2 * sin (n * x / 2) * sin ((n - 1) * x / 2 + a)
          + 2 * sin (x / 2) * sin (↑n * x + a)
-         = 2 * sin ((↑n + 1) * x / 2) * sin (↑n * x / 2 + a) := by
+         = 2 * sin ((n + 1) * x / 2) * sin (n * x / 2 + a) := by
       rw [two_mul_sin_mul_sin, two_mul_sin_mul_sin, two_mul_sin_mul_sin]
       nth_rw 3 [← cos_neg]
       ring_nf
