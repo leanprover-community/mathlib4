@@ -39,9 +39,9 @@ public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
 public theorem fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
     fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x.natAbs * fib a ^ 2 :=
   calc
-    _ = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 - fib x *
-          (fib x * (fib (a + 1) ^ 2 + fib a ^ 2) + fib (x - 1) *
-          (fib a * fib (a + 1) + fib (a - 1) * fib a)) := by
+    _ = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 -
+          fib x * (fib x * (fib (a + 1) ^ 2 + fib a ^ 2) +
+            fib (x - 1) * (fib a * fib (a + 1) + fib (a - 1) * fib a)) := by
       congr 2
       · simp only [fib_add, fib_one, mul_one, reduceAdd, fib_two]
         ring
