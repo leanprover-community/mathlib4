@@ -223,6 +223,7 @@ protected theorem card :
       · simp
 
 variable {α} in
+/-- If `0 < n < ENat.card α`, then `n.Combination α` is nontrivial. -/
 theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     Nontrivial (n.Combination α) := by
   obtain ⟨t, ht⟩ := Cardinal.exists_finset_le_card α (n + 1)
