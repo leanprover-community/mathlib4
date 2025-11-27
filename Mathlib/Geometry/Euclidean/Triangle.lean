@@ -435,11 +435,11 @@ are equal. -/
 lemma angle_le_pi_div_three_of_le_of_le {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₁ p₂ p₃ ≤ ∠ p₂ p₃ p₁)
     (h₃₁₂ : ∠ p₁ p₂ p₃ ≤ ∠ p₃ p₁ p₂) (hnd : p₁ ≠ p₂ ∨ p₁ ≠ p₃ ∨ p₂ ≠ p₃) :
     ∠ p₁ p₂ p₃ ≤ π / 3 := by
-  by_cases h : p₁ = p₂
+  by_cases h : p₂ = p₁
   · subst h
     simp_all [angle_self_of_ne]
     linarith [Real.pi_pos]
-  · linarith [angle_add_angle_add_angle_eq_pi p₃ (Ne.symm h)]
+  · linarith [angle_add_angle_add_angle_eq_pi p₃ h]
 
 /-- The least angle of a possibly degenerate triangle is less than `π / 3`, unless all angles are
 equal. -/
