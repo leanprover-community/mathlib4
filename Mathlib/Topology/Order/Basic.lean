@@ -589,6 +589,13 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [OrderTopology �
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
   exact (hc.image _).union (hc.image _)
 
+/-- A countable linearly ordered set equipped with the order topology is second countable. -/
+instance [OrderTopology α] [Countable α] : SecondCountableTopology α := by
+  suffices FirstCountableTopology α from inferInstance
+  constructor
+  intro x
+  sorry
+
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
 theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology α] :
