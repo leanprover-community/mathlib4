@@ -105,11 +105,11 @@ theorem small_fullSubcategory_filteredClosure :
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
       · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! (castMode := .all) [FilteredClosureSmall.bundledAbstractFilteredClosure.eq_1]
-        grind
+        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure.eq_1]
+        rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
@@ -254,11 +254,11 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! (castMode := .all) [CofilteredClosureSmall.bundledAbstractCofilteredClosure.eq_1]
-      grind
+      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure.eq_1]
+      rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
