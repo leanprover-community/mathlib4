@@ -99,7 +99,7 @@ public lemma Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
       · simp only [fib_add, fib_one, mul_one, reduceAdd, fib_two]
         ring
       · simp_rw [add_comm x, two_mul]
-        simp [fib_add, ← add_sub]
+        simp only [fib_add, ← add_sub, sub_add_cancel, fib_one, mul_one, reduceAdd, fib_two]
         grind
     _ = fib a ^ 2 * (fib (x - 1) ^ 2 + fib x * fib (x - 1) - fib x ^ 2) := by grind [fib_add_two]
     _ = _ := by grind [fib_succ_mul_fib_pred_sub_fib_sq, fib_add_two]
