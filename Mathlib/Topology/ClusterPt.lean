@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Lemmas on cluster and accumulation points
@@ -15,6 +17,8 @@ A filter `F` on `X` has `x` as a cluster point if `ClusterPt x F : 𝓝 x ⊓ F 
 clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map f F)`.
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -61,9 +65,6 @@ theorem ClusterPt.frequently' {F : Filter X} {p : X → Prop} (hx : ClusterPt x 
 theorem clusterPt_iff_nonempty {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
-
-@[deprecated (since := "2025-03-16")]
-alias clusterPt_iff := clusterPt_iff_nonempty
 
 theorem clusterPt_iff_not_disjoint {F : Filter X} :
     ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
@@ -147,9 +148,6 @@ theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Pro
 theorem mapClusterPt_iff_frequently : MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s :=
   (𝓝 x).basis_sets.mapClusterPt_iff_frequently
 
-@[deprecated (since := "2025-03-16")]
-alias mapClusterPt_iff := mapClusterPt_iff_frequently
-
 theorem MapClusterPt.frequently (h : MapClusterPt x F u) {p : X → Prop} (hp : ∀ᶠ y in 𝓝 x, p y) :
     ∃ᶠ a in F, p (u a) :=
   h.clusterPt.frequently hp
@@ -173,16 +171,10 @@ theorem accPt_sup {x : X} {F G : Filter X} :
 theorem accPt_iff_clusterPt {x : X} {F : Filter X} : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 
-@[deprecated (since := "2025-04-20")]
-alias acc_iff_cluster := accPt_iff_clusterPt
-
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem accPt_principal_iff_clusterPt {x : X} {C : Set X} :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ { x })) := by
   rw [accPt_iff_clusterPt, inf_principal, inter_comm, diff_eq]
-
-@[deprecated (since := "2025-04-20")]
-alias acc_principal_iff_cluster := accPt_principal_iff_clusterPt
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
 of `x` contains a point of `C` other than `x`. -/

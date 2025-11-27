@@ -252,6 +252,19 @@ example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.sqrt := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.totient := by positivity
 
+section NNReal
+
+example (a : ℝ) (ha : 0 < a) : 0 < a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.nnabs := by positivity
+example (a : ℝ) (ha : 0 < a) : 0 < a.nnabs := by positivity
+example (a : ℝ) (ha : a ≠ 0) : 0 < a.nnabs := by positivity
+example (a : ℝ≥0) (ha : 0 < a) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) (ha : a ≠ 0) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) : 0 ≤ (a : ℝ) := by positivity
+
+end NNReal
+
 section ENNReal
 
 variable {a b : ℝ≥0∞}
@@ -557,9 +570,7 @@ example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j �
 example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i ∈ range n, (f j ^ 2 + i ^ 2) := by positivity
 example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
 example (f : Empty → ℤ) : 0 ≤ ∑ j : Empty, f j ^ 2 := by positivity
-example (f : ℕ → ℤ) : 0 < ∑ j ∈ ({1} : Finset ℕ), (f j ^ 2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
+example (f : ℕ → ℤ) : 0 < ∑ j ∈ ({1} : Finset ℕ), (f j ^ 2 + 1) := by positivity
 example (s : Finset ℕ) : 0 ≤ ∑ j ∈ s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
@@ -575,9 +586,7 @@ example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j ∈ range n, a j^2 := by posit
 example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j ∈ s, a j^2 := by positivity
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j : Fin 8, ∏ i ∈ range n, (a j^2 + i ^ 2) := by positivity
 example (n : ℕ) (a : ℕ → ℤ) : 0 < ∏ j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℤ) : 0 < ∏ j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
+example (a : ℕ → ℤ) : 0 < ∏ j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by positivity
 example (s : Finset ℕ) : 0 ≤ ∏ j ∈ s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity

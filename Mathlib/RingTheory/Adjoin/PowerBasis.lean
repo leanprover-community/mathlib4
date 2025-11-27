@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.LinearAlgebra.Matrix.Basis
+module
+
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
 # Power basis for `Algebra.adjoin R {x}`
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 This file defines the canonical power basis on `Algebra.adjoin R {x}`,
 where `x` is an integral element over `R`.
 -/
+
+@[expose] public section
 
 open Module Polynomial PowerBasis
 
@@ -114,7 +118,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
   refine IsIntegral.sum _ fun j hj => ?_
   replace hj := Finset.mem_range.1 hj
   rw [← Fin.val_mk hj, ← B.basis_eq_pow, Algebra.smul_def, IsScalarTower.algebraMap_apply R S A, ←
-    Algebra.smul_def, LinearEquiv.map_smul]
+    Algebra.smul_def, map_smul]
   simp only [algebraMap_smul, Finsupp.coe_smul, Pi.smul_apply, B.basis.repr_self_apply]
   by_cases hij : (⟨j, hj⟩ : Fin _) = i
   · simp only [hij, if_true]
@@ -134,8 +138,8 @@ theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) {x y : A}
   rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, ← Finset.sum_product',
     map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun I _ => ?_
-  simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, LinearEquiv.map_smulₛₗ,
-    RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
+  simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, map_smulₛₗ, RingHom.id_apply,
+    Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
   refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
   exact repr_gen_pow_isIntegral hB hmin _ _
@@ -176,8 +180,8 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
   refine repr_pow_isIntegral hB (fun i => ?_) hmin _ _
   rw [← h, aeval_eq_sum_range, map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun n _ => ?_
-  rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,
-    LinearEquiv.map_smul, algebraMap_smul]
+  rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def, map_smul,
+    algebraMap_smul]
   exact (repr_gen_pow_isIntegral hB hmin _ _).smul _
 
 end PowerBasis

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # The factorization axiom
@@ -31,6 +33,8 @@ is `MorphismProperty.comp_eq_top_iff`).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace MorphismProperty
@@ -51,7 +55,24 @@ structure MapFactorizationData {X Y : C} (f : X ⟶ Y) where
   hi : W₁ i
   hp : W₂ p
 
-attribute [reassoc (attr := simp)] MapFactorizationData.fac
+namespace MapFactorizationData
+
+attribute [reassoc (attr := simp)] fac
+
+variable {X Y : C} (f : X ⟶ Y)
+
+/-- The opposite of a factorization. -/
+@[simps]
+def op {X Y : C} {f : X ⟶ Y} (hf : MapFactorizationData W₁ W₂ f) :
+    MapFactorizationData W₂.op W₁.op f.op where
+  Z := Opposite.op hf.Z
+  i := hf.p.op
+  p := hf.i.op
+  fac := Quiver.Hom.unop_inj (by simp)
+  hi := hf.hp
+  hp := hf.hi
+
+end MapFactorizationData
 
 /-- The data of a term in `MapFactorizationData W₁ W₂ f` for any morphism `f`. -/
 abbrev FactorizationData := ∀ {X Y : C} (f : X ⟶ Y), MapFactorizationData W₁ W₂ f
@@ -65,6 +86,9 @@ class HasFactorization : Prop where
 /-- A chosen term in `FactorizationData W₁ W₂` when `HasFactorization W₁ W₂` holds. -/
 noncomputable def factorizationData [HasFactorization W₁ W₂] : FactorizationData W₁ W₂ :=
   fun _ => Nonempty.some (HasFactorization.nonempty_mapFactorizationData _)
+
+instance [HasFactorization W₁ W₂] : HasFactorization W₂.op W₁.op where
+  nonempty_mapFactorizationData f := ⟨(factorizationData W₁ W₂ f.unop).op⟩
 
 /-- The class of morphisms that are of the form `i ≫ p` with `W₁ i` and `W₂ p`. -/
 def comp : MorphismProperty C := fun _ _ f => Nonempty (MapFactorizationData W₁ W₂ f)
@@ -102,7 +126,7 @@ attribute [reassoc (attr := simp)] fac
 
 @[reassoc (attr := simp)]
 lemma fac_app {f : Arrow C} : data.i.app f ≫ data.p.app f = f.hom := by
-  rw [← NatTrans.comp_app, fac,Arrow.leftToRight_app]
+  rw [← NatTrans.comp_app, fac, Arrow.leftToRight_app]
 
 /-- If `W₁ ≤ W₁'` and `W₂ ≤ W₂'`, then a functorial factorization for `W₁` and `W₂` induces
 a functorial factorization for `W₁'` and `W₂'`. -/

@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Categorical images
@@ -51,6 +53,8 @@ so that `m` factors through the `m'` in any other such factorisation.
 * TODO: connect this with existing working in the group theory and ring theory libraries.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -539,7 +543,7 @@ theorem image.eq_fac [HasEqualizers C] (h : f = f') :
     image.ι f = (image.eqToIso h).hom ≫ image.ι f' := by
   apply image.ext
   subst h
-  simp [asIso,image.eqToIso, image.eqToHom]
+  simp [asIso, image.eqToIso, image.eqToHom]
 
 end
 
@@ -732,7 +736,7 @@ instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [H
   HasImageMap.mk
     { map := (HasImageMap.imageMap sq1).map ≫ (HasImageMap.imageMap sq2).map
       map_ι := by
-        rw [Category.assoc,ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
+        rw [Category.assoc, ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
 
 variable {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
 
@@ -745,7 +749,7 @@ theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] 
     (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
     (map' : image f.hom ⟶ image g.hom)
     (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') := by
-  have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι,map_ι']
+  have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι, map_ι']
   apply (cancel_mono (image.ι g.hom)).1 this
 
 theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
