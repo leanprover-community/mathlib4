@@ -106,7 +106,7 @@ lemma nonempty [Nonempty X] (D : DeloneSet X) : Nonempty D.carrier := by
   obtain ⟨_, _, hcov⟩ := D.relativelyDense
   obtain ⟨x⟩ := (inferInstance : Nonempty X)
   obtain ⟨y, hyD, _⟩ := hcov x
-  exact ⟨⟨y, hyD⟩⟩
+  exact ⟨y, hyD⟩
 
 noncomputable def coveringRadius (D : DeloneSet X) : ℝ :=
   Classical.choose D.relativelyDense
