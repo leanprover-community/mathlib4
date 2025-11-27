@@ -3,14 +3,18 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finset.Image
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Finset.Image
 
 /-!
 # `Finset.range` and addition of natural numbers
 -/
-assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
+
+@[expose] public section
+assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {α β γ : Type*}
 

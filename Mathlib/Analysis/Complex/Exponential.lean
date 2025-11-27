@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Analysis.Complex.Norm
-import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Analysis.Complex.Norm
+public import Mathlib.Algebra.Order.CauSeq.BigOperators
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Exponential Function
@@ -22,6 +24,8 @@ This file contains the definitions of the real and complex exponential function.
 * `Real.exp`: The real exponential function, defined as the real part of the complex exponential
 
 -/
+
+@[expose] public section
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
@@ -449,6 +453,13 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
     _ ≤ ‖x‖ ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = ‖x‖ ^ 2 := by rw [mul_one]
 
+theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ = ‖x‖ ^ 2 := by simp
+
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖
       ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
@@ -593,6 +604,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
+  simp
   field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
   simp
 
@@ -666,7 +678,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : PositivityExt where eval {u α} _ _ e := do
+meta def evalExp : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
     assertInstancesCommute

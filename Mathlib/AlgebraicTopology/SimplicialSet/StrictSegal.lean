@@ -3,8 +3,10 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou, Johan Commelin, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
-import Mathlib.AlgebraicTopology.SimplicialSet.Path
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 
 /-!
 # Strict Segal simplicial sets
@@ -22,6 +24,8 @@ the nerve of its homotopy category.
 in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -48,8 +52,45 @@ structure StrictSegal where
 
 /-- For an `n + 1`-truncated simplicial set `X`, `IsStrictSegal X` asserts the
 mere existence of an inverse to `spine X m` for all `m ≤ n + 1`. -/
-class IsStrictSegal : Prop where
-  segal (m : ℕ) (h : m ≤ n + 1 := by omega) : Function.Bijective (X.spine m)
+class IsStrictSegal (X : SSet.Truncated.{u} (n + 1)) : Prop where
+  spine_bijective (X) (m : ℕ) (h : m ≤ n + 1 := by grind) : Function.Bijective (X.spine m)
+
+export IsStrictSegal (spine_bijective)
+
+@[deprecated (since := "2025-11-04")] alias IsStrictSegal.segal := spine_bijective
+
+lemma spine_injective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
+    {m : ℕ} {h : m ≤ n + 1} :
+    Function.Injective (X.spine m) :=
+  (spine_bijective X m).injective
+
+lemma spine_surjective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
+    {m : ℕ} (p : X.Path m) (h : m ≤ n + 1 := by grind) :
+    ∃ (x : X _⦋m⦌ₙ₊₁), X.spine m _ x = p :=
+  (spine_bijective X m).surjective p
+
+variable {X} in
+lemma IsStrictSegal.ext [X.IsStrictSegal] {d : ℕ} {hd} {x y : X _⦋d + 1⦌ₙ₊₁}
+    (h : ∀ (i : Fin (d + 1)),
+      X.map (SimplexCategory.Truncated.Hom.tr (mkOfSucc i)).op x =
+        X.map (SimplexCategory.Truncated.Hom.tr (mkOfSucc i)).op y) :
+    x = y :=
+  X.spine_injective (by ext i; apply h)
+
+variable {X} in
+lemma IsStrictSegal.hom_ext {Y : SSet.Truncated.{u} (n + 1)} [Y.IsStrictSegal]
+    {f g : X ⟶ Y} (h : ∀ (x : X _⦋1⦌ₙ₊₁), f.app _ x = g.app _ x) : f = g := by
+  ext ⟨⟨m, hm⟩⟩ x
+  induction m using SimplexCategory.rec with | _ m
+  obtain _ | m := m
+  · have fac := δ_comp_σ_self (i := (0 : Fin 1))
+    dsimp at fac
+    simpa [← FunctorToTypes.naturality,
+      ← FunctorToTypes.map_comp_apply, ← op_comp,
+      ← SimplexCategory.Truncated.Hom.tr_comp, fac] using
+      congr_arg (Y.map (SimplexCategory.Truncated.Hom.tr (SimplexCategory.δ 0)).op)
+        (h (X.map (SimplexCategory.Truncated.Hom.tr (SimplexCategory.σ 0)).op x))
+  · exact IsStrictSegal.ext (fun i ↦ by simp only [← FunctorToTypes.naturality, h])
 
 namespace StrictSegal
 
@@ -57,7 +98,7 @@ namespace StrictSegal
 `m ≤ n + 1` determines an inhabitant of `StrictSegal X`. -/
 noncomputable def ofIsStrictSegal [IsStrictSegal X] : StrictSegal X where
   spineToSimplex m h :=
-    Equiv.ofBijective (X.spine m) (IsStrictSegal.segal m h) |>.invFun
+    Equiv.ofBijective (X.spine m) (X.spine_bijective m h) |>.invFun
   spine_spineToSimplex m _ :=
     funext <| Equiv.ofBijective (X.spine m) _ |>.right_inv
   spineToSimplex_spine m _ :=
@@ -102,7 +143,7 @@ end autoParam
 /-- The unique existence of an inverse to `spine X m` for all `m ≤ n + 1`
 implies the mere existence of such an inverse. -/
 lemma isStrictSegal (sx : StrictSegal X) : IsStrictSegal X where
-  segal m h := sx.spineEquiv m h |>.bijective
+  spine_bijective m h := sx.spineEquiv m h |>.bijective
 
 variable (m : ℕ) (h : m ≤ n + 1)
 
@@ -161,8 +202,8 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -173,8 +214,8 @@ lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_le_castSucc j i hij]
 
 variable {i : Fin m} {j : Fin (m + 2)}
@@ -245,10 +286,14 @@ variable {X} (sx : StrictSegal X)
 
 /-- A `StrictSegal` structure on a simplicial set `X` restricts to a
 `Truncated.StrictSegal` structure on the `n + 1`-truncation of `X`. -/
-def truncation (n : ℕ) : truncation (n + 1) |>.obj X |>.StrictSegal where
+protected def truncation (n : ℕ) : truncation (n + 1) |>.obj X |>.StrictSegal where
   spineToSimplex _ _ := sx.spineToSimplex
   spine_spineToSimplex m _ := sx.spine_spineToSimplex m
   spineToSimplex_spine m _ := sx.spineToSimplex_spine m
+
+instance [X.IsStrictSegal] (n : ℕ) :
+    ((truncation (n + 1)).obj X).IsStrictSegal :=
+  ((ofIsStrictSegal X).truncation n).isStrictSegal
 
 @[simp]
 lemma spine_spineToSimplex_apply {n : ℕ} (f : Path X n) :
@@ -386,6 +431,79 @@ lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
 
 end StrictSegal
+
+/-- Helper structure in order to show that a simplicial set is strict Segal. -/
+structure StrictSegalCore (n : ℕ) where
+  /-- Map which produces a `n + 1`-simplex from a `1`-simplex and a `n`-simplex when
+  the target vertex of the `1`-simplex equals the zeroth simplex of the `n`-simplex. -/
+  concat (x : X _⦋1⦌) (s : X _⦋n⦌) (h : X.δ 0 x = X.map (SimplexCategory.const _ _ 0).op s) :
+    X _⦋n + 1⦌
+  map_mkOfSucc_zero_concat x s h : X.map (mkOfSucc 0).op (concat x s h) = x
+  δ₀_concat x s h : X.δ 0 (concat x s h) = s
+  injective {x y : X _⦋n + 1⦌} (h : X.map (mkOfSucc 0).op x = X.map (mkOfSucc 0).op y)
+    (h₀ : X.δ 0 x = X.δ 0 y) : x = y
+
+namespace StrictSegalCore
+
+variable {X} (h : ∀ n, X.StrictSegalCore n) {n : ℕ} (p : X.Path n)
+
+/-- Auxiliary definition for `StrictSegalCore.spineToSimplex`. -/
+def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
+  induction n with
+  | zero => exact ⟨p.vertex 0, by aesop⟩
+  | succ n hn =>
+    refine ⟨(h n).concat (p.arrow 0) (hn (p.interval 1 n)).val ?_, ?_⟩
+    · rw [p.arrow_tgt 0]
+      exact Path.congr_vertex (hn (p.interval 1 n)).prop.symm 0
+    · ext i
+      obtain rfl | ⟨i, rfl⟩ := i.eq_zero_or_eq_succ
+      · dsimp
+        rw [map_mkOfSucc_zero_concat]
+      · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
+          op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
+          ← p.arrow_interval 1 n i i.succ (by grind) (by grind [Fin.val_succ])] using
+            Path.congr_arrow (hn (p.interval 1 n)).prop i
+
+/-- Auxiliary definition for `StrictSegal.ofCore`. -/
+def spineToSimplex : X _⦋n⦌ := (spineToSimplexAux h p).val
+
+@[simp]
+lemma spine_spineToSimplex : X.spine n (spineToSimplex h p) = p := (spineToSimplexAux h p).prop
+
+lemma spineToSimplex_zero (p : X.Path 0) : spineToSimplex h p = p.vertex 0 := rfl
+
+lemma spineToSimplex_succ (p : X.Path (n + 1)) :
+    spineToSimplex h p = (h n).concat (p.arrow 0) (spineToSimplex h (p.interval 1 n)) (by
+      rw [p.arrow_tgt 0]
+      exact Path.congr_vertex (spine_spineToSimplex h (p.interval 1 n)).symm 0) :=
+  rfl
+
+lemma map_mkOfSucc_zero_spineToSimplex (p : X.Path (n + 1)) :
+    X.map (mkOfSucc 0).op (spineToSimplex h p) = p.arrow 0 := by
+  rw [spineToSimplex_succ, map_mkOfSucc_zero_concat]
+
+lemma δ₀_spineToSimplex (p : X.Path (n + 1)) :
+    X.δ 0 (spineToSimplex h p) = spineToSimplex h (p.interval 1 n) := by
+  rw [spineToSimplex_succ, δ₀_concat]
+
+@[simp]
+lemma spineToSimplex_spine (s : X _⦋n⦌) : spineToSimplex h (X.spine _ s) = s := by
+  induction n with
+  | zero => simp [spineToSimplex_zero]
+  | succ n hn =>
+    exact (h n).injective (map_mkOfSucc_zero_spineToSimplex _ _)
+      (by rw [δ₀_spineToSimplex, ← hn (X.δ 0 s), spine_δ₀])
+
+end StrictSegalCore
+
+variable {X} in
+/-- Given a simplicial set `X`, this constructs a `StrictSegal` structure for `X` from
+`StrictSegalCore` structures for all `n : ℕ`. -/
+def StrictSegal.ofCore (h : ∀ n, X.StrictSegalCore n) : X.StrictSegal where
+  spineToSimplex := StrictSegalCore.spineToSimplex h
+  spine_spineToSimplex := by aesop
+  spineToSimplex_spine n := by aesop
+
 end SSet
 
 namespace CategoryTheory.Nerve
@@ -396,27 +514,16 @@ variable (C : Type u) [Category.{v} C]
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
-noncomputable def strictSegal : StrictSegal (nerve C) where
-  spineToSimplex {n} F :=
-    ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
-      (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
-        (F.arrow i).map' 0 1 ≫ eqToHom (Functor.congr_obj (F.arrow_tgt i) 0))
-  spine_spineToSimplex n := by
-    ext F i
-    · exact ComposableArrows.ext₀ rfl
-    · refine ComposableArrows.ext₁ ?_ ?_ ?_
-      · exact Functor.congr_obj (F.arrow_src i).symm 0
-      · exact Functor.congr_obj (F.arrow_tgt i).symm 0
-      · dsimp
-        apply ComposableArrows.mkOfObjOfMapSucc_map_succ
-  spineToSimplex_spine n := by
-    ext F
-    fapply ComposableArrows.ext
-    · intro i
-      rfl
-    · intro i hi
-      dsimp
-      exact ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ i hi
+def strictSegal : StrictSegal (nerve C) :=
+  StrictSegal.ofCore (fun n ↦
+    { concat f s h := s.precomp (f.hom ≫ eqToHom (Functor.congr_obj h 0))
+      map_mkOfSucc_zero_concat f s h :=
+        ComposableArrows.ext₁ rfl (Functor.congr_obj h 0).symm (by cat_disch)
+      δ₀_concat f s h := rfl
+      injective {f g} h h₀ :=
+        ComposableArrows.ext_succ (Functor.congr_obj h 0) h₀
+          ((Arrow.mk_eq_mk_iff _ _).1
+            (DFunLike.congr_arg ComposableArrows.arrowEquiv h)).2.2 })
 
 instance isStrictSegal : IsStrictSegal (nerve C) :=
   strictSegal C |>.isStrictSegal

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Directed
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Directed
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Chains and flags
@@ -24,6 +26,8 @@ Originally ported from Isabelle/HOL. The
 [original file](https://isabelle.in.tum.de/dist/library/HOL/HOL/Zorn.html) was written by Jacques D.
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 
@@ -241,9 +245,22 @@ lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc 
     IsMaxChain s (e '' c) where
   left := hc.isChain.image _ _ _ fun _ _ ↦ by exact e.map_rel_iff.2
   right t ht hf := by
-    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, ← Equiv.image_symm_eq_preimage]
     exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
       ((e.toEquiv.subset_symm_image _ _).2 hf)
+
+protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s = ∅ := by
+  refine ⟨fun _ ↦ s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
+  constructor
+  intro x
+  simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
+  exact singleton_ne_empty x (h IsChain.singleton).symm
+
+protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s ≠ ∅ := by
+  grind [not_nonempty_iff, IsMaxChain.isEmpty_iff]
+
+theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
+  ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
 
 open Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`

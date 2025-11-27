@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Tactic.FinCases
-import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Locally constant functions
@@ -21,6 +23,8 @@ This file sets up the theory of locally constant function from a topological spa
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
 -/
+
+@[expose] public section
 
 variable {X Y Z α : Type*} [TopologicalSpace X]
 
@@ -111,9 +115,6 @@ theorem prodMk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
     (hf' : IsLocallyConstant f') : IsLocallyConstant fun x => (f x, f' x) :=
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
-
-@[deprecated (since := "2025-03-10")]
-alias prod_mk := prodMk
 
 theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
     (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=

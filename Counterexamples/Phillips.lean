@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+import Mathlib.Analysis.Normed.Module.HahnBanach
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Star
@@ -397,7 +397,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
         ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s) +
           ofNormedAddCommGroupDiscrete (indicator t 1) 1 (norm_indicator_le_one t) := by
       ext x; simp [indicator_union_of_disjoint hst]
-    rw [this, f.map_add]
+    grind
   exists_bound :=
     ⟨‖f‖, fun s => by
       have I :
@@ -588,7 +588,7 @@ theorem no_pettis_integral (Hcont : #ℝ = ℵ₁) :
     have : g x = evalCLM ℝ x g := rfl
     rw [this, ← h]
     simp
-  simp only [this, ContinuousLinearMap.map_zero] at h
+  simp only [this, map_zero] at h
   specialize h (volume.restrict (Icc (0 : ℝ) 1)).extensionToBoundedFunctions
   simp_rw [toFunctions_toMeasure_continuousPart _ _ MeasurableSet.univ] at h
   simp at h

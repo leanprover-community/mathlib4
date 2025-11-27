@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
 
@@ -36,6 +38,8 @@ for these theorems for multigraphs from [Chou1994].
 
 acyclic graphs, trees
 -/
+
+@[expose] public section
 
 
 namespace SimpleGraph
@@ -153,7 +157,7 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>
-    simp only [Walk.cons_isTrail_iff, Walk.support_cons, List.tail_cons] at hc
+    simp only [Walk.isTrail_cons, Walk.support_cons, List.tail_cons] at hc
     specialize h _ _ ⟨c', by simp only [Walk.isPath_def, hc.2]⟩ (Path.singleton ha.symm)
     rw [Path.singleton, Subtype.mk.injEq] at h
     simp [h] at hc
@@ -185,6 +189,34 @@ theorem isTree_iff_existsUnique_path :
 
 lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2
+
+theorem IsAcyclic.isPath_iff_isChain [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+     p.IsPath ↔ List.IsChain (· ≠ ·) p.edges := by
+  refine ⟨fun h ↦ (edges_nodup_of_support_nodup <| p.isPath_def.mp h).isChain, fun h ↦ ?_⟩
+  induction p with
+  | nil => simp
+  | @cons u' v' _ head tail ih =>
+    have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
+    refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
+    rcases tail.length.eq_zero_or_pos with h' | h'
+    · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
+    · by_contra hh
+      apply hG <| cons head (tail.takeUntil u' hh)
+      simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons, ne_eq, reduceCtorEq,
+        not_false_eq_true, support_cons, List.tail_cons, true_and]
+      have : cons head (tail.takeUntil u' hh) |>.support.tail.Nodup :=
+        tail.isPath_def.mp (ih hcc.2) |>.sublist <| List.IsInfix.sublist
+          ⟨[], (tail.dropUntil u' hh).support.tail, by simp [← support_append]⟩
+      refine ⟨⟨?_, edges_nodup_of_support_nodup this⟩, this⟩
+      by_contra hhh
+      refine hcc.1 s(u', v') ?_ rfl
+      rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
+      have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
+      simp [this, snd_takeUntil head.ne]
+
+theorem IsAcyclic.isPath_iff_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+    p.IsPath ↔ p.IsTrail :=
+  ⟨IsPath.isTrail, fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain⟩
 
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
@@ -300,5 +332,53 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   use v
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
+
+/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
+lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
+    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
+  obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
+  refine (connected_iff _).mpr ⟨?_, u, by aesop⟩
+  /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ
+  via the unique vertex u adjacent to vertex v. -/
+  intro w x
+  obtain ⟨pwu, hpwu⟩ := hconn.exists_isPath w u
+  obtain ⟨pux, hpux⟩ := hconn.exists_isPath u x
+  rw [Reachable, ← exists_true_iff_nonempty]
+  classical
+  use ((pwu.append pux).toPath.val.induce {v}ᶜ ?_).copy (SetCoe.ext rfl) (SetCoe.ext rfl)
+  /- Each path between vertex u and another vertex in G.induce {v}ᶜ
+  is contained in G.induce {v}ᶜ. -/
+  intro z hz
+  rw [Set.mem_compl_iff, Set.mem_singleton_iff]
+  obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
+  /- Prove vertex v is not in the path formed from the concatenated walks
+  by showing that vertex u must then be passed twice. -/
+  by_contra
+  subst_vars
+  refine List.nodup_iff_forall_not_duplicate.mp (pwu.append pux).toPath.nodup_support u ?_
+  rw [p_eq_pwzx, support_append, List.duplicate_iff_two_le_count, List.count_append]
+  have := List.one_le_count_iff.mpr (pwz.getVert_mem_support (pwz.length - 1))
+  simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
+  have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
+  rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
+  cutsat
+
+/-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
+removed. -/
+lemma Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial
+    [Finite V] [Nontrivial V] (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Connected := by
+  obtain ⟨T, _, T_isTree⟩ := hconn.exists_isTree_le
+  have ⟨hT, _⟩ := T_isTree
+  have := Fintype.ofFinite V
+  classical
+  obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
+  exact ⟨v, (hT.induce_compl_singleton_of_degree_eq_one hv).mono (by tauto)⟩
+
+/-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
+lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
+    (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
+  nontriviality V using hconn.nonempty
+  obtain ⟨v, hv⟩ := hconn.exists_connected_induce_compl_singleton_of_finite_nontrivial
+  exact ⟨v, hv.preconnected⟩
 
 end SimpleGraph
