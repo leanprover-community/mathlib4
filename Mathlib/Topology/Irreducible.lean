@@ -235,6 +235,14 @@ lemma IsIrreducible.of_subtype {X : Type*} [TopologicalSpace X] (s : Set X)
     [IrreducibleSpace s] : IsIrreducible s := by
   exact ⟨.of_subtype, .of_subtype s⟩
 
+theorem isPreirreducible_iff_preirreducibleSpace {X : Type*} [TopologicalSpace X] {s : Set X} :
+    IsPreirreducible s ↔ PreirreducibleSpace s :=
+  ⟨Subtype.preirreducibleSpace, fun _ ↦ .of_subtype s⟩
+
+theorem isIrreducible_iff_irreducibleSpace {X : Type*} [TopologicalSpace X] {s : Set X} :
+    IsIrreducible s ↔ IrreducibleSpace s :=
+  ⟨Subtype.irreducibleSpace, fun _ ↦ .of_subtype s⟩
+
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
