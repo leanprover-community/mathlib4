@@ -543,6 +543,13 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+@[simp]
+lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
+    (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
+  change RingHom.ker _ = _
+  congr
+  exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
+
 lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
