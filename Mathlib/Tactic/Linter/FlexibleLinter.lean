@@ -344,7 +344,7 @@ def flexible : Std.HashSet Name :=
 
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
 the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
-For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
+For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false`. -/
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases' => false
