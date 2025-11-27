@@ -5,7 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Data.Int.Fib.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
@@ -17,21 +17,16 @@ to `(-1) ^ (n + 1)`. And Catalan's identity states that for any naturals `x` and
 `fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) = (-1) ^ (x + 1) * fib (a + 1) ^ 2`.
 -/
 
-@[expose] public section
-
-namespace Nat
-
 /-- Being a linear recurrence, the entries of the Fibonacci sequence can be related via
 matrix exponentiation. -/
-lemma fib_matrix_eq : ∀ {n : ℕ},
+public lemma Nat.fib_matrix_eq : ∀ {n : ℕ},
     !![fib (n + 2), fib (n + 1); fib (n + 1), fib n] = !![1, 1; 1, 0] ^ (n + 1)
   | 0 => by simp
   | n + 1 => by
     rw [pow_succ, ← fib_matrix_eq]
     simp [fib_add_two, ← add_assoc, add_rotate, add_comm (fib n)]
 
-/-- **Cassini's identity**: `fib (n + 2) * fib n - fib (n + 1) ^ 2 = (-1) ^ (n + 1)`. -/
-lemma fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
+lemma Nat.fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
     (fib (n + 2) * fib n - fib (n + 1) ^ 2 : ℤ) = (-1) ^ (n + 1) :=
   calc
     _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n] : Matrix _ _ ℤ).det := by simp [pow_two]
@@ -40,21 +35,25 @@ lemma fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
     _ = (!![1, 1; 1, 0] ^ (n + 1)).det := by congr; simp [← Matrix.ext_iff]
     _ = (-1) ^ (n + 1) := by simp
 
-/-- Cassini's identity for even `n`: `fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1`. -/
-lemma fib_add_two_mul_fib_of_even {n : ℕ} (hn2 : Even n) :
-    fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1 := by
-  obtain ⟨a, rfl⟩ := hn2
-  grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
+lemma Int.fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
+    fib (n + 2) * fib n - fib (n + 1) ^ 2 = (-1) ^ (n + 1) := by
+  simp [← Nat.fib_add_two_mul_fib_sub_fib_succ_sq, ← fib_natCast]
 
-/-- Cassini's identity for odd `n`: `fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1`. -/
-lemma fib_succ_mul_fib_pred_of_odd {n : ℕ} (hn : Odd n) :
-    fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1 := by
-  obtain ⟨a, rfl⟩ := hn
-  grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
+/-- **Cassini's identity**: `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n.natAbs`. -/
+public lemma Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
+    fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n.natAbs := by
+  if hn₀ : n = 0 then simp [hn₀] else
+  obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn₀)
+    simp [natAbs_add_of_nonneg, ← fib_add_two_mul_fib_sub_fib_succ_sq, add_assoc]
+  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn₀)
+    simp_rw [show -((i + 1 : ℕ) : ℤ) + 1 = -i by simp, sub_eq_add_neg, ← neg_add,
+      fib_neg, natAbs_neg, natAbs_natCast]
+    grind [fib_add_two_mul_fib_sub_fib_succ_sq]
 
 /-- **Catalan's identity**:
 `fib (x + a + 1) ^ 2 - fib (x + 1) * fib (x + 2 * a + 1) = (-1) ^ (x + 1) * fib a ^ 2`. -/
-lemma fib_add_add_one_sq_sub_fib_succ_mul_fib_add_two_mul_succ (x a : ℕ) :
+lemma Nat.fib_add_add_one_sq_sub_fib_succ_mul_fib_add_two_mul_succ (x a : ℕ) :
     (fib (x + a + 1) ^ 2 - fib (x + 1) * fib (x + 2 * a + 1) : ℤ) = (-1) ^ (x + 1) * fib a ^ 2 := by
   by_cases ha : a = 0
   · simp [ha, sq]
@@ -85,5 +84,3 @@ lemma fib_add_add_one_sq_sub_fib_succ_mul_fib_add_two_mul_succ (x a : ℕ) :
     _ = _ := by
         rw [← fib_add_two_mul_fib_sub_fib_succ_sq, sub_mul, fib_add_two, cast_add]
         ring
-
-end Nat
