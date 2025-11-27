@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
-
 
 /-!
 # Pushouts in `Type`
@@ -306,9 +304,10 @@ lemma mono_of_isPushout_of_isPullback {k : X₄ ⟶ X₅} (h₁ : IsPushout t l 
       b' x₃ = b' y₃ → x₃ = y₃) :
     Mono k := by
   subst facr facb
-  have hl : Mono l :=
-    (MorphismProperty.monomorphisms _).of_isPullback h₂ (.infer_property _)
-  rw [mono_iff_injective] at hr' hl ⊢
+  have : Function.Injective l :=
+    fun x₁ y₁ h ↦ ext_of_isPullback h₂ ((mono_iff_injective _).1 hr'
+      ((congr_fun h₂.w x₁).trans (Eq.trans (by simp [h]) (congr_fun h₂.w.symm y₁)))) h
+  rw [mono_iff_injective] at hr' ⊢
   have w := congr_fun h₁.w
   dsimp at w
   intro x₃ y₃ eq
@@ -349,16 +348,14 @@ lemma isPushout_of_isPullback_of_mono {k : X₄ ⟶ X₅}
     (by simp only [← cancel_mono k, Category.assoc, facr, facb, h₁.w])
   have := mono_of_isPushout_of_isPullback (IsPushout.of_hasPushout t l) h₁
     (k := φ ≫ k) (by cat_disch) (by cat_disch) H
-  have := mono_of_mono φ k
-  have : Epi φ := by
-    rw [epi_iff_surjective]
-    intro x₄
+  have : IsIso φ := by
+    rw [isIso_iff_bijective]
+    refine ⟨(mono_iff_injective _).1 (mono_of_mono φ k), fun x₄ ↦ ?_⟩
     have hx₄ := Set.mem_univ x₄
     simp only [← h₂, Set.sup_eq_union, Set.mem_union, Set.mem_range] at hx₄
     obtain (⟨x₂, rfl⟩ | ⟨x₃, rfl⟩) := hx₄
     · exact ⟨_, congr_fun hφ₁ x₂⟩
     · exact ⟨_, congr_fun hφ₂ x₃⟩
-  have := isIso_of_mono_of_epi φ
   exact IsPushout.of_iso (IsPushout.of_hasPushout t l)
     (Iso.refl _) (Iso.refl _) (Iso.refl _) (asIso φ) (by simp) (by simp)
     (by simpa) (by simpa)
