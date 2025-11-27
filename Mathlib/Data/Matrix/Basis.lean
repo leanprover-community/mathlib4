@@ -97,7 +97,7 @@ theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Mat
     x = ∑ i : m, ∑ j : n, single i j (x i j) := by
   ext i j
   rw [← Fintype.sum_prod_type']
-  simp [single, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk_inj]
+  simp [single, Matrix.sum_apply, ← Prod.mk_inj]
 
 theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     single i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by

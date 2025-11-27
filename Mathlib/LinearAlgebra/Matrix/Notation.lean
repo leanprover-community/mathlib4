@@ -280,7 +280,7 @@ theorem cons_mul [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (B : Mat
   ext i j
   refine Fin.cases ?_ ?_ i
   · rfl
-  simp [mul_val_succ]
+  simp [mul_val_succ, -of_eq_self]
 
 end Mul
 
@@ -309,7 +309,8 @@ theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' �
   simp [vecMul]
 
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
-    vecCons x v ᵥ* of (vecCons w B) = x • w + v ᵥ* of B := by simp
+    vecCons x v ᵥ* of (vecCons w B) = x • w + v ᵥ* of B := by
+  simp [-of_eq_self]
 
 end VecMul
 
