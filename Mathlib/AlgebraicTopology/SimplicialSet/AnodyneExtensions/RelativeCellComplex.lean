@@ -3,14 +3,19 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+module
+
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 
 /-!
 # The relative cell complex attached to a rank function for a pairing
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -67,7 +72,7 @@ lemma le_filtration (i : ι) : A ≤ f.filtration i := le_sup_left
 lemma filtration_bot [OrderBot ι] : f.filtration ⊥ = A := by
   simp [filtration]
 
-lemma monotone_filtration : Monotone f.filtration := by
+lemma filtration_monotone : Monotone f.filtration := by
   intro i₁ i₂ h
   rw [filtration]
   simp only [sup_le_iff, iSup_le_iff, le_filtration, true_and]
@@ -86,7 +91,7 @@ lemma filtration_succ [SuccOrder ι] (i : ι) (hi : ¬ IsMax i) :
     · exact (f.simplex_le_filtration _ hj).trans le_sup_left
     · exact le_trans (le_trans (by rfl) (le_iSup _ c)) le_sup_right
   · simp only [sup_le_iff, iSup_le_iff]
-    exact ⟨f.monotone_filtration (Order.le_succ i),
+    exact ⟨f.filtration_monotone (Order.le_succ i),
       fun c ↦ f.simplex_le_filtration _ (Order.lt_succ_of_not_isMax hi)⟩
 
 lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
@@ -105,7 +110,7 @@ lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
       exact f.simplex_le_filtration _ (Order.lt_succ_of_not_isMax hj.not_isMax)
   · simp only [iSup_le_iff]
     intro j hj
-    exact f.monotone_filtration hj.le
+    exact f.filtration_monotone hj.le
 
 lemma filtration_le_iSup (i : ι) :
     f.filtration i ≤ ⨆ (i : ι), f.filtration i :=
@@ -131,6 +136,18 @@ lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
   exact le_trans (by simp [Cells.simplex])
     ((f.simplex_le_filtration ⟨y, rfl⟩ (Order.lt_succ (f.rank y))).trans
     (f.filtration_le_iSup _))
+
+lemma iSup_filtration_iio [OrderBot ι] [SuccOrder ι] (m : ι) (hm : Order.IsSuccLimit m) :
+    ⨆ (i : Set.Iio m), f.filtration i = f.filtration m :=
+  le_antisymm (by
+    simp only [iSup_le_iff, Subtype.forall, Set.mem_Iio]
+    intro j hj
+    exact f.filtration_monotone hj.le) (by
+    rw [filtration]
+    simp only [sup_le_iff, iSup_le_iff, ← f.filtration_bot]
+    exact ⟨le_trans (by rfl) (le_iSup _ ⟨⊥, hm.bot_lt⟩), fun j hj c ↦
+      (f.simplex_le_filtration c (Order.lt_succ_of_not_isMax (not_isMax_of_lt hj))).trans
+        (le_trans (by rfl) (le_iSup _ ⟨Order.succ j, hm.succ_lt_iff.2 hj⟩))⟩)
 
 def Cells.mapToSucc {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j) :
     Δ[c.dim + 1] ⟶ f.filtration (Order.succ j) :=
@@ -197,13 +214,13 @@ lemma ι_b {j : ι} (c : f.Cells j) :
 
 @[reassoc]
 lemma w (j : ι) :
-    f.t j ≫ homOfLE (f.monotone_filtration (Order.le_succ j)) = f.m j ≫ f.b j := by
+    f.t j ≫ homOfLE (f.filtration_monotone (Order.le_succ j)) = f.m j ≫ f.b j := by
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
-      (homOfLE (f.monotone_filtration (Order.le_succ j))) (f.b j) where
+      (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
   isColimit' := sorry
 
@@ -211,11 +228,23 @@ end
 
 variable [SuccOrder ι] [OrderBot ι] [NoMaxOrder ι] [WellFoundedLT ι]
 
+instance : f.filtration_monotone.functor.IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨Preorder.isColimitOfIsLUB _ _ (by
+    dsimp
+    rw [← f.iSup_filtration_iio m hm]
+    apply isLUB_iSup)⟩
+
 noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι where
-  F := f.monotone_filtration.functor ⋙ Subcomplex.toSSetFunctor
+  F := f.filtration_monotone.functor ⋙ Subcomplex.toSSetFunctor
   isoBot := Subcomplex.eqToIso (filtration_bot _)
-  isColimit := sorry
-  isWellOrderContinuous := sorry
+  isColimit :=
+    IsColimit.ofIsoColimit (isColimitOfPreserves Subcomplex.toSSetFunctor
+      (Preorder.colimitCoconeOfIsLUB f.filtration_monotone.functor (pt := ⊤)
+        (by rw [← f.iSup_filtration]; apply isLUB_iSup)).isColimit)
+        (Cocones.ext (Subcomplex.topIso _))
+  isWellOrderContinuous :=
+    ⟨fun m hm ↦ ⟨isColimitOfPreserves Subcomplex.toSSetFunctor
+      (Functor.isColimitOfIsWellOrderContinuous f.filtration_monotone.functor m hm)⟩⟩
   incl.app i := (f.filtration i).ι
   attachCells j hj :=
     { ι := f.Cells j
