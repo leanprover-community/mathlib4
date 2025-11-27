@@ -96,11 +96,11 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
   rw [specializes_iff_forall_open]
   constructor
   · intro x_le_y u hu x_in_u
-    apply (@isUpperSet_of_isOpen α {d | DirectedOn (· ≤ ·) d }) at hu
+    apply (isUpperSet_of_isOpen {d | DirectedOn (· ≤ ·) d }) at hu
     exact hu x_le_y x_in_u
   · let u := {z : α | ¬(z ≤ y)}
     have hu: IsOpen u := by
-      rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }]
+      rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }]
       constructor
       · intro a b a_le_b a_in_u b_le_y
         exact (and_not_self_iff (a ≤ y)).1 ⟨a_le_b.trans b_le_y, a_in_u⟩
@@ -128,7 +128,7 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
 /-- Anticipating the construction of basis proved in `isTopologicalBasis_Ici_image_compactSet`
 We use the name `basis` instead of `Ici_image_compactSet` here -/
 lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u := by
-  rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }]
+  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }]
   constructor
   · -- u is an upper set
     unfold IsUpperSet
@@ -181,7 +181,7 @@ private lemma Opens.mem_iff_Ici_subset {e : α} {u : Opens α} : e ∈ u ↔ e�
   constructor
   · intro e_in_u
     have u_open := u.isOpen
-    rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }] at u_open
+    rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }] at u_open
     let ⟨u_Ici, _⟩ := u_open
     intro a ha
     exact u_Ici ha e_in_u
@@ -199,7 +199,7 @@ which contains `x`.
 In anticipation of `isTopologicalBasis_Ici_image_compactSet` we already use the word `basis` -/
 lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
     : ∃ c ∈ 𝕂 D, x ∈ cᵘ ∧ cᵘ ⊆ u := by
-  rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn D {d | DirectedOn (· ≤ ·) d }] at hu
+  rw [isOpen_iff_isUpperSet_and_dirSupInaccOn {d | DirectedOn (· ≤ ·) d }] at hu
   obtain ⟨upper, hausdorff⟩ := hu
   have compactLowerBounded : ∃ c: D, c ≤ x ∧ c ∈ u ∧ Compact c := by
     -- the Algebraicity property
@@ -235,13 +235,13 @@ theorem isTopologicalBasis_Ici_image_compactSet : IsTopologicalBasis (Ici '' �
     intro x u x_in_u hu
     choose c hc x_in_c' hc' using exists_basis_mem_basis x u x_in_u hu
     use cᵘ
-    use ⟨c, And.intro hc rfl⟩
+    use ⟨c, hc, rfl⟩
 
 /-- Any open set, `u`, can be constructed as a union of sets from the basis.
     The basis consists of the upward closures of those compact elements in `u`
     This is the weaker version of the lemma using `Set`s instead of `Opens`. -/
 lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
-  u = ⋃₀ (Ici '' { c ∈ 𝕂 D | cᵘ ⊆ u}) := by
+  u = ⋃₀ (Ici '' {c ∈ 𝕂 D | cᵘ ⊆ u}) := by
   ext e
   simp only [sUnion_image, mem_setOf_eq, mem_iUnion, exists_prop]
   constructor
