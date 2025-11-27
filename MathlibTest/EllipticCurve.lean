@@ -15,8 +15,6 @@ def basepoint : curve.Point :=
     rw [nonsingular_iff, equation_iff]
     decide
 
-example : (5 * 5 / 5 : ZMod 37) = 5 := by grind only
-
 theorem valid_base_order : addOrderOf basepoint = 37 := by
   apply addOrderOf_eq_prime
   · rfl
