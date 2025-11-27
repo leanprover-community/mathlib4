@@ -65,10 +65,12 @@ end IsOpenCover
 
 section IrreducibleSpace
 
+open Function
+
 /-- Irreducibility can be checked on an open cover with pairwise non-empty intersections. -/
 theorem IrreducibleSpace.of_openCover {X ι : Type*} [TopologicalSpace X] [hι : Nonempty ι]
     {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.IsOpenCover U)
-    (hn : ∀ i j, ((U i).carrier ∩ (U j).carrier).Nonempty)
+    (hn : Pairwise ((¬ Disjoint · ·) on U))
     (h : ∀ i, IrreducibleSpace ↥(U i)) :
     IrreducibleSpace X := by
   have h' (i : _) : IsIrreducible (U i).carrier :=
@@ -85,8 +87,10 @@ theorem IrreducibleSpace.of_openCover {X ι : Type*} [TopologicalSpace X] [hι :
     rw [u.ne_univ_iff_exists_notMem] at huniv
     choose a ha using huniv
     choose j haj using hU.exists_mem a
+    have hji : j ≠ i := fun hji' ↦ ha <| hUu <| hji' ▸ haj
     rcases Set.inter_nonempty_iff_exists_left.mp
-      ((h' j).2 (U i) uᶜ (U i).isOpen huo (hn j i) ⟨a, ⟨haj, ha⟩⟩).right
+      ((h' j).2 (U i) uᶜ (U i).isOpen huo
+      (not_disjoint_iff_nonempty_inter.mp (by simpa using hn hji)) ⟨a, ⟨haj, ha⟩⟩).right
       with ⟨x, hx₁, hx₂⟩
     exfalso; exact hx₂ <| hUu hx₁
 
