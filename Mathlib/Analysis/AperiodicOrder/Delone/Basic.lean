@@ -139,10 +139,8 @@ lemma le_dist_of_mem_ne (D : DeloneSet X)
 /-- Distinct points in a Delone set are at positive distance. -/
 lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
     (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
-    0 < dist x y := by
-  have hsep := D.le_dist_of_mem_ne hx hy hne
-  have hpos := D.packingRadius_pos
-  exact lt_of_lt_of_le hpos hsep
+    0 < dist x y :=
+  lt_of_lt_of_le D.packingRadius_pos <| D.le_dist_of_mem_ne hx hy hne
 
 /--
 If the packing radius of a Delone set is `r`, then for any `z : X` the open ball
@@ -154,15 +152,11 @@ lemma subset_ball_singleton (D : DeloneSet X) :
   · exact half_pos D.packingRadius_pos
   · intro x y z hx hy hz hxz hyz
     by_contra hne
-    have hge := D.le_dist_of_mem_ne hx hy hne
     have hlt : dist x y < D.packingRadius := by
       have hsum_lt : dist x z + dist z y < D.packingRadius := by
-        have := add_lt_add hxz <| mem_ball'.mp hyz
-        simpa [add_halves] using this
-      have htriangle : dist x y ≤ dist x z + dist z y :=
-        dist_triangle x z y
-      exact lt_of_le_of_lt htriangle hsum_lt
-    exact (not_lt_of_ge hge) hlt
+        simpa [add_halves] using (add_lt_add hxz <| mem_ball'.mp hyz)
+      exact lt_of_le_of_lt (dist_triangle x z y) hsum_lt
+    exact (not_lt_of_ge <| D.le_dist_of_mem_ne hx hy hne) hlt
 
 /-- The image of a Delone set under an isometry is a Delone set. -/
 def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
