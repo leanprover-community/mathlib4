@@ -100,21 +100,16 @@ lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
   apply le_antisymm
   · rw [filtration]
     simp only [sup_le_iff, iSup_le_iff]
-    constructor
+    refine ⟨?_, fun j hj c ↦ ?_⟩
     · refine le_trans ?_ (le_iSup _ ⊥)
       exact le_trans (by simp) (le_iSup _ hi.bot_lt)
-    · intro j hj c
-      refine le_trans ?_ (le_iSup _ (Order.succ j))
+    · refine le_trans ?_ (le_iSup _ (Order.succ j))
       refine le_trans ?_ (le_iSup _
         (by rwa [← Order.IsSuccLimit.succ_lt_iff hi] at hj))
       exact f.simplex_le_filtration _ (Order.lt_succ_of_not_isMax hj.not_isMax)
   · simp only [iSup_le_iff]
     intro j hj
     exact f.filtration_monotone hj.le
-
-lemma filtration_le_iSup (i : ι) :
-    f.filtration i ≤ ⨆ (i : ι), f.filtration i :=
-  le_iSup _ i
 
 lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
     ⨆ (i : ι), f.filtration i = ⊤ := by
@@ -123,7 +118,7 @@ lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
     rw [eq_top_iff_contains_nonDegenerate]
     intro n s hs
     by_cases hs₀ : s ∈ A.obj _
-    · exact f.filtration_le_iSup ⊥ _ (by rwa [filtration_bot])
+    · exact le_iSup f.filtration ⊥ _ (by rwa [filtration_bot])
     · exact this (N.mk _ hs hs₀)
   suffices ∀ (y : P.II), ofSimplex (P.p y).1.simplex ≤ B by
     intro s
@@ -135,7 +130,7 @@ lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
   intro y
   exact le_trans (by simp [Cells.simplex])
     ((f.simplex_le_filtration ⟨y, rfl⟩ (Order.lt_succ (f.rank y))).trans
-    (f.filtration_le_iSup _))
+      (le_iSup f.filtration _))
 
 lemma iSup_filtration_iio [OrderBot ι] [SuccOrder ι] (m : ι) (hm : Order.IsSuccLimit m) :
     ⨆ (i : Set.Iio m), f.filtration i = f.filtration m :=
@@ -222,7 +217,12 @@ lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
-  isColimit' := sorry
+  isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨d⟩ ↦ by
+    induction d using SimplexCategory.rec with | _ d
+    refine (isColimitMapCoconePushoutCoconeEquiv _ _).2
+      (IsPushout.isColimit ?_)
+    dsimp
+    sorry)⟩
 
 end
 
