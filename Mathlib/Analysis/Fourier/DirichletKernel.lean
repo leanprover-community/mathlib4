@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Analysis.Complex.Trigonometric
 
+/-!
+# Dirichlet kernel
+
+This file contains the definitions of Dirichlet kernel.
+
+## TODO : $S_n(f)(x) = (D_n * f)(x)$
+
+-/
+
 @[expose] public section
 
 open Real
