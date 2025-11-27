@@ -257,8 +257,8 @@ set_option linter.flexible false in
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
-  · simp; rename_i b; cases b <;> simp
-  · simp; rename_i a; cases a <;> simp
+  · rename_i b; cases b <;> simp
+  · rename_i a; cases a <;> simp
   · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by

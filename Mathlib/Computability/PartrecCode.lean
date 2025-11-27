@@ -42,13 +42,10 @@ of some code.
 
 -/
 
-<<<<<<< HEAD
--- TODO: revisit this after #13791 is merged
-set_option linter.flexible false
-=======
 @[expose] public section
 
->>>>>>> master
+-- TODO: revisit this after #13791 is merged
+set_option linter.flexible false
 
 open Encodable Denumerable
 
