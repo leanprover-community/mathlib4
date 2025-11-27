@@ -698,22 +698,31 @@ def print_result(step_name: str, result: VerificationResult) -> None:
     print(f"  {symbol} {step_name}: {result.message}")
 
 
-def verify_tag(tag: str) -> bool:
-    """Run all verification steps for a single tag. Returns True if all passed."""
+def verify_tag(tag: str) -> Tuple[bool, bool]:
+    """Run all verification steps for a single tag.
+
+    Returns:
+        (has_errors, has_warnings): Tuple of booleans indicating if there were errors or warnings.
+    """
     print(f"\nVerifying tag: {tag}")
     print("-" * 50)
 
-    all_passed = True
+    has_errors = False
+    has_warnings = False
 
     result = verify_local_remote_consistency(tag)
     print_result("Local/remote consistency", result)
     if not result.success:
-        all_passed = False
+        has_errors = True
+    elif result.warning:
+        has_warnings = True
 
     result = verify_github_tag(tag)
     print_result("GitHub tag", result)
     if not result.success:
-        all_passed = False
+        has_errors = True
+    elif result.warning:
+        has_warnings = True
 
     with tempfile.TemporaryDirectory() as tmpdir:
         checkout_dir = os.path.join(tmpdir, 'mathlib4')
@@ -721,13 +730,17 @@ def verify_tag(tag: str) -> bool:
         result = verify_checkout(tag, checkout_dir)
         print_result("Checkout", result)
         if not result.success:
-            all_passed = False
-            return all_passed  # Can't continue without checkout
+            has_errors = True
+            return has_errors, has_warnings  # Can't continue without checkout
+        elif result.warning:
+            has_warnings = True
 
         result = verify_lean_toolchain(tag, checkout_dir)
         print_result("lean-toolchain", result)
         if not result.success:
-            all_passed = False
+            has_errors = True
+        elif result.warning:
+            has_warnings = True
 
         # This may trigger toolchain download and dependency fetching, which streams to stderr
         # The function prints its own success output, so we only print on failure
@@ -735,28 +748,40 @@ def verify_tag(tag: str) -> bool:
         result = verify_lean_version_string(tag, checkout_dir)
         if not result.success:
             print_result("Lean version", result)
-            all_passed = False
+            has_errors = True
+        elif result.warning:
+            has_warnings = True
 
         result = verify_elan_toolchain(tag, checkout_dir)
         print_result("Elan toolchain", result)
         if not result.success:
-            all_passed = False
+            has_errors = True
+        elif result.warning:
+            has_warnings = True
 
         result = verify_proofwidgets_toolchain(checkout_dir)
         if result is not None:
             print_result("ProofWidgets toolchain", result)
+            if not result.success:
+                has_errors = True
+            elif result.warning:
+                has_warnings = True
 
         result = verify_cache_download(checkout_dir)
         print_result("Cache download", result)
         if not result.success:
-            all_passed = False
+            has_errors = True
+        elif result.warning:
+            has_warnings = True
 
         result = verify_build(tag, checkout_dir)
         print_result("Build verification", result)
         if not result.success:
-            all_passed = False
+            has_errors = True
+        elif result.warning:
+            has_warnings = True
 
-    return all_passed
+    return has_errors, has_warnings
 
 
 def main() -> None:
@@ -857,13 +882,20 @@ Examples:
     passed = 0
     failed = 0
     failed_tags: List[str] = []
+    any_errors = False
+    any_warnings = False
 
     for tag in tags_to_verify:
-        if verify_tag(tag):
-            passed += 1
-        else:
+        has_errors, has_warnings = verify_tag(tag)
+        if has_errors or has_warnings:
             failed += 1
             failed_tags.append(tag)
+            if has_errors:
+                any_errors = True
+            if has_warnings:
+                any_warnings = True
+        else:
+            passed += 1
 
     # Print summary for multi-tag modes
     if len(tags_to_verify) > 1:
@@ -922,11 +954,11 @@ Examples:
         else:
             print(f"Passed: {passed}/{passed + failed}")
 
-        # Exit with error only if there are actual errors (not just warnings)
+        # Multi-tag mode: Exit with error only if there are actual errors (not just warnings)
         sys.exit(0 if not errors else 1)
     else:
-        # Single tag mode - no summary needed
-        sys.exit(0 if failed == 0 else 1)
+        # Single tag mode: Exit with error if there are errors OR warnings
+        sys.exit(0 if not (any_errors or any_warnings) else 1)
 
 
 if __name__ == "__main__":
