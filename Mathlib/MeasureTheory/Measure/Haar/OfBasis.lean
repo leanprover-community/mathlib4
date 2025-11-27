@@ -68,7 +68,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, _root_.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, _root_.map_sum, map_smulₛₗ, RingHom.id_apply]
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
 @[simp]
@@ -218,7 +218,7 @@ theorem parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
 theorem prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
-    (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
+    (v.prod w).parallelepiped = v.parallelepiped ×ˢ w.parallelepiped := by
   ext x
   simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
     mem_parallelepiped_iff]

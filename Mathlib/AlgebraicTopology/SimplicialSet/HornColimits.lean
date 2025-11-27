@@ -19,17 +19,17 @@ In this file, we express horns as colimits:
 
 @[expose] public section
 
+universe u
+
 namespace SSet
 
 open CategoryTheory Simplicial Opposite Limits
 
-universe u
-
 namespace horn₂₀
 
 lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
-    (stdSimplex.face {0, 2}) (horn 2 0) where
-  max_eq := by
+    (stdSimplex.face {0, 2}) (horn.{u} 2 0) where
+  sup_eq := by
     apply le_antisymm
     · rw [sup_le_iff]
       constructor
@@ -40,7 +40,7 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
       fin_cases i
       · exact le_sup_right
       · exact le_sup_left
-  min_eq := by simp [stdSimplex.face_inter_face]
+  inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ horn 2 0` which avoids `2`. -/
 abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 0 := horn.ι 0 2 (by simp)
@@ -61,8 +61,8 @@ end horn₂₀
 namespace horn₂₁
 
 lemma sq : Subcomplex.BicartSq (stdSimplex.face {1}) (stdSimplex.face {0, 1})
-    (stdSimplex.face {1, 2}) (horn 2 1) where
-  max_eq := by
+    (stdSimplex.face {1, 2}) (horn.{u} 2 1) where
+  sup_eq := by
     apply le_antisymm
     · rw [sup_le_iff]
       constructor
@@ -73,7 +73,7 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {1}) (stdSimplex.face {0, 1})
       fin_cases i
       · exact le_sup_right
       · exact le_sup_left
-  min_eq := by simp [stdSimplex.face_inter_face]
+  inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ horn 2 1` which avoids `2`. -/
 abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 1 := horn.ι 1 2 (by simp)
@@ -94,8 +94,8 @@ end horn₂₁
 namespace horn₂₂
 
 lemma sq : Subcomplex.BicartSq (stdSimplex.face {2}) (stdSimplex.face {0, 2})
-    (stdSimplex.face {1, 2}) (horn 2 2) where
-  max_eq := by
+    (stdSimplex.face {1, 2}) (horn.{u} 2 2) where
+  sup_eq := by
     apply le_antisymm
     · rw [sup_le_iff]
       constructor
@@ -106,7 +106,7 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {2}) (stdSimplex.face {0, 2})
       fin_cases i
       · exact le_sup_right
       · exact le_sup_left
-  min_eq := by simp [stdSimplex.face_inter_face]
+  inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ horn 2 2` which avoids `1`. -/
 abbrev ι₀₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 1 (by simp)

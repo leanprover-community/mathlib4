@@ -61,11 +61,11 @@ variable (σ a a')
 
 @[simp]
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
-  RingHom.map_sub _ _ _
+  map_sub _ _ _
 
 @[simp]
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
-  RingHom.map_neg _ _
+  map_neg _ _
 
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
