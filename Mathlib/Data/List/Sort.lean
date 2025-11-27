@@ -51,9 +51,14 @@ def orderedInsert (a : α) : List α → List α
     (b :: l).orderedInsert r a = if r a b then a :: b :: l else
     b :: l.orderedInsert r a := .refl _
 
-theorem orderedInsert_of_le {a b : α} (l : List α) (h : a ≼ b) :
+theorem orderedInsert_cons_of_le {a b : α} (l : List α) (h : a ≼ b) :
     orderedInsert r a (b :: l) = a :: b :: l :=
   dif_pos h
+
+@[deprecated (since := "2025-11-27")] alias orderedInsert_of_le := orderedInsert_cons_of_le
+
+theorem orderedInsert_of_not_le {a b : α} (l : List α) (h : ¬ a ≼ b) :
+    orderedInsert r a (b :: l) = b :: orderedInsert r a l := dif_neg h
 
 /-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
 def insertionSort : List α → List α := foldr (orderedInsert r) []
@@ -71,12 +76,12 @@ example :
 
 theorem orderedInsert_length (L : List α) (a : α) :
     (L.orderedInsert r a).length = L.length + 1 := by
-  induction L <;> grind [orderedInsert]
+  induction L <;> grind
 
 /-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
 theorem orderedInsert_eq_take_drop (a : α) (l : List α) :
       l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b := by
-    induction l <;> grind [orderedInsert, takeWhile, dropWhile]
+    induction l <;> grind [takeWhile, dropWhile]
 
 theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
@@ -87,12 +92,12 @@ theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
 @[simp]
 theorem mem_orderedInsert {a b : α} {l : List α} :
     a ∈ orderedInsert r b l ↔ a = b ∨ a ∈ l := by
-  induction l <;> grind [orderedInsert]
+  induction l <;> grind
 
 theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
     (hl₁ : ∀ a ∈ l, a ≼ x ↔ f a ≼ f x) (hl₂ : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
     (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
-  induction l <;> grind [orderedInsert]
+  induction l <;> grind
 
 section Correctness
 
@@ -100,18 +105,16 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
   | b :: l => by
     by_cases h : a ≼ b
-    · simp [orderedInsert, h]
-    · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
+    · simp [h]
+    · simpa [h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
     count a (L.orderedInsert r b) = count a L + if b = a then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
   simp
 
-theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
-  | [] => Perm.nil
-  | b :: l => by
-    simpa [insertionSort] using (perm_orderedInsert _ _ _).trans ((perm_insertionSort l).cons b)
+theorem perm_insertionSort (l : List α) : insertionSort r l ~ l := by
+  induction l <;> grind [List.Perm, perm_orderedInsert]
 
 @[simp]
 theorem mem_insertionSort {l : List α} {x : α} : x ∈ l.insertionSort r ↔ x ∈ l :=
@@ -127,7 +130,7 @@ theorem insertionSort_cons_of_forall_rel {a : α} {l : List α} (h : ∀ b ∈ l
   cases hi : insertionSort r l with
   | nil => rfl
   | cons b m =>
-    rw [orderedInsert_of_le]
+    rw [orderedInsert_cons_of_le]
     apply h b <| (mem_insertionSort r).1 _
     rw [hi]
     exact mem_cons_self
@@ -147,12 +150,8 @@ variable {r}
 
 /-- If `l` is already `List.Pairwise` with respect to `r`, then `insertionSort` does not change
 it. -/
-theorem Pairwise.insertionSort_eq : ∀ {l : List α}, Pairwise r l → insertionSort r l = l
-  | [], _ => rfl
-  | [_], _ => rfl
-  | a :: b :: l, h => by
-    rw [insertionSort_cons, Pairwise.insertionSort_eq, orderedInsert, if_pos]
-    exacts [rel_of_pairwise_cons h mem_cons_self, h.tail]
+theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort r l = l := by
+  induction l <;> grind [cases List]
 
 @[deprecated (since := "2025-10-11")]
 alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
@@ -160,13 +159,13 @@ alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [orderedInsert, IsRefl]
+  induction xs <;> grind [IsRefl]
 
 /-- Inserting then erasing an element that is absent is the identity. -/
 theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [orderedInsert, IsRefl]
+  induction xs <;> grind [IsRefl]
 
 @[deprecated (since := "2025-05-23")]
 alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
@@ -183,28 +182,19 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
     · rw [erase_cons_head]
       cases ys with
       | nil => rfl
-      | cons z zs =>
-        rw [orderedInsert, if_pos (hxs.1 _ (.head zs))]
+      | cons z zs => grind
     · rw [mem_cons] at hx
       replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
+      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert_cons, ih _ hx hxs.2, if_neg]
       refine mt (fun hrxy => ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
 
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
-  induction xs <;> grind [orderedInsert]
+  induction xs <;> grind
 
 theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : ∀ a' ∈ c, a ≼ a') :
     a :: c <+ orderedInsert r a l := by
-  induction l with
-  | nil         => simp_all only [sublist_nil, orderedInsert, Sublist.refl]
-  | cons _ _ ih =>
-    unfold orderedInsert
-    split_ifs with hr
-    · exact .cons₂ _ hl
-    · cases hl with
-      | cons _ h => exact .cons _ <| ih h
-      | cons₂    => exact absurd (ha _ <| mem_cons_self ..) hr
+  induction l <;> grind
 
 theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
     (hb : bs.Pairwise r) : orderedInsert r x as <+ orderedInsert r x bs := by
@@ -218,12 +208,12 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       cases hs <;> split_ifs with hr
       · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
-        simp only [hr, orderedInsert, ite_true] at ih
+        simp only [hr, orderedInsert_cons, ite_true] at ih
         exact .trans ih <| .cons _ (.refl _)
       · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)
         exact absurd (trans_of _ ‹r x b› hba) hr
       · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
-        rw [orderedInsert, if_neg hr] at ih
+        rw [orderedInsert_cons, if_neg hr] at ih
         exact .cons _ ih
       · simp_all only [pairwise_cons, cons_sublist_cons]
       · exact .cons₂ _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
@@ -236,9 +226,9 @@ theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (or
   | [], _ => pairwise_singleton _ a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · simpa [orderedInsert, h', h] using fun b' bm => _root_.trans h' (rel_of_pairwise_cons h bm)
+    · grind
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
-        simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
+        simpa [orderedInsert_cons, h', h.of_cons.orderedInsert a l]
       intro b' bm
       rcases (mem_orderedInsert r).mp bm with be | bm
       · subst b'
