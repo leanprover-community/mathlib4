@@ -3,21 +3,25 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Int.CharZero
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Int.CharZero
 
 /-!
 # Further basic results about `Algebra`.
 
 This file could usefully be split further.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -429,21 +433,6 @@ instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Se
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
-
-namespace LinearMap
-
-variable (R)
-
--- TODO: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
-a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
-  toFun f := f.toFun
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end LinearMap
 
 end IsScalarTower
 

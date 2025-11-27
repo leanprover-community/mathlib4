@@ -3,15 +3,17 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Logic.Equiv.Fin.Rotate
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Linear independence
@@ -45,6 +47,8 @@ Rework proofs to hold in semirings, by avoiding the path through
 linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Cardinal
@@ -204,6 +208,18 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
 
 end Maximal
 
+lemma Submodule.codisjoint_span_image_of_codisjoint (hv : Submodule.span R (Set.range v) = ⊤)
+    {s t : Set ι} (hst : Codisjoint s t) :
+    Codisjoint (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) := by
+  rw [Finsupp.span_image_eq_map_linearCombination, Finsupp.span_image_eq_map_linearCombination]
+  refine Submodule.codisjoint_map ?_ (Finsupp.codisjoint_supported_supported hst)
+  rwa [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
+
+lemma LinearIndependent.isCompl_span_image (h₁ : LinearIndependent R v)
+    (h₂ : Submodule.span R (Set.range v) = ⊤) {s t : Set ι} (hst : IsCompl s t) :
+    IsCompl (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) :=
+  ⟨h₁.disjoint_span_image hst.1, Submodule.codisjoint_span_image_of_codisjoint h₂ hst.2⟩
+
 end Semiring
 
 section Module
@@ -320,10 +336,6 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   convert pair_add_smul_add_smul_iff_aux d (-b) (-c) a (by simpa [mul_comm d a]) h' using 1
   ext i; fin_cases i <;> simp <;> module
 
-@[deprecated (since := "2025-04-15")]
-alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
-  LinearIndependent.pair_add_smul_add_smul_iff
-
 @[simp] lemma LinearIndependent.pair_add_smul_right_iff :
     LinearIndependent R ![x, c • x + y] ↔ LinearIndependent R ![x, y] := by
   rcases subsingleton_or_nontrivial S with hS | hS; · simp [hS.elim c 0]
@@ -430,7 +442,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
       rintro x hx
       refine (memJ.mp (supp_f hx)).resolve_left ?_
       rintro rfl
-      exact hIlinind (Finsupp.mem_support_iff.mp hx)
+      exact (Finsupp.mem_support_iff.mp hx) hIlinind
     use f i, hfi
     have hfi' : i ∈ f.support := Finsupp.mem_support_iff.mpr hfi
     rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.notMem_erase _ _),
@@ -443,7 +455,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
 lemma linearIndependent_algHom_toLinearMap
     (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
     LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
-  apply LinearIndependent.of_comp (LinearMap.ltoFun K M L)
+  apply LinearIndependent.of_comp (LinearMap.ltoFun K M L L)
   exact (linearIndependent_monoidHom M L).comp
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
     (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))
@@ -471,6 +483,19 @@ lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCo
   refine ⟨LinearMap.injective_of_linearIndependent hv hli, ?_⟩
   rw [Set.range_comp, ← Submodule.map_span, hv, Submodule.map_top] at hsp
   rwa [← range_eq_top]
+
+/-- Version of `LinearIndepOn.insert` that works when the scalars are not a field. -/
+lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
+    (hx : ∀ r : R, r • v i ∈ Submodule.span R (v '' s) → r = 0) :
+    LinearIndepOn R v (insert i s) := by
+  rw [← Set.union_singleton]
+  refine hs.union (.singleton' fun r hr ↦ hx _ <| by simp [hr]) ?_
+  simp +contextual [disjoint_span_singleton'', hx]
+
+/-- Version of `LinearIndepOn.id_insert` that works when the scalars are not a field. -/
+lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
+    (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
+  hs.insert' <| by simpa
 
 end Module
 
@@ -504,7 +529,7 @@ protected theorem LinearIndepOn.insert {s : Set ι} {x : ι} (hs : LinearIndepOn
     (hx : v x ∉ span K (v '' s)) : LinearIndepOn K v (insert x s) := by
   rw [← union_singleton]
   have x0 : v x ≠ 0 := fun h => hx (h ▸ zero_mem _)
-  apply hs.union (LinearIndepOn.singleton _ x0)
+  apply hs.union (LinearIndepOn.singleton x0)
   rwa [image_singleton, disjoint_span_singleton' x0]
 
 protected theorem LinearIndepOn.id_insert (hs : LinearIndepOn K id s) (hx : x ∉ span K s) :
@@ -581,9 +606,8 @@ theorem LinearIndepOn.notMem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn 
 alias LinearIndepOn.not_mem_span_iff_id := LinearIndepOn.notMem_span_iff_id
 
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
-    LinearIndepOn K id {x, y} :=
-  pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).id_insert (x := y) <|
-    mt mem_span_singleton.1 <| not_exists.2 hy
+    LinearIndepOn K id {x, y} := by
+  rw [pair_comm]; exact .id_insert (.singleton hx) <| by simpa [mem_span_singleton]
 
 /-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
 theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0) :

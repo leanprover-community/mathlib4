@@ -3,14 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.Data.Fintype.Prod
-import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.OreLocalization.Ring
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+public import Mathlib.RingTheory.OreLocalization.Ring
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.Ring
 
 /-!
 # Localizations of commutative rings
@@ -81,6 +83,8 @@ fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 assert_not_exists AlgHom Ideal
 
@@ -633,7 +637,7 @@ theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
 protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
-  rw [Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, map_eq]
+  rw [Algebra.smul_def, Algebra.smul_def, map_mul, map_eq]
 
 end
 
@@ -876,8 +880,6 @@ theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
   nonZeroDivisors.coe_ne_zero ⟨(sec M x).snd.val, hM (sec M x).snd.property⟩
 
 variable [IsDomain R]
-
-@[deprecated (since := "2025-03-18")] alias noZeroDivisors_of_le_nonZeroDivisors := noZeroDivisors
 
 variable (S) in
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of

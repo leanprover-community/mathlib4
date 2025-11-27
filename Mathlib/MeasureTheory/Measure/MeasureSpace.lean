@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
-import Mathlib.MeasureTheory.Measure.NullMeasurable
-import Mathlib.Order.Interval.Set.Monotone
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
+public import Mathlib.MeasureTheory.Measure.NullMeasurable
+public import Mathlib.Order.Interval.Set.Monotone
 
 /-!
 # Measure spaces
@@ -76,6 +78,8 @@ The measure is denoted `volume`.
 
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -329,12 +333,12 @@ theorem ae_eq_of_subset_of_measure_ge (h₁ : s ⊆ t) (h₂ : μ t ≤ μ s) (h
 theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → Set α} {t : ι → Set α}
     (hsub : ∀ i, s i ⊆ t i) (h_le : ∀ i, μ (t i) ≤ μ (s i)) : μ (⋃ i, s i) = μ (⋃ i, t i) := by
   refine le_antisymm (by gcongr; apply hsub) ?_
-  rcases Classical.em (∃ i, μ (t i) = ∞) with (⟨i, hi⟩ | htop)
-  · calc
+  by_cases! htop : ∃ i, μ (t i) = ∞
+  · rcases htop with ⟨i, hi⟩
+    calc
       μ (⋃ i, t i) ≤ ∞ := le_top
       _ ≤ μ (s i) := hi ▸ h_le i
       _ ≤ μ (⋃ i, s i) := measure_mono <| subset_iUnion _ _
-  push_neg at htop
   set M := toMeasurable μ
   have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
     refine fun b => ae_eq_of_subset_of_measure_ge inter_subset_left ?_ ?_ ?_
@@ -1323,6 +1327,10 @@ instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite 
     · rwa [compl_mem_cofinite, measure_toMeasurable]
     · rw [compl_subset_comm]
       apply subset_toMeasurable
+
+theorem cofinite_le_ae : μ.cofinite ≤ ae μ := by
+  intro s hs
+  simp_all [mem_cofinite, mem_ae_iff]
 
 end Measure
 

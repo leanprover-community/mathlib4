@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Finiteness.Prod
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Trace of a linear map
@@ -20,6 +22,8 @@ See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 linear_map, trace, diagonal
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -223,7 +227,7 @@ variable (R M N P)
 
 open TensorProduct Function
 
-theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N)) =
+theorem trace_tensorProduct : compr₂ (mapBilinear (.id R) M N M N) (trace R (M ⊗ N)) =
     compl₁₂ (lsmul R R : R →ₗ[R] R →ₗ[R] R) (trace R M) (trace R N) := by
   apply
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
@@ -328,7 +332,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
     exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
   have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?
-  rw [hμ, comp_add, map_add, hg, add_zero, this, LinearMap.map_smul, smul_eq_mul]
+  rw [hμ, comp_add, map_add, hg, add_zero, this, map_smul, smul_eq_mul]
 
 -- This result requires `Mathlib/RingTheory/TensorProduct/Free.lean`.
 -- Maybe it should move elsewhere?

@@ -3,9 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
+module
 
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Order.Partition.Finpartition
 
 /-!
 # Equivalence relations: partitions
@@ -32,6 +33,8 @@ usable.
 
 setoid, equivalence, iseqv, relation, equivalence relation, partition, equivalence class
 -/
+
+@[expose] public section
 
 
 namespace Setoid
@@ -242,7 +245,6 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
 instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
-  le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
@@ -477,7 +479,7 @@ theorem piecewise_bij {β : Type*} {f : ι → α → β}
     simp only [fun i ↦ BijOn.image_eq (hf i)]
     rintro i - j - hij
     exact ht.disjoint hij
-  rw [bijective_iff_bijOn_univ, ← hs.iUnion, ← ht.iUnion]
+  rw [← bijOn_univ, ← hs.iUnion, ← ht.iUnion]
   exact bijOn_iUnion hg_bij hg_inj
 
 end IndexedPartition
