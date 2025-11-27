@@ -14,9 +14,6 @@ Since every pair of elements are comparable in a linear order, intervals over th
 better behaved. This file collects their properties under this assumption.
 -/
 
--- TODO: fix the linter errors in this file
-set_option linter.flexible false in
-
 @[expose] public section
 
 assert_not_exists RelIso

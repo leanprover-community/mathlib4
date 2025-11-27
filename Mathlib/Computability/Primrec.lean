@@ -43,12 +43,10 @@ other design choices in this formalization, see [carneiro2019].
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-<<<<<<< HEAD
+@[expose] public section
+
 -- TODO: revisit this after #13791 is merged
 set_option linter.flexible false
-=======
-@[expose] public section
->>>>>>> master
 
 open List (Vector)
 open Denumerable Encodable Function

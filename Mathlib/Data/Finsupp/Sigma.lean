@@ -67,7 +67,7 @@ theorem embSigma_apply_of_ne {k k' : κ} (f : ι k →₀ M) (hk : k' ≠ k) (i 
     embSigma f ⟨k', i⟩ = 0 := by
   apply embDomain_notin_range
   intro ⟨j, hj⟩
-  simp [Embedding.sigmaMk] at hj
+  simp only [Embedding.sigmaMk, Embedding.coeFn_mk, Sigma.mk.injEq] at hj
   exact hk hj.1.symm
 
 @[simp, grind =]
