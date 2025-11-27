@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Angles between points
@@ -17,11 +19,9 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 * `EuclideanGeometry.angle`, with notation `∠`, is the undirected angle determined by three
   points.
-
-## TODO
-
-Prove the triangle inequality for the angle.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -289,8 +289,7 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
     convert (one_smul ℝ (p₂ -ᵥ p₁)).symm
-    field_simp [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
-    ring
+    field [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
   · rw [ne_comm, ← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
     exact ⟨hr.ne, hp₁p₂⟩
 
