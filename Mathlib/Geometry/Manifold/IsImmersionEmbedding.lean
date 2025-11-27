@@ -303,16 +303,16 @@ lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F :=
 /-- Given an immersion `f` at `x`, this is a choice of complement which lives in the same universe
 as the model space for the co-domain of `f`: this is useful to avoid universe restrictions. -/
 def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
-  have := hf.small
+  haveI := hf.small
   Shrink.{u} F
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
-  have := hf.small
+  haveI := hf.small
   unfold smallComplement
   infer_instance
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
-  have := hf.small
+  haveI := hf.small
   unfold smallComplement
   infer_instance
 
@@ -321,7 +321,7 @@ a continuous linear equivalence from `F` to the small complement of `F`:
 mathematically, this is just the identity map; however, this is technically useful as it enables
 us to always work with `hf.smallComplement`. -/
 def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
-  have := hf.small
+  haveI := hf.small
   ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
 
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
