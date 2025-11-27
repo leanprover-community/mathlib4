@@ -5,8 +5,10 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
+
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Facts about Gaussian characteristic function
