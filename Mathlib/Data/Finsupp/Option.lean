@@ -86,12 +86,6 @@ theorem some_single_some (a : α) (m : M) :
     ext b
     simp [single_apply]
 
-@[simp]
-theorem some_update_none (f : Option α →₀ M) (a : M) :
-    (f.update none a).some = f.some := by
-  ext
-  simp [Finsupp.update]
-
 @[simp] lemma some_embDomain_some (f : α →₀ M) : (f.embDomain .some).some = f := by
   ext; rw [some_apply]; exact embDomain_apply _ _ _
 
@@ -102,6 +96,11 @@ theorem some_update_none (f : Option α →₀ M) (a : M) :
 theorem embDomain_some_some (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
   simp [← Function.Embedding.some_apply]
 
+@[simp]
+theorem some_update_none (f : Option α →₀ M) (a : M) :
+    (f.update none a).some = f.some := by
+  ext
+  simp [Finsupp.update]
 
 /-- `Finsupp`s from `Option` are equivalent to
 pairs of an element and a `Finsupp` on the original type. -/
@@ -186,11 +185,11 @@ theorem optionElim_ne_zero_iff (y : M) (f : α →₀ M) :
     | inl h => exact optionElim_ne_zero_of_right y f h
     | inr h => exact optionElim_ne_zero_of_left y f h
 
-end Zero
-
-theorem eq_option_embedding_update_none_iff [Zero M] {n : Option α →₀ M} {m : α →₀ M} {i : M} :
+theorem eq_option_embedding_update_none_iff {n : Option α →₀ M} {m : α →₀ M} {i : M} :
     n = (embDomain Embedding.some m).update none i ↔ n none = i ∧ n.some = m :=
   (optionEquiv.apply_eq_iff_eq_symm_apply (y := (_, _))).symm.trans Prod.ext_iff
+
+end Zero
 
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
