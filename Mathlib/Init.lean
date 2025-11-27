@@ -108,7 +108,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
