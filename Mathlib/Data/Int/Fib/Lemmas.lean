@@ -18,7 +18,7 @@ to `(-1) ^ |n|`. And Catalan's identity states that for any integers `x` and `a`
 namespace Int
 
 /-- Auxiliary for `Int.fib_succ_mul_fib_pred_sub_fib_sq` -/
-lemma fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq (n : ℕ) :
+lemma fib_natCast_succ_mul_fib_natCast_pred_sub_fib_natCast_sq (n : ℕ) :
     fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n := by
   induction n with
   | zero => simp
@@ -29,10 +29,10 @@ public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
     fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n.natAbs := by
   if hn : n = 0 then simp [hn] else
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
-  · exact fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq n
+  · exact fib_natCast_succ_mul_fib_natCast_pred_sub_fib_natCast_sq n
   · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn)
     simp_rw [show -((i + 1 : ℕ) : ℤ) + 1 = -i by simp, sub_eq_add_neg, ← neg_add, fib_neg,
-      natAbs_neg, natAbs_natCast, ← fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq]
+      natAbs_neg, natAbs_natCast, ← fib_natCast_succ_mul_fib_natCast_pred_sub_fib_natCast_sq]
     grind
 
 /-- **Catalan's identity**: `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`. -/
