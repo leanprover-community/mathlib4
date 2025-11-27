@@ -3,14 +3,17 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Index of a Subgroup
@@ -25,7 +28,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `H.relIndex K` : the relative index of `H : Subgroup G` in `K : Subgroup G` as a natural number,
   and returns 0 if the relative index is infinite.
 
-# Main results
+## Main results
 
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
 - `index_mul_card` : `H.index * Nat.card H = Nat.card G`
@@ -35,6 +38,8 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -688,9 +693,6 @@ lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index
     ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
   rw [QuotientGroup.leftRel_prod]
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddSubgroup.index_sum := AddSubgroup.index_prod
-
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
     (Subgroup.pi Set.univ H).index = ∏ i, (H i).index := by
@@ -731,17 +733,12 @@ class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G
   recall that `AddSubgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
 
-@[deprecated (since := "2025-04-13")]
-alias _root_AddSubgroup.FiniteIndex.finiteIndex := AddSubgroup.FiniteIndex.index_ne_zero
-
 variable (H) in
 /-- Typeclass for finite index subgroups. -/
 @[to_additive] class FiniteIndex : Prop where
   /-- The subgroup has finite index;
   recall that `Subgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
-
-@[deprecated (since := "2025-04-13")] alias FiniteIndex.finiteIndex := FiniteIndex.index_ne_zero
 
 /-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 class _root_.AddSubgroup.IsFiniteRelIndex {G : Type*} [AddGroup G] (H K : AddSubgroup G) :

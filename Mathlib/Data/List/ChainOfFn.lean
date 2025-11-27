@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.Data.List.OfFn
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.Data.List.OfFn
 
 /-!
 # Lemmas about `IsChain` and `ofFn`
 
 This file provides lemmas involving both `List.IsChain` and `List.ofFn`.
 -/
+
+@[expose] public section
 
 open Nat
 

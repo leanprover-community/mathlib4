@@ -3,11 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Evaluation
-import Mathlib.RingTheory.MvPowerSeries.LinearTopology
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-! # Substitutions in multivariate power series
 
@@ -55,6 +56,8 @@ as it is discrete.
   of a legit substitution is nilpotent; prove that the converse holds when
   the kernel of `algebraMap R S` is a nil ideal.
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 
@@ -474,7 +477,7 @@ lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
   simp only [MvPowerSeries.coeff_rescale, map_smul, Finsupp.prod, Function.const_apply,
     Finset.prod_pow_eq_pow_sum, smul_eq_mul]
   by_cases he : e ∈ f.support
-  · rw [← hf e he, Finsupp.degree]
+  · rw [← hf e he, Finsupp.degree_def]
   · simp only [Function.mem_support, ne_eq, not_not] at he
     simp [he, mul_zero, coeff_apply]
 

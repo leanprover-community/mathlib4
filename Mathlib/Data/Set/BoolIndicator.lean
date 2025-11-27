@@ -3,13 +3,17 @@ Copyright (c) 2022 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Leonardo de Moura
 -/
-import Mathlib.Order.BooleanAlgebra.Set
+module
+
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Indicator function valued in bool
 
 See also `Set.indicator` and `Set.piecewise`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.PostTuringMachine
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.PostTuringMachine
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -21,6 +23,8 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
   `List ℕ →. List ℕ`.
   * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -299,8 +303,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
                 else Sum.inr
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
             (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
-        erw [Part.eq_some_iff.2 (this 0 n (zero_add n))]
-        simp only [List.headI, Part.bind_some, List.tail_cons]
+        have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+        simp_all
       intro a b e
       induction b generalizing a with
       | zero =>

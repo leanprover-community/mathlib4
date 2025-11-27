@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Topology.OpenPartialHomeomorph
+module
+
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Non-linear maps close to affine maps
@@ -43,6 +45,8 @@ We introduce some `local notation` to make formulas shorter:
 * by `g` we denote the auxiliary contracting map `x ↦ x + f'.symm (y - f x)` used to prove that
   `{x | f x = y}` is nonempty.
 -/
+
+@[expose] public section
 
 open Function Set Filter Metric
 
@@ -204,7 +208,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         rw [mul_one]
         gcongr
         exact mem_closedBall'.1 hy
-      _ = ε * (1 - c * f'symm.nnnorm) := by field_simp
+      _ = ε * (1 - c * f'symm.nnnorm) := by field
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
     `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
@@ -367,7 +371,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
-      simp only [ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearEquiv.map_sub]
+      simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
       abel
     _ ≤ N * (c * ‖y' - x'‖) := mul_le_mul_of_nonneg_left (hf _ y's _ x's) (NNReal.coe_nonneg _)
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by

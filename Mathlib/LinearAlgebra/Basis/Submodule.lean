@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases of submodules
 -/
+
+@[expose] public section
 
 open Function Set Submodule Finsupp Module
 
@@ -199,7 +203,7 @@ end RestrictScalars
 
 section AddSubgroup
 
-variable {M R : Type*} [Ring R] [Nontrivial R] [NoZeroSMulDivisors ℤ R]
+variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
   [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
 
 /--

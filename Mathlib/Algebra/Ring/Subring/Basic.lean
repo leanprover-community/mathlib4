@@ -3,12 +3,14 @@ Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.RingTheory.NonUnitalSubring.Defs
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -58,7 +60,9 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists OrderedRing
+@[expose] public section
+
+assert_not_exists IsOrderedRing
 
 universe u v w
 
@@ -69,32 +73,32 @@ variable [Ring S] [Ring T]
 namespace Subring
 variable {s t : Subring R}
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[gcongr]
+@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
 lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
 
-@[gcongr]
+@[deprecated toSubsemiring_mono (since := "2025-10-20")]
 lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 
-@[gcongr]
+@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
 lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
 
-@[gcongr]
+@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
 lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
@@ -766,7 +770,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subring R) :
     K.map (f : R →+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : Subring S) :
     K.comap (f : R →+* S) = K.map f.symm :=
@@ -858,6 +862,10 @@ theorem mem_closure_image_of (f : R →+* S) {s : Set R} {x : R} (hx : x ∈ Sub
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
+
+@[simp]
+theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
+    (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
