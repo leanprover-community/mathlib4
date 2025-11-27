@@ -45,11 +45,11 @@ lemma Int.fib_add_two_mul_fib_sub_fib_add_one_sq (n : ℕ) :
 /-- **Cassini's identity**: `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ |n|`. -/
 public lemma Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
     fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n.natAbs := by
-  if hn₀ : n = 0 then simp [hn₀] else
+  if hn : n = 0 then simp [hn] else
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
-  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn₀)
+  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn)
     simp [natAbs_add_of_nonneg, ← fib_add_two_mul_fib_sub_fib_add_one_sq, add_assoc]
-  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn₀)
+  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn)
     simp_rw [show -((i + 1 : ℕ) : ℤ) + 1 = -i by simp, sub_eq_add_neg, ← neg_add,
       fib_neg, natAbs_neg, natAbs_natCast]
     grind [fib_add_two_mul_fib_sub_fib_add_one_sq]
