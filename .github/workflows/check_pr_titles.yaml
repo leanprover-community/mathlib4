@@ -1,0 +1,131 @@
+name: Check PR titles
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - edited
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
+jobs:
+  check_title:
+    if: (github.repository == 'leanprover-community/mathlib4') && (github.event.pull_request.state == 'open') && (github.event.action == 'opened' || github.event.action == 'reopened' || (github.event.action == 'edited' && github.event.changes.title))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: master
+      - name: Configure Lean
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+
+      - name: check the PR title format
+        id: pr-title-check
+        if: github.event.pull_request.draft == false && github.event.pull_request.base.ref == 'master'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels) }}
+        run: |
+          set -o pipefail
+          echo "$TITLE"
+
+          # Skip check if title starts with "[Merged by Bors] - "
+          if [[ "$TITLE" == "[Merged by Bors] - "* ]]; then
+            echo "Skipping check for Bors-merged PR"
+            exit 0
+          fi
+
+          label_names=$(echo "$PR_LABELS" | jq -r '.[].name')
+          echo "$label_names"
+
+          # build command so build lines don't pollute `output` below
+          lake build check_title_labels
+
+          set +e
+          # Capture output and exit code
+          output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1)
+          exit_code=$?
+          set -e
+
+          if [ $exit_code -eq 0 ]; then
+            echo "Check passed"
+          else
+            # Set the output for use in subsequent steps
+            {
+              echo "errors<<EOF"
+              echo "$output"
+              echo "EOF"
+            } | tee -a "$GITHUB_OUTPUT"
+            exit "$exit_code"
+          fi
+
+      - name: Add comment to fix PR title
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2.9.4
+        if: failure() && steps.pr-title-check.outputs.errors
+        with:
+          header: 'PR Title Check'
+          message: |
+            ### 🚨 PR Title Needs Formatting
+            Please update the title to match our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+
+            Errors from script:
+            ```
+            ${{ steps.pr-title-check.outputs.errors }}
+            ```
+
+            <details>
+            <summary>Details on the required title format</summary>
+
+            The title should fit the following format:
+            ```
+            <kind>(<optional-scope>): <subject>
+            ```
+            `<kind>` is:
+
+            - `feat` (feature)
+            - `fix` (bug fix)
+            - `doc` (documentation)
+            - `style` (formatting, missing semicolons, ...)
+            - `refactor`
+            - `test` (when adding missing tests)
+            - `chore` (maintain)
+            - `perf` (performance improvement, optimization, ...)
+            - `ci` (changes to continuous integration, repo automation, ...)
+
+            `<optional-scope>` is a name of module or a directory which contains changed modules.
+            This is not necessary to include, but may be useful if the `<subject>` is insufficient.
+            The `Mathlib` directory prefix is always omitted.
+            For instance, it could be
+
+            - Data/Nat/Basic
+            - Algebra/Group/Defs
+            - Topology/Constructions
+
+            `<subject>` has the following constraints:
+
+            - do not capitalize the first letter
+            - no dot(.) at the end
+            - use imperative, present tense: "change" not "changed" nor "changes"
+            </details>
+
+      - name: Add comment that PR title is fixed
+        if: steps.pr-title-check.outcome == 'success'
+        uses: marocchino/sticky-pull-request-comment@773744901bac0e8cbb5a0dc842800d45e9b2b405 # v2.9.4
+        with:
+          header: 'PR Title Check'
+          # should do nothing if a 'PR Title Check' comment does not exist
+          only_update: true
+          message: |
+            ### ✅ PR Title Formatted Correctly
+            The title of this PR has been updated to match our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+            Thank you!

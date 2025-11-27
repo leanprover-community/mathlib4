@@ -238,7 +238,7 @@ theorem inner_add_left (x y z : F) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   c.add_left _ _ _
 
 theorem inner_add_right (x y z : F) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
-  rw [← inner_conj_symm, inner_add_left, RingHom.map_add]; simp only [inner_conj_symm]
+  rw [← inner_conj_symm, inner_add_left, map_add]; simp only [inner_conj_symm]
 
 theorem ofReal_normSq_eq_inner_self (x : F) : (normSqF x : 𝕜) = ⟪x, x⟫ := by
   rw [ext_iff]
@@ -253,14 +253,14 @@ theorem inner_smul_left (x y : F) {r : 𝕜} : ⟪r • x, y⟫ = r† * ⟪x, y
 
 theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
   rw [← inner_conj_symm, inner_smul_left]
-  simp only [conj_conj, inner_conj_symm, RingHom.map_mul]
+  simp only [conj_conj, inner_conj_symm, map_mul]
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
   rw [← zero_smul 𝕜 (0 : F), inner_smul_left]
-  simp only [zero_mul, RingHom.map_zero]
+  simp only [zero_mul, map_zero]
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
-  rw [← inner_conj_symm, inner_zero_left]; simp only [RingHom.map_zero]
+  rw [← inner_conj_symm, inner_zero_left]; simp only [map_zero]
 
 theorem inner_self_of_eq_zero {x : F} : x = 0 → ⟪x, x⟫ = 0 := by
   rintro rfl
@@ -283,7 +283,7 @@ theorem inner_neg_left (x y : F) : ⟪-x, y⟫ = -⟪x, y⟫ := by
   simp
 
 theorem inner_neg_right (x y : F) : ⟪x, -y⟫ = -⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_neg_left]; simp only [RingHom.map_neg, inner_conj_symm]
+  rw [← inner_conj_symm, inner_neg_left]; simp only [map_neg, inner_conj_symm]
 
 theorem inner_sub_left (x y z : F) : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
   simp [sub_eq_add_neg, inner_add_left, inner_neg_left]

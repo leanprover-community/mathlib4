@@ -32,7 +32,7 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{v} (ModuleCat.{v} R) :=
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
     Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
   apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
   exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
@@ -240,14 +240,14 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
 
 lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
     ringKrullDim (R ⧸ P) ≠ ⊥ :=
-  ne_bot_of_le_ne_bot WithBot.zero_ne_bot (@ringKrullDim_nonneg_of_nontrivial _ _ (
-        Quotient.nontrivial prime.ne_top'))
+  ne_bot_of_le_ne_bot WithBot.zero_ne_bot
+    (@ringKrullDim_nonneg_of_nontrivial _ _ (Quotient.nontrivial_iff.mpr prime.ne_top'))
 
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} R] (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] (P : Ideal R)
     (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
-  let _ := Quotient.nontrivial ass.1.ne_top'
+  let _ := Quotient.nontrivial_iff.mpr ass.1.ne_top'
   let _ : Module.Finite R (Shrink.{v} (R ⧸ P)) :=
     Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ P)).symm
   let _ : Nontrivial (Shrink.{v} (R ⧸ P)) :=
