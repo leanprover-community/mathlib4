@@ -14,7 +14,7 @@ public import Mathlib.RepresentationTheory.Induced
 
 Given a commutative ring `k`, a finite index subgroup `S ≤ G`, and a `k`-linear `S`-representation
 `A`, this file defines an isomorphism $Ind_S^G(A) ≅ Coind_S^G(A)$. Given `g : G` and `a : A`, the
-forward map sends `⟦g ⊗ₜ[k] a⟧` to the function `G → A`supported at `sg` by `ρ(s)(a)` for `s : S`
+forward map sends `⟦g ⊗ₜ[k] a⟧` to the function `G → A` supported at `sg` by `ρ(s)(a)` for `s : S`
 and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ ⟦gᵢ ⊗ₜ[k] f(gᵢ)⟧` for
 `1 ≤ i ≤ n`, where `g₁, ..., gₙ` is a set of right coset representatives of `S`.
 
