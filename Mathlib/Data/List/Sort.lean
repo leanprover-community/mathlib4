@@ -64,10 +64,10 @@ theorem orderedInsert_of_not_le {a b : α} (l : List α) (h : ¬ a ≼ b) :
 def insertionSort : List α → List α := foldr (orderedInsert r) []
 
 @[simp, grind =]
-theorem insertionSort_nil : [].insertionSort r  = [] := .refl _
+theorem insertionSort_nil : [].insertionSort r = [] := .refl _
 
 @[simp, grind =] theorem insertionSort_cons (a : α) (l : List α) :
-    (a :: l).insertionSort r  = orderedInsert r a (insertionSort r l) := .refl _
+    (a :: l).insertionSort r = orderedInsert r a (insertionSort r l) := .refl _
 
 -- A quick check that insertionSort is stable:
 example :
