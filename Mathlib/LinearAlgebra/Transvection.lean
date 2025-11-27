@@ -176,7 +176,7 @@ theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, endHom_comp_apply, toDualHom_comp_apply]
+  | tmul x => simp [transvection.apply, toDualHom_comp_apply, endHom_apply]
 
 end LinearMap.transvection
 
