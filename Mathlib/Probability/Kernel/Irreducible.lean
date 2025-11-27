@@ -3,7 +3,9 @@ Copyright (c) 2025 Bryan Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Wang
 -/
-import Mathlib.Probability.Kernel.Composition.Comp
+module
+
+public import Mathlib.Probability.Kernel.Composition.Comp
 
 /-!
 # Irreducibility of kernels
@@ -37,6 +39,8 @@ that is, there is a positive probability of reaching any
 * [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 
