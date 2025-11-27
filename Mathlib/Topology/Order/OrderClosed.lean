@@ -28,8 +28,8 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
-`Preorder` vs `PartialOrder` vs `LinearOrder` etc)
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology`,
+`Preorder` vs `PartialOrder` vs `LinearOrder`, etc.)
 see their statements.
 
 ### Open / closed sets
