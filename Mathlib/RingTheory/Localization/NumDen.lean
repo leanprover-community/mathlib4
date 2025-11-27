@@ -139,6 +139,20 @@ lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (
   rw [inv_inv] at this
   exact this
 
+variable (A) in
+theorem num_den_unique (x : K) (n : A) (d : nonZeroDivisors A) (pr : IsRelPrime n d)
+    (h : IsLocalization.mk' K n d = x) :
+    Associated (num A x) n ∧ Associated (den A x : A) d := by
+  rw [← IsFractionRing.mk'_num_den A x, IsLocalization.mk'_eq_iff_eq',
+    (FaithfulSMul.algebraMap_injective _ _).eq_iff] at h
+  refine ⟨associated_of_dvd_dvd
+      ((num_den_reduced A x).dvd_of_dvd_mul_right <| h ▸ dvd_mul_right _ _)
+      (pr.dvd_of_dvd_mul_right <| h ▸ dvd_mul_right _ _),
+    associated_of_dvd_dvd
+      ((num_den_reduced A x).symm.dvd_of_dvd_mul_left <| h ▸ dvd_mul_left _ _)
+      (pr.symm.dvd_of_dvd_mul_left <| h ▸ dvd_mul_left _ _)⟩
+
+
 end NumDen
 
 end IsFractionRing
