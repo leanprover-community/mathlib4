@@ -46,48 +46,6 @@ protected theorem finite [FiniteDimensional K L] : Finite G := by
   rw [hGKL.card_eq_finrank]
   exact Module.finrank_pos.ne'
 
-instance to_subgroup :
-    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
-  faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by
-    simp_rw [Algebra.smul_def, IntermediateField.algebraMap_apply, smul_mul', x.2 g]⟩
-  isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
-
-theorem card_subgroup_eq_finrank_fixedpoints :
-    Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
-  card_eq_finrank H (FixedPoints.intermediateField H) L
-
-end IsGaloisGroup
-
-namespace IsGaloisGroup
-
-section SMulCommClass
-
-variable [SMulCommClass G K L]
-
-theorem le_fixedPoints_iff_le_fixingSubgroup :
-    F ≤ FixedPoints.intermediateField H ↔ H ≤ fixingSubgroup G (F : Set L) :=
-  ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
-
-end SMulCommClass
-
-variable [hGKL : IsGaloisGroup G K L]
-
-theorem fixedPoints_top :
-    (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
-  simp only [eq_bot_iff, SetLike.le_def, FixedPoints.mem_intermediateField_iff, Subtype.forall,
-    Subgroup.mem_top, Subgroup.mk_smul, forall_const]
-  exact hGKL.isInvariant.isInvariant
-
-theorem fixingSubgroup_fixedPoints [Finite G] :
-    fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
-  have : FiniteDimensional K L := hGKL.finiteDimensional
-  refine (Subgroup.eq_of_le_of_card_ge ?_ ?_).symm
-  · rw [← le_fixedPoints_iff_le_fixingSubgroup]
-  · rw [hGKL.card_subgroup_eq_finrank_fixedpoints, hGKL.card_subgroup_eq_finrank_fixedpoints]
-    apply IntermediateField.finrank_le_of_le_left
-    rw [le_fixedPoints_iff_le_fixingSubgroup]
-
 end IsGaloisGroup
 
 end GeneralGalois
