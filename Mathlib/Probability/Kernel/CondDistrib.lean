@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.Lemmas
-import Mathlib.Probability.Kernel.Disintegration.Unique
+module
+
+public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import Mathlib.Probability.Kernel.Disintegration.Unique
 
 /-!
 # Regular conditional probability distribution
@@ -39,6 +41,8 @@ to `m`.
   `∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Set Filter TopologicalSpace
@@ -383,7 +387,7 @@ theorem condExp_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F]
 
 /-- The conditional expectation of `Y` given `X` is almost everywhere equal to the integral
 `∫ y, y ∂(condDistrib Y X μ (X a))`. -/
-theorem condExp_ae_eq_integral_condDistrib' {Ω} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
+theorem condExp_ae_eq_integral_condDistrib' {Ω : Type*} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
     [CompleteSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω] [SecondCountableTopology Ω] {Y : α → Ω}
     (hX : Measurable X) (hY_int : Integrable Y μ) :
     μ[Y|mβ.comap X] =ᵐ[μ] fun a => ∫ y, y ∂condDistrib Y X μ (X a) :=
@@ -409,10 +413,6 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     · simp
     · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
 
-@[deprecated (since := "2025-03-05")]
-alias _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_mk :=
-  MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk
-
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
@@ -425,27 +425,16 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     · simp
     · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
 
-@[deprecated (since := "2025-03-05")]
-alias _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk :=
-  MeasureTheory.Integrable.comp_snd_map_prodMk
-
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}
     [TopologicalSpace F] {X : Ω → β} {μ : Measure Ω} (hX : Measurable X) {f : Ω → F} :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) ↔
       AEStronglyMeasurable f μ :=
   ⟨fun h => h.comp_measurable (hX.prodMk measurable_id), fun h => h.comp_snd_map_prodMk X⟩
 
-@[deprecated (since := "2025-03-05")]
-alias aestronglyMeasurable_comp_snd_map_prod_mk_iff :=
-  aestronglyMeasurable_comp_snd_map_prodMk_iff
-
 theorem integrable_comp_snd_map_prodMk_iff {Ω} {_ : MeasurableSpace Ω} {X : Ω → β} {μ : Measure Ω}
     (hX : Measurable X) {f : Ω → F} :
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) ↔ Integrable f μ :=
   ⟨fun h => h.comp_measurable (hX.prodMk measurable_id), fun h => h.comp_snd_map_prodMk X⟩
-
-@[deprecated (since := "2025-03-05")]
-alias integrable_comp_snd_map_prod_mk_iff := integrable_comp_snd_map_prodMk_iff
 
 theorem condExp_ae_eq_integral_condDistrib_id [NormedSpace ℝ F] [CompleteSpace F] {X : Ω → β}
     {μ : Measure Ω} [IsFiniteMeasure μ] (hX : Measurable X) {f : Ω → F} (hf_int : Integrable f μ) :
