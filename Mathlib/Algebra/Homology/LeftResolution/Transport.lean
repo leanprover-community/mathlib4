@@ -30,6 +30,8 @@ namespace LeftResolution
 
 open Functor
 
+-- TODO: figure out why this got slower and fix
+set_option synthInstance.maxHeartbeats 24000 in
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :
@@ -44,7 +46,9 @@ def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
       whiskerLeft Λ.F eC.counitIso.hom ≫ Λ.F.rightUnitor.hom)) _) _ ≫
         (whiskerRight ((associator _ _ _).hom ≫ whiskerLeft _ Λ.π ≫
           (rightUnitor _).hom) _) ≫ eA.unitIso.inv
-  epi_π_app _ := by dsimp; infer_instance
+  epi_π_app _ := by
+    dsimp
+    infer_instance
 
 /-- If we have an isomorphism `e : G ⋙ ι' ≅ ι`, then any `Λ : LeftResolution ι`
 induces `Λ.ofCompIso e : LeftResolution ι'`. -/
