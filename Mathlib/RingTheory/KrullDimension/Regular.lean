@@ -110,22 +110,19 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson {x : R} (reg : Is
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson
     (fun _ ↦ reg.notMem_of_mem_minimalPrimes) hx
 
-lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
-    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
-    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
-  have h := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
-  simp only [smul_eq_mul, mul_top] at h
-  rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
-    ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
-  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
-    ((annihilator R R).ringJacobson_le_jacobson hx)
-
 lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
     ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
   rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
   exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
     ((annihilator R R).ringJacobson_le_jacobson hx)
+
+lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
+    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
+    ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
+  have h : span {x} = x • (⊤ : Ideal R) := by simp [← Submodule.ideal_span_singleton_smul]
+  rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
+    ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg hx]
 
 variable [IsLocalRing R]
 
@@ -153,7 +150,8 @@ lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
   · rename_i a S nmem ih
     have sub : (S : Set R) ⊆ maximalIdeal R := fun x hx ↦ hS (Finset.mem_insert_of_mem hx)
     have : Nontrivial (R ⧸ Ideal.span (SetLike.coe S)) :=
-      Ideal.Quotient.nontrivial (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
+      Ideal.Quotient.nontrivial_iff.mpr
+      (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
     have lochom : IsLocalHom (Ideal.Quotient.mk (Ideal.span (SetLike.coe S))) :=
       IsLocalHom.of_surjective _ (Ideal.Quotient.mk_surjective)
     let _ : IsLocalRing (R ⧸ span (SetLike.coe S)) :=
@@ -161,7 +159,7 @@ lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
     apply le_trans (ih sub)
     simp only [Finset.card_insert_of_notMem nmem, Nat.cast_add, Nat.cast_one, add_comm _ 1,
       ← add_assoc]
-    apply add_le_add_right
+    apply add_le_add_left
     let f : R ⧸ span (SetLike.coe S) →+* R ⧸ span (SetLike.coe (insert a S)) :=
       Ideal.Quotient.factor (Ideal.span_mono (S.subset_insert a))
     have surj : Function.Surjective f := Ideal.Quotient.factor_surjective _
