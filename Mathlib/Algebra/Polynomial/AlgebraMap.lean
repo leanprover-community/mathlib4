@@ -23,7 +23,7 @@ We promote `eval₂` to an algebra hom in `aeval`.
 - `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
-- `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `baseChange φ` aplies `φ` on the
+- `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
 coefficients of a polynomial in `S[X]`.
 
 -/
