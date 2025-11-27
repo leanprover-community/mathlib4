@@ -844,6 +844,8 @@ theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv 
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
+/-- The partial derivative (or directional derivative) in the direction `m : E` as a
+continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) f
 

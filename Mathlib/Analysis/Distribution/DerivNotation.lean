@@ -15,6 +15,10 @@ In this file we define notation type classes for line derivatives, also known as
 derivatives.
 
 Moreover, we provide type-classes that encode the linear structure.
+
+Currently, this type class is only used by Schwartz functions. Future uses include derivatives on
+test functions, distributions, tempered distributions, and Sobolev spaces (and other generalized
+function spaces).
 -/
 
 @[expose] public section
