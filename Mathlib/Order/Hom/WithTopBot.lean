@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Order.WithBot
 
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
@@ -15,6 +17,8 @@ isomorphisms) and lattice homomorphisms, and properties about the results.
 Some definitions cause a possibly unbounded lattice homomorphism to become bounded,
 so they change the type of the homomorphism.
 -/
+
+@[expose] public section
 
 
 variable {α β γ : Type*}
@@ -393,12 +397,12 @@ lemma withTop_apply (f : LatticeHom α β) (a : WithTop α) : f.withTop a = a.ma
 
 @[simp]
 theorem withTop_id : (LatticeHom.id α).withTop = LatticeHom.id _ :=
-  DFunLike.coe_injective Option.map_id
+  DFunLike.coe_injective WithTop.map_id
 
 @[simp]
 theorem withTop_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `LatticeHom`. -/
 @[simps]
@@ -407,18 +411,18 @@ protected def withBot (f : LatticeHom α β) : LatticeHom (WithBot α) (WithBot 
 
 -- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
-lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = Option.map f := rfl
+lemma coe_withBot (f : LatticeHom α β) : ⇑f.withBot = WithBot.map f := rfl
 
 lemma withBot_apply (f : LatticeHom α β) (a : WithBot α) : f.withBot a = a.map f := rfl
 
 @[simp]
 theorem withBot_id : (LatticeHom.id α).withBot = LatticeHom.id _ :=
-  DFunLike.coe_injective Option.map_id
+  DFunLike.coe_injective WithBot.map_id
 
 @[simp]
 theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
 @[simps]
@@ -428,17 +432,17 @@ def withTopWithBot (f : LatticeHom α β) :
 
 -- Porting note: `simps` doesn't generate those
 @[simp, norm_cast]
-lemma coe_withTopWithBot (f : LatticeHom α β) : ⇑f.withTopWithBot = Option.map (Option.map f) := rfl
+lemma coe_withTopWithBot (f : LatticeHom α β) :
+    ⇑f.withTopWithBot = WithTop.map (WithBot.map f) :=
+  rfl
 
 lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
-    f.withTopWithBot a = a.map (Option.map f) := rfl
+    f.withTopWithBot a = a.map (WithBot.map f) :=
+  rfl
 
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
-  DFunLike.coe_injective <| by
-    refine (congr_arg Option.map ?_).trans Option.map_id
-    rw [withBot_id]
-    rfl
+  DFunLike.coe_injective <| by simp [WithTop.map_id, WithBot.map_id]
 
 @[simp]
 theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :

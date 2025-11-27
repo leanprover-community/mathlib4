@@ -3,13 +3,15 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.RingTheory.ClassGroup
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.Norm.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Class numbers of global fields
@@ -20,6 +22,8 @@ finiteness of the class group for number fields and function fields.
 - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
   its integral closure has a finite class group
 -/
+
+@[expose] public section
 
 open Module Ring
 open scoped nonZeroDivisors
@@ -39,7 +43,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
-we have algebra.norm a ≤ norm_bound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
+we have `algebra.norm a ≤ normBound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
 noncomputable def normBound : ℤ :=
   let n := Fintype.card ι
   let i : ι := Nonempty.some bS.index_nonempty
@@ -103,8 +107,8 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_left₀ this (Int.cast_nonneg.mpr y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
-  · exact pow_nonneg (Int.cast_nonneg.mpr y'_nonneg) _
+  · exact pow_lt_pow_left₀ this (Int.cast_nonneg y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
+  · exact pow_nonneg (Int.cast_nonneg y'_nonneg) _
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 
 
@@ -197,7 +201,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
       mul_left_comm, mul_inv_cancel₀, mul_one, rpow_natCast] <;>
       try norm_cast; cutsat
-    · exact Iff.mpr Int.cast_nonneg this
+    · exact Iff.mpr Int.cast_nonneg_iff this
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm
   let s : ι →₀ R := bS.repr a
@@ -247,7 +251,7 @@ theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R S] (a : S) {b : S} (hb 
     lt_of_le_of_lt (le_of_eq ?_)
       (mul_lt_mul hqr le_rfl (abv.pos ((Algebra.norm_ne_zero_iff_of_basis bS).mpr hb))
         (abv.nonneg _))
-  rw [← abv.map_mul, ← MonoidHom.map_mul, ← abv.map_mul, ← MonoidHom.map_mul, ← Algebra.smul_def,
+  rw [← abv.map_mul, ← map_mul, ← abv.map_mul, ← map_mul, ← Algebra.smul_def,
     smul_sub b', sub_mul, smul_comm, h, mul_comm b a', Algebra.smul_mul_assoc r a' b,
     Algebra.smul_mul_assoc b' q b]
 

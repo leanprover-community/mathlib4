@@ -3,14 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.CPolynomial
-import Mathlib.Analysis.Analytic.Inverse
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Analytic.CPolynomial
+public import Mathlib.Analysis.Analytic.Inverse
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Fréchet derivatives of analytic functions.
@@ -30,7 +32,7 @@ iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
   open set `s`, so is its derivative.
 * `AnalyticOn.fderivWithin` : if a function is analytic on a set of unique differentiability,
   so is its derivative within this set.
-* `PartialHomeomorph.analyticAt_symm` : if a partial homeomorphism `f` is analytic at a
+* `OpenPartialHomeomorph.analyticAt_symm` : if an open partial homeomorphism `f` is analytic at a
   point `f.symm a`, with invertible derivative, then its inverse is analytic at `a`.
 
 ## Comments on completeness
@@ -60,6 +62,8 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
 
 -/
+
+@[expose] public section
 
 open Filter Asymptotics Set
 
@@ -391,18 +395,18 @@ theorem AnalyticOnNhd.iteratedFDeriv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs 
   exact (h.iteratedFDerivWithin hs.uniqueDiffOn n).congr
     (fun x hx ↦ (iteratedFDerivWithin_of_isOpen n hs hx).symm)
 
-/-- If a partial homeomorphism `f` is analytic at a point `a`, with invertible derivative, then
-its inverse is analytic at `f a`. -/
-theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
+/-- If an open partial homeomorphism `f` is analytic at a point `a`, with invertible derivative,
+then its inverse is analytic at `f a`. -/
+theorem OpenPartialHomeomorph.analyticAt_symm' (f : OpenPartialHomeomorph E F) {a : E}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) (h : AnalyticAt 𝕜 f a) (h' : fderiv 𝕜 f a = i) :
     AnalyticAt 𝕜 f.symm (f a) := by
   rcases h with ⟨p, hp⟩
   have : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i := by simp [← h', hp.fderiv_eq]
   exact (f.hasFPowerSeriesAt_symm h0 hp this).analyticAt
 
-/-- If a partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible derivative,
-then its inverse is analytic at `a`. -/
-theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
+/-- If an open partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible
+derivative, then its inverse is analytic at `a`. -/
+theorem OpenPartialHomeomorph.analyticAt_symm (f : OpenPartialHomeomorph E F) {a : F}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.target) (h : AnalyticAt 𝕜 f (f.symm a))
     (h' : fderiv 𝕜 f (f.symm a) = i) :
     AnalyticAt 𝕜 f.symm a := by
@@ -604,7 +608,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr
-  grind [Function.update_self, Function.update_of_ne]
+  grind
 
 protected theorem hasStrictFDerivAt [DecidableEq ι] : HasStrictFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]

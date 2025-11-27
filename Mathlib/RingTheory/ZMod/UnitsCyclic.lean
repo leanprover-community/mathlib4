@@ -3,11 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.ZMod.Units
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 
@@ -46,6 +48,8 @@ The proofs mostly follow [Ireland and Rosen,
   [IrelandRosen1990].
 
 -/
+
+@[expose] public section
 
 open scoped Nat
 
@@ -358,9 +362,6 @@ theorem isCyclic_units_iff (n : ℕ) :
   apply iff_of_false
   · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
     cutsat
-  rintro (⟨p, m, -, odd, -, eq⟩ | ⟨p, m, -, odd, -, eq⟩)
-  on_goal 1 => have := eq ▸ odd.pow
-  on_goal 2 => have := (Nat.mul_left_cancel_iff zero_lt_two).mp eq ▸ odd.pow
-  all_goals simp [← Nat.not_even_iff_odd] at this
+  grind
 
 end ZMod

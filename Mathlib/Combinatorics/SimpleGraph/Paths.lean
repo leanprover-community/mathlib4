@@ -3,8 +3,11 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
-import Mathlib.Combinatorics.SimpleGraph.Walk
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 /-!
 
@@ -43,6 +46,8 @@ counterparts in [Chou1994].
 trails, paths, circuits, cycles
 -/
 
+@[expose] public section
+
 open Function
 
 universe u v w
@@ -54,7 +59,7 @@ variable (G : SimpleGraph V) (G' : SimpleGraph V')
 
 namespace Walk
 
-variable {G} {u v w : V}
+variable {G} {u u' v w : V}
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -94,6 +99,10 @@ theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : p.IsPath :
 theorem isPath_def {u v : V} (p : G.Walk u v) : p.IsPath ↔ p.support.Nodup :=
   ⟨IsPath.support_nodup, IsPath.mk'⟩
 
+theorem isPath_iff_injective_get_support {u v : V} (p : G.Walk u v) :
+    p.IsPath ↔ (p.support.get ·).Injective :=
+  p.isPath_def.trans List.nodup_iff_injective_get
+
 @[simp]
 theorem isPath_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
     (p.copy hu hv).IsPath ↔ p.IsPath := by
@@ -128,8 +137,13 @@ theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
     (cons h p).IsTrail → p.IsTrail := by simp [isTrail_def]
 
 @[simp]
-theorem cons_isTrail_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
+theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
+
+@[deprecated (since := "2025-11-03")] alias cons_isTrail_iff := isTrail_cons
+
+protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
+    (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
 theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
   simpa [isTrail_def] using h
@@ -384,6 +398,16 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
       (by rwa [getVert_cons _ _ n.add_one_ne_zero, getVert_zero])
     omega
 
+theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+    (hmem : s(u, w) ∈ p.edges) : w = p.snd := by
+  rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
+  have : u ∉ p.tail.support := by induction p <;> simp_all
+  grind [fst_mem_support_of_mem_edges]
+
+theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+    (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
+  simpa [hnil, hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
@@ -462,6 +486,10 @@ protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
     (by rwa [← take_spec _ h] at hc)
+
+lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : w.IsTrail)
+    (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges :=
+  List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
 protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
     (c.rotate h).IsTrail := by
@@ -569,7 +597,7 @@ theorem notMem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
     (he : s(u, v) ∉ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
-  simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
+  simp [Walk.isCycle_def, Walk.isTrail_cons, he]
 
 end Path
 
@@ -578,7 +606,7 @@ end Path
 
 namespace Walk
 
-variable {G} [DecidableEq V]
+variable {G} [DecidableEq V] {u u' v v' : V}
 
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
 The result is a path, as shown in `SimpleGraph.Walk.bypass_isPath`.
@@ -593,12 +621,12 @@ def bypass {u v : V} : G.Walk u v → G.Walk u v
       cons ha p'
 
 @[simp]
-theorem bypass_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
+theorem bypass_copy (p : G.Walk u v) (hu : u = u') (hv : v = v') :
     (p.copy hu hv).bypass = p.bypass.copy hu hv := by
   subst_vars
   rfl
 
-theorem bypass_isPath {u v : V} (p : G.Walk u v) : p.bypass.IsPath := by
+theorem bypass_isPath (p : G.Walk u v) : p.bypass.IsPath := by
   induction p with
   | nil => simp!
   | cons _ p' ih =>
@@ -607,7 +635,7 @@ theorem bypass_isPath {u v : V} (p : G.Walk u v) : p.bypass.IsPath := by
     · exact ih.dropUntil hs
     · simp [*, cons_isPath_iff]
 
-theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.length := by
+theorem length_bypass_le (p : G.Walk u v) : p.bypass.length ≤ p.length := by
   induction p with
   | nil => rfl
   | cons _ _ ih =>
@@ -620,7 +648,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     · rw [length_cons, length_cons]
       exact Nat.add_le_add_right ih 1
 
-lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
+lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
     p.bypass = p := by
   induction p with
   | nil => rfl
@@ -639,10 +667,10 @@ lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p
       rw [ih h]
 
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
-def toPath {u v : V} (p : G.Walk u v) : G.Path u v :=
+def toPath (p : G.Walk u v) : G.Path u v :=
   ⟨p.bypass, p.bypass_isPath⟩
 
-theorem support_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.support ⊆ p.support := by
+theorem support_bypass_subset (p : G.Walk u v) : p.bypass.support ⊆ p.support := by
   induction p with
   | nil => simp!
   | cons _ _ ih =>
@@ -655,11 +683,11 @@ theorem support_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.support ⊆ 
       apply List.cons_subset_cons
       assumption
 
-theorem support_toPath_subset {u v : V} (p : G.Walk u v) :
+theorem support_toPath_subset (p : G.Walk u v) :
     (p.toPath : G.Walk u v).support ⊆ p.support :=
   support_bypass_subset _
 
-theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.darts := by
+theorem darts_bypass_subset (p : G.Walk u v) : p.bypass.darts ⊆ p.darts := by
   induction p with
   | nil => simp!
   | cons _ _ ih =>
@@ -670,14 +698,40 @@ theorem darts_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.darts ⊆ p.da
     · rw [darts_cons]
       exact List.cons_subset_cons _ ih
 
-theorem edges_bypass_subset {u v : V} (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
+theorem edges_bypass_subset (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
   List.map_subset _ p.darts_bypass_subset
 
-theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
+theorem darts_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   darts_bypass_subset _
 
-theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
+theorem edges_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
+
+/-- Bypass repeated vertices like `Walk.bypass`, except the starting vertex.
+
+This is intended to be used for closed walks, for which `Walk.bypass` unhelpfully returns the empty
+walk. -/
+def cycleBypass : G.Walk v v → G.Walk v v
+  | .nil => .nil
+  | .cons hvv' w => .cons hvv' w.bypass
+
+@[simp] lemma cycleBypass_nil : (.nil : G.Walk v v).cycleBypass = .nil := rfl
+
+lemma edges_cycleBypass_subset : ∀ {w : G.Walk v v}, w.cycleBypass.edges ⊆ w.edges
+  | .nil => by simp
+  | .cons (v := v') hvv' w => by
+    classical
+    dsimp only [cycleBypass, edges_cons]
+    gcongr
+    exact edges_bypass_subset _
+
+lemma IsTrail.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w ≠ .nil → w.IsTrail → w.cycleBypass.IsCycle
+  | .cons (v := v') hvv' w, _, hw => by
+    dsimp [cycleBypass]
+    refine ⟨⟨(bypass_isPath _).isTrail.cons _ fun hvv' ↦ ?_, by simp⟩, ?_⟩
+    · simp only [isTrail_cons] at hw
+      exact hw.2 <| edges_bypass_subset _ hvv'
+    · simpa using (bypass_isPath _).support_nodup
 
 end Walk
 
@@ -714,7 +768,7 @@ theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
   induction p with
   | nil => simp
   | cons _ _ ih =>
-    rw [map_cons, cons_isTrail_iff, ih, cons_isTrail_iff]
+    rw [map_cons, isTrail_cons, ih, isTrail_cons]
     apply and_congr_right'
     rw [← Sym2.map_pair_eq, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
 

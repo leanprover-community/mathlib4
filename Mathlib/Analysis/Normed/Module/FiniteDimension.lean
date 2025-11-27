@@ -3,18 +3,22 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.Topology.Algebra.AffineSubspace
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.LinearAlgebra.Dimension.LinearMap
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Normed.Group.Lemmas
+public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
+
 
 /-!
 # Finite-dimensional normed spaces over complete fields
@@ -42,9 +46,11 @@ linear maps are continuous. Moreover, a finite-dimensional subspace is always co
 The fact that all norms are equivalent is not written explicitly, as it would mean having two norms
 on a single space, which is not the way type classes work. However, if one has a
 finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another norm,
-then the identities from `E` to `E'` and from `E'`to `E` are continuous thanks to
+then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -149,7 +155,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
   -- TODO: this could be easier with `det_cases`
   by_cases h : ∃ s : Finset E, Nonempty (Basis (↥s) 𝕜 E)
   · rcases h with ⟨s, ⟨b⟩⟩
-    haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis b
+    haveI : FiniteDimensional 𝕜 E := b.finiteDimensional_of_finite
     classical
     simp_rw [LinearMap.det_eq_det_toMatrix_of_finset b]
     refine Continuous.matrix_det ?_
@@ -674,6 +680,29 @@ theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSp
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO_nat hg.norm h.norm_right
+
+
+open Nat Asymptotics in
+/-- This is a version of `summable_norm_mul_geometric_of_norm_lt_one` for more general codomains. We
+keep the original one due to import restrictions. -/
+theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
+    [NormOneClass F] [NormMulClass F] {k : ℕ} {r : F} (hr : ‖r‖ < 1) {u : ℕ → F}
+    (hu : u =O[atTop] fun n ↦ ((n ^ k : ℕ) : F)) : Summable fun n : ℕ ↦ ‖u n * r ^ n‖ := by
+  rcases exists_between hr with ⟨r', hrr', h⟩
+  apply summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h).norm
+  calc
+  fun n ↦ ‖(u n) * r ^ n‖
+  _ =O[atTop] fun n ↦ ‖u n‖ * ‖r‖ ^ n := by
+      apply (IsBigOWith.of_bound (c := ‖(1 : ℝ)‖) ?_).isBigO
+      filter_upwards [eventually_norm_pow_le r] with n hn
+      simp
+  _ =O[atTop] fun n ↦ ‖((n : F) ^ k)‖ * ‖r‖ ^ n := by
+      simpa [Nat.cast_pow] using
+      (isBigO_norm_left.mpr (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n ↦ (‖r‖ ^ n)) atTop)
+  _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
+      convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
+        (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
+      simp only [norm_pow, norm_mul]
 
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ι → E} {g : ι → E} (hg : Summable g) (h : f ~[cofinite] g) :

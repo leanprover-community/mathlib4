@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
-import Mathlib.Probability.Process.Filtration
+module
+
+public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
+public import Mathlib.Probability.Process.Filtration
 
 /-!
 # Factorization of a map from measurability
@@ -17,6 +19,8 @@ If `Z` is completely metrizable, the factorization map `h` can be taken to be me
 This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
 see `exists_eq_measurable_comp`.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

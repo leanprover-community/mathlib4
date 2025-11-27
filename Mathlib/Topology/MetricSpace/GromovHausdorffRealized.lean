@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.MetricSpace.Gluing
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.MetricSpace.Gluing
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -29,6 +31,8 @@ embeddings of `X` and `Y` in metric spaces is a set of equicontinuous functions.
 it is compact, and one can find such a distance which is minimal. This distance defines a premetric
 space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCoupling X Y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -118,13 +122,7 @@ private theorem candidates_refl (fA : f ∈ candidates X Y) : f (x, x) = 0 :=
   fA.1.2 x
 
 private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) := by
-  have : 0 ≤ 2 * f (x, y) :=
-    calc
-      0 = f (x, x) := (candidates_refl fA).symm
-      _ ≤ f (x, y) + f (y, x) := candidates_triangle fA
-      _ = f (x, y) + f (x, y) := by rw [candidates_symm fA]
-      _ = 2 * f (x, y) := by ring
-  linarith
+  grind [candidates_symm, candidates_triangle]
 
 private theorem candidates_dist_inl (fA : f ∈ candidates X Y) (x y : X) :
     f (inl x, inl y) = dist x y :=
@@ -171,8 +169,8 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
   calc
-    f (x, y) - f (z, t) ≤ f (x, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
-    _ ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
+    f (x, y) - f (z, t) ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by
+      grind [candidates_triangle]
     _ = f (x, z) + f (t, y) := by simp [sub_eq_add_neg, add_assoc]
     _ ≤ maxVar X Y * dist x z + maxVar X Y * dist t y := by
       gcongr <;> apply candidates_dist_bound fA
@@ -240,7 +238,7 @@ technical lemmas. -/
 theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
-  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
 
 private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
@@ -253,7 +251,7 @@ private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
-  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => by grw [hcf (mem_range_self _)]⟩
 
 private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
@@ -326,8 +324,8 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
 
 private theorem HD_lipschitz_aux3 (f g : Cb X Y) :
     HD f ≤ HD g + dist f g :=
-  max_le (le_trans (HD_lipschitz_aux1 f g) (add_le_add_right (le_max_left _ _) _))
-    (le_trans (HD_lipschitz_aux2 f g) (add_le_add_right (le_max_right _ _) _))
+  max_le (by grw [HD_lipschitz_aux1 f g, HD, ← le_max_left])
+    (by grw [HD_lipschitz_aux2 f g, HD, ← le_max_right])
 
 /-- Conclude that `HD`, being Lipschitz, is continuous -/
 private theorem HD_continuous : Continuous (HD : Cb X Y → ℝ) :=

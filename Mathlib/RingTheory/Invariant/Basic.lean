@@ -3,8 +3,10 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.RingTheory.Invariant.Defs
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+module
+
+public import Mathlib.RingTheory.Invariant.Defs
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
 # Invariant Extensions of Rings
@@ -36,6 +38,8 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
   an automorphism of `B/Q`.
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 section Galois
@@ -47,17 +51,24 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
 
 /-- In the AKLB setup, the Galois group of `L/K` acts on `B`. -/
 noncomputable def IsIntegralClosure.MulSemiringAction [Algebra.IsAlgebraic K L] :
-    MulSemiringAction (L ≃ₐ[K] L) B :=
+    MulSemiringAction Gal(L/K) B :=
   MulSemiringAction.compHom B (galRestrict A K L B).toMonoidHom
+
+instance [Algebra.IsAlgebraic K L] : let := IsIntegralClosure.MulSemiringAction A K L B
+    SMulDistribClass Gal(L/K) B L :=
+  let := IsIntegralClosure.MulSemiringAction A K L B
+  ⟨fun g b l ↦ by
+    simp only [Algebra.smul_def, smul_mul', mul_eq_mul_right_iff]
+    exact Or.inl (algebraMap_galRestrictHom_apply A K L B g b).symm⟩
 
 /-- In the AKLB setup, every fixed point of `B` lies in the image of `A`. -/
 theorem Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
     letI := IsIntegralClosure.MulSemiringAction A K L B
-    Algebra.IsInvariant A B (L ≃ₐ[K] L) := by
+    Algebra.IsInvariant A B Gal(L/K) := by
   replace h := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
   letI := IsIntegralClosure.MulSemiringAction A K L B
   refine ⟨fun b hb ↦ ?_⟩
-  replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup (L ≃ₐ[K] L)) := by
+  replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup Gal(L/K)) := by
     rintro ⟨g, -⟩
     exact (algebraMap_galRestrict_apply A g b).symm.trans (congrArg (algebraMap B L) (hb g))
   rw [h, IntermediateField.mem_bot] at hb
@@ -101,7 +112,7 @@ instance (H : Subgroup G) [H.Normal] :
   inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
 instance (H : Subgroup G) [H.Normal] :
-    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H)  where
+    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
   smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
 
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
@@ -256,7 +267,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     have hr : r = ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j)) := rfl
     rw [← Ideal.neg_mem_iff, neg_sub, hr, Finset.sum_range_succ', Polynomial.eval_add,
         Polynomial.eval_monomial, zero_add, pow_zero, mul_one, add_sub_cancel_right]
-    simp only [ ← Polynomial.monomial_mul_X]
+    simp only [← Polynomial.monomial_mul_X]
     rw [← Finset.sum_mul, Polynomial.eval_mul_X]
     exact Ideal.mul_mem_left (g • Q) _ (hbP g hg)
   refine ⟨a, a - r.eval b, ha, ?_, fun h ↦ ?_⟩
@@ -298,7 +309,7 @@ private theorem fixed_of_fixed1_aux3 [NoZeroDivisors B] {b : B} {i j : ℕ} {p :
   exact hf.symm
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
-private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K] L) (b : B ⧸ Q)
+private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : Gal(L/K)) (b : B ⧸ Q)
     (hx : ∀ g : MulAction.stabilizer G Q, Ideal.Quotient.stabilizerHom Q P G g b = b) :
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
@@ -335,11 +346,11 @@ private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K
 variable [IsFractionRing (A ⧸ P) K] [IsFractionRing (B ⧸ Q) L]
 
 /-- If `Q` lies over `P`, then the stabilizer of `Q` acts on `Frac(B/Q)/Frac(A/P)`. -/
-noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* (L ≃ₐ[K] L) :=
+noncomputable def IsFractionRing.stabilizerHom : MulAction.stabilizer G Q →* Gal(L/K) :=
   MonoidHom.comp (IsFractionRing.fieldEquivOfAlgEquivHom K L) (Ideal.Quotient.stabilizerHom Q P G)
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
-private theorem fixed_of_fixed2 (f : L ≃ₐ[K] L) (x : L)
+private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
     f x = x := by
   obtain ⟨_⟩ := nonempty_fintype G
@@ -482,9 +493,9 @@ lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
     (by rw [Polynomial.aeval_map_algebraMap, Polynomial.aeval_algebraMap_apply, H, map_zero])
   refine Polynomial.splits_of_splits_of_dvd (algebraMap (A ⧸ P) (B ⧸ Q)) ?_ ?_ this
   · exact (h₂.map (algebraMap A (A ⧸ P))).ne_zero
-  · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
-      ← Polynomial.splits_map_iff, hp, MulSemiringAction.charpoly_eq]
-    exact Polynomial.splits_prod _ (fun _ _ ↦ Polynomial.splits_X_sub_C _)
+  · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq A B,
+      ← Polynomial.map_map, hp, MulSemiringAction.charpoly_eq, Polynomial.map_prod]
+    exact Polynomial.Splits.prod (fun _ _ ↦ (Polynomial.Splits.X_sub_C _).map _)
 
 attribute [local instance] Ideal.Quotient.field in
 include G in
