@@ -167,7 +167,7 @@ variable {β : Type*} [Preorder β] {f : E → β}
 
 open scoped Set.Notation
 
-theorem QuasiconcaveOn.isPreconnected_preimage {s : Set E} {t : β}
+theorem QuasiconcaveOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasiconcaveOn ℝ s f) :
     IsPreconnected (s ↓∩ f ⁻¹' Ici t) := by
   rw [← Topology.IsInducing.subtypeVal.isPreconnected_image,
@@ -175,15 +175,15 @@ theorem QuasiconcaveOn.isPreconnected_preimage {s : Set E} {t : β}
     Subtype.range_coe, inter_comm]
   exact (hfc t).isPreconnected
 
-theorem QuasiconvexOn.isPreconnected_preimage {s : Set E} {t : β}
+theorem QuasiconvexOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasiconvexOn ℝ s f) :
     IsPreconnected (s ↓∩ f ⁻¹' Iic t) :=
-  QuasiconcaveOn.isPreconnected_preimage (β := βᵒᵈ) hfc
+  QuasiconcaveOn.isPreconnected_preimage_subtype (β := βᵒᵈ) hfc
 
-theorem QuasilinearOn.isPreconnected_preimage {s : Set E} {t : β}
+theorem QuasilinearOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasilinearOn ℝ s f) :
     IsPreconnected (s ↓∩ f ⁻¹' Iic t) :=
-  hfc.left.isPreconnected_preimage
+  hfc.left.isPreconnected_preimage_subtype
 
 end Preconnected
 
