@@ -61,10 +61,7 @@ theorem mem_iff {s : Finset α} :
     s ∈ n.Combination α ↔ s.card = n := by
   rw [Combination, Set.mem_setOf_eq]
 
--- TODO : Update once there is a `SetLike` for `Finset` (PR  #28241)
-instance : SetLike (n.Combination α) α where
-  coe s := s
-  coe_injective' s t h := SetCoe.ext (by simpa using h)
+instance : SetLike (n.Combination α) α := SetLike.instSubtype
 
 @[simp]
 theorem coe_coe {s : n.Combination α} :
@@ -95,7 +92,7 @@ def subMulAction [DecidableEq α] : SubMulAction G (Finset α) where
   smul_mem' g s := (Finset.card_smul_finset g s).trans
 
 @[to_additive]
-instance [DecidableEq α] : MulAction G (n.Combination α) :=
+local instance [DecidableEq α] : MulAction G (n.Combination α) :=
   (subMulAction G α n).mulAction
 
 variable {G}
@@ -105,72 +102,79 @@ theorem coe_smul [DecidableEq α] {n : ℕ} {g : G} {s : n.Combination α} :
     ((g • s : n.Combination α) : Finset α) = (g • s) :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
-@[to_additive]
-theorem smul_ne_iff_exists_mem_notMem_smul [DecidableEq α] {s t : n.Combination α} {g : G} :
-    g • s ≠ t ↔ ∃ a ∈ (s : Finset α), a ∉ g⁻¹ • (t : Finset α) := by
-  rw [← Finset.not_subset, not_iff_not, ← coe_smul, ← eq_iff_subset]
-  exact smul_eq_iff_eq_inv_smul g
-
 theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
-    {g : G} (hg : (AddAction.toPerm g : Equiv.Perm α) ≠ 1) :
-    ∃ s : n.Combination α, g +ᵥ s ≠ s := by
-  have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using hg
-  obtain ⟨a, ha⟩ := this
-  obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
-  use s
-  contrapose! has'
-  rwa [← has', ← mem_coe_iff, coe_vadd, vadd_mem_vadd_finset_iff, mem_coe_iff]
+    {g : G} :
+    AddAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
+      ↔ AddAction.toPerm g = (1 : Equiv.Perm α) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose h with h
+    have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h
+    obtain ⟨a, ha⟩ := this
+    obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
+    rw [Equiv.ext_iff, not_forall]
+    use s
+    intro hs
+    apply has'
+    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at hs
+    rw [← hs]
+    simpa only [coe_vadd, vadd_mem_vadd_finset_iff, ← mem_coe_iff]
+  · ext1 s
+    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq]
+    suffices (g +ᵥ s : Finset α) = (AddAction.toPerm g : Equiv.Perm α) '' (s : Finset α) by
+      rw [← Subtype.coe_inj, ← Finset.coe_inj, this]
+      simp [h]
+    simp
 
+/-- If an additive group `G` acts faithfully on `α`,
+then it acts faithfully on `n.Combination α`,
+provided `1 ≤ n < ENat.card α`. -/
 theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
     [FaithfulVAdd G α] :
-    FaithfulVAdd G (n.Combination α) := ⟨fun {g₁ g₂} h ↦ by
-  simp only [vadd_eq_iff_eq_neg_vadd, vadd_vadd] at h
-  rw [← neg_inj, ← sub_eq_zero, sub_neg_eq_add]
-  set g := -g₁ + g₂
-  by_contra! h'
-  have hg : (AddAction.toPerm g : Equiv.Perm α) ≠ 1 := by
-    intro K
-    simp only [Equiv.Perm.ext_iff, Equiv.Perm.coe_one, id_eq] at K
-    apply h'
-    apply FaithfulVAdd.eq_of_vadd_eq_vadd (P := α)
-    simpa using K
-  obtain ⟨s, hs⟩ := addAction_faithful hn hα hg
-  apply hs
-  rw [← h]⟩
+    FaithfulVAdd G (n.Combination α) := by
+  rw [faithfulVAdd_iff]
+  intro g hg
+  apply AddAction.toPerm_injective (α := G) (β := α)
+  rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
+  exact Equiv.Perm.ext_iff.mpr hg
 
-theorem mulAction_faithful [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
-    {g : G} (hg : (MulAction.toPerm g : Equiv.Perm α) ≠ 1) :
-    ∃ s : n.Combination α, g • s ≠ s := by
-  have : ∃ (a : α), (g • a : α) ≠ a := by
-    by_contra! h
-    apply hg
-    ext a
-    simpa only using h a
-  obtain ⟨a, ha⟩ := this
-  obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
-  use s
-  intro h
-  apply has'
-  rwa [← h, ← mem_coe_iff, coe_smul, smul_mem_smul_finset_iff, mem_coe_iff]
+theorem mulAction_faithful {G : Type*} [Group G] {α : Type*} [MulAction G α] {n : ℕ}
+    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
+    {g : G} :
+    MulAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
+      ↔ MulAction.toPerm g = (1 : Equiv.Perm α) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose h with h
+    have : ∃ a, (g • a : α) ≠ a := by simpa [Equiv.ext_iff] using h
+    obtain ⟨a, ha⟩ := this
+    obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
+    rw [Equiv.ext_iff, not_forall]
+    use s
+    intro hs
+    apply has'
+    simp only [MulAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at hs
+    rw [← hs]
+    simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]
+  · ext1 s
+    simp only [MulAction.toPerm_apply, Equiv.Perm.coe_one, id_eq]
+    suffices ((g • s : n.Combination α) : Finset α) =
+      (MulAction.toPerm g : Equiv.Perm α) '' (s : Finset α) by
+      rw [← Subtype.coe_inj, ← Finset.coe_inj, this]
+      simp [h]
+    simp
 
+/-- If a group `G` acts faithfully on `α`,
+then it acts faithfull on `n.Combination α`,
+provided `1 ≤ n < ENat.card α`. -/
 theorem faithfulSMul [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
     [FaithfulSMul G α] :
-    FaithfulSMul G (n.Combination α) := ⟨fun {g₁ g₂} h ↦ by
-  simp only [smul_eq_iff_eq_inv_smul, smul_smul] at h
-  rw [← inv_inj, ← div_eq_one, div_inv_eq_mul]
-  set g := g₁⁻¹ * g₂
-  by_contra! h'
-  have hg : (MulAction.toPerm g : Equiv.Perm α) ≠ 1 := by
-    intro K
-    simp only [Equiv.Perm.ext_iff, Equiv.Perm.coe_one, id_eq] at K
-    apply h'
-    apply FaithfulSMul.eq_of_smul_eq_smul (α := α)
-    simpa using K
-  obtain ⟨s, hs⟩ := mulAction_faithful hn hα hg
-  apply hs
-  rw [← h]⟩
+    FaithfulSMul G (n.Combination α) := by
+  rw [faithfulSMul_iff]
+  intro g hg
+  apply MulAction.toPerm_injective (α := G) (β := α)
+  rw [MulAction.toPerm_one, ← mulAction_faithful hn hα]
+  exact Equiv.Perm.ext_iff.mpr hg
 
 attribute [to_additive existing] faithfulSMul
 
