@@ -24,6 +24,8 @@ predicates which are equivalent to `List.Pairwise` when the relation derives fro
 preorder (but which are defined in terms of the monotonicity predicates).
 -/
 
+public section
+
 namespace List
 
 section sort
@@ -367,6 +369,8 @@ theorem Pairwise.merge {l l' : List α} (h : Pairwise r l) (h' : Pairwise r l') 
     (fun a b => by simpa using IsTotal.total a b)
     l l' (by simpa using h) (by simpa using h')
 
+@[deprecated (since := "2025-11-27")] alias Sorted.merge := Pairwise.merge
+
 variable (r)
 
 /-- Variant of `pairwise_mergeSort` using relation typeclasses. -/
@@ -524,6 +528,9 @@ protected theorem SortedLT.sortedLE {l : List α} (h : l.SortedLT) : l.SortedLE 
 protected theorem SortedGT.sortedGE {l : List α} (h : l.SortedGT) : l.SortedGE :=
   h.strictAnti_get.antitone.sortedGE
 
+@[deprecated (since := "2025-11-27")] alias Sorted.le_of_lt := SortedLT.sortedLE
+@[deprecated (since := "2025-11-27")] alias Sorted.ge_of_gt := SortedGT.sortedGE
+
 protected theorem SortedLT.nodup (h : l.SortedLT) : l.Nodup := h.strictMono_get.injective.nodup
 protected theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.strictAnti_get.injective.nodup
 
@@ -654,6 +661,9 @@ protected theorem SortedLE.sortedLT_of_nodup {l : List α} (h₁ : l.SortedLE) (
 
 protected theorem SortedGE.sortedGT_of_nodup {l : List α} (h₁ : l.SortedGE) (h₂ : l.Nodup) :
     l.SortedGT := (h₁.antitone_get.strictAnti_of_injective h₂.injective_get).sortedGT
+
+@[deprecated (since := "2025-11-27")] alias Sorted.lt_of_le := SortedLE.sortedLT_of_nodup
+@[deprecated (since := "2025-11-27")] alias Sorted.gt_of_ge := SortedGE.sortedGT_of_nodup
 
 theorem sortedLT_iff_nodup_and_sortedLE : l.SortedLT ↔ l.Nodup ∧ l.SortedLE :=
   ⟨fun h => ⟨h.nodup, h.sortedLE⟩, fun h => h.2.sortedLT_of_nodup h.1⟩
