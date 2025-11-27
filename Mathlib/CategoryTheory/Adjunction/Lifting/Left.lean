@@ -81,19 +81,18 @@ coequalizer of something (i.e. a regular epi).
 def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) :
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
   Cofork.IsColimit.mk' _ fun s => by
-    have := (h X).epi
-    have := (h (h X).W).epi
-    refine ⟨(RegularEpi.desc' (adj₁.counit.app X) (h _) s.π ?_).1, ?_, ?_⟩
+    have := fun Y ↦ h Y |>.epi
+    refine ⟨((h X).desc' s.π ?_).1, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (h X).W)]
       rw [← adj₁.counit_naturality_assoc (h X).left]
       dsimp only [Functor.comp_obj]
       rw [← s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
         F.map_comp_assoc, s.condition, ← adj₁.counit_naturality_assoc (h X).right]
       simp
-    · apply (RegularEpi.desc' (adj₁.counit.app X) (h _) s.π _).2
+    · apply ((h X).desc' s.π _).2
     · intro m hm
       rw [← cancel_epi (adj₁.counit.app X)]
-      apply hm.trans (RegularEpi.desc' (adj₁.counit.app X) (h _) s.π _).2.symm
+      apply hm.trans ((h _).desc' s.π _).2.symm
 
 /-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
 coequalizer of something (i.e. a regular epi).

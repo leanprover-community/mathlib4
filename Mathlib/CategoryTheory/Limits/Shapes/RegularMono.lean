@@ -390,7 +390,7 @@ instance (priority := 100) (f : X ⟶ Y) [IsSplitEpi f] : IsRegularEpi f :=
 
 /-- If `f` is a regular epi, then every morphism `k : X ⟶ W` coequalizing `RegularEpi.left` and
 `RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
-def RegularEpi.desc' {W : C} (f : X ⟶ Y) (hf : RegularEpi f) (k : X ⟶ W)
+def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
     (h : hf.left ≫ k = hf.right ≫ k) :
     { l : Y ⟶ W // f ≫ l = k } :=
   Cofork.IsColimit.desc' hf.isColimit _ h

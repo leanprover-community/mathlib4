@@ -87,7 +87,7 @@ def unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
     · rw [← cancel_mono (adj₁.unit.app ((h X).Z)), assoc, ← adj₁.unit_naturality (h _).left]
       dsimp only [Functor.comp_obj]
       have := s.condition
-      dsimp at this
+      dsimp only [Functor.comp_obj] at this
       rw [← assoc, ← this, assoc, ← U.map_comp, ← F.map_comp, RegularMono.w, F.map_comp,
         U.map_comp, s.condition_assoc, assoc, ← adj₁.unit_naturality (h _).right]
     · apply ((h X).lift' s.ι _).2
