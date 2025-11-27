@@ -305,6 +305,18 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f)
 lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
   g.isBigOTVS_comp
 
+lemma _root_.LinearMap.isBigOTVS_rev_comp (g : E →ₗ[𝕜] F) (hg : comap g (𝓝 0) ≤ 𝓝 0) :
+    f =O[𝕜; l] (g ∘ f) := by
+  constructor
+  intro U hU
+  rcases mem_comap.1 (hg hU) with ⟨V, hV, hgV⟩
+  use V, hV
+  filter_upwards with a
+  refine le_egauge_of_forall_ne_zero (mem_of_mem_nhds hV) fun c hc₀ hc ↦ ?_
+  apply egauge_le_of_mem_smul
+  grw [← hgV, ← (IsUnit.mk0 _ hc₀).preimage_smul_set]
+  exact hc
+
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩

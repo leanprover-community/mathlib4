@@ -49,6 +49,7 @@ General algebra:
     cyclic group: 'IsCyclic'
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
+    Cayley's theorem: 'Equiv.Perm.subgroupOfMulAction'
     alternating group: 'alternatingGroup'
     A5 is simple: 'alternatingGroup.isSimpleGroup_five'
     classification of abelian simple groups: CommGroup.is_simple_iff_prime_card
