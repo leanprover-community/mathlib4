@@ -3,7 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms
@@ -30,6 +33,8 @@ This file defines isomorphisms between objects of a category.
 
 category, category theory, isomorphism
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 
@@ -133,7 +138,10 @@ instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) wher
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
-@[simp, grind =]
+-- Annotating this with `@[grind =]` triggers a run-away chain of `Category.assoc` instantiations.
+-- Hopefully this can be restored when `grind` has support for associative/commutative operations,
+-- or direct support for category theory.
+@[simp]
 theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
     (hom' : Y ⟶ Z) (inv' : Z ⟶ Y) (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
     Iso.trans ⟨hom, inv, hom_inv_id, inv_hom_id⟩ ⟨hom', inv', hom_inv_id', inv_hom_id'⟩ =

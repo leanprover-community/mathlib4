@@ -3,9 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.IntervalAverage
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+module
+
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.IntervalAverage
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Circle Averages
@@ -27,6 +29,8 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
 -/
 
+@[expose] public section
+
 open Complex Filter Metric Real
 
 variable
@@ -38,7 +42,7 @@ variable
 namespace Real
 
 /-!
-# Definition
+### Definition
 -/
 
 variable (f c R) in
@@ -53,7 +57,7 @@ noncomputable def circleAverage : E :=
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
-/-- Expression of `circleAverage´ in terms of interval averages. -/
+/-- Expression of `circleAverage` in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
     circleAverage f c R = ⨍ θ in 0..2 * π, f (circleMap c R θ) := by
   simp [circleAverage, interval_average_eq]
@@ -68,9 +72,9 @@ lemma circleAverage_eq_intervalAverage :
     one_smul]
 
 /--
-Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
+Expression of `circleAverage` with arbitrary center in terms of `circleAverage` with center zero.
 -/
-lemma circleAverage_fun_add :
+lemma circleAverage_map_add_const :
     circleAverage (fun z ↦ f (z + c)) 0 R = circleAverage f c R := by
   unfold circleAverage circleMap
   congr
@@ -272,12 +276,25 @@ theorem circleAverage_add (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleInt
   congr
   apply intervalIntegral.integral_add hf₁ hf₂
 
+/-- Circle averages commute with addition. -/
+theorem circleAverage_fun_add {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E} (hf₁ : CircleIntegrable f₁ c R)
+    (hf₂ : CircleIntegrable f₂ c R) :
+    circleAverage (fun z ↦ f₁ z + f₂ z) c R = circleAverage f₁ c R + circleAverage f₂ c R :=
+  circleAverage_add hf₁ hf₂
+
 /-- Circle averages commute with sums. -/
 theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     circleAverage (∑ i ∈ s, f i) c R = ∑ i ∈ s, circleAverage (f i) c R := by
   unfold circleAverage
   simp [← Finset.smul_sum, intervalIntegral.integral_finset_sum h]
+
+/-- Circle averages commute with sums. -/
+theorem circleAverage_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    circleAverage (fun z ↦ ∑ i ∈ s, f i z) c R = ∑ i ∈ s, circleAverage (f i) c R := by
+  convert circleAverage_sum h
+  simp
 
 /-- Circle averages commute with subtraction. -/
 theorem circleAverage_sub (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleIntegrable f₂ c R) :
@@ -286,5 +303,9 @@ theorem circleAverage_sub (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleInt
   congr
   apply intervalIntegral.integral_sub hf₁ hf₂
 
+/-- Circle averages commute with subtraction. -/
+theorem circleAverage_fun_sub (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleIntegrable f₂ c R) :
+    circleAverage (fun z ↦ f₁ z - f₂ z) c R = circleAverage f₁ c R - circleAverage f₂ c R :=
+  circleAverage_sub hf₁ hf₂
 
 end Real

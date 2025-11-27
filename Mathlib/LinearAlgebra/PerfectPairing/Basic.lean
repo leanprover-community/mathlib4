@@ -3,7 +3,9 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Perfect pairings
@@ -19,6 +21,8 @@ A perfect pairing of two (left) modules may be defined either as:
 In this file we provide a definition `IsPerfPair` corresponding to 1 above, together with logic
 to connect 1 and 2.
 -/
+
+@[expose] public section
 
 open Function Module
 
@@ -37,14 +41,14 @@ class IsPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   bijective_left (p) : Bijective p
   bijective_right (p) : Bijective p.flip
 
-/-- Given a perfect pairing between `M`and `N`, we may interchange the roles of `M` and `N`. -/
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 protected lemma IsPerfPair.flip (hp : p.IsPerfPair) : p.flip.IsPerfPair where
   bijective_left := IsPerfPair.bijective_right p
   bijective_right := IsPerfPair.bijective_left p
 
 variable [p.IsPerfPair]
 
-/-- Given a perfect pairing between `M`and `N`, we may interchange the roles of `M` and `N`. -/
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 instance flip.instIsPerfPair : p.flip.IsPerfPair := .flip ‹_›
 
 variable (p)
