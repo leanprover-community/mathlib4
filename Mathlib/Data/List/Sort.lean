@@ -24,8 +24,6 @@ predicates which are equivalent to `List.Pairwise` when the relation derives fro
 preorder (but which are defined in terms of the monotonicity predicates).
 -/
 
-public section
-
 namespace List
 
 section sort
