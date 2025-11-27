@@ -3,7 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Data.List.Induction
+module
+
+public import Mathlib.Data.List.Induction
+public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Util.AssertExists
 
 /-!
 # Join of a list of lists
@@ -11,6 +15,8 @@ import Mathlib.Data.List.Induction
 This file proves basic properties of `List.flatten`, which concatenates a list of lists. It is
 defined in `Init.Prelude`.
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

@@ -3,8 +3,10 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.UniformSpace.Equiv
+module
+
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Equiv
 
 /-!
 # Abstract theory of Hausdorff completions of uniform spaces
@@ -42,6 +44,8 @@ call a completion.
 
 uniform spaces, completion, universal property
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -219,6 +223,25 @@ variable (pkg'' : AbstractCompletion.{vγ} γ)
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     pkg'.map pkg'' g ∘ pkg.map pkg' f = pkg.map pkg'' (g ∘ f) :=
   pkg.extend_map pkg' (pkg''.uniformContinuous_coe.comp hg) hf
+
+/-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
+def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
+  toFun := pkg.map pkg' e
+  invFun := pkg'.map pkg e.symm
+  uniformContinuous_toFun := uniformContinuous_map ..
+  uniformContinuous_invFun := uniformContinuous_map ..
+  left_inv := Function.leftInverse_iff_comp.2 <| by
+    simp [map_comp _ _ _ e.symm.uniformContinuous e.uniformContinuous]
+  right_inv := Function.rightInverse_iff_comp.2 <| by
+    simp [map_comp _ _ _ e.uniformContinuous e.symm.uniformContinuous]
+
+@[simp]
+theorem mapEquiv_symm (e : α ≃ᵤ β) :
+    (pkg.mapEquiv pkg' e).symm = pkg'.mapEquiv pkg e.symm := rfl
+
+@[simp]
+theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : pkg.mapEquiv pkg' e (ι a) = ι' (e a) :=
+  pkg.map_coe pkg' e.uniformContinuous _
 
 end MapSec
 

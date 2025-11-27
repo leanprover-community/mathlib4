@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexBiprod
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -29,10 +31,12 @@ morphisms `φ₀ φ₁ : K ⟶ M` and a homotopy `h : Homotopy φ₀ φ₁`,
 see `cylinder.desc`. There is also a homotopy equivalence
 `cylinder.homotopyEquiv K : HomotopyEquiv K.cylinder K`. From the construction of
 the cylinder, we deduce the lemma `Homotopy.map_eq_of_inverts_homotopyEquivalences`
-which assert that if a functor inverts homotopy equivalences, then the image of
+which asserts that if a functor inverts homotopy equivalences, then the images of
 two homotopic maps are equal.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Category Limits Preadditive
@@ -336,6 +340,7 @@ lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
 
 end
 
+omit [DecidableRel c.Rel] in
 lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
@@ -427,8 +432,7 @@ noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
 @[reassoc (attr := simp)]
 lemma inlX_π (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (π K).f j = 0 := by
-  erw [homotopyCofiber.inlX_desc_f]
-  simp [Homotopy.equivSubZero]
+  simp [HomologicalComplex.cylinder.π, HomologicalComplex.cylinder.desc, Homotopy.equivSubZero]
 
 @[reassoc (attr := simp)]
 lemma inrX_π (i : ι) :
@@ -456,15 +460,14 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
   dsimp [nullHomotopicMap]
-  by_cases hj : ∃ (k : ι), c.Rel k j
+  by_cases! hj : ∃ (k : ι), c.Rel k j
   · obtain ⟨k, hjk⟩ := hj
     simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_X, homotopyCofiber_d,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, homotopyCofiber.inlX_fstX_assoc,
       homotopyCofiber.inlX_sndX_assoc, zero_comp, add_zero, comp_sub, inlX_π_assoc, comp_id,
       zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
       neg_comp, id_comp]
-  · simp only [not_exists] at hj
-    simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
+  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
       homotopyCofiber_X, homotopyCofiber_d, assoc, comp_sub, comp_id,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
       homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,
@@ -540,6 +543,7 @@ end
 
 end cylinder
 
+omit [DecidableRel c.Rel] in
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
@@ -548,6 +552,7 @@ lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map φ₀ = H.map φ₁ := by
+  classical
   simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp,
     cylinder.map_ι₀_eq_map_ι₁ _ hc _ hH]
 
