@@ -332,6 +332,14 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 @[deprecated (since := "2025-07-10")]
 alias snd_injective := intent_injective
 
+/-- Copy a concept, adjusting definitional equalities. -/
+@[simps!]
+def copy (c : Concept α β r) (e : Set α) (i : Set β) (he : e = c.extent) (hi : i = c.intent) :
+    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
+
+theorem copy_eq (c : Concept α β r) (e : Set α) (i : Set β) (he hi) : c.copy e i he hi = c := by
+  ext; simp_all
+
 /-- Define a concept from an extent, by setting the intent to its upper polar. -/
 @[simps!]
 def _root_.Order.IsExtent.concept (hs : IsExtent r s) : Concept α β r :=
@@ -387,6 +395,18 @@ theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
 
 instance : PartialOrder (Concept α β r) :=
   PartialOrder.lift _ extent_injective
+
+theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') :
+    IsCompl c'.extent c'.intent :=
+  ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
+
+@[simp]
+theorem compl_extent [IsStrictTotalOrder α r'] (c' : Concept α α r') : c'.extentᶜ = c'.intent :=
+  c'.isCompl_extent_intent.compl_eq
+
+@[simp]
+theorem compl_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') : c'.intentᶜ = c'.extent :=
+  c'.isCompl_extent_intent.symm.compl_eq
 
 @[simp]
 theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=
