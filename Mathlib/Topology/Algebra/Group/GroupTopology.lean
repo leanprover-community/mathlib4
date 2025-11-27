@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 ### Lattice of group topologies
@@ -18,6 +20,8 @@ Any function `f : α → β` induces `coinduced f : TopologicalSpace α → Grou
 
 The additive version `AddGroupTopology α` and corresponding results are provided as well.
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -108,9 +112,7 @@ theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = �
 
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
-  top := ⊤
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
-  bot := ⊥
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
@@ -123,7 +125,7 @@ theorem toTopologicalSpace_inf (x y : GroupTopology α) :
 
 @[to_additive]
 instance : SemilatticeInf (GroupTopology α) :=
-  toTopologicalSpace_injective.semilatticeInf _ toTopologicalSpace_inf
+  toTopologicalSpace_injective.semilatticeInf _ .rfl .rfl toTopologicalSpace_inf
 
 @[to_additive]
 instance : Inhabited (GroupTopology α) :=
@@ -176,9 +178,7 @@ instance : CompleteLattice (GroupTopology α) :=
   { inferInstanceAs (BoundedOrder (GroupTopology α)),
     inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
-    inf := (· ⊓ ·)
-    top := ⊤
-    bot := ⊥ }
+    inf := (· ⊓ ·) }
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced group topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological group. -/

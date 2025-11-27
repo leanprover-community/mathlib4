@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.ModelTheory.Semantics
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.ModelTheory.Semantics
 
 /-!
 # Definable Sets
@@ -29,6 +31,8 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 
 -/
+
+@[expose] public section
 
 
 universe u v w u₁
@@ -377,7 +381,7 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
 lemma coe_himp (s t : L.DefinableSet A α) : ↑(s ⇨ t) = (s ⇨ t : Set (α → M)) := rfl
 
 noncomputable instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
-  Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
+  Function.Injective.booleanAlgebra _ Subtype.coe_injective .rfl .rfl
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff coe_himp
 
 end DefinableSet

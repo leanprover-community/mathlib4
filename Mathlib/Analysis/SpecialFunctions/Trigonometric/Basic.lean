@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.Field.NegOnePow
-import Mathlib.Algebra.Field.Periodic
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.SpecialFunctions.Exp
+module
+
+public import Mathlib.Algebra.Field.NegOnePow
+public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # Trigonometric functions
@@ -40,6 +42,8 @@ in terms of Chebyshev polynomials.
 
 sin, cos, tan, angle
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -172,7 +176,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
     assertInstancesCommute
@@ -366,8 +370,14 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
 theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (-1) ^ n * cos x :=
   n.cast_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
 
+theorem cos_int_mul_pi (n : ℤ) : cos (n * π) = (-1) ^ n := by
+  simpa using cos_add_int_mul_pi 0 n
+
 theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.add_nat_mul_eq n
+
+theorem cos_nat_mul_pi (n : ℕ) : cos (n * π) = (-1) ^ n := by
+  simpa using cos_add_nat_mul_pi 0 n
 
 theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = (-1) ^ n * cos x :=
   n.cast_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
@@ -395,11 +405,7 @@ theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
 
 theorem sin_pos_of_pos_of_lt_pi {x : ℝ} (h0x : 0 < x) (hxp : x < π) : 0 < sin x :=
   if hx2 : x ≤ 2 then sin_pos_of_pos_of_le_two h0x hx2
-  else
-    have : (2 : ℝ) + 2 = 4 := by norm_num
-    have : π - x ≤ 2 :=
-      sub_le_iff_le_add.2 (le_trans pi_le_four (this ▸ add_le_add_left (le_of_not_ge hx2) _))
-    sin_pi_sub x ▸ sin_pos_of_pos_of_le_two (sub_pos.2 hxp) this
+  else sin_pi_sub x ▸ sin_pos_of_pos_of_le_two (sub_pos.2 hxp) (by linarith [pi_le_four])
 
 theorem sin_pos_of_mem_Ioo {x : ℝ} (hx : x ∈ Ioo 0 π) : 0 < sin x :=
   sin_pos_of_pos_of_lt_pi hx.1 hx.2
@@ -421,6 +427,12 @@ theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π �
 
 @[deprecated (since := "2025-07-27")]
 alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
+
+lemma abs_sin_eq_sin_abs_of_abs_le_pi {x : ℝ} (hx : |x| ≤ π) : |sin x| = sin |x| := by
+  rcases lt_or_ge x 0 with h | h
+  · rw [abs_of_neg h, sin_neg,
+      abs_of_nonpos (sin_nonpos_of_nonpos_of_neg_pi_le h.le (abs_le.1 hx).1)]
+  · rw [abs_of_nonneg h, abs_of_nonneg (sin_nonneg_of_nonneg_of_le_pi h (abs_le.1 hx).2)]
 
 @[simp]
 theorem sin_pi_div_two : sin (π / 2) = 1 :=
@@ -659,12 +671,12 @@ theorem sqrtTwoAddSeries_succ (x : ℝ) :
   | 0 => rfl
   | n + 1 => by rw [sqrtTwoAddSeries, sqrtTwoAddSeries_succ _ _, sqrtTwoAddSeries]
 
+@[gcongr]
 theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
     ∀ n : ℕ, sqrtTwoAddSeries x n ≤ sqrtTwoAddSeries y n
   | 0 => h
   | n + 1 => by
-    rw [sqrtTwoAddSeries, sqrtTwoAddSeries]
-    exact sqrt_le_sqrt (add_le_add_left (sqrtTwoAddSeries_monotone_left h _) _)
+    rw [sqrtTwoAddSeries, sqrtTwoAddSeries]; gcongr; exact sqrtTwoAddSeries_monotone_left h _
 
 @[simp]
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
@@ -767,7 +779,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
       ring
     linarith [cos_pi, cos_three_mul (π / 3)]
   rcases mul_eq_zero.mp h₁ with h | h
-  · linarith [pow_eq_zero h]
+  · linarith [eq_zero_of_pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
       refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
     linarith [cos_pi]

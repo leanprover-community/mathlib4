@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.NAry
-import Mathlib.Data.ULift
-import Mathlib.Order.CompleteLattice.Defs
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Data.ULift
+public import Mathlib.Order.CompleteLattice.Defs
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Theory of complete lattices
@@ -32,6 +34,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -913,11 +917,11 @@ theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f
 
 theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = sSup (f.symm ⁻¹' s) := by
-  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
+  rw [map_sSup, ← sSup_image, f.image_eq_preimage_symm]
 
 theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sInf s) = sInf (f.symm ⁻¹' s) := by
-  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
+  rw [map_sInf, ← sInf_image, f.image_eq_preimage_symm]
 
 /-
 ### iSup and iInf under set constructions
@@ -1128,12 +1132,12 @@ theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a 
 dropped, without changing the result. -/
 @[simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
-  by_cases htriv : ∀ i, f i = ⊥
+  by_cases! htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
   refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => ?_)
   by_cases hi : f i = ⊥
   · rw [hi]
-    obtain ⟨i₀, hi₀⟩ := not_forall.mp htriv
+    obtain ⟨i₀, hi₀⟩ := htriv
     exact ⟨⟨i₀, hi₀⟩, bot_le⟩
   · exact ⟨⟨i, hi⟩, rfl.le⟩
 
@@ -1364,18 +1368,16 @@ congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| 
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
-    [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [LT α]
+    [SupSet α] [InfSet α] [Top α] [Bot α] [CompleteLattice β]
+    (f : α → β) (hf : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
-  -- we cannot use BoundedOrder.lift here as the `LE` instance doesn't exist yet
-  __ := hf.lattice f map_sup map_inf
-  le_sSup _ a h := (le_iSup₂ a h).trans (map_sSup _).ge
-  sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
-  sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
-  le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  top := ⊤
-  le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
-  bot_le _ := map_bot.le.trans bot_le
+  __ := hf.lattice f le lt map_sup map_inf
+  __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
+  le_sSup _ a h := le.1 <| (le_iSup₂ a h).trans (map_sSup _).ge
+  sSup_le _ _ h := le.1 <| (map_sSup _).trans_le <| iSup₂_le fun a ha ↦ le.2 <| h a ha
+  sInf_le _ a h := le.1 <| (map_sInf _).trans_le <| iInf₂_le a h
+  le_sInf _ _ h := le.1 <| (le_iInf₂ fun a ha ↦ le.2 <| h a ha).trans (map_sInf _).ge

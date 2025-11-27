@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Bool.Set
-import Mathlib.Data.Nat.Set
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.Data.Bool.Set
+public import Mathlib.Data.Nat.Set
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Theory of complete lattices
@@ -31,6 +33,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -192,7 +196,7 @@ theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) 
   congr_arg ULift.up <| (down_iInf _).symm
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
-  ULift.down_injective.completeLattice _ down_sup down_inf
+  ULift.down_injective.completeLattice _ .rfl .rfl down_sup down_inf
     (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
 

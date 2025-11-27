@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Bounded
-import Mathlib.Order.Hom.Lattice
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Order.Hom.Bounded
+public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Bounded lattice homomorphisms
@@ -31,6 +33,8 @@ be satisfied by itself and all stricter types.
 
 Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms?
 -/
+
+@[expose] public section
 
 
 open Function
@@ -314,8 +318,11 @@ variable [SemilatticeSup β] [OrderBot β]
 instance : Max (SupBotHom α β) :=
   ⟨fun f g => { f.toBotHom ⊔ g.toBotHom with toSupHom := f.toSupHom ⊔ g.toSupHom }⟩
 
+instance : PartialOrder (SupBotHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeSup (SupBotHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderBot (SupBotHom α β) where
   bot := ⟨⊥, rfl⟩
@@ -464,8 +471,11 @@ variable [SemilatticeInf β] [OrderTop β]
 instance : Min (InfTopHom α β) :=
   ⟨fun f g => { f.toTopHom ⊓ g.toTopHom with toInfHom := f.toInfHom ⊓ g.toInfHom }⟩
 
+instance : PartialOrder (InfTopHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (InfTopHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderTop (InfTopHom α β) where
   top := ⟨⊤, rfl⟩

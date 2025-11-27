@@ -3,9 +3,11 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Algebra.Order.Module.PositiveLinearMap
-import Mathlib.Topology.Algebra.Order.Support
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+module
+
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Topology.Algebra.Order.Support
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
 # Compactly supported continuous functions
@@ -20,10 +22,12 @@ continuous functions.
 When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCommGroup`,
 `NonUnitalRing` and `StarRing`.
 
-When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
-`C(α, β) ≃ C_c(α, β)`.
+When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapEquiv`
+gives the identification `C(α, β) ≃ C_c(α, β)`.
 
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*} [TopologicalSpace α]
 
@@ -116,11 +120,14 @@ theorem eq_of_empty [IsEmpty α] (f g : C_c(α, β)) : f = g :=
 
 /-- A continuous function on a compact space automatically has compact support. -/
 @[simps]
-def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
+def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
   toFun f :=
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
+
+@[deprecated (since := "2025-10-21")] alias ContinuousMap.liftCompactlySupported :=
+    continuousMapEquiv
 
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
@@ -449,7 +456,7 @@ instance instSup : Max C_c(α, β) where max f g :=
 @[simp] lemma sup_apply (f g : C_c(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 
 instance semilatticeSup : SemilatticeSup C_c(α, β) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 lemma finsetSup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.sup' H f a = s.sup' H fun i ↦ f i a :=
@@ -475,7 +482,7 @@ instance instInf : Min C_c(α, β) where min f g :=
 @[simp] lemma inf_apply (f g : C_c(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
 
 instance semilatticeInf : SemilatticeInf C_c(α, β) :=
-  DFunLike.coe_injective.semilatticeInf _ coe_inf
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
     s.inf' H f a = s.inf' H fun i ↦ f i a :=
@@ -491,25 +498,23 @@ section Lattice
 
 variable [TopologicalSpace β]
 
-instance [Lattice β] [TopologicalLattice β] [Zero β] :
-    Lattice C_c(α, β) :=
-  DFunLike.coe_injective.lattice _ coe_sup coe_inf
+instance [Lattice β] [TopologicalLattice β] [Zero β] : Lattice C_c(α, β) where
 
 instance instMulLeftMono [PartialOrder β] [MulZeroClass β] [ContinuousMul β] [MulLeftMono β] :
     MulLeftMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right (hg₁₂ x) _⟩
 
 instance instMulRightMono [PartialOrder β] [MulZeroClass β] [ContinuousMul β] [MulRightMono β] :
     MulRightMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left (hg₁₂ x) _⟩
 
 instance instAddLeftMono [PartialOrder β] [AddZeroClass β] [ContinuousAdd β] [AddLeftMono β] :
     AddLeftMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => add_le_add_left (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => add_le_add_right (hg₁₂ x) _⟩
 
 instance instAddRightMono [PartialOrder β] [AddZeroClass β] [ContinuousAdd β] [AddRightMono β] :
     AddRightMono C_c(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => add_le_add_right (hg₁₂ x) _⟩
+  ⟨fun _ _ _ hg₁₂ x => add_le_add_left (hg₁₂ x) _⟩
 
 -- TODO transfer this lattice structure to `BoundedContinuousFunction`
 
@@ -790,7 +795,7 @@ noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] �
         obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g
         rw [← add_zero ((Λ (f + g).nnrealPart).toReal - (Λ (-g + -f).nnrealPart).toReal),
           ← sub_self (Λ h).toReal, sub_add_sub_comm, ← NNReal.coe_add, ← NNReal.coe_add,
-          ← LinearMap.map_add, ← LinearMap.map_add, hh.1, add_comm (-g) (-f), hh.2]
+          ← map_add, ← map_add, hh.1, add_comm (-g) (-f), hh.2]
         simp only [map_add, NNReal.coe_add]
         ring
       map_smul' a f := by

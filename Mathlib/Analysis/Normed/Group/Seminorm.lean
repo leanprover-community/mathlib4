@@ -3,8 +3,10 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Group
+module
+
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Group seminorms
@@ -42,6 +44,8 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 
 norm, seminorm
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -273,7 +277,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
 @[to_additive /-- Composition of an additive group seminorm with an additive monoid homomorphism as
@@ -504,7 +508,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end AddGroup
 
@@ -712,7 +716,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance : SemilatticeSup (GroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end Group
 
@@ -814,7 +818,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
   ⟨{ (1 : NonarchAddGroupSeminorm E) with

@@ -3,15 +3,17 @@ Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.SetTheory.Game.Birthday
-import Mathlib.SetTheory.Surreal.Multiplication
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.SetTheory.Surreal.Multiplication
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Surreal.Dyadic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -32,6 +34,8 @@ The above construction gives us an abelian group embedding of ℤ into `Surreal`
 extend this to an embedding of dyadic rationals into `Surreal` and use Cauchy sequences of dyadic
 rational numbers to construct an ordered field embedding of ℝ into `Surreal`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -126,22 +130,22 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     swap
     · exact Sum.inl default
     calc
-      powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ :=
-        add_le_add_left (powHalf_succ_le_powHalf _) _
+      powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ := by
+        grw [powHalf_succ_le_powHalf (n + 1)]
       _ ≈ powHalf n := hn _ (Nat.lt_succ_self n)
   · simp only [powHalf_moveLeft, forall_const]
     apply lf_of_lt
     calc
       0 ≈ 0 + 0 := Equiv.symm (add_zero_equiv 0)
-      _ ≤ powHalf n.succ + 0 := add_le_add_right (zero_le_powHalf _) _
-      _ < powHalf n.succ + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
+      _ ≤ powHalf n.succ + 0 := by grw [← zero_le_powHalf]
+      _ < powHalf n.succ + powHalf n.succ := by gcongr; exact powHalf_pos _
   · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
     · calc
         powHalf n ≈ powHalf n + 0 := Equiv.symm (add_zero_equiv _)
-        _ < powHalf n + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
+        _ < powHalf n + powHalf n.succ := by gcongr; exact powHalf_pos _
     · calc
         powHalf n ≈ 0 + powHalf n := Equiv.symm (zero_add_equiv _)
-        _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
+        _ < powHalf n.succ + powHalf n := by gcongr; exact powHalf_pos _
 
 theorem half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
   add_powHalf_succ_self_eq_powHalf 0

@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Wrenna Robson, Violeta Hernández Palacios
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Formal concept analysis
@@ -34,6 +36,8 @@ Prove the fundamental theorem of concept lattices.
 
 concept, formal concept analysis, intent, extend, attribute
 -/
+
+@[expose] public section
 
 
 open Function OrderDual Order Set
@@ -444,14 +448,12 @@ alias inf_extent := min_extent
 alias inf_intent := min_intent
 
 instance : SemilatticeInf (Concept α β r) :=
-  extent_injective.semilatticeInf _ fun _ _ ↦ rfl
+  extent_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : SemilatticeSup (Concept α β r) :=
-  show SemilatticeSup (Concept α β r)ᵒᵈ from
-    (OrderDual.toDual.injective.comp intent_injective).semilatticeSup' _
-      (by simp) (by simp) fun _ _ ↦ rfl
+  (intent_injective.comp toDual.injective).semilatticeSup _ sorry sorry (fun _ _ ↦ by simp)
 
-instance : Lattice (Concept α β r) where
+  #exit
 
 @[simps!]
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where

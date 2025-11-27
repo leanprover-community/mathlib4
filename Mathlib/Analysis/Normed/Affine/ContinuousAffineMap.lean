@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Norm on the continuous affine maps between normed vector spaces.
@@ -32,6 +34,8 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 * `ContinuousAffineMap.toConstProdContinuousLinearMap`
 
 -/
+
+@[expose] public section
 
 
 namespace ContinuousAffineMap
@@ -100,16 +104,12 @@ theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * �
   · calc
       ‖f.comp g 0‖ = ‖f (g 0)‖ := by simp
       _ = ‖f.contLinear (g 0) + f 0‖ := by rw [f.decomp]; simp
-      _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ :=
-        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_opNorm _) _))
-      _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ :=
-        add_le_add_right
-          (mul_le_mul f.norm_contLinear_le g.norm_image_zero_le (norm_nonneg _) (norm_nonneg _)) _
+      _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ := by grw [norm_add_le, f.contLinear.le_opNorm]
+      _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by grw [f.norm_contLinear_le, g.norm_image_zero_le]
   · calc
       ‖(f.comp g).contLinear‖ ≤ ‖f.contLinear‖ * ‖g.contLinear‖ :=
         (g.comp_contLinear f).symm ▸ f.contLinear.opNorm_comp_le _
-      _ ≤ ‖f‖ * ‖g‖ :=
-        (mul_le_mul f.norm_contLinear_le g.norm_contLinear_le (norm_nonneg _) (norm_nonneg _))
+      _ ≤ ‖f‖ * ‖g‖ := by grw [f.norm_contLinear_le, g.norm_contLinear_le]
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg
 
 variable (𝕜 V W)

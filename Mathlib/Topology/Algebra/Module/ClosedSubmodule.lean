@@ -3,13 +3,15 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Closed submodules of a topological module
 
-This files builds the frame of closed `R`-submodules of a topological module `M`.
+This file builds the frame of closed `R`-submodules of a topological module `M`.
 
 One can turn `s : Submodule R E` + `hs : IsClosed s` into `s : ClosedSubmodule R E` in a tactic
 block by doing `lift s to ClosedSubmodule R E using hs`.
@@ -18,6 +20,8 @@ block by doing `lift s to ClosedSubmodule R E using hs`.
 
 Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 -/
+
+@[expose] public section
 
 open Function Order TopologicalSpace
 
@@ -128,7 +132,7 @@ lemma coe_iInf (f : ι → ClosedSubmodule R M) : ↑(⨅ i, f i) = ⨅ i, (f i 
   simp [← SetLike.mem_coe]
 
 instance instSemilatticeInf : SemilatticeInf (ClosedSubmodule R M) :=
-  toSubmodule_injective.semilatticeInf _ fun _ _ ↦ rfl
+  toSubmodule_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp, norm_cast]
 lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
@@ -139,12 +143,8 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le s a ha _ := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun h ↦ h a ha
-  le_sInf s a ha b := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun a i hi ↦ ha i hi a
+  sInf_le _ a ha _ h := mem_sInf.1 h a ha
+  le_sInf _ _ ha _ h := mem_sInf.2 fun a hi ↦ ha a hi h
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩

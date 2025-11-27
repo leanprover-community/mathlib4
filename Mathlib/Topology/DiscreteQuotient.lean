@@ -3,10 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Data.Setoid.Partition
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 
@@ -60,6 +62,8 @@ The two main results proved in this file are:
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/
+
+@[expose] public section
 
 
 open Set Function TopologicalSpace Topology
@@ -138,8 +142,11 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
 instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
+instance : PartialOrder (DiscreteQuotient X) :=
+  PartialOrder.lift _ toSetoid_injective
+
 instance : SemilatticeInf (DiscreteQuotient X) :=
-  Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
+  toSetoid_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderTop (DiscreteQuotient X) where
   top := ⟨⊤, fun _ => isOpen_univ⟩
@@ -357,7 +364,7 @@ noncomputable def finsetClopens [CompactSpace X]
 
 /-- A helper lemma to prove that `finsetClopens X` is injective, see `finsetClopens_inj`. -/
 lemma comp_finsetClopens [CompactSpace X] :
-    (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet) ∘
+    (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ (↑)) ∘
       finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
   ext d
   simp only [Setoid.classes, Set.mem_setOf_eq, Function.comp_apply,
@@ -367,12 +374,12 @@ lemma comp_finsetClopens [CompactSpace X] :
   · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
     ext
     simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
-  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj]⟩
+  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj, Quotient.eq]⟩
 
 /-- `finsetClopens X` is injective. -/
 theorem finsetClopens_inj [CompactSpace X] :
     (finsetClopens X).Injective := by
-  apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet)
+  apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ (↑))
   rw [comp_finsetClopens]
   intro ⟨_, _⟩ ⟨_, _⟩ h
   congr

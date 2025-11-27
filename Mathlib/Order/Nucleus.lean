@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
-import Mathlib.Order.Closure
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.Closure
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Nucleus
@@ -19,6 +21,8 @@ A nucleus is an endomorphism of a frame which corresponds to a sublocale.
 https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
+
+@[expose] public section
 
 open Order InfHom Set
 
@@ -110,7 +114,8 @@ instance : Min (Nucleus X) where
 @[simp, norm_cast] lemma coe_inf (m n : Nucleus X) : ⇑(m ⊓ n) = ⇑m ⊓ ⇑n := rfl
 @[simp] lemma inf_apply (m n : Nucleus X) (x : X) : (m ⊓ n) x = m x ⊓ n x := rfl
 
-instance : SemilatticeInf (Nucleus X) := DFunLike.coe_injective.semilatticeInf _ coe_inf
+instance : SemilatticeInf (Nucleus X) :=
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 /-- The smallest nucleus is the identity. -/
 instance instBot : OrderBot (Nucleus X) where

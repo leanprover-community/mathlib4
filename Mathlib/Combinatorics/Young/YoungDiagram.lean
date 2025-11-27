@@ -3,10 +3,12 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Young diagrams
@@ -48,6 +50,8 @@ Young diagram
 <https://en.wikipedia.org/wiki/Young_tableau>
 
 -/
+
+@[expose] public section
 
 
 open Function
@@ -167,8 +171,8 @@ instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
 
 instance : DistribLattice YoungDiagram :=
-  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h => by rwa [YoungDiagram.ext_iff])
-    (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h ↦ by rwa [YoungDiagram.ext_iff])
+    .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end DistribLattice
 
@@ -209,7 +213,7 @@ theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose �
 -- This is effectively both directions of `transpose_le_iff` below.
 protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose ≤ ν) :
     μ ≤ ν.transpose := fun c hc => by
-  simp only [mem_cells, mem_transpose]
+  simp only [mem_transpose]
   apply h_le
   simpa
 

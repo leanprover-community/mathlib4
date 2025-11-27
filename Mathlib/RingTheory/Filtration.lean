@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.RingTheory.Finiteness.Nakayama
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.ReesAlgebra
+module
+
+public import Mathlib.Algebra.Polynomial.Module.Basic
+public import Mathlib.RingTheory.Finiteness.Nakayama
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.ReesAlgebra
 
 /-!
 
@@ -35,6 +37,8 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
@@ -154,10 +158,13 @@ theorem iSup_N {ι : Sort*} (f : ι → I.Filtration M) : (iSup f).N = ⨆ i, (f
 theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f i).N :=
   congr_arg sInf (Set.range_comp _ _).symm
 
+instance : PartialOrder (I.Filtration M) :=
+  PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
+
 instance : CompleteLattice (I.Filtration M) :=
   Function.Injective.completeLattice Ideal.Filtration.N
-    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
-    (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
+    (fun _ _ ↦ Ideal.Filtration.ext) .rfl .rfl sup_N inf_N
+    (fun _ ↦ sSup_image) (fun _ ↦ sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=
   ⟨⊥⟩
