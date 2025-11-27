@@ -15,10 +15,12 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 Given `ℤ`-indexed cochain complexes `K` and `L`, and `n : ℤ`, we introduce
 a type `HomComplex.CohomologyClass K L n` which is the quotient
 of `HomComplex.Cocycle K L n` which identifies cohomologous cocycles.
-The reason for not applying the homology API to this complex is that
-`Cochain K L` can be considered both as a complex of abelian groups
-or as a complex of `R`-modules when the category is `R`-linear.
-
+We construct this type of cohomology classes instead of using
+the homology API because `Cochain K L` can be considered both
+as a complex of abelian groups or as a complex of `R`-modules
+when the category is `R`-linear. This also complements the API
+around `HomComplex` which is centered on terms in types
+`Cochain` or `Cocycle` which are suitable for computations.
 
 -/
 
