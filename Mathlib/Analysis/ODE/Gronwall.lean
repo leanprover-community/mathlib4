@@ -89,17 +89,14 @@ theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwa
   · simp only [gronwallBound_of_K_ne_0 hK]
     exact continuous_const.add ((continuous_id.mul continuous_const).mul continuous_const)
 
-/-- The Gronwall bound is monotone with respect to the time variable `x`.
-
-Given `0 ≤ δ`, `0 ≤ ε`, and `0 ≤ K`, if `x₁ ≤ x₂`,
-then `gronwallBound δ K ε x₁ ≤ gronwallBound δ K ε x₂`. -/
-lemma gronwallBound_mono (δ K ε : ℝ) (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
+/-- The Gronwall bound is monotone with respect to the time variable `x`. -/
+lemma gronwallBound_mono {δ K ε : ℝ} (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
     Monotone (gronwallBound δ K ε) := by
   intro x₁ x₂ hx
   unfold gronwallBound
   split_ifs with hK₀
   · gcongr
-  · have hK_pos : 0 < K := hK.lt_of_ne (Ne.symm hK₀)
+  · have hK_pos : 0 < K := by positivity
     gcongr
 
 /-! ### Inequality and corollaries -/
