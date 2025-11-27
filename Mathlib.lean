@@ -1712,7 +1712,6 @@ public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Analysis.Convex.Radon
-public import Mathlib.Analysis.Convex.SaddlePoint
 public import Mathlib.Analysis.Convex.Segment
 public import Mathlib.Analysis.Convex.Side
 public import Mathlib.Analysis.Convex.SimplicialComplex.Basic
@@ -5432,6 +5431,7 @@ public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.RelSeries
 public import Mathlib.Order.Restriction
+public import Mathlib.Order.SaddlePoint
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
