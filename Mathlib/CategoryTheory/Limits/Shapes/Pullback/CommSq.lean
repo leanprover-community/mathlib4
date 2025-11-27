@@ -591,7 +591,7 @@ lemma of_iso (h : IsPushout f g inl inr)
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
 
-/-- Same as `IsPushout.of_iso`, but using the data and compatibilities involve
+/-- Same as `IsPushout.of_iso`, but using the data and compatibilities involving
 the inverse isomorphisms instead. -/
 lemma of_iso' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
     (h : IsPushout f g inl inr)
