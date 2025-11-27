@@ -44,17 +44,17 @@ theorem inr_injective : Function.Injective (inr : β → α ⊕ β) := fun _ _ �
 
 theorem sum_rec_congr (P : α ⊕ β → Sort*) (f : ∀ i, P (inl i)) (g : ∀ i, P (inr i))
     {x y : α ⊕ β} (h : x = y) :
-    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by grind
+    @Sum.rec _ _ _ f g x = cast (congr_arg P h.symm) (@Sum.rec _ _ _ f g y) := by cases h; rfl
 
 section get
 
 variable {x : α ⊕ β}
 
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
-  grind
+  cases x <;> simp
 
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
-  grind
+  cases x <;> simp
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
     x.getLeft h₁ = x.getLeft?.get h₂ := by grind
@@ -75,12 +75,12 @@ open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_o
 @[simp]
 theorem update_elim_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : α}
     {x : γ} : update (Sum.elim f g) (inl i) x = Sum.elim (update f i x) g :=
-  update_eq_iff.2 ⟨by simp, by grind⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_elim_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α → γ} {g : β → γ} {i : β}
     {x : γ} : update (Sum.elim f g) (inr i) x = Sum.elim f (update g i x) :=
-  update_eq_iff.2 ⟨by simp, by grind⟩
+  update_eq_iff.2 ⟨by simp, by simp +contextual⟩
 
 @[simp]
 theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α}
