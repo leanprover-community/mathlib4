@@ -8,8 +8,8 @@ lake env lean scripts/undocumented_tactics.lean
 ```
 to list tactics without documentation.
 
-```
-COUNT_ONLY=1 lake env lean scripts/undocumented.tactics.lean
+```bash
+COUNT_ONLY=1 lake env lean scripts/undocumented_tactics.lean
 ```
 to report the total count (for use in the weekly tech debt metric report).
 -/
