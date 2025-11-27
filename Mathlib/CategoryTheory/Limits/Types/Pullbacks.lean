@@ -234,7 +234,7 @@ lemma isPullback_iff :
       rw [isIso_iff_bijective]
       constructor
       · intro x₁ y₁ h
-        rw [Subtype.ext_iff, _root_.Prod.ext_iff] at h
+        rw [Subtype.ext_iff, Prod.ext_iff] at h
         exact h₁ _ _ h
       · rintro ⟨⟨x₂, x₃⟩, h⟩
         obtain ⟨x₁, rfl, rfl⟩ := h₂ x₂ x₃ h
