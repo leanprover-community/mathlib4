@@ -67,17 +67,25 @@ register_option push_neg.use_distrib : Bool :=
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
+/-- The configuration options for the `push` tactic. -/
+structure Config where
+  /-- If `true` (default `false`), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`. -/
+  distrib : Bool := false
+
+/-- Function elaborating `Push.Config`. -/
+declare_config_elab elabPushConfig Config
+
 /--
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
-- `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the option `push_neg.use_distrib`.
+- `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the `distrib` configuration.
 - `¬ ∀ a, p` turns into `∃ a, ¬ p`, where the binder name `a` is preserved.
 -/
-private def pushNegBuiltin : Simp.Simproc := fun e => do
+private def pushNegBuiltin (cfg : Config) : Simp.Simproc := fun e => do
   let e := (← instantiateMVars e).cleanupAnnotations
   match e with
   | .app (.app (.const ``And _) p) q =>
-    if ← getBoolOption `push_neg.use_distrib then
+    if cfg.distrib then
       return mkSimpStep (mkOr (mkNot p) (mkNot q)) (mkApp2 (.const ``not_and_or_eq []) p q)
     else
       return mkSimpStep (.forallE `_ p (mkNot q) .default) (mkApp2 (.const ``not_and_eq []) p q)
@@ -97,7 +105,7 @@ def pushSimpConfig : Simp.Config where
   proj := false
 
 /-- Try to rewrite using a `push` lemma. -/
-def pushStep (head : Head) : Simp.Simproc := fun e => do
+def pushStep (head : Head) (cfg : Config) : Simp.Simproc := fun e => do
   let e_whnf ← whnf e
   let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
   unless e_head == head do
@@ -108,18 +116,19 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
     -- after rewriting `¬ ¬ ¬ p` into `¬ p`, we may want to rewrite `¬ p` again.
     return Simp.Step.visit r
   if let some e := e_whnf.not? then
-    pushNegBuiltin e
+    pushNegBuiltin cfg e
   else
     return Simp.Step.continue
 
 /-- Common entry point to the implementation of `push`. -/
-def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+def pushCore (head : Head) (cfg : Config) (disch? : Option Simp.Discharge) (tgt : Expr) :
+    MetaM Simp.Result := do
   let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pushStep head }
-    | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep head cfg }
+    | some disch => { pre := pushStep head cfg, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Try to rewrite using a `pull` lemma. -/
@@ -199,20 +208,11 @@ end ElabHead
 def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
   (·.2) <$> tacticToDischarge stx.raw[3]
 
-/-- The configuration options for the `push` tactic. -/
-structure Config where
-  /-- If `true` (default `false`), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
-  This is equivalent to using `set_option push_neg.use_distrib true`. -/
-  distrib : Bool := false
-
-/-- Function elaborating `Push.Config`. -/
-declare_config_elab elabPushConfig Config
-
 /-- Run the `push` tactic. -/
 def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
     (failIfUnchanged : Bool := true) : TacticM Unit := do
-  (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
-    transformAtLocation (pushCore head · disch?) "push" loc failIfUnchanged
+  let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
+  transformAtLocation (pushCore head cfg disch? ·) "push" loc failIfUnchanged
 
 /--
 `push` pushes the given constant away from the head of the expression. For example
@@ -245,8 +245,7 @@ For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by
 `push_neg` is a special case of the more general `push` tactic, namely `push Not`.
 The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
 built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
-transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
-`set_option push_neg.use_distrib true` or `push_neg +distrib`.
+transformed to either `p → ¬ q` (default) or `¬ p ∨ ¬ q` (`push_neg +distrib`).
 
 Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
 that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
@@ -292,7 +291,7 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
-simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda
+simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda {}
 
 /-- A simproc variant of `pull fun _ ↦ _`, to be used as `simp [pullFun]`. -/
 simproc_decl _root_.pullFun (_) := pullStep .lambda
@@ -303,12 +302,12 @@ section Conv
 elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv =>
   withMainContext do
   let cfg ← elabPushConfig cfg
+  let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
-  (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
-    -- TODO: this doesn't throw an error when it does nothing.
-    -- Note that conv-mode `simp` has the same problem.
-    Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
+  -- TODO: this doesn't throw an error when it does nothing.
+  -- Note that conv-mode `simp` has the same problem.
+  Conv.applySimpResult (← pushCore head cfg disch? (← instantiateMVars (← Conv.getLhs)))
 
 @[inherit_doc push_neg]
 macro "push_neg" cfg:optConfig : conv => `(conv| push $cfg Not)
