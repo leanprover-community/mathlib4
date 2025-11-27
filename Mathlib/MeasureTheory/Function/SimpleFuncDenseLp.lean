@@ -510,7 +510,7 @@ def toSimpleFunc (f : Lp.simpleFunc E p μ) : α →ₛ E :=
   Classical.choose f.2
 
 /-- `(toSimpleFunc f)` is measurable. -/
-@[measurability]
+@[fun_prop]
 protected theorem measurable [MeasurableSpace E] (f : Lp.simpleFunc E p μ) :
     Measurable (toSimpleFunc f) :=
   (toSimpleFunc f).measurable
@@ -519,7 +519,7 @@ protected theorem stronglyMeasurable (f : Lp.simpleFunc E p μ) :
     StronglyMeasurable (toSimpleFunc f) :=
   (toSimpleFunc f).stronglyMeasurable
 
-@[measurability]
+@[fun_prop]
 protected theorem aemeasurable [MeasurableSpace E] (f : Lp.simpleFunc E p μ) :
     AEMeasurable (toSimpleFunc f) μ :=
   (simpleFunc.measurable f).aemeasurable

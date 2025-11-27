@@ -73,13 +73,13 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
     StronglyMeasurable (gammaPDFReal a r) :=
   (measurable_gammaPDFReal a r).stronglyMeasurable

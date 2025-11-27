@@ -54,7 +54,7 @@ theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
   (continuous_infDist_pt s).measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infDist (f x) s :=
   measurable_infDist.comp hf
@@ -63,7 +63,7 @@ theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
 theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
   (continuous_infNndist_pt s).measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infNndist (f x) s :=
   measurable_infNndist.comp hf
@@ -76,12 +76,12 @@ variable [SecondCountableTopology α]
 theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
   continuous_dist.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => dist (f b) (g b) :=
   continuous_dist.measurable2 hf hg
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun b ↦ dist (f b) (g b)) μ :=
@@ -91,7 +91,7 @@ lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
 theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
   continuous_nndist.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => nndist (f b) (g b) :=
   continuous_nndist.measurable2 hf hg
@@ -111,11 +111,11 @@ open EMetric
 theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
   EMetric.isOpen_ball.measurableSet
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_edist_right : Measurable (edist x) :=
   (continuous_const.edist continuous_id).measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_edist_left : Measurable fun y => edist y x :=
   (continuous_id.edist continuous_const).measurable
 
@@ -123,7 +123,7 @@ theorem measurable_edist_left : Measurable fun y => edist y x :=
 theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
   continuous_infEdist.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infEdist (f x) s :=
   measurable_infEdist.comp hf
@@ -178,12 +178,12 @@ variable [SecondCountableTopology α]
 theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
   continuous_edist.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => edist (f b) (g b) :=
   continuous_edist.measurable2 hf hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
   continuous_edist.aemeasurable2 hf hg
@@ -226,14 +226,14 @@ section ContinuousENorm
 variable {ε : Type*} [MeasurableSpace ε] [TopologicalSpace ε] [ContinuousENorm ε]
   [OpensMeasurableSpace ε] [MeasurableSpace β]
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_enorm : Measurable (enorm : ε → ℝ≥0∞) := continuous_enorm.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma Measurable.enorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
   measurable_enorm.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.enorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (‖f ·‖ₑ) μ :=
   measurable_enorm.comp_aemeasurable hf
@@ -244,15 +244,15 @@ section NormedAddCommGroup
 
 variable [MeasurableSpace α] [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_norm : Measurable (norm : α → ℝ) :=
   continuous_norm.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
   measurable_norm.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
@@ -261,11 +261,11 @@ theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f
 theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
