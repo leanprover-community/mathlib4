@@ -660,7 +660,7 @@ lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetheri
     [Nontrivial M] : I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
     (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
   let _ := Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm
-  let _ : Nontrivial (R ⧸ I) := Quotient.nontrivial netop
+  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop
   have smul_lt : I • (⊤ : Submodule R M) < ⊤ := lt_of_le_of_lt
       (Submodule.smul_mono (le_maximalIdeal netop) (le_refl _))
       (Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
@@ -722,7 +722,7 @@ lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Smal
 lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
     I.depth (ModuleCat.of R (Shrink.{v} R)) = I.depth (ModuleCat.of R R) := by
   simp only [Ideal.depth]
-  let _ : Nontrivial (R ⧸ I) := Submodule.Quotient.nontrivial_of_lt_top I lt_top
+  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr lt_top.ne
   let _ : Nontrivial R := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt I ⊤ lt_top)
   let e : (of R (Shrink.{u, u} (R ⧸ I))) ≅ (of R (R ⧸ I)) :=
     (Shrink.linearEquiv.{u, u} R (R ⧸ I)).toModuleIso
