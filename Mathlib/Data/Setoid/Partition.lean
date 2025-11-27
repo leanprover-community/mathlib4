@@ -501,7 +501,7 @@ theorem range_piecewise : range (hs.piecewise f) = ⋃ i, (f i)'' (s i) := by
     simp [hs.mem_iff_index_eq] at ha1
     simpa [hs.mem_iff_index_eq, ← ha1] using ha2
 
-theorem range_subset : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
+theorem range_piecewise_subset : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
   fun x ⟨y, hy⟩ => by simpa [IndexedPartition.piecewise_apply] using ⟨hs.index y, y, hy⟩
 
 end IndexedPartition
