@@ -261,7 +261,7 @@ theorem restrict_apply' (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (ht 
 
 /-- The restriction of a constant kernel to a measurable set is equal
 to the constant kernel of the restricted measure. -/
-theorem const_restrict {μ : Measure β} (hs : MeasurableSet s) :
+theorem restrict_const {μ : Measure β} (hs : MeasurableSet s) :
     (Kernel.const α μ).restrict hs = Kernel.const α (μ.restrict s) := by
   ext a
   simp [Kernel.restrict_apply, Kernel.const_apply]
