@@ -188,4 +188,135 @@ theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup
     (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
+@[simp]
+theorem map_mulEquivAlgEquiv_fixingSubgroup
+    [IsGaloisGroup G K L] [Finite G] (F : IntermediateField K L) :
+    (fixingSubgroup G (F : Set L)).map (mulEquivAlgEquiv G K L) = F.fixingSubgroup := by
+  ext g
+  obtain ⟨g, rfl⟩ := (mulEquivAlgEquiv G K L).surjective g
+  simp [mem_fixingSubgroup_iff]
+
+variable (H H' : Subgroup G) (F F' : IntermediateField K L)
+
+instance subgroup [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
+  faithful := have := hGKL.faithful; inferInstance
+  commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
+  isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+
+@[simp]
+theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
+    Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
+  (card_eq_finrank H (FixedPoints.intermediateField H) L).symm
+
+variable {G K L} in
+theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x, e g x = g • x) :
+    IsGaloisGroup G K L where
+  faithful := ⟨fun {g₁ g₂} h ↦ e.injective <| AlgEquiv.ext <| by simpa [he]⟩
+  commutes := ⟨by simp [← he]⟩
+  isInvariant := ⟨fun y hy ↦ (InfiniteGalois.mem_bot_iff_fixed y).mpr <|
+    e.surjective.forall.mpr <| by simpa [he]⟩
+
+instance fixedPoints [Finite G] [FaithfulSMul G L] :
+    IsGaloisGroup G (FixedPoints.subfield G L) L :=
+  of_mulEquiv_algEquiv (FixedPoints.toAlgAutMulEquiv _ _) fun _ _ ↦ rfl
+
+instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup (fixingSubgroup G (F : Set L)) F L :=
+  let e := ((mulEquivAlgEquiv G K L).subgroupMap (fixingSubgroup G (F : Set L))).trans <|
+    (MulEquiv.subgroupCongr (map_mulEquivAlgEquiv_fixingSubgroup ..)).trans <|
+    IntermediateField.fixingSubgroupEquiv F
+  have := hGKL.isGalois
+  .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
+
+@[simp]
+theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
+    Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
+  card_eq_finrank ..
+
+section GaloisCorrespondence
+
+theorem fixingSubgroup_le_of_le (h : F ≤ F') :
+    fixingSubgroup G (F' : Set L) ≤ fixingSubgroup G (F : Set L) :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h hx⟩
+
+section SMulCommClass
+
+variable [SMulCommClass G K L]
+
+@[simp]
+theorem fixingSubgroup_bot : fixingSubgroup G ((⊥ : IntermediateField K L) : Set L) = ⊤ := by
+  simp [Subgroup.ext_iff, mem_fixingSubgroup_iff, IntermediateField.mem_bot]
+
+@[simp]
+theorem fixedPoints_bot :
+    (FixedPoints.intermediateField (⊥ : Subgroup G) : IntermediateField K L) = ⊤ := by
+  simp [IntermediateField.ext_iff]
+
+theorem le_fixedPoints_iff_le_fixingSubgroup :
+    F ≤ FixedPoints.intermediateField H ↔ H ≤ fixingSubgroup G (F : Set L) :=
+  ⟨fun h g hg x ↦ h x.2 ⟨g, hg⟩, fun h x hx g ↦ h g.2 ⟨x, hx⟩⟩
+
+theorem fixedPoints_le_of_le (h : H ≤ H') :
+    FixedPoints.intermediateField H' ≤ (FixedPoints.intermediateField H : IntermediateField K L) :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h hx⟩
+
+end SMulCommClass
+
+section IsGaloisGroup
+
+variable [hGKL : IsGaloisGroup G K L]
+
+-- this can't be a simp-lemma since the left-hand side is not in simp normal form
+-- and if the theorem was `fixingSubgroup G Set.univ = ⊥` then `K` couldn't be inferred
+theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
+  have := hGKL.faithful
+  ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MulAction.fixedBy_eq_univ_iff_eq_one
+
+@[simp]
+theorem fixedPoints_top :
+    (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
+  convert IsGaloisGroup.fixedPoints_eq_bot G K L
+  ext; simp
+
+/-- The Galois correspondence from intermediate fields to subgroups. -/
+noncomputable def intermediateFieldEquivSubgroup [Finite G] :
+    IntermediateField K L ≃o (Subgroup G)ᵒᵈ :=
+  have := isGalois G K L
+  have := finiteDimensional G K L
+  IsGalois.intermediateFieldEquivSubgroup.trans <| (mulEquivAlgEquiv G K L).comapSubgroup.dual
+
+@[simp] theorem intermediateFieldEquivSubgroup_apply [Finite G] {F} :
+    intermediateFieldEquivSubgroup G K L F = .toDual (fixingSubgroup G (F : Set L)) := rfl
+
+theorem ofDual_intermediateFieldEquivSubgroup_apply [Finite G] {F} :
+    (intermediateFieldEquivSubgroup G K L F).ofDual = fixingSubgroup G (F : Set L) := rfl
+
+@[simp] theorem intermediateFieldEquivSubgroup_symm_apply [Finite G] {H} :
+    (intermediateFieldEquivSubgroup G K L).symm H = FixedPoints.intermediateField H.ofDual := by
+  obtain ⟨H, rfl⟩ := OrderDual.toDual.surjective H
+  simp [IntermediateField.ext_iff, intermediateFieldEquivSubgroup,
+    (mulEquivAlgEquiv G K L).surjective.forall, -mulEquivAlgEquiv_symm_apply]
+
+theorem intermediateFieldEquivSubgroup_symm_apply_toDual [Finite G] {H} :
+    (intermediateFieldEquivSubgroup G K L).symm (.toDual H) = FixedPoints.intermediateField H :=
+  intermediateFieldEquivSubgroup_symm_apply ..
+
+@[simp]
+theorem fixingSubgroup_fixedPoints [Finite G] :
+    fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
+  rw [← intermediateFieldEquivSubgroup_symm_apply_toDual,
+    ← ofDual_intermediateFieldEquivSubgroup_apply,
+    OrderIso.apply_symm_apply, OrderDual.ofDual_toDual]
+
+@[simp]
+theorem fixedPoints_fixingSubgroup [Finite G] :
+    FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
+  rw [← ofDual_intermediateFieldEquivSubgroup_apply, ← intermediateFieldEquivSubgroup_symm_apply,
+    OrderIso.symm_apply_apply]
+
+end IsGaloisGroup
+
+end GaloisCorrespondence
+
 end IsGaloisGroup

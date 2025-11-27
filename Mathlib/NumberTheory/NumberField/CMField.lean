@@ -114,7 +114,7 @@ theorem units_rank_eq_units_rank [NumberField K] :
 
 section complexConj
 
-theorem exists_isConj (φ : K →+* ℂ) :
+theorem exists_isConj [Algebra.IsAlgebraic ℚ K] (φ : K →+* ℂ) :
     ∃ σ : K ≃ₐ[K⁺] K, IsConj φ σ :=
   exists_isConj_of_isRamified <|
     isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
