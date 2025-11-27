@@ -77,7 +77,7 @@ lemma coconePt_mem_upperBounds (c : Cocone F) : c.pt ∈ upperBounds (Set.range 
 
 /-- If a cocone is a colimit, its point is a lub. -/
 lemma isLUB_of_isColimit {c : Cocone F} (h : IsColimit c) : IsLUB (Set.range F.obj) c.pt :=
-  ⟨(coconePt_mem_upperBounds F c), fun _ k ↦ (h.desc (coconePt_mem_upperBounds F k)).le⟩
+  ⟨(coconePt_mem_upperBounds F c), fun _ k ↦ (h.desc (coconeOfUpperBound F k)).le⟩
 
 /-- If the point of cocone is a lub, the cocone is a .colimit -/
 def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) : IsColimit c where
