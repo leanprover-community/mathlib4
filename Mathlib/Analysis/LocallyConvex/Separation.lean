@@ -345,6 +345,8 @@ theorem iInter_nat_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     change ↑(Subtype.mk x hx) ∈ closure (range (((↑) : ↑sᶜ → E) ∘ _))
     rw [range_comp, ← closure_subtype, (denseRange_denseSeq ↑sᶜ).closure_range]
     trivial
+  -- for each point x ∈ sᶜ, use hahn banach to find a hyperplane that separates s and an open ball
+  -- around x
   have φc i : ∃ (φ : E →L[𝕜] 𝕜) (c : ℝ),
       (∀ a ∈ ball (f i) (infDist (f i) s), re (φ a) < c) ∧ ∀ b ∈ s, c ≤ re (φ b) :=
     geometric_hahn_banach_open (convex_ball _ _) isOpen_ball hs₁ disjoint_ball_infDist
