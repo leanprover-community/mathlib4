@@ -71,7 +71,7 @@ lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
     Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
   rfl
 
-/-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphisms
+/-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphism
 of `2`-truncated simplicial sets. -/
 @[simps]
 def map {S T : SSet.Truncated 2} (f : S ⟶ T) :
@@ -103,35 +103,25 @@ variable {C : Type u} [Category.{v} C]
 
 /-- An equivalence between the type of objects underlying a category and the type of 0-simplices in
 the 2-truncated nerve. -/
-@[simps -isSimp]
-def nerveEquiv : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C where
-  toFun X := X.obj 0
-  invFun X := .mk₀ X
-  left_inv _ := ComposableArrows.ext₀ rfl
+@[simps! -isSimp]
+def nerveEquiv : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C :=
+  CategoryTheory.nerveEquiv
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
 def nerveHomEquiv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
-    (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
-  toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
-      eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
-  invFun f :=
-    { edge := ComposableArrows.mk₁ f
-      src_eq := ComposableArrows.ext₀ rfl
-      tgt_eq := ComposableArrows.ext₀ rfl }
-  left_inv φ := by
-    ext
-    exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
-      (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
-  right_inv f := by cat_disch
+    (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) :=
+  nerve.homEquiv
+
+lemma nerveHomEquiv_apply {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))}
+    (f : X ⟶ Y) :
+    nerveHomEquiv f = eqToHom (congr_arg ComposableArrows.left f.src_eq.symm) ≫
+      f.edge.hom ≫ eqToHom (congr_arg ComposableArrows.left f.tgt_eq) :=
+  rfl
 
 @[simp]
 lemma nerveHomEquiv_id (X : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
     nerveHomEquiv (𝟙rq X) = 𝟙 _ :=
-  nerveHomEquiv.symm.injective (by
-    simp only [nerveEquiv_apply, Equiv.symm_apply_apply]
-    obtain ⟨x, rfl⟩ := ComposableArrows.mk₀_surjective X
-    ext
-    exact ComposableArrows.ext₁ rfl rfl (by aesop))
+  nerve.homEquiv_id _
 
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
 def ofNerve₂ (C : Type u) [Category.{u} C] :
@@ -160,8 +150,8 @@ def OneTruncation₂.ofNerve₂.natIso :
     (fun F ↦ ReflPrefunctor.ext (by cat_disch) (fun x y f ↦ by
       obtain ⟨f, rfl, rfl⟩ := f
       simp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso,
-        Quiv.isoOfEquiv, nerveMap_app, nerveHomEquiv, nerveFunctor₂,
-        SimplicialObject.truncation, ReflQuiv.category]))
+        Quiv.isoOfEquiv, nerveHomEquiv_apply]
+      rfl))
 
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :

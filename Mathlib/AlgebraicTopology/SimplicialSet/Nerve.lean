@@ -152,6 +152,7 @@ section
 attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
 
 /-- Bijection between edges in the nerve of category and morphisms in the category. -/
+@[simps -isSimp]
 def homEquiv {x y : ComposableArrows C 0} :
     (nerve C).Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
   toFun e := eqToHom (by simp) ≫ e.edge.hom ≫ eqToHom (by simp)
