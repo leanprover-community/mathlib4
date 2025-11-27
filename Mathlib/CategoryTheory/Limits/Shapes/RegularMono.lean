@@ -131,6 +131,10 @@ def equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
       apply equalizer.hom_ext
       simp [← w]
 
+instance (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
+    IsRegularMono (equalizer.ι g h) :=
+  isRegularMono_of_regularMono <| equalizerRegular g h
+
 /-- Every split monomorphism is a regular monomorphism. -/
 def RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
     RegularMono f where
@@ -138,6 +142,10 @@ def RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
   left := 𝟙 Y
   right := retraction f ≫ f
   isLimit := isSplitMonoEqualizes f
+
+instance (priority := 100) (f : X ⟶ Y) [IsSplitMono f] :
+    IsRegularMono f :=
+  isRegularMono_of_regularMono <| .ofIsSplitMono f
 
 /-- If `f` is a regular mono, then any map `k : W ⟶ Y` equalizing `RegularMono.left` and
 `RegularMono.right` induces a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
