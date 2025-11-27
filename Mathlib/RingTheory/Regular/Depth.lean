@@ -169,7 +169,7 @@ lemma exist_isRegular_tfae_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
     have ntr' : Nontrivial M' :=
-      Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
+      Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
     have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
       rw [lt_top_iff_ne_top]
       by_contra eq
@@ -248,7 +248,7 @@ lemma exist_isRegular_tfae_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (
         exact Submodule.smul_mono_left
           ((span_singleton_le_iff_mem I).mpr (mem a List.mem_cons_self))
       have Qntr : Nontrivial M' :=
-        Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
+        Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
       have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
         rw [lt_top_iff_ne_top]
         by_contra eq
@@ -293,7 +293,7 @@ lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ 
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
     ].TFAE := by
   have ntrQ : Nontrivial (R ⧸ I) := by
-    apply Submodule.Quotient.nontrivial_of_lt_top _ (lt_top_iff_ne_top.mpr _)
+    apply Submodule.Quotient.nontrivial_iff.mpr (lt_top_iff_ne_top.mpr _).ne
     by_contra eq
     absurd smul_lt
     simp [eq]
