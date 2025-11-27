@@ -76,8 +76,7 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   Z := Y
   left := 𝟙 Y
   right := 𝟙 Y
-  isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by
-    simp [← w]
+  isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by simp [← w]
 
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
@@ -93,7 +92,8 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 
 /-- `IsRegularMono f` is the assertion that `f` is a regular monomorphism. -/
-abbrev IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularMono f)
+class IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop where
+  regularMono : Nonempty (RegularMono f)
 
 variable (C) in
 /-- The `MorphismProperty C` satisfied by regular monomorphisms in `C`. -/
@@ -106,18 +106,49 @@ theorem MorphismProperty.regularMono_iff (f : X ⟶ Y) :
 
 instance MorphismProperty.regularMono.containsIdentities :
     (MorphismProperty.regularMono C).ContainsIdentities where
-  id_mem _ := ⟨RegularMono.ofIso <| Iso.refl _⟩
+  id_mem _ := ⟨⟨RegularMono.ofIso <| Iso.refl _⟩⟩
 
 instance MorphismProperty.regularMono.respectsIso :
     (MorphismProperty.regularMono C).RespectsIso :=
-  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
+  RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨⟨.ofArrowIso e (h := h.regularMono.some)⟩⟩)
 
-lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨h⟩
+lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
-def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
-    RegularMono f :=
-  h.some
+noncomputable def IsRegularMono.get (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
+  IsRegularMono.regularMono.some
+
+@[deprecated (since := "2025-11-27")] alias regularMonoOfIsRegularMono := IsRegularMono.get
+
+noncomputable section IsRegularMono
+
+variable {X Y : C} (f : X ⟶ Y) [IsRegularMono f]
+
+def IsRegularMono.Z : C := (IsRegularMono.get f).Z
+
+def IsRegularMono.left : Y ⟶ Z f := (IsRegularMono.get f).left
+
+def IsRegularMono.right : Y ⟶ Z f := (IsRegularMono.get f).right
+
+lemma IsRegularMono.w : f ≫ left f = f ≫ right f := (IsRegularMono.get f).w
+
+def IsRegularMono.isLimit : IsLimit <| Fork.ofι _ (w f) := (IsRegularMono.get f).isLimit
+
+def IsRegularMono.lift {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+    (h : k ≫ left f = k ≫ right f) : W ⟶ X :=
+  Fork.IsLimit.lift (isLimit f) k h
+
+@[reassoc (attr := simp)]
+lemma IsRegularMono.fac {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+    (h : k ≫ left f = k ≫ right f) : lift f k h ≫ f = k :=
+  Fork.IsLimit.lift_ι (isLimit f)
+
+lemma IsRegularMono.uniq {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
+    (h : k ≫ left f = k ≫ right f) (m : W ⟶ X) (hm : m ≫ f = k) : m = lift f k h :=
+  Fork.IsLimit.existsUnique (isLimit f) k h |>.unique hm <| by simp
+
+
+end IsRegularMono
 
 /-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
 def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
@@ -209,7 +240,7 @@ lemma RegularMono.strongMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
       simp only [Category.assoc, ht, sq.w])
 
 instance (priority := 100) (f : X ⟶ Y) [IsRegularMono f] : StrongMono f :=
-  RegularMono.strongMono <| regularMonoOfIsRegularMono f
+  RegularMono.strongMono <| IsRegularMono.get f
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) (h : RegularMono f) [Epi f] : IsIso f :=
@@ -230,7 +261,8 @@ end
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
 an equalizer. This is not an instance because it would create an instance loop. -/
 def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
-  regularMonoOfIsRegularMono f (h := IsRegularMonoCategory.regularMonoOfMono f)
+  have := IsRegularMonoCategory.regularMonoOfMono f
+  IsRegularMono.get f
 
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
     IsRegularMonoCategory C where
@@ -435,7 +467,7 @@ def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
     RegularEpi k :=
   regularOfIsPushoutSndOfRegular hf comm.symm (PushoutCocone.flipIsColimit t)
 
-@[deprecated "No replacement" (since := "2025-11-20")] -- ?
+@[deprecated "No replacement" (since := "2025-11-20")]
 lemma strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
   have := isRegularEpi_of_regularEpi h
   inferInstance
