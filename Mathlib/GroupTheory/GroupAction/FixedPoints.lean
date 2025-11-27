@@ -291,8 +291,6 @@ lemma map_mem_fixedBy
     (f : A →[G] B) {g : G}
     {a : A} (ha : a ∈ MulAction.fixedBy A g) :
     f a ∈ MulAction.fixedBy B g := by
-  change (g : G) • f a = f a
-  rw [← f.map_smul g a]
-  exact congr_arg f ha
+  simpa using congr_arg f ha
 
 end MulActionHom
