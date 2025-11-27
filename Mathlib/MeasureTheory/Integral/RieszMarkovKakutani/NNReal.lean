@@ -126,14 +126,34 @@ variable {X : Type*} [MetricSpace X] [MeasurableSpace X] [CompactSpace X] [Borel
 noncomputable section Arav
 
 open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedContinuousMap
-  Filter
+  Filter TopologicalSpace
 
 instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
   LevyProkhorov.instPseudoMetricSpaceProbabilityMeasure
 
 
+section SeqBA
 
-open WeakDual TopologicalSpace
+open WeakDual TopologicalSpace Topology
+
+variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
+[SeparableSpace V] (K : Set (WeakDual 𝕜 V)) [ProperSpace 𝕜] (K_cpt : IsCompact K)
+
+theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
+    (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
+    IsSeqCompact s := sorry
+
+/-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in
+a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 V`. -/
+theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
+    IsSeqCompact (WeakDual.polar 𝕜 s) := sorry
+
+/-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
+normed space `V` are sequentially compact in the weak-* topology. -/
+theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
+    IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) := sorry
+
+end SeqBA
 
 omit [BorelSpace X] in
 lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
@@ -147,6 +167,7 @@ lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
 
 /- ### This depends on PR #31292 (the sequential Banach-Alaoglu theorem)-/
 
+-- #info_trees in
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
@@ -259,9 +280,13 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     apply RealRMK.rieszMeasure_integralPositiveLinearMap
   simp only [this]
   have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project (Seq. banach alaoglu thm)
-    obtain ⟨ds⟩ := hΦ1
-    refine { isSeqCompact_univ := ?_ }
-    rw [Φ_decomp]
+    --obtain ⟨ds⟩ := hΦ1
+    refine (seqCompactSpace_iff ↑Φ).mpr ?_
+    -- rw [Φ_decomp]
+    refine FirstCountableTopology.seq_compact_of_compact (X := )
+    apply IsCompact.isSeqCompact h
+    have Sep : SeparableSpace C(X, ℝ) := sorry
+    refine isSeqCompact_of_bounded_of_closed ?_ ?_ (𝕜 := ℝ) (V := C(X, ℝ)) (s := Φ)
     sorry
   apply IsSeqCompact.range
   refine Continuous.seqContinuous ?_
