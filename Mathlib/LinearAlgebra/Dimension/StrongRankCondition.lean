@@ -505,13 +505,13 @@ noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R
 theorem finrank_eq_rank [Module.Finite R M] : ↑(finrank R M) = Module.rank R M := by
   rw [Module.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
 
-theorem finrank_eq_zero_iff_of_free [Nontrivial R] [Module.Free R M] [Module.Finite R M] :
+theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
     Module.finrank R M = 0 ↔ Subsingleton M := by
   have := Module.rank_lt_aleph0 R M
   rw [← not_le] at this
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
-theorem finrank_pos_iff_of_free [Nontrivial R] [Module.Free R M] [Module.Finite R M] :
+theorem finrank_pos_iff_of_free [Module.Free R M] [Module.Finite R M] :
     0 < Module.finrank R M ↔ Nontrivial M := by
   rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
   simp [Module.finrank_eq_zero_iff_of_free]
