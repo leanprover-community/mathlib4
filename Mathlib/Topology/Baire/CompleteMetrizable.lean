@@ -17,8 +17,8 @@ In this file we prove that a completely pseudometrizable topological space is a 
 
 @[expose] public section
 
-open Filter EMetric Set
-open scoped Topology Uniformity ENNReal
+open Filter EMetric Set TopologicalSpace
+open scoped Uniformity ENNReal
 
 variable {X : Type*} [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
 
