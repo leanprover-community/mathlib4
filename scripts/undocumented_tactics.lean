@@ -42,6 +42,10 @@ def undocumentedTactics : CommandElabM Unit := liftTermElabM do
   -- but if we do environment manipulation it might give us weird results.
   -- So we keep track of the original tactic declaration name too.
   let tacticDocs := dedupTactics.map fun tac => (tac, docMap.get? tac)
+  -- Sort them by user-readable name, falling back on their declaration name
+  -- if the documentation is missing.
+  let tacticDocs := tacticDocs.qsort <| (decide <| · < ·).onFun fun (tac, doc) =>
+    (doc.map TacticDoc.userName).getD tac.toString
   let emptyTacticDocs := tacticDocs.filter fun (_, doc) => !doc.any isNonemptyDoc
 
   if (← IO.getEnv "COUNT_ONLY").any (· == "1") then
