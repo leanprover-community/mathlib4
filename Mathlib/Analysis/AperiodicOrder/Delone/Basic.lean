@@ -108,6 +108,8 @@ lemma nonempty [Nonempty X] (D : DeloneSet X) : Nonempty D.carrier := by
   obtain ⟨y, hyD, _⟩ := hcov x
   exact ⟨y, hyD⟩
 
+/-- The **covering radius** of a Delone set: a chosen constant `R > 0` such that every
+point of the ambient space lies within distance `R` of some point of the set. -/
 noncomputable def coveringRadius (D : DeloneSet X) : ℝ :=
   Classical.choose D.relativelyDense
 
@@ -119,6 +121,8 @@ lemma dist_le_coveringRadius (D : DeloneSet X) (x : X) :
     ∃ y ∈ D.carrier, dist x y ≤ D.coveringRadius :=
   (Classical.choose_spec D.relativelyDense).2 x
 
+/-- The **packing radius** of a Delone set: a chosen constant `r > 0` such that any
+two distinct points of the set are at distance at least `r`. -/
 noncomputable def packingRadius (D : DeloneSet X) : ℝ :=
   Classical.choose D.uniformlyDiscrete
 
