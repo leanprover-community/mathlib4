@@ -33,6 +33,11 @@ open CategoryTheory Limits HomComplex Preadditive
 
 variable {C : Type*} [Category C] [Abelian C]
 
+-- TODO (@joelriou): show that this definition is equivalent to the
+-- original definition by Spaltenstein saying that whenever `K`
+-- is acyclic, then `HomComplex K L` is acyclic. (The condition below
+-- is equivalent to the acyclicity of `HomComplex K L` in degree
+-- `0`, and the general case follows by shifting `K`.)
 /-- A cochain complex `L` is K-injective if any morphism `K ⟶ L`
 with `K` acyclic is homotopic to zero. -/
 class IsKInjective (L : CochainComplex C ℤ) : Prop where
