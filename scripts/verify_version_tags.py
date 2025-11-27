@@ -241,7 +241,10 @@ def verify_local_remote_consistency(tag: str) -> VerificationResult:
 
     # Find which remote(s) point to the main repo
     # Match leanprover-community/mathlib4 but not mathlib4-nightly-testing etc.
-    main_repo_pattern = re.compile(r'leanprover-community/mathlib4(?:\.git)?$')
+    # Matches common git URL formats: https://, git@, git://
+    main_repo_pattern = re.compile(
+        r'(?:https://|git@|git://)[^/]+[:/]leanprover-community/mathlib4(?:\\.git)?$'
+    )
     main_repo_remotes = []
     other_remotes = []
     for remote in remotes:
@@ -461,6 +464,7 @@ def verify_lean_version_string(tag: str, checkout_dir: str) -> VerificationResul
     # Use lake env lean --version to get the version string
     # This also triggers elan to download the toolchain if needed
     # Stream stderr with indentation so user sees download progress
+    proc = None
     try:
         proc = subprocess.Popen(
             ['lake', 'env', 'lean', '--version'],
@@ -469,16 +473,24 @@ def verify_lean_version_string(tag: str, checkout_dir: str) -> VerificationResul
             stderr=subprocess.PIPE,
             text=True,
         )
-        # Read stderr line by line and print with indentation
-        stderr_lines = []
-        for line in proc.stderr:
-            print(f"       {line}", end="", flush=True)
-            stderr_lines.append(line)
-        stdout, _ = proc.communicate(timeout=300)
-        code = proc.returncode
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        return VerificationResult(False, "Timed out (toolchain download?)")
+        try:
+            # Read stderr line by line and print with indentation
+            stderr_lines = []
+            for line in proc.stderr:
+                print(f"       {line}", end="", flush=True)
+                stderr_lines.append(line)
+            stdout, _ = proc.communicate(timeout=300)
+            code = proc.returncode
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()  # Clean up zombie process
+            return VerificationResult(False, "Timed out (toolchain download?)")
+        except Exception:
+            # Ensure process is terminated if something goes wrong during stderr reading
+            if proc.poll() is None:  # Process still running
+                proc.kill()
+                proc.wait()
+            raise
     except Exception as e:
         return VerificationResult(False, f"Failed: {e}")
 
