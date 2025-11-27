@@ -27,7 +27,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
 
 * `IsCyclotomicExtension.Rat.inertiaDeg_of_not_dvd`: if the prime `p` does not divide `m`, then
-  the inertia degree of `p` in `ℚ(ζₘ)` if the order of `p` modulo `m`.
+  the inertia degree of `p` in `ℚ(ζₘ)` is the order of `p` modulo `m`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdx_of_not_dvd`: if the prime `p` does not divide `m`,
   then the ramification index of `p` in `ℚ(ζₘ)` is `1`.
