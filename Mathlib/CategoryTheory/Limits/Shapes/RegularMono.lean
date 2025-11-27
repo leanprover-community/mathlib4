@@ -340,8 +340,8 @@ def effectiveEpiStructOfRegularEpi {B X : C} {f : X ⟶ B} (hf : RegularEpi f) :
 lemma RegularEpi.effectiveEpi {B X : C} {f : X ⟶ B} (h : RegularEpi f) : EffectiveEpi f :=
   ⟨⟨effectiveEpiStructOfRegularEpi h⟩⟩
 
-instance {B X : C} {f : X ⟶ B} [h : IsRegularEpi f] : EffectiveEpi f :=
-  RegularEpi.effectiveEpi <| regularEpiOfIsRegularEpi f
+instance (priority := 100) {B X : C} {f : X ⟶ B} [h : IsRegularEpi f] : EffectiveEpi f :=
+  (regularEpiOfIsRegularEpi f).effectiveEpi
 
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
 theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]

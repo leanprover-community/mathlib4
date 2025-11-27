@@ -30,11 +30,6 @@ namespace LeftResolution
 
 open Functor
 
--- TODO: figure out why this got slower and fix
--- It is a question of synthesizing `Epi (_ ≫ _ ≫ _ ≫ _ ≫ ...) for a big composition of (mostly?)
--- isos.
-set_option synthInstance.maxHeartbeats 24000 in
--- silence the linter
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :
