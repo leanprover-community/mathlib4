@@ -164,15 +164,15 @@ theorem Splits.def {i : K →+* L} {f : K[X]} (h : Splits (f.map i)) :
 alias splits_of_splits_mul := splits_mul_iff
 
 @[deprecated (since := "2025-11-25")]
-alias splits_of_splits_of_dvd := Splits.of_dvd
+alias splits_of_splits_of_dvd := Splits.splits_of_dvd
 
 theorem splits_of_splits_gcd_left [DecidableEq K] {f g : K[X]} (hf0 : f ≠ 0)
     (hf : Splits (f.map i)) : Splits ((EuclideanDomain.gcd f g).map i) :=
-  Splits.of_dvd hf (map_ne_zero hf0) <| map_dvd i <| EuclideanDomain.gcd_dvd_left f g
+  Splits.splits_of_dvd hf (map_ne_zero hf0) <| map_dvd i <| EuclideanDomain.gcd_dvd_left f g
 
 theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0)
     (hg : Splits (g.map i)) : Splits ((EuclideanDomain.gcd f g).map i) :=
-  Splits.of_dvd hg (map_ne_zero hg0) <| map_dvd i <| EuclideanDomain.gcd_dvd_right f g
+  Splits.splits_of_dvd hg (map_ne_zero hg0) <| map_dvd i <| EuclideanDomain.gcd_dvd_right f g
 
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → (((∏ x ∈ t, s x).map i).Splits ↔ ∀ j ∈ t, ((s j).map i).Splits) := by
