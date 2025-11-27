@@ -451,9 +451,10 @@ instance : SemilatticeInf (Concept α β r) :=
   extent_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : SemilatticeSup (Concept α β r) :=
-  (intent_injective.comp toDual.injective).semilatticeSup _ sorry sorry (fun _ _ ↦ by simp)
+  show SemilatticeSup (Concept α β r)ᵒᵈ from
+    (toDual.injective.comp intent_injective).semilatticeSup _ (by simp) (by simp) fun _ _ ↦ rfl
 
-  #exit
+instance : Lattice (Concept α β r) where
 
 @[simps!]
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
@@ -472,8 +473,8 @@ instance : SupSet (Concept α β r) where
 
 instance : CompleteLattice (Concept α β r) where
   le_sSup _ _ hc := intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-  sSup_le _ _ hc :=
-    intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
+  sSup_le _ _ hc := intent_subset_intent_iff.1 <|
+    subset_iInter₂ (intent_subset_intent_iff.2 <| hc · ·)
   sInf_le _ _ := biInter_subset_of_mem
   le_sInf _ _ := subset_iInter₂
 
