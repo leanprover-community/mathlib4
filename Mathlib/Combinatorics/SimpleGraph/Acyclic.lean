@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -415,5 +416,45 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w)
       hadj.symm hw
     rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
+
+lemma IsTree.diff_dist_adj (hG : G.IsTree) (u v w : V) (hadj : SimpleGraph.Adj G v w) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
+  have h := hG.isConnected.diff_dist_adj (u := u) hadj
+  have hne := hG.dist_ne_of_adj u hadj
+  rcases h with h₁ | h₂ | h₃
+  · exfalso
+    apply hne
+    rw [h₁]
+  · right
+    exact h₂.symm
+  · left
+    rw [h₃]
+    have : 0 < G.dist u v := hG.isConnected.pos_dist_of_ne (by
+      intro h
+      subst h
+      have h₁ := dist_eq_one_iff_adj.mpr hadj
+      rw [dist_self] at h₃
+      simp only [Nat.zero_sub] at h₃
+      rw [h₃] at h₁
+      exact absurd h₁ Nat.zero_ne_one)
+    exact Eq.symm (Nat.sub_add_cancel this)
+
+noncomputable def IsTree.coloring_two_of_elem (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
+  Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
+  intro v w hadj h
+  simp only [Fin.mk.injEq] at h
+  have := hG.diff_dist_adj u v w hadj
+  obtain hA | hB := hG.diff_dist_adj u v w hadj
+  · rw [hA] at h
+    omega
+  · rw [← hB] at h
+    omega
+
+noncomputable def IsTree.coloring_two (hG : G.IsTree) : G.Coloring (Fin 2) :=
+  let u : V := Classical.choice hG.isConnected.nonempty
+  hG.coloring_two_of_elem u
+
+lemma IsTree.colorable_two (hG : G.IsTree) : G.Colorable 2 :=
+  Nonempty.intro hG.coloring_two
 
 end SimpleGraph
