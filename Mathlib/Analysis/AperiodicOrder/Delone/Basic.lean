@@ -6,6 +6,7 @@ Authors: Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Delone sets
@@ -60,19 +61,31 @@ def RelativelyDense (D : Set X) : Prop :=
     ∃ R > 0, ∀ x : X, ∃ y ∈ D, dist x y ≤ R
 
 /-- If `D ⊆ E` and `E` is uniformly discrete, then so is `D`. -/
-lemma uniformlyDiscrete_mono {D E : Set X} (hDE : D ⊆ E) :
+lemma UniformlyDiscrete.mono {D E : Set X} (hDE : D ⊆ E) :
     UniformlyDiscrete E → UniformlyDiscrete D := by
   rintro ⟨r, hr, hsep⟩
   refine ⟨r, hr, fun x y hx hy hne ↦ ?_⟩
   exact hsep (hDE hx) (hDE hy) hne
 
 /-- If `D ⊆ E` and `D` is relatively dense, then so is `E`. -/
-lemma relativelyDense_mono {D E : Set X} (hDE : D ⊆ E) :
+lemma RelativelyDense.mono {D E : Set X} (hDE : D ⊆ E) :
     RelativelyDense D → RelativelyDense E := by
   rintro ⟨R, hR, hcov⟩
   refine ⟨R, hR, fun x ↦ ?_⟩
   rcases hcov x with ⟨y, hyD, hxy⟩
   exact ⟨y, hDE hyD, hxy⟩
+
+lemma RelativelyDense.cthickening_eq_univ
+    {X : Type*} [MetricSpace X] {D : Set X} :
+    RelativelyDense D → ∃ R > 0, cthickening R D = Set.univ := by
+  intro hD
+  rcases hD with ⟨R, hRpos, hcov⟩
+  refine ⟨R, hRpos, ?_⟩
+  ext x; constructor
+  · intro _; trivial
+  · intro _
+    rcases hcov x with ⟨y, hyD, hxy⟩
+    exact mem_cthickening_of_dist_le x y R D hyD hxy
 
 end Metric
 
@@ -92,60 +105,82 @@ attribute [simp] DeloneSet.carrier
 namespace DeloneSet
 
 /-- A Delone set is nonempty. -/
-lemma nonempty [Inhabited X] (D : DeloneSet X) : D.carrier.Nonempty := by
+lemma nonempty [Nonempty X] (D : DeloneSet X) : Nonempty D.carrier := by
   obtain ⟨R, hR, hcov⟩ := D.relativelyDense
-  rcases hcov (default : X) with ⟨y, hyD, _⟩
-  exact ⟨y, hyD⟩
+  cases ‹Nonempty X› with
+  | intro x =>
+    rcases hcov x with ⟨_, ha⟩
+    simp_all only [gt_iff_lt, nonempty_subtype]
+    obtain ⟨left, _⟩ := ha
+    apply Exists.intro; exact left
 
-/-- Extract the covering radius of a Delone set. -/
-lemma exists_covering_radius (D : DeloneSet X) :
-    ∃ R > 0, ∀ x : X, ∃ y ∈ D.carrier, dist x y ≤ R :=
-  D.relativelyDense
+noncomputable def coveringRadius (D : DeloneSet X) : ℝ :=
+  Classical.choose D.relativelyDense
 
-/-- Extract the packing radius of a Delone set. -/
-lemma exists_packing_radius (D : DeloneSet X) :
-    ∃ r > 0, ∀ ⦃x y⦄, x ∈ D.carrier → y ∈ D.carrier → x ≠ y → r ≤ dist x y :=
-  D.uniformlyDiscrete
+lemma coveringRadius_pos (D : DeloneSet X) :
+    0 < D.coveringRadius :=
+  (Classical.choose_spec D.relativelyDense).1
+
+lemma dist_le_coveringRadius (D : DeloneSet X) (x : X) :
+    ∃ y ∈ D.carrier, dist x y ≤ D.coveringRadius :=
+  (Classical.choose_spec D.relativelyDense).2 x
+
+noncomputable def packingRadius (D : DeloneSet X) : ℝ :=
+  Classical.choose D.uniformlyDiscrete
+
+lemma packingRadius_pos (D : DeloneSet X) :
+    0 < D.packingRadius :=
+  (Classical.choose_spec D.uniformlyDiscrete).1
+
+lemma le_dist_of_mem_ne (D : DeloneSet X)
+    {x y : X} (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
+    D.packingRadius ≤ dist x y :=
+  (Classical.choose_spec D.uniformlyDiscrete).2 hx hy hne
 
 /-- Distinct points in a Delone set are at positive distance. -/
 lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
     (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
     0 < dist x y := by
-  obtain ⟨r, hr, hsep⟩ := D.exists_packing_radius
-  exact lt_of_lt_of_le hr <| hsep hx hy hne
+  have hsep := D.le_dist_of_mem_ne hx hy hne
+  have hpos := D.packingRadius_pos
+  exact lt_of_lt_of_le hpos hsep
 
-/-- At most one point of a Delone set lies in a sufficiently small ball. -/
+/--
+If the packing radius of a Delone set is `r`, then for any `z : X` the open ball
+`ball z (r / 2)` contains at most one point of the Delone set. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
-    ∃ r > 0, ∀ x y z, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
-      dist x z < r / 2 → dist z y < r / 2 → x = y := by
-  obtain ⟨ρ, hρ, hsep⟩ := D.exists_packing_radius
-  refine ⟨ρ, hρ, fun x y z hx hy hz hxz hyz ↦ ?_⟩
-  have hxy_lt : dist x y < ρ := by
-    have := calc
-      dist x y ≤ dist x z + dist z y := dist_triangle _ _ _
-      _ < ρ / 2 + ρ / 2 := add_lt_add hxz hyz
-      _ = ρ := by ring
-    simpa using this
-  by_contra hne
-  exact lt_irrefl _ (lt_of_lt_of_le hxy_lt <| hsep hx hy hne)
+    ∃ r > 0, ∀ ⦃x y z⦄, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
+    x ∈ Metric.ball z r → y ∈ Metric.ball z r → x = y := by
+  refine ⟨D.packingRadius / 2, ?_, ?_⟩
+  · exact half_pos D.packingRadius_pos
+  · intro x y z hx hy hz hxz hyz
+    by_contra hne
+    have hge := D.le_dist_of_mem_ne hx hy hne
+    have hlt : dist x y < D.packingRadius := by
+      have hsum_lt : dist x z + dist z y < D.packingRadius := by
+        have := add_lt_add hxz <| mem_ball'.mp hyz
+        simpa [add_halves] using this
+      have htriangle : dist x y ≤ dist x z + dist z y :=
+        dist_triangle x z y
+      exact lt_of_le_of_lt htriangle hsum_lt
+    exact (not_lt_of_ge hge) hlt
 
 /-- The image of a Delone set under an isometry is a Delone set. -/
 def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
   carrier := f '' D.carrier
   uniformlyDiscrete := by
-    obtain ⟨r, hr, hsep⟩ := D.exists_packing_radius
-    refine ⟨r, hr, ?_⟩
+    refine ⟨D.packingRadius, D.packingRadius_pos, ?_⟩
     rintro y y' ⟨x, hx, rfl⟩ ⟨x', hx', rfl⟩ hne
-    simpa using f.dist_eq x x' ▸ (hsep hx hx' (by grind))
+    simpa [f.dist_eq] using D.le_dist_of_mem_ne hx hx' (by grind)
   relativelyDense := by
-    obtain ⟨R, hR, hcov⟩ := D.exists_covering_radius
-    refine ⟨R, hR, fun y ↦ ?_⟩
-    obtain ⟨x, hxD, hxR⟩ := hcov (f.symm y)
+    refine ⟨D.coveringRadius, D.coveringRadius_pos, ?_⟩
+    intro y
+    obtain ⟨x, hxD, hdist⟩ := D.dist_le_coveringRadius (f.symm y)
     refine ⟨f x, ⟨x, hxD, rfl⟩, ?_⟩
-    have hdist : dist y (f x) = dist (f.symm y) x := by
+    have hdist' : dist y (f x) = dist (f.symm y) x := by
       simpa [f.apply_symm_apply y] using
         f.dist_eq (f.symm y) x
-    simpa [hdist] using hxR
+    simpa [hdist'] using hdist
 }
 
 @[ext] lemma ext {D E : DeloneSet X} (h : D.carrier = E.carrier) : D = E := by
