@@ -40,7 +40,7 @@ namespace IsCyclotomicExtension.Rat
 
 open Ideal NumberField RingOfIntegers
 
-variable (n m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
+variable (m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
   (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (Ideal.span {(p : ℤ)})]
 
 local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
