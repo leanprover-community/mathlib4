@@ -241,7 +241,7 @@ where
 
 /--
 If `entry.previous.isSome`, then replace it with `none`, and add the required entries
-to entry.stack`.
+to `entry.stack`.
 -/
 private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
   let some { expr, bvars, lctx, localInsts, cfg } := entry.previous | return entry
