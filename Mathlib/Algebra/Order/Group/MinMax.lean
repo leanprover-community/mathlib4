@@ -72,17 +72,12 @@ theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b
   grind
 
 theorem abs_max_sub_max_le_max (a b c d : α) : |max a b - max c d| ≤ max |a - c| |b - d| := by
-  refine abs_sub_le_iff.2 ⟨?_, ?_⟩
-  · exact (max_sub_max_le_max _ _ _ _).trans (max_le_max (le_abs_self _) (le_abs_self _))
-  · rw [abs_sub_comm a c, abs_sub_comm b d]
-    exact (max_sub_max_le_max _ _ _ _).trans (max_le_max (le_abs_self _) (le_abs_self _))
+  grind
 
 theorem abs_min_sub_min_le_max (a b c d : α) : |min a b - min c d| ≤ max |a - c| |b - d| := by
-  simpa only [max_neg_neg, neg_sub_neg, abs_sub_comm] using
-    abs_max_sub_max_le_max (-a) (-b) (-c) (-d)
+  grind
 
 theorem abs_max_sub_max_le_abs (a b c : α) : |max a c - max b c| ≤ |a - b| := by
-  simpa only [sub_self, abs_zero, max_eq_left (abs_nonneg (a - b))]
-    using abs_max_sub_max_le_max a c b c
+  grind
 
 end LinearOrderedAddCommGroup
