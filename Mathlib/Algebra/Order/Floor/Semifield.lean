@@ -29,28 +29,15 @@ variable {R K : Type*}
 
 namespace Nat
 
+-- TODO: should these lemmas be `simp`? `norm_cast`?
 section LinearOrderedSemifield
-
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 
--- TODO: should these lemmas be `simp`? `norm_cast`?
-
 theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
-  rcases le_total a 0 with ha | ha
-  · rw [floor_of_nonpos, floor_of_nonpos ha]
-    · simp
-    apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
   obtain rfl | hn := n.eq_zero_or_pos
   · simp
-  refine eq_of_forall_le_iff fun m ↦ ?_
-  rw [Nat.le_div_iff_mul_le hn, le_floor_iff (by positivity), le_floor_iff ha,
-    le_div_iff₀ (by positivity), cast_mul]
-
-theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  simpa [hn] using (floor_div_natCast (n * a) n).symm
-
-theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, cast_mul_floor_div_cancel hn]
+  nth_rw 2 [<-div_mul_cancel₀ (a := a) (b := ↑n) (by positivity)]
+  rw [mul_cast_floor_div_cancel (Nat.ne_zero_of_lt hn)]
 
 theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
     ⌊a / ofNat(n)⌋₊ = ⌊a⌋₊ / ofNat(n) :=
