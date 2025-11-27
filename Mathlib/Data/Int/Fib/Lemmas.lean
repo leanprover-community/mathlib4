@@ -18,12 +18,11 @@ to `(-1) ^ |n|`. And Catalan's identity states that for any integers `x` and `a`
 namespace Int
 
 /-- Auxiliary for `Int.fib_succ_mul_fib_pred_sub_fib_sq` -/
-lemma fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq :
-    ∀ n : ℕ, fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n
-  | 0 => by simp
-  | n + 1 => by
-    have := fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq n
-    grind [fib_add_two]
+lemma fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq (n : ℕ) :
+    fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n := by
+  induction n with
+  | zero => simp
+  | succ _ _ => grind [fib_add_two]
 
 /-- **Cassini's identity**: `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ |n|`. -/
 public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
