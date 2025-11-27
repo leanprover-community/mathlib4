@@ -824,7 +824,7 @@ variable {ι : Type*} {β : ι → Type*}
 
 /-- `piEquiv` as an `AlgEquiv`. -/
 @[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
-    [Fintype n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
   map_smul' _ _ := rfl
 
