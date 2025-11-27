@@ -42,6 +42,16 @@ def primeFactors (n : ℕ) : Finset ℕ := n.primeFactorsList.toFinset
 lemma mem_primeFactors_of_ne_zero (hn : n ≠ 0) : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n := by
   simp [hn]
 
+lemma Prime.mem_primeFactors (hp : p.Prime) (hdvd : p ∣ n) (hn : n ≠ 0) : p ∈ n.primeFactors :=
+  Nat.mem_primeFactors.mpr ⟨hp, hdvd, hn⟩
+
+/-- A version of `Nat.Prime.mem_primeFactors` using `[NeZero n]` instead of an explicit argument. -/
+lemma Prime.mem_primeFactors' (hp : p.Prime) (hdvd : p ∣ n) [NeZero n] : p ∈ n.primeFactors :=
+  hp.mem_primeFactors hdvd (NeZero.ne n)
+
+lemma Prime.mem_primeFactors_self (hp : p.Prime) : p ∈ p.primeFactors :=
+  hp.mem_primeFactors p.dvd_refl hp.ne_zero
+
 lemma primeFactors_mono (hmn : m ∣ n) (hn : n ≠ 0) : primeFactors m ⊆ primeFactors n := by
   simp only [subset_iff, mem_primeFactors, and_imp]
   exact fun p hp hpm _ ↦ ⟨hp, hpm.trans hmn, hn⟩
