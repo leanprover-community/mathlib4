@@ -54,7 +54,7 @@ open LinearMap (ker range)
 
 open scoped Topology
 
-/-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → F` that will
+/-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → G` that will
 lead to a $C^n$ implicit function `φ : E → F`. -/
 structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
     Prop where
@@ -132,7 +132,7 @@ noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F
   fun x ↦ (h.implicitFunctionAux x (f a)).2
 
 lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, (f a))).2 :=
+    h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, f a)).2 :=
   rfl
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
