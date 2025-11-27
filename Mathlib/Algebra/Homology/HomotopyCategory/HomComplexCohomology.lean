@@ -155,7 +155,7 @@ lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _)
   · obtain ⟨f, rfl⟩ := Functor.map_surjective _ f
     exact ⟨mk (Cocycle.equivHomShift f), by simp [toHom_mk]⟩
 
-/-- Cohomology classes identifies to morphisms in the homotopy category. -/
+/-- Cohomology classes identify to morphisms in the homotopy category. -/
 @[simps! apply]
 noncomputable def homAddEquiv :
     CohomologyClass K L n ≃+
