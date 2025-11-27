@@ -190,7 +190,6 @@ section
 
 variable [MeasurableSpace α]
 
-@[measurability]
 theorem measurable_subtype_coe {p : α → Prop} : Measurable ((↑) : Subtype p → α) :=
   MeasurableSpace.le_map_comap
 
@@ -368,12 +367,10 @@ instance Prod.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : Me
     MeasurableSpace (α × β) :=
   m₁.prod m₂
 
-@[measurability]
 theorem measurable_fst {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.fst : α × β → α) :=
   Measurable.of_comap_le le_sup_left
 
-@[measurability]
 theorem measurable_snd {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.snd : α × β → β) :=
   Measurable.of_comap_le le_sup_right
