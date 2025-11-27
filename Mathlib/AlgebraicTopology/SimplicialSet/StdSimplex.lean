@@ -354,7 +354,7 @@ of `Δ[n]` corresponding to `{i}`. -/
 noncomputable def faceSingletonIso {n : ℕ} (i : Fin (n + 1)) :
     Δ[0] ≅ (face {i} : SSet.{u}) :=
   stdSimplex.isoOfRepresentableBy
-      (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
+    (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
 
 @[reassoc]
 lemma faceSingletonIso_zero_hom_comp_ι_eq_δ :
