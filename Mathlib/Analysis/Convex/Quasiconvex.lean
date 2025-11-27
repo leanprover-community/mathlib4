@@ -114,12 +114,12 @@ theorem QuasiconvexOn.antitone_comp (hg : Antitone g) (hf : QuasiconvexOn 𝕜 s
   hf.monotone_comp (γ := γᵒᵈ) hg
 
 theorem QuasiconcaveOn.monotone_comp (hg : Monotone g) (hf : QuasiconcaveOn 𝕜 s f) :
-    QuasiconcaveOn 𝕜 s (g ∘ f) := by
+    QuasiconcaveOn 𝕜 s (g ∘ f) :=
   QuasiconvexOn.monotone_comp hg.dual hf
 
 theorem QuasiconcaveOn.antitone_comp (hg : Antitone g) (hf : QuasiconcaveOn 𝕜 s f) :
-    QuasiconvexOn 𝕜 s (g ∘ f) := by
-  QuasiconvexOn.monotone_comp hg.dual hf
+    QuasiconvexOn 𝕜 s (g ∘ f) :=
+  QuasiconvexOn.monotone_comp (β := βᵒᵈ) hg.dual hf
 
 theorem QuasilinearOn.monotone_comp (hg : Monotone g) (hf : QuasilinearOn 𝕜 s f) :
     QuasilinearOn 𝕜 s (g ∘ f) :=
@@ -159,19 +159,22 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 variable {β : Type*} [Preorder β] {f : E → β}
 
+open scoped Set.Notation
+
+/-- If `f` is quasiconcave, then its over-levels are connected. -/
 theorem QuasiconcaveOn.isPreconnected_preimage {s : Set E} {t : β}
     (hfc : QuasiconcaveOn ℝ s f) :
     IsPreconnected (s ↓∩ (f ⁻¹' Ici t)) := by
-  rw [preimage_comp,
-    ← Topology.IsInducing.subtypeVal.isPreconnected_image,
+  rw [← Topology.IsInducing.subtypeVal.isPreconnected_image,
     image_preimage_eq_inter_range,
     Subtype.range_coe, inter_comm]
   exact (hfc t).isPreconnected
 
+/-- If `f` is quasiconcave, then its under-levels are connected. -/
 theorem QuasiconvexOn.isPreconnected_preimage {s : Set E} {t : β}
     (hfc : QuasiconvexOn ℝ s f) :
-    IsPreconnected (s ↓∩ (f ⁻¹' Iic t)) := by
-  exact QuasiconcaveOn.isPreconnected_preimage (β := βᵒᵈ) hfc
+    IsPreconnected (s ↓∩ (f ⁻¹' Iic t)) :=
+  QuasiconcaveOn.isPreconnected_preimage (β := βᵒᵈ) hfc
 
 theorem QuasilinearOn.isPreconnected_preimage {s : Set E} {t : β}
     (hfc : QuasilinearOn ℝ s f) :
