@@ -3,12 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Matrix.Dual
+module
+
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Diagonal
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
+public import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
 # Rank of matrices
@@ -23,6 +25,8 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 * `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
 -/
+
+@[expose] public section
 
 open Matrix
 
@@ -287,7 +291,7 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply] at aux₁ aux₂
   simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
-    aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
+    aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by

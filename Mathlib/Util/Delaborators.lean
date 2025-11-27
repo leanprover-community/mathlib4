@@ -3,9 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Mathlib.Util.PPOptions
-import Lean.PrettyPrinter.Delaborator.Builtins
+module
+
+public import Mathlib.Init
+public meta import Mathlib.Util.PPOptions
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Pi type notation
 
@@ -16,6 +18,8 @@ then do `open scoped PiNotation`.
 The notation also accepts extended binders, like `Π x ∈ s, β x` for `Π x, x ∈ s → β x`.
 This can be disabled with the `pp.mathlib.binderPredicates` option.
 -/
+
+public meta section
 
 namespace PiNotation
 open Lean hiding binderIdent

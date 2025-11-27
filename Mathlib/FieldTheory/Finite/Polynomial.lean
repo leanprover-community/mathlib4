@@ -3,15 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 ## Polynomials over finite fields
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -86,7 +90,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   intro n
   refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
-    AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
+    map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne

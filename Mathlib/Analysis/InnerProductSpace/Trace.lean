@@ -3,15 +3,19 @@ Copyright (c) 2025 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Trace
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Traces in inner product spaces
 
 This file contains various results about traces of linear operators in inner product spaces.
 -/
+
+@[expose] public section
 
 namespace LinearMap
 
