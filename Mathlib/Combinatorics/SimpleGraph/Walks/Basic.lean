@@ -270,6 +270,18 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 @[simp]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
 
+@[simp]
+theorem fst_darts_getElem? {u v : V} {p : G.Walk u v} {i : ℕ} (h : i < p.length) :
+    (p.darts[i]'(by grind [length_darts])).fst = p.support[i]'(by grind [length_support]) := by
+  rw [← p.support.getElem_dropLast <| by grind [length_support]]
+  grind [map_fst_darts]
+
+@[simp]
+theorem snd_darts_getElem? {u v : V} {p : G.Walk u v} {i : ℕ} (h : i < p.length) :
+    (p.darts[i]'(by grind [length_darts])).snd = p.support[i + 1]'(by grind [length_support]) := by
+  rw [← p.support.getElem_tail <| by grind [length_support]]
+  grind [map_snd_darts]
+
 theorem dart_fst_mem_support_of_mem_darts {u v : V} :
     ∀ (p : G.Walk u v) {d : G.Dart}, d ∈ p.darts → d.fst ∈ p.support
   | cons h p', d, hd => by
