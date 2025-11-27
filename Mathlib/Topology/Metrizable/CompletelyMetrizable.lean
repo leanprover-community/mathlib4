@@ -143,10 +143,6 @@ theorem _root_.IsClosed.isCompletelyPseudoMetrizableSpace
     {s : Set X} (hs : IsClosed s) : IsCompletelyPseudoMetrizableSpace s :=
   hs.isClosedEmbedding_subtypeVal.IsCompletelyPseudoMetrizableSpace
 
-instance univ [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] :
-    IsCompletelyPseudoMetrizableSpace (univ : Set X) :=
-  isClosed_univ.isCompletelyPseudoMetrizableSpace
-
 end IsCompletelyPseudoMetrizableSpace
 
 /-- A topological space is completely metrizable if there exists a metric space structure
@@ -164,7 +160,8 @@ instance IsCompletelyMetrizableSpace.toIsCompletelyPseudoMetrizableSpace [Topolo
   use m.toPseudoMetricSpace
 
 /-- A completely pseudometrizable T0 space is completely metrizable. -/
-instance [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X] [T0Space X] :
+lemma IsCompletelyMetrizableSpace_of_isCompletelyPseudoMetrizableSpace [TopologicalSpace X]
+    [IsCompletelyPseudoMetrizableSpace X] [T0Space X] :
     IsCompletelyMetrizableSpace X := by
   letI := upgradeIsCompletelyPseudoMetrizable X
   use MetricSpace.ofT0PseudoMetricSpace X
