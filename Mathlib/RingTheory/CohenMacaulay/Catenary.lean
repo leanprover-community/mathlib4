@@ -64,7 +64,7 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
     have le := le_trans (hn (rs.take n) reg' (ne_top_of_le_ne_top h (Ideal.span_mono
       (fun r hr ↦ List.mem_of_mem_take hr))) len') (Ideal.height_mono hq.1.2)
     rw [Ideal.height_eq_primeHeight] at le
-    apply le_trans (add_le_add_right le 1) (Ideal.primeHeight_add_one_le_of_lt (lep.lt_of_ne _))
+    apply le_trans (add_le_add_left le 1) (Ideal.primeHeight_add_one_le_of_lt (lep.lt_of_ne _))
     by_contra eq
     have p_min : p ∈ (Module.annihilator R
       (R ⧸ Ideal.ofList (rs.take n) • (⊤ : Ideal R))).minimalPrimes := by
@@ -161,7 +161,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
       have lt : q < p := lt_of_le_of_ne qle (ne_of_mem_of_not_mem'
           ((sup_le_iff.mp hp.1.2).2 (mem_span_singleton_self x)) (nmem q hq)).symm
       apply le_trans _ (Ideal.primeHeight_add_one_le_of_lt lt)
-      simpa only [← ht, ← height_eq_primeHeight] using add_le_add_right (Ideal.height_mono hq.1.2) 1
+      simpa only [← ht, ← height_eq_primeHeight] using add_le_add_left (Ideal.height_mono hq.1.2) 1
     have len' : d - (rs ++ [x]).length = k := by
       simp only [List.length_append, List.length_cons, List.length_nil, zero_add]
       omega
@@ -202,7 +202,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
       have xmem : x ∈ maximalIdeal R := mem.1.2 (Ideal.subset_span (by simp))
       let R' := R ⧸ x • (⊤ : Ideal R)
       have : Nontrivial R' :=
-          Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+        Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       let _ : IsLocalRing R' := IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
@@ -216,7 +216,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         have eq := ModuleCat.depth_eq_supportDim_of_cohenMacaulay (ModuleCat.of R R)
         rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p (ModuleCat.of R R) ass,
           Module.supportDim_self_eq_ringKrullDim, WithBot.coe_unbot] at eq
-        have : Nontrivial (R ⧸ p) := Ideal.Quotient.nontrivial (Ideal.IsPrime.ne_top ass.1)
+        have : Nontrivial (R ⧸ p) := Ideal.Quotient.nontrivial_iff.mpr (Ideal.IsPrime.ne_top ass.1)
         have : IsLocalHom (Ideal.Quotient.mk p) :=
           IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
         let _ : IsLocalRing (R ⧸ p) :=
@@ -376,7 +376,7 @@ lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
 
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
-  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial netop
+  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop
   rw [height, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes, iSup_subtype', iInf_subtype']
   let min := (Subtype (Membership.mem I.minimalPrimes))
   have fin : Finite min := finite_minimalPrimes_of_isNoetherianRing R I
@@ -386,9 +386,9 @@ lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLoc
     rcases exists_eq_ciSup_of_finite (f := f) with ⟨p, hp⟩
     let _ := p.2.1.1
     rw [← hp, ← Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim p.1]
-    apply add_le_add_right (WithBot.coe_le_coe.mpr (iInf_le_iff.mpr fun b a ↦ a p))
+    apply add_le_add_left (WithBot.coe_le_coe.mpr (iInf_le_iff.mpr fun b a ↦ a p))
   · let g : min → ℕ∞ := fun x ↦ @Ideal.primeHeight _ _ x.1 (minimalPrimes_isPrime x.2)
     rcases exists_eq_ciInf_of_finite (f := g) with ⟨p, hp⟩
     let _ := p.2.1.1
     rw [← hp, ← Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim p.1]
-    apply add_le_add_left (le_iSup_iff.mpr fun b a ↦ a p)
+    apply add_le_add_right (le_iSup_iff.mpr fun b a ↦ a p)
