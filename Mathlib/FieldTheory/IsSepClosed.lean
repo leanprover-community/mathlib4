@@ -63,7 +63,8 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  factors_of_separable : ∀ p : k[X], p.Separable → p.Factors
+  -- todo: rename to `splits_of_separable`
+  factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
@@ -72,8 +73,8 @@ instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
 variable {k} {K}
 
 theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
-    (p.map (RingHom.id k)).Splits :=
-  (factors_of_separable p hp).map (RingHom.id k)
+    p.Splits :=
+  factors_of_separable p hp
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
@@ -81,8 +82,8 @@ separably closed.
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : (p.map f).Splits := by
-  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
+  IsSepClosed.splits_of_separable (p.map f) (Separable.map h)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
@@ -91,13 +92,13 @@ See also `IsSepClosed.splits_codomain` for the case where `k` is separably close
 -/
 theorem IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
     (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
-  Polynomial.splits_of_splits_id _ <| IsSepClosed.splits_of_separable _ h
+  (IsSepClosed.splits_of_separable _ h).map f
 
 namespace IsSepClosed
 
 theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, IsRoot p x :=
-  exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
+  exists_root_of_splits _ ((IsSepClosed.splits_of_separable p hsep).map (RingHom.id k)) hp
 
 /-- If `n ≥ 2` equals zero in a separably closed field `k`, `b ≠ 0`,
 then there exists `x` in `k` such that `a * x ^ n + b * x + c = 0`. -/
@@ -184,7 +185,7 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
@@ -214,7 +215,7 @@ theorem algebraMap_surjective
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
-  exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
+  exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
 end IsSepClosed
 
