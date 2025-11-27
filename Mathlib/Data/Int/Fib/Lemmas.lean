@@ -30,7 +30,7 @@ public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
   · exact fib_natCast_succ_mul_fib_natCast_pred_sub_fib_natCast_sq n
   · if hn : n = 0 then simp [hn] else
-    obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn)
+    obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
     simp_rw [show -((i + 1 : ℕ) : ℤ) + 1 = -i by simp, sub_eq_add_neg, ← neg_add, fib_neg,
       natAbs_neg, natAbs_natCast, ← fib_natCast_succ_mul_fib_natCast_pred_sub_fib_natCast_sq]
     grind
