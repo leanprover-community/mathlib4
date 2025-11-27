@@ -75,10 +75,10 @@ instance : IsStrictOrderedRing (ArchimedeanClass.Finite K) where
   le_of_add_le_add_left x y z := le_of_add_le_add_left (α := K)
   mul_lt_mul_of_pos_left x hx y z h := by
     have := IsOrderedRing.toIsStrictOrderedRing K
-    exact mul_lt_mul_of_pos_left (α := K) hx h
+    exact mul_lt_mul_of_pos_left (α := K) h hx
   mul_lt_mul_of_pos_right x hx y z h := by
     have := IsOrderedRing.toIsStrictOrderedRing K
-    exact mul_lt_mul_of_pos_right (α := K) hx h
+    exact mul_lt_mul_of_pos_right (α := K) h hx
 
 theorem not_isUnit_iff_mk_pos {x : ArchimedeanClass.Finite K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
@@ -177,8 +177,10 @@ instance : IsStrictOrderedRing (FiniteResidueField K) where
     · exact mk.monotone' <| le_of_add_le_add_left h
     · apply le_of_eq
       simpa using h
-  mul_lt_mul_of_pos_left _ _ _ := mul_lt_mul_of_pos_left'
-  mul_lt_mul_of_pos_right x y z := by simp_rw [mul_comm _ z]; exact mul_lt_mul_of_pos_left'
+  mul_lt_mul_of_pos_left _ hx _ _ h := mul_lt_mul_of_pos_left' h hx
+  mul_lt_mul_of_pos_right x hx y z h := by
+    simp_rw [mul_comm _ x]
+    exact mul_lt_mul_of_pos_left' h hx
 
 instance : Archimedean (FiniteResidueField K) where
   arch x y hy := by
