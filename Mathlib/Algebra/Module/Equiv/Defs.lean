@@ -118,8 +118,8 @@ def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 /-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
 instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : CoeDep F f (M ≃ₛₗ[σ] M₂) where
-  coe := semilinearEquiv f
+    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
+  coe f := semilinearEquiv f
 
 end SemilinearEquivClass
 
@@ -135,9 +135,8 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
--- needs to be `CoeDep` to have priority over instCoeToSemilinearMap
-instance (f : M ≃ₛₗ[σ] M₂) : CoeDep (M ≃ₛₗ[σ] M₂) f (M →ₛₗ[σ] M₂) :=
-  ⟨toLinearMap f⟩
+instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
+  ⟨toLinearMap⟩
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 /-- The equivalence of types underlying a linear equivalence. -/
