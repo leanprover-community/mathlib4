@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Linter.UnusedInstancesInType
+import Mathlib.Init
+
+set_option linter.mathlibStandardSet true
 
 section decidable
 
