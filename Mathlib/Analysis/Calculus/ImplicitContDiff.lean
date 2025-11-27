@@ -3,8 +3,10 @@ Copyright (c) 2025 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Analysis.Calculus.Implicit
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
+module
+
+public import Mathlib.Analysis.Calculus.Implicit
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 
 /-!
 # Implicit function theorem
@@ -14,9 +16,9 @@ that the implicit function preserves the smoothness class of the implicit equati
 
 Let `E`, `F`, and `G` be real or complex Banach spaces. Let `f : E × F → G` be a function that is
 $C^n$ at a point `(a, b) : E × F`, where `n ≥ 1`. Let `f'` be the derivative of `f` at `(a, b)`. If
-the range of `f'` is all of `G`, and the kernel of `f'` is the subspace `E × {0}` in `E × F`, then
-there exists a function `φ : E → F` such that `φ a = b`, and `f x (φ x) = f a b` holds for all `x`
-in a neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
+the map `y ↦ f' (0, y)` is a Banach space isomorphism, then there exists a function `φ : E → F` such
+that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a neighbourhood of `a`. Furthermore,
+`φ` is $C^n$ at `a`.
 
 ## TODO
 * Local uniqueness of the implicit function
@@ -27,17 +29,18 @@ in a neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
 implicit function, inverse function
 -/
 
-namespace ImplicitFunctionData
+variable
+  {𝕜 : Type*} [RCLike 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [CompleteSpace F] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
-  (φ : ImplicitFunctionData 𝕜 E F G) {n : WithTop ℕ∞}
+namespace ImplicitFunctionData
 
 /-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
 form of the implicit function theorem. -/
-theorem contDiff_implicitFunction (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt)
-    (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
+theorem contDiff_implicitFunction {φ : ImplicitFunctionData 𝕜 E F G} {n : WithTop ℕ∞}
+    (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
   rw [implicitFunction, Function.uncurry_curry, toOpenPartialHomeomorph,
     ← HasStrictFDerivAt.localInverse_def]
@@ -51,26 +54,18 @@ open LinearMap (ker range)
 
 open scoped Topology
 
-/-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → F` that will
+/-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → G` that will
 lead to a $C^n$ implicit function `φ : E → F`. -/
-structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
-    (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) : Prop where
+structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
+    Prop where
   hasFDerivAt : HasFDerivAt f f' a
   contDiffAt : ContDiffAt 𝕜 n f a
-  range_eq_top : range f' = ⊤
-  ker_eq_left : ker f' = range (LinearMap.inl 𝕜 E F)
+  bijective : Function.Bijective (f'.comp (ContinuousLinearMap.inr 𝕜 E F))
   one_le : 1 ≤ n
 
 namespace IsContDiffImplicitAt
 
 variable
-  {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
   {n : WithTop ℕ∞} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
 
 /-- We record the parameters of our specific case in order to apply the general implicit function
@@ -85,11 +80,27 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
   hasStrictFDerivAt_leftFun := by fun_prop
   hasStrictFDerivAt_rightFun := h.contDiffAt.hasStrictFDerivAt' h.hasFDerivAt h.one_le
   range_leftDeriv := LinearMap.range_eq_top_of_surjective _ fun x ↦ ⟨(x, 0), rfl⟩
-  range_rightDeriv := h.range_eq_top
+  range_rightDeriv := by
+    apply top_unique
+    rw [← LinearMap.range_eq_top_of_surjective _ h.bijective.surjective]
+    exact LinearMap.range_comp_le_range _ _
   isCompl_ker := by
-    have : ker (ContinuousLinearMap.fst 𝕜 E F) = ker (LinearMap.fst 𝕜 E F) := rfl
-    rw [isCompl_comm, this, LinearMap.ker_fst, h.ker_eq_left]
-    exact LinearMap.isCompl_range_inl_inr
+    apply IsCompl.of_eq
+    · ext x
+      rw [Submodule.mem_inf, Submodule.mem_bot, LinearMap.mem_ker, ContinuousLinearMap.coe_fst',
+        LinearMap.mem_ker]
+      constructor
+      · intro ⟨h1, h2⟩
+        rw [← Prod.mk.eta (p := x), h1] at h2
+        rw [Prod.ext_iff]
+        refine ⟨h1, h.bijective.injective ?_⟩
+        simp [h2, map_zero]
+      · rintro rfl
+        exact ⟨rfl, map_zero _⟩
+    · ext x
+      simp only [Submodule.mem_sup, Submodule.mem_top, iff_true]
+      obtain ⟨y, hy⟩ := h.bijective.surjective (f' x)
+      exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
 lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
@@ -117,7 +128,7 @@ noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F
   fun x ↦ (h.implicitFunctionAux x (f a)).2
 
 lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, (f a))).2 :=
+    h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, f a)).2 :=
   rfl
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/

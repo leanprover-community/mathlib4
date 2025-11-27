@@ -3,12 +3,14 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+module
+
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Properties of the integral of `mulExpNegMulSq`
@@ -36,6 +38,8 @@ of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * √ε`.
 This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`, where
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
+
+@[expose] public section
 
 open MeasureTheory Real NNReal ENNReal BoundedContinuousFunction Filter
 
@@ -169,15 +173,15 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     rw [not_and_or] at hPP'
     rcases hPP' with hP0 | hP'0
     · exact lt_max_of_lt_left
-        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (measure_ne_top P Set.univ))
+        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP0) (by finiteness))
     · exact lt_max_of_lt_right
-        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (measure_ne_top P' Set.univ))
+        (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (by finiteness))
   -- obtain K, a compact and closed set, which covers E up to a small area of measure at most ε
   -- w.r.t. both P and P'
   obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
-    (MeasurableSet.univ) (measure_ne_top P Set.univ) (ne_of_gt (ofReal_pos.mpr hε))
+    (MeasurableSet.univ) (measure_ne_top P Set.univ) (ofReal_pos.mpr hε).ne'
   obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
-    (MeasurableSet.univ) (measure_ne_top P' Set.univ) (ne_of_gt (ofReal_pos.mpr hε))
+    (MeasurableSet.univ) (measure_ne_top P' Set.univ) (ofReal_pos.mpr hε).ne'
   let K := KP ∪ KP'
   have hKco := IsCompact.union hKPco hKP'co
   have hKcl := IsClosed.union hKPcl hKP'cl
@@ -223,7 +227,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     rw [mul_assoc]
     apply mul_le_of_le_one_right (le_of_lt (sqrt_pos_of_pos hε))
     apply inv_mul_le_one_of_le₀ (le_max_of_le_left _) (le_of_lt pos_of_measure)
-    exact (toReal_le_toReal (measure_ne_top P _) (measure_ne_top P _)).mpr
+    exact (toReal_le_toReal (by finiteness) (by finiteness)).mpr
         (measure_mono (Set.subset_univ _))
   have line6 : |∫ x in K, mulExpNegMulSq ε (g x) ∂P'
       - ∫ x in K, mulExpNegMulSq ε (f x) ∂P'| ≤ √ε := by
@@ -232,7 +236,7 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
     rw [mul_assoc]
     apply mul_le_of_le_one_right (le_of_lt (sqrt_pos_of_pos hε))
     apply inv_mul_le_one_of_le₀ (le_max_of_le_right _) (le_of_lt pos_of_measure)
-    exact (toReal_le_toReal (measure_ne_top P' _) (measure_ne_top P' _)).mpr
+    exact (toReal_le_toReal (by finiteness) (by finiteness)).mpr
         (measure_mono (Set.subset_univ _))
   have line4 : |∫ x, mulExpNegMulSq ε (g x) ∂P
       - ∫ x, mulExpNegMulSq ε (g x) ∂P'| = 0 := by

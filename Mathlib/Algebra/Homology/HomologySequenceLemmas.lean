@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+module
+
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
 /-!
 # Consequences of the homology sequence
@@ -17,14 +19,16 @@ of the homology sequence of `S₁` and `S₂` with respect to `φ`
 
 Then, we shall show in this file that if two out of the three maps `φ.τ₁`,
 `φ.τ₂`, `φ.τ₃` are quasi-isomorphisms, then the third is. We also obtain
-more specific separate lemmas which gives sufficient condition for one
+more specific separate lemmas which give sufficient conditions for one
 of these three morphisms to induce a mono/epi/iso in a given degree
-in terms of properties of the two others in the same or neighboring degrees.
+in terms of properties of the other two in the same or neighboring degrees.
 
 So far, we state only four lemmas for `φ.τ₃`. Eight more similar lemmas
-for `φ.τ₁` and `φ.τ₂` shall be also obtained (TODO).
+for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 -/
+
+@[expose] public section
 
 open CategoryTheory ComposableArrows Abelian
 

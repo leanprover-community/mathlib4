@@ -3,7 +3,9 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Separably Closed Field
@@ -47,6 +49,8 @@ separable closure, separably closed
 
 -/
 
+@[expose] public section
+
 universe u v w
 
 open Polynomial
@@ -59,13 +63,18 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  splits_of_separable : ∀ p : k[X], p.Separable → (p.Splits <| RingHom.id k)
+  -- todo: rename to `splits_of_separable`
+  factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
+  ⟨fun p _ ↦ IsAlgClosed.factors p⟩
 
 variable {k} {K}
+
+theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
+    p.Splits :=
+  factors_of_separable p hp
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
@@ -73,8 +82,8 @@ separably closed.
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f := by
-  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
+  IsSepClosed.splits_of_separable (p.map f) (Separable.map h)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
@@ -82,14 +91,14 @@ separably closed.
 See also `IsSepClosed.splits_codomain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f :=
-  Polynomial.splits_of_splits_id _ <| IsSepClosed.splits_of_separable _ h
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
+  (IsSepClosed.splits_of_separable _ h).map f
 
 namespace IsSepClosed
 
 theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, IsRoot p x :=
-  exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
+  exists_root_of_splits _ ((IsSepClosed.splits_of_separable p hsep).map (RingHom.id k)) hp
 
 /-- If `n ≥ 2` equals zero in a separably closed field `k`, `b ≠ 0`,
 then there exists `x` in `k` such that `a * x ^ n + b * x + c = 0`. -/
@@ -154,26 +163,30 @@ theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
     simp at hz
 
-theorem exists_eval₂_eq_zero [IsSepClosed K] (f : k →+* K)
-    (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
+theorem exists_eval₂_eq_zero_of_injective {k : Type*} [CommSemiring k] [IsSepClosed K] (f : k →+* K)
+    (hf : Function.Injective f) (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, p.eval₂ f x = 0 :=
-  let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective f.injective])
+  let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
     (Separable.map hsep)
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
+theorem exists_eval₂_eq_zero {k : Type*} [CommRing k] [IsSimpleRing k] [IsSepClosed K] (f : k →+* K)
+    (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x, p.eval₂ f x = 0 :=
+  exists_eval₂_eq_zero_of_injective _ f.injective _ hp hsep
+
 variable (K)
 
-theorem exists_aeval_eq_zero [IsSepClosed K] [Algebra k K] (p : k[X])
-    (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, aeval x p = 0 :=
-  exists_eval₂_eq_zero (algebraMap k K) p hp hsep
+theorem exists_aeval_eq_zero {k : Type*} [CommSemiring k] [IsSepClosed K] [Algebra k K]
+    [FaithfulSMul k K] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
+    ∃ x : K, p.aeval x = 0 :=
+  exists_eval₂_eq_zero_of_injective _ (FaithfulSMul.algebraMap_injective ..) p hp hsep
 
 variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
-  simp only [map_id] at hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
   have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=
@@ -202,7 +215,7 @@ theorem algebraMap_surjective
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
-  exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
+  exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
 end IsSepClosed
 

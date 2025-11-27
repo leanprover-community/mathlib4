@@ -195,7 +195,7 @@
   title  : The Central Limit Theorem
 48:
   title  : Dirichlet’s Theorem
-  decl   : Nat.setOf_prime_and_eq_mod_infinite
+  decl   : Nat.infinite_setOf_prime_and_eq_mod
   authors: David Loeffler, Michael Stoll
 49:
   title  : The Cayley-Hamilton Theorem

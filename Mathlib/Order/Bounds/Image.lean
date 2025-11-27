@@ -3,8 +3,10 @@ Copyright (c) 2017 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
-import Mathlib.Data.Set.NAry
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 
@@ -12,6 +14,8 @@ import Mathlib.Order.Bounds.Basic
 
 In this file we prove various results about the behaviour of bounds under monotone/antitone maps.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -204,7 +208,7 @@ lemma StrictMono.mem_upperBounds_image (hf : StrictMono f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ upperBounds s := by simp [upperBounds, hf.le_iff_le]
 
 lemma StrictMono.mem_lowerBounds_image (hf : StrictMono f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s :=  by simp [lowerBounds, hf.le_iff_le]
+    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s := by simp [lowerBounds, hf.le_iff_le]
 
 lemma StrictMono.map_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a := by
   simp [IsLeast, hf.injective.eq_iff, hf.mem_lowerBounds_image]

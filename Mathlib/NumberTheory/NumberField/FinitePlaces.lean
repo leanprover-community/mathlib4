@@ -3,15 +3,17 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.Algebra.Order.Archimedean.Submonoid
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Data.Int.WithZero
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Topology.Algebra.Valued.NormedValued
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Submonoid
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
 # Finite places of number fields
@@ -36,7 +38,9 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 number field, places, finite places
 -/
 
-open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
+@[expose] public section
+
+open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt WithZero
 
 open scoped WithZero NNReal
 
@@ -58,9 +62,8 @@ instance : IsDiscreteValuationRing (v.valuation K).integer where
       Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [Valuation.mem_integer_iff, ← WithZero.coe_one, ← ofAdd_zero, - ofAdd_neg,
-          Subtype.ext_iff, ← (v.valuation K).map_eq_zero_iff, hπ, ← WithZero.coe_one,
-          ← ofAdd_zero]
+    simp [Valuation.mem_integer_iff, ← exp_zero, Subtype.ext_iff, - exp_neg,
+      ← (v.valuation K).map_eq_zero_iff, hπ]
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   unfold HeightOneSpectrum.adicCompletionIntegers
@@ -69,7 +72,7 @@ instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   simpa using Valued.v.range_nontrivial
 
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
--- develop the API for a  completion of a base `IsDVR` ring
+-- develop the API for a completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
   not_a_field' := by
     unfold HeightOneSpectrum.adicCompletionIntegers
@@ -78,7 +81,7 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
       exists_prop]
     obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
     use π
-    simp [hπ, - ofAdd_neg, ← WithZero.coe_one, ← ofAdd_zero,
+    simp [hπ, ← exp_zero, - exp_neg,
           ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
@@ -137,7 +140,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
     map_one' := rfl
-    map_mul' := MonoidWithZeroHom.map_mul (toNNReal (absNorm_ne_zero v))
+    map_mul' := map_mul (toNNReal (absNorm_ne_zero v))
   }
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
   exists_val_nontrivial := by
@@ -165,9 +168,6 @@ noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace 
 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv v x := rfl
-
-@[deprecated (since := "2025-03-01")]
-  alias toNNReal_Valued_eq_vadicAbv := toNNReal_valued_eq_adicAbv
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
@@ -228,7 +228,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 instance : FunLike (FinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext <| congr_fun h)
+  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext <| congr_fun h)
 
 instance : MonoidWithZeroHomClass (FinitePlace K) K ℝ where
   map_mul w := w.1.map_mul
