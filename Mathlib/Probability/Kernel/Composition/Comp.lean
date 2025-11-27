@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+module
+
+public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # Composition of kernels
@@ -28,6 +30,8 @@ a kernel from `α` to `γ`.
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -199,7 +203,7 @@ instance IsFiniteKernel.comp (η : Kernel β γ) [IsFiniteKernel η] (κ : Kerne
   refine ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a ↦ ?_⟩⟩
   calc (η ∘ₖ κ) a Set.univ
   _ ≤ κ a Set.univ * η.bound := comp_apply_univ_le κ η a
-  _ ≤ κ.bound * η.bound := mul_le_mul (measure_le_bound κ a Set.univ) le_rfl zero_le' zero_le'
+  _ ≤ κ.bound * η.bound := by gcongr; exact measure_le_bound κ a Set.univ
 
 instance IsSFiniteKernel.comp (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
     [IsSFiniteKernel κ] : IsSFiniteKernel (η ∘ₖ κ) := by

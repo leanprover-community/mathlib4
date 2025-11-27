@@ -3,11 +3,13 @@ Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
-import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Pi
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Multinomial
@@ -23,6 +25,8 @@ This file defines the multinomial coefficient and several small lemma's for mani
 - `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
 -/
+
+@[expose] public section
 
 open Finset
 open scoped Nat

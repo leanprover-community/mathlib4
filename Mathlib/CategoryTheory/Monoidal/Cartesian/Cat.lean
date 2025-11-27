@@ -3,13 +3,17 @@ Copyright (c) 2024 Nicolas Rolland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolas Rolland
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Chosen finite products in `Cat`
 
 This file proves that the Cartesian product of a pair of categories agrees with the
 product in `Cat`, and provides the associated `CartesianMonoidalCategory` instance.
 -/
+
+@[expose] public section
 
 universe v u
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Hall's Marriage Theorem for finite index types
@@ -32,6 +34,8 @@ A description of this formalization is in [Gusakov2021].
 
 Hall's Marriage Theorem, indexed families
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -220,10 +224,9 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t)) :
         ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x := by
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
-    by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)
+    by_cases! h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t)
     · refine hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
-    · push_neg at h
-      rcases h with ⟨s, sne, snu, sle⟩
+    · rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
         s sne snu (Nat.le_antisymm (ht _) sle)
 

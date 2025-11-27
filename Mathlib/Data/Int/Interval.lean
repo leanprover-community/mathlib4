@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of integers
@@ -15,6 +17,8 @@ import Mathlib.Order.Interval.Finset.Basic
 This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -125,26 +129,6 @@ theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
   simp
   omega
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  simp
-
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
 
@@ -165,22 +149,52 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   constructor
   · rintro ⟨i, _, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
-  intro hia
+  rintro ⟨hi₀, hia⟩
   have hn := Int.emod_add_mul_ediv n a
   obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
-    · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
-      refine hn.symm.le.trans (add_le_add_right ?_ _)
-      simpa only [zero_add] using add_le_add hia.left (Int.emod_lt_of_pos n ha).le
-    · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
-      rw [mul_add, mul_one, ← add_assoc, hn]
-    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
+    · calc
+        n = 0 + n % a + a * (n / a) := by simp [hn]
+        _ ≤ i + a + a * (n / a) := by gcongr; exact (Int.emod_lt_of_pos n ha).le
+        _ = i + a * (n / a + 1) := by grind
+    · calc
+        i + a * (n / a + 1) < n % a + a * (n / a + 1) := by gcongr
+        _ = n + a := by rw [mul_add, mul_one, ← add_assoc, hn]
+    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hi₀ hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · exact hn.symm.le.trans (add_le_add_right hi _)
+    · exact hn.symm.le.trans (add_le_add_left hi _)
     · rw [add_comm n a]
-      refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
+      refine add_lt_add_of_lt_of_le hia (le_trans ?_ hn.le)
       simp only [le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
-    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
+    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hi₀ hia]
 
 end Int
+
+section Nat
+
+lemma Finset.Icc_succ_succ (m n : ℕ) :
+    Icc (-(m + 1) : ℤ) (n + 1) = Icc (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Icc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ico_succ_succ (m n : ℕ) :
+    Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioc_succ_succ (m n : ℕ) :
+    Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioo_succ_succ (m n : ℕ) :
+    Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
+  omega
+
+end Nat

@@ -3,15 +3,19 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Instances.AddCircle.Defs
-import Mathlib.Topology.Instances.ZMultiples
+module
+
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The additive circle over `ℝ`
 
 Results specific to the additive circle over `ℝ`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
