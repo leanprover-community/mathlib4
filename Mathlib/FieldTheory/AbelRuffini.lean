@@ -152,10 +152,10 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
     exact ha' hb.symm
   let s := ((X ^ n - C a).map i).roots
   have hs : _ = _ * (s.map _).prod := eq_prod_roots_of_splits h
-  rw [leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
+  rw [leadingCoeff_X_pow_sub_C hn', map_one, C_1, one_mul] at hs
   have hs' : Multiset.card s = n := (natDegree_eq_card_roots h).symm.trans natDegree_X_pow_sub_C
   apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
-  rw [leadingCoeff_X_pow_sub_one hn', RingHom.map_one, C_1, one_mul, Multiset.map_map]
+  rw [leadingCoeff_X_pow_sub_one hn', map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
     rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
   have key1 : (X ^ n - 1 : F[X]).map i = C (i a⁻¹) * ((X ^ n - C a).map i).comp (C b * X) := by
@@ -206,11 +206,11 @@ def solvableByRad : IntermediateField F E where
   carrier := IsSolvableByRad F
   zero_mem' := by
     change IsSolvableByRad F 0
-    convert IsSolvableByRad.base (E := E) (0 : F); rw [RingHom.map_zero]
+    convert IsSolvableByRad.base (E := E) (0 : F); rw [map_zero]
   add_mem' := by apply IsSolvableByRad.add
   one_mem' := by
     change IsSolvableByRad F 1
-    convert IsSolvableByRad.base (E := E) (1 : F); rw [RingHom.map_one]
+    convert IsSolvableByRad.base (E := E) (1 : F); rw [map_one]
   mul_mem' := by apply IsSolvableByRad.mul
   inv_mem' := IsSolvableByRad.inv
   algebraMap_mem' := IsSolvableByRad.base
