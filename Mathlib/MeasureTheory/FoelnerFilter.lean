@@ -21,6 +21,10 @@ This file defines Følner filters for measurable spaces acted on by a group.
     1. Each `s` in `l` is eventually measurable with finite non-zero measure,
     2. For all `g : G`, `μ ((g • F i) ∆ F i) / μ (F i)` tends to `0`.
 
+* `IsFoelner.mean μ l F s` : Given a Følner sequence `F` with respect to some group `G`
+  acting on a measure space `X`, the mean of a set `s` is the limit of the sequence
+  `μ (s ∩ F i) / μ (F i)` along the filter `l`.
+
 * `maxFoelner G μ` : The maximal Følner filter with respect to some group `G` acting on a
   measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g • s) / μ s` on measurable
   sets of finite non-zero measure.
@@ -74,20 +78,30 @@ theorem IsFoelner.univ_of_isFiniteMeasure [NeZero μ] [IsFiniteMeasure μ] :
   eventually_meas_ne_top := by simp
   tendsto_meas_symmDiff := by simp [tendsto_const_nhds]
 
-lemma IsFoelner.limUnder_univ_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelner G μ l F)
+theorem IsFoelner.of_isFoelner_of_le {l' : Filter ι} (hfoel : IsFoelner G μ l F)
+    (hle : l' ≤ l) : IsFoelner G μ l' F where
+  eventually_measurableSet := Eventually.filter_mono hle hfoel.eventually_measurableSet
+  eventually_meas_ne_zero := Eventually.filter_mono hle hfoel.eventually_meas_ne_zero
+  eventually_meas_ne_top := Eventually.filter_mono hle hfoel.eventually_meas_ne_top
+  tendsto_meas_symmDiff (g : G) := Tendsto.mono_left (hfoel.tendsto_meas_symmDiff g) hle
+
+variable (μ) in
+noncomputable def IsFoelner.mean (l : Filter ι) (F : ι → Set X) (s : Set X) :=
+  limUnder l (fun i ↦ μ (s ∩ (F i)) / μ (F i))
+
+lemma IsFoelner.mean_univ_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelner G μ l F)
     {u : Ultrafilter ι} (hle : u ≤ l) :
-    limUnder u (fun i ↦ μ (.univ ∩ (F i)) / μ (F i)) = 1 := by
+    IsFoelner.mean μ u.toFilter F .univ = 1 := by
   refine Tendsto.limUnder_eq <| Tendsto.mono_left (tendsto_congr' ?_|>.mp tendsto_const_nhds) hle
   exact Eventually.mono
     (hfoel.eventually_meas_ne_zero.and hfoel.eventually_meas_ne_top)
     (fun _ hi ↦ by simp [ENNReal.div_self hi.1 hi.2])
 
-lemma IsFoelner.limUnder_add_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelner G μ l F)
+lemma IsFoelner.mean_add_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelner G μ l F)
     {u : Ultrafilter ι} (hle : u ≤ l) :
     ∀ s t, MeasurableSet t → Disjoint s t →
-      limUnder u (fun i ↦ μ ((s ∪ t) ∩ (F i)) / μ (F i))  =
-        limUnder u (fun i ↦ μ (s ∩ (F i)) / μ (F i)) +
-          limUnder u (fun i ↦ μ (t ∩ (F i)) / μ (F i)) := by
+      IsFoelner.mean μ u.toFilter F (s ∪ t) =
+        IsFoelner.mean μ u.toFilter F s + IsFoelner.mean μ u.toFilter F t := by
   intro s t ht hdisj
   have subset_Icc : ∀ s, ∀ᶠ i in u, μ (s ∩ (F i)) / μ (F i) ∈ Icc 0 1 :=
     fun s ↦ Eventually.mono (
@@ -96,7 +110,7 @@ lemma IsFoelner.limUnder_add_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelne
       (fun i hi ↦ by simp [ENNReal.div_le_iff hi.1 hi.2]; exact μ.mono inter_subset_right)
   obtain ⟨_, _, h₁⟩ := u.tendsto_of_eventually_mem_isCompact isCompact_Icc (subset_Icc s)
   obtain ⟨_, _, h₂⟩ := u.tendsto_of_eventually_mem_isCompact isCompact_Icc (subset_Icc t)
-  rw [Tendsto.limUnder_eq h₁, Tendsto.limUnder_eq h₂]
+  simp_rw [IsFoelner.mean, Tendsto.limUnder_eq h₁, Tendsto.limUnder_eq h₂]
   simp [union_inter_distrib_right]
   refine Tendsto.limUnder_eq <| Filter.Tendsto.congr' ?_ (Tendsto.add h₁ h₂)
   refine Eventually.mono (Eventually.filter_mono hle (hfoel.eventually_measurableSet)) ?_
@@ -106,12 +120,11 @@ lemma IsFoelner.limUnder_add_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelne
       (Disjoint.mono (inter_subset_left) (inter_subset_left) hdisj)
       (MeasurableSet.inter ht hi)]
 
-lemma IsFoelner.limUnder_smul_of_ultrafilter_le [SMulInvariantMeasure G X μ]
+lemma IsFoelner.mean_smul_of_ultrafilter_le [SMulInvariantMeasure G X μ]
     {l : Filter ι} (hfoel : IsFoelner G μ l F) {u : Ultrafilter ι} (hle : u ≤ l) :
     ∀ (g : G) (s : Set X),
-      limUnder u (fun i ↦ μ ((g • s) ∩ (F i)) / μ (F i)) =
-        limUnder u (fun i ↦ μ (s ∩ (F i)) / μ (F i)) := by
-  let m := fun t ↦ limUnder u (fun i ↦ μ (t ∩ (F i)) / μ (F i))
+      IsFoelner.mean μ u.toFilter F (g • s) = IsFoelner.mean μ u.toFilter F s := by
+  let m (t : Set X) := IsFoelner.mean μ u.toFilter F t
   intro g t
   suffices h_le : ∀ (h h' : G), m (h • t) ≤ m (h' • t) by
     simpa [one_smul] using le_antisymm (h_le g 1) (h_le 1 g)
@@ -140,7 +153,7 @@ lemma IsFoelner.limUnder_smul_of_ultrafilter_le [SMulInvariantMeasure G X μ]
       (fun i hi ↦ by simp [ENNReal.div_le_iff hi.1 hi.2]; exact μ.mono inter_subset_right)
   obtain ⟨w₁, _, h₁⟩ := u.tendsto_of_eventually_mem_isCompact isCompact_Icc (subset_Icc (h • t))
   obtain ⟨w₂, _, h₂⟩ := u.tendsto_of_eventually_mem_isCompact isCompact_Icc (subset_Icc (h' • t))
-  simp [m]
+  simp [m, IsFoelner.mean]
   rw [Tendsto.limUnder_eq h₁, Tendsto.limUnder_eq h₂, ← add_zero w₂]
   refine le_of_tendsto_of_tendsto' h₁ (Tendsto.add h₂ tendsto₀) ?_
   simp [← ENNReal.add_div]
@@ -153,11 +166,11 @@ theorem IsFoelner.amenable [SMulInvariantMeasure G X μ]
     ∃ m : Set X → ℝ≥0∞, m .univ = 1 ∧
       (∀ s t, MeasurableSet t → Disjoint s t → m (s ∪ t) = m s + m t) ∧
       ∀ (g : G) (s : Set X), m (g • s) = m s := by
-  use fun t ↦ limUnder (Ultrafilter.of l) (fun i ↦ μ (t ∩ (F i)) / μ (F i))
+  use IsFoelner.mean μ (Ultrafilter.of l).toFilter F
   refine ⟨?_, ?_, ?_⟩
-  · exact IsFoelner.limUnder_univ_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
-  · exact IsFoelner.limUnder_add_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
-  · exact IsFoelner.limUnder_smul_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
+  · exact IsFoelner.mean_univ_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
+  · exact IsFoelner.mean_add_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
+  · exact IsFoelner.mean_smul_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
 
 variable (G μ) in
 /-- The maximal Følner filter with respect to some group `G` acting on a
