@@ -3,7 +3,9 @@ Copyright (c) 2025 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Analysis.ODE.PicardLindelof
+module
+
+public import Mathlib.Analysis.ODE.PicardLindelof
 
 /-!
 # Smooth dependence on initial condition
@@ -23,6 +25,8 @@ We prove that the solution of a $C^n$ vector field has $C^n$ dependence on the i
 differential equation, dynamical system, initial value problem
 
 -/
+
+@[expose] public section
 
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
