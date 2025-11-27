@@ -3,11 +3,14 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Zify
-import Mathlib.Tactic.CancelDenoms.Core
-import Mathlib.Control.Basic
-import Mathlib.Util.AtomM
+module
+
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Lean.Meta.Tactic.Rewrite
+public meta import Mathlib.Tactic.CancelDenoms.Core
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Tactic.Zify
+public meta import Mathlib.Util.AtomM
 
 /-!
 # Linarith preprocessing
@@ -24,6 +27,8 @@ A `GlobalPreprocessor` is a function `List Expr → TacticM (List Expr)`. Users 
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith
 
@@ -99,7 +104,7 @@ open Zify
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
 or the negation thereof.
 -/
-partial def isNatProp (e : Expr) : MetaM Bool := succeeds <| do
+partial def isNatProp (e : Expr) : MetaM Bool := succeeds do
   let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
@@ -161,7 +166,7 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    withNewMCtxDepth <| AtomM.run .reducible <| do
+    withNewMCtxDepth <| AtomM.run .reducible do
     let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?

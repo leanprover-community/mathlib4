@@ -3,11 +3,13 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.AlgebraicTopology.ExtraDegeneracy
-import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.RepresentationTheory.Rep
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
@@ -57,6 +59,8 @@ computing group (co)homology.
  * `Rep.standardResolution`
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -129,7 +133,7 @@ def ofMulActionBasisAux :
     (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
   { e with
     map_smul' := fun r x => by
-      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
+      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← map_smul e]
       congr 1
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
       · simp only [smul_zero]
@@ -271,9 +275,9 @@ equipped with the representation induced by the diagonal action of `G`. -/
 def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
-instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
-    Projective ((standardComplex k G).X n) :=
-  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
+instance x_projective (G : Type u) [Group G] (n : ℕ) :
+    Projective ((standardComplex k G).X n) := by
+  classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
@@ -370,7 +374,7 @@ end standardComplex
 
 open HomologicalComplex.Hom standardComplex
 
-variable [Group G] [DecidableEq G]
+variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
@@ -395,6 +399,7 @@ namespace barComplex
 
 open Rep Finsupp
 
+variable [DecidableEq G]
 variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
@@ -410,7 +415,7 @@ variable {k G} in
 lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
-        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+        single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d]
 
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
@@ -425,6 +430,8 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
 end barComplex
 
 open barComplex
+
+variable [DecidableEq G]
 
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to

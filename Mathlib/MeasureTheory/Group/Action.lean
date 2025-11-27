@@ -3,22 +3,26 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Dynamics.Minimal
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Group.Defs
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Dynamics.Minimal
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measures invariant under group actions
 
 A measure `μ : Measure α` is said to be *invariant* under an action of a group `G` if scalar
-multiplication by `c : G` is a measure preserving map for all `c`. In this file we define a
+multiplication by `c : G` is a measure-preserving map for all `c`. In this file we define a
 typeclass for measures invariant under action of an (additive or multiplicative) group and prove
 some basic properties of such measures.
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal NNReal Pointwise Topology
@@ -216,7 +220,7 @@ variable [MeasurableSpace G] [MeasurableSMul G α] in
 
 - 5: for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, scalar multiplication by `c` is a measure preserving map. -/
+- 6: for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
@@ -256,7 +260,7 @@ theorem smulInvariantMeasure_tfae :
 
 - 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, vector addition of `c` is a measure preserving map. -/
+- 6: for any `c : G`, vector addition of `c` is a measure-preserving map. -/
 add_decl_doc vaddInvariantMeasure_tfae
 
 variable {G}

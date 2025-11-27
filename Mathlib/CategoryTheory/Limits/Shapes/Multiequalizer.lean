@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.ConeCategory
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-!
 
@@ -25,6 +27,8 @@ an equalizer between products (and analogously for multicoequalizers).
 Prove that the limit of any diagram is a multiequalizer (and similarly for colimits).
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Limits
@@ -92,7 +96,7 @@ inductive WalkingMulticospan (J : MulticospanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMulticospan J
   | right : J.R → WalkingMulticospan J
 
-/-- The type underlying the multiecoqualizer diagram. -/
+/-- The type underlying the multicoequalizer diagram. -/
 inductive WalkingMultispan (J : MultispanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMultispan J
   | right : J.R → WalkingMultispan J
@@ -183,6 +187,31 @@ lemma Hom.id_eq_id (X : WalkingMultispan J) : Hom.id X = 𝟙 X := rfl
 @[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+
+variable (J) in
+/-- The bijection `WalkingMultispan J ≃ J.L ⊕ J.R`. -/
+def equiv : WalkingMultispan J ≃ J.L ⊕ J.R where
+  toFun x := match x with
+    | left a => Sum.inl a
+    | right b => Sum.inr b
+  invFun := Sum.elim left right
+  left_inv := by rintro (_ | _) <;> rfl
+  right_inv := by rintro (_ | _) <;> rfl
+
+variable (J) in
+/-- The bijection `Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.R ⊕ J.R`. -/
+def arrowEquiv :
+    Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.L ⊕ J.L where
+  toFun f := match f.hom with
+    | .id x => Sum.inl x
+    | .fst a => Sum.inr (Sum.inl a)
+    | .snd a => Sum.inr (Sum.inr a)
+  invFun :=
+    Sum.elim (fun X ↦ Arrow.mk (𝟙 X))
+      (Sum.elim (fun a ↦ Arrow.mk (Hom.fst a : left _ ⟶ right _))
+        (fun a ↦ Arrow.mk (Hom.snd a : left _ ⟶ right _)))
+  left_inv := by rintro ⟨_, _, (_ | _ | _)⟩ <;> rfl
+  right_inv := by rintro (_ | _ | _) <;> rfl
 
 end WalkingMultispan
 
@@ -754,7 +783,7 @@ abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
 abbrev HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   HasColimit I.multispan
 
-/-- The multiecoqualizer of `I : MultispanIndex J C`. -/
+/-- The multicoequalizer of `I : MultispanIndex J C`. -/
 abbrev multicoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     [HasMulticoequalizer I] : C :=
   colimit I.multispan
