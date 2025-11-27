@@ -10,9 +10,9 @@ public import Mathlib.Analysis.Complex.Trigonometric
 /-!
 # Dirichlet kernel
 
-This file contains the definitions of Dirichlet kernel.
+## TODO : define the Dirichlet kernel
 
-## TODO : $S_n(f)(x) = (D_n * f)(x)$
+## TODO : Show that $S_n(f)(x) = (D_n * f)(x)$
 
 -/
 
@@ -22,7 +22,7 @@ open Real
 
 section
 
-theorem sum_cos_arith_progression (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
+theorem sum_range_cos_mul_add (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
     ∑ k ∈ Finset.range n, cos ((k : ℝ) * x + a)
     = sin (n * x / 2) / sin (x / 2) * cos ((n - 1 : ℝ) * x / 2 + a) := by
   induction n with
@@ -38,7 +38,7 @@ theorem sum_cos_arith_progression (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0)
       ring_nf
     linarith
 
-theorem sum_sin_arith_progression (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
+theorem sum_range_sin_mul_add (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
     ∑ k ∈ Finset.range n, sin ((k : ℝ) * x + a)
     = sin (n * x / 2) / sin (x / 2) * sin ((n - 1 : ℝ) * x / 2 + a) := by
   induction n with
