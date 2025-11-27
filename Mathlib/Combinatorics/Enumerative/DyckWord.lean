@@ -3,9 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
-import Mathlib.Combinatorics.Enumerative.Catalan
-import Mathlib.Tactic.Positivity
+module
+
+public import Batteries.Data.List.Count
+public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Tactic.Positivity
+import Mathlib.Data.Tree.Basic
 
 /-!
 # Dyck words
@@ -40,6 +43,8 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 While any two-valued type could have been used for `DyckStep`, a new enumerated type is used here
 to emphasise that the definition of a Dyck word does not depend on that underlying type.
 -/
+
+@[expose] public section
 
 open List
 
@@ -563,7 +568,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `p.firstReturn` is positive if `p` is nonzero. -/
 @[positivity DyckWord.firstReturn _]
-def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(DyckWord.firstReturn $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a

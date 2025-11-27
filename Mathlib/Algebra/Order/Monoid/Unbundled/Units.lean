@@ -3,13 +3,16 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Lemmas for units in an ordered monoid
 -/
+
+@[expose] public section
 
 variable {M : Type*} [Monoid M] [LE M]
 
@@ -19,7 +22,7 @@ section MulLeftMono
 variable [MulLeftMono M] (u : Mˣ) {a b : M}
 
 theorem mulLECancellable_val : MulLECancellable (↑u : M) := fun _ _ h ↦ by
-  simpa using mul_le_mul_left' h ↑u⁻¹
+  simpa using mul_le_mul_right h ↑u⁻¹
 
 private theorem mul_le_mul_iff_left : u * a ≤ u * b ↔ a ≤ b :=
   u.mulLECancellable_val.mul_le_mul_iff_left
@@ -55,7 +58,7 @@ section MulRightMono
 variable [MulRightMono M] {a b : M} (u : Mˣ)
 
 private theorem mul_le_mul_iff_right : a * u ≤ b * u ↔ a ≤ b :=
-  ⟨(by simpa using mul_le_mul_right' · ↑u⁻¹), (mul_le_mul_right' · _)⟩
+  ⟨(by simpa using mul_le_mul_left · ↑u⁻¹), (mul_le_mul_left · _)⟩
 
 theorem mul_inv_le_iff : a * u⁻¹ ≤ b ↔ a ≤ b * u := by
   rw [← u.mul_le_mul_iff_right, u.inv_mul_cancel_right]

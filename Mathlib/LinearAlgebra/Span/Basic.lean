@@ -4,15 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Module.Submodule.EqLocus
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -25,6 +27,8 @@ import Mathlib.Order.OmegaCompletePartialOrder
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
 
 -/
+
+@[expose] public section
 
 variable {R R₂ K M M₂ V S : Type*}
 
@@ -428,6 +432,24 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
+lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
+    (hs : ∀ i, s i ∈ p) :
+    span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
+  rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
+  simp [map_span, ← Set.range_comp, Function.comp_def]
+
+lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
+    {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
+    p.comap f ≤ q.comap f ↔ p ≤ q := by
+  rw [← Submodule.map_le_iff_le_comap, Submodule.map_comap_eq_of_le hp]
+
+lemma comap_sup_of_injective {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂] {p q : Submodule R₂ M₂}
+    (hf : Function.Injective f) (hp : p ≤ LinearMap.range f) (hq : q ≤ LinearMap.range f) :
+    comap f (p ⊔ q) = comap f p ⊔ comap f q := by
+  apply map_injective_of_injective hf
+  rw [map_sup, map_comap_eq_self, map_comap_eq_self hp, map_comap_eq_self hq]
+  simp [sup_le_iff, hp, hq]
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -589,6 +611,11 @@ theorem map_strict_mono_of_ker_inf_eq {f : F} (hab : p < p')
     (q : LinearMap.ker f ⊓ p = LinearMap.ker f ⊓ p') : Submodule.map f p < Submodule.map f p' :=
   map_strict_mono_or_ker_sup_lt_ker_sup f hab |>.resolve_right q.not_lt
 
+/-- Version of `disjoint_span_singleton` that works when the scalars are not a field. -/
+lemma disjoint_span_singleton'' {s : Submodule R M} {x : M} :
+    Disjoint s (R ∙ x) ↔ ∀ r : R, r • x ∈ s → r • x = 0 := by
+  rw [disjoint_comm]; simp +contextual [disjoint_def, mem_span_singleton]
+
 end Ring
 
 section DivisionRing
@@ -612,21 +639,14 @@ theorem covBy_span_singleton_sup {x : V} {s : Submodule K V} (h : x ∉ s) : Cov
   ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  refine disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, ?_⟩
-  intro H y hy hyx
-  obtain ⟨c, rfl⟩ := mem_span_singleton.1 hyx
-  by_cases hc : c = 0
-  · rw [hc, zero_smul]
-  · rw [s.smul_mem_iff hc] at hy
-    rw [H hy, smul_zero]
+  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_swap (β := ¬_),
+    s.smul_mem_iff] using ⟨fun h ↦ h _ one_ne_zero, fun h _ _ ↦ h⟩
 
-theorem disjoint_span_singleton' (x0 : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s :=
-  disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
+theorem disjoint_span_singleton' (hx : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s := by
+  simp [disjoint_span_singleton, hx]
 
 lemma disjoint_span_singleton_of_notMem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
-  rw [disjoint_span_singleton]
-  intro h
-  contradiction
+  simp [disjoint_span_singleton, hx]
 
 @[deprecated (since := "2025-05-23")]
 alias disjoint_span_singleton_of_not_mem := disjoint_span_singleton_of_notMem

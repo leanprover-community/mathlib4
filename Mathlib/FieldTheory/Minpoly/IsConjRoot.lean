@@ -3,10 +3,12 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Extension
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.FieldTheory.Normal.Defs
+module
+
+public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Normal.Defs
 
 /-!
 # Conjugate roots
@@ -35,6 +37,8 @@ over `K` if they have the same minimal polynomial over `K`.
 ## Tags
 conjugate root, minimal polynomial
 -/
+
+@[expose] public section
 
 
 open Polynomial minpoly IntermediateField
@@ -365,7 +369,7 @@ of `x` splits in `L`, then `x` is not in `K` if and only if there exists a conju
 root of `x` over `K` in `L` which is not equal to `x` itself.
 -/
 theorem notMem_iff_exists_ne_and_isConjRoot {x : L} (h : IsSeparable K x)
-    (sp : (minpoly K x).Splits (algebraMap K L)) :
+    (sp : ((minpoly K x).map (algebraMap K L)).Splits) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ y : L, x ≠ y ∧ IsConjRoot K x y := by
   calc
     _ ↔ 2 ≤ (minpoly K x).natDegree := (minpoly.two_le_natDegree_iff h.isIntegral).symm
