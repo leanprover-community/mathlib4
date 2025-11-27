@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Dedup
-import Mathlib.Data.List.Infix
+module
+
+public import Mathlib.Data.Multiset.Dedup
+public import Mathlib.Data.List.Infix
 
 /-!
 # Preparations for defining operations on `Finset`.
@@ -12,6 +14,8 @@ import Mathlib.Data.List.Infix
 The operations here ignore multiplicities,
 and prepare for defining the corresponding operations on `Finset`.
 -/
+
+@[expose] public section
 
 
 -- Assert that we define `Finset` without the material on the set lattice.
@@ -92,7 +96,7 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
   have eq :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
-    fun _ => funext fun _ => Subtype.eq rfl
+    fun _ => funext fun _ => Subtype.ext rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
       (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
@@ -154,7 +158,7 @@ theorem ndunion_le_add (s t : Multiset α) : ndunion s t ≤ s + t :=
 theorem ndunion_le {s t u : Multiset α} : ndunion s t ≤ u ↔ s ⊆ u ∧ t ≤ u :=
   Multiset.induction_on s (by simp [zero_ndunion])
     (fun _ _ h =>
-      by simp only [cons_ndunion, mem_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
+      by simp only [cons_ndunion, ndinsert_le, and_comm, cons_subset, and_left_comm, h,
         and_assoc])
 
 theorem subset_ndunion_left (s t : Multiset α) : s ⊆ ndunion s t := fun _ h =>

@@ -3,20 +3,24 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of well order continuous functors
 
-Given a well ordered type `J` and a functor `G : C ⥤ D`,
+Given a well-ordered type `J` and a functor `G : C ⥤ D`,
 we define a type class `PreservesWellOrderContinuousOfShape J G`
 saying that `G` preserves colimits of shape `Set.Iio j`
 for any limit element `j : J`. It follows that if
 `F : J ⥤ C` is well order continuous, then so is `F ⋙ G`.
 
 -/
+
+@[expose] public section
 
 universe w w' v v' v'' u' u u''
 

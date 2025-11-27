@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Martingale.Basic
+module
+
+public import Mathlib.Probability.Martingale.Basic
 
 /-!
 # Centering lemma for stochastic processes
@@ -28,6 +30,8 @@ From a process `f`, a filtration `ℱ` and a measure `μ`, we define two process
 
 -/
 
+@[expose] public section
+
 
 open TopologicalSpace Filter
 
@@ -48,11 +52,11 @@ theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
   simp_rw [predictablePart, Finset.range_zero, Finset.sum_empty]
 
 theorem adapted_predictablePart : Adapted ℱ fun n => predictablePart f ℱ μ (n + 1) := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hin =>
+  Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 
 theorem adapted_predictablePart' : Adapted ℱ fun n => predictablePart f ℱ μ n := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hin =>
+  Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_le hin))
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
@@ -113,7 +117,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
     add_zero (∑ i ∈ Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
   refine (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add ?_
   refine (eventuallyEq_sum fun k hk => h_ge k (Finset.mem_Ico.mp hk).1).trans ?_
-  simp only [Finset.sum_const_zero, Pi.zero_apply]
+  simp only [Finset.sum_const_zero]
   rfl
 
 -- The following two lemmas demonstrate the essential uniqueness of the decomposition

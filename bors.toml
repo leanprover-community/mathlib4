@@ -1,4 +1,4 @@
-status = ["CI Success"]
+status = ["Build", "Lint style", "Post-Build Step"]
 use_squash_merge = true
 timeout_sec = 28800
 block_labels = ["WIP", "blocked-by-other-PR", "merge-conflict", "awaiting-CI", "bench-after-CI"]

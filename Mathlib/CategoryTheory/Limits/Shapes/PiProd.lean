@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 
 # A product as a binary product
@@ -13,6 +15,8 @@ We write a product indexed by `I` as a binary product of the products indexed by
 and its complement.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 
@@ -65,6 +69,6 @@ lemma Pi.map_eq_prod_map [∀ i, Decidable (P i)] : Pi.map f =
   rw [← Category.assoc, Iso.eq_comp_inv]
   dsimp only [IsLimit.conePointUniqueUpToIso, binaryFanOfProp, prodIsProd]
   apply prod.hom_ext
-  all_goals aesop_cat
+  all_goals cat_disch
 
 end CategoryTheory.Limits

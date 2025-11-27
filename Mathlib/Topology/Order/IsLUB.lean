@@ -3,12 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+module
 
-import Mathlib.Topology.Order.LeftRightNhds
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Properties of LUB and GLB in an order topology
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -225,15 +228,15 @@ theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCoun
     obtain ⟨z, hyz, hzx⟩ := hs.exists_between hy
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
-  apply hx.exists_seq_strictMono_tendsto_of_notMem (by aesop) hnonempty |>.imp
-  aesop
+  apply hx.exists_seq_strictMono_tendsto_of_notMem (by simp) hnonempty |>.imp
+  simp_all
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Iio x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ := exists_lt x
   apply hs.exists_seq_strictMono_tendsto_of_lt (exists_lt x).choose_spec |>.imp
-  aesop
+  simp_all
 
 theorem DenseRange.exists_seq_strictMono_tendsto_of_lt {β : Type*} [LinearOrder β]
     [DenselyOrdered α] [FirstCountableTopology α] {f : β → α} {x y : α} (hf : DenseRange f)
@@ -248,7 +251,7 @@ theorem DenseRange.exists_seq_strictMono_tendsto_of_lt {β : Type*} [LinearOrder
 
 theorem DenseRange.exists_seq_strictMono_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
     [NoMinOrder α] [FirstCountableTopology α] {f : β → α} (hf : DenseRange f) (hmono : Monotone f)
-    (x : α):
+    (x : α) :
     ∃ u : ℕ → β, StrictMono u ∧ (∀ n, f (u n) ∈ Iio x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) := by
   rcases Dense.exists_seq_strictMono_tendsto hf x with ⟨u, hu, huxf, hlim⟩
   have hux (n : ℕ) : u n ∈ Iio x := (huxf n).1
@@ -318,7 +321,7 @@ theorem DenseRange.exists_seq_strictAnti_tendsto_of_lt {β : Type*} [LinearOrder
 
 theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [DenselyOrdered α]
     [NoMaxOrder α] [FirstCountableTopology α] {f : β → α} (hf : DenseRange f) (hmono : Monotone f)
-    (x : α):
+    (x : α) :
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
   hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
 

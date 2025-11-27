@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Eckmann-Hilton argument
@@ -20,6 +22,8 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
   over a unital binary operation, then the group is commutative.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -61,8 +65,8 @@ theorem mul : m₁ = m₂ := by
   funext a b
   calc
     m₁ a b = m₁ (m₂ a e₁) (m₂ e₁ b) := by
-      { simp only [one h₁ h₂ distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id] }
-    _ = m₂ a b := by simp only [distrib, h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id]
+      { simp only [one h₁ h₂ distrib, h₂.left_id, h₂.right_id] }
+    _ = m₂ a b := by simp only [distrib, h₁.left_id, h₁.right_id]
 
 /-- If a type carries two unital binary operations that distribute over each other,
 then these operations are commutative.
@@ -81,8 +85,8 @@ theorem mul_assoc : Std.Associative m₂ :=
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/
 @[to_additive
-      "If a type carries a unital additive magma structure that distributes over a unital binary
-      operation, then the additive magma structure is a commutative additive monoid."]
+      /-- If a type carries a unital additive magma structure that distributes over a unital binary
+      operation, then the additive magma structure is a commutative additive monoid. -/]
 abbrev commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
   { h with
@@ -92,8 +96,8 @@ abbrev commMonoid [h : MulOneClass X]
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
 @[to_additive
-      "If a type carries an additive group structure that distributes over a unital binary
-      operation, then the additive group is commutative."]
+      /-- If a type carries an additive group structure that distributes over a unital binary
+      operation, then the additive group is commutative. -/]
 abbrev commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { EckmannHilton.commMonoid h₁ distrib, G with .. }

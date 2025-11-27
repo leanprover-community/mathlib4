@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.RingTheory.Artinian.Ring
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.Unramified.Finite
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.RingTheory.Unramified.Finite
 
 /-!
 # Unramified algebras over fields
@@ -29,19 +31,20 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 -/
 
+@[expose] public section
+
+open Algebra Module Polynomial
+open scoped TensorProduct
+
 universe u
 
 variable (K A L : Type*) [Field K] [Field L] [CommRing A] [Algebra K A] [Algebra K L]
-
-open Algebra Polynomial
-
-open scoped TensorProduct
 
 namespace Algebra.FormallyUnramified
 
 theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
   rw [iff_comp_injective]
-  intros B _ _ I hI f₁ f₂ e
+  intro B _ _ I hI f₁ f₂ e
   ext x
   have : f₁ x - f₂ x ∈ I := by
     simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun e x
@@ -77,7 +80,7 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     congr 1
     apply LinearMap.restrictScalars_injective K
     apply _root_.TensorProduct.ext'
-    intros r s
+    intro r s
     obtain ⟨s, rfl⟩ := e.surjective s
     suffices s • (Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)) r = r • e s by
       simpa [ofId, e']
@@ -111,17 +114,11 @@ theorem isField_of_isAlgClosed_of_isLocalRing
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
   obtain ⟨x, rfl⟩ := (bijective_of_isAlgClosed_of_isLocalRing K A).surjective x
-  show _ = 0
+  change _ = 0
   rw [← (algebraMap K A).map_zero]
   by_contra hx'
   exact hx ((isUnit_iff_ne_zero.mpr
     (fun e ↦ hx' ((algebraMap K A).congr_arg e))).map (algebraMap K A))
-
-@[deprecated (since := "2024-11-12")]
-alias bijective_of_isAlgClosed_of_localRing := bijective_of_isAlgClosed_of_isLocalRing
-
-@[deprecated (since := "2024-11-12")]
-alias isField_of_isAlgClosed_of_localRing := isField_of_isAlgClosed_of_isLocalRing
 
 include K in
 theorem isReduced_of_field :
@@ -204,10 +201,10 @@ theorem range_eq_top_of_isPurelyInseparable
 theorem isSeparable : Algebra.IsSeparable K L := by
   have := finite_of_free (R := K) (S := L)
   rw [← separableClosure.eq_top_iff]
-  have := of_comp K (separableClosure K L) L
+  have := of_restrictScalars K (separableClosure K L) L
   have := EssFiniteType.of_comp K (separableClosure K L) L
   ext
-  show _ ↔ _ ∈ (⊤ : Subring _)
+  change _ ↔ _ ∈ (⊤ : Subring _)
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]
   simp
 

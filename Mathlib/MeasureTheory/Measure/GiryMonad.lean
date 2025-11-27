@@ -3,7 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # The Giry monad
@@ -26,6 +28,8 @@ monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 giry monad
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -59,6 +63,15 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
   refine Measurable.add ?_ ?_
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
+
+-- There is no typeclass for measurability of `SMul` only on that side, otherwise we could
+-- turn that into an instance.
+@[fun_prop]
+lemma _root_.Measurable.smul_measure {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure β) :
+    Measurable (fun x ↦ f x • μ) := by
+  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
+  simp only [Measure.smul_apply, smul_eq_mul]
+  fun_prop
 
 theorem measurable_measure {μ : α → Measure β} :
     Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=
@@ -102,7 +115,7 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine .iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine .iSup fun n => Finset.measurable_fun_sum _ fun i _ => ?_
   refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 
@@ -166,7 +179,7 @@ theorem join_zero : (0 : Measure (Measure α)).join = 0 := by
 @[fun_prop]
 theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α) :=
   measurable_of_measurable_coe _ fun s hs => by
-    simp only [join_apply hs]; exact measurable_lintegral (measurable_coe hs)
+    simp only [join_apply hs, measurable_lintegral (measurable_coe hs)]
 
 theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : AEMeasurable f (join m)) :
     ∫⁻ x, f x ∂join m = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
@@ -297,7 +310,7 @@ theorem join_map_map {f : α → β} (hf : Measurable f) (μ : Measure (Measure 
   simp_rw [map_apply hf hs]
 
 theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ) = join (join μ) := by
-  show bind μ join = join (join μ)
+  change bind μ join = join (join μ)
   rw [join_eq_bind, join_eq_bind, bind_bind aemeasurable_id aemeasurable_id]
   apply congr_arg (bind μ)
   funext ν

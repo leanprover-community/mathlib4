@@ -130,7 +130,7 @@ dependencies should only be included when CI is building documentation.
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
 
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
-* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
+* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
 * Kevin Buzzard (@kbuzzard): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
@@ -152,7 +152,8 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kim Morrison (@kim-em): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
-* Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics
+* Michael Rothgang (@grunweg): differential geometry, analysis, topology, linters
+* Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics, linter
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 

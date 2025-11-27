@@ -3,8 +3,10 @@ Copyright (c) 2025 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.MeasureTheory.Group.LIntegral
+module
+
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
 # Convolution of functions using the Lebesgue integral
@@ -31,6 +33,8 @@ the order of the densities would be flipped.
   is the additive convolution of `f` and `g` w.r.t. the measure `μ`.
 -/
 
+@[expose] public section
+
 namespace MeasureTheory
 open Measure
 open scoped ENNReal
@@ -42,7 +46,7 @@ section NoGroup
 variable [Mul G] [Inv G]
 
 /-- Multiplicative convolution of functions. -/
-@[to_additive "Additive convolution of functions"]
+@[to_additive /-- Additive convolution of functions -/]
 noncomputable def mlconvolution (f g : G → ℝ≥0∞) (μ : Measure G) :
     G → ℝ≥0∞ := fun x ↦ ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ
 
@@ -60,19 +64,19 @@ scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66 => MeasureTheory.lc
 scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.lconvolution f g volume
 
 /- The definition of multiplicative convolution of functions. -/
-@[to_additive "The definition of additive convolution of functions."]
+@[to_additive /-- The definition of additive convolution of functions. -/]
 theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G} :
     (f ⋆ₘₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := rfl
 
 /-- Convolution of the zero function with a function returns the zero function. -/
 @[to_additive (attr := simp)
-"Convolution of the zero function with a function returns the zero function."]
+/-- Convolution of the zero function with a function returns the zero function. -/]
 theorem zero_mlconvolution (f : G → ℝ≥0∞) (μ : Measure G) : 0 ⋆ₘₗ[μ] f = 0 := by
   ext; simp [mlconvolution]
 
 /-- Convolution of a function with the zero function returns the zero function. -/
 @[to_additive (attr := simp)
-"Convolution of a function with the zero function returns the zero function."]
+/-- Convolution of a function with the zero function returns the zero function. -/]
 theorem mlconvolution_zero (f : G → ℝ≥0∞) (μ : Measure G) : f ⋆ₘₗ[μ] 0 = 0 := by
   ext; simp [mlconvolution]
 
@@ -82,7 +86,7 @@ variable [MeasurableMul₂ G] [MeasurableInv G]
 
 /-- The convolution of measurable functions is measurable. -/
 @[to_additive (attr := measurability, fun_prop)
-"The convolution of measurable functions is measurable."]
+/-- The convolution of measurable functions is measurable. -/]
 theorem measurable_mlconvolution {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₘₗ[μ] g) := by
   unfold mlconvolution
@@ -100,7 +104,7 @@ variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
 
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/
 @[to_additive (attr := measurability, fun_prop)
-"The convolution of `AEMeasurable` functions is `AEMeasurable`."]
+/-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/]
 theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⋆ₘₗ[μ] g) μ := by
@@ -122,7 +126,7 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
   simpa [mul_assoc] using by fun_prop
 
 /- Convolution is associative. -/
-@[to_additive "Convolution is associative."]
+@[to_additive /-- Convolution is associative. -/]
 theorem mlconvolution_assoc {f g k : G → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hk : Measurable k) :
     f ⋆ₘₗ[μ] g ⋆ₘₗ[μ] k = (f ⋆ₘₗ[μ] g) ⋆ₘₗ[μ] k :=
@@ -135,7 +139,7 @@ section CommGroup
 variable [CommGroup G] [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure G}
 
 /-- Convolution is commutative when the group is commutative. -/
-@[to_additive "Convolution is commutative when the group is commutative."]
+@[to_additive /-- Convolution is commutative when the group is commutative. -/]
 theorem mlconvolution_comm [IsMulLeftInvariant μ] [IsInvInvariant μ] {f g : G → ℝ≥0∞} :
     (f ⋆ₘₗ[μ] g) = (g ⋆ₘₗ[μ] f) := by
   ext x
