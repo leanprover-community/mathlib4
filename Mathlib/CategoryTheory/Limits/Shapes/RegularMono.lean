@@ -244,7 +244,7 @@ instance (priority := 100) strongMonoCategory_of_regularMonoCategory [IsRegularM
     strongMono_of_regularMono <| regularMonoOfMono f
 
 /-- A regular epimorphism is a morphism which is the coequalizer of some parallel pair. -/
-class RegularEpi (f : X ⟶ Y) where
+structure RegularEpi (f : X ⟶ Y) where
   /-- An object from `C` -/
   W : C
   /-- Two maps to the domain of `f` -/
@@ -257,8 +257,8 @@ class RegularEpi (f : X ⟶ Y) where
 attribute [reassoc] RegularEpi.w
 
 /-- Every regular epimorphism is an epimorphism. -/
-instance (priority := 100) RegularEpi.epi (f : X ⟶ Y) [RegularEpi f] : Epi f :=
-  epi_of_isColimit_cofork RegularEpi.isColimit
+def RegularEpi.epi (f : X ⟶ Y) (h : RegularEpi f) : Epi f :=
+  epi_of_isColimit_cofork h.isColimit
 
 /-- Every isomorphism is a regular epimorphism. -/
 def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
@@ -270,7 +270,7 @@ def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
 
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
-    (e : Arrow.mk f ≅ Arrow.mk g) [h : RegularEpi f] :
+    (e : Arrow.mk f ≅ Arrow.mk g) (h : RegularEpi f) :
     RegularEpi g where
   W := h.W
   left := h.left ≫ e.hom.left
@@ -301,14 +301,15 @@ instance MorphismProperty.regularEpi.respectsIso :
     (MorphismProperty.regularEpi C).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
-instance isRegularEpi_of_regularEpi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
+lemma isRegularEpi_of_regularEpi {f : X ⟶ Y} (h : RegularEpi f) : IsRegularEpi f := ⟨h⟩
 
 /-- Given `IsRegularEpi f`, a choice of data for `RegularEpi f`. -/
 def regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
     RegularEpi f :=
   h.some
 
-instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+/-- The chosen coequalizer of a parallel pair is a regular epimorphism. -/
+def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
   W := X
   left := g
@@ -329,26 +330,28 @@ noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f 
   isColimit := hc
 
 /-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
-def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
+def effectiveEpiStructOfRegularEpi {B X : C} {f : X ⟶ B} (hf : RegularEpi f) :
     EffectiveEpiStruct f where
-  desc _ h := Cofork.IsColimit.desc RegularEpi.isColimit _ (h _ _ RegularEpi.w)
-  fac _ _ := Cofork.IsColimit.π_desc' RegularEpi.isColimit _ _
-  uniq _ _ _ hg := Cofork.IsColimit.hom_ext RegularEpi.isColimit (hg.trans
+  desc _ h := Cofork.IsColimit.desc hf.isColimit _ (h _ _ hf.w)
+  fac _ _ := Cofork.IsColimit.π_desc' hf.isColimit _ _
+  uniq _ _ _ hg := Cofork.IsColimit.hom_ext hf.isColimit (hg.trans
     (Cofork.IsColimit.π_desc' _ _ _).symm)
 
-instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
-  ⟨⟨effectiveEpiStructOfRegularEpi f⟩⟩
+lemma effectiveEpi_of_regularEpi {B X : C} {f : X ⟶ B} (h : RegularEpi f) : EffectiveEpi f :=
+  ⟨⟨effectiveEpiStructOfRegularEpi h⟩⟩
+
+instance {B X : C} {f : X ⟶ B} [h : IsRegularEpi f] : EffectiveEpi f :=
+  effectiveEpi_of_regularEpi <| regularEpiOfIsRegularEpi f
 
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
 theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : EffectiveEpi f :=
-  let _ := regularEpiOfKernelPair f hc
-  inferInstance
+  effectiveEpi_of_regularEpi <| regularEpiOfKernelPair f hc
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
 /-- An effective epi which has a kernel pair is a regular epi. -/
-noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -371,19 +374,26 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
       | one => simp [this]
     uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
 
+noncomputable instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+    [EffectiveEpi f] : IsRegularEpi f :=
+  isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
+
 /-- Every split epimorphism is a regular epimorphism. -/
-instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
+def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
   W := X
   left := 𝟙 X
   right := f ≫ section_ f
   isColimit := isSplitEpiCoequalizes f
 
+instance (priority := 100) (f : X ⟶ Y) [IsSplitEpi f] : IsRegularEpi f :=
+  isRegularEpi_of_regularEpi <| RegularEpi.ofSplitEpi f
+
 /-- If `f` is a regular epi, then every morphism `k : X ⟶ W` coequalizing `RegularEpi.left` and
 `RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
-def RegularEpi.desc' {W : C} (f : X ⟶ Y) [RegularEpi f] (k : X ⟶ W)
-    (h : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ k = RegularEpi.right ≫ k) :
+def RegularEpi.desc' {W : C} (f : X ⟶ Y) (hf : RegularEpi f) (k : X ⟶ W)
+    (h : hf.left ≫ k = hf.right ≫ k) :
     { l : Y ⟶ W // f ≫ l = k } :=
-  Cofork.IsColimit.desc' RegularEpi.isColimit _ h
+  Cofork.IsColimit.desc' hf.isColimit _ h
 
 /-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
 
@@ -391,7 +401,7 @@ See also `Pushout.sndOfEpi` for the basic epimorphism version, and
 `regularOfIsPushoutFstOfRegular` for the flipped version.
 -/
 def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
-    [gr : RegularEpi g] (comm : f ≫ h = g ≫ k) (t : IsColimit (PushoutCocone.mk _ _ comm)) :
+    (gr : RegularEpi g) (comm : f ≫ h = g ≫ k) (t : IsColimit (PushoutCocone.mk _ _ comm)) :
     RegularEpi h where
   W := gr.W
   left := gr.left ≫ f
@@ -408,6 +418,7 @@ def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
     intro m w
     have z := w.trans hp₁.symm
     apply t.hom_ext
+    have := gr.epi
     apply (PushoutCocone.mk _ _ comm).coequalizer_ext
     · exact z
     · erw [← cancel_epi g, ← Category.assoc, ← eq_whisker comm]
@@ -420,16 +431,18 @@ See also `Pushout.fstOfEpi` for the basic epimorphism version, and
 `regularOfIsPushoutSndOfRegular` for the flipped version.
 -/
 def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
-    [RegularEpi f] (comm : f ≫ h = g ≫ k) (t : IsColimit (PushoutCocone.mk _ _ comm)) :
+    (hf : RegularEpi f) (comm : f ≫ h = g ≫ k) (t : IsColimit (PushoutCocone.mk _ _ comm)) :
     RegularEpi k :=
-  regularOfIsPushoutSndOfRegular comm.symm (PushoutCocone.flipIsColimit t)
+  regularOfIsPushoutSndOfRegular hf comm.symm (PushoutCocone.flipIsColimit t)
 
 @[deprecated "No replacement" (since := "2025-11-20")]
-instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] : StrongEpi f :=
+instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
+  have := isRegularEpi_of_regularEpi h
   inferInstance
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
-theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=
+theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) (h : RegularEpi f) [Mono f] : IsIso f :=
+  have := isRegularEpi_of_regularEpi h
   isIso_of_mono_of_strongEpi _
 
 section
@@ -457,7 +470,7 @@ instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategor
 instance (priority := 100) strongEpiCategory_of_regularEpiCategory [IsRegularEpiCategory C] :
     StrongEpiCategory C where
   strongEpi_of_epi f _ := by
-    haveI := regularEpiOfEpi f
+    haveI := isRegularEpi_of_regularEpi <| regularEpiOfEpi f
     infer_instance
 
 end CategoryTheory
