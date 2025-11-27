@@ -78,7 +78,7 @@ def NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono f] : RegularMono f :=
     right := 0
     w := by simpa using I.w }
 
-instance (priority := 100)  (f : X ⟶ Y) [I : NormalMono f] : IsRegularMono f := ⟨I.regularMono⟩
+instance (priority := 100) (f : X ⟶ Y) [I : NormalMono f] : IsRegularMono f := ⟨I.regularMono⟩
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
 a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
