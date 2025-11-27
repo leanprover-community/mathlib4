@@ -3,11 +3,13 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Ring.Archimedean
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Real.CompleteField
-import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Order.Quotient
+module
+
+public import Mathlib.Algebra.Order.Ring.Archimedean
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Data.Real.CompleteField
+public import Mathlib.Order.Quotient
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Standard part function
@@ -26,6 +28,8 @@ standard part function on `Hyperreal`.
 
 Redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`.
 -/
+
+@[expose] public section
 
 namespace ArchimedeanClass
 variable
