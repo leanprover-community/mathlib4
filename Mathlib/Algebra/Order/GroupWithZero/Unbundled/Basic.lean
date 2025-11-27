@@ -3,13 +3,15 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Lemmas on the monotone multiplication typeclasses
@@ -17,6 +19,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by proving several
 lemmas that do not immediately follow from the typeclass specifications.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -1342,7 +1346,7 @@ attribute [local instance] PosMulReflectLT.toPosMulStrictMono PosMulMono.toMulPo
   PosMulStrictMono.toMulPosStrictMono PosMulReflectLT.toMulPosReflectLT
 
 /-- See `le_inv_mul_iff₀` for a version with multiplication on the other side. -/
-lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ c * a ≤ b := by
+lemma le_inv_mul_iff₀' (hc : 0 < c) : a ≤ c⁻¹ * b ↔ a * c ≤ b := by
   rw [le_inv_mul_iff₀ hc, mul_comm]
 
 /-- See `inv_mul_le_iff₀` for a version with multiplication on the other side. -/

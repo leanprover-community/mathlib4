@@ -3,8 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.Metrizable.CompletelyMetrizable
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # First Baire theorem
@@ -12,8 +15,10 @@ import Mathlib.Topology.Metrizable.CompletelyMetrizable
 In this file we prove that a completely pseudometrizable topological space is a Baire space.
 -/
 
-open EMetric Set TopologicalSpace
-open scoped ENNReal
+@[expose] public section
+
+open Filter EMetric Set
+open scoped Topology Uniformity ENNReal
 
 variable {X : Type*} [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
 

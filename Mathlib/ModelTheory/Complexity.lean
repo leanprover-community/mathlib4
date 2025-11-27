@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Equivalence
+module
+
+public import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
@@ -27,6 +29,8 @@ This file defines quantifier complexity of first-order formulas, and constructs 
   formula has the same realization as the original formula.
 
 -/
+
+@[expose] public section
 
 universe u v w u' v'
 
