@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Analysis.NormedSpace.RieszLemma
+public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Logic.Encodable.Pi
@@ -46,7 +46,7 @@ linear maps are continuous. Moreover, a finite-dimensional subspace is always co
 The fact that all norms are equivalent is not written explicitly, as it would mean having two norms
 on a single space, which is not the way type classes work. However, if one has a
 finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another norm,
-then the identities from `E` to `E'` and from `E'`to `E` are continuous thanks to
+then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
 
