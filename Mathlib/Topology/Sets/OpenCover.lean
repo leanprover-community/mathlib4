@@ -68,7 +68,7 @@ section IrreducibleSpace
 open Function
 
 /-- Irreducibility can be checked on an open cover with pairwise non-empty intersections. -/
-theorem IrreducibleSpace.of_openCover {X ι : Type*} [TopologicalSpace X] [hι : Nonempty ι]
+theorem IrreducibleSpace.of_isOpenCover {X ι : Type*} [TopologicalSpace X] [hι : Nonempty ι]
     {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.IsOpenCover U)
     (hn : Pairwise ((¬ Disjoint · ·) on U))
     (h : ∀ i, IrreducibleSpace ↥(U i)) :
