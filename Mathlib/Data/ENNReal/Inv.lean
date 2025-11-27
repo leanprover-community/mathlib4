@@ -203,7 +203,7 @@ theorem div_lt_top {x y : ℝ≥0∞} (h1 : x ≠ ∞) (h2 : y ≠ 0) : x / y < 
 @[aesop (rule_sets := [finiteness]) safe apply]
 theorem div_ne_top {x y : ℝ≥0∞} (h1 : x ≠ ∞) (h2 : y ≠ 0) : x / y ≠ ∞ := (div_lt_top h1 h2).ne
 
-@[simp]
+@[simp, grind =]
 protected theorem inv_eq_zero : a⁻¹ = 0 ↔ a = ∞ :=
   inv_top ▸ inv_inj
 
@@ -238,7 +238,7 @@ protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : 
   case top =>
     simp_all only [Ne, top_ne_zero, not_false_eq_true, coe_ne_top, or_self, not_true_eq_false,
       coe_eq_zero, false_or, top_mul, inv_top, zero_mul]
-  grind [_=_ coe_mul, coe_zero, inv_zero, = mul_inv, coe_ne_top, ENNReal.inv_eq_zero,
+  grind [_=_ coe_mul, coe_zero, inv_zero, = mul_inv, coe_ne_top,
     =_ coe_inv, zero_mul, = mul_eq_zero, mul_top, mul_zero, top_mul]
 
 protected theorem inv_div {a b : ℝ≥0∞} (htop : b ≠ ∞ ∨ a ≠ ∞) (hzero : b ≠ 0 ∨ a ≠ 0) :
