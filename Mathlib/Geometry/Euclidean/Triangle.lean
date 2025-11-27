@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Triangles
@@ -34,6 +36,8 @@ unnecessarily.
 * https://en.wikipedia.org/wiki/Law_of_sines
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -73,8 +77,9 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
     simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
+  simp only [inner_sub_left, inner_sub_right, real_inner_comm x y]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
-  simp [field, inner_sub_left, inner_sub_right, real_inner_comm x y]
+  field_simp
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
@@ -190,6 +195,34 @@ theorem angle_add_angle_sub_add_angle_sub_eq_pi (x : V) {y : V} (hy : y ≠ 0) :
 
 end InnerProductGeometry
 
+namespace Orientation
+
+open Module InnerProductGeometry
+
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Fact (finrank ℝ V = 2)]
+variable (o : Orientation ℝ V (Fin 2))
+
+/-- **Converse of pons asinorum**, oriented vector angle form (given equality of angles mod `π`). -/
+theorem norm_eq_of_two_zsmul_oangle_sub_eq {x y : V}
+    (h : (2 : ℤ) • o.oangle x (x - y) = (2 : ℤ) • o.oangle (y - x) y) (h0 : o.oangle x y ≠ 0)
+    (hpi : o.oangle x y ≠ π) : ‖x‖ = ‖y‖ := by
+  have hs : (o.oangle x (x - y)).sign = (o.oangle (y - x) y).sign := by simp
+  rw [Real.Angle.two_zsmul_eq_iff] at h
+  rcases h with h | h
+  · rw [← o.angle_eq_iff_oangle_eq_of_sign_eq (o.left_ne_zero_of_oangle_ne_zero h0)
+      (sub_ne_zero_of_ne (o.ne_of_oangle_ne_zero h0))
+      (sub_ne_zero_of_ne (o.ne_of_oangle_ne_zero h0).symm)
+      (o.right_ne_zero_of_oangle_ne_zero h0) hs, angle_comm (y - x)] at h
+    refine norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h ?_
+    rw [ne_eq, ← o.oangle_eq_pi_iff_angle_eq_pi]
+    exact hpi
+  · rw [h, Real.Angle.sign_add_pi, SignType.neg_eq_self_iff, oangle_sign_sub_left_swap,
+      o.oangle_rev, Real.Angle.sign_neg, SignType.neg_eq_zero_iff,
+      Real.Angle.sign_eq_zero_iff] at hs
+    simp [h0, hpi] at hs
+
+end Orientation
+
 namespace EuclideanGeometry
 
 /-!
@@ -264,6 +297,20 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p
   rw [← vsub_sub_vsub_cancel_left p₃ p₂ p₁, ← vsub_sub_vsub_cancel_left p₂ p₃ p₁] at h
   exact norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h hpi
 
+/-- Converse of pons asinorum, oriented angle-at-point form (given equality of angles mod `π`). -/
+theorem dist_eq_of_two_zsmul_oangle_eq [Module.Oriented ℝ V (Fin 2)]
+    [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₂ p₃ p₁)
+    (h0 : ∡ p₃ p₁ p₂ ≠ 0) (hpi : ∡ p₃ p₁ p₂ ≠ π) : dist p₁ p₂ = dist p₁ p₃ := by
+  convert (Orientation.norm_eq_of_two_zsmul_oangle_sub_eq (x := p₃ -ᵥ p₁) (y := p₂ -ᵥ p₁) ?_ ?_
+    h0 hpi).symm
+  · rw [dist_eq_norm_vsub']
+  · rw [dist_eq_norm_vsub']
+  · rw [eq_comm, o.oangle_rev, ← o.oangle_neg_neg]
+    nth_rw 2 [o.oangle_rev, ← o.oangle_neg_neg]
+    simp_rw [smul_neg, neg_inj]
+    simp_rw [oangle] at h
+    convert h <;> simp
+
 /-- The **sum of the angles of a triangle** (possibly degenerate, where two
 given vertices are distinct), angle-at-point. -/
 theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠ p₁) :
@@ -321,10 +368,10 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
-        field_simp
+        field
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
         rw [hm]
-        field_simp
+        field
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
@@ -354,15 +401,14 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
     apply Real.sin_nonneg_of_mem_Icc
     simp [angle_nonneg, angle_le_pi]
   intro h1
-  by_cases h2 : ∠ a b c ≤ π / 2
+  by_cases! h2 : ∠ a b c ≤ π / 2
   · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := by
       exact Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
     by_contra! w
     have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
       exact mul_lt_mul h3 w hac hsinabc
     linarith
-  · push_neg at h2
-    by_contra! w
+  · by_contra! w
     have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
       by_contra! w1
       have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by

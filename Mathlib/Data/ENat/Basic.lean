@@ -3,14 +3,16 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.ENat.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -34,6 +36,8 @@ for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for 
 similarly for multiplication.
 -/
 
+@[expose] public section
+
 open Function
 
 assert_not_exists Field
@@ -47,9 +51,6 @@ deriving instance Zero, CommSemiring, Nontrivial,
   CharZero,
   NoZeroDivisors
   for ENat
-
--- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
--- and it seems to work without.
 
 namespace ENat
 
@@ -291,7 +292,6 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-@[simp]
 lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
   cases n <;> simp
 

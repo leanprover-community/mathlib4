@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.Tactic.CategoryTheory.ToApp
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Oplax functors
@@ -19,10 +21,13 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`
+* `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`, which we
+  denote by `B ⥤ᵒᵖᴸ C`.
 * `CategoryTheory.OplaxFunctor.comp F G` : the composition of oplax functors
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -81,6 +86,10 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
       map₂ (ρ_ f).hom = mapComp f (𝟙 b) ≫ map f ◁ mapId b ≫ (ρ_ (map f)).hom := by
     cat_disch
 
+/-- Notation for a pseudofunctor between bicategories. -/
+-- Given similar precedence as ⥤ (26).
+scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵒᵖᴸ " => OplaxFunctor -- type as \func\op\^L
+
 initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace OplaxFunctor
@@ -94,7 +103,7 @@ section
 /-- The underlying prelax functor. -/
 add_decl_doc OplaxFunctor.toPrelaxFunctor
 
-variable (F : OplaxFunctor B C)
+variable (F : B ⥤ᵒᵖᴸ C)
 
 @[reassoc, to_app]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -127,12 +136,12 @@ theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
 
 /-- The identity oplax functor. -/
 @[simps]
-def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where
+def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵒᵖᴸ B where
   toPrelaxFunctor := PrelaxFunctor.id B
   mapId := fun a => 𝟙 (𝟙 a)
   mapComp := fun f g => 𝟙 (f ≫ g)
 
-instance : Inhabited (OplaxFunctor B B) :=
+instance : Inhabited (B ⥤ᵒᵖᴸ B) :=
   ⟨id B⟩
 
 /-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
@@ -158,7 +167,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
 
 /-- Composition of oplax functors. -/
 --@[simps]
-def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
+def comp (F : B ⥤ᵒᵖᴸ C) (G : C ⥤ᵒᵖᴸ D) : B ⥤ᵒᵖᴸ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
@@ -189,7 +198,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfOplax`. -/
-structure PseudoCore (F : OplaxFunctor B C) where
+structure PseudoCore (F : B ⥤ᵒᵖᴸ C) where
   /-- The isomorphism giving rise to the oplax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
   /-- The isomorphism giving rise to the oplax functoriality constraint -/

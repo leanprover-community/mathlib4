@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 
 /-!
 # Chunk of the increment partition for Szemerédi Regularity Lemma
@@ -33,6 +35,8 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finpartition Finset Fintype Rel Nat
@@ -348,8 +352,8 @@ private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
     _ = (G.edgeDensity U V - ε ^ 5 / 50) ^ 2 := by ring
     _ ≤ _ := by
       gcongr
-      have rflU := Set.Subset.refl (chunk hP G ε hU).parts.toSet
-      have rflV := Set.Subset.refl (chunk hP G ε hV).parts.toSet
+      have rflU := Subset.refl (chunk hP G ε hU).parts
+      have rflV := Subset.refl (chunk hP G ε hV).parts
       refine (le_trans ?_ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans ?_
       · rw [biUnion_parts, biUnion_parts]
       · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← cast_mul, ← mul_pow, cast_pow]

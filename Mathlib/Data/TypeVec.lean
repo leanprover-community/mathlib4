@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 
@@ -29,6 +31,8 @@ Also, support functions for operating with n-tuples of types, such as:
 Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not definitionally equal
 to it, we need support functions and lemmas to mediate between constructions.
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -348,7 +352,7 @@ def «repeat» : ∀ (n : ℕ), Type u → TypeVec n
 
 /-- `prod α β` is the pointwise product of the components of `α` and `β` -/
 def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
-  | 0,     _, _ => Fin2.elim0
+  | 0, _, _ => Fin2.elim0
   | n + 1, α, β => (@prod n (drop α) (drop β)) ::: (last α × last β)
 
 @[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗ " => TypeVec.prod
@@ -357,7 +361,7 @@ def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
 contains nothing but `x` -/
 protected def const {β} (x : β) : ∀ {n} (α : TypeVec n), α ⟹ «repeat» _ β
   | succ _, α, Fin2.fs _ => TypeVec.const x (drop α) _
-  | succ _, _, Fin2.fz   => fun _ => x
+  | succ _, _, Fin2.fz => fun _ => x
 
 open Function (uncurry)
 
@@ -410,11 +414,11 @@ instance Curry.inhabited (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β :
 /-- arrow to remove one element of a `repeat` vector -/
 def dropRepeat (α : Type*) : ∀ {n}, drop («repeat» (succ n) α) ⟹ «repeat» n α
   | succ _, Fin2.fs i => dropRepeat α i
-  | succ _, Fin2.fz   => fun (a : α) => a
+  | succ _, Fin2.fz => fun (a : α) => a
 
 /-- projection for a repeat vector -/
 def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
-  | _, Fin2.fz   => fun (a : α) => a
+  | _, Fin2.fz => fun (a : α) => a
   | _, Fin2.fs i => @ofRepeat _ _ i
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
@@ -444,7 +448,7 @@ def prod.diag : ∀ {n} {α : TypeVec.{u} n}, α ⟹ α ⊗ α
 /-- constructor for `prod` -/
 def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (α ⊗ β) i
   | succ _, α, β, Fin2.fs i => mk (α := fun i => α i.fs) (β := fun i => β i.fs) i
-  | succ _, _, _, Fin2.fz   => Prod.mk
+  | succ _, _, _, Fin2.fz => Prod.mk
 
 end
 
@@ -527,7 +531,7 @@ into a subtype of vector -/
 def ofSubtype {n} {α : TypeVec.{u} n} (p : α ⟹ «repeat» n Prop) :
     Subtype_ p ⟹ fun i : Fin2 n => { x // ofRepeat <| p i x }
   | Fin2.fs i, x => ofSubtype _ i x
-  | Fin2.fz,   x => x
+  | Fin2.fz, x => x
 
 /-- similar to `toSubtype` adapted to relations (i.e. predicate on product) -/
 def toSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :

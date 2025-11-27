@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.Normed.Lp.WithLp
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces
@@ -1020,4 +1024,66 @@ abbrev pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] :
 lemma dist_pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : α × β) :
     @dist _ (pseudoMetricSpaceToProd p α β).toDist x y = dist (toLp p x) (toLp p y) := rfl
 
-/-- This definition a
+/-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
+Lp norm. -/
+abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+    SeminormedAddCommGroup (α × β) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+
+lemma norm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+    (x : α × β) :
+    @Norm.norm _ (seminormedAddCommGroupToProd p α β).toNorm x = ‖toLp p x‖ := rfl
+
+lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+    (x : α × β) :
+    @NNNorm.nnnorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
+    ‖toLp p x‖₊ := rfl
+
+lemma isBoundedSMulSeminormedAddCommGroupToProd
+    [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
+    [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
+    letI := pseudoMetricSpaceToProd p α β
+    IsBoundedSMul R (α × β) := by
+  letI := pseudoMetricSpaceToProd p α β
+  refine ⟨fun x y z ↦ ?_, fun x y z ↦ ?_⟩
+  · simpa [dist_pseudoMetricSpaceToProd] using dist_smul_pair x (toLp p y) (toLp p z)
+  · simpa [dist_pseudoMetricSpaceToProd] using dist_pair_smul x y (toLp p z)
+
+lemma normSMulClassSeminormedAddCommGroupToProd
+    [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
+    [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
+    letI := seminormedAddCommGroupToProd p α β
+    NormSMulClass R (α × β) := by
+  letI := seminormedAddCommGroupToProd p α β
+  exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
+
+/-- This definition allows to endow `α × β` with a normed space structure corresponding to
+the Lp norm. It is useful for type synonyms of `α × β`. -/
+abbrev normedSpaceSeminormedAddCommGroupToProd
+    [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
+    [NormedSpace R α] [NormedSpace R β] :
+    letI := seminormedAddCommGroupToProd p α β
+    NormedSpace R (α × β) := by
+  letI := seminormedAddCommGroupToProd p α β
+  exact ⟨fun x y ↦ norm_smul_le x (toLp p y)⟩
+
+/-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
+Lp norm. -/
+abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+    NormedAddCommGroup (α × β) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
+  dist_eq x y := by
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+  eq_of_dist_eq_zero {x y} h := by
+    rw [dist_pseudoMetricSpaceToProd] at h
+    exact toLp_injective p (eq_of_dist_eq_zero h)
+
+end toProd
+
+end WithLp
