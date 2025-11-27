@@ -10,9 +10,11 @@ public import Mathlib.Analysis.Complex.Trigonometric
 /-!
 # Dirichlet kernel
 
-## TODO : define the Dirichlet kernel
+## TODO
 
-## TODO : Show that $S_n(f)(x) = (D_n * f)(x)$
+- Define the Dirichlet kernel
+
+- Show that $S_n(f)(x) = (D_n * f)(x)$
 
 -/
 
