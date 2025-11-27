@@ -15,12 +15,15 @@ public import Mathlib.Init
 
 variable {α β : Type}
 
+@[noinline]
+private def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
+
 unsafe def memoFixImpl [Nonempty β] (f : (α → β) → (α → β)) : α → β := unsafeBaseIO do
   let cache : IO.Ref (Lean.PtrMap α β) ← ST.mkRef Lean.mkPtrMap
   let rec fix (a) : β := unsafeBaseIO do
     if let some b := (← cache.get).find? a then
       return b
-    let b := f fix a
+    let b ← injectIntoBaseIO (f fix a)
     cache.modify (·.insert a b)
     return b
   return fix
