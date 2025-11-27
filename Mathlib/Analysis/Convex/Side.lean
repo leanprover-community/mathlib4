@@ -887,21 +887,9 @@ lemma sOppSide_affineSpan_faceOpposite_of_pos_of_neg {w₁ w₂ : Fin (n + 1) �
   have h' : Sbtw R (Finset.univ.affineCombination R s.points w₁)
       (Finset.univ.affineCombination R s.points w₃)
       (Finset.univ.affineCombination R s.points w₂) := by
-    refine ⟨h.wbtw.map _, fun he ↦ ?_, fun he ↦ ?_⟩
-    · replace he := (affineIndependent_iff_eq_of_fintype_affineCombination_eq R s.points).1
-        s.independent w₃ w₁ hw₃ hw₁ he
-      simp_rw [← he, w₃] at hs₁
-      simp only [lineMap_apply, vsub_eq_sub, Pi.vadd_apply', Pi.smul_apply, Pi.sub_apply,
-        smul_eq_mul, vadd_eq_add] at hs₁
-      rw [← neg_sub (w₁ i) (w₂ i), mul_neg, div_mul_cancel₀ _ hp.ne'] at hs₁
-      simp at hs₁
-    · replace he := (affineIndependent_iff_eq_of_fintype_affineCombination_eq R s.points).1
-        s.independent w₃ w₂ hw₃ hw₂ he
-      simp_rw [← he, w₃] at hs₂
-      simp only [lineMap_apply, vsub_eq_sub, Pi.vadd_apply', Pi.smul_apply, Pi.sub_apply,
-        smul_eq_mul, vadd_eq_add] at hs₂
-      rw [← neg_sub (w₁ i) (w₂ i), mul_neg, div_mul_cancel₀ _ hp.ne'] at hs₂
-      simp at hs₂
+    rwa [s.independent.injOn_affineCombination_fintypeAffineCoords.sbtw_map_iff
+     (mem_fintypeAffineCoords_iff_sum.2 hw₁) (mem_fintypeAffineCoords_iff_sum.2 hw₃)
+     (mem_fintypeAffineCoords_iff_sum.2 hw₂)]
   refine h'.sOppSide_of_notMem_of_mem
     ((s.affineCombination_mem_affineSpan_faceOpposite_iff hw₁).not.2 hs₁.ne')
     ((s.affineCombination_mem_affineSpan_faceOpposite_iff hw₃).2 ?_)
