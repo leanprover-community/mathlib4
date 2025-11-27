@@ -93,7 +93,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
       s.head = ⊥ ∧ s.last = ⊤ := by
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩
-  have := Submodule.Quotient.nontrivial_of_lt_top _ hN.lt_top
+  have := Submodule.Quotient.nontrivial_iff.mpr hN
   obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
   have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
