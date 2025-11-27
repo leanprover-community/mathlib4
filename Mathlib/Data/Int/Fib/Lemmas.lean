@@ -36,7 +36,7 @@ public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
     grind
 
 /-- **Catalan's identity**: `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`. -/
-public theorem fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
+public theorem fib_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
     fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x.natAbs * fib a ^ 2 :=
   calc
     _ = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 -
