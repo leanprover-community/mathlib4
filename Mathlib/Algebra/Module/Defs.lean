@@ -105,6 +105,7 @@ variable {R}
 theorem Module.eq_zero_of_zero_eq_one (zero_eq_one : (0 : R) = 1) : x = 0 := by
   rw [← one_smul R x, ← zero_eq_one, zero_smul]
 
+variable (R M) in
 @[nontriviality]
 lemma Module.subsingleton_ofSubsingleton [Subsingleton R] :
     Subsingleton M where
