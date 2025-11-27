@@ -514,6 +514,14 @@ instance Prod.infinite_of_right [Nonempty α] [Infinite β] : Infinite (α × β
 instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β) :=
   Infinite.of_surjective Prod.fst Prod.fst_surjective
 
+instance [Infinite α] : Infinite (Equiv.Perm α) := by
+  have : DecidableEq α := Classical.typeDecidableEq α
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  apply Infinite.of_injective (fun b ↦ Equiv.swap a b)
+  intro c d h
+  simp only at h
+  rw [← Equiv.swap_apply_left a c, h, Equiv.swap_apply_left]
+
 namespace Infinite
 
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α

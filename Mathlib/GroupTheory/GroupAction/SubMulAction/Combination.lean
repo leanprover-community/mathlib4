@@ -103,8 +103,7 @@ theorem coe_smul [DecidableEq α] {n : ℕ} {g : G} {s : n.Combination α} :
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
 theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
-    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
-    {g : G} :
+    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     AddAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
       ↔ AddAction.toPerm g = (1 : Equiv.Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -140,8 +139,7 @@ theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n :
   exact Equiv.Perm.ext_iff.mpr hg
 
 theorem mulAction_faithful {G : Type*} [Group G] {α : Type*} [MulAction G α] {n : ℕ}
-    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
-    {g : G} :
+    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     MulAction.toPerm g = (1 : Equiv.Perm (n.Combination α))
       ↔ MulAction.toPerm g = (1 : Equiv.Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -207,12 +205,23 @@ theorem mulActionHom_of_embedding_surjective [DecidableEq α] :
     Function.Embedding.exists_of_card_eq_finset (by rw [hs, Fintype.card_fin])
   exact ⟨f, Subtype.ext hf⟩
 
-protected theorem card [Finite α] :
+protected theorem card :
     Nat.card (n.Combination α) = (Nat.card α).choose n := by
-  have := Fintype.ofFinite α
-  suffices n.Combination α = Finset.powersetCard n (Finset.univ : Finset α) by
-    simp [this]
-  ext; simp
+  classical
+  cases fintypeOrInfinite α
+  · suffices n.Combination α = Finset.powersetCard n (Finset.univ : Finset α) by
+      simp [this]
+    ext; simp
+  · rcases n with _ | n
+    · simp [Combination]
+    · rcases finite_or_infinite (Combination α (n + 1)) with hc | hc
+      · refine (Infinite.false (α := (Combination α (n + 1) → Combination α (n + 1))) ?_).elim
+        have : FaithfulSMul (Equiv.Perm α) (Combination α (n + 1)) :=
+          Nat.Combination.faithfulSMul (le_add_left 1 n) (by simp)
+        have : Infinite (Equiv.Perm α) := inferInstance
+        exact (Infinite.false (α := (Combination α (n + 1) → Combination α (n + 1)))
+          (Infinite.of_injective _ (smul_left_injective' (M := Equiv.Perm α)))).elim
+      · simp
 
 variable {α} in
 theorem _root_.ENat.nontrivial_combination (h1 : 0 < n) (h2 : n < ENat.card α) :
