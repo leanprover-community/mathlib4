@@ -65,6 +65,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
 public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
@@ -5421,6 +5422,7 @@ public import Mathlib.Order.Interval.Finset.Box
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Interval.Finset.DenselyOrdered
 public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.Interval.Finset.Gaps
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Lex
