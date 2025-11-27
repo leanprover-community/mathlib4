@@ -490,7 +490,7 @@ theorem piecewise_preimage (t : Set β) : hs.piecewise f ⁻¹' t = ⋃ i, s i �
   · rw [← hi, ← (IndexedPartition.mem_iff_index_eq hs).mp ha.1] at ha
     simp_all [IndexedPartition.piecewise_apply]
 
-theorem range_piecewise : range (hs.piecewise f) = ⋃ i, (f i)'' (s i) := by
+theorem range_piecewise : range (hs.piecewise f) = ⋃ i, f i '' s i := by
   ext x; constructor
   · rintro ⟨x, rfl⟩
     exact mem_iUnion_of_mem (hs.index x) ⟨x, hs.mem_index x, rfl⟩
