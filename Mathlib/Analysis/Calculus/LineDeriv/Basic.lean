@@ -268,7 +268,7 @@ lemma HasFDerivWithinAt.hasLineDerivWithinAt (hf : HasFDerivWithinAt f L s x) (v
 
 theorem DifferentiableWithinAt.lineDifferentiableWithinAt
     (hf : DifferentiableWithinAt 𝕜 f s x) :
-    LineDifferentiableAt 𝕜 f x s v :=
+    LineDifferentiableWithinAt 𝕜 f s x v :=
   hf.hasFDerivWithinAt.hasLineDerivWithinAt _ |>.lineDifferentiableWithinAt
 
 lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) (v : E) :
