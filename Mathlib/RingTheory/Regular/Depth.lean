@@ -67,14 +67,14 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     let Mₚ := LocalizedModule p'.asIdeal.primeCompl M
     let Nₚ' := Nₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)
     have ntr : Nontrivial Nₚ' :=
-      Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top'
-        (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-        (IsLocalRing.maximalIdeal_le_jacobson (Module.annihilator Rₚ Nₚ))))
+      Submodule.Quotient.nontrivial_iff.mpr <| .symm <|
+        Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator <|
+          IsLocalRing.maximalIdeal_le_jacobson _
     let Mₚ' := Mₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Mₚ)
     let _ : Module p.ResidueField Nₚ' :=
       Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
     have := AssociatePrimes.mem_iff.mp
-      (associatedPrimes.mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes pass)
+      (associatedPrimes.mem_associatedPrimes_atPrime_of_mem_associatedPrimes pass)
     rcases this.2 with ⟨x, hx⟩
     have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
     rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩
@@ -169,7 +169,7 @@ lemma exist_isRegular_tfae_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
     have ntr' : Nontrivial M' :=
-      Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
+      Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
     have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
       rw [lt_top_iff_ne_top]
       by_contra eq
@@ -248,7 +248,7 @@ lemma exist_isRegular_tfae_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (
         exact Submodule.smul_mono_left
           ((span_singleton_le_iff_mem I).mpr (mem a List.mem_cons_self))
       have Qntr : Nontrivial M' :=
-        Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
+        Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
       have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
         rw [lt_top_iff_ne_top]
         by_contra eq
@@ -293,7 +293,7 @@ lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ 
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
     ].TFAE := by
   have ntrQ : Nontrivial (R ⧸ I) := by
-    apply Submodule.Quotient.nontrivial_of_lt_top _ (lt_top_iff_ne_top.mpr _)
+    apply Submodule.Quotient.nontrivial_iff.mpr (lt_top_iff_ne_top.mpr _).ne
     by_contra eq
     absurd smul_lt
     simp [eq]
@@ -660,7 +660,7 @@ lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetheri
     [Nontrivial M] : I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
     (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
   let _ := Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm
-  let _ : Nontrivial (R ⧸ I) := Quotient.nontrivial netop
+  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop
   have smul_lt : I • (⊤ : Submodule R M) < ⊤ := lt_of_le_of_lt
       (Submodule.smul_mono (le_maximalIdeal netop) (le_refl _))
       (Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
@@ -722,7 +722,7 @@ lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Smal
 lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
     I.depth (ModuleCat.of R (Shrink.{v} R)) = I.depth (ModuleCat.of R R) := by
   simp only [Ideal.depth]
-  let _ : Nontrivial (R ⧸ I) := Submodule.Quotient.nontrivial_of_lt_top I lt_top
+  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr lt_top.ne
   let _ : Nontrivial R := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt I ⊤ lt_top)
   let e : (of R (Shrink.{u, u} (R ⧸ I))) ≅ (of R (R ⧸ I)) :=
     (Shrink.linearEquiv.{u, u} R (R ⧸ I)).toModuleIso
