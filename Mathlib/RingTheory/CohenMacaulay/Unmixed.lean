@@ -75,7 +75,7 @@ lemma isCohenMacaulayRing_of_unmixed
       have netop : Ideal.ofList rs ≠ ⊤ := ne_top_of_le_ne_top (Ideal.IsPrime.ne_top hp)
         (Ideal.span_le.mpr mem)
       have ht := (Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg netop)
-      let _ := Ideal.Quotient.nontrivial netop
+      let _ := Ideal.Quotient.nontrivial_iff.mpr netop
       obtain ⟨r, rmem, hr⟩ : ∃ r ∈ p, IsSMulRegular (R ⧸ Ideal.ofList rs) r := by
         by_contra! h
         obtain ⟨q, qass, le⟩ : ∃ q ∈ associatedPrimes R (R ⧸ Ideal.ofList rs), p ≤ q := by
@@ -165,7 +165,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     (Module.annihilator (Localization.AtPrime p) S).minimalPrimes :=
     associated_prime_eq_minimalPrimes_isCohenMacaulay (ModuleCat.of (Localization.AtPrime p) S)
   have : maximalIdeal (Localization.AtPrime p) ∈ associatedPrimes (Localization.AtPrime p) S := by
-    have := mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes hp
+    have := mem_associatedPrimes_atPrime_of_mem_associatedPrimes hp
     simp only [smul_eq_mul, S]
     rw [Ideal.mul_top, ← Ideal.map_ofList]
     convert this
