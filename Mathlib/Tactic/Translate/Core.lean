@@ -1168,18 +1168,16 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
   let argInfo := { reorder, relevantArg }
   insertTranslation t src tgt argInfo alreadyExists
-  let nestedNames ←
-    if alreadyExists then
-      -- since `tgt` already exists, we just need to copy metadata and
-      -- add translations `src.x ↦ tgt.x'` for any subfields.
-      trace[translate_detail] "declaration {tgt} already exists."
-      proceedFields t src tgt argInfo
-      copyMetaData t cfg src tgt argInfo
-    else
-      -- tgt doesn't exist, so let's make it
-      withDeclNameForAuxNaming tgt <|
-        transformDeclRec t cfg.ref src tgt src argInfo.reorder cfg.dontTranslate
-      copyMetaData t cfg src tgt argInfo
+  if alreadyExists then
+    -- since `tgt` already exists, we just need to
+    -- add translations `src.x ↦ tgt.x'` for any subfields.
+    trace[translate_detail] "declaration {tgt} already exists."
+    proceedFields t src tgt argInfo
+  else
+    -- tgt doesn't exist, so let's make it
+    withDeclNameForAuxNaming tgt <|
+      transformDeclRec t cfg.ref src tgt src argInfo.reorder cfg.dontTranslate
+  let nestedNames ← copyMetaData t cfg src tgt argInfo
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
   pushInfoLeaf <| .ofTermInfo {
