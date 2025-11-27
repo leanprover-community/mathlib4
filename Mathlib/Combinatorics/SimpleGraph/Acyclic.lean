@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 
@@ -164,6 +165,26 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
 
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
+
+lemma IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
+    {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
+    (hv : v ∉ q.support) : w ∈ p.support := by
+  rw [Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨p, hp⟩ ⟨_, hq.concat hv hadj.symm⟩]
+  exact q.support_subset_support_concat _ q.end_mem_support
+
+lemma IsAcyclic.ne_mem_support_of_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
+    {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
+    (hw : w ∈ p.support) : v ∉ q.support := by
+  obtain ⟨p₀, p₁, hp₀, hp₁, happend⟩ := hp.mem_support_iff_exists_append.mp hw
+  rw [← Subtype.mk.inj <| hG.path_unique ⟨p₀, hp₀⟩ ⟨q, hq⟩]
+  exact fun hxp => (happend ▸ hp).ne_of_mem_support_of_append hadj.symm.ne' hxp
+    (p₁.end_mem_support) rfl
+
+lemma IsAcyclic.path_concat (hG : G.IsAcyclic) {u v w : V} {p : G.Walk u v} {q : G.Walk u w}
+    (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w) (hv : v ∈ q.support) :
+    q = p.concat hadj := by
+  have hw : w ∉ p.support := hG.ne_mem_support_of_support_of_adj_of_isPath hq hp hadj.symm hv
+  exact Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨q, hq⟩ ⟨_, hp.concat hw hadj⟩
 
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
@@ -381,5 +402,18 @@ lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
   nontriviality V using hconn.nonempty
   obtain ⟨v, hv⟩ := hconn.exists_connected_induce_compl_singleton_of_finite_nontrivial
   exact ⟨v, hv.preconnected⟩
+
+lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w) :
+    G.dist u v ≠ G.dist u w := by
+  obtain ⟨p, hp, hp'⟩ := hG.isConnected.exists_path_of_dist u v
+  obtain ⟨q, hq, hq'⟩ := hG.isConnected.exists_path_of_dist u w
+  rw [← hp', ← hq']
+  by_cases hw : w ∈ p.support
+  · rw [hG.IsAcyclic.path_concat hq hp hadj.symm hw, q.length_concat]
+    exact q.length.ne_add_one.symm
+  · have hv : v ∈ q.support := hG.IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp
+      hadj.symm hw
+    rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat]
+    exact p.length.ne_add_one
 
 end SimpleGraph
