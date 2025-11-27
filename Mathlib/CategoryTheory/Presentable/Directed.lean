@@ -249,7 +249,7 @@ def Diagram.iSup {ι : Type*} (D : ι → Diagram J κ) (hι : HasCardinalLT ι 
 variable {J κ} in
 /-- The union of two `κ`-bounded diagrams. -/
 @[simps]
-def Diagram.max (D₁ D₂ : Diagram J κ) :
+def Diagram.sup (D₁ D₂ : Diagram J κ) :
     Diagram J κ where
   W := D₁.W ⊔ D₂.W
   P := D₁.P ⊔ D₂.P
