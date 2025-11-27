@@ -29,7 +29,7 @@ that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a neighbourhood o
 implicit function, inverse function
 -/
 
-public section
+@[expose] public section
 
 variable
   {𝕜 : Type*} [RCLike 𝕜]
