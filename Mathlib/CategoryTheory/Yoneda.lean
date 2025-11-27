@@ -346,6 +346,88 @@ def CorepresentableBy.toIso {F : C ⥤ Type v₁} {X : C} (e : F.Corepresentable
     coyoneda.obj (op X) ≅ F :=
   corepresentableByEquiv e
 
+/-- Transport `RepresentableBy` along an isomorphism of the object. -/
+@[simps]
+def RepresentableBy.ofIsoObj {F : Cᵒᵖ ⥤ Type w} {X Y : C} (R : F.RepresentableBy X)
+    (e : Y ≅ X) :
+    F.RepresentableBy Y where
+  homEquiv {Z} := e.homToEquiv.trans R.homEquiv
+  homEquiv_comp := by simp [R.homEquiv_comp]
+
+/-- Transport `RepresentableBy` along an isomorphism of the object. -/
+@[simps]
+def CorepresentableBy.ofIsoObj {F : C ⥤ Type w} {X Y : C} (R : F.CorepresentableBy X)
+    (e : Y ≅ X) :
+    F.CorepresentableBy Y where
+  homEquiv {Z} := e.homFromEquiv.trans R.homEquiv
+  homEquiv_comp := by simp [R.homEquiv_comp]
+
+/-- If `Y` is isomorphic to `X`, representations of `F` by `X` are equivalent
+to representations of `F` by `Y`. -/
+@[simps]
+def RepresentableBy.equivOfIsoObj {F : Cᵒᵖ ⥤ Type w} {X Y : C} (e : Y ≅ X) :
+    F.RepresentableBy X ≃ F.RepresentableBy Y where
+  toFun R := R.ofIsoObj e
+  invFun R := R.ofIsoObj e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- If `Y` is isomorphic to `X`, corepresentations of `F` by `X` are equivalent
+to corepresentations of `F` by `Y`. -/
+@[simps]
+def CorepresentableBy.equivOfIsoObj {F : C ⥤ Type w} {X Y : C} (e : Y ≅ X) :
+    F.CorepresentableBy X ≃ F.CorepresentableBy Y where
+  toFun R := R.ofIsoObj e
+  invFun R := R.ofIsoObj e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- Representing `F` composed with universe lifting is the same as representing `F`. -/
+@[simps]
+def representableByUliftFunctorEquiv {F : Cᵒᵖ ⥤ Type v} {X : C} :
+    (F ⋙ uliftFunctor.{w}).RepresentableBy X ≃ F.RepresentableBy X where
+  toFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift
+      homEquiv_comp f g := congr($(R.homEquiv_comp _ _).down) }
+  invFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
+      homEquiv_comp f g := by simp [R.homEquiv_comp] }
+
+/-- Corepresenting `F` composed with universe lifting is the same as corepresenting `F`. -/
+@[simps]
+def corepresentableByUliftFunctorEquiv {F : C ⥤ Type v} {X : C} :
+    (F ⋙ uliftFunctor.{w}).CorepresentableBy X ≃ F.CorepresentableBy X where
+  toFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift
+      homEquiv_comp f g := congr($(R.homEquiv_comp _ _).down) }
+  invFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
+      homEquiv_comp f g := by simp [R.homEquiv_comp] }
+
+/-- Version of `representableByEquiv` with more general universe assumptions. -/
+@[simps]
+def RepresentableBy.equivUliftYonedaIso (F : Cᵒᵖ ⥤ Type (max w v₁)) (X : C) :
+    F.RepresentableBy X ≃ (uliftYoneda.obj X ≅ F) where
+  toFun R := NatIso.ofComponents (fun X ↦ equivEquivIso (Equiv.ulift.trans R.homEquiv)) <| by
+    intro X Y f
+    ext x
+    exact R.homEquiv_comp f.unop _
+  invFun e :=
+    { homEquiv {X} := Equiv.ulift.symm.trans (equivEquivIso.symm (e.app _))
+      homEquiv_comp {X Y} f g := congr($(e.hom.naturality f.op) ⟨g⟩) }
+
+/-- Version of `corepresentableByEquiv` with more general universe assumptions. -/
+@[simps]
+def CorepresentableBy.equivUliftCoyonedaIso (F : C ⥤ Type (max w v₁)) (X : C) :
+    F.CorepresentableBy X ≃ (uliftCoyoneda.obj (op X) ≅ F) where
+  toFun R := NatIso.ofComponents (fun X ↦ equivEquivIso (Equiv.ulift.trans R.homEquiv)) <| by
+    intro X Y f
+    ext x
+    exact R.homEquiv_comp f _
+  invFun e :=
+    { homEquiv {X} := Equiv.ulift.symm.trans (equivEquivIso.symm (e.app _))
+      homEquiv_comp {X Y} f g := congr($(e.hom.naturality f) ⟨g⟩) }
+
 /-- A functor `F : Cᵒᵖ ⥤ Type v` is representable if there is an object `Y` with a structure
 `F.RepresentableBy Y`, i.e. there is a natural bijection `(X ⟶ Y) ≃ F.obj (op X)`,
 which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `Category.{v} C`. -/
@@ -461,6 +543,16 @@ theorem coreprW_hom_app (F : C ⥤ Type v₁) [F.IsCorepresentable] (X : C) (f :
   apply CorepresentableBy.homEquiv_eq
 
 end Corepresentable
+
+lemma isRepresentable_comp_uliftFunctor_iff {F : Cᵒᵖ ⥤ Type v} :
+    (F ⋙ uliftFunctor.{w}).IsRepresentable ↔ F.IsRepresentable where
+  mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨representableByUliftFunctorEquiv R⟩⟩
+  mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨representableByUliftFunctorEquiv.symm R⟩⟩
+
+lemma isCorepresentable_comp_uliftFunctor_iff {F : C ⥤ Type v} :
+    (F ⋙ uliftFunctor.{w}).IsCorepresentable ↔ F.IsCorepresentable where
+  mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv R⟩⟩
+  mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv.symm R⟩⟩
 
 end Functor
 
