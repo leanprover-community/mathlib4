@@ -68,7 +68,7 @@ structure RegularMono (f : X ⟶ Y) where
 attribute [reassoc] RegularMono.w
 
 /-- Every regular monomorphism is a monomorphism. -/
-def RegularMono.mono {f : X ⟶ Y} (h : RegularMono f) : Mono f :=
+lemma RegularMono.mono {f : X ⟶ Y} (h : RegularMono f) : Mono f :=
   mono_of_isLimit_fork h.isLimit
 
 /-- Every isomorphism is a regular monomorphism. -/
@@ -120,7 +120,7 @@ def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
   h.some
 
 /-- The chosen equalizer of a parallel pair is a regular monomorphism. -/
-def equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
+def RegularMono.equalizer (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
   Z := Y
   left := g
@@ -133,7 +133,7 @@ def equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
 
 instance (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     IsRegularMono (equalizer.ι g h) :=
-  isRegularMono_of_regularMono <| equalizerRegular g h
+  isRegularMono_of_regularMono <| RegularMono.equalizer g h
 
 /-- Every split monomorphism is a regular monomorphism. -/
 def RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
@@ -196,7 +196,7 @@ def regularOfIsPullbackFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   regularOfIsPullbackSndOfRegular hk comm.symm (PullbackCone.flipIsLimit t)
 
 /-- Any regular monomorphism is a strong monomorphism. -/
-def strongMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
+def RegularMono.strongMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
   have := h.mono
   StrongMono.mk' (by
       intro A B z hz u v sq
@@ -209,11 +209,11 @@ def strongMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :
       simp only [Category.assoc, ht, sq.w])
 
 instance (priority := 100) (f : X ⟶ Y) [IsRegularMono f] : StrongMono f :=
-  strongMono_of_regularMono <| regularMonoOfIsRegularMono f
+  RegularMono.strongMono <| regularMonoOfIsRegularMono f
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) (h : RegularMono f) [Epi f] : IsIso f :=
-  have := strongMono_of_regularMono h
+  have := RegularMono.strongMono h
   isIso_of_epi_of_strongMono _
 
 section
@@ -241,7 +241,7 @@ instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCate
 instance (priority := 100) strongMonoCategory_of_regularMonoCategory [IsRegularMonoCategory C] :
     StrongMonoCategory C where
   strongMono_of_mono f _ :=
-    strongMono_of_regularMono <| regularMonoOfMono f
+    RegularMono.strongMono <| regularMonoOfMono f
 
 /-- A regular epimorphism is a morphism which is the coequalizer of some parallel pair. -/
 structure RegularEpi (f : X ⟶ Y) where
@@ -257,7 +257,7 @@ structure RegularEpi (f : X ⟶ Y) where
 attribute [reassoc] RegularEpi.w
 
 /-- Every regular epimorphism is an epimorphism. -/
-def RegularEpi.epi (f : X ⟶ Y) (h : RegularEpi f) : Epi f :=
+lemma RegularEpi.epi (f : X ⟶ Y) (h : RegularEpi f) : Epi f :=
   epi_of_isColimit_cofork h.isColimit
 
 /-- Every isomorphism is a regular epimorphism. -/
@@ -337,16 +337,16 @@ def effectiveEpiStructOfRegularEpi {B X : C} {f : X ⟶ B} (hf : RegularEpi f) :
   uniq _ _ _ hg := Cofork.IsColimit.hom_ext hf.isColimit (hg.trans
     (Cofork.IsColimit.π_desc' _ _ _).symm)
 
-lemma effectiveEpi_of_regularEpi {B X : C} {f : X ⟶ B} (h : RegularEpi f) : EffectiveEpi f :=
+lemma RegularEpi.effectiveEpi {B X : C} {f : X ⟶ B} (h : RegularEpi f) : EffectiveEpi f :=
   ⟨⟨effectiveEpiStructOfRegularEpi h⟩⟩
 
 instance {B X : C} {f : X ⟶ B} [h : IsRegularEpi f] : EffectiveEpi f :=
-  effectiveEpi_of_regularEpi <| regularEpiOfIsRegularEpi f
+  RegularEpi.effectiveEpi <| regularEpiOfIsRegularEpi f
 
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
 theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : EffectiveEpi f :=
-  effectiveEpi_of_regularEpi <| regularEpiOfKernelPair f hc
+  RegularEpi.effectiveEpi <| regularEpiOfKernelPair f hc
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
