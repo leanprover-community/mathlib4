@@ -34,12 +34,11 @@ aperiodic order, and tiling theory.
 
 ## Basic properties
 
-* `DeloneSet.nonempty`
-* `DeloneSet.exists_covering_radius`
-* `DeloneSet.exists_packing_radius`
-* `DeloneSet.dist_pos_of_ne`
-* `DeloneSet.subset_ball_singleton`
-* `DeloneSet.map`
+* Canonical radii: `DeloneSet.coveringRadius`, `DeloneSet.packingRadius`,
+  with corresponding bounds `dist_le_coveringRadius` and `le_dist_of_mem_ne`.
+* `DeloneSet.dist_pos_of_ne`: distinct points lie at positive distance.
+* `DeloneSet.subset_ball_singleton`: small balls contain at most one point of a Delone set.
+* `DeloneSet.map`: Delone sets are preserved by isometries (with `map_id`, `map_comp`, `map_symm`).
 -/
 
 @[expose] public section
@@ -150,7 +149,7 @@ If the packing radius of a Delone set is `r`, then for any `z : X` the open ball
 `ball z (r / 2)` contains at most one point of the Delone set. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
     ∃ r > 0, ∀ ⦃x y z⦄, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
-    x ∈ Metric.ball z r → y ∈ Metric.ball z r → x = y := by
+    x ∈ ball z r → y ∈ ball z r → x = y := by
   refine ⟨D.packingRadius / 2, ?_, ?_⟩
   · exact half_pos D.packingRadius_pos
   · intro x y z hx hy hz hxz hyz
