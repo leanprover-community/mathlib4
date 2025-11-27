@@ -513,7 +513,7 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
       change ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
-    map_add' := LinearMap.map_add (map R R S S')
+    map_add' := map_add (map R R S S')
     map_smul' := LinearMap.CompatibleSMul.map_smul (map R R S S') }
 
 variable {R S S' T}

@@ -127,7 +127,7 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
   {_mα : MeasurableSpace α} {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
   {κ η : Kernel α Ω} {μ : Measure α}
   {π : ι → Set (Set Ω)} {s : ι → Set Ω} {S : Finset ι} {f : ∀ x : ι, Ω → β x}
-  {s1 s2 : Set (Set Ω)}
+  {s1 s2 : Set (Set Ω)} {ι' : Type*} {g : ι' → ι}
 
 @[simp] lemma iIndepSets_zero_right : iIndepSets π κ 0 := by simp [iIndepSets]
 
@@ -272,6 +272,64 @@ lemma IndepFun.meas_inter {β γ : Type*} [mβ : MeasurableSpace β] [mγ : Meas
     {f : Ω → β} {g : Ω → γ} (hfg : IndepFun f g κ μ)
     {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s) (ht : MeasurableSet[mγ.comap g] t) :
     ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t := hfg _ _ hs ht
+
+lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
+    iIndepSets (π ∘ g) κ μ := by
+  intro s f hf
+  let f' := Function.extend g f fun _ => ∅
+  have f'_apply x : f' (g x) = f x := hg.extend_apply ..
+  classical
+  have hf' : ∀ i ∈ s.image g, f' i ∈ π i := by
+    simp_rw [Finset.forall_mem_image, f'_apply]
+    exact hf
+  filter_upwards [@h (s.image g) f' hf'] with a ha
+  simpa [Finset.set_biInter_finset_image, Finset.prod_image hg.injOn, f'_apply] using ha
+
+lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
+    iIndepSets π κ μ := by
+  obtain ⟨g', hg'⟩ := hg.hasRightInverse
+  convert h.precomp hg'.injective
+  rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
+
+lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepSets (π ∘ g) κ μ ↔ iIndepSets π κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+lemma iIndep.precomp (hg : Function.Injective g) (h : iIndep m κ μ) :
+    iIndep (m ∘ g) κ μ :=
+  (iIndepSets.precomp hg h :)
+
+lemma iIndep.of_precomp (hg : Function.Surjective g) (h : iIndep (m ∘ g) κ μ) :
+    iIndep m κ μ :=
+  iIndepSets.of_precomp hg h
+
+lemma iIndep_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndep (m ∘ g) κ μ ↔ iIndep m κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+lemma iIndepSet.precomp (hg : Function.Injective g) (h : iIndepSet s κ μ) :
+    iIndepSet (s ∘ g) κ μ :=
+  iIndep.precomp hg h
+
+lemma iIndepSet.of_precomp (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) κ μ) :
+    iIndepSet s κ μ :=
+  iIndep.of_precomp hg h
+
+lemma iIndepSet_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepSet (s ∘ g) κ μ ↔ iIndepSet s κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+lemma iIndepFun.precomp (hg : Function.Injective g) (h : iIndepFun f κ μ) :
+    iIndepFun (fun i ↦ f (g i)) κ μ :=
+  iIndep.precomp hg h
+
+lemma iIndepFun.of_precomp (hg : Function.Surjective g) (h : iIndepFun (fun i ↦ f (g i)) κ μ) :
+    iIndepFun f κ μ :=
+  iIndep.of_precomp hg h
+
+lemma iIndepFun_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepFun (fun i ↦ f (g i)) κ μ ↔ iIndepFun f κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
 end ByDefinition
 
@@ -1482,3 +1540,5 @@ lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
 -- for kernels
 
 end ProbabilityTheory.Kernel
+
+set_option linter.style.longFile 1700
