@@ -154,10 +154,9 @@ abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring
 
 /-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
 def _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSemiring A]
-    (φ : R →+* A) : CommRing A := by
+    (φ : R →+* A) : CommRing A :=
   let _ : Algebra R A := RingHom.toAlgebra φ
-  refine {
-    toRing := Algebra.semiringToRing R
+  { __ := Algebra.semiringToRing R
     mul_comm := CommMonoid.mul_comm }
 
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
