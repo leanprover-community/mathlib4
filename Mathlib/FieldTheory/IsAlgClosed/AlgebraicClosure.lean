@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Algebraic Closure
@@ -26,6 +28,8 @@ In this file we construct the algebraic closure of a field
 
 algebraic closure, algebraically closed
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -58,14 +62,14 @@ variable {k}
 
 /-- If a monic polynomial `f : k[X]` splits in `K`,
 then it has as many roots (counting multiplicity) as its degree. -/
-def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k} (hf : f.1.Splits i) :
-    Fin f.1.natDegree ≃ (f.1.map i).roots.toEnumFinset :=
+def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k}
+    (hf : (f.1.map i).Splits) : Fin f.1.natDegree ≃ (f.1.map i).roots.toEnumFinset :=
   .symm <| Finset.equivFinOfCardEq <| by
-    rwa [← splits_id_iff_splits, splits_iff_card_roots,
+    rwa [splits_iff_card_roots,
       ← Multiset.card_toEnumFinset, f.2.natDegree_map] at hf
 
 lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f ∈ s) :
-    f.1.Splits (algebraMap k (SplittingField (∏ f ∈ s, f.1))) :=
+    (f.1.map (algebraMap k (SplittingField (∏ f ∈ s, f.1)))).Splits :=
   (splits_prod_iff _ fun j _ ↦ j.2.ne_zero).1 (SplittingField.splits _) _ hf
 
 open Classical in
@@ -184,8 +188,8 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           simp⟩
 
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
-  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, ← splits_id_iff_splits, Monics.map_eq_prod]
-  exact splits_prod _ fun _ _ ↦ (splits_id_iff_splits _).mpr (splits_X_sub_C _)
+  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
+  exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
 

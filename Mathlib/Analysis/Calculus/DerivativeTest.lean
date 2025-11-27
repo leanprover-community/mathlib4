@@ -3,22 +3,22 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser
 -/
-import Mathlib.Topology.Order.OrderClosedExtr
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
+module
+
+public import Mathlib.Topology.Order.OrderClosedExtr
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 /-!
-# The First-Derivative Test
+# The First- and Second-Derivative Tests
 
 We prove the first-derivative test from calculus, in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
 
 The test is proved over the real numbers ℝ
 using `monotoneOn_of_deriv_nonneg` from `Mathlib/Analysis/Calculus/Deriv/MeanValue.lean`.
 
-# The Second-Derivative Test
-
-We prove the Second-Derivative Test using the First-Derivative Test.
+We prove the second-derivative test using the first-derivative test.
 Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
 
 ## Main results
@@ -43,8 +43,10 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
 
 ## Tags
 
-derivative test, calculus
+derivative test, first-derivative test, second-derivative test, calculus
 -/
+
+@[expose] public section
 
 
 open Set Topology

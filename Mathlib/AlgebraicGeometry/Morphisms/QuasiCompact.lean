@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.AlgebraicGeometry.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Quasi-compact morphisms
@@ -17,6 +19,8 @@ It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -37,7 +41,8 @@ of quasi-compact open sets are quasi-compact.
 -/
 @[mk_iff]
 class QuasiCompact (f : X ⟶ Y) : Prop where
-  /-- Preimage of compact open set under a quasi-compact morphism between schemes is compact. -/
+  /-- The preimage of a compact open set under a quasi-compact morphism between schemes is
+  compact. -/
   isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f ⁻¹' U)
 
 variable {f} in
@@ -139,14 +144,18 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
         Opens.iSup_mk, Opens.coe_mk]
       exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
 
-theorem quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
-    QuasiCompact f ↔ CompactSpace X := by
-  rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
-
 theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
+instance {X : Scheme} [CompactSpace X] : QuasiCompact X.toSpecΓ :=
+  HasAffineProperty.iff_of_isAffine.mpr ‹_›
+
+/-
+A quasi-compact scheme over quasi-compact base is also quasi-compact as a topological space.
+For the coverse, see `quasiCompact_of_compactSpace` for the fact that
+a (topologically) quasi-compact scheme is quasi-compact over a base if the base is quasi-separated.
+-/
 lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
     [CompactSpace Y] : CompactSpace X := by
   constructor
@@ -156,6 +165,9 @@ lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y)
 instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
   comp_mem _ _ _ _ := inferInstance
+
+instance : MorphismProperty.IsMultiplicative @QuasiCompact where
+  id_mem _ := inferInstance
 
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
@@ -175,6 +187,9 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.f
 
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
@@ -213,8 +228,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
   intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
   wlog hX : ∃ R, X = Spec R
-  · obtain ⟨R, g, hg⟩ :=
-      compactSpace_iff_exists.mp ((quasiCompact_over_affine_iff f).mp inferInstance)
+  · obtain ⟨R, g, hg⟩ := compactSpace_iff_exists.mp (QuasiCompact.compactSpace_of_compactSpace f)
     have inst : QuasiCompact (g ≫ f) := HasAffineProperty.iff_of_isAffine.mpr (by infer_instance)
     have := this _ (g ≫ f) (g ⁻¹' Z) (hZ.preimage g.continuous)
     simp_rw [Scheme.Hom.comp_base, TopCat.comp_app, ← Set.image_image,
@@ -322,13 +336,5 @@ lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
     [CompactSpace X] (s : Set Γ(X, ⊤)) :
     X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, ⊤) :=
   zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
-
-@[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact :=
-  Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
-
-@[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical :=
-  Scheme.zeroLocus_eq_univ_iff_subset_nilradical
 
 end AlgebraicGeometry
