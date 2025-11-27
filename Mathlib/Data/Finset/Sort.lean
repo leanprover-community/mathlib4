@@ -132,11 +132,15 @@ section SortLinearOrder
 
 variable [LinearOrder α]
 
-theorem sort_sortedLT (s : Finset α) : (sort s).SortedLT :=
+theorem sortedLT_sort (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-theorem sort_sortedGT (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
+@[deprecated (since := "2025-11-27")] alias sort_sorted_lt := sortedLT_sort
+
+theorem sortedGT_sort (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
+
+@[deprecated (since := "2025-11-27")] alias sort_sorted_gt := sortedGT_sort
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
     s.sort.get ⟨0, h⟩ = s.min' H := by
@@ -188,7 +192,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
-    (s.sort_sortedLT.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sortedLT_sort.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a
@@ -331,10 +335,7 @@ end Finset
 namespace Fin
 
 theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
-  (List.perm_of_nodup_nodup_toFinset_eq
-      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp)).eq_of_pairwise'
-    (Finset.univ.pairwise_sort LE.le)
-    (List.pairwise_le_finRange n)
+  Finset.univ.sortedLT_sort.eq_of_mem_iff (List.sortedLT_finRange n) (by simp)
 
 end Fin
 

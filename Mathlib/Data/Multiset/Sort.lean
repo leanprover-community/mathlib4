@@ -69,7 +69,7 @@ theorem map_sort (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
 
 theorem sort_cons : (∀ b ∈ s, r a b) → sort (a ::ₘ s) r = a :: sort s r := by
   refine Quot.inductionOn s fun l => ?_
-  simpa [mergeSort_eq_insertionSort] using insertionSort_cons r (a := a) (l := l)
+  simpa [mergeSort_eq_insertionSort] using insertionSort_cons_of_forall_rel r (a := a) (l := l)
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (range n) = List.range n :=

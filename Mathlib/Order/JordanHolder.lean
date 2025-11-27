@@ -171,12 +171,12 @@ theorem toList_nodup (s : CompositionSeries X) : s.toList.Nodup :=
 
 /-- Two `CompositionSeries` are equal if they have the same elements. See also `ext_fun`. -/
 @[ext]
-theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ :=
-  toList_injective <| by
-      classical
-      exact (List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup
-          (by simpa only [Finset.ext_iff, List.mem_toFinset, RelSeries.mem_toList])).eq_of_pairwise'
-          s₁.toList_sorted.pairwise s₂.toList_sorted.pairwise
+theorem ext {s₁ s₂ : CompositionSeries X} (h : ∀ x, x ∈ s₁ ↔ x ∈ s₂) : s₁ = s₂ := by
+  classical
+  apply toList_injective <|
+    (List.perm_of_nodup_nodup_toFinset_eq s₁.toList_nodup s₂.toList_nodup _).eq_of_pairwise'
+    s₁.toList_sorted.pairwise s₂.toList_sorted.pairwise
+  simpa only [Finset.ext_iff, List.mem_toFinset, RelSeries.mem_toList]
 
 @[simp]
 theorem le_last {s : CompositionSeries X} (i : Fin (s.length + 1)) : s i ≤ s.last :=

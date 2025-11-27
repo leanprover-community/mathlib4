@@ -297,7 +297,7 @@ If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ b
 such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
-@[simps length]
+@[simps]
 def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by omega)
@@ -365,12 +365,8 @@ lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.las
 lemma toList_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).toList = p.toList ++ q.toList := by
   apply List.ext_getElem
-  · simp
-    cutsat
-  · simp only [append, toList_getElem, Function.comp_apply, Fin.cast_mk, List.getElem_append,
-      length_toList, Fin.append, Fin.addCases,
-      Fin.castLT_mk, Fin.subNat_mk, Fin.natAdd_mk, eq_rec_constant, implies_true]
-
+  · simp; grind
+  · simp [List.getElem_append, Fin.append, Fin.addCases]
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
@@ -494,11 +490,7 @@ def cons (p : RelSeries r) (newHead : α) (rel : newHead ~[r] p.head) : RelSerie
 
 lemma cons_cast_succ (s : RelSeries r) (a : α) (h : a ~[r] s.head) (i : Fin (s.length + 1)) :
     (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
-  dsimp [cons]
-  convert append_apply_right (singleton r a) s h i
-  ext1
-  dsimp
-  omega
+  simp [cons, Fin.append, Fin.addCases, Fin.subNat]
 
 @[simp]
 lemma append_singleton_left (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :

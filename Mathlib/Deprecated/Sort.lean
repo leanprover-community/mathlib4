@@ -22,7 +22,9 @@ section Sorted
 
 variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `Sorted r l` is the same as `List.Pairwise r l` and has been deprecated. -/
+/-- `Sorted r l` is the same as `List.Pairwise r l` and has been deprecated.
+Consider using any of `SortedLE`, `SortedLT`, `SortedGE`, or `SortedGT` if the relation you're
+  using is a preorder. -/
 @[deprecated (since := "2025-10-11")]
 alias Sorted := Pairwise
 

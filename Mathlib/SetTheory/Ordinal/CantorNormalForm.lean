@@ -172,7 +172,7 @@ protected theorem sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := 
   simp_rw [sortedGT_iff_pairwise]
   refine CNF.rec b ?_ (fun o ho IH ↦ ?_) o
   · rw [zero_right]
-    exact Pairwise.nil
+    exact .nil
   · rcases le_or_gt b 1 with hb | hb
     · rw [CNF.of_le_one hb ho]
       exact pairwise_singleton _ _

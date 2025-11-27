@@ -181,7 +181,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
       else (1 - (e (π C (· ∈ s)) i)))).prod ∈
       Submodule.span ℤ ((Products.eval (π C (· ∈ s))) '' {m | m.val ≤ l}) from
     Submodule.span_mono (Set.image_subset_range _ _)
-      (this (Finset.sort_sortedGT _))
+      (this (Finset.sortedGT_sort _))
   rw [List.sortedGT_iff_isChain]
   induction l with
   | nil =>

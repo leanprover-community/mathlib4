@@ -24,7 +24,7 @@ predicates which are equivalent to `List.Pairwise` when the relation derives fro
 preorder (but which are defined in terms of the monotonicity predicates).
 -/
 
-@[expose] public section
+public section
 
 namespace List
 
@@ -43,29 +43,33 @@ section InsertionSort
 
 /-- `orderedInsert a l` inserts `a` into `l` at such that
   `orderedInsert a l` is sorted if `l` is. -/
-@[simp]
 def orderedInsert (a : α) : List α → List α
   | [] => [a]
   | b :: l => if a ≼ b then a :: b :: l else b :: orderedInsert a l
+
+@[simp, grind =] theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] := .refl _
+
+@[simp, grind =] theorem orderedInsert_cons (a b : α) (l : List α) :
+    (b :: l).orderedInsert r a = if r a b then a :: b :: l else
+    b :: l.orderedInsert r a := .refl _
 
 theorem orderedInsert_of_le {a b : α} (l : List α) (h : a ≼ b) :
     orderedInsert r a (b :: l) = a :: b :: l :=
   dif_pos h
 
 /-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
-@[simp]
-def insertionSort : List α → List α
-  | [] => []
-  | b :: l => orderedInsert r b (insertionSort l)
+def insertionSort : List α → List α := foldr (orderedInsert r) []
+
+@[simp, grind =]
+theorem insertionSort_nil : [].insertionSort r  = [] := .refl _
+
+@[simp, grind =] theorem insertionSort_cons (a : α) (l : List α) :
+    (a :: l).insertionSort r  = orderedInsert r a (insertionSort r l) := .refl _
 
 -- A quick check that insertionSort is stable:
 example :
     insertionSort (fun m n => m / 10 ≤ n / 10) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] =
       [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := rfl
-
-@[simp]
-theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
-  rfl
 
 theorem orderedInsert_length (L : List α) (a : α) :
     (L.orderedInsert r a).length = L.length + 1 := by
@@ -119,9 +123,9 @@ theorem mem_insertionSort {l : List α} {x : α} : x ∈ l.insertionSort r ↔ x
 theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.length :=
   (perm_insertionSort r _).length_eq
 
-theorem insertionSort_cons {a : α} {l : List α} (h : ∀ b ∈ l, r a b) :
+theorem insertionSort_cons_of_forall_rel {a : α} {l : List α} (h : ∀ b ∈ l, r a b) :
     insertionSort r (a :: l) = a :: insertionSort r l := by
-  rw [insertionSort]
+  rw [insertionSort_cons]
   cases hi : insertionSort r l with
   | nil => rfl
   | cons b m =>
@@ -136,7 +140,7 @@ theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b
   | nil => simp
   | cons x xs ih =>
     simp_rw [List.forall_mem_cons, forall_and] at hl
-    simp_rw [List.map, List.insertionSort]
+    simp_rw [List.map, insertionSort_cons]
     rw [List.map_orderedInsert _ s, ih hl.2.2]
     · simpa only [mem_insertionSort] using hl.2.1
     · simpa only [mem_insertionSort] using hl.1.2
@@ -149,7 +153,7 @@ theorem Pairwise.insertionSort_eq : ∀ {l : List α}, Pairwise r l → insertio
   | [], _ => rfl
   | [_], _ => rfl
   | a :: b :: l, h => by
-    rw [insertionSort, Pairwise.insertionSort_eq, orderedInsert, if_pos]
+    rw [insertionSort_cons, Pairwise.insertionSort_eq, orderedInsert, if_pos]
     exacts [rel_of_pairwise_cons h mem_cons_self, h.tail]
 
 @[deprecated (since := "2025-10-11")]
@@ -264,7 +268,7 @@ If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort
 theorem sublist_insertionSort {l c : List α} (hr : c.Pairwise r) (hc : c <+ l) :
     c <+ insertionSort r l := by
   induction l generalizing c with
-  | nil         => simp_all only [sublist_nil, insertionSort, Sublist.refl]
+  | nil         => grind
   | cons _ _ ih =>
     cases hc with
     | cons  _ h => exact ih hr h |>.trans (sublist_orderedInsert ..)
@@ -292,7 +296,7 @@ theorem sublist_insertionSort' {l c : List α} (hs : c.Pairwise r) (hc : c <+~ l
   classical
   obtain ⟨d, hc, hd⟩ := hc
   induction l generalizing c d with
-  | nil         => simp_all only [sublist_nil, insertionSort, nil_perm]
+  | nil         => grind [nil_perm]
   | cons a _ ih =>
     cases hd with
     | cons  _ h => exact ih hs _ hc h |>.trans (sublist_orderedInsert ..)
@@ -424,20 +428,20 @@ The provided API should be used to move to and from `IsChain`,
 --/
 
 /-- `l.SortedLE` means that the list is monotonic. -/
-@[irreducible] def SortedLE (l : List α) := Monotone l.get
+def SortedLE (l : List α) := Monotone l.get
 /-- `l.SortedGE` means that the list is antitonic. -/
-@[irreducible] def SortedGE (l : List α) := Antitone l.get
+@[to_dual existing SortedLE] def SortedGE (l : List α) := Antitone l.get
 /-- `l.SortedLT` means that the list is strictly monotonic. -/
-@[irreducible] def SortedLT (l : List α) := StrictMono l.get
+def SortedLT (l : List α) := StrictMono l.get
 /-- `l.SortedGT` means that the list is strictly antitonic. -/
-@[irreducible] def SortedGT (l : List α) := StrictAnti l.get
+@[to_dual existing SortedLT] def SortedGT (l : List α) := StrictAnti l.get
 
 section Get
 
-unseal SortedLE in theorem sortedLE_iff_monotone_get : l.SortedLE ↔ Monotone l.get := Iff.rfl
-unseal SortedGE in theorem sortedGE_iff_antitone_get : l.SortedGE ↔ Antitone l.get := Iff.rfl
-unseal SortedLT in theorem sortedLT_iff_strictMono_get : l.SortedLT ↔ StrictMono l.get := Iff.rfl
-unseal SortedGT in theorem sortedGT_iff_strictAnti_get : l.SortedGT ↔ StrictAnti l.get := Iff.rfl
+theorem sortedLE_iff_monotone_get : l.SortedLE ↔ Monotone l.get := .rfl
+theorem sortedGE_iff_antitone_get : l.SortedGE ↔ Antitone l.get := .rfl
+theorem sortedLT_iff_strictMono_get : l.SortedLT ↔ StrictMono l.get := .rfl
+theorem sortedGT_iff_strictAnti_get : l.SortedGT ↔ StrictAnti l.get := .rfl
 
 protected alias ⟨SortedLE.monotone_get, _root_.Monotone.sortedLE⟩ := sortedLE_iff_monotone_get
 protected alias ⟨SortedGE.antitone_get, _root_.Antitone.sortedGE⟩ := sortedGE_iff_antitone_get
@@ -861,7 +865,6 @@ theorem sortedLE_listMap (hf : StrictAnti f) :
     (l.map f).SortedLE ↔ l.SortedGE := by
   have h := hf.dual_right.sortedGE_listMap (l := l)
   grind
-
 
 theorem sortedGE_listMap (hf : StrictAnti f) :
     (l.map f).SortedGE ↔ l.SortedLE := by
