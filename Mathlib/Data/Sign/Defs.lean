@@ -215,6 +215,11 @@ def cast : SignType → α
   | pos => 1
   | neg => -1
 
+/--
+This can't be a `CoeTail` or `Coe` instance because we don't want it to fire when `SignType` isn't
+involved in the coercion (or `CoeHead` or `CoeOut` because of `outParam`s). The only other
+user-exposed option is `CoeDep` then, which allows us to match on both given and expected type.
+-/
 instance (s : SignType) : CoeDep SignType s α :=
   ⟨cast s⟩
 
