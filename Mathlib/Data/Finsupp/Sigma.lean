@@ -116,11 +116,10 @@ end EmbSigmaAdd
 
 section EmbSigmaSingle
 
-variable [Zero M] [DecidableEq κ] [∀ k, DecidableEq (ι k)]
-
 @[simp]
-theorem embSigma_single {k : κ} (i : ι k) (m : M) :
+theorem embSigma_single [Zero M] {k : κ} (i : ι k) (m : M) :
     embSigma (single i m) = single ⟨k, i⟩ m := by
+  classical
   ext ⟨k', j⟩
   by_cases hk : k' = k
   · subst hk
