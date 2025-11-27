@@ -439,6 +439,7 @@ lemma IsTree.diff_dist_adj (hG : G.IsTree) (u v w : V) (hadj : SimpleGraph.Adj G
       exact absurd h₁ Nat.zero_ne_one)
     exact Eq.symm (Nat.sub_add_cancel this)
 
+/-- The unique two-coloring of a tree that colors the given vertex with zero -/
 noncomputable def IsTree.coloring_two_of_elem (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
   Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
   intro v w hadj h
