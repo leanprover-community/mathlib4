@@ -89,11 +89,11 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
     simp_rw [this, Algebra.smul_def]
     exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
 
-lemma exists_aeval_invOf_eq_zero_of_ideal_map_adjoin_add_span_eq_top [CommRing R] [CommRing S]
+lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R] [CommRing S]
     [Algebra R S] (x : S) (I : Ideal R) (hI : I ≠ ⊤) [Invertible x]
-    (h : I.map (algebraMap R (adjoin R {x})) + .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
+    (h : I.map (algebraMap R (adjoin R {x})) ⊔ .span {⟨x, subset_adjoin rfl⟩} = ⊤) :
     ∃ p : R[X], p.leadingCoeff - 1 ∈ I ∧ p.aeval ⅟x = 0 := by
-  rw [← Ideal.one_eq_top, Ideal.add_eq_one_iff] at h
+  rw [← Ideal.one_eq_top, ← Ideal.add_eq_sup, Ideal.add_eq_one_iff] at h
   have ⟨y, hy, z, hz, eq⟩ := h
   have ⟨p, hp⟩ := (mem_ideal_map_adjoin ..).mp hy
   have ⟨w, hw⟩ := Ideal.mem_span_singleton.mp hz
@@ -104,6 +104,6 @@ lemma exists_aeval_invOf_eq_zero_of_ideal_map_adjoin_add_span_eq_top [CommRing R
   dsimp at eq
   rw [reverse_leadingCoeff, trailingCoeff_eq_coeff_zero]
   · exact ⟨this, (eval₂_reverse_eq_zero_iff ..).mpr <| by simp [← aeval_def, hp.2, hq, ← eq, hw]⟩
-  · refine fun h ↦ hI ?_; simpa [h, Ideal.eq_top_iff_one] using this
+  · exact fun h ↦ hI <| by simpa [h, Ideal.eq_top_iff_one]
 
 end Algebra
