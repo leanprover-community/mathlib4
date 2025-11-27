@@ -3,9 +3,11 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Eric Wieser
 -/
-import Mathlib.Data.ENNReal.Holder
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Integral.MeanInequalities
+module
+
+public import Mathlib.Data.ENNReal.Holder
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
 # Compare Lp seminorms for different values of `p`
@@ -13,6 +15,8 @@ import Mathlib.MeasureTheory.Integral.MeanInequalities
 In this file we compare `MeasureTheory.eLpNorm'` and `MeasureTheory.eLpNorm` for different
 exponents.
 -/
+
+@[expose] public section
 
 open Filter ENNReal
 open scoped Topology
@@ -107,7 +111,7 @@ theorem eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteM
       eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp_pos hpq hf
     _ < ∞ := by
       rw [ENNReal.mul_lt_top_iff]
-      refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
+      refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (by finiteness)⟩
       rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv₀ hq_pos hp_pos]
 
 theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp f q μ)
@@ -127,7 +131,7 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
     rw [hq_top, eLpNorm_exponent_top] at hfq_lt_top
     refine lt_of_le_of_lt (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hp_pos) ?_
     refine ENNReal.mul_lt_top hfq_lt_top ?_
-    exact ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)
+    exact ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (by finiteness)
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
@@ -185,7 +189,6 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
   apply lintegral_mono_ae
   filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
-  refine ENNReal.rpow_le_rpow ?_ hp.le
   gcongr
   exact hf
 
@@ -210,10 +213,11 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurab
     eLpNorm' (fun x => b (f x) (g x)) r μ
       ≤ eLpNorm' (fun x ↦ (c : ℝ) • ‖f x‖ * ‖g x‖) r μ := by
       simp only [eLpNorm']
-      refine (ENNReal.rpow_le_rpow_iff <| one_div_pos.mpr hro_lt).mpr <|
-        lintegral_mono_ae <| h.mono fun a ha ↦ (ENNReal.rpow_le_rpow_iff hro_lt).mpr <| ?_
-      simp only [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
-      simpa [Real.nnnorm_of_nonneg (by positivity)] using ha
+      gcongr ?_ ^ _
+      refine lintegral_mono_ae <| h.mono fun a ha ↦ ?_
+      gcongr
+      simp only [enorm_eq_nnnorm, ENNReal.coe_le_coe]
+      simpa using ha
     _ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ := by
       simp only [smul_mul_assoc, ← Pi.smul_def, eLpNorm'_const_smul _ hro_lt]
       rw [Real.enorm_eq_ofReal c.coe_nonneg, ENNReal.ofReal_coe_nnreal, mul_assoc]

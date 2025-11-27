@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Bases
@@ -55,6 +57,8 @@ ordered index type `ι`.
 basis, bases
 
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
@@ -121,7 +125,7 @@ theorem repr_symm_single : b.repr.symm (Finsupp.single i c) = c • b i :=
   calc
     b.repr.symm (Finsupp.single i c) = b.repr.symm (c • Finsupp.single i (1 : R)) := by
       { rw [Finsupp.smul_single', mul_one] }
-    _ = c • b i := by rw [LinearEquiv.map_smul, repr_symm_single_one]
+    _ = c • b i := by rw [map_smul, repr_symm_single_one]
 
 @[simp]
 theorem repr_self : b.repr (b i) = Finsupp.single i 1 :=
@@ -318,13 +322,13 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  simp only [map_sum, LinearMap.map_smulₛₗ, h]
+  simp only [map_sum, map_smulₛₗ, h]
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  simp only [map_sum, LinearEquiv.map_smulₛₗ, h]
+  simp only [map_sum, map_smulₛₗ, h]
 
 /-- Two elements are equal iff their coordinates are equal. -/
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
@@ -416,11 +420,10 @@ def reindexRange : Basis (range b) R M :=
     .ofRepr (Module.subsingletonEquiv R M (range b))
 
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
-  by_cases htr : Nontrivial R
-  · simp [htr, reindexRange, reindex_apply]
-  · push_neg at htr
-    letI := Module.subsingleton R M
+  cases subsingleton_or_nontrivial R
+  · let := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]
+  · simp [*, reindexRange, reindex_apply]
 
 theorem reindexRange_repr_self (i : ι) :
     b.reindexRange.repr (b i) = Finsupp.single ⟨b i, mem_range_self i⟩ 1 :=
@@ -441,10 +444,10 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
   apply (b.repr_apply_eq (fun x i => b.reindexRange.repr x ⟨b i, _⟩) _ _ _ x i).symm
   · intro x y
     ext i
-    simp only [Pi.add_apply, LinearEquiv.map_add, Finsupp.coe_add]
+    simp only [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
-    simp only [Pi.smul_apply, LinearEquiv.map_smul, Finsupp.coe_smul]
+    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
   · intro i
     ext j
     simp only [reindexRange_repr_self]
@@ -681,7 +684,7 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
   ext m
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
     id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
-    LinearMap.coeFn_sum]
+    LinearMap.coe_sum]
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by

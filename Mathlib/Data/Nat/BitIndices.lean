@@ -3,12 +3,14 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.List.Sort
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.List.Sort
 
 /-!
 # Bit Indices
@@ -24,6 +26,8 @@ This is used in `Combinatorics.colex` to construct a bijection `equivBitIndices 
 
 Relate the material in this file to `Nat.digits` and `Nat.bits`.
 -/
+
+@[expose] public section
 
 open List
 namespace Nat

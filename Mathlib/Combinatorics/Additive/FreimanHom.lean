@@ -3,18 +3,20 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Freiman homomorphisms
 
-In this file, we define Freiman homomorphisms and isomorphism.
+In this file, we define Freiman homomorphisms and isomorphisms.
 
 An `n`-Freiman homomorphism from `A` to `B` is a function `f : α → β` such that `f '' A ⊆ B` and
 `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ` for all `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that
@@ -57,8 +59,10 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 * `MonoidHomClass.isMulFreimanHom` could be relaxed to `MulHom.toFreimanHom` by proving
   `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
-* Affine maps are Freiman homs.
+* Affine maps are Freiman homomorphisms.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
@@ -359,12 +363,6 @@ lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : 
       (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
       (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
 
-@[deprecated (since := "2025-03-11")]
-alias IsAddFreimanHom.sum := IsAddFreimanHom.prodMap
-
-@[to_additive existing, deprecated (since := "2025-03-11")]
-alias IsMulFreimanHom.prod := IsMulFreimanHom.prodMap
-
 @[to_additive prodMap]
 lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
@@ -377,12 +375,6 @@ lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : 
       h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
       h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
         (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
-
-@[deprecated (since := "2025-03-11")]
-alias IsAddFreimanIso.sum := IsAddFreimanIso.prodMap
-
-@[to_additive existing, deprecated (since := "2025-03-11")]
-alias IsMulFreimanIso.prod := IsMulFreimanIso.prodMap
 
 end Prod
 
@@ -424,7 +416,7 @@ lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
   · simp [← bot_eq_zero]
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
   convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
-  · simp [lt_iff_val_lt_val, le_iff_val_le_val, -val_fin_le, -val_fin_lt, Nat.mod_eq_of_lt,
+  · simp [lt_def, le_iff_val_le_val, -val_fin_le, -val_fin_lt, Nat.mod_eq_of_lt,
       aux hm hkmn']
     simp_rw [← Nat.cast_add_one]
     rw [Fin.val_cast_of_lt (aux hm hkmn), Nat.lt_succ_iff]

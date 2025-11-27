@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Distributions.Gaussian.Real
+module
+
+public import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!
 # Gaussian distributions in Banach spaces
@@ -30,6 +32,8 @@ For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distribut
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Complex NormedSpace
 open scoped ENNReal NNReal
@@ -60,6 +64,29 @@ instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianR
     congr
     simp only [left_eq_sup]
     positivity
+
+/-- A Gaussian measure over `ℝ` is some `gaussianReal`. -/
+lemma IsGaussian.eq_gaussianReal (μ : Measure ℝ) (h : IsGaussian μ) :
+    μ = gaussianReal μ[id] Var[id; μ].toNNReal := calc
+  μ = μ.map (ContinuousLinearMap.id ℝ ℝ) := by simp
+  _ = gaussianReal μ[id] Var[id; μ].toNNReal := by rw [h.map_eq_gaussianReal]; simp
+
+lemma isGaussian_of_isGaussian_map {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
+    (h : ∀ L : E →L[ℝ] ℝ, IsGaussian (μ.map L)) : IsGaussian μ := by
+  refine ⟨fun L ↦ ?_⟩
+  rw [(h L).eq_gaussianReal, integral_map, variance_map]
+  · rfl
+  all_goals fun_prop
+
+lemma isGaussian_of_map_eq_gaussianReal {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
+    (h : ∀ L : E →L[ℝ] ℝ, ∃ (m : ℝ) (v : ℝ≥0), μ.map L = gaussianReal m v) :
+    IsGaussian μ := by
+  refine isGaussian_of_isGaussian_map fun L ↦ ?_
+  obtain ⟨m, v, h⟩ := h L
+  rw [h]
+  infer_instance
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
@@ -143,6 +170,30 @@ alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
 end charFunDual
 
+section charFun
+
+open InnerProductSpace
+open scoped RealInnerProductSpace
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E] {μ : Measure E}
+
+lemma IsGaussian.charFun_eq [IsGaussian μ] (t : E) :
+    charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
+  rw [charFun_eq_charFunDual_toDualMap, IsGaussian.charFunDual_eq]
+  rfl
+
+-- TODO: This should not require completeness as `toDualMap` has dense range, but this is not
+-- in mathlib.
+lemma isGaussian_iff_charFun_eq [CompleteSpace E] [IsFiniteMeasure μ] :
+    IsGaussian μ ↔
+    ∀ t, charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
+  simp_rw [isGaussian_iff_charFunDual_eq, (toDual ℝ E).surjective.forall,
+    charFun_eq_charFunDual_toDualMap]
+  rfl
+
+end charFun
+
 instance isGaussian_conv [SecondCountableTopology E]
     {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :
     IsGaussian (μ ∗ ν) where
@@ -164,7 +215,7 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
   simp only [map_add]
   rw [integral_add (by fun_prop) (by fun_prop)]
   congr
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, ofReal_add]
+  simp only [integral_const, probReal_univ, smul_eq_mul, one_mul, ofReal_add]
   ring
 
 instance (c : E) : IsGaussian (μ.map (fun x ↦ c + x)) := by simp_rw [add_comm c]; infer_instance
@@ -178,8 +229,26 @@ instance : IsGaussian (μ.map (fun x ↦ -x)) := by
 instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
   simp_rw [sub_eq_add_neg]
   suffices IsGaussian ((μ.map (fun x ↦ -x)).map (fun x ↦ c + x)) by
-    rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
-    convert this using 1
+    rwa [Measure.map_map (by fun_prop) (by fun_prop), Function.comp_def] at this
   infer_instance
+
+/-- A product of Gaussian distributions is Gaussian. -/
+instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
+    IsGaussian (μ.prod ν) := by
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
+  congr
+  let (eq := hL₁) L₁ := L.comp (.inl ℝ E F)
+  let (eq := hL₂) L₂ := L.comp (.inr ℝ E F)
+  rw [← hL₁, ← hL₂, sub_add_sub_comm, ← add_mul]
+  congr
+  · simp_rw [integral_complex_ofReal]
+    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
+      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
+    norm_cast
+  · field_simp
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
+    norm_cast
 
 end ProbabilityTheory

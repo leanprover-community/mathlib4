@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Simple functions
@@ -20,6 +22,8 @@ measurable function into `ℝ≥0∞`, it is sufficient to show that the propert
 characteristic functions and is closed under addition and supremum of increasing sequences of
 functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -408,10 +412,6 @@ theorem coe_div [Div β] (f g : α →ₛ β) : ⇑(f / g) = ⇑f / ⇑g :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_le [LE β] {f g : α →ₛ β} : (f : α → β) ≤ g ↔ f ≤ g :=
-  Iff.rfl
-
-@[simp, norm_cast]
 theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
@@ -443,13 +443,8 @@ theorem range_one [Nonempty α] [One β] : (1 : α →ₛ β).range = {1} :=
 
 @[simp]
 theorem range_eq_empty_of_isEmpty {β} [hα : IsEmpty α] (f : α →ₛ β) : f.range = ∅ := by
-  rw [← Finset.not_nonempty_iff_eq_empty]
-  by_contra h
-  obtain ⟨y, hy_mem⟩ := h
-  rw [SimpleFunc.mem_range, Set.mem_range] at hy_mem
-  obtain ⟨x, hxy⟩ := hy_mem
-  rw [isEmpty_iff] at hα
-  exact hα x
+  ext
+  simp
 
 theorem eq_zero_of_mem_range_zero [Zero β] : ∀ {y : β}, y ∈ (0 : α →ₛ β).range → y = 0 :=
   @(forall_mem_range.2 fun _ => rfl)
@@ -671,8 +666,10 @@ variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs
 
 instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
-@[norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
+
+@[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
 
 @[simp] lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 @[simp] lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
@@ -704,7 +701,7 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
 @[to_additive]
 instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
-  mul_le_mul_left _ _ h _ _ := mul_le_mul_left' (h _) _
+  mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
@@ -887,11 +884,11 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
       _ < ⊤ := ENNReal.coe_lt_top
   · exact WithTop.top_pos
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
   monotone_approx _ f
 
-@[gcongr]
+@[deprecated monotone_eapprox (since := "2025-08-13")]
 lemma eapprox_mono {m n : ℕ} (hmn : m ≤ n) : eapprox f m ≤ eapprox f n := monotone_eapprox _ hmn
 
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
@@ -1432,7 +1429,7 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
   convert iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
     (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
-    (fun m n hmn a ↦ Set.indicator_le_indicator_of_subset (by gcongr) (by simp) _)
+    (fun m n hmn a ↦ by dsimp; grw [hmn])
     (fun n ↦ indicator _ (hs.inter (measurableSet_spanningSets ..))
       (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]

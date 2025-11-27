@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Results about division in extended non-negative reals
@@ -29,6 +31,8 @@ A few order isomorphisms are worthy of mention:
     the extended nonnegative real numbers and the unit interval. This is `orderIsoIicOneBirational`
     composed with the identity order isomorphism between `Iic (1 : ℝ≥0∞)` and `Icc (0 : ℝ) 1`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -68,7 +72,7 @@ theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 
 lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
-  simpa only [div_eq_mul_inv, coe_mul] using mul_le_mul_left' coe_inv_le _
+  simpa only [div_eq_mul_inv, coe_mul] using _root_.mul_le_mul_right coe_inv_le _
 
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
@@ -210,7 +214,7 @@ protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
 
 protected theorem inv_mul_le_iff {x y z : ℝ≥0∞} (h1 : x ≠ 0) (h2 : x ≠ ∞) :
     x⁻¹ * y ≤ z ↔ y ≤ x * z := by
-  rw [← mul_le_mul_left h1 h2, ← mul_assoc, ENNReal.mul_inv_cancel h1 h2, one_mul]
+  rw [← ENNReal.mul_le_mul_iff_right h1 h2, ← mul_assoc, ENNReal.mul_inv_cancel h1 h2, one_mul]
 
 protected theorem mul_inv_le_iff {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
     x * y⁻¹ ≤ z ↔ x ≤ z * y := by
@@ -355,7 +359,7 @@ protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ �
   · have hc : c ≠ 0 := h0.neg_resolve_left rfl
     simp [div_zero hc]
   · rw [← coe_ne_zero] at hb
-    rw [← ENNReal.mul_le_mul_right hb coe_ne_top, ENNReal.div_mul_cancel hb coe_ne_top]
+    rw [← ENNReal.mul_le_mul_iff_left hb coe_ne_top, ENNReal.div_mul_cancel hb coe_ne_top]
 
 protected theorem div_le_iff_le_mul (hb0 : b ≠ 0 ∨ c ≠ ∞) (hbt : b ≠ ∞ ∨ c ≠ 0) :
     a / b ≤ c ↔ a ≤ c * b := by
@@ -412,10 +416,10 @@ theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
   div_lt_of_lt_mul <| by rwa [mul_comm]
 
 protected lemma div_lt_div_iff_left (hc₀ : c ≠ 0) (hc : c ≠ ∞) : a / c < b / c ↔ a < b :=
-  ENNReal.mul_lt_mul_right (by simpa) (by simpa)
+  ENNReal.mul_lt_mul_iff_left (by simpa) (by simpa)
 
 protected lemma div_lt_div_iff_right (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a / b < a / c ↔ c < b :=
-  (ENNReal.mul_lt_mul_left ha₀ ha).trans (by simp)
+  (ENNReal.mul_lt_mul_iff_right ha₀ ha).trans (by simp)
 
 @[gcongr]
 protected lemma div_lt_div_right (hc₀ : c ≠ 0) (hc : c ≠ ∞) (hab : a < b) : a / c < b / c :=
@@ -458,7 +462,7 @@ protected theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ := by
   simp [left_ne_zero_of_mul_eq_one h] at h
 
 theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ ∞) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
-  rw [← @ENNReal.mul_le_mul_left _ a _ hr₀ hr₁, ← mul_assoc, ENNReal.mul_inv_cancel hr₀ hr₁,
+  rw [← @ENNReal.mul_le_mul_iff_right _ a _ hr₀ hr₁, ← mul_assoc, ENNReal.mul_inv_cancel hr₀ hr₁,
     one_mul]
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
@@ -466,9 +470,13 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
-lemma eq_of_forall_nnreal_iff {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) : x = y :=
-  le_antisymm (le_of_forall_nnreal_lt fun _r hr ↦ (h _).1 hr.le)
-    (le_of_forall_nnreal_lt fun _r hr ↦ (h _).2 hr.le)
+lemma eq_of_forall_nnreal_le_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) → x = y :=
+  WithTop.eq_of_forall_coe_le_iff
+
+@[deprecated (since := "2025-10-20")] alias eq_of_forall_nnreal_iff := eq_of_forall_nnreal_le_iff
+
+lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y :=
+  WithTop.eq_of_forall_le_coe_iff
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
@@ -653,7 +661,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
   rcases n with n | n
-  · simp only [Int.ofNat_eq_coe, coe_pow, zpow_natCast]
+  · simp only [Int.ofNat_eq_natCast, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 
@@ -719,11 +727,11 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   obtain a | a := a <;> obtain b | b := b
-  · simp only [Int.ofNat_eq_coe, zpow_natCast]
+  · simp only [Int.ofNat_eq_natCast, zpow_natCast]
     exact pow_right_mono₀ hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.natCast_nonneg _)
-  · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_natCast]
+  · simp only [zpow_negSucc, Int.ofNat_eq_natCast, zpow_natCast]
     refine (ENNReal.inv_le_one.2 ?_).trans ?_ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
     apply pow_right_mono₀ hx
@@ -776,13 +784,13 @@ lemma isUnit_iff : IsUnit a ↔ a ≠ 0 ∧ a ≠ ∞ := by
 @[simps! toEquiv apply symm_apply]
 def mulLeftOrderIso (a : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
   toEquiv := ha.unit.mulLeft
-  map_rel_iff' := by simp [ENNReal.mul_le_mul_left, ha.ne_zero, (isUnit_iff.1 ha).2]
+  map_rel_iff' := by simp [ENNReal.mul_le_mul_iff_right, ha.ne_zero, (isUnit_iff.1 ha).2]
 
 /-- Right multiplication by a nonzero finite `a` as an order isomorphism. -/
 @[simps! toEquiv apply symm_apply]
 def mulRightOrderIso (a : ℝ≥0∞) (ha : IsUnit a) : ℝ≥0∞ ≃o ℝ≥0∞ where
   toEquiv := ha.unit.mulRight
-  map_rel_iff' := by simp [ENNReal.mul_le_mul_right, ha.ne_zero, (isUnit_iff.1 ha).2]
+  map_rel_iff' := by simp [ENNReal.mul_le_mul_iff_left, ha.ne_zero, (isUnit_iff.1 ha).2]
 
 variable {ι κ : Sort*} {f g : ι → ℝ≥0∞} {s : Set ℝ≥0∞} {a : ℝ≥0∞}
 

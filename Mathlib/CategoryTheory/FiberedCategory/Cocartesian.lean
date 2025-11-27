@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
 # Co-Cartesian morphisms
@@ -34,6 +35,8 @@ equalities.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
@@ -49,10 +52,12 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is co-Cartesian if for all
 morphisms `φ' : a ⟶ b'`, also lying over `f`, there exists a unique morphism `χ : b ⟶ b'` lifting
 `𝟙 S` such that `φ' = φ ≫ χ`. -/
-class IsCocartesian : Prop extends IsHomLift p f φ where
+class IsCocartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ'] :
       ∃! χ : b ⟶ b', IsHomLift p (𝟙 S) χ ∧ φ ≫ χ = φ'
 
+attribute [instance] IsCocartesian.toIsHomLift
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly co-Cartesian if for
 all morphisms `φ' : a ⟶ b'` and all diagrams of the form
 ```
@@ -63,9 +68,11 @@ R --f--> S --g--> S'
 ```
 such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
 @[stacks 02XK]
-class IsStronglyCocartesian : Prop extends IsHomLift p f φ where
+class IsStronglyCocartesian : Prop where
+  [toIsHomLift : IsHomLift p f φ]
   universal_property' {b' : 𝒳} (g : S ⟶ p.obj b') (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
       ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ'
+attribute [instance] IsStronglyCocartesian.toIsHomLift
 
 end
 
@@ -81,21 +88,21 @@ variable {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ']
 `φ' : a ⟶ b'` which also lifts `f`, then `IsCocartesian.map f φ φ'` is the morphism `b ⟶ b'` lying
 over `𝟙 S` obtained from the universal property of `φ`. -/
 protected noncomputable def map : b ⟶ b' :=
-  Classical.choose <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
+  Classical.choose <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ'
 
 instance map_isHomLift : IsHomLift p (𝟙 S) (IsCocartesian.map p f φ φ') :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.1
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.1
 
 @[reassoc (attr := simp)]
 lemma fac : φ ≫ IsCocartesian.map p f φ φ' = φ' :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.2
 
 /-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
 `φ' : a ⟶ b'` which also lifts `f`. Then any morphism `ψ : b ⟶ b'` lifting `𝟙 S` such that
 `g ≫ ψ = φ'` must equal the map induced by the universal property of `φ`. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ') :
     ψ = IsCocartesian.map p f φ φ' :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
     ψ ⟨inferInstance, hψ⟩
 
 end

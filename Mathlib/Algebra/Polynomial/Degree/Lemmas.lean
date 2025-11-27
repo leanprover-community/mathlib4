@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Prime.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Degree
+public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials
@@ -13,6 +15,8 @@ Some of the main results include
 - `natDegree_comp_le` : The degree of the composition is at most the product of degrees
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -49,8 +53,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                 degree_mul_le _ _
               _ ≤ natDegree (C (coeff p n)) + n • degree q :=
                 (add_le_add degree_le_natDegree (degree_pow_le _ _))
-              _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
-                (add_le_add_left (nsmul_le_nsmul_right (@degree_le_natDegree _ _ q) n) _)
+              _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) := by grw [degree_le_natDegree]
               _ = (n * natDegree q : ℕ) := by
                 rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul]
                 simp
@@ -70,7 +73,7 @@ theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degr
   lt_of_not_ge fun hlt => by
     have := eq_C_of_degree_le_zero hlt
     rw [IsRoot, this, eval_C] at h
-    simp only [h, RingHom.map_zero] at this
+    simp only [h, map_zero] at this
     exact hp this
 
 theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
@@ -105,7 +108,7 @@ theorem natDegree_C_mul_eq_of_mul_eq_one {ai : R} (au : ai * a = 1) :
   le_antisymm (natDegree_C_mul_le a p)
     (calc
       p.natDegree = (1 * p).natDegree := by nth_rw 1 [← one_mul p]
-      _ = (C ai * (C a * p)).natDegree := by rw [← C_1, ← au, RingHom.map_mul, ← mul_assoc]
+      _ = (C ai * (C a * p)).natDegree := by rw [← C_1, ← au, map_mul, ← mul_assoc]
       _ ≤ (C a * p).natDegree := natDegree_C_mul_le ai (C a * p))
 
 theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
@@ -113,7 +116,7 @@ theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
   le_antisymm (natDegree_mul_C_le p a)
     (calc
       p.natDegree = (p * 1).natDegree := by nth_rw 1 [← mul_one p]
-      _ = (p * C a * C ai).natDegree := by rw [← C_1, ← au, RingHom.map_mul, ← mul_assoc]
+      _ = (p * C a * C ai).natDegree := by rw [← C_1, ← au, map_mul, ← mul_assoc]
       _ ≤ (p * C a).natDegree := natDegree_mul_C_le (p * C a) ai)
 
 /-- Although not explicitly stated, the assumptions of lemma `natDegree_mul_C_eq_of_mul_ne_zero`
@@ -204,7 +207,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
 theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on natDegree ∘ f)) :
     natDegree (s.sum f) = s.sup fun i => natDegree (f i) := by
-  by_cases H : ∃ x ∈ s, f x ≠ 0
+  by_cases! H : ∃ x ∈ s, f x ≠ 0
   · obtain ⟨x, hx, hx'⟩ := H
     have hs : s.Nonempty := ⟨x, hx⟩
     refine natDegree_eq_of_degree_eq_some ?_
@@ -228,8 +231,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
           simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
-  · push_neg at H
-    rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
+  · rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
     intro x hx
     simp [H x hx]
 
@@ -240,7 +242,7 @@ theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) 
   lt_of_not_ge fun hlt => by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
     rw [A, eval₂_C] at hz
-    simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A
+    simp only [inj (p.coeff 0) hz, map_zero] at A
     exact hp A
 
 theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
@@ -271,6 +273,39 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   rcases eq_or_ne (natDegree p) 0 with h|h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
+
+theorem degree_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).degree = p.degree :=
+  degree_map_eq_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
+
+theorem natDegree_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).natDegree = p.natDegree :=
+  natDegree_eq_natDegree <| degree_map_eq_of_isUnit_leadingCoeff _ hp
+
+theorem leadingCoeff_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).leadingCoeff = f p.leadingCoeff :=
+  leadingCoeff_map_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
+
+theorem nextCoeff_map_eq_of_isUnit_leadingCoeff [Nontrivial S] (f : R →+* S)
+    (hp : IsUnit p.leadingCoeff) : (p.map f).nextCoeff = f p.nextCoeff :=
+  nextCoeff_map_of_leadingCoeff_ne_zero _ <| f.isUnit_map hp |>.ne_zero
+
+theorem degree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+    (p.map f).degree = p.degree := by
+  simp [hf, map_ne_zero_iff, ne_or_eq]
+
+theorem natDegree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+    (p.map f).natDegree = p.natDegree :=
+  natDegree_eq_of_degree_eq <| degree_map_eq_of_injective hf _
+
+theorem leadingCoeff_map_of_injective {f : R →+* S} (hf : Function.Injective f)
+    (p : Polynomial R) : (p.map f).leadingCoeff = f p.leadingCoeff := by
+  simp only [leadingCoeff, natDegree_map_eq_of_injective hf, coeff_map]
+
+theorem nextCoeff_map {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+    (p.map f).nextCoeff = f p.nextCoeff := by
+  simp only [hf, nextCoeff, natDegree_map_eq_of_injective]
+  split_ifs <;> simp
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   grind [nextCoeff]
@@ -324,6 +359,13 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
   · rintro ⟨a, ha, b, rfl⟩
     simp [ha]
 
+theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R]
+    (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
+  intro r₁
+  obtain ⟨r₂, hr₂, r₃, rfl⟩ : ∃ a, a ≠ 0 ∧ ∃ b, C a * X + C b = p := by rwa [natDegree_eq_one] at h
+  have (x y : R) := mul_left_cancel₀ hr₂ (b := x) (c := y)
+  grind [IsRoot, eval_add, eval_mul_X, eval_C]
+
 variable [NoZeroDivisors R]
 
 theorem degree_mul_C (a0 : a ≠ 0) : (p * C a).degree = p.degree := by
@@ -357,6 +399,14 @@ theorem natDegree_iterate_comp (k : ℕ) :
 theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [← coeff_comp_degree_mul_degree hq, ← natDegree_comp, coeff_natDegree]
+
+@[simp]
+theorem nextCoeff_C_mul : (C a * p).nextCoeff = a * p.nextCoeff := by
+  by_cases h₀ : a = 0 <;> simp [h₀, nextCoeff, natDegree_C_mul]
+
+@[simp]
+theorem nextCoeff_mul_C : (p * C a).nextCoeff = p.nextCoeff * a := by
+  by_cases h₀ : a = 0 <;> simp [h₀, nextCoeff, natDegree_mul_C]
 
 end NoZeroDivisors
 

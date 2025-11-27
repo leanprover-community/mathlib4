@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Evaluating a polynomial
@@ -25,6 +27,8 @@ We also provide the following bundled versions:
 We include results on applying the definitions to `C`, `X` and ring operations.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -155,7 +159,7 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   intro k
   by_cases hk : k = 0
   · simp only [hk, h, coeff_C_zero]
-  · simp only [coeff_C_ne_zero hk, RingHom.map_zero, Commute.zero_left]
+  · simp only [coeff_C_ne_zero hk, map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
@@ -447,6 +451,11 @@ theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
   eval₂_mul _ _
 
 @[simp]
+theorem mul_comp_neg_X {R : Type*} [Ring R] (p q : R[X]) :
+    (p * q).comp (-X) = p.comp (-X) * q.comp (-X) :=
+  eval₂_mul_noncomm C (-X) fun _ ↦ Commute.symm (commute_X _).neg_left
+
+@[simp]
 theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
     (p ^ n).comp q = p.comp q ^ n :=
   (MonoidHom.mk (OneHom.mk (fun r : R[X] => r.comp q) one_comp) fun r s => mul_comp r s q).map_pow
@@ -552,6 +561,9 @@ protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
+@[simp] lemma eval_map_apply (x : R) : (p.map f).eval (f x) = f (p.eval x) :=
+  eval_map f _ ▸ eval₂_at_apply ..
+
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=
   map_sum (mapRingHom f) _ _
@@ -592,6 +604,9 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 @[simp]
 theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
   eval₂_pow _ _ _
+
+theorem eval_X_pow (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
+  simp
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by

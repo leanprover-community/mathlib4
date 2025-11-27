@@ -3,12 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 
@@ -38,6 +39,8 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
   are morphisms for the algebra structure by `MvPolynomial σ R`.
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -51,7 +54,7 @@ open Set LinearMap Submodule
 
 variable {R : Type u} {N : Type v} [CommSemiring R]
 
-variable {σ : Type*}
+variable {σ ι : Type*}
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 
@@ -237,6 +240,20 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
 
+@[simp]
+lemma algebraTensorAlgEquiv_symm_comp_aeval :
+    (((algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
+        MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
+      (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
+      Algebra.TensorProduct.includeRight := by
+  ext
+  simp
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_map (x : MvPolynomial σ R) :
+    (algebraTensorAlgEquiv R A).symm (map (algebraMap R A) x) = 1 ⊗ₜ x :=
+  DFunLike.congr_fun (algebraTensorAlgEquiv_symm_comp_aeval R A) x
+
 lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
   induction p using MvPolynomial.induction_on with
@@ -245,6 +262,35 @@ lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
   | add p q hp hq => simp [hp, hq, tmul_add]
   | mul_X p i h => simp [h]
+
+variable (S σ ι) in
+/-- `S[X] ⊗[R] R[Y] ≃ S[X, Y]` -/
+def tensorEquivSum :
+    MvPolynomial σ S ⊗[R] MvPolynomial ι R ≃ₐ[S] MvPolynomial (σ ⊕ ι) S :=
+  ((algebraTensorAlgEquiv _ _).restrictScalars _).trans
+    ((sumAlgEquiv _ _ _).symm.trans  (renameEquiv _ (.sumComm ι σ)))
+
+variable {R}
+
+attribute [local simp] Algebra.smul_def
+
+@[simp] lemma tensorEquivSum_X_tmul_one (i) :
+    tensorEquivSum R σ ι S (.X i ⊗ₜ 1) = .X (.inl i) := by simp [tensorEquivSum]
+
+@[simp] lemma tensorEquivSum_C_tmul_one (r) :
+    tensorEquivSum R σ ι S (.C r ⊗ₜ 1) = .C r := by simp [tensorEquivSum]
+
+@[simp] lemma tensorEquivSum_one_tmul_X (i) :
+    tensorEquivSum R σ ι S (1 ⊗ₜ .X i) = .X (.inr i) := by simp [tensorEquivSum]
+
+@[simp] lemma tensorEquivSum_one_tmul_C (r) :
+    tensorEquivSum R σ ι S (1 ⊗ₜ .C r) = .C (algebraMap R S r) := by simp [tensorEquivSum]
+
+@[simp] lemma tensorEquivSum_C_tmul_C (r : R) (s : S) :
+    tensorEquivSum R σ ι S (.C s ⊗ₜ .C r) = .C (r • s) := by simp [tensorEquivSum, mul_comm (C s)]
+
+@[simp] lemma tensorEquivSum_X_tmul_X (i j) :
+    tensorEquivSum R σ ι S (.X i ⊗ₜ .X j) = .X (.inl i) * .X (.inr j) := by simp [tensorEquivSum]
 
 section Pushout
 

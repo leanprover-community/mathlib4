@@ -3,12 +3,14 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Tactic.Linarith
 
 /-! The cochain complex of homomorphisms between cochain complexes
 
@@ -31,6 +33,8 @@ We follow the signs conventions appearing in the introduction of
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -59,7 +63,7 @@ structure Triplet (n : ℤ) where
 
 variable (F G)
 
-/-- A cochain of degree `n : ℤ` between to cochain complexes `F` and `G` consists
+/-- A cochain of degree `n : ℤ` between two cochain complexes `F` and `G` consists
 of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
@@ -117,7 +121,7 @@ lemma sub_v {n : ℤ} (z₁ z₂ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) 
 
 @[simp]
 lemma neg_v {n : ℤ} (z : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
-    (-z).v p q hpq = - (z.v p q hpq) := rfl
+    (-z).v p q hpq = -(z.v p q hpq) := rfl
 
 @[simp]
 lemma smul_v {n : ℤ} (k : R) (z : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
@@ -191,7 +195,7 @@ lemma ofHom_sub (φ₁ φ₂ : F ⟶ G) :
 lemma ofHom_neg (φ : F ⟶ G) :
     Cochain.ofHom (-φ) = -Cochain.ofHom φ := by cat_disch
 
-/-- The cochain of degree `-1` given by an homotopy between two morphism of complexes. -/
+/-- The cochain of degree `-1` given by a homotopy between two morphisms of complexes. -/
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
   Cochain.mk (fun p q _ => ho.hom p q)
 
@@ -222,8 +226,8 @@ def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K
     Cochain F K n₁₂ :=
   Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by cutsat))
 
-/-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and that
-we have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
+/-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and we
+have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
 The following lemma `comp_v` computes the value of this composition `z₁.comp z₂ h`
 on a triplet `⟨p₁, p₃, _⟩` (with `p₁ + n₁₂ = p₃`). In order to use this lemma,
 we need to provide an intermediate integer `p₂` such that `p₁ + n₁ = p₂`.
@@ -458,7 +462,7 @@ variable {F G R}
 
 @[simp] lemma δ_zero : δ n m (0 : Cochain F G n) = 0 := (δ_hom ℤ F G n m).map_zero
 
-@[simp] lemma δ_neg (z : Cochain F G n) : δ n m (-z) = - δ n m z :=
+@[simp] lemma δ_neg (z : Cochain F G n) : δ n m (-z) = -δ n m z :=
   (δ_hom ℤ F G n m).map_neg z
 
 @[simp] lemma δ_smul (k : R) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
@@ -475,8 +479,8 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
   ext p q hpq
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
-    δ_v n₀ n₁ h₀₁ z p (q-1) (by cutsat) (q-2) _ (by cutsat) rfl,
-    δ_v n₀ n₁ h₀₁ z (p+1) q (by cutsat) _ (p+2) rfl (by cutsat),
+    δ_v n₀ n₁ h₀₁ z p (q - 1) (by cutsat) (q - 2) _ (by cutsat) rfl,
+    δ_v n₀ n₁ h₀₁ z (p + 1) q (by cutsat) _ (p + 2) rfl (by cutsat),
     ← h₁₂, Int.negOnePow_succ, add_comp, assoc,
     HomologicalComplex.d_comp_d, comp_zero, zero_add, comp_add,
     HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero,
@@ -492,13 +496,13 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
   ext p q hpq
   dsimp
   rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by cutsat),
-    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by cutsat) p (p+n₁+1) q
+    Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by cutsat) p (p + n₁ + 1) q
       (by cutsat) (by cutsat),
     δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by cutsat) rfl,
     z₁.comp_v z₂ rfl p _ _ rfl rfl,
-    z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by cutsat) (by cutsat),
-    δ_v n₂ (n₂+1) rfl z₂ (p+n₁) q (by cutsat) (p+n₁+n₂) _ (by cutsat) rfl,
-    δ_v n₁ (n₁+1) rfl z₁ p (p+n₁+1) (by cutsat) (p+n₁) _ (by cutsat) rfl]
+    z₁.comp_v z₂ rfl (p + 1) (p + n₁ + 1) q (by cutsat) (by cutsat),
+    δ_v n₂ (n₂ + 1) rfl z₂ (p + n₁) q (by cutsat) (p + n₁ + n₂) _ (by cutsat) rfl,
+    δ_v n₁ (n₁ + 1) rfl z₁ p (p + n₁ + 1) (by cutsat) (p + n₁) _ (by cutsat) rfl]
   simp only [assoc, comp_add, add_comp, Int.negOnePow_succ, Int.negOnePow_add n₁ n₂,
     Units.neg_smul, comp_neg, neg_comp, smul_neg, smul_smul, Linear.units_smul_comp,
     mul_comm n₁.negOnePow n₂.negOnePow, Linear.comp_units_smul, smul_add]
@@ -538,9 +542,9 @@ lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
     δ (-1) 0 (Cochain.ofHomotopy h) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by
   ext p
   have eq := h.comm p
-  rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p+1) by simp),
-    prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p-1) p by simp)] at eq
-  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  rw [dNext_eq h.hom (show (ComplexShape.up ℤ).Rel p (p + 1) by simp),
+    prevD_eq h.hom (show (ComplexShape.up ℤ).Rel (p - 1) p by simp)] at eq
+  rw [Cochain.ofHomotopy, δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p - 1) (p + 1) rfl rfl]
   simp only [Cochain.mk_v, one_smul, Int.negOnePow_zero, Cochain.sub_v, Cochain.ofHom_v, eq]
   abel
 
@@ -548,10 +552,10 @@ lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
     δ (-1) 0 z = Cochain.ofHom (Homotopy.nullHomotopicMap'
       (fun i j hij => z.v i j (by dsimp at hij; rw [← hij, add_neg_cancel_right]))) := by
   ext p
-  rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p-1) (p+1) rfl rfl]
+  rw [δ_v (-1) 0 (neg_add_cancel 1) _ p p (add_zero p) (p - 1) (p + 1) rfl rfl]
   simp only [one_smul, Cochain.ofHom_v, Int.negOnePow_zero]
-  rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p-1) p by simp)
-    (show (ComplexShape.up ℤ).Rel p (p+1) by simp)]
+  rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p - 1) p by simp)
+    (show (ComplexShape.up ℤ).Rel p (p + 1) by simp)]
   abel
 
 end HomComplex
@@ -563,9 +567,9 @@ open HomComplex
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
 @[simps! X d_hom_apply]
-def HomComplex : CochainComplex AddCommGrp ℤ where
-  X i := AddCommGrp.of (Cochain F G i)
-  d i j := AddCommGrp.ofHom (δ_hom ℤ F G i j)
+def HomComplex : CochainComplex AddCommGrpCat ℤ where
+  X i := AddCommGrpCat.of (Cochain F G i)
+  d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
   d_comp_d' _ _ _ _ _  := by ext; simp [δ_δ]
 
@@ -735,7 +739,7 @@ lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
 
 namespace Cochain
 
-/-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of an homotopy between `φ₁` and
+/-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of a homotopy between `φ₁` and
 `φ₂` is equivalent to the datum of a `1`-cochain `z` such that `δ (-1) 0 z` is the difference
 of the zero cochains associated to `φ₂` and `φ₁`. -/
 @[simps]
@@ -770,6 +774,31 @@ lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
 
 lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁ = f₂ :=
   (Cocycle.equivHom F G).injective (by ext1; exact h)
+
+/-- The cochain in `Cochain K L n` that is given by a single
+morphism `K.X p ⟶ L.X q` and is zero otherwise. (As we do not check
+that `p + n = q`, this will be the zero cochain when `p + n ≠ q`.) -/
+def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
+    Cochain K L n :=
+  Cochain.mk (fun p' q' _ =>
+    if h : p = p' ∧ q = q'
+      then (K.XIsoOfEq h.1).inv ≫ f ≫ (L.XIsoOfEq h.2).hom
+      else 0)
+
+@[simp]
+lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
+    (single f n).v p q hpq = f := by
+  dsimp [single]
+  rw [if_pos, id_comp, comp_id]
+  tauto
+
+lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hp' : p' ≠ p) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  rw [dif_neg]
+  intro h
+  exact hp' (by cutsat)
 
 end Cochain
 
@@ -825,7 +854,7 @@ lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
   by_cases hnm : n + 1 = m
   · ext p q hpq
     dsimp
-    simp only [δ_v n m hnm _ p q hpq (q-1) (p+1) rfl rfl,
+    simp only [δ_v n m hnm _ p q hpq (q - 1) (p + 1) rfl rfl,
       Functor.map_add, Functor.map_comp, Functor.map_units_smul,
       Cochain.map_v, Functor.mapHomologicalComplex_obj_d]
   · simp only [δ_shape _ _ hnm, Cochain.map_zero]

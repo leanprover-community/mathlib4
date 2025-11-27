@@ -3,11 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -30,6 +32,8 @@ In this file, we show that an `AddMonoidAlgebra` has an internal direct sum stru
   `AddMonoidAlgebra.grade` defines an internal graded structure when the degree function
   is the identity.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -120,9 +124,9 @@ def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
         dsimp only [toAdd_one, Eq.ndrec, Set.mem_setOf_eq, ne_eq, OneHom.toFun_eq_coe,
           OneHom.coe_mk, toAdd_mul]
         convert DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
-        repeat { rw [AddMonoidHom.map_add] }
+        repeat { rw [map_add] }
         simp only [SetLike.coe_gMul]
-        exact Eq.trans (by rw [one_mul]) single_mul_single.symm }
+        exact Eq.trans (by rw [one_mul]) (single_mul_single ..).symm }
 
 theorem decomposeAux_single (m : M) (r : R) :
     decomposeAux f (Finsupp.single m r) =
@@ -144,7 +148,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
   refine Finsupp.induction x ?_ ?_
   · intro hx
     symm
-    exact AddMonoidHom.map_zero _
+    exact map_zero _
   · intro m b y hmy hb ih hmby
     have : Disjoint (Finsupp.single m b).support y.support := by
       simpa only [Finsupp.support_single_ne_zero _ hb, Finset.disjoint_singleton_left]
@@ -158,7 +162,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     simp only [map_add, decomposeAux_single f m]
     let ih' := ih h2
     dsimp at ih'
-    rw [ih', ← AddMonoidHom.map_add]
+    rw [ih', ← map_add]
     apply DirectSum.of_eq_of_gradedMonoid_eq
     congr 2
 

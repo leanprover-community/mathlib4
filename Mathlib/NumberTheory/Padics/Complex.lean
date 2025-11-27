@@ -3,10 +3,12 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -35,6 +37,8 @@ integers.
 
 p-adic, p adic, padic, norm, valuation, Cauchy, completion, p-adic completion
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -185,7 +189,7 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun
 
 end PadicComplex
 
-/-- We define `𝓞_ℂ_[p]` as the valuation subring of of `ℂ_[p]`, consisting of those elements with
+/-- We define `𝓞_ℂ_[p]` as the valuation subring of `ℂ_[p]`, consisting of those elements with
   valuation `≤ 1`. -/
 def PadicComplexInt : ValuationSubring ℂ_[p] := (PadicComplex.valued p).v.valuationSubring
 

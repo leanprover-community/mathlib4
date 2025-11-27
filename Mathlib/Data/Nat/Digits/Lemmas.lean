@@ -3,19 +3,23 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Log
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.Nat.Digits.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Data.Nat.Digits.Defs
 
 /-!
 # Digits of a natural number
 
 This provides lemma about the digits of natural numbers.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -63,7 +67,7 @@ theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
   by_cases h : n = 0
   · have : 0 < b ^ k := by positivity
     simpa [h]
-  rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
+  rw [digits_len b n hb h, ← log_lt_iff_lt_pow hb h]
   exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
@@ -85,12 +89,12 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
-  by_cases hnb : n < b + 2
+  by_cases! hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_
     rw [← pos_iff_ne_zero]
-    exact Nat.div_pos (le_of_not_gt hnb) (zero_lt_succ (succ b))
+    exact Nat.div_pos hnb (zero_lt_succ (succ b))
 
 theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
@@ -300,5 +304,19 @@ theorem ofDigits_neg_one :
   | a :: b :: t => by
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
+
+/-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
+theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
+  obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
+  clear h
+  rw [List.getD_eq_getElem?_getD]
+  induction n using Nat.caseStrongRecOn generalizing i with
+  | zero => simp
+  | ind n IH =>
+    rcases i with _ | i
+    · rw [← List.head?_eq_getElem?, ← default_eq_zero, Option.getD_default_eq_iget,
+        ← List.head!_eq_head?, head!_digits (by grind)]
+      simp
+    · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
 
 end Nat

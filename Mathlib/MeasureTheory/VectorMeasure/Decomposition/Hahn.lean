@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Hahn decomposition
@@ -33,6 +35,8 @@ being positive/negative with respect to the signed measure `s`.
 
 Hahn decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section

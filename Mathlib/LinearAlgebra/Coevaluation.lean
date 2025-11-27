@@ -3,7 +3,9 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.LinearAlgebra.Contraction
+module
+
+public import Mathlib.LinearAlgebra.Contraction
 
 /-!
 # The coevaluation map on finite-dimensional vector spaces
@@ -19,6 +21,8 @@ coevaluation, dual module, tensor product
 
 * Prove that this is independent of the choice of basis on `V`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -62,7 +66,7 @@ theorem contractLeft_assoc_coevaluation :
   letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply (Basis.ofVectorSpace K V).dualBasis.ext; intro j; apply LinearMap.ext_ring
-  rw [LinearMap.compr₂_apply, LinearMap.compr₂_apply, TensorProduct.mk_apply]
+  rw [LinearMap.compr₂ₛₗ_apply, LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [rid_tmul, one_smul, lid_symm_apply]
   simp only [LinearMap.lTensor_tmul, coevaluation_apply_one]
@@ -80,7 +84,7 @@ theorem contractLeft_assoc_coevaluation' :
   letI := Classical.decEq (Basis.ofVectorSpaceIndex K V)
   apply TensorProduct.ext
   apply LinearMap.ext_ring; apply (Basis.ofVectorSpace K V).ext; intro j
-  rw [LinearMap.compr₂_apply, LinearMap.compr₂_apply, TensorProduct.mk_apply]
+  rw [LinearMap.compr₂ₛₗ_apply, LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply]
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_toLinearMap]
   rw [lid_tmul, one_smul, rid_symm_apply]
   simp only [LinearMap.rTensor_tmul, coevaluation_apply_one]

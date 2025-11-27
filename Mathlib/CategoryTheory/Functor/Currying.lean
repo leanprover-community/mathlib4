@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Curry and uncurry, as functors.
@@ -14,12 +16,16 @@ and verify that they provide an equivalence of categories
 `currying : (C ⥤ (D ⥤ E)) ≌ ((C × D) ⥤ E)`.
 
 This is used in `CategoryTheory.Category.Cat.CartesianClosed` to equip the category of small
-categories `Cat.{u, u}` with a Cartesian-closed structure.
+categories `Cat.{u, u}` with a Cartesian closed structure.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
 namespace Functor
+
+open scoped Prod
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -51,11 +57,11 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
-      map := fun g => F.map (𝟙 X, g)
-      map_id := fun Y => by simp only; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map := fun g => F.map (𝟙 X ×ₘ g)
+      map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
       map_comp := fun f g => by simp [← F.map_comp]}
   map f :=
-    { app := fun Y => F.map (f, 𝟙 Y)
+    { app := fun Y => F.map (f ×ₘ 𝟙 Y)
       naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
   map_comp := fun f g => by ext Y; simp [← F.map_comp]

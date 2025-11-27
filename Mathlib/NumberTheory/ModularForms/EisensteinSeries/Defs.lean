@@ -3,10 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
 # Eisenstein Series
@@ -24,6 +26,8 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -119,6 +123,10 @@ lemma gammaSet_eq_gcd_mul_divIntMap {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ ga
 /-- The equivalence between `gammaSet 1 r 0` and `gammaSet 1 1 0` for non-zero `r`. -/
 def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0 :=
     Set.BijOn.equiv _ (gammaSet_div_gcd_to_gammaSet10_bijection r)
+
+@[simp]
+lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
+    (gammaSetDivGcdEquiv r) v = divIntMap r v.1 := rfl
 
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
