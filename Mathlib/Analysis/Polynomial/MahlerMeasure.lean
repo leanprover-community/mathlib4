@@ -147,6 +147,9 @@ theorem logMahlerMeasure_mul_eq_add_logMahlerMeasure {p q : ℂ[X]} (hpq : p * q
     (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
   simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
 
+@[deprecated (since := "2025-11-17")]
+alias logMahlerMeasure_mul_eq_add_logMahelerMeasure := logMahlerMeasure_mul_eq_add_logMahlerMeasure
+
 theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠ 0) :
     (C a * p).logMahlerMeasure = log ‖a‖ + p.logMahlerMeasure := by
   rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
