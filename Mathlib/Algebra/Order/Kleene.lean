@@ -3,11 +3,13 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Kleene Algebras
@@ -47,6 +49,8 @@ Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `
 
 kleene algebra, idempotent semiring
 -/
+
+@[expose] public section
 
 
 open Function
@@ -198,11 +202,9 @@ theorem mul_kstar_le_self : b * a ≤ b → b * a∗ ≤ b :=
 theorem kstar_mul_le_self : a * b ≤ b → a∗ * b ≤ b :=
   KleeneAlgebra.kstar_mul_le_self _ _
 
-theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c :=
-  (mul_le_mul_right' hb _).trans <| mul_kstar_le_self ha
+theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c := by grw [hb, mul_kstar_le_self ha]
 
-theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
-  (mul_le_mul_left' hb _).trans <| kstar_mul_le_self ha
+theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c := by grw [hb, kstar_mul_le_self ha]
 
 theorem kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
   simpa using mul_kstar_le hb
@@ -246,9 +248,7 @@ theorem kstar_idem (a : α) : a∗∗ = a∗ :=
 @[simp]
 theorem pow_le_kstar : ∀ {n : ℕ}, a ^ n ≤ a∗
   | 0 => (pow_zero _).trans_le one_le_kstar
-  | n + 1 => by
-    rw [pow_succ']
-    exact (mul_le_mul_left' pow_le_kstar _).trans mul_kstar_le_kstar
+  | n + 1 => by grw [pow_succ', pow_le_kstar, mul_kstar_le_kstar]
 
 end KleeneAlgebra
 
@@ -305,6 +305,7 @@ instance : KleeneAlgebra (∀ i, π i) :=
     mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
     kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
 
+@[push ←]
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
   rfl
 
@@ -327,7 +328,6 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
   { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
-    bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
 -- See note [reducible non-instances]

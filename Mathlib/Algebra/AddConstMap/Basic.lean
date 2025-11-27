@@ -3,10 +3,12 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -22,16 +24,18 @@ for bundled maps satisfying `f (x + a) = f x + b`.
 We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
 - maps between circles of different lengths;
-- self-maps $f\colon S^1\to  S^1$ of degree other than one,
+- self-maps $f\colon S^1\to S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
 open Function Set
 
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
-denoted as `f: G →+c[a, b] H`.
+denoted as `f : G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
@@ -257,7 +261,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + 0 • a := add_le_add_left (zsmul_le_zsmul_left ha.le (by cutsat)) _
+        _ ≤ l + (0 : ℤ) • a := by gcongr; cutsat
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy
