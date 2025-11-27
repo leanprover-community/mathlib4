@@ -74,7 +74,7 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
 alias mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule :=
   mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
 
-lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
+lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
     {p : Ideal R} [p.IsPrime] (ass : p ∈ associatedPrimes R M) :
     maximalIdeal (Localization.AtPrime p) ∈
     associatedPrimes (Localization.AtPrime p) (LocalizedModule.AtPrime p M) := by
@@ -82,9 +82,9 @@ lemma mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
     p.primeCompl (LocalizedModule.mkLinearMap p.primeCompl M)
   simpa [Localization.AtPrime.comap_maximalIdeal] using ass
 
-@[deprecated (since := "2025-08-15")]
+@[deprecated (since := "2025-11-27")]
 alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
-  mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
+  mem_associatedPrimes_atPrime_of_mem_associatedPrimes
 
 include S f in
 lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg (p : Ideal R')
