@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # First Baire theorem
