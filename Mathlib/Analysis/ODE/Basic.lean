@@ -36,6 +36,8 @@ junk.
 integral curve, vector field
 -/
 
+@[expose] public section
+
 open scoped Topology
 
 open Set

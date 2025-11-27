@@ -21,6 +21,8 @@ curve.
 integral curve, vector field
 -/
 
+@[expose] public section
+
 open Function Set Pointwise
 
 variable
