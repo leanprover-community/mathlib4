@@ -55,7 +55,7 @@ namespace Kernel
 /-- `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`). -/
 @[mk_iff]
 class IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
-  irreducible : ∀ ⦃A⦄, MeasurableSet A → φ A > 0 → ∃ (n : ℕ+), ∀ a, κ.pow n a A > 0
+  irreducible : ∀ ⦃A⦄, MeasurableSet A → φ A > 0 → ∀ a, ∃ (n : ℕ+), κ.pow n a A > 0
 
 /-- Strongly `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`). -/
 @[mk_iff]
@@ -64,8 +64,8 @@ class IsStronglyIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
 
 instance {φ : Measure α} {κ : Kernel α α} [IsStronglyIrreducible φ κ] :
     IsIrreducible φ κ :=
-  { irreducible := fun _ hs hsp ↦ by
-      use 1; simpa using IsStronglyIrreducible.strongly_irreducible hs hsp }
+  { irreducible := fun _ hs hsp a ↦ by
+      use 1; simpa using IsStronglyIrreducible.strongly_irreducible hs hsp a }
 
 instance {φ : Measure α} [Subsingleton α] :
     IsStronglyIrreducible φ Kernel.id :=
