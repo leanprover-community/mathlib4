@@ -5,10 +5,11 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.Probability.Distributions.Gaussian.CharFun
+public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.Independence.CharacteristicFunction
+
+import Mathlib.Probability.Distributions.Gaussian.CharFun
+import Mathlib.Probability.Independence.CharacteristicFunction
 
 /-!
 # Gaussian random variables
@@ -25,13 +26,13 @@ measure `P`, the random variable `X` has a Gaussian distribution, i.e. `IsGaussi
 Gaussian random variable
 -/
 
-public section
-
 
 open MeasureTheory WithLp Complex Finset
 open scoped ENNReal NNReal
 
 variable {Ω ι E F : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
+
+public section
 
 namespace ProbabilityTheory
 
@@ -261,9 +262,7 @@ end HasGaussianLaw
 
 end ProbabilityTheory
 
-section Independence
-
-variable {ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+end
 
 section Diagonal
 
@@ -281,7 +280,6 @@ variable [RCLike 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 `diagonalStrongDual L` is a continuous bilinear form is the continuous bilinear form over
 `(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
 `∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`. -/
-@[expose]
 noncomputable
 def diagonalStrongDual : StrongDual 𝕜 (Π i, E i) →L[𝕜] StrongDual 𝕜 (Π i, E i) →L[𝕜] 𝕜 :=
   letI g : LinearMap.BilinForm 𝕜 (StrongDual 𝕜 (Π i, E i)) := LinearMap.mk₂ 𝕜
@@ -325,6 +323,8 @@ end Real
 end ContinuousLinearMap
 
 end Diagonal
+
+public section Independence
 
 namespace ProbabilityTheory
 
