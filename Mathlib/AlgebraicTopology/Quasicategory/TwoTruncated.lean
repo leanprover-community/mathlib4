@@ -158,8 +158,8 @@ theorem homotopicL_iff_homotopicR [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f 
 
 end homotopy_eqrel
 
-
 section homotopy_category
+
 variable {A : Truncated 2} [Quasicategory₂ A] {x y z : A _⦋0⦌₂}
 
 /--
@@ -180,14 +180,14 @@ Given two consecutive edges `f`, `g`  in a 2-truncated quasicategory, nonconstru
 an edge that is the diagonal of a 2-simplex with spine given by `f` and `g`. The `CompStruct`
 witnessing this property is given by `Edge.composeStruct`.
 -/
-noncomputable
-def Edge.comp (f : Edge x y) (g : Edge y z) := (Nonempty.some (Quasicategory₂.fill21 f g )).1
+noncomputable def Edge.comp (f : Edge x y) (g : Edge y z) : Edge x z := 
+  (Nonempty.some (Quasicategory₂.fill21 f g )).1
 
 /--
 See `Edge.comp`
 -/
-noncomputable
-def Edge.compStruct (f : Edge x y) (g : Edge y z) := (Nonempty.some (Quasicategory₂.fill21 f g )).2
+noncomputable def Edge.compStruct (f : Edge x y) (g : Edge y z) : CompStruct f g (f.comp g) := 
+  (Nonempty.some (Quasicategory₂.fill21 f g )).2
 
 /--
 The edge `composeEdges f g` is the unique edge up to homotopy such that there is
