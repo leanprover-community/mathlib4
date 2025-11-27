@@ -489,7 +489,7 @@ lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ :
     (h₃₁₂ : ∠ p₁ p₂ p₃ ≤ ∠ p₃ p₁ p₂)
     (hne : ∠ p₁ p₂ p₃ ≠ ∠ p₂ p₃ p₁ ∨ ∠ p₁ p₂ p₃ ≠ ∠ p₃ p₁ p₂ ∨ ∠ p₂ p₃ p₁ ≠ ∠ p₃ p₁ p₂) :
     ∠ p₁ p₂ p₃ < π / 3 := by
-  by_cases h : p₁ = p₂
+  by_cases h : p₂ = p₁
   · subst h
     by_cases h₁₃ : p₁ = p₃
     · subst h₁₃
@@ -498,6 +498,6 @@ lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ :
       linarith [Real.pi_pos]
   · rcases hne with hne | hne | hne <;>
       rcases hne.lt_or_gt with hne | hne <;>
-      linarith [angle_add_angle_add_angle_eq_pi p₃ (Ne.symm h)]
+      linarith [angle_add_angle_add_angle_eq_pi p₃ h]
 
 end EuclideanGeometry
