@@ -73,12 +73,12 @@ instance : IsStrictOrderedRing (ArchimedeanClass.Finite K) where
   zero_le_one := zero_le_one (α := K)
   add_le_add_left _ _ h _ := add_le_add_left (α := K) h _
   le_of_add_le_add_left x y z := le_of_add_le_add_left (α := K)
-  mul_lt_mul_of_pos_left x y z := by
+  mul_lt_mul_of_pos_left x hx y z h := by
     have := IsOrderedRing.toIsStrictOrderedRing K
-    exact mul_lt_mul_of_pos_left (α := K)
-  mul_lt_mul_of_pos_right x y z := by
+    exact mul_lt_mul_of_pos_left (α := K) hx h
+  mul_lt_mul_of_pos_right x hx y z h := by
     have := IsOrderedRing.toIsStrictOrderedRing K
-    exact mul_lt_mul_of_pos_right (α := K)
+    exact mul_lt_mul_of_pos_right (α := K) hx h
 
 theorem not_isUnit_iff_mk_pos {x : ArchimedeanClass.Finite K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
@@ -99,9 +99,8 @@ namespace FiniteResidueField
 noncomputable instance : Field (FiniteResidueField K) :=
   inferInstanceAs (Field (IsLocalRing.ResidueField _))
 
-private theorem ordConnected_preimage_mk' :
-    ∀ x, Set.OrdConnected (Quotient.mk
-      (Submodule.quotientRel (IsLocalRing.maximalIdeal (ArchimedeanClass.Finite K))) ⁻¹' {x}) := by
+private theorem ordConnected_preimage_mk' : ∀ x, Set.OrdConnected <| Quotient.mk
+    (Submodule.quotientRel (IsLocalRing.maximalIdeal (ArchimedeanClass.Finite K))) ⁻¹' {x} := by
   refine fun x ↦ ⟨?_⟩
   rintro x rfl y hy z ⟨hxz, hzy⟩
   have := hxz.trans hzy
@@ -215,7 +214,9 @@ end FiniteResidueField
 /-! ### Standard part -/
 
 /-- The standard part of an `ArchimedeanClass.Finite` element is the unique real number with an
-infinitesimal difference. -/
+infinitesimal difference.
+
+For any infinite inputs, this function outputs a junk value of 0. -/
 noncomputable def standardPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then
     (LinearOrderedField.inducedOrderRingHom _ _).comp FiniteResidueField.mk ⟨x, h⟩ else 0
