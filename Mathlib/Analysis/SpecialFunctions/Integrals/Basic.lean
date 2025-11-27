@@ -246,7 +246,7 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
     simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
   rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv)
-    fun x _ => (D x).differentiableAt.differentiableWithinAt]
+    (fun x _ => (D x).differentiableAt.differentiableWithinAt)]
   · ring
   · fun_prop
 
@@ -566,8 +566,7 @@ theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
       rw [← sq, ← sq, sin_sq]
     _ = ∫ x in b..a, cos x ^ n * (↑1 - cos x ^ 2) ^ m * -sin x := by congr; ext; ring
     _ = ∫ u in cos b..cos a, u ^ n * (↑1 - u ^ 2) ^ m :=
-      integral_comp_mul_deriv (fun x _ => hasDerivAt_cos x)
-        continuousOn_sin.neg hc
+      integral_comp_mul_deriv (fun x _ => hasDerivAt_cos x) continuousOn_sin.neg hc
 
 /-- The integral of `sin x * cos x`, given in terms of cos².
 See `integral_sin_mul_cos₁` above for the integral given in terms of sin². -/

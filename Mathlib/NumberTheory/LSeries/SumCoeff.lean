@@ -50,16 +50,16 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
   have h₂ : (-s).re + r ≤ 0 := by
     rw [neg_re, neg_add_nonpos_iff]
     exact hs.le
-  have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ ‖(x : ℂ) ^ (-s)‖) t :=
+  have h₃ : DifferentiableOn ℝ (fun x : ℝ ↦ ‖(x : ℂ) ^ (-s)‖) (Set.Ici 1) := fun t ht ↦
     have ht' : t ≠ 0 := (zero_lt_one.trans_le ht).ne'
-    (differentiableAt_id.ofReal_cpow_const ht' h₁).norm ℝ <|
-      (cpow_ne_zero_iff_of_exponent_ne_zero h₁).mpr <| ofReal_ne_zero.mpr ht'
+    ((differentiableAt_id.ofReal_cpow_const ht' h₁).norm ℝ <|
+      (cpow_ne_zero_iff_of_exponent_ne_zero h₁).mpr (ofReal_ne_zero.mpr ht')).differentiableWithinAt
   have h₄ : (deriv fun t : ℝ ↦ ‖(t : ℂ) ^ (-s)‖) =ᶠ[atTop] fun t ↦ -s.re * t ^ (-(s.re + 1)) := by
     filter_upwards [eventually_gt_atTop 0] with t ht
     rw [deriv_norm_ofReal_cpow _ ht, neg_re, neg_add']
   simp_rw [LSeriesSummable, funext (LSeries.term_def₀ hf s), mul_comm (f _)]
   refine summable_mul_of_bigO_atTop' (f := fun t ↦ (t : ℂ) ^ (-s))
-    (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ (fun t ht ↦ (h₃ t ht).differentiableWithinAt) ?_ ?_ ?_ ?_
+    (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ h₃ ?_ ?_ ?_ ?_
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi
       (integrableOn_Ioi_deriv_norm_ofReal_cpow zero_lt_one ?_)).locallyIntegrableOn
     exact neg_re _ ▸ neg_nonpos.mpr <| hr.trans hs.le
@@ -102,8 +102,9 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   have h₁ : (-s - 1).re + r < -1 := by
     rwa [sub_re, one_re, neg_re, neg_sub_left, neg_add_lt_iff_lt_add, add_neg_cancel_comm]
   have h₂ : s ≠ 0 := ne_zero_of_re_pos (hr.trans_lt hs)
-  have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) t :=
+  have h₃ : DifferentiableOn ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) (Set.Ici 1) := fun t ht ↦
     differentiableAt_id.ofReal_cpow_const (zero_lt_one.trans_le ht).ne' (neg_ne_zero.mpr h₂)
+      |>.differentiableWithinAt
   have h₄ : ∀ n, ∑ k ∈ Icc 0 n, f k = ∑ k ∈ Icc 1 n, f k := fun n ↦ by
     rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert (by aesop), hf, zero_add, zero_add]
   simp_rw [← h₄] at hO
@@ -111,8 +112,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).mpr hS.hasSum.tendsto_sum_nat) ?_
   simp_rw [Nat.range_succ_eq_Icc_zero, LSeries.term_def₀ hf, mul_comm (f _)]
   convert tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0)
-    ?_ hf (fun t ht ↦ (h₃ t ht).differentiableWithinAt) ?_ ?_ ?_
-    (integrableAtFilter_rpow_atTop_iff.mpr h₁)
+    ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
     rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
