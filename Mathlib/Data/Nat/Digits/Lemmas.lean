@@ -501,7 +501,7 @@ end List
 /--
 The formula for the sum of the sum of the digits in `b` over the natural integers `< b ^ l`.
 -/
-theorem Nat.sum_digits_sum_eq {b : ℕ} (hb : 1 < b) (l : ℕ) :
+theorem Nat.sum_sum_digits_eq {b : ℕ} (hb : 1 < b) (l : ℕ) :
     ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * b.choose 2 := by
   rw [← List.sum_fixedLengthDigits_sum hb]
   refine (Finset.sum_nbij (ofDigits b) (by exact (bijOn_ofDigits' hb l).1)
