@@ -604,18 +604,21 @@ section CommGroup
 variable [CommGroup α]
 
 @[to_additive]
-theorem not_mem_pow_of_order_two {g : α} (horder : orderOf g = 0) :
-    g ∉ (Subgroup.zpowers (g ^ 2)) := by
+theorem not_mem_zpowers {g : α} {k : ℕ} (horder : orderOf g = 0) (hk : 1 < k) :
+    g ∉ (Subgroup.zpowers (g ^ k)) := by
   rintro ⟨z, hz⟩
-  have hz' : g ^ (2 * z) = g ^ (1 : ℤ) := by simpa [zpow_mul, zpow_ofNat] using hz
-  have hz1_new : 2 * z = 1 := by
+  have hz' : g ^ (k * z) = g ^ (1 : ℤ) := by simpa [zpow_mul, zpow_ofNat] using hz
+  have hzk : ↑k * z = 1 := by
     have finj : Function.Injective (fun n : ℤ => g ^ n) := by
-      simp_all only [orderOf_eq_zero_iff,
-      zpow_one, injective_zpow_iff_not_isOfFinOrder, not_false_eq_true]
+      simp_all only [orderOf_eq_zero_iff, injective_zpow_iff_not_isOfFinOrder, not_false_eq_true]
     exact finj hz'
-  have h21 : (2 : ℤ) ∣ (1 : ℤ) := by
-    exact dvd_of_mul_right_eq z hz1_new
+  have k_div_one_nat : k ∣ 1 := Int.ofNat_dvd.mp (dvd_of_mul_right_eq z hzk)
   simp_all
+
+@[to_additive]
+theorem not_mem_zpowsers_sq {g : α} (horder : orderOf g = 0) :
+    g ∉ (Subgroup.zpowers (g ^ 2)) := by
+  refine not_mem_zpowers horder (Nat.one_lt_two)
 
 end CommGroup
 
@@ -633,7 +636,7 @@ instance (priority := 100) isCyclic : IsCyclic α := by
 
 /-- A commutative simple group is a finite group. -/
 @[to_additive /-- A commutative simple group is a finite group. -/]
-theorem CommSimple_is_Finite : Finite α := by
+theorem finite : Finite α := by
   obtain ⟨g, hg⟩ :=
     (isCyclic_iff_exists_zpowers_eq_top : IsCyclic α  ↔ _).mp (by infer_instance)
   by_contra hnf
@@ -646,7 +649,7 @@ theorem CommSimple_is_Finite : Finite α := by
     intro htop
     have h1 : g ^ 1 ∈ Subgroup.zpowers g := by exact Subgroup.npow_mem_zpowers g 1
     have hn1 : g ^ 1 ∉ H := by
-      simpa [H] using not_mem_pow_of_order_two (g := g) (by exact orderOf_eq_zero_iff.mpr horder)
+      simpa [H] using not_mem_zpowsers_sq (g := g) (by exact orderOf_eq_zero_iff.mpr horder)
     simp_all only [Subgroup.mem_top]
   have hneq_bot : H ≠ ⊥ := by
     intro hbot
@@ -665,7 +668,8 @@ theorem CommSimple_is_Finite : Finite α := by
   rcases this <;> contradiction
 
 @[to_additive]
-theorem prime_card_of_Finite [Finite α] : (Nat.card α).Prime := by
+theorem prime_card : (Nat.card α).Prime := by
+  letI := IsSimpleGroup.finite (α := α)
   have h0 : 0 < Nat.card α := Nat.card_pos
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   rw [Nat.prime_def]
@@ -686,11 +690,6 @@ theorem prime_card_of_Finite [Finite α] : (Nat.card α).Prime := by
     apply orderOf_le_of_pow_eq_one (Nat.pos_of_dvd_of_pos hn h0)
     rw [← Subgroup.mem_bot, ← h]
     exact Subgroup.mem_zpowers _
-
-@[to_additive]
-theorem prime_card : (Nat.card α).Prime := by
-  letI := CommSimple_is_Finite (α := α)
-  apply IsSimpleGroup.prime_card_of_Finite
 
 end CommSimpleGroup
 
@@ -846,14 +845,14 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 
-/-- The isomprphism from `ZMod p` with `p` is a prime number to any commutative simple group. -/
-theorem CommSimple_iso_ZMod_p [CommGroup G] [IsSimpleGroup G] :
+/-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
+theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
     ∃ p : ℕ , (Nat.Prime p) ∧ Nonempty (Additive G ≃+ ZMod p) := by
   have hcyc : IsCyclic G  := by infer_instance
   rcases (isCyclic_iff_exists_zpowers_eq_top.mp hcyc) with ⟨g, hg⟩
   let p : ℕ := orderOf g
   have orderG : Nat.card G = p := Eq.symm (orderOf_eq_card_of_zpowers_eq_top hg)
-  have FinG : Finite G := IsSimpleGroup.CommSimple_is_Finite
+  have FinG : Finite G := IsSimpleGroup.finite
   use p; rw [← orderG]
   constructor
   · exact IsSimpleGroup.prime_card
