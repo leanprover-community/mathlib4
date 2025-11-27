@@ -6,8 +6,6 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Data.Int.Fib.Basic
-public import Mathlib.LinearAlgebra.Matrix.Notation
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Cassini and Catalan identities for the Fibonacci numbers
@@ -17,45 +15,28 @@ to `(-1) ^ |n|`. And Catalan's identity states that for any integers `x` and `a`
 `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`.
 -/
 
-/-- Being a linear recurrence, the entries of the Fibonacci sequence can be related via
-matrix exponentiation. -/
-public lemma Nat.fib_matrix_eq : ∀ {n : ℕ},
-    !![fib (n + 2), fib (n + 1); fib (n + 1), fib n] = !![1, 1; 1, 0] ^ (n + 1)
+/-- Auxiliary for `Int.fib_succ_mul_fib_pred_sub_fib_sq` -/
+lemma Int.fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq :
+    ∀ n : ℕ, fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n
   | 0 => by simp
   | n + 1 => by
-    rw [pow_succ, ← fib_matrix_eq]
-    simp [fib_add_two, ← add_assoc, add_rotate, add_comm (fib n)]
-
-/-- Nat version of Cassini's identity. Auxiliary for `Int.fib_succ_mul_fib_pred_sub_fib_sq`. -/
-lemma Nat.fib_add_two_mul_fib_sub_fib_add_one_sq (n : ℕ) :
-    (fib (n + 2) * fib n - fib (n + 1) ^ 2 : ℤ) = (-1) ^ (n + 1) :=
-  calc
-    _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n] : Matrix _ _ ℤ).det := by simp [pow_two]
-    _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n].map (castRingHom ℤ)).det := rfl
-    _ = (!![1, 1; 1, 0].map (castRingHom ℤ) ^ (n + 1)).det := by rw [fib_matrix_eq, Matrix.map_pow]
-    _ = (!![1, 1; 1, 0] ^ (n + 1)).det := by congr; simp [← Matrix.ext_iff]
-    _ = (-1) ^ (n + 1) := by simp
-
-/-- Auxiliary for `Int.fib_succ_mul_fib_pred_sub_fib_sq`. The `Int` version of
-`Nat.fib_add_two_mul_fib_sub_fib_add_one_sq`. -/
-lemma Int.fib_add_two_mul_fib_sub_fib_add_one_sq (n : ℕ) :
-    fib (n + 2) * fib n - fib (n + 1) ^ 2 = (-1) ^ (n + 1) := by
-  simp [← Nat.fib_add_two_mul_fib_sub_fib_add_one_sq, ← fib_natCast]
+    have := calc _ = _ := fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq n |>.symm
+      _ = fib (n + 1) ^ 2 - fib n * fib (n + 2) := by grind [fib_add_two]
+    grind
 
 /-- **Cassini's identity**: `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ |n|`. -/
-public lemma Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
+public theorem Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
     fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n.natAbs := by
   if hn : n = 0 then simp [hn] else
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+  · exact fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq n
   · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn)
-    simp [natAbs_add_of_nonneg, ← fib_add_two_mul_fib_sub_fib_add_one_sq, add_assoc]
-  · obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero (by simpa using hn)
-    simp_rw [show -((i + 1 : ℕ) : ℤ) + 1 = -i by simp, sub_eq_add_neg, ← neg_add,
-      fib_neg, natAbs_neg, natAbs_natCast]
-    grind [fib_add_two_mul_fib_sub_fib_add_one_sq]
+    simp_rw [show -((i + 1 : ℕ) : ℤ) + 1 = -i by simp, sub_eq_add_neg, ← neg_add, fib_neg,
+      natAbs_neg, natAbs_natCast, ← fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq]
+    grind
 
 /-- **Catalan's identity**: `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`. -/
-public lemma Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
+public theorem Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
     fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x.natAbs * fib a ^ 2 :=
   calc
     _ = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 - fib x *
