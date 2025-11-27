@@ -573,7 +573,6 @@ theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α
     Function.update g (f i) a ∘ f = Function.update (g ∘ f) i a :=
   update_comp_eq_of_injective' g hf i a
 
-
 /-- Recursors can be pushed inside `Function.update`.
 
 The `ctor` argument should be a one-argument constructor like `Sum.inl`,
