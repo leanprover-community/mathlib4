@@ -519,10 +519,10 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
 theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b :=
   mem_diagSet_iff_isDiag _
 
-theorem diagSet_eq_setOf_isDiag : diagSet = { z : Sym2 α | z.IsDiag } :=
+theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} :=
   Set.ext mem_diagSet_iff_isDiag
 
-theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = { z : Sym2 α | ¬z.IsDiag } :=
+theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = {z : Sym2 α | ¬z.IsDiag} :=
   congrArg _ diagSet_eq_setOf_isDiag
 
 theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ :=
