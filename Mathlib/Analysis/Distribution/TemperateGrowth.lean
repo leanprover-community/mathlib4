@@ -211,9 +211,7 @@ theorem HasTemperateGrowth.pow {f : E â†’ R} (hf : f.HasTemperateGrowth) (k : â„
     (f ^ k).HasTemperateGrowth := by
   induction k with
   | zero => simpa using HasTemperateGrowth.const 1
-  | succ k IH =>
-    rw [pow_succ]
-    fun_prop
+  | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
 
