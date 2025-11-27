@@ -106,36 +106,36 @@ theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
   simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
 
 @[to_additive (attr := simp)]
-theorem measure_smul_inter (c : G) (s t : Set α) : μ (s ∩ c⁻¹ • t) = μ (c • s ∩ t) := by
+theorem measure_inter_inv_smul (c : G) (s t : Set α) : μ (s ∩ c⁻¹ • t) = μ (c • s ∩ t) := by
   rw [← measure_smul _ c, smul_set_inter, smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-theorem measure_inter_smul (c : G) (s t : Set α) : μ (c⁻¹ • s ∩ t) = μ (s ∩ c • t) := by
-  simpa [inv_inv] using (measure_smul_inter _ c⁻¹ _ _).symm
+theorem measure_inv_smul_inter (c : G) (s t : Set α) : μ (c⁻¹ • s ∩ t) = μ (s ∩ c • t) := by
+  simpa [inv_inv] using (measure_inter_inv_smul _ c⁻¹ _ _).symm
 
 @[to_additive (attr := simp)]
-theorem measure_smul_union (c : G) (s t : Set α) : μ (s ∪ c⁻¹ • t) = μ (c • s ∪ t) := by
+theorem measure_union_inv_smul (c : G) (s t : Set α) : μ (s ∪ c⁻¹ • t) = μ (c • s ∪ t) := by
   rw [← measure_smul _ c, smul_set_union, smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-theorem measure_union_smul (c : G) (s t : Set α) : μ (c⁻¹ • s ∪ t) = μ (s ∪ c • t) := by
-  simpa [inv_inv] using (measure_smul_union _ c⁻¹ _ _).symm
+theorem measure_inv_smul_union (c : G) (s t : Set α) : μ (c⁻¹ • s ∪ t) = μ (s ∪ c • t) := by
+  simpa [inv_inv] using (measure_union_inv_smul _ c⁻¹ _ _).symm
 
 @[to_additive (attr := simp)]
-theorem measure_smul_sdiff (c : G) (s t : Set α) : μ (s \ c⁻¹ • t) = μ (c • s \ t) := by
+theorem measure_sdiff_inv_smul (c : G) (s t : Set α) : μ (s \ c⁻¹ • t) = μ (c • s \ t) := by
   rw [← measure_smul _ c, smul_set_sdiff, smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-theorem measure_sdiff_smul (c : G) (s t : Set α) : μ (c⁻¹ • s \ t) = μ (s \ c • t) := by
-  simpa [inv_inv] using (measure_smul_sdiff _ c⁻¹ _ _).symm
+theorem measure_inv_smul_sdiff (c : G) (s t : Set α) : μ (c⁻¹ • s \ t) = μ (s \ c • t) := by
+  simpa [inv_inv] using (measure_sdiff_inv_smul _ c⁻¹ _ _).symm
 
 @[to_additive (attr := simp)]
-theorem measure_smul_symmDiff (c : G) (s t : Set α) : μ (s ∆ (c⁻¹ • t)) = μ ((c • s) ∆ t) := by
+theorem measure_symmDiff_inv_smul (c : G) (s t : Set α) : μ (s ∆ (c⁻¹ • t)) = μ ((c • s) ∆ t) := by
   rw [← measure_smul _ c, smul_set_symmDiff, smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-theorem measure_symmDiff_smul (c : G) (s t : Set α) : μ ((c⁻¹ • s) ∆ t) = μ (s ∆ (c • t)) := by
-  simpa [inv_inv] using (measure_smul_symmDiff _ c⁻¹ _ _).symm
+theorem measure_inv_smul_symmDiff (c : G) (s t : Set α) : μ ((c⁻¹ • s) ∆ t) = μ (s ∆ (c • t)) := by
+  simpa [inv_inv] using (measure_symmDiff_inv_smul _ c⁻¹ _ _).symm
 
 variable {μ}
 
