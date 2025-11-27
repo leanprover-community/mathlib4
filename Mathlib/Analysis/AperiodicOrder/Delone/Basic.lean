@@ -77,13 +77,11 @@ lemma RelativelyDense.mono {D E : Set X} (hDE : D ⊆ E) :
 lemma RelativelyDense.cthickening_eq_univ
     {X : Type*} [MetricSpace X] {D : Set X} :
     RelativelyDense D → ∃ R > 0, cthickening R D = Set.univ := by
-  intro hD
-  rcases hD with ⟨R, hRpos, hcov⟩
+  rintro ⟨R, hRpos, hcov⟩
   refine ⟨R, hRpos, ?_⟩
   ext x; constructor
   · intro _; trivial
-  · intro _
-    rcases hcov x with ⟨y, hyD, hxy⟩
+  · intro _; rcases hcov x with ⟨y, hyD, hxy⟩
     exact mem_cthickening_of_dist_le x y R D hyD hxy
 
 end Metric
@@ -105,13 +103,10 @@ namespace DeloneSet
 
 /-- A Delone set is nonempty. -/
 lemma nonempty [Nonempty X] (D : DeloneSet X) : Nonempty D.carrier := by
-  obtain ⟨R, hR, hcov⟩ := D.relativelyDense
-  cases ‹Nonempty X› with
-  | intro x =>
-    rcases hcov x with ⟨_, ha⟩
-    simp_all only [gt_iff_lt, nonempty_subtype]
-    obtain ⟨left, _⟩ := ha
-    apply Exists.intro; exact left
+  obtain ⟨_, _, hcov⟩ := D.relativelyDense
+  obtain ⟨x⟩ := (inferInstance : Nonempty X)
+  obtain ⟨y, hyD, _⟩ := hcov x
+  exact ⟨⟨y, hyD⟩⟩
 
 noncomputable def coveringRadius (D : DeloneSet X) : ℝ :=
   Classical.choose D.relativelyDense
@@ -148,15 +143,14 @@ If the packing radius of a Delone set is `r`, then for any `z : X` the open ball
 lemma subset_ball_singleton (D : DeloneSet X) :
     ∃ r > 0, ∀ ⦃x y z⦄, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
     x ∈ ball z r → y ∈ ball z r → x = y := by
-  refine ⟨D.packingRadius / 2, ?_, ?_⟩
-  · exact half_pos D.packingRadius_pos
-  · intro x y z hx hy hz hxz hyz
-    by_contra hne
-    have hlt : dist x y < D.packingRadius := by
-      have hsum_lt : dist x z + dist z y < D.packingRadius := by
-        simpa [add_halves] using (add_lt_add hxz <| mem_ball'.mp hyz)
-      exact lt_of_le_of_lt (dist_triangle x z y) hsum_lt
-    exact (not_lt_of_ge <| D.le_dist_of_mem_ne hx hy hne) hlt
+  refine ⟨D.packingRadius / 2, half_pos D.packingRadius_pos, ?_⟩
+  intro x y z hx hy hz hxz hyz
+  by_contra hne
+  have hlt : dist x y < D.packingRadius := by
+    have hsum_lt : dist x z + dist z y < D.packingRadius := by
+      simpa [add_halves] using (add_lt_add hxz <| mem_ball'.mp hyz)
+    exact lt_of_le_of_lt (dist_triangle x z y) hsum_lt
+  exact (not_lt_of_ge <| D.le_dist_of_mem_ne hx hy hne) hlt
 
 /-- The image of a Delone set under an isometry is a Delone set. -/
 def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
