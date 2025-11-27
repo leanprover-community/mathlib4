@@ -196,7 +196,7 @@ def regularOfIsPullbackFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   regularOfIsPullbackSndOfRegular hk comm.symm (PullbackCone.flipIsLimit t)
 
 /-- Any regular monomorphism is a strong monomorphism. -/
-def RegularMono.strongMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
+lemma RegularMono.strongMono {f : X ⟶ Y} (h : RegularMono f) : StrongMono f :=
   have := h.mono
   StrongMono.mk' (by
       intro A B z hz u v sq
@@ -435,8 +435,8 @@ def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
     RegularEpi k :=
   regularOfIsPushoutSndOfRegular hf comm.symm (PushoutCocone.flipIsColimit t)
 
-@[deprecated "No replacement" (since := "2025-11-20")]
-instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
+@[deprecated "No replacement" (since := "2025-11-20")] -- ?
+lemma strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
   have := isRegularEpi_of_regularEpi h
   inferInstance
 
