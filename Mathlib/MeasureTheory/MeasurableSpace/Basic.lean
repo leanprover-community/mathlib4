@@ -292,7 +292,7 @@ protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : Meas
   exact hs.ite (hf ht) (hg ht)
 
 @[measurability, fun_prop]
-protected theorem Measurable.IndexedPartition.piecewise {ι : Type*} {s : ι → Set α} [Countable ι]
+protected theorem IndexedPartition.measurable_piecewise {ι : Type*} {s : ι → Set α} [Countable ι]
     (hms : ∀ i, MeasurableSet (s i)) {f : ι → α → β} (hs : IndexedPartition s)
     (hmf : ∀ i, Measurable (f i)) : Measurable (hs.piecewise f) := by
   refine fun t ht => ?_

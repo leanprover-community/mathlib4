@@ -784,14 +784,14 @@ protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α →
     (hg : StronglyMeasurable g) : StronglyMeasurable fun x => ite (p x) (f x) (g x) :=
   StronglyMeasurable.piecewise hp hf hg
 
-protected theorem IndexedPartition.piecewise {s : ι → Set α}
+protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι → Set α}
     (hs : IndexedPartition s) [MeasurableSpace α] (hm : ∀ i, MeasurableSet (s i))
     {f : ι → α → β} [TopologicalSpace β] (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (hs.piecewise f) := by
   by_cases Fi : Finite ι
-  · refine ⟨fun n => SimpleFunc.IndexedPartition.piecewise hs hm (fun i => (hf i).approx n),
+  · refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise hs hm (fun i => (hf i).approx n),
       fun x => ?_⟩
-    simp [SimpleFunc.IndexedPartition.piecewise, IndexedPartition.piecewise_apply,
+    simp [SimpleFunc.indexedPartitionPiecewise, IndexedPartition.piecewise_apply,
       StronglyMeasurable.tendsto_approx]
   · simp only [not_finite_iff_infinite] at Fi
     obtain ⟨e, _⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
@@ -845,12 +845,12 @@ protected theorem IndexedPartition.piecewise {s : ι → Set α}
             intro m hm; simp only [hs.mem_iff_index_eq] at hm
             exact hi (({m | m < n}.mem_image e (hs.index a)).mpr (Exists.intro m.1 ⟨m.2, hm.symm⟩))
       }
-    refine ⟨fun n => SimpleFunc.IndexedPartition.piecewise (R n)
+    refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise (R n)
       (fun i => ?_) (fun i => (hf (e i)).approx n), fun x => ?_⟩
     · by_cases hin : i < n
       · simpa [r, hin] using hm (e i)
       · simp only [r, hin]; exact MeasurableSet.compl (MeasurableSet.iUnion (fun m => hm (e m)))
-    · simp only [SimpleFunc.IndexedPartition.piecewise, SimpleFunc.coe_mk,
+    · simp only [SimpleFunc.indexedPartitionPiecewise, SimpleFunc.coe_mk,
         IndexedPartition.piecewise_apply]
       have : ∀ᶠ n in atTop, e ((R n).index x) = hs.index x := by
         obtain ⟨y, hy⟩ := he.2 (hs.index x)

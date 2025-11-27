@@ -192,12 +192,12 @@ def piecewise (s : Set α) (hs : MeasurableSet s) (f g : α →ₛ β) : α →�
     (f.finite_range.union g.finite_range).subset range_ite_subset⟩
 
 /-- This is the analogue of `SimpleFunc.piecewise` for `IndexedPartition`. -/
-def IndexedPartition.piecewise {ι : Type*} [Finite ι] {s : ι → Set α} (hs : IndexedPartition s)
+def indexedPartitionPiecewise {ι : Type*} [Finite ι] {s : ι → Set α} (hs : IndexedPartition s)
     (hms : ∀ i, MeasurableSet (s i)) (f : ι → α →ₛ β) : α →ₛ β :=
   ⟨hs.piecewise (fun i => f i), fun _ =>
     letI : MeasurableSpace β := ⊤
-    Measurable.IndexedPartition.piecewise hms hs (fun i => (f i).measurable) trivial,
-    (Set.finite_iUnion (fun i => (f i).finite_range)).subset (hs.range_subset)⟩
+    hs.measurable_piecewise hms (fun i => (f i).measurable) trivial,
+    (Set.finite_iUnion (fun i => (f i).finite_range)).subset (hs.range_piecewise_subset)⟩
 
 open scoped Classical in
 @[simp]
