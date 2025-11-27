@@ -241,6 +241,16 @@ theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i =>
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 
+@[to_additive (attr := simp)]
+theorem forall_inv_mem {p : α → Prop} : (∀ x, x⁻¹ ∈ s → p x) ↔ ∀ x ∈ s, p x⁻¹ := by
+  rw [← (Equiv.inv _).forall_congr_right]
+  simp
+
+@[to_additive (attr := simp)]
+theorem exists_inv_mem {p : α → Prop} : (∃ x, x⁻¹ ∈ s ∧ p x) ↔ ∃ x ∈ s, p x⁻¹ := by
+  rw [← (Equiv.inv _).exists_congr_right]
+  simp
+
 open MulOpposite
 
 @[to_additive]
