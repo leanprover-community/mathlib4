@@ -54,40 +54,6 @@ public lemma Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
       fib_neg, natAbs_neg, natAbs_natCast]
     grind [fib_add_two_mul_fib_sub_fib_add_one_sq]
 
-/-- Nat version of Catalan's identity. Auxiliary for
-`Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul` -/
-lemma Nat.fib_add_add_one_sq_sub_fib_succ_mul_fib_add_two_mul_succ (x a : ℕ) :
-    (fib (x + a + 1) ^ 2 - fib (x + 1) * fib (x + 2 * a + 1) : ℤ) = (-1) ^ (x + 1) * fib a ^ 2 := by
-  by_cases ha : a = 0
-  · simp [ha, sq]
-  obtain ⟨a, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero ha
-  calc (fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) : ℤ)
-      = (fib (x + 1) * fib (a + 2) + fib x * fib (a + 1)) ^ 2 - fib (x + 1) *
-          (fib (x + 1) * (fib ((a + 1) + 1) ^ 2 + fib (a + 1) ^ 2) + fib ((x + 1) - 1)
-            * (fib (a + 1) * fib ((a + 1) + 1) + fib ((a + 1) - 1) * fib (a + 1))) := by
-        congr 2
-        · rw [(by ring : x + a + 2 = x + (a + 1) + 1)]
-          simp only [fib_add, fib_one, mul_one, reduceAdd, fib_two, cast_add, cast_mul]
-          ring
-        · rw [show x + 2 * a + 3 = (x + 1) + 2 * (a + 1) by ring]
-          set b := a + 1
-          set c := x + 1
-          have {m n : ℕ} (hn : n ≠ 0) :
-              fib (m + n) = fib m * fib (n - 1) + fib (m + 1) * fib n := by
-            obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
-            simp [← add_assoc, fib_add]
-          rw [add_comm c, this (by grind)]
-          simp_rw [two_mul, fib_add, this (m := b) (n := b) (by grind)]
-          simp only [cast_add, cast_mul, sq, add_comm, mul_comm]
-    _ = fib (x + 1) * fib x * fib (a + 1) * (fib (a + 2) - fib a) +
-      fib (a + 1) ^ 2 * (fib x ^ 2 - fib (x + 1) ^ 2) := by simp only [add_tsub_cancel_right]; ring
-    _ = fib (a + 1) ^ 2 * (fib x ^ 2 + fib (x + 1) * fib x - fib (x + 1) ^ 2) := by
-        simp only [fib_add_two, cast_add, add_sub_cancel_left]
-        ring
-    _ = _ := by
-        rw [← fib_add_two_mul_fib_sub_fib_add_one_sq, sub_mul, fib_add_two, cast_add]
-        ring
-
 /-- **Catalan's identity**: `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`. -/
 public lemma Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
     fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x.natAbs * fib a ^ 2 :=
