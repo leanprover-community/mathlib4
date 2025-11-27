@@ -243,7 +243,7 @@ def verify_local_remote_consistency(tag: str) -> VerificationResult:
     # Match leanprover-community/mathlib4 but not mathlib4-nightly-testing etc.
     # Matches common git URL formats: https://, git@, git://
     main_repo_pattern = re.compile(
-        r'(?:https://|git@|git://)[^/]+[:/]leanprover-community/mathlib4(?:\\.git)?$'
+        r'(?:https://|git@|git://)[^/]+[:/]leanprover-community/mathlib4(?:\.git)?$'
     )
     main_repo_remotes = []
     other_remotes = []
