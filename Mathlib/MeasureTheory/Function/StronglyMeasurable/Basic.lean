@@ -785,7 +785,7 @@ protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α →
   StronglyMeasurable.piecewise hp hf hg
 
 protected theorem IndexedPartition.piecewise {s : ι → Set α}
-    (hs : IndexedPartition s) {_ : MeasurableSpace α} (hm : ∀ i, MeasurableSet (s i))
+    (hs : IndexedPartition s) [MeasurableSpace α] (hm : ∀ i, MeasurableSet (s i))
     {f : ι → α → β} [TopologicalSpace β] (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (hs.piecewise f) := by
   by_cases Fi : Finite ι
