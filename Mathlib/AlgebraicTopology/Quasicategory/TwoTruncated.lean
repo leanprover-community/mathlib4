@@ -180,13 +180,13 @@ Given two consecutive edges `f`, `g`  in a 2-truncated quasicategory, nonconstru
 an edge that is the diagonal of a 2-simplex with spine given by `f` and `g`. The `CompStruct`
 witnessing this property is given by `Edge.composeStruct`.
 -/
-noncomputable def Edge.comp (f : Edge x y) (g : Edge y z) : Edge x z := 
+noncomputable def Edge.comp (f : Edge x y) (g : Edge y z) : Edge x z :=
   (Nonempty.some (Quasicategory₂.fill21 f g )).1
 
 /--
 See `Edge.comp`
 -/
-noncomputable def Edge.compStruct (f : Edge x y) (g : Edge y z) : CompStruct f g (f.comp g) := 
+noncomputable def Edge.compStruct (f : Edge x y) (g : Edge y z) : CompStruct f g (f.comp g) :=
   (Nonempty.some (Quasicategory₂.fill21 f g )).2
 
 /--
