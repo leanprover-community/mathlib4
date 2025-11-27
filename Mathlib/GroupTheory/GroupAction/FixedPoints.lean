@@ -280,11 +280,8 @@ lemma map_mem_fixedPoints
     (f : A →[G] B) {H : Submonoid G}
     {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
     f a ∈ MulAction.fixedPoints H B := by
-  intro h
-  change (h : G) • f a = f a
-  rw [← f.map_smul h a]
-  change f (h • a) = f a
-  simp [ha h]
+  intro ⟨h, _⟩
+  simp_all [← f.map_smul h a]
 
 /-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
 @[to_additive]
@@ -294,8 +291,6 @@ lemma map_mem_fixedBy
     (f : A →[G] B) {g : G}
     {a : A} (ha : a ∈ MulAction.fixedBy A g) :
     f a ∈ MulAction.fixedBy B g := by
-  change (g : G) • f a = f a
-  rw [← f.map_smul g a]
-  exact congr_arg f ha
+  simpa using congr_arg f ha
 
 end MulActionHom
