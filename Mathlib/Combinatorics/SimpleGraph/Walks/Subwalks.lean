@@ -5,7 +5,9 @@ Authors: Rida Hamadani
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Subwalks
@@ -27,7 +29,7 @@ namespace SimpleGraph
 
 namespace Walk
 
-variable {V : Type*} {G : SimpleGraph V}
+variable {V : Type*} {G G' : SimpleGraph V}
 
 /-- `p.IsSubwalk q` means that the walk `p` is a contiguous subwalk of the walk `q`. -/
 def IsSubwalk {u₁ v₁ u₂ v₂} (p : G.Walk u₁ v₁) (q : G.Walk u₂ v₂) : Prop :=
@@ -111,6 +113,33 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
     p₁ = p₂ := by
   rw [isSubwalk_iff_support_isInfix] at h₁ h₂
   exact ext_support <| List.infix_antisymm h₁ h₂
+
+@[simp]
+theorem IsSubwalk.support_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h : p₂.IsSubwalk p₁) : p₂.support ⊆ p₁.support :=
+  List.IsInfix.subset <| isSubwalk_iff_support_isInfix.mp h
+
+theorem IsSubwalk.edges_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h : p₁.IsSubwalk p₂) : p₁.edges <:+: p₂.edges := by
+  grind [edges_append, IsSubwalk]
+
+@[simp]
+theorem IsSubwalk.edges_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h : p₂.IsSubwalk p₁) : p₂.edges ⊆ p₁.edges :=
+  List.IsInfix.subset <| h.edges_isInfix
+
+theorem IsSubwalk.darts_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h : p₁.IsSubwalk p₂) : p₁.darts <:+: p₂.darts := by
+  grind [darts_append, IsSubwalk]
+
+@[simp]
+theorem IsSubwalk.darts_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h : p₂.IsSubwalk p₁) : p₂.darts ⊆ p₁.darts :=
+  List.IsInfix.subset <| h.darts_isInfix
+
+protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h : p₂.IsSubwalk p₁) (f : G →g G') : (p₂.map f).IsSubwalk (p₁.map f) := by
+  simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h, List.IsInfix.map]
 
 end Walk
 
