@@ -564,6 +564,7 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     ((centerCongr (toLin_equiv b)).trans centerEquivRootsOfUnity g).val =
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
+  nontriviality R
   by_cases hV : Subsingleton V
   · convert Eq.refl (1 : Rˣ) <;>
     · apply rootsOfUnity.eq_one
