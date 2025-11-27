@@ -704,6 +704,28 @@ def diff : Cocycle K K 1 :=
     simp only [Cochain.zero_v, δ_v 1 2 rfl _ p q hpq _ _ rfl rfl, Cochain.diff_v,
       HomologicalComplex.d_comp_d, smul_zero, add_zero])
 
+variable (L n) in
+/-- The inclusion `Cocycle K L n →+ Cochain K L n`. -/
+@[simps]
+def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
+  toFun x := x
+  map_zero' := by simp
+  map_add' := by simp
+
+variable (L n) in
+/-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
+def isKernel (hm : n + 1 = m) :
+    IsLimit ((KernelFork.ofι (f := (HomComplex K L).d n m)
+      (AddCommGrpCat.ofHom (toCochainAddMonoidHom K L n))) (by cat_disch)) :=
+  Fork.IsLimit.mk _
+    (fun s ↦ AddCommGrpCat.ofHom
+      { toFun x := ⟨s.ι x, by
+          rw [mem_iff _ _ hm]
+          exact ConcreteCategory.congr_hom s.condition x⟩
+        map_zero' := by cat_disch
+        map_add' := by cat_disch })
+    (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
+
 end Cocycle
 
 variable {F G}
