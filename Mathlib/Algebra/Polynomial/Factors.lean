@@ -377,7 +377,7 @@ theorem Splits.comp_of_degree_le_one {f g : R[X]} (hf : f.Splits) (hg : g.degree
     (f.comp g).Splits :=
   hf.comp_of_natDegree_le_one (natDegree_le_of_degree_le hg)
 
-theorem splits_iff_comp_of_natDegree_eq_one {f g : R[X]} (hg : g.natDegree = 1) :
+theorem splits_iff_comp_splits_of_natDegree_eq_one {f g : R[X]} (hg : g.natDegree = 1) :
     f.Splits ↔ (f.comp g).Splits := by
   refine ⟨fun hf ↦ hf.comp_of_natDegree_le_one hg.le, fun hf ↦ ?_⟩
   obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hg.le
@@ -389,9 +389,9 @@ theorem splits_iff_comp_of_natDegree_eq_one {f g : R[X]} (hg : g.natDegree = 1) 
   refine Splits.comp_of_natDegree_le_one hf ?_
   rw [natDegree_C_mul (mt inv_eq_zero.mp ha), natDegree_X_sub_C]
 
-theorem splits_iff_comp_of_degree_eq_one {f g : R[X]} (hg : g.degree = 1) :
+theorem splits_iff_comp_splits_of_degree_eq_one {f g : R[X]} (hg : g.degree = 1) :
     f.Splits ↔ (f.comp g).Splits :=
-  splits_iff_comp_of_natDegree_eq_one (natDegree_eq_of_degree_eq_some hg)
+  splits_iff_comp_splits_of_natDegree_eq_one (natDegree_eq_of_degree_eq_some hg)
 
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name.

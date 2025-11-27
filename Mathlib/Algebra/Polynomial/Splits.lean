@@ -103,13 +103,7 @@ theorem splits_id_iff_splits {f : K[X]} :
 variable {i}
 
 @[deprecated (since := "2025-11-25")]
-alias Splits.comp_of_degree_le_one := Splits.comp_of_natDegree_le_one
-
-@[deprecated (since := "2025-11-25")]
-alias Splits.comp_of_map_degree_le_one := Splits.comp_of_natDegree_le_one
-
-@[deprecated (since := "2025-11-25")]
-alias splits_iff_comp_splits_of_degree_eq_one := splits_iff_comp_of_natDegree_eq_one
+alias Splits.comp_of_map_degree_le_one := Splits.comp_of_degree_le_one
 
 variable (i)
 
