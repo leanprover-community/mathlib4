@@ -218,13 +218,12 @@ protected theorem card :
       · refine (Infinite.false (α := (Combination α (n + 1) → Combination α (n + 1))) ?_).elim
         have : FaithfulSMul (Equiv.Perm α) (Combination α (n + 1)) :=
           Nat.Combination.faithfulSMul (le_add_left 1 n) (by simp)
-        have : Infinite (Equiv.Perm α) := inferInstance
         exact (Infinite.false (α := (Combination α (n + 1) → Combination α (n + 1)))
           (Infinite.of_injective _ (smul_left_injective' (M := Equiv.Perm α)))).elim
       · simp
 
 variable {α} in
-theorem _root_.ENat.nontrivial_combination (h1 : 0 < n) (h2 : n < ENat.card α) :
+theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     Nontrivial (n.Combination α) := by
   obtain ⟨t, ht⟩ := Cardinal.exists_finset_le_card α (n + 1)
     (by rwa [← Cardinal.natCast_le_toENat_iff, cast_add,
@@ -247,13 +246,12 @@ theorem _root_.ENat.nontrivial_combination (h1 : 0 < n) (h2 : n < ENat.card α) 
     simp
   simp
 
-theorem _root_.Nat.nontrivial_combination (h1 : 0 < n) (h2 : n < Nat.card α) :
+/-- A variant of `Nat.Combination.nontrivial` that uses `Nat.card`. -/
+theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
     Nontrivial (n.Combination α) := by
-  apply ENat.nontrivial_combination h1
-  suffices ENat.card α = Nat.card α by
-    simp [this, h2]
-  refine (ENat.toNat_eq_iff ?_).mp rfl
-  exact Nat.ne_zero_of_lt h2
+  have : Finite α := finite_of_card_ne_zero (ne_zero_of_lt h2)
+  apply nontrivial h1
+  simp [ENat.card_eq_coe_natCard α, h2]
 
 section
 
