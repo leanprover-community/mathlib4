@@ -3,7 +3,9 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.EReal.Basic
+module
+
+public import Mathlib.Data.EReal.Basic
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -29,6 +31,8 @@ Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where eith
 see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`. See `EReal.left_distrib_of_nonneg`
 (similarly for right distributivity).
 -/
+
+@[expose] public section
 
 open ENNReal NNReal
 
@@ -237,7 +241,7 @@ instance : InvolutiveNeg EReal where
     | (a : ℝ) => congr_arg Real.toEReal (neg_neg a)
 
 @[simp]
-theorem toReal_neg : ∀ {a : EReal}, toReal (-a) = -toReal a
+theorem toReal_neg_eq : ∀ {a : EReal}, toReal (-a) = -toReal a
   | ⊤ => by simp
   | ⊥ => by simp
   | (x : ℝ) => rfl
@@ -834,7 +838,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: sum of two `EReal`s. -/
 @[positivity (_ + _ : EReal)]
-def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a + $b) =>
     assertInstancesCommute
@@ -853,7 +857,7 @@ def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: product of two `EReal`s. -/
 @[positivity (_ * _ : EReal)]
-def evalERealMul : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealMul : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a * $b) =>
     assertInstancesCommute

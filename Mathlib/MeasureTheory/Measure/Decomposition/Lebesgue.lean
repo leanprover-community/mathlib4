@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Measure.Sub
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
 # Lebesgue decomposition
@@ -43,6 +45,8 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 
 Lebesgue decomposition theorem
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.VectorMeasure
 
@@ -718,7 +722,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
     lift μ A to ℝ≥0 using measure_ne_top _ _ with μA
     lift ν A to ℝ≥0 using measure_ne_top _ _ with νA
     rw [ENNReal.coe_eq_zero]
-    by_cases hb : 0 < νA
+    by_cases! hb : 0 < νA
     · suffices ∀ b, 0 < b → μA ≤ b by
         by_contra h
         have h' := this (μA / 2) (half_pos (zero_lt_iff.2 h))
@@ -739,7 +743,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       refine le_trans ?_ h'.le
       rw [← ENNReal.coe_le_coe, ENNReal.coe_mul]
       exact hA₃ n
-    · rw [not_lt, le_zero_iff] at hb
+    · rw [le_zero_iff] at hb
       simpa [hb] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h

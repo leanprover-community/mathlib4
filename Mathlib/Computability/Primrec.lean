@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # The primitive recursive functions
@@ -41,8 +43,12 @@ other design choices in this formalization, see [carneiro2019].
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
+<<<<<<< HEAD
 -- TODO: revisit this after #13791 is merged
 set_option linter.flexible false
+=======
+@[expose] public section
+>>>>>>> master
 
 open List (Vector)
 open Denumerable Encodable Function
@@ -318,8 +324,6 @@ theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
     dom_denumerable.2 <|
       (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_getElem?₁ l).of_eq fun n => by
         cases n <;> simp
-
-@[deprecated (since := "2025-02-14")] alias list_get?₁ := list_getElem?₁
 
 end Primrec
 
@@ -720,7 +724,7 @@ theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   if H : k = 0 then simp [H, eq_comm]
   else
     have : q * k ≤ a ∧ a < (q + 1) * k ↔ q = a / k := by
-      rw [le_antisymm_iff, ← (@Nat.lt_succ _ q), Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero H),
+      rw [le_antisymm_iff, ← (@Nat.lt_succ_iff _ q), Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero H),
           Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero H)]
     simpa [H, zero_lt_iff, eq_comm (b := q)]
 
@@ -948,7 +952,6 @@ theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :
         induction l <;> simp_all
       · simpa using IH ..
 
-@[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getElem?_getD]
   exact option_getD.comp₂ list_getElem? (const _)
@@ -1091,7 +1094,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
       induction i with
       | zero => symm; simpa [graph] using bindList_eq_nil
       | succ i ih =>
-        simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ.mp hi),
+        simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.le_of_lt_succ hi),
           Nat.succ_eq_add_one, bindList_succ, Nat.reduceSubDiff]
         apply List.filterMap_eq_map_iff_forall_eq_some.mpr
         intro b' ha'; simp; rw [mapGraph_graph]

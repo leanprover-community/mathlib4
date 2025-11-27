@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 /-!
 
 # Description of the covering sieves of the regular topology
@@ -15,6 +17,8 @@ This file characterises the covering sieves of the regular topology.
 * `regularTopology.mem_sieves_iff_hasEffectiveEpi`: a sieve is a covering sieve for the
   regular topology if and only if it contains an effective epi.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.regularTopology
 

@@ -3,16 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Category.Cat.AsSmall
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.AsSmall
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -66,6 +68,8 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 * Borceux, Handbook of Categorical Algebra I, Section 2.11.
   (Note he reverses the roles of definition and main result relative to here!)
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -379,6 +383,10 @@ We can't make this an instance, because `F` is not determined by the goal.
 -/
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
+
+lemma hasColimit_comp_iff :
+    HasColimit (F ⋙ G) ↔ HasColimit G :=
+  ⟨fun _ ↦ Functor.Final.hasColimit_of_comp F, fun _ ↦ inferInstance⟩
 
 theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit (F ⋙ G) H] : PreservesColimit G H where
@@ -716,6 +724,10 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
 
+lemma hasLimit_comp_iff :
+    HasLimit (F ⋙ G) ↔ HasLimit G :=
+  ⟨fun _ ↦ Functor.Initial.hasLimit_of_comp F, fun _ ↦ inferInstance⟩
+
 theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesLimit (F ⋙ G) H] : PreservesLimit G H where
   preserves {c} hc := by
@@ -909,6 +921,25 @@ lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).I
     infer_instance
 
 end
+
+section
+
+variable {C D : Type*} [Category C] [Category D]
+
+instance (F : C ⥤ Dᵒᵖ) [Initial F] : F.leftOp.Final :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Final
+
+instance (F : C ⥤ Dᵒᵖ) [Final F] : F.leftOp.Initial :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Initial
+
+instance (F : Cᵒᵖ ⥤ D) [Initial F] : F.rightOp.Final :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Final
+
+instance (F : Cᵒᵖ ⥤ D) [Final F] : F.rightOp.Initial :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Initial
+
+end
+
 
 end Functor
 
@@ -1110,6 +1141,9 @@ variable (F : C ⥤ D) (G : C' ⥤ D')
 
 instance [F.Final] [G.Final] : (F.prod G).Final where
   out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
+
+instance [F.Initial] [G.Initial] : (F.prod G).Initial where
+  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (CostructuredArrow.prodEquivalence F G d d').symm
 
 end Prod
 

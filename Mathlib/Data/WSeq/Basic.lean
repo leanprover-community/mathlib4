@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Seq.Basic
-import Mathlib.Util.CompileInductive
+module
+
+public import Mathlib.Data.Seq.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Partially defined possibly infinite lists
@@ -15,6 +17,8 @@ This file provides a `WSeq α` type representing partially defined possibly infi
 
 -- TODO: fix the errors in this file!
 set_option linter.flexible false
+
+@[expose] public section
 
 namespace Stream'
 

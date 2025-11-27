@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Quadratic form structures related to `Module.Dual`
@@ -20,6 +22,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
   from `(Q.prod <| -Q)` to `QuadraticForm.dualProd R M`.
 
 -/
+
+@[expose] public section
 
 
 variable (R M N : Type*)
@@ -84,7 +88,7 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Modu
 def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun p := p.1 p.2
   toFun_smul a p := by
-    rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
+    rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, map_smul, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
     ⟨LinearMap.dualProd R M, fun p q => by
@@ -141,7 +145,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
       smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
-    rw [← LinearMap.map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
+    rw [← map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
     simp only [Module.End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
       invOf_mul_cancel_left']
 

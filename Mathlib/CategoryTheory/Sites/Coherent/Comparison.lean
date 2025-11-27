@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.EffectiveEpi.Comp
-import Mathlib.CategoryTheory.EffectiveEpi.Extensive
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.EffectiveEpi.Comp
+public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 /-!
 
 # Connections between the regular, extensive and coherent topologies
@@ -19,6 +21,8 @@ This file compares the regular, extensive and coherent topologies.
 * `extensive_union_regular_generates_coherent`: the union of the regular and extensive coverages
   generates the coherent topology on `C` if `C` is precoherent, preextensive and preregular.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

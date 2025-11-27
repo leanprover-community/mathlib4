@@ -17,7 +17,7 @@ numbers to the positive real numbers) such that
       ```
 for all positive real numbers `w`, `x`, `y`, `z`, satisfying `wx = yz`.
 
-# Solution
+## Solution
 The desired theorem is that either `f = fun x => x` or `f = fun x => 1/x`
 -/
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Formal concept analysis
@@ -34,6 +36,8 @@ Prove the fundamental theorem of concept lattices.
 
 concept, formal concept analysis, intent, extend, attribute
 -/
+
+@[expose] public section
 
 
 open Function OrderDual Set
@@ -251,6 +255,14 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 @[deprecated (since := "2025-07-10")]
 alias snd_injective := intent_injective
 
+/-- Copy a concept, adjusting definitional equalities. -/
+@[simps!]
+def copy (c : Concept α β r) (e : Set α) (i : Set β) (he : e = c.extent) (hi : i = c.intent) :
+    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
+
+theorem copy_eq (c : Concept α β r) (e : Set α) (i : Set β) (he hi) : c.copy e i he hi = c := by
+  ext; simp_all
+
 theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r x y := by
   rw [← c.upperPolar_extent] at hy
   exact hy hx
@@ -281,6 +293,18 @@ theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
   · cases hx <| mem_extent_of_rel_extent h hy
   · contradiction
   · assumption
+
+theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') :
+    IsCompl c'.extent c'.intent :=
+  ⟨c'.disjoint_extent_intent, c'.codisjoint_extent_intent⟩
+
+@[simp]
+theorem compl_extent [IsStrictTotalOrder α r'] (c' : Concept α α r') : c'.extentᶜ = c'.intent :=
+  c'.isCompl_extent_intent.compl_eq
+
+@[simp]
+theorem compl_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') : c'.intentᶜ = c'.extent :=
+  c'.isCompl_extent_intent.symm.compl_eq
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>

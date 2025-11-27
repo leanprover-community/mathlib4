@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Computability.PartrecCode
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Computability theory and the halting problem
@@ -18,6 +20,8 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 
 -- TODO: fix all violations in this file
 set_option linter.flexible false
+
+@[expose] public section
 
 open List (Vector)
 open Encodable Denumerable
