@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
-import Mathlib.CategoryTheory.Localization.SmallShiftedHom
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
+public import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
 /-!
 # Ext groups in abelian categories
@@ -35,6 +37,8 @@ Then, for `C := Sheaf X.etale AddCommGrpCat.{u}`, we will have
 sheaves over `X` shall be in `Type u`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -297,8 +301,7 @@ lemma mk₀_add (f g : X ⟶ Y) : mk₀ (f + g) = mk₀ f + mk₀ g := by
 @[simps! symm_apply]
 noncomputable def addEquiv₀ : Ext X Y 0 ≃+ (X ⟶ Y) where
   toEquiv := homEquiv₀
-  map_add' x y := by apply
-    homEquiv₀.symm.injective (by simp [mk₀_add])
+  map_add' x y := homEquiv₀.symm.injective (by simp [mk₀_add])
 
 @[simp]
 lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :

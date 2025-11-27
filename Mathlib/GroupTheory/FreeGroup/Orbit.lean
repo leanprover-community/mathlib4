@@ -3,17 +3,21 @@ Copyright (c) 2025 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Krause
 -/
-import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.GroupTheory.FreeGroup.Reduce
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
-For any `w : α × bool`, `FreeGroup.startsWith w` is the set of all elemenents of `FreeGroup α` that
+For any `w : α × Bool`, `FreeGroup.startsWith w` is the set of all elemenents of `FreeGroup α` that
 start with `w`.
 
 The main theorem `Orbit.duplicate` proves that applying `w⁻¹` to the orbit of `x` under the action
 of `FreeGroup.startsWith w` yields the orbit of `x` under the action of `FreeGroup.startsWith v`
 for every `v ≠ w⁻¹` (and the point `x`).
 -/
+
+@[expose] public section
 
 variable {α X : Type*} [DecidableEq α]
 
@@ -38,10 +42,8 @@ lemma startsWith.disjoint_iff_ne {w w' : α × Bool} :
   exact Iff.intro (fun h ↦ h (mk [w]) (by simp)) (by grind)
 
 lemma startsWith.Injective : @startsWith α _|>.Injective := fun a b h ↦ by
-  simp only [startsWith, Set.ext_iff, Set.mem_setOf_eq] at *
-  specialize h (mk [a])
-  simp at h
-  exact h
+  simp only [startsWith, Set.ext_iff, Set.mem_setOf_eq] at h
+  simpa using h (mk [a])
 
 theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
     (h : ¬ g ∈ startsWith (w.1, !w.2)) : mk [w] * g ∈ startsWith w := by

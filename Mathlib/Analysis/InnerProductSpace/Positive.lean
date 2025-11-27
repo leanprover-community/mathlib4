@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.Analysis.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -36,6 +38,8 @@ of requiring self adjointness in the definition.
 
 Positive operator
 -/
+
+@[expose] public section
 
 open InnerProductSpace RCLike LinearMap ContinuousLinearMap
 
@@ -196,9 +200,10 @@ open ComplexOrder in
 @[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
-  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
-    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
-      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
+  rw [← Matrix.isPositive_toEuclideanLin_iff]
+  convert isPositive_linearIsometryEquiv_conj_iff b.repr
+  ext
+  simp [LinearMap.toMatrix]
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]

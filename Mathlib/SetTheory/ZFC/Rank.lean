@@ -3,9 +3,11 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Ordinal.Rank
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Ordinal.Rank
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Ordinal ranks of PSet and ZFSet
@@ -19,6 +21,8 @@ same as the indexing types.
 * `PSet.rank`: Ordinal rank of a pre-set.
 * `ZFSet.rank`: Ordinal rank of a ZFC set.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -136,6 +140,10 @@ variable {x y : ZFSet.{u}}
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift _ fun _ _ => PSet.rank_congr
 
+@[simp]
+theorem rank_mk (x : PSet) : rank (.mk x) = x.rank :=
+  rfl
+
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
 
@@ -200,6 +208,15 @@ theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
   apply (Ordinal.iSup_le _).antisymm'
   · simpa [rank_le_iff, ← succ_le_iff] using Ordinal.le_iSup _
   · simp [rank_lt_of_mem]
+
+@[simp]
+theorem rank_iUnion {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
+    rank (⋃ i, f i) = ⨆ i, rank (f i) := by
+  apply le_antisymm
+  · simp_rw [rank_le_iff, mem_iUnion]
+    intro y ⟨i, hy⟩
+    exact (rank_lt_of_mem hy).trans_le (Ordinal.le_iSup _ _)
+  · exact Ordinal.iSup_le fun i => rank_mono (subset_iUnion f i)
 
 /-- `ZFSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZFSet) (· ∈ ·) x := by
