@@ -3,16 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Polynomial.Quotient
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Adjoining roots of polynomials
@@ -46,6 +48,8 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Algebra (FinitePresentation FiniteType)
@@ -73,12 +77,11 @@ instance : Inhabited (AdjoinRoot f) :=
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
 
-protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
-  Ideal.Quotient.nontrivial
-    (by
-      simp_rw [Ne, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
-      rintro x hx rfl
-      exact h (degree_C hx.ne_zero))
+protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) := by
+  simp only [AdjoinRoot, Quotient.nontrivial_iff, Ne, span_singleton_eq_top,
+    Polynomial.isUnit_iff, not_exists, not_and]
+  rintro x hx rfl
+  exact h (degree_C hx.ne_zero)
 
 /-- Ring homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
 def mk : R[X] →+* AdjoinRoot f :=
@@ -269,7 +272,7 @@ def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S 
   apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
+  rw [hy, map_mul, coe_eval₂RingHom, h, zero_mul]
 
 variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
 
@@ -334,7 +337,7 @@ theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
   have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
-  rw [aeval_def, ← h, ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
+  rw [aeval_def, ← h, ← map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 
 @[simp]
@@ -628,7 +631,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
     Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   · apply natDegree_le_of_dvd
-    · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
+    · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, map_zero]
       exact mk_eq_zero.1 this
     · exact q_monic.ne_zero
   · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]

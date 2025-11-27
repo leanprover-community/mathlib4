@@ -3,8 +3,10 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Logic.Small.Set
-import Mathlib.CategoryTheory.Filtered.Final
+module
+
+public import Mathlib.Logic.Small.Set
+public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Finally small categories
@@ -23,6 +25,8 @@ We show that a finally small category admits a small weakly terminal set, i.e., 
 objects such that from every object there a morphism to a member of `s`. We also show that the
 converse holds if `J` is filtered.
 -/
+
+@[expose] public section
 
 universe w v v₁ u u₁
 
@@ -127,6 +131,12 @@ theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
   initiallySmall_of_initial_of_initiallySmall F
 
 end InitiallySmall
+
+instance {J : Type u} [Category.{v} J] [InitiallySmall.{w} J] : FinallySmall.{w} Jᵒᵖ where
+  final_smallCategory := ⟨_, _, (fromInitialModel.{w} J).op, inferInstance⟩
+
+instance {J : Type u} [Category.{v} J] [FinallySmall.{w} J] : InitiallySmall.{w} Jᵒᵖ where
+  initial_smallCategory := ⟨_, _, (fromFinalModel.{w} J).op, inferInstance⟩
 
 section WeaklyTerminal
 
