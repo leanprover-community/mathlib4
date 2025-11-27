@@ -339,6 +339,18 @@ lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
+/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
+
+Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
+while being an immersion at `x` requires the existence of a complement in the same universe as
+the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`.
+-/
+lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
+    IsImmersionAt I J n f x := by
+  rw [IsImmersionAt_def]
+  use h.smallComplement, by infer_instance, by infer_instance
+  exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
