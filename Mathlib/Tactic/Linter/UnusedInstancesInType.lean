@@ -192,7 +192,7 @@ Note: `set_option linter.unusedDecidableInType _ in <command>` currently only wo
 outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
 -/
 public register_option linter.unusedDecidableInType : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
     replaced by a use of `classical` in the proof."

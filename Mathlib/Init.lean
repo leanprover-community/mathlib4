@@ -79,8 +79,8 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.docString
   linter.style.dollarSyntax
   linter.style.emptyLine
-  linter.style.lambdaSyntax
   linter.style.header
+  linter.style.lambdaSyntax
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
@@ -90,6 +90,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.show
   linter.style.maxHeartbeats
+  linter.unusedDecidableInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
