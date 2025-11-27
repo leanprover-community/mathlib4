@@ -248,7 +248,7 @@ theorem image_inv_of_apply_inv_eq {f g : α → β} (H : ∀ x ∈ s, f x⁻¹ =
 
 @[to_additive]
 theorem image_inv_of_apply_inv_eq_inv [InvolutiveInv β] {f g : α → β}
-    (H : ∀ x ∈ s, f x⁻¹ = (g x)⁻¹) : f '' (s⁻¹) = (g '' s)⁻¹ := by
+    (H : ∀ x ∈ s, f x⁻¹ = (g x)⁻¹) : f '' s⁻¹ = (g '' s)⁻¹ := by
   conv_rhs => rw [← image_inv_eq_inv, image_image, ← image_inv_of_apply_inv_eq H]
 
 @[to_additive (attr := simp)]
