@@ -482,7 +482,7 @@ theorem piecewise_bij {t : ι → Set β} (ht : IndexedPartition t)
   rw [← bijOn_univ, ← hs.iUnion, ← ht.iUnion]
   exact bijOn_iUnion hg_bij hg_inj
 
-theorem piecewise_preimage (t : Set β) : (hs.piecewise f) ⁻¹' t = ⋃ i, s i ∩ ((f i)⁻¹' t) := by
+theorem piecewise_preimage (t : Set β) : hs.piecewise f ⁻¹' t = ⋃ i, s i ∩ (f i ⁻¹' t) := by
   refine ext fun x => ⟨fun hx => ?_, fun ⟨a, ⟨i, hi⟩, ha⟩ => ?_⟩
   · rw [mem_preimage, IndexedPartition.piecewise_apply, ← mem_preimage] at hx
     exact mem_iUnion_of_mem (s := fun i => s i ∩ ((f i)⁻¹' t)) (hs.index x)
