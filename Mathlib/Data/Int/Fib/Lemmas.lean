@@ -22,9 +22,8 @@ lemma fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq :
     ∀ n : ℕ, fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n
   | 0 => by simp
   | n + 1 => by
-    have := calc _ = _ := fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq n |>.symm
-      _ = fib (n + 1) ^ 2 - fib n * fib (n + 2) := by grind [fib_add_two]
-    grind
+    have := fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq n
+    grind [fib_add_two]
 
 /-- **Cassini's identity**: `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ |n|`. -/
 public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
