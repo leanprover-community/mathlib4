@@ -210,8 +210,7 @@ theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
 theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
     (f ^ k).HasTemperateGrowth := by
   induction k with
-  | zero =>
-    simpa using HasTemperateGrowth.const 1
+  | zero => simpa using HasTemperateGrowth.const 1
   | succ k IH =>
     rw [pow_succ]
     fun_prop
