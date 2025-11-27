@@ -9456,6 +9456,7 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Grothendieck
+public import Mathlib.CategoryTheory.Bicategory.InducedBicategory
 public import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
