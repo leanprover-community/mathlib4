@@ -363,7 +363,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       ne_top_of_le_ne_top (depth_ne_top M') (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M')
     have depth_eq : p.depth M'= n := by
       simp only [Nat.cast_add, ← p.depth_quotSMulTop_succ_eq_moduleDepth M a reg mem] at hn
-      exact (ENat.add_right_cancel_iff _ _ 1 (ENat.coe_ne_top 1)).mp hn.symm
+      exact (WithTop.add_right_inj (ENat.coe_ne_top 1)).mp hn.symm
     let M'ₚ := ModuleCat.of Rₚ (QuotSMulTop ((algebraMap R Rₚ) a) Mₚ)
     have map_mem : (algebraMap R Rₚ) a ∈ maximalIdeal Rₚ :=
       ((IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p a _).mpr mem)
@@ -538,7 +538,7 @@ lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
     IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ x • (⊤ : Ideal R)) := by
   have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
     have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
-      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
@@ -554,7 +554,7 @@ lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] 
     IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ Ideal.span {x}) := by
   have : IsLocalRing (R ⧸ Ideal.span {x}) :=
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
-      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
@@ -568,9 +568,8 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : IsCohenMacaulayLocalRing R ↔
     IsCohenMacaulayLocalRing (R ⧸ Ideal.ofList rs) := by
   have : IsLocalRing (R ⧸ Ideal.ofList rs) :=
-    have : Nontrivial (R ⧸ Ideal.ofList rs) :=
-      Submodule.Quotient.nontrivial_of_lt_top _
-        (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))
+    have : Nontrivial (R ⧸ Ideal.ofList rs) := Submodule.Quotient.nontrivial_iff.mpr
+      (ne_top_of_le_ne_top IsPrime.ne_top' (span_le.mpr mem))
     have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList rs)) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
