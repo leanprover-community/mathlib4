@@ -267,21 +267,6 @@ noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
 lemma withBot_coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
     {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
-  have : Nonempty s := nonempty_subtype.mpr hs
-  obtain ⟨j, hj⟩ := id hs
-  refine le_antisymm ?_ (csSup_le ⟨_, j, rfl⟩ ?_)
-  · rw [← iSup_subtype'', WithBot.coe_iSup (OrderTop.bddAbove _)]
-    refine csSup_le ⟨_, ⟨j, hj⟩, rfl⟩ ?_
-    rintro _ ⟨i, rfl⟩
-    exact le_csSup (OrderTop.bddAbove _) ⟨i, by simp⟩
-  · rintro _ ⟨i, rfl⟩
-    by_cases h : i ∈ s
-    · simpa only [ciSup_pos h, WithBot.coe_le_coe] using le_biSup f h
-    · simpa only [ciSup_neg h, WithBot.sSup_empty] using bot_le
-
-lemma withBot_coe_biSup' {ι : Type*} {s : Set ι} (hs : s.Nonempty)
-    {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
   rcases hs with ⟨j, hj⟩
   have : Nonempty ι := Nonempty.intro j
   refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
@@ -291,24 +276,7 @@ lemma withBot_coe_biSup' {ι : Type*} {s : Set ι} (hs : s.Nonempty)
   · simpa only [iSup_pos h] using by apply le_biSup _ h
   · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
 
-lemma withBot_coe_biInf {ι : Type*} {s : Set ι} (hs : s.Nonempty) {α : Type*} [CompleteLattice α]
-    (f : ι → α) : ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
-  have : Nonempty s := nonempty_subtype.mpr hs
-  obtain ⟨j, hj⟩ := id hs
-  refine le_antisymm ?_ ?_
-  · refine le_csInf ⟨_, j, rfl⟩ ?_
-    rintro _ ⟨i, rfl⟩
-    by_cases h : i ∈ s
-    · simpa only [ciInf_pos h, WithBot.coe_le_coe] using biInf_le f h
-
-    · let : Preorder (WithBot α) := inferInstance
-      let : InfSet (WithBot α) := inferInstance
-      simp [ciInf_neg h]
-
-  · sorry
-
-
-lemma withBot_coe_biInf' {ι : Type*} {s : Set ι} (f : ι → ℕ∞) :
+lemma withBot_coe_biInf {ι : Type*} {s : Set ι} (f : ι → ℕ∞) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot ℕ∞) := by
   refine le_antisymm (by simpa using fun _ ↦ biInf_le _) <|
     (le_iInf_iff.mpr (fun i ↦ ?_)).trans_eq (WithBot.coe_iInf _ (OrderBot.bddBelow _)).symm
