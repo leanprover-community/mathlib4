@@ -449,7 +449,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         simp [uF', nerveFunctor₂, SSet.truncation, ReflQuiv.comp_eq_comp, uF, Fhk] <;>
         [let ι := ι0₂; let ι := ι1₂; let ι := ι2₂] <;>
       · replace := congr_arg (·.obj 0) (congr_fun (F.naturality ι.op) hk)
-        dsimp [oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,
+        dsimp [nerve_map, oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,
           nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂] at this ⊢
         convert this.symm
         apply ComposableArrows.ext₀; rfl
