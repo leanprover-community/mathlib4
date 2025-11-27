@@ -161,6 +161,20 @@ lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
   rintro a b hab _ _ ha rfl rfl _ _ hb rfl rfl
   rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
 
+@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_fst :=
+  pairwise_divisorsAntidiagonalList_fst
+
+@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_snd :=
+  pairwise_divisorsAntidiagonalList_snd
+
+lemma sortedLT_map_fst_divisorsAntidiagonalList {n : ℕ} :
+    (n.divisorsAntidiagonalList.map Prod.fst).SortedLT :=
+  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_fst).sortedLT
+
+lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
+    (n.divisorsAntidiagonalList.map Prod.snd).SortedGT :=
+  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
+
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
   have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   pairwise_divisorsAntidiagonalList_fst.nodup

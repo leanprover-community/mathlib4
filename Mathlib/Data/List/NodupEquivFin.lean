@@ -96,6 +96,9 @@ def SortedLT.getIso (l : List α) (H : SortedLT l) : Fin (length l) ≃o { x // 
   toEquiv := H.pairwise.nodup.getEquiv l
   map_rel_iff' := H.strictMono_get.le_iff_le
 
+@[deprecated (since := "2025-10-11")]
+alias Sorted.getIso := SortedLT.getIso
+
 variable (H : SortedLT l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
@@ -105,9 +108,6 @@ theorem SortedLT.coe_getIso_apply : (H.getIso l i : α) = get l i :=
 @[simp]
 theorem SortedLT.coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
   rfl
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.getIso := SortedLT.getIso
 
 @[deprecated (since := "2025-10-11")]
 alias Sorted.coe_getIso_apply := SortedLT.coe_getIso_apply

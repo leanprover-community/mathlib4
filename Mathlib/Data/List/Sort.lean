@@ -380,6 +380,8 @@ theorem pairwise_mergeSort' (l : List α) : Pairwise r (mergeSort l (r · ·)) :
     (by simpa using total_of r)
     l
 
+@[deprecated (since := "2025-11-27")] alias sorted_mergeSort' := pairwise_mergeSort'
+
 variable [IsAntisymm α r]
 
 theorem mergeSort_eq_self {l : List α} : Pairwise r l → mergeSort l (r · ·) = l :=
@@ -537,13 +539,27 @@ protected theorem SortedGT.nodup (h : l.SortedGT) : l.Nodup := h.strictAnti_get.
 theorem sortedLE_replicate {a : α} (n : ℕ) : (replicate n a).SortedLE :=
   (pairwise_replicate.mpr (Or.inr le_rfl)).sortedLE
 
+@[deprecated (since := "2025-11-27")] alias sorted_le_replicate := sortedLE_replicate
+
 theorem sortedLT_finRange (n : ℕ) : (finRange n).SortedLT :=
     sortedLT_of_getElem_lt_getElem_of_lt <| by simp
 
 theorem sortedLT_range (n : ℕ) : (range n).SortedLT := pairwise_lt_range.sortedLT
 
+@[deprecated (since := "2025-11-27")] alias sorted_lt_range := sortedLT_range
+
+@[deprecated "use sortedLT_range.sortedLE" (since := "2025-11-27")]
+theorem sorted_le_range (n) :
+    (range n).SortedLE := (sortedLT_range n).sortedLE
+
 theorem sortedLT_range' (a b) {s} (hs : s ≠ 0) :
     (range' a b s).SortedLT := (pairwise_lt_range' _ (Nat.pos_of_ne_zero hs)).sortedLT
+
+@[deprecated (since := "2025-11-27")] alias sorted_lt_range' := sortedLT_range'
+
+@[deprecated "use sortedLT_range'.sortedLE" (since := "2025-11-27")]
+theorem sorted_le_range' (a b) {s} (hs : s ≠ 0) :
+    (range' a b s).SortedLE := (sortedLT_range' a b hs).sortedLE
 
 theorem sortedLE_range' (a b s) :
     (range' a b s).SortedLE := (pairwise_le_range' _).sortedLE
@@ -575,6 +591,11 @@ strictly antitone. -/
 @[simp] theorem sortedGT_ofFn_iff : (ofFn f).SortedGT ↔ StrictAnti f := by
   simp only [sortedGT_iff_strictAnti_get, StrictAnti, Fin.forall_iff,
     length_ofFn, get_ofFn, Fin.cast_mk, Fin.mk_lt_mk]
+
+@[deprecated (since := "2025-11-27")] alias sorted_le_ofFn_iff := sortedLE_ofFn_iff
+@[deprecated (since := "2025-11-27")] alias sorted_lt_ofFn_iff := sortedLT_ofFn_iff
+@[deprecated (since := "2025-11-27")] alias sorted_ge_ofFn_iff := sortedGE_ofFn_iff
+@[deprecated (since := "2025-11-27")] alias sorted_gt_ofFn_iff := sortedGT_ofFn_iff
 
 /-- The list obtained from a monotone tuple is sorted. -/
 protected alias ⟨SortedLE.monotone, _root_.Monotone.sortedLE_ofFn⟩ := sortedLE_ofFn_iff
@@ -764,10 +785,14 @@ variable {α β : Type*} {ra : α → α → Prop} {rb : β → β → Prop}
 theorem pairwise_listMap (e : ra ↪r rb) {l : List α} : (l.map e).Pairwise rb ↔ l.Pairwise ra := by
   simp [pairwise_map, e.map_rel_iff]
 
+@[deprecated (since := "2025-11-27")] alias sorted_listMap := pairwise_listMap
+
 @[simp]
 theorem pairwise_swap_listMap (e : ra ↪r rb) {l : List α} :
     (l.map e).Pairwise (Function.swap rb) ↔ l.Pairwise (Function.swap ra) := by
   simp [pairwise_map, e.map_rel_iff]
+
+@[deprecated (since := "2025-11-27")] alias sorted_swap_listMap := pairwise_swap_listMap
 
 end RelEmbedding
 
@@ -812,6 +837,11 @@ theorem sortedGE_listMap (e : α ↪o β) {l : List α} :
 theorem sortedGT_listMap (e : α ↪o β) {l : List α} :
     (l.map e).SortedGT ↔ l.SortedGT := by
   simp_rw [← sortedLT_reverse, ← map_reverse, sortedLT_listMap]
+
+@[deprecated (since := "2025-11-27")] alias sorted_le_listMap := sortedLE_listMap
+@[deprecated (since := "2025-11-27")] alias sorted_lt_listMap := sortedLT_listMap
+@[deprecated (since := "2025-11-27")] alias sorted_ge_listMap := sortedGE_listMap
+@[deprecated (since := "2025-11-27")] alias sorted_gt_listMap := sortedGT_listMap
 
 end OrderEmbedding
 
