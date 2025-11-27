@@ -21,6 +21,7 @@ public import Mathlib.Tactic.Linter.PrivateModule
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
+public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 public import Mathlib.Tactic.MinImports

@@ -5,7 +5,9 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Init
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+public meta import Mathlib.Tactic.Linter.Header
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
