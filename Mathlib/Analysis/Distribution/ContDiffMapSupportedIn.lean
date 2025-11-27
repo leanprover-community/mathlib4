@@ -619,20 +619,6 @@ theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
   rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
   exact norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 (zero_le _)
 
-theorem norm_iteratedFDeriv_apply_le_withOrder {i : ℕ} (hin : i ≤ n)
-    {f : 𝓓^{n}_{K}(E, F)} {x : E} :
-    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, n, i} f :=
-  calc
-      ‖iteratedFDeriv ℝ i f x‖
-  _ = ‖structureMapLM ℝ n i f x‖ := by simp [structureMapLM_apply_withOrder, hin]
-  _ ≤ ‖structureMapLM ℝ n i f‖ := BoundedContinuousFunction.norm_coe_le_norm _ _
-  _ = N[𝕜]_{K, n, i} f := rfl
-
-theorem norm_iteratedFDeriv_apply_le {i : ℕ}
-    {f : 𝓓_{K}(E, F)} {x : E} :
-    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, i} f :=
-  norm_iteratedFDeriv_apply_le_withOrder 𝕜 (mod_cast le_top)
-
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
