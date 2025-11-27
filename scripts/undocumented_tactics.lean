@@ -57,4 +57,5 @@ def undocumentedTactics : CommandElabM Unit := liftTermElabM do
   else
     IO.println "All tactics have a docstring."
 
+-- This next line runs the analysis in a context that has Mathlib available.
 run_cmd undocumentedTactics
