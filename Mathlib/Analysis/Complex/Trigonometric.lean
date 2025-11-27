@@ -791,6 +791,35 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 theorem sinh_lt_cosh : sinh x < cosh x :=
   lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 
+theorem sum_cos_arith_progression (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
+    ∑ k ∈ Finset.range n, cos ((k : ℝ) * x + a)
+    = sin (n * x / 2) / sin (x / 2) * cos ((n - 1 : ℝ) * x / 2 + a) := by
+  induction' n with n ih
+  · simp
+  · simp [Finset.sum_range_succ, ih, field]
+    have : 2 * sin ((n + 1) * x / 2) * cos (n * x / 2 + a)
+         - 2 * sin (n * x / 2) * cos ((n - 1) * x / 2 + a)
+         = 2 * sin (x / 2) * cos (n * x + a) := by
+      rw [two_mul_sin_mul_cos, two_mul_sin_mul_cos, two_mul_sin_mul_cos]
+      ring_nf
+      rw [sub_eq_add_neg, ← sin_neg]
+      ring_nf
+    linarith
+
+theorem sum_sin_arith_progression (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
+    ∑ k ∈ Finset.range n, sin ((k : ℝ) * x + a)
+    = sin (n * x / 2) / sin (x / 2) * sin ((n - 1 : ℝ) * x / 2 + a) := by
+  induction' n with n ih
+  · simp
+  · simp [Finset.sum_range_succ, ih, field]
+    have : 2 * sin (↑n * x / 2) * sin ((↑n - 1) * x / 2 + a)
+         + 2 * sin (x / 2) * sin (↑n * x + a)
+         = 2 * sin ((↑n + 1) * x / 2) * sin (↑n * x / 2 + a) := by
+      rw [two_mul_sin_mul_sin, two_mul_sin_mul_sin, two_mul_sin_mul_sin]
+      nth_rw 3 [← cos_neg]
+      ring_nf
+    linarith
+
 end Real
 
 namespace Real
