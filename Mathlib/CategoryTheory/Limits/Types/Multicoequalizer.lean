@@ -88,9 +88,9 @@ noncomputable def isColimitOfMulticoequalizerDiagram
   · dsimp at i₁ i₂ h₁ h₂
     obtain rfl : x₁ = x₂ := by simpa using h
     have eq₁ := e.ιColimitType_map (WalkingMultispan.Hom.fst (J := .prod ι) ⟨i₁, i₂⟩)
-      ⟨x₁, by dsimp; rw [c.min_eq]; exact ⟨h₁, h₂⟩⟩
+      ⟨x₁, by dsimp; rw [c.eq_inf]; exact ⟨h₁, h₂⟩⟩
     have eq₂ := e.ιColimitType_map (WalkingMultispan.Hom.snd (J := .prod ι) ⟨i₁, i₂⟩)
-      ⟨x₁, by dsimp; rw [c.min_eq]; exact ⟨h₁, h₂⟩⟩
+      ⟨x₁, by dsimp; rw [c.eq_inf]; exact ⟨h₁, h₂⟩⟩
     dsimp [e] at eq₁ eq₂
     rw [eq₁, eq₂]
   · simp only [MulticoequalizerDiagram.multicofork_pt, ← c.iSup_eq,
@@ -109,7 +109,7 @@ noncomputable def isColimitOfMulticoequalizerDiagram' [LinearOrder ι]
   Multicofork.isColimitToLinearOrder _ (isColimitOfMulticoequalizerDiagram c)
     { iso i j := Set.functorToTypes.mapIso (eqToIso (by
         dsimp
-        rw [c.min_eq, c.min_eq, inf_comm]))
+        rw [c.eq_inf, c.eq_inf, inf_comm]))
       iso_hom_fst _ _ := rfl
       iso_hom_snd _ _ := rfl
       fst_eq_snd _ := rfl }

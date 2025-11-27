@@ -231,8 +231,8 @@ lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
 
 @[reassoc (attr := simp)]
 lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
-    (stdSimplex.faceSingletonComplIso j).inv ≫ ι i j hij = faceι i j hij := by
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso j).hom, Iso.hom_inv_id_assoc]
+    (stdSimplex.faceSingletonComplIso.{u} j).inv ≫ ι i j hij = faceι i j hij := by
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso.{u} j).hom, Iso.hom_inv_id_assoc]
   rfl
 
 end horn

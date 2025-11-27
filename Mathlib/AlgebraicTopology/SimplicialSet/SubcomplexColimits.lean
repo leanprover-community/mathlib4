@@ -57,21 +57,21 @@ noncomputable def isColimit :
   evaluationJointlyReflectsColimits _ (fun n ↦ by
     have h' : CompleteLattice.MulticoequalizerDiagram (A.obj n) (fun i ↦ (U i).obj n)
         (fun i j ↦ (V i j).obj n) :=
-      { min_eq := by simp [h.min_eq]
+      { eq_inf := by simp [h.eq_inf]
         iSup_eq := by simp [← h.iSup_eq] }
     exact (Multicofork.isColimitMapEquiv _ _).2
       (Types.isColimitOfMulticoequalizerDiagram h'))
 
 /-- A colimit multicofork attached to a `MulticoequalizerDiagram`
 structure in the complete lattice of subcomplexes of a simplicial set.
-In this variant, we assume that the index type `ι` has a linear order which allows
+In this variant, we assume that the index type `ι` has a linear order. This allows
 to consider only the "relations" given by tuples `(i, j)` such that `i < j`. -/
 noncomputable def isColimit' [LinearOrder ι] :
     IsColimit (h.multicofork.toLinearOrder.map toSSetFunctor) :=
   Multicofork.isColimitToLinearOrder _ h.isColimit
     { iso i j := toSSetFunctor.mapIso (eqToIso (by
         dsimp
-        rw [h.min_eq, h.min_eq, inf_comm]))
+        rw [h.eq_inf, h.eq_inf, inf_comm]))
       iso_hom_fst _ _ := rfl
       iso_hom_snd _ _ := rfl
       fst_eq_snd _ := rfl }
@@ -91,11 +91,11 @@ lemma BicartSq.isPushout {A₁ A₂ A₃ A₄ : X.Subcomplex} (sq : BicartSq A�
     ⟨evaluationJointlyReflectsColimits _
       (fun n ↦ (PushoutCocone.isColimitMapCoconeEquiv _ _).2 (by
         have h : Lattice.BicartSq (A₁.obj n) (A₂.obj n) (A₃.obj n) (A₄.obj n) :=
-          { max_eq := by
-              rw [← sq.max_eq]
+          { sup_eq := by
+              rw [← sq.sup_eq]
               rfl
-            min_eq := by
-              rw [← sq.min_eq]
+            inf_eq := by
+              rw [← sq.inf_eq]
               rfl }
         exact (Types.isPushout_of_bicartSq h).isColimit))⟩
 
