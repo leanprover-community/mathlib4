@@ -102,7 +102,6 @@ def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) :
 
 @[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
-  __ := categoryStruct
   whiskerLeft {_ _ _} h {_ _} η := mkHom₂ <| h.hom ◁ Hom₂.hom η
   whiskerRight {_ _ _} {_ _} η h := mkHom₂ <| (Hom₂.hom η) ▷ h.hom
   associator x y z := isoMk (α_ x.hom y.hom z.hom)
