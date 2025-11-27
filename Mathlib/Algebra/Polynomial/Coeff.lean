@@ -148,7 +148,7 @@ theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
   rw [← pow_one X, coeff_C_mul_X_pow]
 
-@[simp]
+@[simp, grind =]
 theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n := by
   rcases p with ⟨p⟩
   simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
@@ -182,7 +182,7 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_intCast_mul [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
     coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
 
-@[simp]
+@[simp, grind =]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
   simp only [one_mul, map_one, ← coeff_C_mul_X_pow]
 
@@ -225,7 +225,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
+  all_goals grind [mem_antidiagonal, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

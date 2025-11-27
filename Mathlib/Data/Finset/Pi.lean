@@ -54,7 +54,7 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
 theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
   Multiset.mem_pi _ _ _
@@ -123,13 +123,8 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
 
 theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
     (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
-  rw [eq_singleton_iff_unique_mem]
-  constructor
-  · simp
-  intro a ha
-  ext i hi
-  rw [mem_pi] at ha
-  simpa using ha i hi
+  ext
+  grind
 
 theorem pi_const_singleton {β : Type*} (s : Finset α) (i : β) :
     (s.pi fun _ => ({i} : Finset β)) = {fun _ _ => i} :=
