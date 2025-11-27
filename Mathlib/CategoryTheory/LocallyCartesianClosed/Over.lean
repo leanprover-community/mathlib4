@@ -62,16 +62,6 @@ open Limits
 
 variable {X : C} (Y Z : Over X)
 
-/-- The canonical pullback cone constructed from `ChosenPullbacksAlong.isPullback.`
-Note: this limit cone is computable as lifts are constructed from the data contained in the
-`ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from
-`CategoryTheory.Square.IsPullback` (a `Prop`).
--/
-def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
-    IsLimit (isPullback Y.hom Z.hom |>.cone) :=
-  PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
-    (by cat_disch) (by cat_disch) (by cat_disch)
-
 /-- The binary fan provided by `fst'` and `snd'`. -/
 def binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
   BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
