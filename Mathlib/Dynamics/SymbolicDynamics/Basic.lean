@@ -6,6 +6,7 @@ Authors: Silvère Gangloff
 module
 
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Symbolic dynamics on cancellative monoids
@@ -206,15 +207,15 @@ lemma cylinder_eq_set_pi (U : Finset G) (x : G → A) :
 lemma mem_cylinder {U : Finset G} {x y : G → A} :
     y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
 
-variable [TopologicalSpace A] [DiscreteTopology A]
+variable [TopologicalSpace A]
 
 /-- Cylinders are open when `A` is discrete. -/
-lemma isOpen_cylinder (U : Finset G) (x : G → A) :
+lemma isOpen_cylinder [DiscreteTopology A] (U : Finset G) (x : G → A) :
     IsOpen (cylinder U x) := by
   simpa [cylinder_eq_set_pi U x] using isOpen_set_pi (U.finite_toSet) (by simp)
 
 /-- Cylinders are closed when `A` is discrete. -/
-lemma isClosed_cylinder (U : Finset G) (x : G → A) :
+lemma isClosed_cylinder [T1Space A] (U : Finset G) (x : G → A) :
     IsClosed (cylinder U x) := by
   simpa [cylinder_eq_set_pi U x] using isClosed_set_pi (by simp)
 
@@ -614,12 +615,12 @@ end OccursAt
 
 section DefSubshiftByForbidden
 
-variable {A : Type*} [TopologicalSpace A] [DiscreteTopology A] [Inhabited A]
+variable {A : Type*} [TopologicalSpace A] [Inhabited A]
 variable {G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G]
 
 /-- Occurrence sets are open. -/
 @[to_additive isOpen_occursInAt]
-lemma isOpen_mulOccursInAt (p : Pattern A G) (g : G) :
+lemma isOpen_mulOccursInAt [DiscreteTopology A] (p : Pattern A G) (g : G) :
     IsOpen { x | p.mulOccursInAt x g } := by
   simpa [mulOccursInAt_eq_cylinder] using isOpen_cylinder _ _
 
@@ -634,7 +635,7 @@ of these closed sets over `p ∈ F` and `v ∈ G`. -/
 Since each occurrence set `{ x | p.occursInAt x v }` is open (when `A` is discrete),
 its complement `{ x | ¬ p.occursInAt x v }` is closed; `forbidden F` is the intersection
 of these closed sets over `p ∈ F` and `v ∈ G`. -/]
-lemma mulForbidden_closed (F : Set (Pattern A G)) :
+lemma mulForbidden_closed [DiscreteTopology A] (F : Set (Pattern A G)) :
     IsClosed (mulForbidden F) := by
   rw [mulForbidden]
   have : {x | ∀ p ∈ F, ∀ v : G, ¬ p.mulOccursInAt x v}
@@ -649,7 +650,7 @@ lemma mulForbidden_closed (F : Set (Pattern A G)) :
 
 /-- Occurrence sets are closed. -/
 @[to_additive isClosed_occursInAt]
-lemma isClosed_mulOccursInAt (p : Pattern A G) (g : G) :
+lemma isClosed_mulOccursInAt [T1Space A] (p : Pattern A G) (g : G) :
     IsClosed { x | p.mulOccursInAt x g } := by
   simpa [mulOccursInAt_eq_cylinder] using isClosed_cylinder _ _
 
@@ -664,7 +665,7 @@ Formally:
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
 @[to_additive subshift_from_forbidden]
-def mulSubshift_from_forbidden (F : Set (Pattern A G)) : MulSubshift A G where
+def mulSubshift_from_forbidden [DiscreteTopology A] (F : Set (Pattern A G)) : MulSubshift A G where
   carrier := mulForbidden F
   isClosed := mulForbidden_closed F
   shiftInvariant := Pattern.mulForbidden_shift_invariant F
@@ -678,7 +679,7 @@ a *finite* family of patterns.
 Formally, `subshift_of_finite_type F` is `subshift_from_forbidden F` where `F` is a
 `Finset (Pattern A G)`. -/
 @[to_additive subshift_of_finite_type]
-def mulSubshift_of_finite_type (F : Finset (Pattern A G)) : MulSubshift A G :=
+def mulSubshift_of_finite_type [DiscreteTopology A] (F : Finset (Pattern A G)) : MulSubshift A G :=
   mulSubshift_from_forbidden (F : Set (Pattern A G))
 
 attribute [inherit_doc SymbolicDynamics.FullShift.mulSubshift_of_finite_type]
