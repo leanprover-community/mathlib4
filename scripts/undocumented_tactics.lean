@@ -3,8 +3,8 @@ import Mathlib
 /-
 Usage:
 
-```
-lake env lean scripts/undocumented.tactics.lean
+```bash
+lake env lean scripts/undocumented_tactics.lean
 ```
 to list tactics without documentation.
 
