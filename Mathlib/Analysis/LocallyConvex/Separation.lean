@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Separation Hahn-Banach theorem
@@ -324,11 +326,11 @@ end
 section Countable
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
+  [SecondCountableTopology E]
 
 /-- A closed convex set `s` is the intersection of countably many half spaces in a separable Banach
 space. Moreover, these halfspaces are all nontrivial if `s` is nonempty and not equal to `univ`. -/
-theorem iInter_nat_halfSpaces_eq
-    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
+theorem iInter_nat_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
     ⋂ (i : ℕ), {x | c i ≤ re (L i x)} = s ∧
     (s.Nonempty → s ≠ univ → ∀ i, ∃ x, re (L i x) ≠ 0) := by
@@ -336,9 +338,9 @@ theorem iInter_nat_halfSpaces_eq
   · exact ⟨0, 1, by simp [iInter_eq_empty_iff]⟩
   obtain rfl | hs_univ := eq_or_ne s univ
   · exact ⟨0, 0, by simp [nonempty_iff_ne_empty]⟩
+  -- choose a countable dense set of sᶜ
   obtain ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
     have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
-    have : SeparableSpace ↑sᶜ := hsep.separableSpace
     refine ⟨fun i ↦ (denseSeq ↑sᶜ i : E), by simp, fun x hx ↦ ?_⟩
     change ↑(Subtype.mk x hx) ∈ closure (range (((↑) : ↑sᶜ → E) ∘ _))
     rw [range_comp, ← closure_subtype, (denseRange_denseSeq ↑sᶜ).closure_range]
@@ -375,14 +377,13 @@ theorem iInter_nat_halfSpaces_eq
       linarith
 
 /-- `iInter_nat_halfSpaces_eq` for product spaces. -/
-theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)}
-    [NormedAddCommGroup F] [NormedSpace ℝ F]
-    [Module 𝕜 F] [ContinuousSMul 𝕜 F]
-    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) (hsep : IsSeparable sᶜ) :
+theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)} [NormedAddCommGroup F]
+    [NormedSpace ℝ F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [SecondCountableTopology F]
+    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ∃ (L : ℕ → E →L[𝕜] 𝕜) (T : ℕ → F →L[𝕜] 𝕜) (c : ℕ → ℝ),
     ⋂ (i : ℕ), {(x, y) | c i ≤ re (L i x) + re (T i y)} = s
     ∧ (s.Nonempty → s ≠ univ → ∀ i, ∃ (x : E) (y : F), re (L i x) + re (T i y) ≠ 0) := by
-  obtain ⟨LT, c, eq1, eq2⟩ := iInter_nat_halfSpaces_eq (𝕜 := 𝕜) hs₁ hs₂ hsep
+  obtain ⟨LT, c, eq1, eq2⟩ := iInter_nat_halfSpaces_eq (𝕜 := 𝕜) hs₁ hs₂
   refine ⟨fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, ?_,
     fun hs₃ hsne i ↦ ?_⟩
   · rw [← eq1]
