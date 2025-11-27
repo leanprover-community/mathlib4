@@ -43,10 +43,9 @@ lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing {S : Type*} [CommRing S]
     [Module.Flat R S] [IsNoetherianRing S] [FormallySmooth R A] :
     Module.Flat R A := by
   have : Module.Flat R (AdicCompletion (RingHom.ker f) S) := .trans _ S _
-  refine Module.Flat.of_retract (sectionAdicCompletion f hf).toLinearMap
-    (AdicCompletion.kerProj hf).toLinearMap ?_
-  ext
-  simp
+  obtain ⟨g, hg⟩ := exists_kerProj_comp_eq_id f hf
+  exact .of_retract g.toLinearMap
+    (AdicCompletion.kerProj hf).toLinearMap (LinearMap.ext fun x ↦ congr($hg x))
 
 /-- If `A` is `R`-smooth and `R` is Noetherian, then `A` is `R`-flat. -/
 instance Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Algebra.Smooth R A] :

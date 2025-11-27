@@ -5,17 +5,14 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.Algebra
+public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
 # Formally smooth algebras and adic completion
 
-Let `S` be an `R`-algebra and `I` an ideal of `S`. In this file we show that if `S ⧸ I` is
-formally smooth over `R`, the canonical projection `AdicCompletion I S →ₐ[R] S ⧸ I`
-(`AdicCompletion.kerProj`) has a section.
-
-Instead of working with an ideal `I` and `S ⧸ I`, we work with a surjective algebra map `S →ₐ[R] A`.
+Let `A` be a  formally smooth `R`-algebra. Then any algebra map
+`A →ₐ[R] S ⧸ I` lifts to an algebra map `A →ₐ[R] S` if `S` is `I`-adically complete.
 
 This is used in the proof that a smooth algebra over a Noetherian ring is flat
 (see `Mathlib.RingTheory.Smooth.Flat`).
@@ -28,8 +25,7 @@ universe u v
 namespace Algebra.FormallySmooth
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-  {S : Type*} [CommRing S] [Algebra R S]
-variable {ι : Type*} (f : S →ₐ[R] A) (hf : Function.Surjective f)
+  {S : Type*} [CommRing S] [Algebra R S] (I : Ideal S) (f : A →ₐ[R] S ⧸ I)
 
 open RingHom
 
@@ -38,23 +34,19 @@ variable [FormallySmooth R A]
 /--
 (Implementation): Lift `A →ₐ[R] S ⧸ I` inductively to `A →ₐ[R] S ⧸ I ^ m` using formal
 smoothness.
-Note that, since `B ≃ₐ[A] R ⧸ I ≃ₐ[A] R ⧸ (I ^ m) ⧸ (I ⧸ (I ^ m))`, we could also
-lift this directly, but then we don't have compatibility with the transition maps.
 -/
-noncomputable def sectionAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (ker f ^ m)
+noncomputable def liftAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (I ^ m)
   | 0 =>
-    haveI : Subsingleton (S ⧸ ker f ^ 0) := by simp [Ideal.Quotient.subsingleton_iff]
+    haveI : Subsingleton (S ⧸ I ^ 0) := by simp [Ideal.Quotient.subsingleton_iff]
     default
-  | 1 =>
-    (Ideal.quotientKerAlgEquivOfSurjective hf).symm.trans
-      (Ideal.quotientEquivAlgOfEq R (by simp)) |>.toAlgHom
+  | 1 => (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)).toAlgHom.comp f
   | m + 2 =>
-    letI T := S ⧸ ker f ^ (m + 1 + 1)
-    letI J : Ideal T := (ker f ^ (m + 1)).map (Ideal.Quotient.mkₐ _ (ker f ^ (m + 1 + 1)))
+    letI T := S ⧸ I ^ (m + 1 + 1)
+    letI J : Ideal T := (I ^ (m + 1)).map (Ideal.Quotient.mkₐ R (I ^ (m + 1 + 1)))
     letI q : A →ₐ[R] T ⧸ J :=
       (DoubleQuot.quotQuotEquivQuotOfLEₐ R
-        (Ideal.pow_le_pow_right (I := ker f) (m + 1).le_succ)).symm.toAlgHom.comp
-      (sectionAdicCompletionAux (m + 1))
+        (Ideal.pow_le_pow_right (I := I) (m + 1).le_succ)).symm.toAlgHom.comp
+      (liftAdicCompletionAux (m + 1))
     haveI : J ^ (m + 1 + 1) = 0 := by
       rw [← Ideal.map_pow, Submodule.zero_eq_bot, ← pow_mul]
       exact eq_bot_mono (Ideal.map_mono <| Ideal.pow_le_pow_right (by simp))
@@ -62,27 +54,23 @@ noncomputable def sectionAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (ke
     FormallySmooth.lift J ⟨m + 1 + 1, this⟩ q
 
 @[simp]
-lemma sectionAdicCompletionAux_one (p : S) : sectionAdicCompletionAux f hf 1 (f p) = p := by
-  simp [sectionAdicCompletionAux]
-
-@[simp]
-lemma factorₐ_comp_sectionAdicCompletionAux (m : ℕ) :
+lemma factorₐ_comp_liftAdicCompletionAux (m : ℕ) :
     (Ideal.Quotient.factorₐ _ (Ideal.pow_le_pow_right m.le_succ)).comp
-      (sectionAdicCompletionAux f hf (m + 1)) = sectionAdicCompletionAux f hf m := by
+      (liftAdicCompletionAux I f (m + 1)) = liftAdicCompletionAux I f m := by
   cases m with
   | zero =>
     ext
     apply eq_of_zero_eq_one
     simp [subsingleton_iff_zero_eq_one, Ideal.Quotient.subsingleton_iff]
   | succ m =>
-    rw [sectionAdicCompletionAux, ← DoubleQuot.quotQuotEquivQuotOfLEₐ_comp_mkₐ]
+    rw [liftAdicCompletionAux, ← DoubleQuot.quotQuotEquivQuotOfLEₐ_comp_mkₐ]
     ext
     simp
 
 @[simp]
-lemma factorₐ_comp_sectionAdicCompletionAux_of_le {m n : ℕ} (hn : m ≤ n) :
-    (Ideal.Quotient.factorₐ _ (Ideal.pow_le_pow_right hn)).comp (sectionAdicCompletionAux f hf n) =
-      sectionAdicCompletionAux f hf m := by
+lemma factorₐ_comp_liftAdicCompletionAux_of_le {m n : ℕ} (hn : m ≤ n) :
+    (Ideal.Quotient.factorₐ _ (Ideal.pow_le_pow_right hn)).comp (liftAdicCompletionAux I f n) =
+      liftAdicCompletionAux I f m := by
   induction n, hn using Nat.le_induction with
   | base => simp
   | succ n hmn ih =>
@@ -90,33 +78,62 @@ lemma factorₐ_comp_sectionAdicCompletionAux_of_le {m n : ℕ} (hn : m ≤ n) :
       (Ideal.pow_le_pow_right n.le_succ) (Ideal.pow_le_pow_right hmn), AlgHom.comp_assoc]
     simpa
 
-/-- If `A` is formally smooth over `R`, any surjective map `S →ₐ[R] A` admits a section
-to the projection `AdicCompletion.kerProj`. -/
-noncomputable def sectionAdicCompletion : A →ₐ[R] AdicCompletion (ker f) S :=
-  AdicCompletion.liftAlgHom (ker f) (sectionAdicCompletionAux f hf)
-    (factorₐ_comp_sectionAdicCompletionAux_of_le f hf)
+/-- If `A` is formally smooth over `R`, any map `A →ₐ[R] S ⧸ I` lifts
+to `A →ₐ[R] AdicCompletion I S`. -/
+noncomputable def liftAdicCompletion : A →ₐ[R] AdicCompletion I S :=
+  AdicCompletion.liftAlgHom I (liftAdicCompletionAux I f)
+    (factorₐ_comp_liftAdicCompletionAux_of_le I f)
+
+/-- If `A` is formally smooth over `R`, any map `A →ₐ[R] S ⧸ I` lifts
+to `A →ₐ[R] S` if `S` is `I`-adically complete.
+See `Algebra.FormallySmooth.liftAdicCompletion` for a version without the `IsAdicComplete`
+assumption. -/
+noncomputable def liftOfIsAdicComplete [IsAdicComplete I S] : A →ₐ[R] S :=
+  IsAdicComplete.liftAlgHom I (liftAdicCompletionAux I f)
+    (factorₐ_comp_liftAdicCompletionAux_of_le I f)
 
 @[simp]
-lemma evalₐ_sectionAdicCompletion_apply (p : S) :
-    AdicCompletion.evalₐ (ker f) 1 (sectionAdicCompletion f hf (f p)) = p := by
-  simp [sectionAdicCompletion]
+lemma evalₐ_liftAdicCompletion_apply (x : A) :
+    AdicCompletion.evalₐ I 1 (liftAdicCompletion I f x) =
+      (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)) (f x) := by
+  simp only [liftAdicCompletion, AdicCompletion.evalₐ_liftAlgHom]
+  rfl
 
 @[simp]
-lemma kerProj_sectionAdicCompletion (x : A) :
-    AdicCompletion.kerProj hf (sectionAdicCompletion f hf x) = x := by
-  obtain ⟨x, rfl⟩ := hf x
-  simp [AdicCompletion.kerProj]
+lemma mk_liftOfIsAdicComplete [IsAdicComplete I S] (x : A) :
+    liftOfIsAdicComplete I f x = f x := by
+  apply (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)).injective
+  simp only [liftOfIsAdicComplete, Ideal.quotientEquivAlgOfEq_mk, IsAdicComplete.mk_liftAlgHom]
+  rfl
 
-/-- The constructed section is indeed a section for `AdicCompletion.kerProj`. -/
-lemma kerProj_comp_sectionAdicCompletion :
-    (AdicCompletion.kerProj hf).comp (sectionAdicCompletion f hf) = AlgHom.id R A :=
-  AlgHom.ext fun x ↦ kerProj_sectionAdicCompletion _ _ x
+lemma mkₐ_comp_liftOfIsAdicComplete [IsAdicComplete I S] :
+    (Ideal.Quotient.mkₐ _ _).comp (liftOfIsAdicComplete I f) = f :=
+  AlgHom.ext fun x ↦ mk_liftOfIsAdicComplete I f x
+
+lemma exists_adicCompletionEvalₐ_comp_eq (I : Ideal S) (f : A →ₐ[R] S ⧸ I) :
+    ∃ (g : A →ₐ[R] AdicCompletion I S),
+      (Ideal.quotientEquivAlgOfEq R (by simp)).toAlgHom.comp
+        (((AdicCompletion.evalₐ I 1).restrictScalars R).comp g) = f := by
+  refine ⟨liftAdicCompletion I f, ?_⟩
+  ext x
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, AlgHom.coe_restrictScalars',
+    Function.comp_apply, evalₐ_liftAdicCompletion_apply,
+    ← Ideal.quotientEquivAlgOfEq_symm _ (show I = I ^ 1 by simp), AlgEquiv.symm_apply_apply]
+
+lemma exists_mkₐ_comp_eq_of_isAdicComplete (I : Ideal S) [IsAdicComplete I S] (f : A →ₐ[R] S ⧸ I) :
+    ∃ (g : A →ₐ[R] S), (Ideal.Quotient.mkₐ _ _).comp g = f :=
+  ⟨liftOfIsAdicComplete I f, mkₐ_comp_liftOfIsAdicComplete _ _⟩
 
 /-- If `A` is formally smooth over `R`, the projection from the adic completion of
 `S` at the kernel of `f : S →ₐ[R] A` has a section. -/
-lemma exists_kerProj_comp_eq_id : ∃ (g : A →ₐ[R] AdicCompletion (ker f) S),
-    (AdicCompletion.kerProj hf).comp g = AlgHom.id R A :=
-  ⟨sectionAdicCompletion f hf, kerProj_comp_sectionAdicCompletion f hf⟩
+lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjective f) :
+    ∃ (g : A →ₐ[R] AdicCompletion (ker f) S),
+    (AdicCompletion.kerProj hf).comp g = AlgHom.id R A := by
+  obtain ⟨g, hg⟩ := exists_adicCompletionEvalₐ_comp_eq (ker f)
+    (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
+  use g
+  ext x
+  simpa using congr(Ideal.quotientKerAlgEquivOfSurjective hf ($hg x))
 
 end FormallySmooth
 
