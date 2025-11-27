@@ -656,7 +656,7 @@ theorem seminorm_postcompLM_le [LinearMap.CompatibleSMul F F' ℝ 𝕜] {i : ℕ
   _ = ‖T'.compContinuousMultilinearMap (iteratedFDeriv ℝ i f x)‖ := by
         rw [T'.iteratedFDeriv_comp_left f.contDiff.contDiffAt (mod_cast hi)]
   _ ≤ ‖T'‖ * ‖iteratedFDeriv ℝ i f x‖ := T'.norm_compContinuousMultilinearMap_le _
-  _ ≤ ‖T'‖ * N[ℝ]_{K, n, i} f := by grw [norm_iteratedFDeriv_apply_le_withOrder ℝ hi]
+  _ ≤ ‖T'‖ * N[ℝ]_{K, n, i} f := by grw [norm_iteratedFDeriv_apply_le_seminorm_withOrder ℝ hi]
 
 variable {𝕜} in
 -- Note: generalizing this to a semilinear setting would require a semilinear version of
