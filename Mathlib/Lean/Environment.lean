@@ -5,10 +5,10 @@ Authors: Thomas R. Murrills
 -/
 module
 
+public import Lean.Environment
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
-public import Lean.Environment
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # Additional utilities for `Lean.Environment`
