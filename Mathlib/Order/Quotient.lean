@@ -3,7 +3,9 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-!
 ### Order instances on quotients
@@ -13,8 +15,11 @@ We define a `Preorder` instance on a general `Quotient`, as the transitive closu
 
 We show that in the case of a linear order with `Set.OrdConnected` equivalence classes, this
 relation is automatically transitive (we don't need to take the transitive closure), and gives a
-`LinearOrder` structure on the quotient.
+`LinearOrder` structure on the quotient. In that case, the resulting order is sometimes called a
+**condensation**.
 -/
+
+@[expose] public section
 
 open Set
 

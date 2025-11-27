@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # (Co)limits in functor categories.
@@ -20,10 +22,12 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 `CategoryTheory.Limits.preservesColimits_of_evaluation`).
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w' w v₁ v₂ u₁ u₂ v v' u u'
 
 namespace CategoryTheory.Limits

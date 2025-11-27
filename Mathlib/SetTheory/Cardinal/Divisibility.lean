@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Tactic.WLOG
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Tactic.WLOG
 
 /-!
 # Cardinal Divisibility
@@ -27,6 +29,8 @@ Note furthermore that no infinite cardinal is irreducible
   which is itself a prime power.
 
 -/
+
+@[expose] public section
 
 
 namespace Cardinal
@@ -60,7 +64,7 @@ instance : Unique Cardinal.{u}ˣ where
 theorem le_of_dvd : ∀ {a b : Cardinal}, b ≠ 0 → a ∣ b → a ≤ b
   | a, x, b0, ⟨b, hab⟩ => by
     simpa only [hab, mul_one] using
-      mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
+      mul_le_mul_right (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
 
 theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
   ⟨b, (mul_eq_right hb h ha).symm⟩

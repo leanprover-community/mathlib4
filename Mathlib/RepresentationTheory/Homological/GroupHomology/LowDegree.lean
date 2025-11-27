@@ -3,16 +3,18 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
-the cycles and group homology  of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+the cycles and group homology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 In `Mathlib/RepresentationTheory/Homological/GroupHomology/Basic.lean`, we define the `n`th group
 homology of `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are
 `(Fin n →₀ G) → A`; this is unnecessarily unwieldy in low degree.
@@ -42,6 +44,8 @@ We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ
   representation on `A` is trivial.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -93,7 +97,7 @@ theorem d₁₀_single_one (a : A) : d₁₀ A (single 1 a) = 0 := by
   simp [d₁₀]
 
 theorem d₁₀_single_inv (g : G) (a : A) :
-    d₁₀ A (single g⁻¹ a) = - d₁₀ A (single g (A.ρ g a)) := by
+    d₁₀ A (single g⁻¹ a) = -d₁₀ A (single g (A.ρ g a)) := by
   simp [d₁₀]
 
 theorem range_d₁₀_eq_coinvariantsKer :
@@ -122,6 +126,12 @@ def chains₁ToCoinvariantsKer :
     ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (Coinvariants.ker A.ρ) :=
   ModuleCat.ofHom <| (d₁₀ A).hom.codRestrict _ <|
     range_d₁₀_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
+
+lemma chains₁ToCoinvariantsKer_surjective :
+    Function.Surjective (chains₁ToCoinvariantsKer A) := by
+  rintro ⟨x, hx⟩
+  rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
 
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
@@ -241,7 +251,6 @@ square commutes:
 ```
 where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 -/
-
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
@@ -559,10 +568,10 @@ theorem isBoundary₀_iff (a : A) :
     IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g⁻¹ • a)))
+    use x.sum (fun g a => single g (-(g⁻¹ • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g • a)))
+    use x.sum (fun g a => single g (-(g • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
 
 theorem isBoundary₁_iff (x : G →₀ A) :
@@ -895,7 +904,7 @@ lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries�
   simp only [H1π, isoCycles₁, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, boundaries₁, shortComplexH1, cycles₁]
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
@@ -935,7 +944,7 @@ open TensorProduct
 /-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
 def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
-  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
+  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicativeRight.symm <| Abelianization.lift {
     toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHomClass.toAddMonoidHom
       ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
     map_one' := Multiplicative.toAdd.injective <|
@@ -965,7 +974,7 @@ variable {A} in
 lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
     H1ToTensorOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
       Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
-  simp only [H1ToTensorOfIsTrivial, H1π,  AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
+  simp only [H1ToTensorOfIsTrivial, H1π, AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
   change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
   simp [π_comp_H1Iso_hom_apply, Submodule.Quotient.mk, QuotientAddGroup.lift, AddCon.lift,
     AddCon.liftOn, AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
@@ -1029,7 +1038,7 @@ lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries�
   simp only [H2π, isoCycles₂, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, boundaries₂, shortComplexH2, cycles₂]
 
 lemma H2π_eq_iff (x y : cycles₂ A) :

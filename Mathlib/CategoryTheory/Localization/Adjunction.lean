@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Localization of adjunctions
@@ -19,6 +21,8 @@ to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagram
 induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

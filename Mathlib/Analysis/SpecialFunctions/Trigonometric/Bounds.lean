@@ -3,8 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+module
+
+public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
 # Polynomial bounds for trigonometric functions
@@ -28,6 +30,8 @@ Here we prove the following:
 
 sin, cos, tan, angle
 -/
+
+@[expose] public section
 
 open Set
 
@@ -228,5 +232,31 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   rcases eq_or_ne x 0 with (rfl | hx3)
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
+
+theorem lipschitzWith_sin : LipschitzWith 1 sin :=
+  lipschitzWith_of_nnnorm_deriv_le differentiable_sin <| by simpa using abs_cos_le_one
+
+theorem lipschitzWith_cos : LipschitzWith 1 cos :=
+  lipschitzWith_of_nnnorm_deriv_le differentiable_cos <| by simpa using abs_sin_le_one
+
+theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
+  simpa [edist_dist] using lipschitzWith_sin x y
+
+theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
+  simpa [edist_dist] using lipschitzWith_cos x y
+
+theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
+  rw [Complex.norm_exp_I_mul_ofReal_sub_one]
+  calc
+    _ = 2 * |Real.sin (x / 2)| := by simp
+    _ ≤ 2 * |x / 2| := (mul_le_mul_iff_of_pos_left zero_lt_two).mpr Real.abs_sin_le_abs
+    _ = _ := by rw [abs_div, Nat.abs_ofNat, Real.norm_eq_abs]; ring
+
+theorem enorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ₑ ≤ ‖x‖ₑ := by
+  iterate 2 rw [← enorm_norm, Real.enorm_of_nonneg (norm_nonneg _)]
+  exact ENNReal.ofReal_le_ofReal norm_exp_I_mul_ofReal_sub_one_le
+
+theorem nnnorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
+  rw [← ENNReal.coe_le_coe]; exact enorm_exp_I_mul_ofReal_sub_one_le
 
 end Real

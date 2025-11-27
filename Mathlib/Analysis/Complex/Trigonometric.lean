@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Analysis.Complex.Exponential
+module
+
+public import Mathlib.Analysis.Complex.Exponential
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
@@ -12,6 +14,8 @@ This file contains the definitions of the sine, cosine, tangent,
 hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 -/
+
+@[expose] public section
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
@@ -150,7 +154,7 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
   simp [sub_eq_add_neg, cosh_add, sinh_neg, cosh_neg]
 
 theorem sinh_conj : sinh (conj x) = conj (sinh x) := by
-  rw [sinh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_sub, sinh, map_div₀, map_ofNat]
+  rw [sinh, ← map_neg, exp_conj, exp_conj, ← map_sub, sinh, map_div₀, map_ofNat]
 
 @[simp]
 theorem ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
@@ -167,7 +171,7 @@ theorem sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
   rfl
 
 theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
-  rw [cosh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_add, cosh, map_div₀, map_ofNat]
+  rw [cosh, ← map_neg, exp_conj, exp_conj, ← map_add, cosh, map_div₀, map_ofNat]
 
 theorem ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
   conj_eq_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
@@ -360,12 +364,12 @@ theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) 
           (cos ((x + y) / 2) * cos ((x - y) / 2) + sin ((x + y) / 2) * sin ((x - y) / 2)) :=
       ?_
     _ = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := ?_
-  · congr <;> field_simp <;> ring
+  · congr <;> field
   · rw [cos_add, cos_sub]
   ring
 
 theorem sin_conj : sin (conj x) = conj (sin x) := by
-  rw [← mul_left_inj' I_ne_zero, ← sinh_mul_I, ← conj_neg_I, ← RingHom.map_mul, ← RingHom.map_mul,
+  rw [← mul_left_inj' I_ne_zero, ← sinh_mul_I, ← conj_neg_I, ← map_mul, ← map_mul,
     sinh_conj, mul_neg, sinh_neg, sinh_mul_I, mul_neg]
 
 @[simp]
@@ -383,7 +387,7 @@ theorem sin_ofReal_re (x : ℝ) : (sin x).re = Real.sin x :=
   rfl
 
 theorem cos_conj : cos (conj x) = conj (cos x) := by
-  rw [← cosh_mul_I, ← conj_neg_I, ← RingHom.map_mul, ← cosh_mul_I, cosh_conj, mul_neg, cosh_neg]
+  rw [← cosh_mul_I, ← conj_neg_I, ← map_mul, ← cosh_mul_I, cosh_conj, mul_neg, cosh_neg]
 
 @[simp]
 theorem ofReal_cos_ofReal_re (x : ℝ) : ((cos x).re : ℂ) = cos x :=
@@ -469,6 +473,11 @@ theorem cos_sq : cos x ^ 2 = 1 / 2 + cos (2 * x) / 2 := by
 theorem cos_sq' : cos x ^ 2 = 1 - sin x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_left]
 
 theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 := by rw [← sin_sq_add_cos_sq x, add_sub_cancel_right]
+
+theorem one_add_tan_sq_mul_cos_sq_eq_one {x : ℂ} (h : cos x ≠ 0) :
+    (1 + tan x ^ 2) * cos x ^ 2 = 1 := by
+  conv_rhs => rw [← sin_sq_add_cos_sq x, ← tan_mul_cos h]
+  ring
 
 theorem inv_one_add_tan_sq {x : ℂ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ = cos x ^ 2 := by
   rw [tan_eq_sin_div_cos, div_pow]
@@ -655,6 +664,10 @@ theorem abs_sin_eq_sqrt_one_sub_cos_sq (x : ℝ) : |sin x| = √(1 - cos x ^ 2) 
 
 theorem abs_cos_eq_sqrt_one_sub_sin_sq (x : ℝ) : |cos x| = √(1 - sin x ^ 2) := by
   rw [← cos_sq', sqrt_sq_eq_abs]
+
+theorem one_add_tan_sq_mul_cos_sq_eq_one {x : ℝ} (h : cos x ≠ 0) :
+    (1 + tan x ^ 2) * cos x ^ 2 = 1 :=
+  mod_cast @Complex.one_add_tan_sq_mul_cos_sq_eq_one x (mod_cast h)
 
 theorem inv_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) : (1 + tan x ^ 2)⁻¹ = cos x ^ 2 :=
   have : Complex.cos x ≠ 0 := mt (congr_arg re) hx
@@ -904,7 +917,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
 @[positivity Real.cosh _]
-def evalCosh : PositivityExt where eval {u α} _ _ e := do
+meta def evalCosh : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cosh $a) =>
     assertInstancesCommute
@@ -925,6 +938,36 @@ theorem norm_cos_add_sin_mul_I (x : ℝ) : ‖cos x + sin x * I‖ = 1 := by
 @[simp]
 theorem norm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ = 1 := by
   rw [exp_mul_I, norm_cos_add_sin_mul_I]
+
+@[simp]
+theorem norm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ = 1 := by
+  rw [mul_comm, norm_exp_ofReal_mul_I]
+
+@[simp]
+theorem nnnorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖₊ = 1 := by
+  rw [← nnnorm_norm, norm_exp_ofReal_mul_I, ← NNReal.coe_eq_one]; simp
+
+@[simp]
+theorem nnnorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
+  rw [← nnnorm_norm, norm_exp_I_mul_ofReal, ← NNReal.coe_eq_one]; simp
+
+@[simp]
+theorem enorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
+  simp [← ENNReal.toReal_eq_one_iff]
+
+@[simp]
+theorem enorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
+  simp [← ENNReal.toReal_eq_one_iff]
+
+theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by
+  rw [show ‖2 * Real.sin (x / 2)‖ = ‖2 * sin (x / 2)‖ by norm_cast, two_sin]
+  nth_rw 2 [← one_mul (_ - _), ← exp_zero]
+  rw [← neg_add_cancel (x / 2 * I), exp_add, mul_assoc _ _ (_ - _), mul_sub, ← exp_add, ← exp_add,
+    ← add_mul, ← add_mul]; norm_cast
+  rw [add_neg_cancel, ofReal_zero, zero_mul, exp_zero, add_halves, ← neg_mul, Complex.norm_mul,
+    norm_I, mul_one, Complex.norm_mul,
+    show -(ofReal (x / 2)) = ofReal (-x / 2) by norm_cast; exact neg_div' 2 x,
+    norm_exp_ofReal_mul_I, one_mul, ← norm_neg, neg_sub, mul_comm]
 
 theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
   rw [exp_eq_exp_re_mul_sin_add_cos, Complex.norm_mul, norm_exp_ofReal, norm_cos_add_sin_mul_I,

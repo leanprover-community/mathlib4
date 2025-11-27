@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.
@@ -15,7 +17,9 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset Ring
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 variable {M : Type*}
 
@@ -24,7 +28,7 @@ multiplied by a unit on the right. -/
 def Associated [Monoid M] (x y : M) : Prop :=
   ∃ u : Mˣ, x * u = y
 
-/-- Notation for two elements of a monoid are associated, i.e.
+/-- Notation for two elements of a monoid being associated, i.e.
 if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
@@ -255,11 +259,11 @@ theorem Irreducible.dvd_iff [Monoid M] {x y : M} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
   constructor
   · rintro ⟨z, hz⟩
-    obtain (h|h) := hx.isUnit_or_isUnit hz
+    obtain (h | h) := hx.isUnit_or_isUnit hz
     · exact Or.inl h
     · rw [hz]
       exact Or.inr (associated_mul_unit_left _ _ h)
-  · rintro (hy|h)
+  · rintro (hy | h)
     · exact hy.dvd
     · exact h.symm.dvd
 
@@ -352,7 +356,7 @@ variable [Monoid M] [Subsingleton Mˣ]
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
   constructor
   · rintro ⟨c, rfl⟩
-    rw [units_eq_one c, Units.val_one, mul_one]
+    rw [c.eq_one, Units.val_one, mul_one]
   · rintro rfl
     rfl
 
@@ -464,8 +468,6 @@ theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk 
   rfl
 
 instance instCommMonoid : CommMonoid (Associates M) where
-  one := 1
-  mul := (· * ·)
   mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
   one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
@@ -713,7 +715,7 @@ theorem one_or_eq_of_le_of_prime {p m : Associates M} (hp : Prime p) (hle : m �
     m = 1 ∨ m = p := by
   rcases mk_surjective p with ⟨p, rfl⟩
   rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm, -Quotient.eq]
+  simpa [mk_eq_mk_iff_associated, Associated.comm]
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 
 theorem dvdNotUnit_iff_lt {a b : Associates M} : DvdNotUnit a b ↔ a < b :=
@@ -741,7 +743,7 @@ section CancelCommMonoidWithZero
 theorem isUnit_of_associated_mul [CancelCommMonoidWithZero M] {p b : M} (h : Associated (p * b) p)
     (hp : p ≠ 0) : IsUnit b := by
   obtain ⟨a, ha⟩ := h
-  refine isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp ?_)
+  refine .of_mul_eq_one a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 
 theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) :

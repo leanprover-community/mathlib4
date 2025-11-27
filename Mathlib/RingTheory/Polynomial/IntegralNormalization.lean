@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Andrew Yang, Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Theory of monic polynomials
 
 We define `integralNormalization`, which relate arbitrary polynomials to monic ones.
 -/
+
+@[expose] public section
 
 
 open Polynomial
@@ -73,6 +77,21 @@ theorem integralNormalization_coeff_ne_natDegree {i : ℕ} (hi : i ≠ natDegree
     coeff (integralNormalization p) i = coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) :=
   integralNormalization_coeff_degree_ne (degree_ne_of_natDegree_ne hi.symm)
 
+@[simp]
+lemma degree_integralNormalization : p.integralNormalization.degree = p.degree := by
+  nontriviality R
+  by_cases hp : p = 0; · simp [hp]
+  rw [degree_eq_natDegree hp]
+  refine degree_eq_of_le_of_coeff_ne_zero ?_ (by simp [integralNormalization_coeff_natDegree, *])
+  exact (Finset.sup_le fun i h =>
+      WithBot.coe_le_coe.2 <| le_natDegree_of_mem_supp i <| support_integralNormalization_subset h)
+
+@[simp]
+lemma natDegree_integralNormalization : p.integralNormalization.natDegree = p.natDegree := by
+  nontriviality R
+  by_cases hp : p = 0; · simp [hp]
+  exact natDegree_eq_of_degree_eq p.degree_integralNormalization
+
 theorem monic_integralNormalization (hp : p ≠ 0) : Monic (integralNormalization p) :=
   monic_of_degree_le p.natDegree
     (Finset.sup_le fun i h =>
@@ -106,11 +125,8 @@ theorem integralNormalization_mul_C_leadingCoeff (p : R[X]) :
       exact coe_lt_degree.mp h'
     · simp [coeff_eq_zero_of_degree_lt (lt_of_le_of_ne (le_of_not_gt h') h)]
 
-theorem integralNormalization_degree : (integralNormalization p).degree = p.degree := by
-  apply le_antisymm
-  · exact Finset.sup_mono p.support_integralNormalization_subset
-  · rw [← degree_scaleRoots, ← integralNormalization_mul_C_leadingCoeff]
-    exact (degree_mul_le _ _).trans (add_le_of_nonpos_right degree_C_le)
+@[deprecated (since := "2025-11-24")] alias integralNormalization_degree :=
+  degree_integralNormalization
 
 variable {A : Type*} [CommSemiring S] [Semiring A]
 
@@ -124,7 +140,7 @@ theorem integralNormalization_eval₂_leadingCoeff_mul_of_commute (h : 1 ≤ p.n
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x := by
   rw [eval₂_eq_sum_range, eval₂_eq_sum_range, Finset.mul_sum]
   apply Finset.sum_congr
-  · rw [natDegree_eq_of_degree_eq p.integralNormalization_degree]
+  · rw [natDegree_eq_of_degree_eq p.degree_integralNormalization]
   intro n _hn
   rw [h₁.mul_pow, ← mul_assoc, ← f.map_pow, ← f.map_mul,
     integralNormalization_coeff_mul_leadingCoeff_pow _ h, f.map_mul, h₂.eq, f.map_pow, mul_assoc]
@@ -156,6 +172,12 @@ theorem integralNormalization_aeval_eq_zero [Algebra S A] {f : S[X]} {z : A} (hz
     aeval (algebraMap S A f.leadingCoeff * z) (integralNormalization f) = 0 :=
   integralNormalization_eval₂_eq_zero_of_commute (algebraMap S A) hz
     (Algebra.commute_algebraMap_left _ _) (.map (.all _ _) _) inj
+
+lemma integralNormalization_map (f : R →+* A) (p : R[X]) (H : f p.leadingCoeff ≠ 0) :
+    (p.map f).integralNormalization = p.integralNormalization.map f := by
+  ext i
+  simp [integralNormalization_coeff, degree_map_eq_of_leadingCoeff_ne_zero _ H, apply_ite f,
+    leadingCoeff_map_of_leadingCoeff_ne_zero _ H, natDegree_map_eq_iff.mpr (.inl H)]
 
 end Semiring
 

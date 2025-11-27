@@ -3,14 +3,15 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init
-import Lean.Elab.Command
-import Lean.Server.InfoUtils
-import Mathlib.Tactic.DeclarationNames
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Tactic.DeclarationNames
 
 /-!
-#  The `have` vs `let` linter
+# The `have` vs `let` linter
 
 The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
 
@@ -25,6 +26,8 @@ TODO:
 * `replace`, `classical!`, `classical`, `tauto` internally use `have`:
   should the linter act on them as well?
 -/
+
+public meta section
 
 open Lean Elab Command Meta
 

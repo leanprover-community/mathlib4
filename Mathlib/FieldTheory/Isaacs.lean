@@ -3,9 +3,11 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.GroupTheory.CosetCover
+module
+
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism
@@ -27,6 +29,8 @@ The American Mathematical Monthly
 
 -/
 
+@[expose] public section
+
 namespace Field
 
 open Polynomial IntermediateField
@@ -39,10 +43,11 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   refine Lifts.nonempty_algHom_of_exist_lifts_finset fun S ↦ ⟨⟨adjoin F S, ?_⟩, subset_adjoin _ _⟩
   let p := (S.prod <| minpoly F).map (algebraMap F K)
   let K' := SplittingField p
-  have splits s (hs : s ∈ S) : (minpoly F s).Splits (algebraMap F K') := by
+  have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
     apply splits_of_splits_of_dvd _
       (Finset.prod_ne_zero_iff.mpr fun _ _ ↦ minpoly.ne_zero <| (alg.isIntegral).1 _)
-      ((splits_map_iff _ _).mp <| SplittingField.splits p) (Finset.dvd_prod_of_mem _ hs)
+      (map_map (algebraMap F K) (algebraMap K p.SplittingField) _ ▸ SplittingField.splits p)
+      (Finset.dvd_prod_of_mem _ hs)
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F
   let FS := adjoin F (S : Set E)
   let Ω := FS →ₐ[F] K'
@@ -51,13 +56,14 @@ theorem nonempty_algHom_of_exist_roots (h : ∀ x : E, ∃ y : K, aeval y (minpo
   have : ⋃ ω : Ω, (M ω : Set FS) = Set.univ :=
     Set.eq_univ_of_forall fun ⟨α, hα⟩ ↦ Set.mem_iUnion.mpr <| by
       have ⟨β, hβ⟩ := h α
-      let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp ((AdjoinRoot.liftHom _ _ hβ).comp
+      let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp
+        ((AdjoinRoot.liftAlgHom _ _ _ hβ).comp
         (adjoinRootEquivAdjoin F <| (alg.isIntegral).1 _).symm.toAlgHom)
       have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
         (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
       refine ⟨ω, β, ((DFunLike.congr_fun hω <| AdjoinSimple.gen F α).trans ?_).symm⟩
       rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_algHom,
-        adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftHom_root]
+        adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftAlgHom_root]
       rfl
   have ω : ∃ ω : Ω, ⊤ ≤ M ω := by
     cases finite_or_infinite F

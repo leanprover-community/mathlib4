@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Analysis.Normed.Group.InfiniteSum
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.ContinuousMap.Star
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
 # Continuous functions on a compact space
@@ -23,6 +25,8 @@ If you need a lemma which is proved about `α →ᵇ β` but not for `C(α, β)`
 you should restate it here. You can also use
 `ContinuousMap.equivBoundedOfCompact` to move functions back and forth.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -69,7 +73,8 @@ additively equivalent to `C(α, 𝕜)`.
 -/
 @[simps! -fullyApplied apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
-  ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
+  ({ toContinuousMapAddMonoidHom α β, (equivBoundedOfCompact α β).symm with } :
+    (α →ᵇ β) ≃+ C(α, β)).symm
 
 instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapPseudoMetricSpace _

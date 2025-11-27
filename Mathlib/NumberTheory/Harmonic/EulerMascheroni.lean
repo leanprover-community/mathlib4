@@ -3,11 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.NumberTheory.Harmonic.Defs
+public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 # The Euler-Mascheroni constant `γ`
@@ -34,6 +35,8 @@ It follows that both sequences tend to a common limit `γ`, and we have the ineq
 `eulerMascheroniSeq n < γ < eulerMascheroniSeq' n` for all `n`. Taking `n = 6` gives the bounds
 `1 / 2 < γ < 2 / 3`.
 -/
+
+@[expose] public section
 
 open Filter Topology
 
