@@ -451,6 +451,11 @@ theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
   eval₂_mul _ _
 
 @[simp]
+theorem mul_comp_neg_X {R : Type*} [Ring R] (p q : R[X]) :
+    (p * q).comp (-X) = p.comp (-X) * q.comp (-X) :=
+  eval₂_mul_noncomm C (-X) fun _ ↦ Commute.symm (commute_X _).neg_left
+
+@[simp]
 theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
     (p ^ n).comp q = p.comp q ^ n :=
   (MonoidHom.mk (OneHom.mk (fun r : R[X] => r.comp q) one_comp) fun r s => mul_comp r s q).map_pow
