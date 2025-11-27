@@ -7,10 +7,6 @@ module
 
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.Normed.Lp.WithLp
-module
-
-public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces

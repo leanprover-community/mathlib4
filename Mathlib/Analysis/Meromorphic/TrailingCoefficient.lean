@@ -341,4 +341,17 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_zpow {n : ℤ} {f : 𝕜 → 𝕜
     · simp_all [meromorphicOrderAt_zpow h₁, zero_zpow n h₃]
   · obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
     rw [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
-        (n := (meromorphicOrderAt f x).untop₀) h₂g
+        (n := (meromorphicOrderAt f x).untop₀) h₂g h₃g,
+      (h₁g.zpow h₂g (n := n)).meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE
+        (n := (meromorphicOrderAt (f ^ n) x).untop₀)
+        (by simp_all [zpow_ne_zero])]
+    · simp only [Pi.pow_apply]
+    · filter_upwards [h₃g] with a ha
+      simp_all [mul_zpow, ← zpow_mul, meromorphicOrderAt_zpow h₁, mul_comm]
+
+/--
+The trailing coefficient of the power of a function is the power of the trailing coefficient.
+-/
+lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow {n : ℕ} {f : 𝕜 → 𝕜} (h₁ : MeromorphicAt f x) :
+    meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
+  convert h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
