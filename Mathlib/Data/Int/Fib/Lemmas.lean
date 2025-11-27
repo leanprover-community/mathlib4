@@ -15,8 +15,10 @@ to `(-1) ^ |n|`. And Catalan's identity states that for any integers `x` and `a`
 `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`.
 -/
 
+namespace Int
+
 /-- Auxiliary for `Int.fib_succ_mul_fib_pred_sub_fib_sq` -/
-lemma Int.fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq :
+lemma fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq :
     ∀ n : ℕ, fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n
   | 0 => by simp
   | n + 1 => by
@@ -25,7 +27,7 @@ lemma Int.fib_natCast_add_fib_natCast_pred_sub_fib_natCast_sq :
     grind
 
 /-- **Cassini's identity**: `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ |n|`. -/
-public theorem Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
+public theorem fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
     fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n.natAbs := by
   if hn : n = 0 then simp [hn] else
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
@@ -36,7 +38,7 @@ public theorem Int.fib_succ_mul_fib_pred_sub_fib_sq (n : ℤ) :
     grind
 
 /-- **Catalan's identity**: `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`. -/
-public theorem Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
+public theorem fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
     fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x.natAbs * fib a ^ 2 :=
   calc
     _ = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 - fib x *
@@ -50,3 +52,5 @@ public theorem Int.fib_add_add_sq_sub_fib_mul_fib_add_two_mul (x a : ℤ) :
         grind
     _ = fib a ^ 2 * (fib (x - 1) ^ 2 + fib x * fib (x - 1) - fib x ^ 2) := by grind [fib_add_two]
     _ = _ := by grind [fib_succ_mul_fib_pred_sub_fib_sq, fib_add_two]
+
+end Int
