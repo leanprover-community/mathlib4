@@ -108,8 +108,8 @@ theorem small_fullSubcategory_filteredClosure :
       · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
       · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
-        rfl
+        rw! (castMode := .all) [FilteredClosureSmall.bundledAbstractFilteredClosure.eq_1]
+        grind
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
@@ -257,8 +257,8 @@ theorem small_fullSubcategory_cofilteredClosure :
     · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
-      rfl
+      rw! (castMode := .all) [CofilteredClosureSmall.bundledAbstractCofilteredClosure.eq_1]
+      grind
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
