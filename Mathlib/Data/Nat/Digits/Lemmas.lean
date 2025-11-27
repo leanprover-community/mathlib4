@@ -327,16 +327,24 @@ theorem mapsTo_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.MapsTo (ofDigits b) {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} :=
   fun _ h ↦ Set.mem_setOf.mpr h.1 ▸ Nat.ofDigits_lt_base_pow_length hb h.2
 
+theorem length_digits_append {b : ℕ} (hb : 1 < b) (l : ℕ) (hn : n < b ^ l) :
+    (b.digits n ++ replicate (l - (b.digits n).length) 0).length = l := by
+  rw [length_append, length_replicate, Nat.add_sub_cancel']
+  rwa [digits_length_le_iff hb]
+
+theorem lt_of_mem_digits_append {b : ℕ} (hb : 1 < b) (l i : ℕ)
+    (hi : i ∈ b.digits n ++ replicate (l - (b.digits n).length) 0) : i < b := by
+  rw [mem_append, mem_replicate] at hi
+  obtain hi | ⟨_, rfl⟩  := hi
+  · exact digits_lt_base hb hi
+  · linarith
+
 theorem surjOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.SurjOn (ofDigits b) {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} {n | n < b ^ l} := by
   intro n hn
   refine ⟨b.digits n ++ replicate (l - (b.digits n).length) 0, ⟨?_, fun i hi ↦ ?_⟩, ?_⟩
-  · rw [length_append, length_replicate, Nat.add_sub_cancel']
-    rwa [digits_length_le_iff hb]
-  · rw [mem_append, mem_replicate] at hi
-    obtain hi | ⟨_, rfl⟩  := hi
-    · exact digits_lt_base hb hi
-    · linarith
+  · exact (length_digits_append hb _ hn).symm
+  · exact lt_of_mem_digits_append hb _ _ hi
   · simp [ofDigits_digits]
 
 theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
@@ -379,7 +387,6 @@ theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
   convert bijOn_ofDigits hb l
   ext; simp
 
-
 theorem mem_fixedLengthDigits_iff {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ} :
     L ∈ fixedLengthDigits hb l ↔ l = L.length ∧ ∀ x ∈ L, x < b := by
   simp
@@ -397,7 +404,7 @@ theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :
   rw [mem_fixedLengthDigits_iff, eq_comm, List.length_eq_one_iff]
   grind
 
-theorem fixedLengthDigits_card {b : ℕ} (hb : 1 < b) (l : ℕ) :
+theorem card_fixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Finset.card (fixedLengthDigits hb l) = b ^ l := by
   rw [Set.BijOn.finsetCard_eq (ofDigits b) (bijOn_ofDigits' hb l), Finset.card_range]
 
@@ -409,21 +416,17 @@ theorem eq_digits_ofDigits_append_of_mem_fixedLengthDigits {b : ℕ} (hb : 1 < b
     {L : List ℕ} (hL : L ∈ fixedLengthDigits hb l) :
     L = b.digits (ofDigits b L) ++ replicate (l - (b.digits (ofDigits b L)).length) 0 := by
   refine (Nat.bijOn_ofDigits' hb l).2.1 hL ?_ (by simp [Nat.ofDigits_digits])
+  rw [mem_fixedLengthDigits_iff hb] at hL
   refine (mem_fixedLengthDigits_iff hb).mpr ⟨?_, fun x hx ↦ ?_⟩
-  · rw [length_append, length_replicate, Nat.add_sub_cancel']
-    rw [digits_length_le_iff hb, ← Finset.mem_range]
-    exact (Nat.bijOn_ofDigits' hb l).1 hL
-  · simp only [mem_append, mem_replicate] at hx
-    obtain hi | ⟨_, rfl⟩  := hx
-    · exact digits_lt_base hb hi
-    · linarith
+  · exact (length_digits_append hb _ (hL.1 ▸ ofDigits_lt_base_pow_length hb hL.2)).symm
+  · exact lt_of_mem_digits_append hb _ _ hx
 
 /--
 The `Finset` of lists whose head is a fixed integer `d` and tail is a list
 in `List.fixedLengthDigits b l`.
 -/
 noncomputable abbrev consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l d : ℕ) :
-    Finset (List ℕ) := Finset.image (fun L ↦ d::L) (fixedLengthDigits hb l)
+    Finset (List ℕ) := Finset.image (fun L ↦ d :: L) (fixedLengthDigits hb l)
 
 
 theorem ne_empty_of_mem_consFixedLengthDigits {b : ℕ} (hb : 1 < b) {l d : ℕ} {L : List ℕ}
@@ -451,7 +454,7 @@ theorem cons_mem_fixedLengthDigits_succ {b : ℕ} (hb : 1 < b) (l d : ℕ) (hd :
     · exact hd
     · exact ((mem_fixedLengthDigits_iff hb).mp hL).2 _ hx
 
-theorem disj_consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
+theorem pairwiseDisjoint_consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.PairwiseDisjoint (Finset.range b : Set ℕ) (fun d ↦ consFixedLengthDigits hb l d) := by
   refine Finset.pairwiseDisjoint_iff.mpr fun i _ j _ ⟨L, hL⟩ ↦ ?_
   rw [Finset.mem_inter] at hL
@@ -463,7 +466,7 @@ The set `List.fixedLengthDigits b (l + 1)` is the disjoint union of the sets
 -/
 theorem fixedLengthDigits_succ_eq_disjiUnion {b : ℕ} (hb : 1 < b) (l : ℕ) :
     fixedLengthDigits hb (l + 1) = Finset.disjiUnion (Finset.range b)
-      (consFixedLengthDigits hb l) (disj_consFixedLengthDigits hb l) := by
+      (consFixedLengthDigits hb l) (pairwiseDisjoint_consFixedLengthDigits hb l) := by
   ext L
   simp_rw [Finset.disjiUnion_eq_biUnion, Finset.mem_biUnion, Finset.mem_range, Finset.mem_image]
   refine ⟨fun hL ↦ ?_, ?_⟩
@@ -489,7 +492,7 @@ theorem sum_fixedLengthDigits_sum {b : ℕ} (hb : 1 < b) (l : ℕ) :
         Finset.sum_add_distrib, hr, add_tsub_cancel_right]
       rw [Finset.sum_comm]
       simp only [Finset.sum_range_id, Finset.sum_const, Finset.card_range, nsmul_eq_mul,
-        fixedLengthDigits_card, cast_pow, cast_id, choose_two_right]
+        card_fixedLengthDigits, cast_pow, cast_id, choose_two_right]
       rw [show b ^ l = b * b ^ (l - 1) by rw [← Nat.pow_succ', Nat.sub_one, Nat.succ_pred hl]]
       ring
 
