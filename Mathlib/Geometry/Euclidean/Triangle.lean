@@ -491,8 +491,8 @@ lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ :
     ∠ p₁ p₂ p₃ < π / 3 := by
   by_cases h : p₂ = p₁
   · subst h
-    by_cases h₁₃ : p₁ = p₃
-    · subst h₁₃
+    by_cases h₂₃ : p₂ = p₃
+    · subst h₂₃
       simp at hne
     · simp_all [angle_self_of_ne]
       linarith [Real.pi_pos]
