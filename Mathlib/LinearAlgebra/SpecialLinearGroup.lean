@@ -347,10 +347,11 @@ namespace SpecialLinearGroup
 
 section center
 
-variable [Module.Free R V] [Module.Finite R V] [Nontrivial R]
+variable [Module.Free R V] [Module.Finite R V]
 
 theorem center_eq_bot_of_finrank_le_one (h : Module.finrank R V ≤ 1) :
     Subgroup.center (SpecialLinearGroup R V) = ⊥ := by
+  nontriviality R
   let b := Module.Free.chooseBasis R V
   have : Subsingleton (Module.Free.ChooseBasisIndex R V) := by
     rwa [← Finite.card_le_one_iff_subsingleton,
@@ -366,6 +367,9 @@ theorem mem_center_iff {g : SpecialLinearGroup R V} :
     g ∈ Subgroup.center (SpecialLinearGroup R V) ↔
       ∃ (r : R), r ^ (Module.finrank R V) = 1 ∧
         (g : V →ₗ[R] V) = r • LinearMap.id := by
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · have : Subsingleton (SpecialLinearGroup R V) := inferInstance
+    simp [Subsingleton.eq_one g]
   let b := Module.Free.chooseBasis R V
   let := Module.Free.ChooseBasisIndex.fintype R V
   rw [Module.finrank_eq_card_basis b]
@@ -427,33 +431,38 @@ open Classical in
 noncomputable def centerEquivRootsOfUnity :
     (Subgroup.center (SpecialLinearGroup R V)) ≃*
       ↥(rootsOfUnity (max (Module.finrank R V) 1) R) where
-  toFun g := (subsingleton_or_nontrivial V).by_cases
+  toFun g := (subsingleton_or_nontrivial R).by_cases
     (fun _ ↦ 1)
-    (fun hV ↦ by
-      rw [← Module.finrank_pos_iff_of_free (R := R)] at hV
-      replace hV : 1 ≤ Module.finrank R V := hV
-      have hr := (mem_center_iff.mp g.prop).choose_spec.1
-      set r := (mem_center_iff.mp g.prop).choose
-      rw [← Nat.max_eq_left hV] at hr
-      have : IsUnit r := by
-        rw [← isUnit_pow_iff _, hr]
-        · exact isUnit_one
-        rw [Nat.max_eq_left hV]
-        exact Nat.ne_zero_of_lt hV
-      exact ⟨this.unit, by simp [mem_rootsOfUnity, ← Units.val_inj, hr]⟩)
+    (fun hR ↦ (subsingleton_or_nontrivial V).by_cases
+      (fun _ ↦ 1)
+      (fun hV ↦ by
+        rw [← Module.finrank_pos_iff_of_free (R := R)] at hV
+        replace hV : 1 ≤ Module.finrank R V := hV
+        have hr := (mem_center_iff.mp g.prop).choose_spec.1
+        set r := (mem_center_iff.mp g.prop).choose
+        rw [← Nat.max_eq_left hV] at hr
+        have : IsUnit r := by
+          rw [← isUnit_pow_iff _, hr]
+          · exact isUnit_one
+          rw [Nat.max_eq_left hV]
+          exact Nat.ne_zero_of_lt hV
+        exact ⟨this.unit, by simp [mem_rootsOfUnity, ← Units.val_inj, hr]⟩))
   invFun := centerEquivRootsOfUnity_invFun
   left_inv g := by
     simp only [centerEquivRootsOfUnity_invFun, ← Subtype.val_inj,
       ← LinearEquiv.toLinearMap_inj, LinearMap.coe_equivOfIsUnitDet]
     simp only [Or.by_cases]
-    split_ifs with hV
+    split_ifs with hR hV
+    · simp [Subsingleton.eq_one g]
     · simp [Subsingleton.eq_one g]
     · simp only [IsUnit.unit_spec, ← (mem_center_iff.mp g.prop).choose_spec.2]
   right_inv r := by
     rw [← Subtype.val_inj, SetLike.coe_eq_coe]
     simp only [Or.by_cases]
-    split_ifs with hV
-    · symm
+    split_ifs with hR hV
+    · simp [Subsingleton.eq_one r]
+    · replace hR := not_subsingleton_iff_nontrivial.mp hR
+      symm
       rw [← Module.finrank_eq_zero_iff_of_free (R := R)] at hV
       simpa [hV] using (mem_rootsOfUnity _ _).mp r.prop
     · rw [not_subsingleton_iff_nontrivial] at hV
@@ -471,7 +480,8 @@ noncomputable def centerEquivRootsOfUnity :
   map_mul' g h := by
     simp only [Or.by_cases, Subgroup.coe_mul, coe_mul, LinearEquiv.coe_toLinearMap_mul,
       mul_dite, mul_one, dite_mul, one_mul, MulMemClass.mk_mul_mk]
-    split_ifs with hV
+    split_ifs with hR hV
+    · rfl
     · rfl
     rw [not_subsingleton_iff_nontrivial] at hV
     have := Module.Free.instFaithfulSMulOfNontrivial R V
@@ -495,7 +505,9 @@ theorem centerEquivRootsOfUnity_apply
     (g : V →ₗ[R] V) = (centerEquivRootsOfUnity g) • LinearMap.id := by
   simp only [centerEquivRootsOfUnity, Or.by_cases, MulEquiv.coe_mk, Equiv.coe_fn_mk,
     dite_smul, one_smul, Subgroup.mk_smul, Units.smul_isUnit, dite_eq_ite]
-  split_ifs with hV
+  split_ifs with hR hV
+  · have : Subsingleton V := Module.subsingleton_ofSubsingleton R V
+    apply Subsingleton.eq_one
   · apply Subsingleton.eq_one
   · rw [not_subsingleton_iff_nontrivial] at hV
     rw [← (mem_center_iff.mp g.prop).choose_spec.2]
@@ -507,7 +519,6 @@ theorem centerEquivRootsOfUnity_apply_apply
   rw [← LinearEquiv.coe_toLinearMap, centerEquivRootsOfUnity_apply]
   simp
 
-omit [Nontrivial R] in
 theorem _root_.rootsOfUnity.eq_one {n : ℕ} {r : rootsOfUnity n R}
     (hn : n = 1) : r.val = 1 := by
   have h := r.prop
