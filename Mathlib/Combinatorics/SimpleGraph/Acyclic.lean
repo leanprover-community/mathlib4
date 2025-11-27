@@ -450,7 +450,7 @@ noncomputable def IsTree.coloring_two_of_elem (hG : G.IsTree) (u : V) : G.Colori
   · rw [← hB] at h
     omega
 
-/- Arbitrary coloring with two colors for a tree -/
+/-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloring_two (hG : G.IsTree) : G.Coloring (Fin 2) :=
   let u : V := Classical.choice hG.isConnected.nonempty
   hG.coloring_two_of_elem u
