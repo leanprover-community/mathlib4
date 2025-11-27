@@ -84,7 +84,7 @@ lemma mem_associatedPrimes_atPrime_of_mem_associatedPrimes
 
 @[deprecated (since := "2025-11-27")]
 alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
-  mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes
+  mem_associatedPrimes_atPrime_of_mem_associatedPrimes
 
 include S f in
 lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg (p : Ideal R')
