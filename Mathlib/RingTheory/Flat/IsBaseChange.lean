@@ -17,8 +17,9 @@ kernel preserves `IsBaseChange S`.
 
 # Main Results
 
-For `S` an `R`-algebra, consider the following commutative diagram with `M₁` `M₂` `M₃` `R`-modules,
-`N₁` `N₂` `N₃` `S`-modules, `R`-linear maps `f₁` `f₂` `i₁` `i₂` `i₃` and `S`-linear maps `g₁` `g₂`.
+For `S` an `R`-algebra, consider the following commutative diagram with exact rows,
+`M₁` `M₂` `M₃` `R`-modules, `N₁` `N₂` `N₃` `S`-modules,
+`R`-linear maps `f₁` `f₂` `i₁` `i₂` `i₃` and `S`-linear maps `g₁` `g₂`.
 
 M₁ --f₁--> M₂ --f₂--> M₃
 |          |          |
