@@ -236,10 +236,30 @@ public theorem ContinuousLinearMap.isCompactOperator_of_iInf_singularValue_eq_ze
     intro n
     sorry
 
+omit [CompleteSpace X] [CompleteSpace Y] in
+lemma helper1 [CompleteSpace 𝕜] (n : ℕ) : IsClosed { f : X →L[𝕜] Y | f.rank ≤ n } := by
+  rw [←isOpen_compl_iff]
+  have : { f : X →L[𝕜] Y | f.rank ≤ n }ᶜ = { f : X →L[𝕜] Y | ↑(n + 1) ≤ f.rank } := by
+    ext f
+    simp [Cardinal.natCast_add_one_le_iff]
+  rw [this]
+  exact isOpen_setOf_nat_le_rank (n + 1)
 
-public theorem ContinuousLinearMap.exists_norm_eq_singularValue (n : ℕ) {ε : ℝ≥0} (hε : 0 < ε)
+omit [CompleteSpace X] [CompleteSpace Y] in
+/--
+If `𝕜` is complete and `X` and `Y` are Banach, then the infimum in the definition of singular values
+of a `T : X →L[𝕜] Y` is actually just a minimum.
+-/
+public theorem ContinuousLinearMap.exists_norm_eq_singularValue
+  [CompleteSpace 𝕜] -- TODO: can I rid this using the assumption the spaces are Banach?
+  (n : ℕ) {ε : ℝ≥0} (hε : 0 < ε)
   : ∃ R : X →L[𝕜] Y, R.rank ≤ ↑n ∧ ‖T - R‖₊ = T.singularValue n := by
-  sorry
+  have : IsClosed { f : X →L[𝕜] Y | f.rank ≤ n } := helper1 n
+  have : IsClosed (Set.range (fun f : { R : X →L[𝕜] Y // R.rank ≤ n } ↦ ‖T - f‖₊)) := by
+    sorry
+  have := this.csInf_mem sorry sorry
+  obtain ⟨⟨R, hR₁⟩, hR₂⟩ := Set.mem_range.mp this
+  exact ⟨R, hR₁, hR₂⟩
 
 public theorem ContinuousLinearMap.support_singularValue
   : T.singularValue.support = {n : ℕ | n < T.rank} := sorry
