@@ -49,7 +49,7 @@ lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
     (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
   have (a : WithBot ℕ∞) : a ≠ ⊤ ↔ ∃ (n : ℕ), a < n := by
     induction a with
-    | bot => simpa using ⟨0, WithBot.bot_lt_coe 0⟩
+    | bot => simp
     | coe a =>
       induction a with
       | top => simp
