@@ -74,7 +74,7 @@ variable {R} in
 lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
     Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
   apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
   exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
