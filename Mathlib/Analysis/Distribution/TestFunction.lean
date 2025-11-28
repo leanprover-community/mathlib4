@@ -438,6 +438,23 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 
+theorem isUniformEmbedding_ofSupportedInCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    IsUniformEmbedding (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
+  let φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] Π i, E →ᵇ E [×i]→L[ℝ] F :=
+  { toFun f i := iteratedFDerivWithOrderLM 𝕜 n 0 i f
+    map_add' _ _ := sorry
+    map_smul' _ _ := sorry }
+  have φ_comp (K' : Compacts E) (K'_sub_Ω : (K' : Set E) ⊆ Ω) :
+      φ ∘ₗ ofSupportedInLM 𝕜 K'_sub_Ω = LinearMap.pi fun i ↦ structureMapLM 𝕜 n i := by
+    ext
+    simp [φ, structureMapLM_apply_withOrder]
+  have φ_cont : Continuous φ := by
+    simp_rw [TestFunction.continuous_iff_continuous_comp, φ_comp]
+    intro K' K'_sub_Ω
+    exact (ContinuousLinearMap.pi fun i ↦ structureMapCLM 𝕜 n i).continuous
+  sorry
+
 end Topology
 
 end TestFunction
