@@ -88,7 +88,7 @@ theorem kernel_ι_d_comp_d {G : C} (hG : IsSeparator G) {A B : C} {M : ModuleCat
   simp only [Category.assoc, ι_d]
   let r (x : F) : (End G)ᵐᵒᵖ := MulOpposite.op (h ≫ pullback.fst _ _ ≫ Sigma.π _ x)
   suffices ∑ x ∈ F.attach, r x • f.hom x.1.as = 0 by simpa [End.smul_left, r] using this
-  simp only [← LinearMap.map_smul, ← map_sum]
+  simp only [← map_smul, ← map_sum]
   suffices ∑ x ∈ F.attach, r x • x.1.as = 0 by simp [this]
   simp only [← g.hom.map_eq_zero_iff ((ModuleCat.mono_iff_injective _).1 hg), map_sum, map_smul]
   simp only [← ι_d g, End.smul_left, MulOpposite.unop_op, Category.assoc, r]
