@@ -562,7 +562,11 @@ Note that the proof contains a small formalisation-related subtlety: `F` can liv
 while being an immersion requires the existence of a complement in the same universe as
 the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`.
 -/
-lemma isImmersion [Nonempty M] (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
+lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
+  by_cases! hM : IsEmpty M
+  · rw [IsImmersion]
+    use PUnit, by infer_instance, by infer_instance
+    exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
   use (h x).smallComplement, by infer_instance, by infer_instance
