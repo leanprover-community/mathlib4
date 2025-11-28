@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+module
+
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Transport a monoidal structure along an equivalence.
@@ -21,10 +23,10 @@ We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
 -/
 
+@[expose] public section
+
 
 universe v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory
 
@@ -188,10 +190,10 @@ instance : (equivalenceTransported e).inverse.Monoidal := by
 instance : (equivalenceTransported e).symm.functor.Monoidal :=
   inferInstanceAs (equivalenceTransported e).inverse.Monoidal
 
-instance : (equivalenceTransported e).functor.Monoidal :=
+noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
   (equivalenceTransported e).symm.inverseMonoidal
 
-instance : (equivalenceTransported e).symm.inverse.Monoidal :=
+noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
 instance : (equivalenceTransported e).symm.IsMonoidal := by

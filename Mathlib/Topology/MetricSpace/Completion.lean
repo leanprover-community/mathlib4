@@ -3,12 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # The completion of a metric space
@@ -19,6 +19,7 @@ by extending the distance to the completion and checking that it is indeed a dis
 it defines the same uniformity as the already defined uniform structure on the completion
 -/
 
+@[expose] public section
 
 open Set Filter UniformSpace Metric
 
@@ -100,9 +101,9 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         exact isClosed_le continuous_const Completion.uniformContinuous_dist.continuous
       · intro x y
         rw [Completion.dist_eq]
-        by_cases h : ε ≤ dist x y
+        by_cases! h : ε ≤ dist x y
         · exact Or.inl h
-        · have Z := hε (not_le.1 h)
+        · have Z := hε h
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
     simp only [not_le.mpr hxy, false_or] at this
@@ -210,19 +211,9 @@ def Isometry.extensionHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α
     [T0Space β] {f : α →+* β} (h : Isometry f) : Completion α →+* β :=
   Completion.extensionHom f h.continuous
 
+@[simp]
 theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
     [T0Space β] {f : α →+* β} (h : Isometry f) (x : α) :
     h.extensionHom x = f x :=
   UniformSpace.Completion.extensionHom_coe f h.continuous _
-
-/-- The extension of an isometry to completions of the domain and codomain. -/
-def Isometry.mapRingHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
-    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
-    (h : Isometry f) : Completion α →+* Completion β :=
-  Completion.mapRingHom f h.continuous
-
-theorem Isometry.mapRingHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
-    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
-    (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
-  Completion.mapRingHom_coe h.uniformContinuous _

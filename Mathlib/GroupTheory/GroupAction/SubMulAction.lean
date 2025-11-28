@@ -3,11 +3,14 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 
@@ -30,6 +33,8 @@ For most uses, typically `Submodule R M` is more powerful.
 
 submodule, mul_action
 -/
+
+@[expose] public section
 
 
 open Function
@@ -214,14 +219,49 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
   SetLike.coe_injective hs
 
 @[to_additive]
-instance : Bot (SubMulAction R M) where
-  bot :=
-    { carrier := ∅
-      smul_mem' := fun _c h => Set.notMem_empty h }
+instance : Bot (SubMulAction R M) :=
+  ⟨⟨∅, by simp⟩⟩
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
   ⟨⊥⟩
+
+@[to_additive]
+instance : Top (SubMulAction R M) :=
+  ⟨⟨Set.univ, by simp⟩⟩
+
+@[to_additive]
+instance : Max (SubMulAction R M) :=
+  ⟨fun s t => ⟨s ∪ t, by aesop⟩⟩
+
+@[to_additive]
+instance : Min (SubMulAction R M) :=
+  ⟨fun s t => ⟨s ∩ t, by aesop⟩⟩
+
+@[to_additive]
+instance : SupSet (SubMulAction R M) :=
+  ⟨fun S => ⟨⋃ s ∈ S, s, by aesop⟩⟩
+
+@[to_additive]
+instance : InfSet (SubMulAction R M) :=
+  ⟨fun S => ⟨⋂ s ∈ S, ↑s, by aesop⟩⟩
+
+@[to_additive]
+instance : CompleteLattice (SubMulAction R M) :=
+  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ => rfl) rfl rfl
+
+@[to_additive (attr := simp)]
+theorem mem_iSup {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
+    x ∈ ⨆ i, p i ↔ ∃ i, x ∈ p i := by
+  change x ∈ ⋃ s ∈ Set.range p, s ↔ _
+  simp
+
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
+    x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
+  change x ∈ ⋂ s ∈ Set.range p, s ↔ _
+  simp
 
 end SubMulAction
 
@@ -348,7 +388,6 @@ variable (p : SubMulAction R M)
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
 @[to_additive]
 instance mulAction' : MulAction S p where
-  smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
@@ -529,3 +568,32 @@ lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
   ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
 
 end Units
+
+section FixedPoints
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α] {H : Subgroup G}
+
+@[to_additive]
+lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
+    (g : G) {a : α} (ha : a ∈ MulAction.fixedPoints H α) :
+    g • a ∈ MulAction.fixedPoints H α := by
+  intro h
+  rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
+  exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
+
+/-- The set of fixed points of a normal subgroup is stable under the group action. -/
+@[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
+def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
+  carrier := MulAction.fixedPoints H α
+  smul_mem' := smul_mem_fixedPoints_of_normal
+
+instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
+  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+
+@[simp]
+lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]
+    (g : G) (a : MulAction.fixedPoints H α) :
+    (g • a : MulAction.fixedPoints H α) = g • (a : α) :=
+  rfl
+
+end FixedPoints

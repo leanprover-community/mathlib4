@@ -3,15 +3,16 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Order.Star.Prod
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Algebra.Order.Star.Prod
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -48,6 +49,8 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 + Lemmas about how these functions interact with commuting `a` and `b`.
 + Prove the order properties (operator monotonicity and concavity/convexity)
 -/
+
+@[expose] public section
 
 open scoped NNReal
 
@@ -94,8 +97,10 @@ noncomputable instance (priority := 100) : Pow A ℝ≥0 where
 @[simp]
 lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
 
-@[simp, grind]
+@[simp]
 lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
+
+grind_pattern nnrpow_nonneg => NonnegSpectrumClass ℝ A, a ^ x
 
 lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a := rfl
 
@@ -227,8 +232,10 @@ section sqrt
 /-- Square roots of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
-@[simp, grind]
+@[simp]
 lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
+
+grind_pattern sqrt_nonneg => NonnegSpectrumClass ℝ A, sqrt a
 
 lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
@@ -395,10 +402,20 @@ noncomputable instance (priority := 100) : Pow A ℝ where
 @[simp]
 lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
 
-@[simp, grind]
+@[simp]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
+grind_pattern rpow_nonneg => NonnegSpectrumClass ℝ A, a ^ y
+
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
+
+lemma rpow_eq_cfc_real [IsTopologicalRing A] [T2Space A] {a : A} {y : ℝ}
+    (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfc (fun x : ℝ => x ^ y) a := by
+  rw [CFC.rpow_def, cfc_nnreal_eq_real ..]
+  refine cfc_congr ?_
+  intro x hx
+  simp only [NNReal.coe_rpow, Real.coe_toNNReal']
+  grind
 
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]

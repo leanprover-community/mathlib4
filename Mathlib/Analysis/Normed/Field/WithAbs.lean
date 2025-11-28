@@ -3,11 +3,13 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.FieldTheory.Separable
-import Mathlib.Topology.Algebra.UniformField
-import Mathlib.Topology.MetricSpace.Completion
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # WithAbs for fields
@@ -17,6 +19,8 @@ on an absolute value. This is useful when dealing with several absolute values o
 
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -54,15 +58,15 @@ variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ} {L : Type*} [NormedFiel
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
-@[deprecated AddMonoidHomClass.isometry_of_norm (since := "2025-09-25")]
+@[deprecated AddMonoidHomClass.isometry_of_norm (since := "2025-11-28")]
 theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
   AddMonoidHomClass.isometry_of_norm _ h
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-the pseudo metric space associated to the absolute value is the same as the pseudo metric space
+the pseudometric space associated to the absolute value is the same as the pseudometric space
 induced by `f`. -/
-@[deprecated "Use Isometry.dist_eq in combination with AddMonoidHomClass.isometry_of_norm"
-  (since := "2025-09-25")]
+@[deprecated "Use `Isometry.dist_eq` in combination with `AddMonoidHomClass.isometry_of_norm`"
+  (since := "2025-11-28")]
 theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
     PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
   ext; exact AddMonoidHomClass.isometry_of_norm _ h |>.dist_eq _ _
@@ -70,8 +74,8 @@ theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the uniform structure associated to the absolute value is the same as the uniform structure
 induced by `f`. -/
-@[deprecated "Use IsUniformInducing.comap_uniformSpace in combination with
-  AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+@[deprecated "Use `IsUniformInducing.comap_uniformSpace in combination` with
+  AddMonoidHomClass.isometry_of_norm" (since := "2025-11-28")]
 theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x) :
     UniformSpace.comap f inferInstance = (normedField v).toUniformSpace :=
   IsUniformInducing.comap_uniformSpace
@@ -79,8 +83,8 @@ theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x) :
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is uniform inducing. -/
-@[deprecated "Use Isometry.isUniformInducing in combination with
-  AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+@[deprecated "Use `Isometry.isUniformInducing` in combination with
+  AddMonoidHomClass.isometry_of_norm" (since := "2025-11-28")]
 theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x) : IsUniformInducing f :=
   (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing
 
@@ -105,20 +109,21 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
-@[deprecated Isometry.extensionHom (since := "2025-09-25")]
+@[deprecated "Use `Isometry.extensionHom` in combination with `AddMonoidHomClass.isometry_of_norm`"
+  (since := "2025-11-28")]
 abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
   (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
-@[deprecated "Use Isometry.extensionHom_coe in combination with AddMonoidHomClass.isometry_of_norm"
-  (since := "2025-09-25")]
+@[deprecated "Use `Isometry.extensionHom_coe` in combination with
+  `AddMonoidHomClass.isometry_of_norm`" (since := "2025-11-28")]
 theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
     (AddMonoidHomClass.isometry_of_norm _ h).extensionHom x = f x :=
   AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom_coe _
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` preserves distances. -/
-@[deprecated "Use Isometry.dist_eq in combination with AddMonoidHomClass.isometry_of_norm"
-  (since := "2025-09-25")]
+@[deprecated "Use `Isometry.dist_eq` in combination with `AddMonoidHomClass.isometry_of_norm`"
+  (since := "2025-11-28")]
 theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
     let f := AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom
     dist (f x) (f y) = dist x y :=
@@ -126,16 +131,16 @@ theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is an isometry. -/
-@[deprecated "Use Isometry.completion_extension in combination with
-  AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+@[deprecated "Use `Isometry.completion_extension` in combination with
+  `AddMonoidHomClass.isometry_of_norm`" (since := "2025-11-28")]
 theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     Isometry (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is a closed embedding. -/
-@[deprecated "Use Isometry.isClosedEmbedding in combination with Isometry.completion_extension
-  and AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+@[deprecated "Use `Isometry.isClosedEmbedding` in combination with `Isometry.completion_extension`
+  and `AddMonoidHomClass.isometry_of_norm`" (since := "2025-11-28")]
 theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     IsClosedEmbedding (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   (AddMonoidHomClass.isometry_of_norm _ h).completion_extension.isClosedEmbedding

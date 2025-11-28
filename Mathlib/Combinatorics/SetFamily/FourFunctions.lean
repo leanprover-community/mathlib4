@@ -3,17 +3,19 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Sups
-import Mathlib.Order.Birkhoff
-import Mathlib.Order.Booleanisation
-import Mathlib.Order.Sublattice
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Order.Birkhoff
+public import Mathlib.Order.Booleanisation
+public import Mathlib.Order.Sublattice
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
@@ -53,6 +55,8 @@ earlier file and give it a proper API.
 
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
+
+@[expose] public section
 
 open Finset Fintype Function
 open scoped FinsetFamily
@@ -239,6 +243,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 
 variable [ExistsAddOfLE β]
 
+-- In the non-terminal simp below, simp runs on four goals, but only needs `exact` once.
+set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
