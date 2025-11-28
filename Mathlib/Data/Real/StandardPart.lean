@@ -87,8 +87,8 @@ theorem isUnit_iff_mk_eq_zero {x : ArchimedeanClass.Finite K} : IsUnit x ↔ mk 
 end Finite
 
 variable (K) in
-/-- The residue field of `ArchimedeanClass.Finite`. By choosing arbitrary representatives from `K`,
-we can make this into a linearly ordered Archimedean field. -/
+/-- The residue field of `ArchimedeanClass.Finite`. This quotient inherits an order from `K`, which
+makes it into a linearly ordered Archimedean field. -/
 def FiniteResidueField : Type _ :=
   IsLocalRing.ResidueField (ArchimedeanClass.Finite K)
 
@@ -217,6 +217,7 @@ end FiniteResidueField
 infinitesimal difference.
 
 For any infinite inputs, this function outputs a junk value of 0. -/
+@[no_expose]
 noncomputable def standardPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then
     (LinearOrderedField.inducedOrderRingHom _ _).comp FiniteResidueField.mk ⟨x, h⟩ else 0
