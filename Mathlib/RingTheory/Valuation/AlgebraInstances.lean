@@ -33,7 +33,7 @@ variable {K : Type*} [Field K] (v : Valuation K ℤᵐ⁰) (L : Type*) [Field L]
 
 namespace ValuationSubring
 
-instance : Algebra v.valuationSubring L := .ofSubsemiring v.valuationSubring.toSubring
+instance : Algebra v.valuationSubring L := fast_instance% inferInstance
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (FaithfulSMul.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
