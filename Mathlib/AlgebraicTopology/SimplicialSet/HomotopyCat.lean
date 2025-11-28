@@ -466,7 +466,7 @@ theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism. -/
-theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D]
+theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D: Type*} [Category D]
     (F₁ F₂ : V.HomotopyCategory ⥤ D)
     (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
