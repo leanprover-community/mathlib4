@@ -347,23 +347,21 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] : Injective S 
     use S.asLimit.lift k_cone
     let g_cone : Cone S.diagram :=
       { pt := X, π := NatTrans.ofOpSequence (fun n ↦ g ≫ S.proj n) (fun n ↦ by
-        simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
-        exact congrArg _ (S.proj_comp_transitionMap n).symm) }
+        simpa using congrArg _ (S.proj_comp_transitionMap n).symm) }
     have hg : g = S.asLimit.lift g_cone := by
       apply S.asLimit.uniq g_cone
       intro n
       rw [NatTrans.ofOpSequence_app]
     rw [hg]
     have hlim : S.asLimit.lift (k_cone.extend f) = S.asLimit.lift g_cone := by
-      unfold Cone.extend
+      dsimp [Cone.extend]
       congr
       ext n
       simp [show k_cone.π.app n = (k_seq n.unop).1 from rfl, h_down]
     rw [← hlim]
     apply S.asLimit.uniq (k_cone.extend f)
     intro n
-    simp only [Category.assoc, IsLimit.fac, Cone.extend_π,  Cone.extensions_app,
-      NatTrans.comp_app,  Functor.const_map_app]
+    simp
 
 instance injective_in_profinite_of_light (S : LightProfinite.{u}) [Nonempty S] :
     Injective (lightToProfinite.obj S) := sorry
