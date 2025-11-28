@@ -37,6 +37,7 @@ that is, there is a positive probability of reaching any
 ## References
 
 * [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
+* [Meyn, S.P. and Tweedie, R.L., *Markov Chains and Stochastic Stability*][meyntweedie1993]
 
 -/
 
@@ -52,7 +53,8 @@ variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
 
-/-- `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`). -/
+/-- `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`).
+Ref. *Meyn-Tweedie* Proposition 4.2.1(ii), page 89 -/
 @[mk_iff]
 class IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
   irreducible : ∀ ⦃A⦄, MeasurableSet A → φ A > 0 → ∀ a, ∃ (n : ℕ+), κ.pow n a A > 0

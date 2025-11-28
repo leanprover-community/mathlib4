@@ -239,7 +239,7 @@ noncomputable def pow (κ : Kernel α α) : ℕ → Kernel α α
 
 /-- The **Chapman-Kolmogorov equation**, kernel composition version.
 The `n+m`-step transition kernel is the composition of the `n`-step and `m`-step kernels.
-Ref. *Robert-Casella* lemma 6.7, page 211 -/
+Ref. *Meyn-Tweedie* Theorem 3.4.2, page 68 -/
 @[simp]
 theorem pow_add (κ : Kernel α α) (m n : ℕ) :
     κ.pow (m + n) = κ.pow m ∘ₖ κ.pow n := by
