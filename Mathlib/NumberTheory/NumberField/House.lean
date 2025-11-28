@@ -92,6 +92,98 @@ theorem house_num_mul_int (α : K) (c' : ℤ) (hc : 0 ≤ c') :
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
 
+/-- Let α be a non-zero algebraic integer. Then α has a conjugate α(i) with |α(i)| ≥ 1. -/
+lemma exists_conjugate_abs_gt_one {α : 𝓞 K} (hα0 : α ≠ 0) :
+    ∃ σ : K →+* ℂ, 1 ≤ norm (σ α) := by
+  have h_exists_w : ∃ w : InfinitePlace K, 1 ≤ w α := by
+    by_contra h_neg; push_neg at h_neg
+    let w₀ := (inferInstance : Nonempty (InfinitePlace K)).some
+    have h_ge_one : 1 ≤ w₀ α :=
+      NumberField.InfinitePlace.one_le_of_lt_one hα0 (fun z _ => h_neg z)
+    linarith [h_neg w₀, h_ge_one]
+  rcases h_exists_w with ⟨w, hw⟩
+  use w.embedding
+  rw [← InfinitePlace.norm_embedding_eq] at hw
+  exact hw
+
+lemma house_gt_one_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
+    1 ≤ house α := by
+  have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+    let a : 𝓞 K := ⟨α, hα⟩
+    have hα_int_0 : a ≠ 0 := by
+      intros H
+      apply hα0
+      injection H
+    apply exists_conjugate_abs_gt_one (K := K) hα_int_0
+  rw [house_eq_sup']
+  have h_le_sup := Finset.le_sup' (fun φ : K →+* ℂ ↦ ‖φ α‖₊) (Finset.mem_univ σ)
+  exact le_trans hσ h_le_sup
+
+lemma house_alg_int_leq_pow (α : K) (n m : ℕ) (h : n ≤ m) (hα0 : α ≠ 0) (H : IsIntegral ℤ α) :
+  house α ^ n ≤ house α ^ m :=
+Bound.pow_le_pow_right_of_le_one_or_one_le (Or.inl ⟨house_gt_one_of_isIntegral H hα0, h⟩)
+
+lemma house_alg_int_leq_pow' (α : K) (n m : Int) (H : n ≤ m) (hα : α ≠ 0) (h_int : IsIntegral ℤ α) :
+    house α ^ n ≤ house α ^ m :=
+  zpow_le_zpow_right₀ (house_gt_one_of_isIntegral h_int hα) H
+
+lemma house_alg_int_leq_pow_real (α : K) (r s : ℝ) (h : r ≤ s) (hα0 : α ≠ 0) (hI : IsIntegral ℤ α) :
+    house α ^ r ≤ house α ^ s :=
+  Real.rpow_le_rpow_of_exponent_le (house_gt_one_of_isIntegral hI hα0) h
+
+lemma house_leq_pow_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
+  (H : IsIntegral ℤ α) : house α ≤ house α ^ n :=
+le_self_pow₀ (house_gt_one_of_isIntegral H hα0) hn
+
+lemma house_leq_one_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
+  (H : IsIntegral ℤ α) :
+  1 ≤ house α ^ n :=
+(house_gt_one_of_isIntegral H hα0).trans (house_leq_pow_pow α n hn hα0 H)
+
+lemma house_prod_le (s : Finset K) :
+  house (∏ x ∈ s, x) ≤ ∏ x ∈ s, house x := by
+  classical
+  simpa [house, map_prod] using
+    (Finset.norm_prod_le s fun x => (canonicalEmbedding K) x)
+
+lemma alg_int_emb_norm (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house (α) := by
+  rw [house_eq_sup', Finset.sup'_eq_sup]
+  exact Finset.le_sup (f:= fun φ => ‖φ α‖₊ ) (b := σ) (s:=Finset.univ) (Finset.mem_univ σ)
+
+lemma norm_le_house_norm (α : K) (σ : K →+* ℂ) :
+  ‖Algebra.norm ℚ (α)‖ ≤ ‖σ α‖ * (house (α)) ^ (Module.finrank ℚ K -1) := by
+  classical
+  calc _ = ‖∏ σ : K →ₐ[ℚ] ℂ, σ (α)‖ := ?_
+       _ = ‖(σ α) * ∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), σ α‖ := ?_
+       _ ≤ ‖σ α‖ * ∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), ‖σ α‖ := ?_
+       _ ≤ ‖σ α‖ * ∏ σ ∈ (Finset.univ.erase σ.toRatAlgHom), house (α) := ?_
+       _ = ‖σ α‖ * (house (α)) ^ (Module.finrank ℚ K -1) := ?_
+  · rw [← Algebra.norm_eq_prod_embeddings]
+    simp only [eq_ratCast, Complex.norm_ratCast]
+    congr
+  · have hmem : σ.toRatAlgHom ∈ (Finset.univ : Finset (K →ₐ[ℚ] ℂ)) := Finset.mem_univ _
+    have H := (Finset.mul_prod_erase (Finset.univ : Finset (K →ₐ[ℚ] ℂ))
+      (fun τ => τ α) hmem).symm
+    rw [H]
+    simp only [RingHom.toRatAlgHom_apply, Complex.norm_mul, norm_prod]
+  · rw [Complex.norm_mul]
+    apply mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
+    · exact Finset.norm_prod_le (Finset.univ.erase σ.toRatAlgHom) fun i ↦ i α
+  · apply mul_le_mul_of_nonneg_left ?_ (norm_nonneg (σ α))
+    refine prod_le_prod ?_ ?_
+    · intros i hi
+      simp only [Finset.mem_erase] at hi
+      exact norm_nonneg (i α)
+    · intros i hi
+      let i' : K →+* ℂ := i.toRingHom
+      calc  _  =  ‖i' α‖ := ?_
+            _  ≤ house (α) := ?_
+      · unfold i'
+        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
+      · apply alg_int_emb_norm
+  · congr
+    simp only [prod_const, Finset.mem_univ, card_erase_of_mem, card_univ, AlgHom.card]
+
 end
 
 end NumberField
