@@ -82,7 +82,7 @@ structure LaxTrans (F G : OplaxFunctor B C) where
         app a ◁ G.mapComp f g ≫ (α_ _ _ _).inv ≫
           naturality f ▷ G.map g ≫ (α_ _ _ _).hom ≫
             F.map f ◁ naturality g ≫ (α_ _ _ _).inv := by
-    aesop_cat
+    cat_disch
 
 namespace LaxTrans
 
