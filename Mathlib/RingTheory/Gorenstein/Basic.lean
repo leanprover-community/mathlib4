@@ -91,7 +91,7 @@ lemma IsGorensteinRing.of_isGorensteinLocalRing [IsGorensteinLocalRing R]
   exact IsGorensteinLocalRing.of_ringEquiv e
 
 lemma IsGorensteinLocalRing.of_isLocalRing_of_isGorensteinRing [IsLocalRing R]
-    [IsNoetherianRing R] [IsGorensteinRing R] : IsGorensteinLocalRing R := by
+    [IsGorensteinRing R] : IsGorensteinLocalRing R := by
   let _ := IsLocalization.at_units (maximalIdeal R).primeCompl (fun x hx ↦ by simpa using hx)
   let _ := (isGorensteinRing_def R).mp ‹_› (maximalIdeal R) inferInstance
   let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
