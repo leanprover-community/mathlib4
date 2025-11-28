@@ -150,7 +150,7 @@ lemma Subgroup.le_adjoinNegOne (𝒢 : Subgroup (GL n R)) : 𝒢 ≤ 𝒢.adjoin
 lemma Subgroup.negOne_mem_adjoinNegOne (𝒢 : Subgroup (GL n R)) : -1 ∈ 𝒢.adjoinNegOne :=
   by simp
 
-lemma Subgroup.adjoinNegOne_eq_self_iff {𝒢 : Subgroup (GL n R)} :
+@[simp] lemma Subgroup.adjoinNegOne_eq_self_iff {𝒢 : Subgroup (GL n R)} :
     𝒢.adjoinNegOne = 𝒢 ↔ -1 ∈ 𝒢 :=
   ⟨fun h ↦ h ▸ negOne_mem_adjoinNegOne 𝒢, fun hG ↦ 𝒢.le_adjoinNegOne.antisymm'
     fun g hg ↦ hg.elim id (fun h ↦ by simpa using mul_mem hG h)⟩
@@ -182,7 +182,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 
-lemma Subgroup.hasDetPlusMinusOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} :
+@[simp] lemma Subgroup.hasDetPlusMinusOne_adjoinNegOne_iff {𝒢 : Subgroup (GL n R)} :
     𝒢.adjoinNegOne.HasDetPlusMinusOne ↔ 𝒢.HasDetPlusMinusOne := by
   refine ⟨fun _ ↦ ⟨fun {g} hg ↦ HasDetPlusMinusOne.det_eq (𝒢.le_adjoinNegOne hg)⟩, fun _ ↦ ⟨?_⟩⟩
   rintro g (hg | hg)

@@ -226,6 +226,8 @@ lemma strictPeriods_le_periods : 𝒢.strictPeriods ≤ 𝒢.periods := by
 def IsRegularAtInfty : Prop :=
     𝒢.strictPeriods = 𝒢.periods
 
+lemma IsRegularAtInfty.eq (h : 𝒢.IsRegularAtInfty) : 𝒢.strictPeriods = 𝒢.periods := h
+
 lemma relIndex_strictPeriods :
     𝒢.strictPeriods.relIndex 𝒢.periods = 1 ∨ 𝒢.strictPeriods.relIndex 𝒢.periods = 2 := by
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
