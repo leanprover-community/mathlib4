@@ -371,6 +371,14 @@ theorem coe_orderIso_refl : (OrderRingIso.refl α : α ≃o α) = OrderIso.refl 
 
 variable {α}
 
+@[simp]
+theorem symm_apply_apply (e : α ≃+*o β) (a : α) : e.symm (e a) = a :=
+  e.toRingEquiv.symm_apply_apply a
+
+@[simp]
+theorem apply_symm_apply (e : α ≃+*o β) (b : β) : e (e.symm b) = b :=
+  e.toRingEquiv.apply_symm_apply b
+
 /-- The inverse of an ordered ring isomorphism as an ordered ring isomorphism. -/
 @[symm]
 protected def symm (e : α ≃+*o β) : β ≃+*o α :=
