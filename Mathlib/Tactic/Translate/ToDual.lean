@@ -109,7 +109,6 @@ initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 @[inherit_doc TranslateData.doTranslateAttr]
 initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
 
-@[inherit_doc to_dual_dont_translate]
 initialize
   registerBuiltinAttribute {
     name := `to_dual_do_translate

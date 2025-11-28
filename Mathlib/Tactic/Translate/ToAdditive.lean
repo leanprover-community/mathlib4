@@ -271,7 +271,6 @@ initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 @[inherit_doc TranslateData.doTranslateAttr]
 initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
 
-@[inherit_doc to_additive_dont_translate]
 initialize
   registerBuiltinAttribute {
     name := `to_additive_do_translate
