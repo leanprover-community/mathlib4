@@ -374,9 +374,7 @@ section trivial
 
 @[to_additive]
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
-  dsimp [HasQuotient.Quotient, QuotientGroup.instHasQuotientSubgroup, Quotient]
-  rw [leftRel_eq]
-  exact Trunc.instSubsingletonTrunc
+  simp
 
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive

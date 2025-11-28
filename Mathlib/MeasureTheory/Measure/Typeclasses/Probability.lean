@@ -187,6 +187,8 @@ end IsProbabilityMeasure
 
 section IsZeroOrProbabilityMeasure
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 instance isZeroOrProbabilityMeasureSMul :
     IsZeroOrProbabilityMeasure ((μ univ)⁻¹ • μ) := by
   rcases eq_zero_or_neZero μ with rfl | h
