@@ -168,6 +168,12 @@ example (h : False) : 0 ≠ 0 := by
   try (simp; done)
   exact h.elim
 
+-- `ac_rfl` is an allowed follower
+#guard_msgs in
+example {a b c d : Nat} (h : False) (h' : d = a) : a + (b + c) = (b + d) + c := by
+  simp [h']
+  ac_rfl
+
 -- `grind` is another flexible tactic,
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
