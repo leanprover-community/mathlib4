@@ -73,7 +73,7 @@ variable {R} in
 lemma quotSMulTop_nontrivial'' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
     Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
   apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
   exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
@@ -378,6 +378,8 @@ lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
       Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
     simp [ann]
 
+set_option maxHeartbeats 220000 in
+--The map just is too complicated with lots of rfl
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
   is bijective. -/
@@ -394,11 +396,8 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     · apply extClass_postcomp_bijective_of_isSMulRegular regM
       ext u
       simp
-    · refine (Ext.homEquiv₀.comp_bijective _ ).mp ((Ext.homEquiv₀.symm.bijective_comp _).mp ?_)
-      change Function.Bijective <| fun t ↦ Ext.homEquiv₀ <|
-        (Fr.mapExt N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) 0) (Ext.homEquiv₀.symm t)
-      simp only [Ext.homEquiv₀_symm_apply, Ext.mapExt_mk₀_eq_mk₀_map]
-      simp only [Ext.homEquiv₀, Equiv.ofBijective_symm_apply_apply, Fr]
+    · change Function.Bijective (Ext.mapExactFunctor _)
+      rw [Ext.mapExactFunctor₀, Equiv.comp_bijective, Equiv.bijective_comp]
       apply Functor.FullyFaithful.map_bijective
       exact ModuleCat.restrictScalars_fullyFaithful_of_surjective _ Ideal.Quotient.mk_surjective
   · rename_i n ih
@@ -454,21 +453,17 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       (ft S.X₂ n) (ft S.X₁ n) (ft S.X₃ (n + 1)) ?_ ?_
       exac1 exac2 (ih S.X₂).2 (ih S.X₁) surj1 surj2
     · ext z
-      change (Ext.mk₀ (Fr.map S.f)).comp (((Fr.mapExt S.X₂
-        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) z).comp
-        regM.smulShortComplex_shortExact.extClass rfl) (zero_add _) =
-        ((Fr.mapExt S.X₁ (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n)
-        ((Ext.mk₀ S.f).comp z (zero_add n))).comp regM.smulShortComplex_shortExact.extClass rfl
-      rw [← Ext.comp_assoc _ _ _ (zero_add n) rfl (by simp),
-        Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+      have : (Ext.mk₀ (Fr.map S.f)).comp (z.mapExactFunctor Fr) (zero_add n) =
+        (((Ext.mk₀ S.f).comp z (zero_add n)).mapExactFunctor Fr) := by
+        rw [Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
+      apply (Ext.comp_assoc _ _ _ (zero_add n) rfl (zero_add (n + 1))).symm.trans
+      exact congrFun (congrFun (congrFun (congrArg Ext.comp this) _) (n + 1)) rfl
     · ext z
-      change (S_exact.map_of_exact Fr).extClass.comp (((Fr.mapExt S.X₁
-        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) z).comp
-        regM.smulShortComplex_shortExact.extClass rfl) (add_comm 1 (n + 1)) =
-        ((Fr.mapExt S.X₃ (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) (n + 1))
-        (S_exact.extClass.comp z (add_comm 1 n))).comp regM.smulShortComplex_shortExact.extClass rfl
-      rw [← Ext.comp_assoc _ _ _ (add_comm 1 n) rfl (by simp [add_comm]),
-        Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
+      have : (S_exact.map_of_exact Fr).extClass.comp (z.mapExactFunctor Fr) (add_comm 1 n) =
+        (S_exact.extClass.comp z (add_comm 1 n)).mapExactFunctor Fr := by
+        rw [Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
+      apply (Ext.comp_assoc _ _ _ (add_comm 1 n) rfl (add_comm 1 (n + 1))).symm.trans
+      exact congrFun (congrFun (congrFun (congrArg Ext.comp this) _) (n + 2)) rfl
 
 end
 
@@ -488,7 +483,7 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     (regR : IsSMulRegular R x) (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) (n : ℕ) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) :=
-        Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+        Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
@@ -497,7 +492,7 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
     (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) := by
   let _ : Nontrivial (R ⧸ Ideal.span {x}) :=
-      Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
   let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
     IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
   let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
@@ -535,7 +530,7 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
     injectiveDimension M := by
   let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
-      Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
