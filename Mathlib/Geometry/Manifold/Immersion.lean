@@ -11,9 +11,9 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 
-/-! # Smooth immersions and embeddings
+/-! # Smooth immersions
 
-In this file, we define `C^n` immersions and embeddings between `C^n` manifolds.
+In this file, we define `C^n` immersions between `C^n` manifolds.
 The correct definition in the infinite-dimensional setting differs from the standard
 finite-dimensional definition (concerning the `mfderiv` being injective): future pull requests will
 prove that our definition implies the latter, and that both are equivalent for finite-dimensional
@@ -25,6 +25,7 @@ charts. Most results below can be deduced from more abstract results about such 
 This shortens the overall argument, as the definition of submersions has the same general form.
 
 ## Main definitions
+
 * `IsImmersionAtOfComplement F I J n f x` means a map `f : M → N` between `C^n` manifolds `M` and
   `N` is an immersion at `x : M`: there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`,
   respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`, w.r.t. some equivalence
@@ -38,10 +39,16 @@ This shortens the overall argument, as the definition of submersions has the sam
   w.r.t. some global choice of complement.
 
 ## Main results
+
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
-* `IsImmersionAtOfComplement.congr_F`: being an immersion at `x` w.r.t. `F`
-  is stable under replacing the complement `F` by an isomorphic copy
+* `IsImmersionAtOfComplement.congr_F`, `IsImmersionOfComplement.congr_F`:
+  being an immersion (at `x`) w.r.t. `F` is stable under
+  replacing the complement `F` by an isomorphic copy
+
+## Implementation notes
+TODO write!
+
 
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
@@ -59,7 +66,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
 * If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being injective
   implies `f` is an immersion at `x`.
-* define smooth embeddings, and deduce analogous results for these
 
 ## References
 
