@@ -248,11 +248,9 @@ variable (V W : SSet.Truncated.{u} 2)
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
 def HomotopyCategory : Type u :=
   Quotient (OneTruncation₂.HoRel₂ V)
+  deriving Category.{u}
 
 namespace HomotopyCategory
-
-instance : Category.{u} V.HomotopyCategory :=
-  inferInstanceAs (Category (CategoryTheory.Quotient _))
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
 simplicial set `V` to its homotopy category. -/
@@ -272,6 +270,14 @@ def mk (x : V _⦋0⦌₂) : V.HomotopyCategory :=
 lemma mk_surjective : Function.Surjective (mk (V := V)) := by
   rintro ⟨⟨x⟩⟩
   exact ⟨x, rfl⟩
+
+@[elab_as_elim, cases_eliminator]
+protected lemma cases_on {motive : V.HomotopyCategory → Prop}
+    (h : ∀ (x : V _⦋0⦌₂), motive (.mk x))
+    (x : V.HomotopyCategory) :
+    motive x := by
+  obtain ⟨x', rfl⟩ := mk_surjective x
+  exact h x'
 
 /-- The morphism in the homotopy category of a `2`-truncated simplicial set that
 is induced by an edge. -/
@@ -379,7 +385,8 @@ variable {F G : V.HomotopyCategory ⥤ D}
 section
 
 variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
-  (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e))
+  (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),
+    F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
@@ -399,7 +406,7 @@ section
 
 variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
   (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
-    (iso x).hom ≫ G.map (homMk e))
+    (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
@@ -421,9 +428,7 @@ lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
       F.map (homMk e) = eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm) :
     F = G :=
   Functor.ext_of_iso (mkNatIso (fun x ↦ eqToIso (h₁ x))
-    (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _) (fun x ↦ by
-      obtain ⟨x, rfl⟩ := x.mk_surjective
-      simp)
+    (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _)
 
 end
 
@@ -466,7 +471,7 @@ theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism. -/
-theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D: Type*} [Category D]
+theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D : Type*} [Category D]
     (F₁ F₂ : V.HomotopyCategory ⥤ D)
     (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
