@@ -246,7 +246,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
-      rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
+      rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]
     exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
   | succ d hd =>
     by_cases eqi : I = 0
