@@ -66,6 +66,12 @@ class OrzechProperty : Prop where
 
 namespace OrzechProperty
 
+instance [Finite R] : OrzechProperty R where
+  injective_of_surjective_of_submodule' {M} _ _ _ {N} _f hf :=
+    have : Finite M := Module.finite_of_finite R
+    have ⟨_g, hg⟩ := N.subtype_injective.hasLeftInverse
+    .of_comp (hg.surjective.comp hf).bijective_of_finite.1
+
 variable {R}
 
 variable [OrzechProperty R] {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]

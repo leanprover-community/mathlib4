@@ -132,12 +132,16 @@ theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
   refine ⟨fun h n => fun f hf => ?_, fun h => ⟨@fun n m f hf => ?_⟩⟩
-  · letI : StrongRankCondition R := h
-    exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
+  · exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
     exact
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
+
+variable {R} in
+theorem not_strongRankCondition_iff_succ :
+    ¬ StrongRankCondition R ↔ ∃ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), Injective f := by
+  simp [strongRankCondition_iff_succ]
 
 /-- Any nontrivial ring satisfying Orzech property also satisfies strong rank condition. -/
 instance (priority := 100) strongRankCondition_of_orzechProperty
@@ -222,6 +226,15 @@ instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition 
     InvariantBasisNumber R where
   eq_of_fin_equiv e := le_antisymm (le_of_fin_surjective R e.symm.toLinearMap e.symm.surjective)
     (le_of_fin_surjective R e.toLinearMap e.surjective)
+
+/-- If `R` fails the strong rank condition, there is a copy of `R^(ℕ)` in some `R^n`. -/
+theorem not_strongRankCondition_iff_exists_finsupp_nat_linearMap :
+    ¬ StrongRankCondition R ↔ ∃ (n : ℕ) (f : (ℕ →₀ R) →ₗ[R] Fin n → R), Injective f := by
+  rw [not_strongRankCondition_iff_succ]
+  constructor <;> refine fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩
+  · exact f.exists_finsupp_nat_of_fin_fun_injective inj
+  · exact ⟨f ∘ₗ Finsupp.lmapDomain R R (↑) ∘ₗ (Finsupp.linearEquivFunOnFinite ..).symm.toLinearMap,
+      inj.comp <| by simpa using Finsupp.mapDomain_injective Fin.val_injective⟩
 
 end
 

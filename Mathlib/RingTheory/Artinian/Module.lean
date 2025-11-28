@@ -143,26 +143,17 @@ lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
 
 open Submodule
 
+theorem not_isArtinian_of_linearMap_prod_injective [Nontrivial P] {f : P × N →ₗ[R] N}
+    (inj : Function.Injective f) : ¬ IsArtinian R N := fun _ ↦
+  have ⟨g, inj⟩ := LinearMap.exists_finsupp_nat_of_prod_injective inj
+  have ⟨p, ne⟩ := exists_ne (0 : P)
+  Infinite.not_finite <| WellFoundedLT.finite_of_iSupIndep
+    (g.iSupIndep_map inj (iSupIndep_range_lsingle ℕ R P))
+    fun i ↦ (Submodule.ne_bot_iff _).mpr ⟨_, ⟨_, ⟨p, rfl⟩, rfl⟩, by simpa [inj]⟩
+
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
-    (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_isEmpty.1 h.wf).elim' ?_
-  have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
-  have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
-    rintro n x ⟨y, _, rfl⟩
-    exact (f y).2
-  have : ∀ a b : ℕ, a ≤ b ↔
-      span R (Subtype.val ∘ f '' { m | b ≤ m }) ≤ span R (Subtype.val ∘ f '' { m | a ≤ m }) := by
-    intro a b
-    rw [span_le_span_iff hs (this b) (this a),
-      Set.image_subset_image_iff (Subtype.coe_injective.comp f.injective), Set.subset_def]
-    simp only [Set.mem_setOf_eq]
-    exact ⟨fun hab x ↦ hab.trans, (· _ le_rfl)⟩
-  exact ⟨⟨fun n ↦ span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y ↦ by
-    rw [le_antisymm_iff, ← this y x, ← this x y]
-    exact fun ⟨h₁, h₂⟩ ↦ le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
-    intro a b
-    conv_rhs => rw [GT.gt, lt_iff_le_not_ge, this, this, ← lt_iff_le_not_ge]
-    rfl⟩
+    (hs : LinearIndependent R ((↑) : s → M)) : s.Finite :=
+  WellFoundedLT.finite_of_iSupIndep hs.iSupIndep_span_singleton fun i _ ↦ hs.ne_zero i (by simp_all)
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
 theorem set_has_minimal_iff_artinian :
