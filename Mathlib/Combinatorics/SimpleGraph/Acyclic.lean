@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -456,7 +456,7 @@ noncomputable def IsTree.coloring_two (hG : G.IsTree) : G.Coloring (Fin 2) :=
   let u : V := Classical.choice hG.isConnected.nonempty
   hG.coloring_two_of_elem u
 
-lemma IsTree.colorable_two (hG : G.IsTree) : G.Colorable 2 :=
+lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
   Nonempty.intro hG.coloring_two
 
 end SimpleGraph
