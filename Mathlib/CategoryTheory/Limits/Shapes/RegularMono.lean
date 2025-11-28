@@ -332,6 +332,27 @@ theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
+/--
+Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
+-/
+def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
+    (c : PullbackCone f f) (hc : IsLimit c) :
+    IsColimit (Cofork.ofπ f c.condition) where
+  desc s := EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+      simp only [Cofork.app_one_eq_π]
+      rw [← PullbackCone.IsLimit.lift_snd hc g₁ g₂ hg, Category.assoc,
+        ← Cofork.app_zero_eq_comp_π_right]
+      simp)
+  fac s := by
+    have := EffectiveEpi.fac f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+      simp only [Cofork.app_one_eq_π]
+      rw [← PullbackCone.IsLimit.lift_snd hc g₁ g₂ hg,
+        Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
+      simp)
+    rintro (_ | _)
+    all_goals simp_all
+  uniq _ _ h := EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one)
+
 /-- An effective epi which has a kernel pair is a regular epi. -/
 noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
@@ -339,22 +360,7 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
   left := pullback.fst f f
   right := pullback.snd f f
   w := pullback.condition
-  isColimit := {
-    desc := fun s ↦ EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
-      simp only [Cofork.app_one_eq_π]
-      rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
-      simp)
-    fac := by
-      intro s j
-      have := EffectiveEpi.fac f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
-          simp only [Cofork.app_one_eq_π]
-          rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
-          simp)
-      simp only [Functor.const_obj_obj, Cofork.app_one_eq_π] at this
-      cases j with
-      | zero => simp [this]
-      | one => simp [this]
-    uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
+  isColimit := isColimitCoforkOfEffectiveEpi f _ (pullback.isLimit _ _)
 
 /-- Every split epimorphism is a regular epimorphism. -/
 instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where
