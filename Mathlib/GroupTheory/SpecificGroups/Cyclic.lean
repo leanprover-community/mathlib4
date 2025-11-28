@@ -636,7 +636,7 @@ instance (priority := 100) isCyclic : IsCyclic α := by
 
 /-- A commutative simple group is a finite group. -/
 @[to_additive /-- A commutative simple group is a finite group. -/]
-instance : Finite α := by
+scoped instance : Finite α := by
   obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic α)
   by_contra hnf
   have horder : ¬IsOfFinOrder g := by
