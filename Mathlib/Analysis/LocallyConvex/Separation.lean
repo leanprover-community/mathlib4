@@ -322,24 +322,29 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 
-/-- A variant of `iInter_halfSpaces_eq`. -/
+/-- A variant of `iInter_halfSpaces_eq`. If `s` is nonempty, then all the halfspaces are
+nontrivial. -/
 theorem iInter_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ∃ (L : (sᶜ : Set E) → StrongDual 𝕜 E) (c : (sᶜ : Set E) → ℝ),
-    ⋂ y, { x | re (L y x) ≤ c y } = s := by
+    ⋂ y, { x | re (L y x) ≤ c y } = s ∧ (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
   have (y : (sᶜ : Set E)) := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ y.2
   choose L c hLc using this
-  refine ⟨L, c, ?_⟩
-  rw [iInter_setOf]
-  refine subset_antisymm (fun x hx => ?_) fun x hx l => ((hLc l).1 x hx).le
-  by_contra!
-  simp only [Subtype.forall, mem_compl_iff, mem_setOf_eq] at hx
-  linarith [(hLc ⟨x, this⟩).2, hx x this]
+  refine ⟨L, c, ?_, fun h y => ?_⟩
+  · rw [iInter_setOf]
+    refine subset_antisymm (fun x hx => ?_) fun x hx l => ((hLc l).1 x hx).le
+    by_contra!
+    simp only [Subtype.forall, mem_compl_iff, mem_setOf_eq] at hx
+    linarith [(hLc ⟨x, this⟩).2, hx x this]
+  · by_contra! p
+    have := lt_trans ((hLc y).1 h.some h.some_mem) (hLc y).2
+    simp [p] at this
 
 /-- A closed convex set with a Lindelöf complement is the intersection of countably many
 halfspaces. -/
 theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (hs₃ : IsLindelof sᶜ) : ∃ (u : Set (sᶜ : Set E)) (L : u → StrongDual 𝕜 E) (c : u → ℝ),
-    u.Countable ∧ ⋂ y, { x | re (L y x) ≤ c y } = s := by
+    u.Countable ∧ ⋂ y, { x | re (L y x) ≤ c y } = s ∧
+    (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
   obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_const_eq (𝕜 := 𝕜) hs₁ hs₂
   let t : (sᶜ : Set E) → Set E := fun y => { x | re (L y x) ≤ c y }
   have htc y : IsClosed (t y) := by
@@ -348,13 +353,14 @@ theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex �
     grind
   have hst : sᶜ ∩ ⋂ y, t y = ∅ := by grind
   obtain ⟨u, hu, hu'⟩ := hs₃.elim_countable_subfamily_closed t htc hst
-  refine ⟨u, fun y => L y, fun y => c y, hu, subset_antisymm (fun z hz => ?_) ?_⟩
+  refine ⟨u, fun y => L y, fun y => c y, hu, subset_antisymm (fun z hz => ?_) ?_, fun h y =>
+    hLc.2 h y.1⟩
   · by_contra!
     have : z ∈ (∅ : Set E) := by
       simp only [← hu', biInter_eq_iInter]
       exact ⟨this, fun i hi => hz i hi⟩
     grind
-  · rw (config := {occs := .pos [1]}) [← hLc]
+  · rw (config := {occs := .pos [1]}) [← hLc.1]
     have : u ⊆ (univ : Set (sᶜ : Set E)) := by grind
     have := biInter_subset_biInter_left (t := t) this
     simp only [t, biInter_eq_iInter] at this
@@ -362,16 +368,20 @@ theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex �
     simp
 
 /-- `IsLindelof.iInter_countable_halfSpaces_const_eq` for product spaces. -/
-theorem _root_.IsLindelof.iInter_nat_halfSpaces_const_eq {F : Type*} [AddCommGroup F] [Module ℝ F]
-    [TopologicalSpace F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F] [IsTopologicalAddGroup F]
+theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq_prod {F : Type*} [AddCommGroup F]
+    [Module ℝ F] [TopologicalSpace F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜 F] [LocallyConvexSpace ℝ F] {s : Set (E × F)} (hs₁ : Convex ℝ s)
     (hs₂ : IsClosed s) (hs₃ : IsLindelof sᶜ) :
     ∃ (u : Set (sᶜ : Set (E × F))) (L : u → StrongDual 𝕜 E) (T : u → StrongDual 𝕜 F) (c : u → ℝ),
-    u.Countable ∧ ⋂ y, { x | re (L y x.1) + re (T y x.2) ≤ c y } = s := by
+    u.Countable ∧ ⋂ y, { x | re (L y x.1) + re (T y x.2) ≤ c y } = s
+    ∧ (s.Nonempty → ∀ y, ∃ x z, re (L y x) + re (T y z) ≠ 0):= by
   obtain ⟨u, LT, c, eq1, eq2⟩ := hs₃.iInter_countable_halfSpaces_const_eq (𝕜 := 𝕜) hs₁ hs₂
-  refine ⟨u, fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, eq1, ?_⟩
-  convert eq2
-  simp [← map_add]
+  refine ⟨u, fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, eq1, ?_,
+    fun h y => ?_⟩
+  · convert eq2.1
+    simp [← map_add]
+  · obtain ⟨w, hw⟩ := eq2.2 h y
+    simpa [← map_add] using ⟨w.1, w.2, hw⟩
 
 end
 
