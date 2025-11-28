@@ -655,7 +655,7 @@ namespace Equivalence
 variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
-simply use `e.symm.toAdjunction`. -/
+simply use `e.symm.toAdjunction`.) -/
 @[simps]
 def toAdjunction : e.functor ⊣ e.inverse where
   unit := e.unit

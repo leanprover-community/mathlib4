@@ -120,7 +120,7 @@ lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : SummationFilter β}
   match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
 open scoped Classical in
-/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise. ]
+/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∏'[L] i, f i` is the product of `f` with respect to
 `L` if it exists, and `1` otherwise.

@@ -133,9 +133,9 @@ atom at one of the endpoints.
 
 There are some `intervalIntegral.FTCFilter` instances where the fact that it is one-sided or
 two-sided depends on the point, namely `(x, 𝓝[Set.Icc a b] x, 𝓝[Set.Icc a b] x)` (resp.
-`(x, 𝓝[Set.uIcc a b] x, 𝓝[Set.uIcc a b] x)`, with `x ∈ Icc a b` (resp. `x ∈ uIcc a b`). This results
-in a two-sided derivatives for `x ∈ Set.Ioo a b` and one-sided derivatives for `x ∈ {a, b}`. Other
-instances could be added when needed (in that case, one also needs to add instances for
+`(x, 𝓝[Set.uIcc a b] x, 𝓝[Set.uIcc a b] x)`), with `x ∈ Icc a b` (resp. `x ∈ uIcc a b`). This
+results in a two-sided derivatives for `x ∈ Set.Ioo a b` and one-sided derivatives for `x ∈ {a, b}`.
+Other instances could be added when needed (in that case, one also needs to add instances for
 `Filter.IsMeasurablyGenerated` and `Filter.TendstoIxxClass`).
 
 ## Tags
