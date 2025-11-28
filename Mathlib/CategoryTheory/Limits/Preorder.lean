@@ -71,22 +71,17 @@ def coconeOfUpperBound {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocon
   pt := x
   ι := { app i := homOfLE (h (Set.mem_range_self _)) }
 
-/-- The cocone associated to an upper bound of a functor -/
-def coconePt_mem_upperBounds {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
-  pt := x
-  ι := { app i := homOfLE (h (Set.mem_range_self _)) }
-
 /-- The point of a cocone is an upper bound. -/
-lemma upperBoundOfCocone (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj) := by
+lemma coconePt_mem_upperBounds (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj) := by
   intro x ⟨i, p⟩; rw [← p]; exact (c.ι.app i).le
 
 /-- If a cocone is a colimit, its point is a lub. -/
 lemma isLUB_of_isColimit {c : Cocone F} (h : IsColimit c) : IsLUB (Set.range F.obj) c.pt :=
-  ⟨(upperBoundOfCocone F c), fun _ k ↦ (h.desc (coconePt_mem_upperBounds F k)).le⟩
+  ⟨(coconePt_mem_upperBounds F c), fun _ k ↦ (h.desc (coconeOfUpperBound F k)).le⟩
 
 /-- If the point of cocone is a lub, the cocone is a .colimit -/
 def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) : IsColimit c where
-  desc d := (h.2 (upperBoundOfCocone F d)).hom
+  desc d := (h.2 (coconePt_mem_upperBounds F d)).hom
 
 /-- The colimit cocone for a functor `F : J ⥤ C` to a preorder when `pt : C`
 is the least upper bound of `Set.range F.obj` -/
