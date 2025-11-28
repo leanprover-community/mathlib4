@@ -24,7 +24,7 @@ triangulated category `C`, we obtain a spectral object in the abelian category `
 * construct the spectral sequence attached to a spectral object in an abelian category
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
 -/
 
