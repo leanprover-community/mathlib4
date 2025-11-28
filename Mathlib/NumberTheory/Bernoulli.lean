@@ -188,6 +188,15 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 @[simp]
 theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 
+@[simp]
+theorem bernoulli_two : bernoulli 2 = 6⁻¹ := by
+  simp [bernoulli]
+
+@[simp]
+theorem bernoulli_odd_eq_zero {s : ℕ} (s0 : s ≠ 0) : bernoulli (2 * s + 1) = 0 := by
+  rw [bernoulli, bernoulli'_odd_eq_zero]
+  all_goals simp [Nat.pos_of_ne_zero s0]
+
 theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
   by_cases h0 : n = 0; · simp [h0]
   rw [bernoulli, neg_one_pow_eq_pow_mod_two]
