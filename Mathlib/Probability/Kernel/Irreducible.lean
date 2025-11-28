@@ -73,9 +73,9 @@ instance {c : ℝ≥0∞} {φ : Measure α} {κ : Kernel α α} [hκ : IsIrreduc
 
 lemma isIrreducible_of_le_measure {φ₁ φ₂ : Measure α} (hφ : φ₁ ≤ φ₂)
     {κ : Kernel α α} [hκ : IsIrreducible φ₂ κ] :
-    IsIrreducible φ₁ κ :=
-  { irreducible := fun s hs hsp ↦ by
-      simpa using hκ.irreducible hs <| Std.lt_of_lt_of_le hsp (hφ s) }
+    IsIrreducible φ₁ κ where
+  irreducible s hs hsp := by
+    simpa using hκ.irreducible hs <| Std.lt_of_lt_of_le hsp (hφ s)
 
 end Kernel
 
