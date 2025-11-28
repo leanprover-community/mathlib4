@@ -187,7 +187,7 @@ instance instSMul : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
               ((of R).symm y).isPWO_support a).Nonempty } := by
           intro a ha
           contrapose! ha
-          simp [not_nonempty_iff_eq_empty.1 ha]
+          simp [ha]
         isPWO_support_vaddAntidiagonal.mono h }
 
 theorem coeff_smul (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
@@ -353,7 +353,7 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
   · exact y.isPWO_support
   intro x hx
   contrapose! hx
-  simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
+  simp only [Set.mem_setOf_eq] at hx
   simp [hx, coeff_smul]
 
 theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}

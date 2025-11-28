@@ -72,8 +72,8 @@ namespace IsApproximateSubgroup
 @[to_additive one_le]
 lemma one_le (hA : IsApproximateSubgroup K A) : 1 ≤ K := by
   obtain ⟨F, hF, hSF⟩ := hA.sq_covBySMul
-  have hF₀ : F ≠ ∅ := by rintro rfl; simp [hA.nonempty.pow.ne_empty] at hSF
-  exact hF.trans' <| by simpa [Finset.nonempty_iff_ne_empty]
+  have hF : F.Nonempty := by by_contra! h; rcases h with rfl; simp [hA.nonempty.pow.ne_empty] at hSF
+  exact hF.trans' <| by simpa
 
 @[to_additive]
 lemma mono (hKL : K ≤ L) (hA : IsApproximateSubgroup K A) : IsApproximateSubgroup L A where

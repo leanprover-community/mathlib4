@@ -194,7 +194,7 @@ theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
 
 @[simp]
 theorem parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
-  rw [nonempty_iff_ne_empty, not_iff_not, parts_eq_empty_iff]
+  contrapose!; exact parts_eq_empty_iff
 
 theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
@@ -531,7 +531,7 @@ lemma part_eq_empty : P.part a = ∅ ↔ a ∉ s :=
 
 @[simp]
 lemma part_nonempty : (P.part a).Nonempty ↔ a ∈ s := by
-  simpa only [nonempty_iff_ne_empty] using P.part_eq_empty.not_left
+  contrapose!; exact part_eq_empty P
 
 @[simp]
 lemma part_subset (a : α) : P.part a ⊆ s := by

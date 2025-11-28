@@ -1053,7 +1053,6 @@ theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
   rw [← support_nonempty] at h
   obtain ⟨n, hn⟩ := h
   rw [mem_support_iff] at hn
-  rw [← nonempty_iff_ne_empty]
   exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
 
 @[simp]

@@ -212,7 +212,7 @@ theorem powersetCard_one (s : Finset α) :
 lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
   refine ⟨?_, fun h ↦ card_eq_zero.1 <| by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
   contrapose!
-  exact fun h ↦ nonempty_iff_ne_empty.1 <| (exists_subset_card_eq h).imp <| by simp
+  exact fun h ↦ (exists_subset_card_eq h).imp <| by simp
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa
