@@ -397,7 +397,7 @@ def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       homEquiv_naturality_right _ _ := adj.homEquiv_naturality_right _ _ }
 
 @[simp]
-lemma adj_counit (V) [ReflQuiver V] :
+lemma adj_counit_app (V) [ReflQuiver V] :
     adj.unit.app (ReflQuiv.of V) = Cat.toFreeRefl V := rfl
 
 lemma adj_unit_app (D : Type*) [Category D] :
