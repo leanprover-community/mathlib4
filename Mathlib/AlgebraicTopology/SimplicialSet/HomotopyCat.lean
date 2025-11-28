@@ -306,7 +306,7 @@ morphisms in `V.HomotopyCategory` corresponding to the edges of `V`.
 (Any morphism in `V.HomotopyCategory` is in the multiplicative closure
 of this family of morphisms, see `multiplicativeClosure_morphismPropertyHomMk`.) -/
 def morphismPropertyHomMk : MorphismProperty V.HomotopyCategory :=
-    .ofHoms (fun (e : Σ (x y : V _⦋0⦌₂), Edge x y) ↦ homMk e.2.2)
+  .ofHoms (fun (e : Σ (x y : V _⦋0⦌₂), Edge x y) ↦ homMk e.2.2)
 
 lemma morphismPropertyHomMk_of_edge {x y : V _⦋0⦌₂} (e : Edge x y) :
     morphismPropertyHomMk V (homMk e) := by
