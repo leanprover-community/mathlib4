@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Ext.BaseChange
+public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
@@ -18,7 +19,6 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.RingTheory.CohenMacaulay.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.GlobalDimension
 public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
@@ -281,9 +281,9 @@ instance (S : Submonoid R) : Small.{v} (Localization S) :=
 instance (p : Ideal R) [p.IsPrime] : Small.{v} p.ResidueField :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
-noncomputable local instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
-    Module R (M.localizedModule S) :=
-  inferInstanceAs (Module R (Shrink.{v} (LocalizedModule S M)))
+private instance [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
+    Small.{v} (LocalizedModule S M) :=
+  small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
 
 lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M]
     {p q : PrimeSpectrum R} (lt : p < q) (eq_of_le : ∀ r : PrimeSpectrum R, p < r → r ≤ q → r = q)
