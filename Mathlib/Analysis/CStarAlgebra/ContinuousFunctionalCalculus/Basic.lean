@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus
 
@@ -48,6 +50,8 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
@@ -238,7 +242,7 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
   nontriviality A
   intro x hx
   by_cases hr' : r = 0
-  · simp [hr'] at hx ⊢
+  · simp only [hr', zero_smul, spectrum.zero_eq, Set.mem_singleton_iff] at hx ⊢
     exact hx.symm.le
   · lift r to ℝˣ using IsUnit.mk0 r hr'
     rw [← Units.smul_def, spectrum.unit_smul_eq_smul, Set.mem_smul_set_iff_inv_smul_mem] at hx

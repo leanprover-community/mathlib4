@@ -3,9 +3,11 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.Disjointed
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -53,6 +55,8 @@ import Mathlib.Order.Disjointed
   insertion, nor do we define a complete lattice. In theory, we could define a complete
   lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
+
+@[expose] public section
 
 
 open MeasurableSpace Set

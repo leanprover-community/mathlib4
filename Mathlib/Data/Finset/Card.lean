@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Finset.Lattice.Lemmas
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
@@ -26,6 +28,8 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 * `Finset.eraseInduction`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -322,7 +326,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     _ = n := card_range n
   apply card_image_of_injective
   intro ⟨i, hi⟩ ⟨j, hj⟩ eq
-  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
+  exact Subtype.ext <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 
 variable {t : Finset β}
 

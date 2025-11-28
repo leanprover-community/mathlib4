@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Dynamics.Minimal
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Group.Defs
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Dynamics.Minimal
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measures invariant under group actions
@@ -20,8 +22,10 @@ typeclass for measures invariant under action of an (additive or multiplicative)
 some basic properties of such measures.
 -/
 
+@[expose] public section
 
-open scoped ENNReal NNReal Pointwise Topology
+
+open scoped ENNReal NNReal Pointwise Topology symmDiff
 open MeasureTheory.Measure Set Function Filter
 
 namespace MeasureTheory
@@ -100,6 +104,38 @@ theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = 
 @[to_additive (attr := simp)]
 theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
   simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
+
+@[to_additive (attr := simp)]
+theorem measure_inter_inv_smul (c : G) (s t : Set α) : μ (s ∩ c⁻¹ • t) = μ (c • s ∩ t) := by
+  rw [← measure_smul _ c, smul_set_inter, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_inter (c : G) (s t : Set α) : μ (c⁻¹ • s ∩ t) = μ (s ∩ c • t) := by
+  simpa [inv_inv] using (measure_inter_inv_smul _ c⁻¹ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem measure_union_inv_smul (c : G) (s t : Set α) : μ (s ∪ c⁻¹ • t) = μ (c • s ∪ t) := by
+  rw [← measure_smul _ c, smul_set_union, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_union (c : G) (s t : Set α) : μ (c⁻¹ • s ∪ t) = μ (s ∪ c • t) := by
+  simpa [inv_inv] using (measure_union_inv_smul _ c⁻¹ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem measure_sdiff_inv_smul (c : G) (s t : Set α) : μ (s \ c⁻¹ • t) = μ (c • s \ t) := by
+  rw [← measure_smul _ c, smul_set_sdiff, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_sdiff (c : G) (s t : Set α) : μ (c⁻¹ • s \ t) = μ (s \ c • t) := by
+  simpa [inv_inv] using (measure_sdiff_inv_smul _ c⁻¹ _ _).symm
+
+@[to_additive (attr := simp)]
+theorem measure_symmDiff_inv_smul (c : G) (s t : Set α) : μ (s ∆ (c⁻¹ • t)) = μ ((c • s) ∆ t) := by
+  rw [← measure_smul _ c, smul_set_symmDiff, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive (attr := simp)]
+theorem measure_inv_smul_symmDiff (c : G) (s t : Set α) : μ ((c⁻¹ • s) ∆ t) = μ (s ∆ (c • t)) := by
+  simpa [inv_inv] using (measure_symmDiff_inv_smul _ c⁻¹ _ _).symm
 
 variable {μ}
 

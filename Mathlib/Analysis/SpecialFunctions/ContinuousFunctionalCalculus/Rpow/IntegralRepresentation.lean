@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
-import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
+public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 
 /-!
 # Integral representations of `rpow`
@@ -46,6 +47,8 @@ relevant in applications, and would needlessly complicate the proof.
 + [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter
 open scoped NNReal Topology
@@ -123,6 +126,8 @@ lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x)
       (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
+-- TODO: non-terminal simp_all followed by positivity
+set_option linter.flexible false in
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
@@ -205,7 +210,7 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
   calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by simp [field, rpowIntegrand₀₁]
     _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
           rw [Real.rpow_sub_one ht.ne']
-          field
+          ring
     _ = _ := by simp [mul_comm, smul_eq_mul, rpowIntegrand₀₁]
 
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/

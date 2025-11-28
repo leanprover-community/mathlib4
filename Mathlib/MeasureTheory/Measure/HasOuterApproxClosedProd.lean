@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+module
+
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!
 # Characterization of a finite measure by the integrals of products of bounded functions
@@ -24,7 +26,7 @@ such that for any two families bounded continuous functions
 
 We specialize these results to the cases where one of the families contains only one type.
 
-# Main statements
+## Main statements
 
 * `ext_of_integral_prod_mul_prod_boundedContinuousFunction`: A finite measure `μ`
   over `(Π i, X i) × (Π j, Y j)` is determined by the values
@@ -46,10 +48,12 @@ We specialize these results to the cases where one of the families contains only
   `ν` is the only finite measure `ξ` such that for all real bounded continuous functions
   `f` and `g` we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
-# Tags
+## Tags
 
 bounded continuous function, product measure
 -/
+
+@[expose] public section
 
 open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal
@@ -211,6 +215,7 @@ lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction' {μ : Measure
     ξ = μ.prod ν :=
   ext_of_integral_prod_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
 
+set_option linter.flexible false in -- simp followed by fun_prop
 lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i, X i) × T)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : ∀ (f : (i : ι) → X i →ᵇ ℝ) (g : T →ᵇ ℝ),
@@ -289,6 +294,7 @@ lemma eq_prod_of_integral_mul_prod_boundedContinuousFunction' {μ : Measure Z}
     ξ = μ.prod ν :=
   ext_of_integral_mul_prod_boundedContinuousFunction' fun f g ↦ by rw [h, ← integral_prod_mul]
 
+set_option linter.flexible false in -- simp followed by fun_prop
 /-- A finite measure `μ` over `X × Y` is determined by the values `∫ p, f p.1 * g p.2 ∂μ`,
 for `f : X → ℝ` and `g : Y → ℝ` any bounded continuous functions. -/
 lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
