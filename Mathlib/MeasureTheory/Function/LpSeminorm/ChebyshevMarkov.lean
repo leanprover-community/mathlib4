@@ -59,7 +59,7 @@ theorem meas_ge_le_mul_pow_eLpNorm_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p �
     simp [h, this, hmeas_top]
   · have hεpow : ε ^ p.toReal ≠ 0 := (ENNReal.rpow_pos (pos_iff_ne_zero.2 hε) h).ne.symm
     have hεpow' : ε ^ p.toReal ≠ ∞ := by finiteness
-    rw [ENNReal.inv_rpow, ← ENNReal.mul_le_mul_left hεpow hεpow', ← mul_assoc,
+    rw [ENNReal.inv_rpow, ← ENNReal.mul_le_mul_iff_right hεpow hεpow', ← mul_assoc,
       ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
     exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top hf ε
 
