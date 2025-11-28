@@ -223,8 +223,14 @@ def preimage : Set α := {a | ∃ b ∈ t, a ~[R] b}
 @[gcongr] lemma image_subset_image (hs : s₁ ⊆ s₂) : image R s₁ ⊆ image R s₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, hs ha, hab⟩
 
+@[gcongr] lemma image_subset_image_left (hR : R₁ ⊆ R₂) : image R₁ s ⊆ image R₂ s :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ha, hR hab⟩
+
 @[gcongr] lemma preimage_subset_preimage (ht : t₁ ⊆ t₂) : preimage R t₁ ⊆ preimage R t₂ :=
   fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ht ha, hab⟩
+
+@[gcongr] lemma preimage_subset_preimage_left (hR : R₁ ⊆ R₂) : preimage R₁ t ⊆ preimage R₂ t :=
+  fun _ ⟨a, ha, hab⟩ ↦ ⟨a, ha, hR hab⟩
 
 variable (R t) in
 @[simp] lemma image_inv : R.inv.image t = preimage R t := rfl
@@ -384,6 +390,12 @@ lemma right_subset_comp [R.IsRefl] {S : SetRel α β} : S ⊆ R ○ S := by
 lemma subset_iterate_comp [R.IsRefl] {S : SetRel α β} : ∀ {n}, S ⊆ (R ○ ·)^[n] S
   | 0 => .rfl
   | _n + 1 => right_subset_comp.trans subset_iterate_comp
+
+lemma self_subset_image [R.IsRefl] (s : Set α) : s ⊆ R.image s :=
+  fun x hx => ⟨x, hx, R.rfl⟩
+
+lemma self_subset_preimage [R.IsRefl] (s : Set α) : s ⊆ R.preimage s :=
+  fun x hx => ⟨x, hx, R.rfl⟩
 
 lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty)
     (hst : s ×ˢ t ⊆ SetRel.id) : ∃ x, s = {x} ∧ t = {x} := by

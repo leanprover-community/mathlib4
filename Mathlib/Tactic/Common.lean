@@ -77,7 +77,6 @@ public meta import Mathlib.Tactic.Observe
 public meta import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-public meta import Mathlib.Tactic.Propose
 public meta import Mathlib.Tactic.Push
 public meta import Mathlib.Tactic.RSuffices
 public meta import Mathlib.Tactic.Recover
