@@ -556,8 +556,8 @@ theorem not_strongRankCondition_iff_finrank_fin_fun_eq_zero [Nontrivial R] :
 /-- If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
 If `R` is a ring, the assumption is equivalent to `R` being a left-Noetherian ring, but this
 is not necessarily the case for semirings: `ℕ` is a Noetherian semiring but `ℕ²` is not a
-Noetherian `ℕ`-module. -/
-theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian R (Fin n → R)] :
+Noetherian `ℕ`-module. (`ℕ` does satisfy the strong rank condition.) -/
+instance (priority := 100) [Nontrivial R] [∀ n, IsNoetherian R (Fin n → R)] :
     StrongRankCondition R :=
   (strongRankCondition_iff_succ R).2 fun n f hf ↦
     have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _

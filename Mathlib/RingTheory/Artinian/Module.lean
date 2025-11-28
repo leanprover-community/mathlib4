@@ -143,14 +143,6 @@ lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
 
 open Submodule
 
-theorem not_isArtinian_of_linearMap_prod_injective [Nontrivial P] {f : P × N →ₗ[R] N}
-    (inj : Function.Injective f) : ¬ IsArtinian R N := fun _ ↦
-  have ⟨g, inj⟩ := LinearMap.exists_finsupp_nat_of_prod_injective inj
-  have ⟨p, ne⟩ := exists_ne (0 : P)
-  Infinite.not_finite <| WellFoundedLT.finite_of_iSupIndep
-    (g.iSupIndep_map inj (iSupIndep_range_lsingle ℕ R P))
-    fun i ↦ (Submodule.ne_bot_iff _).mpr ⟨_, ⟨_, ⟨p, rfl⟩, rfl⟩, by simpa [inj]⟩
-
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite :=
   WellFoundedLT.finite_of_iSupIndep hs.iSupIndep_span_singleton fun i _ ↦ hs.ne_zero i (by simp_all)
@@ -220,6 +212,13 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
   simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end IsArtinian
+
+theorem not_isArtinian_of_linearMap_prod_injective [Nontrivial P] {f : P × N →ₗ[R] N}
+    (inj : Function.Injective f) : ¬ IsArtinian R N := fun _ ↦
+  have ⟨p, ne⟩ := exists_ne (0 : P)
+  have ⟨_, eq⟩ := IsArtinian.surjective_of_injective_endomorphism (f ∘ₗ .inr ..)
+    (inj.comp (Prod.mk_right_injective _)) (f (p, 0))
+  ne congr($(inj eq).1).symm
 
 namespace LinearMap
 

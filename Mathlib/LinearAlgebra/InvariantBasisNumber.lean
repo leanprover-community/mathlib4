@@ -279,10 +279,10 @@ variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι'
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ Ideal.pi (fun _ ↦ I) → (ι' → R) ⧸ Ideal.pi fun _ ↦ I := fun x =>
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk _ (e y))
-    (fun a b hab => Ideal.Quotient.eq.2 fun h => by
+    fun a b hab => Ideal.Quotient.eq.2 fun h => by
       rw [Submodule.quotientRel_def] at hab
       rw [← map_sub]
-      exact Ideal.map_pi _ _ hab e h)
+      exact Ideal.map_pi _ _ hab e h
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
