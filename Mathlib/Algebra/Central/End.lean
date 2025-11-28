@@ -9,9 +9,7 @@ public import Mathlib.Algebra.Central.Defs
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
-
-# `Module.End K V` is a central algebra
-
+# `Module.End R M` is a central algebra
 -/
 
 @[expose] public section
