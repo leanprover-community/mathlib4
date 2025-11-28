@@ -108,7 +108,8 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
-@[deprecated Isometry.extensionHom (since := "2025-11-28")]
+@[deprecated "Use `Isometry.extensionHom` in combination with `AddMonoidHomClass.isometry_of_norm`"
+  (since := "2025-11-28")]
 abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
   (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
