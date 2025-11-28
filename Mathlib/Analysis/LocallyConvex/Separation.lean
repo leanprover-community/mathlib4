@@ -41,7 +41,7 @@ assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
-open Pointwise TopologicalSpace Metric
+open Pointwise
 
 variable {E : Type*} {s t : Set E} {x y : E}
 
