@@ -14,13 +14,6 @@ theorem LawfulSingleton.insert_empty_eq' [EmptyCollection β] [Insert α β] [Si
 
 attribute [grind _=_] LawfulSingleton.insert_empty_eq'
 
-attribute [grind =] Finset.mem_singleton
-
-attribute [grind =] Finset.disjoint_insert_left
-attribute [grind =] Finset.disjoint_insert_right
-attribute [grind ←] Finset.disjoint_empty_left
-attribute [grind ←] Finset.disjoint_empty_right
-
 attribute [grind] Pairwise
 
 example : Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
