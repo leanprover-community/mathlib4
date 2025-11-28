@@ -60,7 +60,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := (if useModule then "module\n\n" else "") ++
+    let fileContent := (if useModule then "module  -- shake: keep-all\n\n" else "") ++
       ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"
