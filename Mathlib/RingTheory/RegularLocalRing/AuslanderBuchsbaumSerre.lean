@@ -37,7 +37,7 @@ local instance [Small.{v} R] (I : Ideal R) : Small.{v} I :=
 lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
     Nontrivial (QuotSMulTop x L) := by
-  apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
+  apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
   apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
   exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
@@ -207,7 +207,7 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         exact Module.Projective.of_free
       · let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
           have : Nontrivial (R ⧸ Ideal.span {x}) :=
-            Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+            Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
           have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
             IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
           IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
@@ -396,12 +396,12 @@ lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x 
     (mem : x ∈ maximalIdeal R) (nmem : x ∉ (maximalIdeal R) ^ 2) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) :=
-        Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+        Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
     (maximalIdeal (R ⧸ Ideal.span {x})).spanFinrank = (maximalIdeal R).spanFinrank - 1 := by
-  let _ : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial
+  let _ : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial_iff.mpr
     (by simpa [← Submodule.ideal_span_singleton_smul] using mem)
   let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
     IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
@@ -501,7 +501,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
     rcases exist_isSMulRegular_of_exist_hasProjectiveDimensionLE nebot h with
       ⟨x, mem, nmem, xreg⟩
     let R' := R ⧸ Ideal.span {x}
-    let _ : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial
+    let _ : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial_iff.mpr
       (by simpa [← Submodule.ideal_span_singleton_smul] using mem)
     let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
