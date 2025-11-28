@@ -301,11 +301,10 @@ theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finran
   have := Fintype.ofFinite K
   have := Fintype.ofFinite L
   refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card K - X) ?_⟩
-  refine Polynomial.splits_of_splits_of_dvd _ ?_
-    (FiniteField.isSplittingField_sub L F).splits ?_
-  · exact FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card
+  refine (FiniteField.isSplittingField_sub L F).splits.splits_of_dvd ?_ ?_
+  · exact map_ne_zero (FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card)
   · rw [Module.card_eq_pow_finrank (K := F), Module.card_eq_pow_finrank (K := F) (V := L)]
-    exact dvd_pow_pow_sub_self_of_dvd h
+    exact (map_dvd_map' _).mpr (dvd_pow_pow_sub_self_of_dvd h)
 
 theorem natCard_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
     Nat.card (K →ₐ[F] L) = Module.finrank F K := by
