@@ -76,6 +76,8 @@ lemma quotientSMulShortComplex_exact (I : Ideal R) (x : R) :
     Quotient.algebraMap_eq, mul_comm]
 
 variable {R} in
+/-- The short complex `R ⧸ I → R ⧸ I → R ⧸ I ⊔ span {x}`,
+with the first map scalar multilple by `x`. -/
 def quotientSMulShortComplex (I : Ideal R) (x : R) : ShortComplex (ModuleCat.{u} R) :=
   ShortComplex.mk (ModuleCat.ofHom (x • (LinearMap.id (R := R) (M := R ⧸ I))))
   (ModuleCat.ofHom (Submodule.factor (le_sup_left : I ≤ I ⊔ Ideal.span {x}))) (by
