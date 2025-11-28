@@ -1,10 +1,40 @@
-import Mathlib.NumberTheory.Padics.WithVal
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Int.Basic
+/-
+Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Salvatore Mercuri
+-/
+module
+
+public import Mathlib.NumberTheory.Padics.WithVal
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.Int.Basic
+
+/-!
+# Isomorphisms between `adicCompletion ℚ` and `ℚ_[p]`
+
+If `v : HeightOneSpectrum ℚ`, then `v.adicCompletion ℚ` is the uniform space completion of `ℚ`
+with respect to the `v`-adic valuation, which definition generalises to Dedekind domains and
+their field of fractions. On the other hand, `ℚ_[p]` is the `p`-adic numbers, defined as the
+completion of `ℚ` with respect to the `p`-adic norm using the completion of Cauchy sequences.
+This file constructs uniform and `ℚ`-algebra` isomorphisms between the two, as well as for their
+respective rings of integers.
+
+## Main definitions
+- `Rat.HeightOneSpectrum.natGenerator v` : the generator in `ℕ` of a height-one prime ideal
+  in `𝓞 ℚ`.
+- `Rat.HeightOneSpectrum.padicUniformEquiv v` : `v.adicCompletion ℚ ≃ᵤ ℚ_[natGenerator v]`.
+- `Rat.HeightOneSpectrum.padicAlgEquiv v` : `v.adicCompletion ℚ ≃ₐ[ℚ] ℚ_[natGenerator v]`.
+- `Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntUniformEquiv v` :
+  `v.adicCompletionIntegers ℚ ≃ᵤ ℤ_[natGenerator v]`.
+- `Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntRingEquiv v` :
+  `v.adicCompletionIntegers ℚ ≃+* ℤ_[natGenerator v]`.
+-/
+
+@[expose] public section
 
 open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
 
-namespace Rat.RingOfIntegers.HeightOneSpectrum
+namespace Rat.HeightOneSpectrum
 
 /-- The generator in `ℕ` of a height-one prime ideal in `𝓞 ℚ`. -/
 noncomputable def natGenerator (v : HeightOneSpectrum (𝓞 ℚ)) : ℕ :=
