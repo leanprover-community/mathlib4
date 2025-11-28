@@ -25,15 +25,14 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 namespace Module.End
 variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Free K V]
 
-open Module LinearMap End Free
+open Module End Free LinearMap LinearEquiv
 
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
 theorem AlgEquiv.eq_linearEquivAlgConj (f : End K V ≃ₐ[K] End K V) :
     ∃ T : V ≃ₗ[K] V, f = T.algConj K := by
   nontriviality V
-  simp_rw [AlgEquiv.ext_iff, LinearEquiv.algConj_apply, ← LinearMap.comp_assoc,
-    LinearEquiv.eq_comp_toLinearMap_symm]
+  simp_rw [AlgEquiv.ext_iff, algConj_apply, ← comp_assoc, eq_comp_toLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := exists_dual_ne_zero K hu
   obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRight v u) z = (0 : End K V) z := by
@@ -51,9 +50,9 @@ theorem AlgEquiv.eq_linearEquivAlgConj (f : End K V ≃ₐ[K] End K V) :
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       apply f.injective <| ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
-      simp_rw [← this, smulRightₗ_apply_apply, map_smul, hxy]
+      simp_rw [← this, smulRightₗ_apply_apply, _root_.map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| this A).symm⟩
+  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (LinearMap.ext <| this A).symm⟩
 
 /-- Alternate statement of `eq_linearEquivAlgConj`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
