@@ -179,7 +179,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
   grind
 
-lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
+lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
   · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
     exact fderiv_id'
@@ -187,14 +187,14 @@ lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : 
   · simp
 
 @[fun_prop]
-lemma _root_.Function.HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
+lemma HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
   Function.HasTemperateGrowth.id
 
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for scalar multiplication. -/
 @[fun_prop]
-theorem _root_.Function.HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
+theorem HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=
   (ContinuousLinearMap.lsmul ℝ 𝕜).bilinear_hasTemperateGrowth hf hg
 
@@ -202,9 +202,16 @@ variable [NormedRing R] [NormedAlgebra ℝ R]
 
 /-- The product of two functions of temperate growth is again of temperate growth. -/
 @[fun_prop]
-theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
+theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth :=
   (ContinuousLinearMap.mul ℝ R).bilinear_hasTemperateGrowth hf hg
+
+@[fun_prop]
+theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
+    (f ^ k).HasTemperateGrowth := by
+  induction k with
+  | zero => simpa using HasTemperateGrowth.const 1
+  | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
 
