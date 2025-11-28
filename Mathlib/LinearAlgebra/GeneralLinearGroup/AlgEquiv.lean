@@ -23,13 +23,13 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 @[expose] public section
 
 namespace Module.End
-variable {R K V : Type*} [CommSemiring R] [Semifield K] [AddCommMonoid V] [Module R V] [Module K V]
+variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Free K V]
 
 open Module LinearMap End Free
 
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
-theorem AlgEquiv.eq_linearEquivAlgConj [Free K V] (f : End K V ≃ₐ[K] End K V) :
+theorem AlgEquiv.eq_linearEquivAlgConj (f : End K V ≃ₐ[K] End K V) :
     ∃ T : V ≃ₗ[K] V, f = T.algConj K := by
   nontriviality V
   simp_rw [AlgEquiv.ext_iff, LinearEquiv.algConj_apply, ← LinearMap.comp_assoc,
@@ -53,14 +53,14 @@ theorem AlgEquiv.eq_linearEquivAlgConj [Free K V] (f : End K V ≃ₐ[K] End K V
       obtain ⟨w, rfl⟩ := surj z
       simp_rw [← this, smulRightₗ_apply_apply, map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| this _).symm⟩
+  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| this A).symm⟩
 
-/-- Alternate statement of `coe_eq_linearEquiv_conj`. -/
-theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Free K V] :
+/-- Alternate statement of `eq_linearEquivAlgConj`. -/
+theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
-  obtain ⟨T, hT⟩ := f.eq_linearEquivAlgConj
-  exact ⟨.ofLinearEquiv T, (DFunLike.coe_injective (congr($hT))).symm⟩
+  have ⟨T, hT⟩ := f.eq_linearEquivAlgConj
+  exact ⟨.ofLinearEquiv T, hT.symm⟩
 
 end Module.End
