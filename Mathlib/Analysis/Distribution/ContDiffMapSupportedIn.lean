@@ -770,7 +770,7 @@ theorem seminorm_fderivWithOrderLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   by_cases hk : k + 1 ≤ n
   · rw [ContDiffMapSupportedIn.seminorm_le_iff_withOrder 𝕜 (apply_nonneg _ _)]
     intro hi x hx
-    have hi' : i + 1 ≤ n := (add_le_add_right hi 1).trans hk
+    have hi' : i + 1 ≤ n := (add_le_add_left hi 1).trans hk
     simpa [hk, norm_iteratedFDeriv_fderiv] using
       norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 hi'
   · simp [fderivWithOrderLM_apply_of_gt 𝕜 f hk]
