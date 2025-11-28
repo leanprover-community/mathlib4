@@ -143,7 +143,7 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZero
   refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
   · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
     suffices f y • x ∈ p by
-      have aux : f y • x ∈ p ⊓ (R ∙ x) := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
+      have aux : f y • x ∈ p ⊓ R ∙ x := ⟨this, Submodule.mem_span_singleton.mpr ⟨f y, rfl⟩⟩
       rw [hp.eq_bot, Submodule.mem_bot, smul_eq_zero] at aux
       exact aux.resolve_right hx
     specialize h' hy
