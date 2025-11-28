@@ -212,10 +212,10 @@ lemma key_extension_lemma (X Y S T : Type u)
     (subset_trans D_cover_univ C_cover_D)
   -- define k to be the unique map sending C i to ψ i
   have h_glue (i j : Fin n) (x : Y) (hxi : x ∈ C i) (hxj : x ∈ C j) :  ψ i = ψ j := by
-    obtain (hij | hij | hij) := lt_trichotomy i j
+    obtain (hij | rfl | hji) := lt_trichotomy i j
     · simpa using Set.disjoint_iff.mp (C_disj i j hij) (mem_inter hxi hxj)
-    · rw [hij]
-    · simpa using Set.disjoint_iff.mp (C_disj j i hij) (mem_inter hxj hxi)
+    · rfl
+    · simpa using Set.disjoint_iff.mp (C_disj j i hji) (mem_inter hxj hxi)
   refine ⟨liftCover C (fun i _ ↦ ψ i) h_glue C_cover_univ, ?_, ?_, ?_⟩
   · apply IsLocallyConstant.continuous
     rw [IsLocallyConstant.iff_isOpen_fiber]
