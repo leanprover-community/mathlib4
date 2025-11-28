@@ -47,8 +47,19 @@ This shortens the overall argument, as the definition of submersions has the sam
   replacing the complement `F` by an isomorphic copy
 
 ## Implementation notes
-TODO write!
 
+* In most applications, there is no need to control the chosen complement in the definition of
+  immersions, so `IsImmersion(At)` is perfectly fine to use. Such control will be helpful, however,
+  when considering the local characterisation of submanifolds: locally, a submanifold is described
+  either as the image of an immersion, or the preimage of a submersion --- w.r.t. the same
+  complement. Having access to a definition version with complements allows stating this equivalence
+  cleanly.
+* To avoid a free universe variable in `IsImmersion(At)`, we ask for a complement in the same
+  universe as the model normed space for `N`. We provide convenience constructors which do not
+  have this restriction (recovering usability).
+  The underlying observation is that the equivalence in the definition of immersions allows
+  shrinking the universe of the complement: this is implemented in
+  `IsImmersion(At)OfComplement.small` and `IsImmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
