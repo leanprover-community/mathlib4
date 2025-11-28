@@ -201,7 +201,8 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; cutsat)
     suffices p'.length ≤ height x by
-      simp [p'] at this
+      simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
+        Nat.cast_one, p'] at this
       convert this
       norm_cast
       cutsat
@@ -481,8 +482,7 @@ lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
   wlog hfin : height x < ⊤
-  · simp_all
-    exact ne_of_beq_false rfl
+  · simp_all [← Nat.cast_add_one, -Nat.cast_add]
   simp only [hfin, true_and]
   trans n < height x ∧ height x ≤ n + 1
   · rw [le_antisymm_iff, and_comm]
@@ -705,9 +705,7 @@ lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.l
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
 lemma krullDim_eq_iSup_length [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
-  unfold krullDim
-  rw [WithBot.coe_iSup (OrderTop.bddAbove _)]
-  rfl
+  simp [krullDim, WithBot.coe_iSup (OrderTop.bddAbove _), WithBot.coe_natCast]
 
 lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l.length < n := by
   rw [krullDim, ← WithBot.coe_natCast]

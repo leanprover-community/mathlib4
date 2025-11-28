@@ -75,7 +75,7 @@ theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.si
       coeffList_eraseLead hpz]
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
-the first two nonzero coeffients match. -/
+the first two nonzero coefficients match. -/
 theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     signVariations P = signVariations P.eraseLead + if SignType.sign P.leadingCoeff
       = -SignType.sign P.eraseLead.leadingCoeff then 1 else 0 := by
@@ -294,6 +294,8 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
 
+-- TODO: fix non-terminal simp below; simp followed by rfl
+set_option linter.flexible false in
 /-- Multiplying a polynomial by a linear term `X - η` adds at least one sign change. This is the
 basis for the induction in `roots_countP_pos_le_signVariations`. -/
 theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
@@ -301,16 +303,13 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
   -- do induction on the degree
   generalize hd : P.natDegree = d
   induction d using Nat.strong_induction_on generalizing P with | _ d ih =>
-
   -- can assume it starts positive, otherwise negate P
   wlog h_lC : 0 < leadingCoeff P generalizing P with H
   · simpa using @H (-P) (by simpa) (by simpa) (by grind [leadingCoeff_eq_zero, leadingCoeff_neg])
-
   --Adding a new root doesn't make the product zero, and increases degree by exactly one.
   have h_mul : (X - C η) * P ≠ 0 := mul_ne_zero (X_sub_C_ne_zero η) hP
   have h_deg_mul : natDegree ((X - C η) * P) = natDegree P + 1 := by
     rw [natDegree_mul (X_sub_C_ne_zero η) hP, natDegree_X_sub_C, add_comm]
-
   rcases d with _ | d
   · --P is zero degree, therefore a constant.
     have hcQ : 0 < coeff P 0 := by grind [leadingCoeff]
@@ -319,23 +318,18 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     dsimp [signVariations, coeffList]
     rw [withBotSucc_degree_eq_natDegree_add_one hP, withBotSucc_degree_eq_natDegree_add_one h_mul]
     simp [h_deg_mul, hxcQ, hη, hcQ, hd, List.range_succ]
-
   -- P is positive degree. Set up some temporary variables for signs for the nextCoeffs.
   generalize hs_nC : SignType.sign P.nextCoeff = s_nC
   generalize hs_nC_mul : SignType.sign ((X - C η) * P).nextCoeff = s_nC_mul
-
   --We're really doing induction on `P.eraseLead` in a sense
   have h_ih : P.eraseLead.natDegree < d + 1 := by grind [eraseLead_natDegree_le]
-
   have h_mul_lC : SignType.sign ((X - C η) * P).leadingCoeff = 1 := by simp [h_lC]
   have h_ηP : 0 < η * coeff P (d + 1) := by grind [leadingCoeff, mul_pos]
-
   rcases s_nC.trichotomy with rfl | rfl | rfl; rotate_left
   · -- P starts with [+,0,...] so (X-C)*P starts with [+,-,...].
     obtain rfl : s_nC_mul = -1 := by
       have : coeff P d = 0 := by simpa [nextCoeff, hd] using hs_nC
       simp [*, ← hs_nC_mul, nextCoeff, coeff_X_sub_C_mul]
-
     /- We would like to just `have : eraseLead P ≠ 0`, so that we can use the inductive
       hypothesis on eraseLead P. but that isn't actually true: we could have P a monomial
       and then eraseLead P = 0, and then the inductive hypothesis doesn't hold. (It's only
@@ -357,7 +351,6 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
         rwa [← eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero hη.ne']
         grind [sign_eq_zero_iff]
       grind [signVariations_le_eraseLead_succ]
-
   all_goals (
     have h₁ : nextCoeff P ≠ 0 := by simp [← sign_ne_zero, hs_nC]
     specialize ih _ h_ih (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₁) rfl
