@@ -18,16 +18,16 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 open Module Free
 
-variable {R V : Type*} [CommSemiring R] [AddCommMonoid V] [Module R V] [Free R V]
+variable {R V : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M]
 
 /-- The center of endomorphisms on a vector space is trivial,
 in other words, it is a central algebra. -/
-instance Algebra.IsCentral.end : IsCentral R (End R V) where
+instance Algebra.IsCentral.end : IsCentral R (End R M) where
   out T hT := by
-    have h' (f : V →ₗ[R] R) (y v : V) : f (T v) • y = f v • T y := by
+    have h' (f : M →ₗ[R] R) (y v : M) : f (T v) • y = f v • T y := by
       simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
-    nontriviality V
-    obtain ⟨x, hx⟩ := exists_ne (0 : V)
-    let b := chooseBasis R V
+    nontriviality M
+    obtain ⟨x, hx⟩ := exists_ne (0 : M)
+    let b := chooseBasis R M
     have ⟨i, hi⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr hx <| Finsupp.ext h
     exact ⟨b.coord i (T (b i)), LinearMap.ext fun y ↦ by simpa using h' (b.coord i) y (b i)⟩
