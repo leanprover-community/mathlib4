@@ -238,7 +238,7 @@ section LambdaSquared
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
-private theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
+private theorem sum_divisors_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
     (∑ d ∈ n.divisors, ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors,
       if d = Nat.lcm d1 d2 then f d1 d2 d else 0) =
     (∑ d ∈ n.divisors, ∑ d1 ∈ n.divisors, ∑ d2 ∈ n.divisors,
@@ -257,7 +257,7 @@ theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) 
   · simp_all
   convert sq_nonneg (∑ d ∈ n.divisors, weights d)
   simp_rw [sq, mul_sum, sum_mul]
-  rw [conv_lambda_sq_larger_sum _ n, sum_comm]
+  rw [sum_divisors_lambda_sq_larger_sum _ n, sum_comm]
   refine sum_congr rfl fun d1 hd1 ↦ ?_
   rw [sum_comm]
   refine sum_congr rfl fun d2 hd2 ↦ ?_
@@ -299,7 +299,7 @@ theorem selbergTerms_isMultiplicative : ArithmeticFunction.IsMultiplicative s.se
   unfold selbergTerms
   arith_mult
 
-theorem one_div_selbergTerms_eq_conv_moebius_nu {l : ℕ} (hl : Squarefree l)
+theorem one_div_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l)
     (hnu_nonzero : s.nu l ≠ 0) :
     (s.selbergTerms l)⁻¹ = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ := by
   simp only [selbergTerms_apply, mul_inv, inv_inv,
@@ -312,14 +312,14 @@ theorem one_div_selbergTerms_eq_conv_moebius_nu {l : ℕ} (hl : Squarefree l)
     by simp_all [s.nu_mult.map_mul_of_coprime hde]
   simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
-theorem nu_inv_eq_conv_one_div_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
+theorem nu_inv_eq_sum_divisors_one_div_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
     (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
   rw [eq_comm, ←sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
   have hd_pos : 0 < d := Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero prodPrimes_ne_zero hdP
   revert hdP; revert d
   apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on _ (fun _ _ ↦ Nat.dvd_trans)).mpr
   intro l _ hlP
-  exact one_div_selbergTerms_eq_conv_moebius_nu
+  exact one_div_selbergTerms_eq_sum_divisors_moebius_nu
     (Squarefree.squarefree_of_dvd hlP s.prodPrimes_squarefree)
     (ne_of_gt <| nu_pos_of_dvd_prodPrimes hlP) |>.symm
 
@@ -341,7 +341,7 @@ theorem sum_divisors_selbergTerms_eq_selbergTerms_mul_nu_inv {d : ℕ} (hd : d �
       · apply coprime_of_squarefree_mul <|
           (Nat.div_mul_cancel hl.2).symm ▸ (squarefree_of_dvd_prodPrimes hd)
       · exact (selbergTerms_pos hl.1.1).ne'
-    _ = s.selbergTerms d * (s.nu d)⁻¹ := by rw [← nu_inv_eq_conv_one_div_selbergTerms hd]
+    _ = s.selbergTerms d * (s.nu d)⁻¹ := by rw [← nu_inv_eq_sum_divisors_one_div_selbergTerms hd]
 
 end SelbergTerms
 
@@ -357,7 +357,7 @@ theorem mainSum_lambdaSquared_eq_quad_form (w : ℕ → ℝ) :
       = ∑ d ∈ divisors s.prodPrimes, ∑ d1 ∈ divisors d, ∑ d2 ∈ divisors d,
           if d = d1.lcm d2 then w d1 * w d2 * s.nu d else 0 := ?caseA
     _ = ∑ d ∈ divisors s.prodPrimes, ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
-          if d = d1.lcm d2 then w d1 * w d2 * s.nu d else 0 := by apply conv_lambda_sq_larger_sum
+          if d = d1.lcm d2 then w d1 * w d2 * s.nu d else 0 := by apply sum_divisors_lambda_sq_larger_sum
     _ = ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
           s.nu d1 * w d1 * s.nu d2 * w d2 * (s.nu (d1.gcd d2))⁻¹ := ?caseB
   case caseA =>
@@ -394,7 +394,7 @@ theorem mainSum_lambdaSquared_eq_diag_quad_form (w : ℕ → ℝ) :
     refine sum_congr rfl fun d1 hd1 ↦ sum_congr rfl fun d2 _ ↦ ?_
     have hgcd_dvd : d1.gcd d2 ∣ s.prodPrimes :=
       (Nat.gcd_dvd_left d1 d2).trans (dvd_of_mem_divisors hd1)
-    simp_rw [nu_inv_eq_conv_one_div_selbergTerms hgcd_dvd, ← sum_filter, mul_sum]
+    simp_rw [nu_inv_eq_sum_divisors_one_div_selbergTerms hgcd_dvd, ← sum_filter, mul_sum]
     congr with l
     ring
   case caseB =>
