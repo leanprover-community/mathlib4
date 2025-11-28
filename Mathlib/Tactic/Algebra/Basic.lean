@@ -24,7 +24,7 @@ types `ExSum`, `ExProd` and `ExBase`.
 support, which take normalized expressions and return a new normalized expression together with
 a proof that the new expression equals the operation applied to the input expressions.
 * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
-coefficients as experssions in the base ring `R`, normalized by `ring`. 
+coefficients as experssions in the base ring `R`, normalized by `ring`.
 
 This tactic is used internally to implement the `polynomial` tactic.
 
