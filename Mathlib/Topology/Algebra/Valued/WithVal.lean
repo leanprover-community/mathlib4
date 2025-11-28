@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
@@ -210,6 +210,19 @@ def IsEquiv.uniformEquiv (hv : Function.Surjective v) (hw : Function.Surjective 
   __ := equivWithVal v w
   uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
   uniformContinuous_invFun := h.symm.uniformContinuous_equivWithVal hv
+
+open UniformSpace.Completion in
+theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
+    {v' : Valuation K Γ₀'} (h : v.IsEquiv v') (hv : Function.Surjective v)
+    (hv' : Function.Surjective v') {x : v.Completion} :
+    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv hv hv') x) ≤ 1 := by
+  induction x using induction_on with
+  | hp =>
+    exact (mapEquiv (h.uniformEquiv hv hv')).toHomeomorph.isClosed_setOf_iff
+      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+  | ih a =>
+    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_coe]
+    simpa using h.le_one_iff_le_one
 
 end Equivalence
 

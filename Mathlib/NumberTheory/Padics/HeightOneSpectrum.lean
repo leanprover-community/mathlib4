@@ -79,19 +79,6 @@ noncomputable def adicCompletion.padicAlgEquiv (v : HeightOneSpectrum (𝓞 ℚ)
       (valuationEquivPadicValuation v).symm.continuous).trans Padic.withValRingEquiv
   commutes' q := by simp
 
-theorem _root_.Valuation.IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} {Γ₀' : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀'] {v' : Valuation K Γ₀'} (h : v.IsEquiv v')
-    (hv : Function.Surjective v) (hv' : Function.Surjective v') {x : v.Completion} :
-    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv hv hv') x) ≤ 1 := by
-  induction x using induction_on with
-  | hp =>
-    exact (mapEquiv (h.uniformEquiv hv hv')).toHomeomorph.isClosed_setOf_iff
-      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
-  | ih a =>
-    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_coe]
-    simpa using h.le_one_iff_le_one
-
 /-- The uniform space isomorphism `v.adicCompletionIntegers ℚ ≃ᵤ ℤ_[natGenerator v]`. -/
 noncomputable def adicCompletionIntegers.padicIntUniformEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
     v.adicCompletionIntegers ℚ ≃ᵤ ℤ_[natGenerator v] :=
@@ -113,17 +100,16 @@ noncomputable def adicCompletionIntegers.padicIntRingEquiv (v : HeightOneSpectru
         (v.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
   e.trans withValIntegersRingEquiv
 
-@[simp]
-theorem adicCompletionIntegers.padicIntRingEquiv_apply (v : HeightOneSpectrum (𝓞 ℚ))
+theorem adicCompletionIntegers.coe_padicIntRingEquiv_apply (v : HeightOneSpectrum (𝓞 ℚ))
     (x : v.adicCompletionIntegers ℚ) :
     padicIntRingEquiv v x = adicCompletion.padicAlgEquiv v x := rfl
 
 theorem adicCompletion.padicAlgEquiv_bijOn (v : HeightOneSpectrum (𝓞 ℚ)) :
     Set.BijOn (padicAlgEquiv v) (v.adicCompletionIntegers ℚ) (subring (natGenerator v)) := by
   refine ⟨fun x hx ↦ ?_, (padicAlgEquiv v).injective.injOn, fun y hy ↦ ?_⟩
-  · rw [← adicCompletionIntegers.padicIntRingEquiv_apply v ⟨x, hx⟩]
+  · rw [← adicCompletionIntegers.coe_padicIntRingEquiv_apply v ⟨x, hx⟩]
     exact norm_le_one ((adicCompletionIntegers.padicIntRingEquiv v) ⟨x, hx⟩)
   · obtain ⟨x, hx⟩ := (adicCompletionIntegers.padicIntRingEquiv v).surjective ⟨y, hy⟩
-    refine ⟨x, x.2, by rw [← adicCompletionIntegers.padicIntRingEquiv_apply, hx]⟩
+    refine ⟨x, x.2, by rw [← adicCompletionIntegers.coe_padicIntRingEquiv_apply, hx]⟩
 
-end Rat.RingOfIntegers.HeightOneSpectrum
+end Rat.HeightOneSpectrum
