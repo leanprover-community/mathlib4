@@ -404,7 +404,7 @@ section ltByCases
 
 @[to_dual self (reorder := ltc gtc)]
 lemma eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt {x y x' y' : α}
-    (ltc : (x < y) ↔ (x' < y')) (gtc : (y < x) ↔ (y' < x')) :
+    (ltc : x < y ↔ x' < y') (gtc : y < x ↔ y' < x') :
     x = y ↔ x' = y' := by grind
 
 end ltByCases
