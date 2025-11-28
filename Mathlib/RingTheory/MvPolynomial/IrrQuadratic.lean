@@ -42,7 +42,7 @@ namespace MvPolynomial
 open scoped Polynomial
 
 section
-/-! ## The quadratic polynomia $$\sum_{i=1}^n X_i Y_i$$. -/
+/-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 
 open Polynomial
 
