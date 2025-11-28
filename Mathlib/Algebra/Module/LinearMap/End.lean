@@ -413,6 +413,9 @@ theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) :
     (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x = smulRight f x :=
   rfl
 
+theorem smulRightₗ_apply_apply (f : M₂ →ₗ[R] R) (x : M) (y : M₂) :
+    smulRightₗ f x y = f y • x := rfl
+
 end CommSemiring
 
 end LinearMap

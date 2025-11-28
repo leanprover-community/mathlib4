@@ -51,7 +51,7 @@ theorem AlgEquiv.eq_linearEquivAlgConj [Free K V] (f : End K V ≃ₐ[K] End K V
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       apply f.injective <| ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
-      simp_rw [← this, smulRightₗ_apply, smulRight_apply, map_smul, hxy]
+      simp_rw [← this, smulRightₗ_apply_apply, map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| this _).symm⟩
 
