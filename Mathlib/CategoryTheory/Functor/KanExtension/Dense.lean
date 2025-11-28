@@ -93,6 +93,7 @@ lemma IsDense.comp_right_iff_of_isEquivalence (G : D ⥤ C') [G.IsEquivalence] :
   let e : (F ⋙ G) ⋙ G.inv ≅ F := associator .. ≪≫
     isoWhiskerLeft _ G.asEquivalence.unitIso.symm ≪≫ F.rightUnitor
   exact of_iso e
+
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
     (F.denseAt _).hom_ext' (fun X p ↦ by
