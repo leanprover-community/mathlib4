@@ -23,6 +23,11 @@ This is useful for when we have a finite-dimensional C⋆-algebra with a faithfu
 positive linear functional (so that it induces an inner product structure), and want the coalgebra
 structure to be the _adjoint_ of the algebra structure.
 This comes up in non-commutative graph theory for example.
+
+## Implementation notes
+
+The instance for the coalgebra structure given by the adjoint of the algebra structure in
+a finite-dimensional inner product space is scoped to `InnerProductSpace.CoalgebraOfAlgebra`.
 -/
 
 @[expose] public section
@@ -84,7 +89,6 @@ theorem comul_def : comul (R := 𝕜) (A := A) = adjoint (mul' 𝕜 A) := rfl
 theorem counit_def : counit (R := 𝕜) (A := A) = adjoint (Algebra.linearMap 𝕜 A) := rfl
 
 end CoalgebraOfAlgebra
-
 end coalgebraOfAlgebra
 
 section algebraOfCoalgebra
