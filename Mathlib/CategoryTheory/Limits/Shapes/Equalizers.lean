@@ -338,6 +338,9 @@ theorem Cofork.app_zero_eq_comp_π_left (s : Cofork f g) : s.ι.app zero = f ≫
 theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w right, parallelPair_map_right]
 
+-- TODO: is there a nice way to fix the non-terminal simp? It's called on four goals,
+-- only one needs an assumption at the end.
+set_option linter.flexible false in
 /-- A fork on `f g : X ⟶ Y` is determined by the morphism `ι : P ⟶ X` satisfying `ι ≫ f = ι ≫ g`.
 -/
 @[simps]

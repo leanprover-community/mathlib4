@@ -30,6 +30,8 @@ variable {x y : ℂ}
 
 namespace Complex
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by

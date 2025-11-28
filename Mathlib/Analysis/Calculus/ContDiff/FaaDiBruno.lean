@@ -287,6 +287,8 @@ These operations are inverse to each other, giving rise to an equivalence betwee
 called `OrderedFinPartition.extendEquiv`.
 -/
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
 @[simps -fullyApplied length partSize]
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
@@ -334,6 +336,8 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
     · simp only [mem_range]
       exact ⟨Fin.succ (c.index i), Fin.cast (by simp) (c.invEmbedding i), by simp⟩
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
   simp only [extendLeft, cases_zero]

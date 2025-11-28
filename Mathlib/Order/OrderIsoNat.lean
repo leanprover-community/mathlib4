@@ -134,7 +134,9 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp [orderIsoOfNat]; congr!
+  simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
+    RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLT]
+  congr!
 
 variable (s)
 

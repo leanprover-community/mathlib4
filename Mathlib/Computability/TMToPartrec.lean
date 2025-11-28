@@ -35,7 +35,8 @@ open Relation
 
 namespace Turing
 
-
+-- TODO: revisit this after #13791 is merged
+set_option linter.flexible false
 
 /-!
 ## Simulating sequentialized partial recursive functions in TM2

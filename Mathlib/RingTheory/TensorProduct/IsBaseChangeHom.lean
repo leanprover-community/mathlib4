@@ -53,7 +53,7 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
     map_add' x y := by ext; simp [add_smul]
     map_smul' r s := by aesop }).toAddHom
   map_smul' s x := by
-    simp
+    simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
     induction x using TensorProduct.induction_on with
     | zero => simp
     | add x y hx hy => simp [smul_add, hx, hy]
@@ -83,9 +83,7 @@ noncomputable def linearMapRightBaseChangeEquiv
     apply LinearEquiv.bijective
   suffices f.toLinearMap.comp (linearMapRightBaseChangeHom S M ε) =
       (finitePow ι ibc).equiv.toLinearMap.comp e'.toLinearMap by
-    simp [h', this]
-    rw [← LinearEquiv.trans_assoc]
-    simp
+    simp [h', this, ← LinearEquiv.trans_assoc e'.symm e']
   ext φ i
   simp
   simp [f, e', linearMapRightBaseChangeHom, LinearEquiv.baseChange, equiv_tmul,

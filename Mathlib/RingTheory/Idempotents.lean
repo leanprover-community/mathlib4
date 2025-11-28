@@ -428,7 +428,8 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   refine ⟨?_, he.1.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  simp [funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
+  simp only [funext_iff, Pi.ringHom_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
+    Ideal.mem_span_singleton] at hx
   suffices ∀ s : Finset I, (∏ i ∈ s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_

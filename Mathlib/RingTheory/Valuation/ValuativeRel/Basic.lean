@@ -558,6 +558,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
+set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]

@@ -53,6 +53,7 @@ lemma sign_eq_of_abs_sub_le {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) 
   rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
   simp_all [abs_of_pos, abs_of_neg, abs_le] <;> linarith
 
+set_option linter.flexible false in
 lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : sign a = sign b) : c < |a + b| := by
   rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
