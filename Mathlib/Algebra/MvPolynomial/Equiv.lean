@@ -414,24 +414,51 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
     eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
+
+theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
+    m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
+  apply Iff.intro
+  · intro h
+    simpa [← optionEquivLeft_coeff_coeff] using h
+  · intro h
+    simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
+
+-- Analogous to `finSuccEquiv_support`
+lemma support_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
+    (optionEquivLeft R σ p).support
+      = Finset.image (fun m => m none) p.support := by
+  ext i
+  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
+  constructor
+  · rintro ⟨m, hm⟩
+    refine ⟨optionElim i m, ?_, optionElim_apply_none _ _⟩
+    rw [← support_coeff_optionEquivLeft]
+    simpa using hm
+  · rintro ⟨m, h, rfl⟩
+    refine ⟨some m, ?_⟩
+    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_optionEquivLeft, optionElim_some]
+
+theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
+    (optionEquivLeft R σ f).support.Nonempty := by
+  rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
+
+theorem degree_optionEquivLeft [DecidableEq σ] {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
+    (optionEquivLeft R σ f).degree = degreeOf none f := by
+  have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
+    rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image]
+    rfl
+  rw [Polynomial.degree, ← h', Nat.cast_withBot,
+    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty R h), Finset.max_eq_sup_coe]
+  rfl
+
 @[simp]
-lemma natDegree_optionEquivLeft (p : MvPolynomial (Option S₁) R) :
-    (optionEquivLeft R S₁ p).natDegree = p.degreeOf .none := by
-  apply le_antisymm
-  · rw [Polynomial.natDegree_le_iff_coeff_eq_zero]
-    intro N hN
-    ext σ
-    trans p.coeff (σ.embDomain .some + .single .none N)
-    · simpa using optionEquivLeft_coeff_coeff R S₁ (σ.embDomain .some + .single .none N) p
-    simp only [coeff_zero, ← notMem_support_iff]
-    intro H
-    simpa using (degreeOf_lt_iff ((zero_le _).trans_lt hN)).mp hN _ H
-  · rw [degreeOf_le_iff]
-    intro σ hσ
-    refine Polynomial.le_natDegree_of_ne_zero fun H ↦ ?_
-    have := optionEquivLeft_coeff_coeff R S₁ σ p
-    rw [H, coeff_zero, eq_comm, ← notMem_support_iff] at this
-    exact this hσ
+lemma natDegree_optionEquivLeft [DecidableEq σ]
+    (p : MvPolynomial (Option σ) R) :
+  Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
+   = p.degreeOf none := by
+  by_cases c : p = 0
+  · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
+  · rw [Polynomial.natDegree, degree_optionEquivLeft R c, Nat.cast_withBot, WithBot.unbotD_coe]
 
 lemma totalDegree_coeff_optionEquivLeft_add_le
     (p : MvPolynomial (Option S₁) R) (i : ℕ) (hi : i ≤ p.totalDegree) :
@@ -674,52 +701,6 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
   by_cases c : f = 0
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
   · rw [Polynomial.natDegree, degree_finSuccEquiv c, Nat.cast_withBot, WithBot.unbotD_coe]
-
-theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
-    m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
-  apply Iff.intro
-  · intro h
-    simpa [← optionEquivLeft_coeff_coeff] using h
-  · intro h
-    simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
-
--- Analogous to `finSuccEquiv_support`
-lemma support_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
-    (optionEquivLeft R σ p).support
-      = Finset.image (fun m => m none) p.support := by
-  ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
-  constructor
-  · rintro ⟨m, hm⟩
-    refine ⟨optionElim i m, ?_, optionElim_apply_none _ _⟩
-    rw [← support_coeff_optionEquivLeft]
-    simpa using hm
-  · rintro ⟨m, h, rfl⟩
-    refine ⟨some m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_optionEquivLeft, optionElim_some]
-
-theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
-    (optionEquivLeft R σ f).support.Nonempty := by
-  rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
-
-theorem degree_optionEquivLeft [DecidableEq σ] {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
-    (optionEquivLeft R σ f).degree = degreeOf none f := by
-  -- TODO: these should be lemmas
-  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
-  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
-  have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
-    rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image, h₀]
-  rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty h), Finset.max_eq_sup_coe, h₁]
-
--- todo dedup above
-lemma natDegree_optionEquivLeft' [DecidableEq σ]
-    (p : MvPolynomial (Option σ) R) :
-  Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
-   = p.degreeOf none := by
-  by_cases c : p = 0
-  · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
-  · rw [Polynomial.natDegree, degree_optionEquivLeft c, Nat.cast_withBot, WithBot.unbotD_coe]
 
 /--
 The degree of a particular variable in a multivariate polynomial
