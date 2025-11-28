@@ -175,7 +175,7 @@ lemma evalOneₐ_of (x : R) : evalOneₐ I (of I R x) = x := rfl
 
 @[simp]
 lemma factorₐ_evalₐ_one (x : AdicCompletion I R) :
-    Ideal.Quotient.factorₐ R (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
+    Ideal.Quotient.factor (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
   rfl
 
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
