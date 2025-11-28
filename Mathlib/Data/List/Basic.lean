@@ -574,13 +574,6 @@ theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n 
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
 
-@[simp]
-theorem getElem_idxOf [BEq α] [LawfulBEq α] {a : α} : ∀ {l : List α} (h : idxOf a l < l.length),
-    l[idxOf a l] = a
-  | b :: l, h => by
-    by_cases h' : b = a <;>
-    simp [h', getElem_idxOf]
-
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
 theorem idxOf_get [BEq α] [LawfulBEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a l, h⟩ = a := by

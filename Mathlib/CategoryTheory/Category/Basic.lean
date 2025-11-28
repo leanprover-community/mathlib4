@@ -92,7 +92,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} 
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
-initialize_simps_projections CategoryStruct (-toQuiver_Hom)
+initialize_simps_projections CategoryStruct (-toQuiver_Hom, -Hom)
 
 /-- Notation for the identity morphism in a category. -/
 scoped notation "𝟙" => CategoryStruct.id  -- type as \b1

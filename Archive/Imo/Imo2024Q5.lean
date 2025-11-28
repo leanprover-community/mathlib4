@@ -197,7 +197,7 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
       have hi' : i - 1 < i := by omega
       exact of_decide_eq_false (List.not_of_lt_findIdx hi') this
     have ha : Adjacent p.cells[i - 1] p.cells[i] := by
-      convert List.isChain_iff_get.1 p.valid_move_seq (i - 1) ?_
+      convert List.isChain_iff_getElem.1 p.valid_move_seq (i - 1) ?_
       · simp [Nat.sub_add_cancel hi]
       · omega
     exact ha.le_of_lt h
@@ -339,7 +339,7 @@ lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
   case base p h0 =>
     have hl := p.one_lt_length_cells
     have adj : Adjacent p.cells[0] p.cells[1] :=
-      List.isChain_iff_get.1 p.valid_move_seq 0 (by omega)
+      List.isChain_iff_getElem.1 p.valid_move_seq 0 (by omega)
     simp_rw [Adjacent, Nat.dist] at adj
     have hc0 : (p.cells[0].1 : ℕ) = 0 := by
       convert Fin.ext_iff.1 p.head_first_row

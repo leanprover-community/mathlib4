@@ -248,7 +248,6 @@
  ["docBlame", "Mathlib.Tactic.Find.tacticFind"],
  ["docBlame", "Mathlib.Tactic.GCongr.exact"],
  ["docBlame", "Mathlib.Tactic.GCongr.tacticGcongr_discharger"],
- ["docBlame", "Mathlib.Tactic.Propose.proposeLemmas"],
  ["docBlame", "Module.End.Eigenvalues.val"],
  ["docBlame", "Order.Ideal.PrimePair.F"],
  ["docBlame", "Order.Ideal.PrimePair.I"],

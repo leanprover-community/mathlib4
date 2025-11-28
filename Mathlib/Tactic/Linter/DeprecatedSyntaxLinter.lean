@@ -124,7 +124,7 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
   | _ => none
 
 /-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option
-enabled. This may have false negatives for `decide (config := {<options>})` syntax). -/
+enabled. This may have false negatives for `decide (config := {<options>})` syntax. -/
 def isDecideNative (stx : Syntax ) : Bool :=
   match stx with
   | .node _ ``Lean.Parser.Tactic.decide args =>

@@ -912,6 +912,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+theorem apply_ite_left {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (x y : α) (z : β) : f (if P then x else y) z = if P then f x z else f y z := by grind
+
 section
 variable [Decidable Q]
 

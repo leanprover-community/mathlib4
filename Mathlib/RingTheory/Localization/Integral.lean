@@ -85,7 +85,7 @@ theorem integerNormalization_spec (p : S[X]) :
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [RingHom.map_zero, notMem_support_iff.mp hi, smul_zero]
+  · rw [map_zero, notMem_support_iff.mp hi, smul_zero]
 
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
@@ -186,7 +186,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommS
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
     rw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
-    exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
+    exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (map_zero _)
 
 /-- Given a particular witness to an element being algebraic over an algebra `R → S`,
 We can localize to a submonoid containing the leading coefficient to make it integral.
@@ -215,8 +215,7 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
   refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
   · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
-    rw [RingHom.map_mul, RingHom.map_one, localizationAlgebraMap_def, IsLocalization.map_eq]
-      at hv'
+    rw [map_mul, map_one, localizationAlgebraMap_def, IsLocalization.map_eq] at hv'
     exact hv.2 ▸ hv'
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
@@ -299,7 +298,7 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
     surj := fun z =>
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
-        hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by
+        hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, map_zero])⟩, by
         rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, Algebra.smul_def, mul_comm]⟩
     exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 

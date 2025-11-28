@@ -131,8 +131,8 @@ noncomputable def mapEquiv (f : R ≃+* S) :
   invFun := map (f.symm : S →+* R)
   left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
   right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
-  map_mul' := RingHom.map_mul _
-  map_add' := RingHom.map_add _
+  map_mul' := map_mul _
+  map_add' := map_add _
 
 @[simp]
 theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=

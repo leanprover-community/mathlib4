@@ -39,6 +39,11 @@ theorem tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ 
   filter_upwards [eventually_ge_atTop 0, eventually_ge_atTop (b ^ (1 / y))] with x hx₀ hx
   simpa (disch := positivity) [Real.rpow_inv_le_iff_of_pos] using hx
 
+theorem tendsto_rpow_neg_nhdsGT_zero {y : ℝ} (hr : y < 0) :
+    Tendsto (fun (x : ℝ) ↦ x ^ y) (𝓝[>] 0) atTop := by
+  simp_rw +singlePass [← neg_neg y, Real.rpow_neg_eq_inv_rpow]
+  exact (tendsto_rpow_atTop <| neg_pos.mpr hr).comp tendsto_inv_nhdsGT_zero
+
 /-- The function `x ^ (-y)` tends to `0` at `+∞` for any positive real `y`. -/
 theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => x ^ (-y)) atTop (𝓝 0) :=
   Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop 0) fun _ hx => (rpow_neg (le_of_lt hx) y).symm)

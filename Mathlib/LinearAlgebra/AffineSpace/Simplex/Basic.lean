@@ -172,6 +172,22 @@ lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZ
     s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
   simp
 
+lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s : Simplex k P n}
+    {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
+    Finset.univ.affineCombination k s.points w ∈
+      affineSpan k (Set.range (s.faceOpposite i).points) ↔ w i = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [range_faceOpposite_points] at h
+    exact s.independent.eq_zero_of_affineCombination_mem_affineSpan hw h (Finset.mem_univ i)
+      (by simp)
+  · rw [range_faceOpposite_points]
+    rcases subsingleton_or_nontrivial k with hk | hk
+    · have : Subsingleton V := Module.subsingleton k _
+      have : Subsingleton P := (AddTorsor.subsingleton_iff V P).1 inferInstance
+      rw [(affineSpan_eq_top_iff_nonempty_of_subsingleton k).2 (by simp)]
+      simp
+    · exact affineCombination_mem_affineSpan_image hw (by simpa using h) s.points
+
 /-- Push forward an affine simplex under an injective affine map. -/
 @[simps -fullyApplied]
 def map {n : ℕ} (s : Affine.Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
@@ -244,6 +260,20 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
+
+lemma range_face_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
+    {fs : Finset (Fin (n + 1))} {n' : ℕ} (h : #fs = n' + 1) :
+    Set.range ((s.reindex e).face h).points =
+      Set.range (s.face (fs := fs.map e.symm.toEmbedding) (h ▸ Finset.card_map _)).points := by
+  simp only [range_face_points, reindex_points, Set.image_comp]
+  simp
+
+lemma range_faceOpposite_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
+    (e : Fin (m + 1) ≃ Fin (n + 1)) (i : Fin (n + 1)) :
+    Set.range ((s.reindex e).faceOpposite i).points =
+      Set.range (s.faceOpposite (e.symm i)).points := by
+  rw [faceOpposite, range_face_reindex]
+  simp [Equiv.image_compl]
 
 section restrict
 

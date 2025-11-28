@@ -318,9 +318,7 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
-  refine ⟨fun h => ?_, Finset.mem_image_of_mem f⟩
-  obtain ⟨y, hy, heq⟩ := mem_image.1 h
-  exact hf heq ▸ hy
+  grind
 
 
 @[simp, norm_cast]
@@ -432,8 +430,7 @@ theorem erase_image_subset_image_erase [DecidableEq α] (f : α → β) (s : Fin
 
 @[simp]
 theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Finset α) (a : α) :
-    (s.erase a).image f = (s.image f).erase (f a) :=
-  coe_injective <| by push_cast [Set.image_diff hf, Set.image_singleton]; rfl
+    (s.erase a).image f = (s.image f).erase (f a) := by grind
 
 @[simp]
 theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ := mod_cast Set.image_eq_empty (f := f) (s := s)

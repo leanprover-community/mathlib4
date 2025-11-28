@@ -409,6 +409,14 @@ grind_pattern rpow_nonneg => NonnegSpectrumClass ℝ A, a ^ y
 
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
 
+lemma rpow_eq_cfc_real [IsTopologicalRing A] [T2Space A] {a : A} {y : ℝ}
+    (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfc (fun x : ℝ => x ^ y) a := by
+  rw [CFC.rpow_def, cfc_nnreal_eq_real ..]
+  refine cfc_congr ?_
+  intro x hx
+  simp only [NNReal.coe_rpow, Real.coe_toNNReal']
+  grind
+
 lemma rpow_one (a : A) (ha : 0 ≤ a := by cfc_tac) : a ^ (1 : ℝ) = a := by
   simp only [rpow_def, NNReal.rpow_one, cfc_id' ℝ≥0 a]
 

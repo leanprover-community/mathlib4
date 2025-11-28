@@ -312,7 +312,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => ?_
         rw [dist_comm]
         exact lt_of_le_of_lt (fF_bdd x n) hn
-      exact this.continuous (Eventually.of_forall fun N => (f N).continuous)
+      exact this.continuous (Frequently.of_forall fun N => (f N).continuous)
     · -- Check that `F` is bounded
       rcases (f 0).bounded with ⟨C, hC⟩
       refine ⟨C + (b 0 + b 0), fun x y => ?_⟩

@@ -156,6 +156,13 @@ abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
 
+/-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
+abbrev _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSemiring A]
+    (φ : R →+* A) : CommRing A :=
+  let _ : Algebra R A := RingHom.toAlgebra φ
+  { __ := Algebra.semiringToRing R
+    mul_comm := CommMonoid.mul_comm }
+
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
   algebraMap :=
   { toFun := Subtype.val
@@ -433,21 +440,6 @@ instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Se
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
-
-namespace LinearMap
-
-variable (R)
-
--- TODO: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
-a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
-  toFun f := f.toFun
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end LinearMap
 
 end IsScalarTower
 

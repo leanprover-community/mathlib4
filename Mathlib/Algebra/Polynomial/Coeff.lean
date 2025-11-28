@@ -72,7 +72,7 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
-    simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
+    simp only [sum_def, Finset.smul_sum, coeff_smul, map_smul, RingHom.id_apply]
 
 variable (R) in
 /-- The nth coefficient, as a linear map. -/
@@ -148,7 +148,7 @@ theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by
   rw [← pow_one X, coeff_C_mul_X_pow]
 
-@[simp]
+@[simp, grind =]
 theorem coeff_C_mul (p : R[X]) : coeff (C a * p) n = a * coeff p n := by
   rcases p with ⟨p⟩
   simp_rw [← monomial_zero_left, ← ofFinsupp_single, ← ofFinsupp_mul, coeff]
@@ -182,9 +182,9 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_intCast_mul [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
     coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
 
-@[simp]
+@[simp, grind =]
 theorem coeff_X_pow (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
-  simp only [one_mul, RingHom.map_one, ← coeff_C_mul_X_pow]
+  simp only [one_mul, map_one, ← coeff_C_mul_X_pow]
 
 theorem coeff_X_pow_self (n : ℕ) : coeff (X ^ n : R[X]) n = 1 := by simp
 
@@ -225,7 +225,7 @@ end Fewnomials
 theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     coeff (p * Polynomial.X ^ n) (d + n) = coeff p d := by
   rw [coeff_mul, Finset.sum_eq_single (d, n), coeff_X_pow, if_pos rfl, mul_one]
-  all_goals grind [mem_antidiagonal, coeff_X_pow, mul_zero]
+  all_goals grind [mem_antidiagonal, mul_zero]
 
 @[simp]
 theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :

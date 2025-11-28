@@ -133,7 +133,7 @@ alias ⟨isHomogeneous_of_totalDegree_zero, _⟩ := totalDegree_zero_iff_isHomog
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
   apply isHomogeneous_monomial
-  simp only [Finsupp.degree, Finsupp.zero_apply, Finset.sum_const_zero]
+  simp only [degree_def, Finsupp.support_zero, zero_apply, Finset.sum_const_zero]
 
 variable (R)
 
@@ -147,8 +147,8 @@ variable {σ}
 
 theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
-  rw [Finsupp.degree, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton]
-  exact Finsupp.single_eq_same
+  simp only [degree_def, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+    single_eq_same]
 
 end
 
@@ -323,7 +323,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     intro i hi
     rw [Finset.mem_range] at hi
     apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by cutsat)).coeff_eq_zero
-    simp only [Finsupp.degree_zero]
+    simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
   simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,

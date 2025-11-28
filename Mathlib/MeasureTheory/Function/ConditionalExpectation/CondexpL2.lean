@@ -413,7 +413,7 @@ theorem integrable_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 theorem condExpIndSMul_empty {x : G} : condExpIndSMul hm MeasurableSet.empty
     ((measure_empty (μ := μ)).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
   rw [condExpIndSMul, indicatorConstLp_empty]
-  simp only [Submodule.coe_zero, ContinuousLinearMap.map_zero]
+  simp only [Submodule.coe_zero, map_zero]
 
 theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) :

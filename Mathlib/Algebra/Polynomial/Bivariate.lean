@@ -293,7 +293,7 @@ lemma equivMvPolynomial_symm_X_1 : (equivMvPolynomial R).symm (.X 1) = X := by
 lemma equivMvPolynomial_symm_C (a : R) : (equivMvPolynomial R).symm (.C a) = C (C a) := by
   simp [equivMvPolynomial]
 
-lemma Polynomial.Bivariate.pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
+lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 0 = equivMvPolynomial R
       (PolynomialModule.equivPolynomialSelf (derivative'.mapCoeffs p)) := by
   induction p using Polynomial.induction_on' with
@@ -305,7 +305,7 @@ lemma Polynomial.Bivariate.pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R
     simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
     simp [map_nsmul]
 
-lemma Polynomial.Bivariate.pderiv_one_equivMvPolynomial (p : R[X][Y]) :
+lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
     (equivMvPolynomial R p).pderiv 1 = equivMvPolynomial R (derivative p) := by
   induction p using Polynomial.induction_on' with
   | add p q _ _ => aesop

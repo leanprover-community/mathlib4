@@ -107,7 +107,7 @@ lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
   by simp [toList, singleton]
 
 lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
-  rw [List.isChain_iff_get]
+  simp_rw [List.isChain_iff_getElem, length_toList, add_lt_add_iff_right]
   intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
@@ -121,7 +121,7 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) : RelSeries r where
   length := x.length - 1
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
-  step i := List.isChain_iff_get.mp hx i _
+  step i := List.isChain_iff_getElem.mp hx i _
 
 @[deprecated (since := "2025-09-24")] alias fromListChain' := fromListIsChain
 

@@ -96,10 +96,12 @@ theorem IsHomogeneous.subsemiringClosure {s : Set A}
 
 theorem IsHomogeneous.subsemiringClosure_of_isHomogeneousElem {s : Set A}
     (h : ∀ x ∈ s, IsHomogeneousElem 𝒜 x) :
-    IsHomogeneous 𝒜 (Subsemiring.closure s) :=
-  Subsemiring.closure_insert_zero s ▸ IsHomogeneous.subsemiringClosure fun i x hx ↦
-    hx.elim (by subst ·; simp) fun hx ↦ by
-    obtain ⟨j, hj⟩ := h x hx
+    IsHomogeneous 𝒜 (Subsemiring.closure s) := by
+  rw [← Subsemiring.closure_insert_zero s]
+  refine IsHomogeneous.subsemiringClosure fun i x hx ↦ ?_
+  obtain rfl | hx := mem_insert_iff.mp hx
+  · simp
+  · obtain ⟨j, hj⟩ := h x hx
     obtain rfl | h := eq_or_ne i j <;> simp [decompose_of_mem _ hj, of_eq_of_ne, *]
 
 end HomogeneousDef
