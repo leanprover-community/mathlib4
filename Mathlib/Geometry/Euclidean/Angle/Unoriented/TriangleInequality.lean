@@ -1,14 +1,14 @@
 /-
 Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ilmārs Cīrulis, Alex Meiburg
+Authors: Ilmārs Cīrulis, Alex Meiburg, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.Analysis.NormedSpace.Normalize
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+
+import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # The Triangle Inequality for Angles
@@ -19,9 +19,11 @@ This file contains the proof that angles obey the triangle inequality.
 open InnerProductGeometry
 open NormedSpace
 
-open scoped RealInnerProductSpace
+open scoped Real NNReal RealInnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+
+namespace InnerProductGeometry
 
 section UnitVectorAngles
 
@@ -135,7 +137,7 @@ end UnitVectorAngles
 
 
 /-- **Triangle inequality** for angles between vectors. -/
-public theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
+public theorem angle_le_angle_add_angle (x y z : V) :
     angle x z ≤ angle x y + angle y z := by
   by_cases hx : x = 0
   · simpa [hx] using angle_nonneg y z
@@ -145,6 +147,32 @@ public theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
   · simpa [hz] using angle_nonneg x y
   simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize_eq_one_iff.mpr hx)
     (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
+
+/-- The triangle inequality is an equality if the middle vector is a nonnegative linear combination
+of the other two vectors. See `angle_add_angle_eq_pi_of_angle_eq_pi` for the other equality case. -/
+public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y ≠ 0)
+    (h_mem : y ∈ Submodule.span ℝ≥0 {x, z}) : angle x z = angle x y + angle y z := by
+  rw [Submodule.mem_span_pair] at h_mem
+  obtain ⟨kx, kz, rfl⟩ := h_mem
+  rcases (zero_le kx).eq_or_lt with rfl | hkx <;> rcases (zero_le kz).eq_or_lt with rfl | hkz
+  · simp at hy
+  · simp_all [NNReal.smul_def]
+  · simp_all [NNReal.smul_def]
+  · rw [angle_comm (_ + _) z]
+    by_cases! hz : z ≠ 0
+    · simpa [hkx, hkz, NNReal.smul_def] using
+        angle_eq_angle_add_add_angle_add (kx • x) (smul_ne_zero hkz.ne' hz)
+    · have hx : x ≠ 0 := by simp_all
+      rw [angle_comm, add_comm, add_comm (kx • x)]
+      simpa [hkx, hkz, NNReal.smul_def] using
+        angle_eq_angle_add_add_angle_add (kz • z) (smul_ne_zero hkx.ne' hx)
+
+/-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
+`angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
+proof_wanted angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
+    angle x z = angle x y + angle y z ↔ angle x z = π ∨ y ∈ Submodule.span ℝ≥0 {x, z}
+
+end InnerProductGeometry
 
 namespace EuclideanGeometry
 
