@@ -19,9 +19,10 @@ are decomposition monoids, and every reduced Artinian ring is semisimple.
 
 @[expose] public section
 
-/-- If each `Rⁿ` is a Artinian `R`-module, then `R` satisfies the strong rank condition. -/
-instance (priority := 100) (R) [Semiring R] [Nontrivial R] [∀ n, IsArtinian R (Fin n → R)] :
-    StrongRankCondition R :=
+/-- If each `Rⁿ` is a Artinian `R`-module, then `R` satisfies the strong rank condition.
+Not an instance for performance reasons. -/
+theorem StrongRankCondition.of_isArtinian (R) [Semiring R] [Nontrivial R]
+    [∀ n, IsArtinian R (Fin n → R)] : StrongRankCondition R :=
   (strongRankCondition_iff_succ R).2 fun n f hf ↦
     have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
     not_isArtinian_of_linearMap_prod_injective
