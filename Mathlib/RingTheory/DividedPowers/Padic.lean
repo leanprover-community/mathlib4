@@ -26,11 +26,7 @@ TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer
 
 @[expose] public section
 
-namespace PadicInt
-
 open DividedPowers DividedPowers.OfInvertibleFactorial Nat Ring
-
-variable (p : ℕ) [hp : Fact p.Prime]
 
 section Injective
 
@@ -41,7 +37,7 @@ variable {A B : Type*} [CommSemiring A] [CommSemiring B] (I : Ideal A) (J : Idea
 /-- Given a divided power algebra `(B, J, δ)` and an injective ring morphism `f : A →+* B`, if `I`
 is an `A`-ideal such that `I.map f = J` and such that for all `n : ℕ`, `x ∈ I`, the preimage of
 `hJ.dpow n (f x)` under `f` belongs to `I`, this is the induced divided power structure on `I`. -/
-noncomputable def dividedPowers_of_injective (f : A →+* B) (hf : Injective f)
+noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     (hJ : DividedPowers J) (hIJ : I.map f = J)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
@@ -77,7 +73,11 @@ noncomputable def dividedPowers_of_injective (f : A →+* B) (hf : Injective f)
 
 end Injective
 
+namespace PadicInt
+
 section Padic
+
+variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The family `ℕ → ℚ_[p] → ℚ_[p]` given by `dpow n x = x ^ n / n!`. -/
 private noncomputable def dpow' : ℕ → ℚ_[p] → ℚ_[p] := fun m x => inverse (m ! : ℚ_[p]) * x ^ m
@@ -131,7 +131,7 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
   classical
-  refine dividedPowers_of_injective (Ideal.span {(p : ℤ_[p])}) (⊤)
+  refine ofInjective (Ideal.span {(p : ℤ_[p])}) (⊤)
     PadicInt.Coe.ringHom ((Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a)
     (RatAlgebra.dividedPowers (⊤ : Ideal ℚ_[p])) ?_ ?_
   · rw [Ideal.map_span, Set.image_singleton, map_natCast]
@@ -147,7 +147,7 @@ open Function
 private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
     (dividedPowers p).dpow n x = open Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
-  simp only [dividedPowers, dividedPowers_of_injective]
+  simp only [dividedPowers, ofInjective]
   split_ifs with hx
   · have hinj : Injective (PadicInt.Coe.ringHom (p := p)) :=
       (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
