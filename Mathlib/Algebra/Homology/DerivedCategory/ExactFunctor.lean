@@ -98,14 +98,14 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.symm.hom ℤ :=
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
-/-- The commute of `DerivedCategory.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
+/-- `DerivedCategory.singleFunctor` commutes with `F` and `F.mapDerivedCategory`. -/
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
-    (DerivedCategory.singleFunctor C₁ n) ⋙ F.mapDerivedCategory ≅
-      F ⋙ (DerivedCategory.singleFunctor C₂ n) :=
-  (isoWhiskerRight (DerivedCategory.singleFunctorIsoCompQ C₁ n) _)
-    ≪≫ associator .. ≪≫ (isoWhiskerLeft _ F.mapDerivedCategoryFactors) ≪≫ (associator ..).symm
+    DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
+      F ⋙ DerivedCategory.singleFunctor C₂ n :=
+  isoWhiskerRight (DerivedCategory.singleFunctorIsoCompQ C₁ n) _
+    ≪≫ associator .. ≪≫ isoWhiskerLeft _ F.mapDerivedCategoryFactors ≪≫ (associator ..).symm
       ≪≫ isoWhiskerRight (HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n) _
-        ≪≫ (associator ..) ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
+        ≪≫ associator .. ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C₁] [CategoryTheory.Linear R C₂]
 

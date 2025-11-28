@@ -339,7 +339,6 @@ protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
 protected theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 :=
   bot_lt_iff_ne_bot
 
-@[simp]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 
@@ -808,10 +807,10 @@ instance instAddRightMono : AddRightMono Ordinal.{u} where
     simp [f.map_rel_iff]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
-  simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
+  simpa only [add_zero] using add_le_add_right (Ordinal.zero_le b) a
 
 theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
-  simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
+  simpa only [zero_add] using add_le_add_left (Ordinal.zero_le b) a
 
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left
