@@ -520,12 +520,6 @@ polynomials over multivariable polynomials in `Fin n`.
 def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomial (Fin n) R) :=
   (renameEquiv R (_root_.finSuccEquiv n)).trans (optionEquivLeft R (Fin n))
 
-theorem optionEquivLeft_eq_renameEquiv_finSuccEquiv : optionEquivLeft R (Fin n) =
-  (renameEquiv R (_root_.finSuccEquiv n)).symm.trans (finSuccEquiv R n) := by
-  rw [finSuccEquiv]
-  ext i : 1
-  simp_rw [AlgEquiv.trans_apply,AlgEquiv.apply_symm_apply]
-
 theorem finSuccEquiv_eq :
     (finSuccEquiv R n : MvPolynomial (Fin (n + 1)) R →+* Polynomial (MvPolynomial (Fin n) R)) =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
