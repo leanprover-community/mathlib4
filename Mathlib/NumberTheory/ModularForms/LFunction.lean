@@ -14,6 +14,8 @@ import Mathlib.Analysis.PSeries
 # The `L`-function of a modular form
 -/
 
+@[expose] public section
+
 open UpperHalfPlane hiding I
 open scoped Real
 open Filter Complex MatrixGroups Asymptotics
