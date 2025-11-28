@@ -31,7 +31,7 @@ Given two oplax functors `F` and `G`, we define:
   `F` and `G`.
 * `StrongTrans.homCategory F G`: the category structure on the strong transformations
   between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
-  instance in the `Oplax.OplaxTrans` namespace, so you need to run `open scoped Oplax.OplaxTrans`
+  instance in the `Oplax.StrongTrans` namespace, so you need to run `open scoped Oplax.StrongTrans`
   to access it.
 
 -/
@@ -260,8 +260,6 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     { app a := (app a).inv
       naturality {a b} f := by
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
-
-@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
 
 end StrongTrans
 
