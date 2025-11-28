@@ -279,6 +279,12 @@ noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) :=
 theorem originalTop_le : originalTop Ω F n ≤ topologicalSpace Ω F n :=
   le_sInf fun _t ⟨ht, _⟩ ↦ ht
 
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
+  IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
+
+noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
+  isUniformAddGroup_of_addCommGroup
+
 /-- Fix a locally convex topology `t` on `𝓓^{n}(Ω, F)`. `t` is coarser than the canonical topology
 on `𝓓^{n}(Ω, F)` if and only if it is coarser than the "original topology" given by
 `TestFunction.originalTop`. -/
