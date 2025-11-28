@@ -127,7 +127,7 @@ lemma nerveHomEquiv_id (X : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))
 def ofNerve₂ (C : Type u) [Category.{u} C] :
     ReflQuiv.of (OneTruncation₂ ((truncation 2).obj (nerve C))) ≅ ReflQuiv.of C :=
   ReflQuiv.isoOfEquiv.{u,u} OneTruncation₂.nerveEquiv
-    (fun _  _↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
+    (fun _ _ ↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
 
 lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
     {F G : X ⟶ ((truncation 2).obj (nerve C))}
