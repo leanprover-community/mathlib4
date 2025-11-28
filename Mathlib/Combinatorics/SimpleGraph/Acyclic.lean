@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -415,5 +416,21 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w)
       hadj.symm hw
     rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
+
+lemma IsTree.diff_dist_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : SimpleGraph.Adj G v w) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
+  grind [dist_ne_of_adj, Connected.diff_dist_adj, IsTree]
+
+/-- The unique two-coloring of a tree that colors the given vertex with zero -/
+noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
+  Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
+    grind [diff_dist_adj]
+
+/-- Arbitrary coloring with two colors for a tree -/
+noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
+  hG.coloringTwoOfVert hG.isConnected.nonempty.some
+
+lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
+  ⟨hG.coloringTwo⟩
 
 end SimpleGraph
