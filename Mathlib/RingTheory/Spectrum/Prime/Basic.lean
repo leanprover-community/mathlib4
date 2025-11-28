@@ -69,7 +69,7 @@ lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := b
     exact ⟨⟨I, hI.isPrime⟩⟩
 
 lemma isEmpty_iff_subsingleton : IsEmpty (PrimeSpectrum R) ↔ Subsingleton R := by
-  rw [← not_iff_not, not_isEmpty_iff, not_subsingleton_iff_nontrivial, nonempty_iff_nontrivial]
+  contrapose!; exact nonempty_iff_nontrivial
 
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
   nonempty_iff_nontrivial.mpr inferInstance
