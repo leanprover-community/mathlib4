@@ -743,6 +743,7 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_iteratedFDeriv := fourier_iteratedFDeriv
 
+set_option linter.flexible false in -- simp followed by positivity
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourier_le
@@ -769,7 +770,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourier_le
     gcongr
     exact norm_innerSL_le _
   rcases eq_or_ne w 0 with rfl | hw
-  · simp only [norm_zero, ne_eq, hn, not_false_eq_true, zero_pow, zero_mul, ge_iff_le]
+  · simp [hn]
     positivity
   rw [mul_le_mul_iff_right₀ (pow_pos (by simp [hw]) n)] at Z
   apply Z.trans
