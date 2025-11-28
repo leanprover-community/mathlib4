@@ -204,7 +204,7 @@ structure OplaxTrans (F G : B ⥤ᴸ C) where
   naturality_id (a : B) :
       F.mapId a ▷ app a ≫ naturality (𝟙 a) =
         (λ_ (app a)).hom ≫ (ρ_ (app a)).inv ≫ app a ◁ G.mapId a := by
-    aesop_cat
+    cat_disch
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       F.mapComp f g ▷ app c ≫ naturality (f ≫ g) =
         (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
