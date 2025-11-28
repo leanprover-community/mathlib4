@@ -419,37 +419,12 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w)
 
 lemma IsTree.diff_dist_adj (hG : G.IsTree) (u v w : V) (hadj : SimpleGraph.Adj G v w) :
     G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
-  have h := hG.isConnected.diff_dist_adj (u := u) hadj
-  have hne := hG.dist_ne_of_adj u hadj
-  rcases h with h₁ | h₂ | h₃
-  · exfalso
-    apply hne
-    rw [h₁]
-  · right
-    exact h₂.symm
-  · left
-    rw [h₃]
-    have : 0 < G.dist u v := hG.isConnected.pos_dist_of_ne (by
-      intro h
-      subst h
-      have h₁ := dist_eq_one_iff_adj.mpr hadj
-      rw [dist_self] at h₃
-      simp only [Nat.zero_sub] at h₃
-      rw [h₃] at h₁
-      exact absurd h₁ Nat.zero_ne_one)
-    exact Eq.symm (Nat.sub_add_cancel this)
+  grind [dist_ne_of_adj, Connected.diff_dist_adj, IsTree]
 
 /-- The unique two-coloring of a tree that colors the given vertex with zero -/
 noncomputable def IsTree.coloring_two_of_elem (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
   Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
-  intro v w hadj h
-  simp only [Fin.mk.injEq] at h
-  have := hG.diff_dist_adj u v w hadj
-  obtain hA | hB := hG.diff_dist_adj u v w hadj
-  · rw [hA] at h
-    omega
-  · rw [← hB] at h
-    omega
+    grind [diff_dist_adj]
 
 /-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloring_two (hG : G.IsTree) : G.Coloring (Fin 2) :=
@@ -457,6 +432,6 @@ noncomputable def IsTree.coloring_two (hG : G.IsTree) : G.Coloring (Fin 2) :=
   hG.coloring_two_of_elem u
 
 lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
-  Nonempty.intro hG.coloring_two
+  .intro hG.coloring_two
 
 end SimpleGraph
