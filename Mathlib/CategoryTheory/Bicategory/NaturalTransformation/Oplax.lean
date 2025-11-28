@@ -76,7 +76,7 @@ structure LaxTrans (F G : OplaxFunctor B C) where
   naturality_id (a : B):
       naturality (𝟙 a) ≫ F.mapId a ▷ app a =
         app a ◁ G.mapId a ≫ (ρ_ (app a)).hom ≫ (λ_ (app a)).inv := by
-    aesop_cat
+    cat_disch
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       naturality (f ≫ g) ≫ F.mapComp f g ▷ app c =
         app a ◁ G.mapComp f g ≫ (α_ _ _ _).inv ≫
