@@ -341,7 +341,7 @@ lemma commAlgEquiv_C_X (i) : commAlgEquiv R S₁ S₂ (.C (.X i)) = .X i := by s
 
 end commAlgEquiv
 
-section
+section optionEquivLeft
 
 -- this speeds up typeclass search in the lemma below
 attribute [local instance] IsScalarTower.right
@@ -414,7 +414,6 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
     eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
-
 theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
   apply Iff.intro
@@ -423,7 +422,6 @@ theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ}
   · intro h
     simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
 
--- Analogous to `finSuccEquiv_support`
 lemma support_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support
       = Finset.image (fun m => m none) p.support := by
@@ -484,7 +482,7 @@ lemma totalDegree_coeff_optionEquivLeft_le
   · simp [Finsupp.sum_add_index, Finsupp.sum_embDomain]
   · simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff R S₁] using hσ
 
-end
+end optionEquivLeft
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
 multivariable polynomials with coefficients in polynomials.
