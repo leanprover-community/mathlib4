@@ -150,7 +150,7 @@ instead.
 @[simps]
 def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
   toFun f := f.coeff
-  invFun f := ⟨(f : (σ →₀ ℕ) → R), Finsupp.isPWO _⟩
+  invFun f := ⟨(f : (σ →₀ ℕ) → R), Set.isPWO_of_wellQuasiOrderedLE _⟩
   left_inv f := by
     ext
     simp
