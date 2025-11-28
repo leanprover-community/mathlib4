@@ -668,7 +668,8 @@ variable {α : Type*} {G : SimpleGraph α}
 /-- The maximum number of vertices in a clique of a graph `G`. -/
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
-private lemma fintype_cliqueNum_bddAbove [Fintype α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+private lemma fintype_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+  have := Fintype.ofFinite α
   use Fintype.card α
   rintro y ⟨s, syc⟩
   rw [isNClique_iff] at syc
