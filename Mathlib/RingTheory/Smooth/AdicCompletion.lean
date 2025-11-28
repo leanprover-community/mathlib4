@@ -18,8 +18,6 @@ This is used in the proof that a smooth algebra over a Noetherian ring is flat
 (see `Mathlib.RingTheory.Smooth.Flat`).
 -/
 
-@[expose] public section
-
 universe u v
 
 namespace Algebra.FormallySmooth
@@ -80,56 +78,32 @@ lemma factorₐ_comp_liftAdicCompletionAux_of_le {m n : ℕ} (hn : m ≤ n) :
 
 /-- If `A` is formally smooth over `R`, any map `A →ₐ[R] S ⧸ I` lifts
 to `A →ₐ[R] AdicCompletion I S`. -/
-noncomputable def liftAdicCompletion : A →ₐ[R] AdicCompletion I S :=
-  AdicCompletion.liftAlgHom I (liftAdicCompletionAux I f)
-    (factorₐ_comp_liftAdicCompletionAux_of_le I f)
+public lemma exists_adicCompletionEvalOneₐ_comp_eq {I : Ideal S} (f : A →ₐ[R] S ⧸ I) :
+    ∃ (g : A →ₐ[R] AdicCompletion I S),
+      ((AdicCompletion.evalOneₐ I).restrictScalars R).comp g = f := by
+  refine ⟨AdicCompletion.liftAlgHom I (liftAdicCompletionAux I f)
+    (factorₐ_comp_liftAdicCompletionAux_of_le I f), ?_⟩
+  ext
+  simp [liftAdicCompletionAux]
 
 /-- If `A` is formally smooth over `R`, any map `A →ₐ[R] S ⧸ I` lifts
 to `A →ₐ[R] S` if `S` is `I`-adically complete.
-See `Algebra.FormallySmooth.liftAdicCompletion` for a version without the `IsAdicComplete`
-assumption. -/
-noncomputable def liftOfIsAdicComplete [IsAdicComplete I S] : A →ₐ[R] S :=
-  IsAdicComplete.liftAlgHom I (liftAdicCompletionAux I f)
-    (factorₐ_comp_liftAdicCompletionAux_of_le I f)
-
-@[simp]
-lemma evalₐ_liftAdicCompletion_apply (x : A) :
-    AdicCompletion.evalₐ I 1 (liftAdicCompletion I f x) =
-      (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)) (f x) := by
-  simp only [liftAdicCompletion, AdicCompletion.evalₐ_liftAlgHom]
-  rfl
-
-@[simp]
-lemma mk_liftOfIsAdicComplete [IsAdicComplete I S] (x : A) :
-    liftOfIsAdicComplete I f x = f x := by
-  apply (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)).injective
-  simp only [liftOfIsAdicComplete, Ideal.quotientEquivAlgOfEq_mk, IsAdicComplete.mk_liftAlgHom]
-  rfl
-
-lemma mkₐ_comp_liftOfIsAdicComplete [IsAdicComplete I S] :
-    (Ideal.Quotient.mkₐ _ _).comp (liftOfIsAdicComplete I f) = f :=
-  AlgHom.ext fun x ↦ mk_liftOfIsAdicComplete I f x
-
-lemma exists_adicCompletionEvalₐ_comp_eq (I : Ideal S) (f : A →ₐ[R] S ⧸ I) :
-    ∃ (g : A →ₐ[R] AdicCompletion I S),
-      (Ideal.quotientEquivAlgOfEq R (by simp)).toAlgHom.comp
-        (((AdicCompletion.evalₐ I 1).restrictScalars R).comp g) = f := by
-  refine ⟨liftAdicCompletion I f, ?_⟩
+See `Algebra.FormallySmooth.exists_adicCompletionEvalOneₐ_comp_eq` for a version without the
+`IsAdicComplete` assumption. -/
+public lemma exists_mkₐ_comp_eq_of_isAdicComplete {I : Ideal S} [IsAdicComplete I S]
+    (f : A →ₐ[R] S ⧸ I) :
+    ∃ (g : A →ₐ[R] S), (Ideal.Quotient.mkₐ _ _).comp g = f := by
+  obtain ⟨g, hg⟩ := exists_adicCompletionEvalOneₐ_comp_eq f
+  refine ⟨AlgHom.comp ((AdicCompletion.ofAlgEquiv I).symm.toAlgHom.restrictScalars R) g, ?_⟩
   ext x
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, AlgHom.coe_restrictScalars',
-    Function.comp_apply, evalₐ_liftAdicCompletion_apply,
-    ← Ideal.quotientEquivAlgOfEq_symm _ (show I = I ^ 1 by simp), AlgEquiv.symm_apply_apply]
-
-lemma exists_mkₐ_comp_eq_of_isAdicComplete (I : Ideal S) [IsAdicComplete I S] (f : A →ₐ[R] S ⧸ I) :
-    ∃ (g : A →ₐ[R] S), (Ideal.Quotient.mkₐ _ _).comp g = f :=
-  ⟨liftOfIsAdicComplete I f, mkₐ_comp_liftOfIsAdicComplete _ _⟩
+  simpa using congr($hg x)
 
 /-- If `A` is formally smooth over `R`, the projection from the adic completion of
 `S` at the kernel of `f : S →ₐ[R] A` has a section. -/
-lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjective f) :
+public lemma exists_kerProj_comp_eq_id (f : S →ₐ[R] A) (hf : Function.Surjective f) :
     ∃ (g : A →ₐ[R] AdicCompletion (ker f) S),
     (AdicCompletion.kerProj hf).comp g = AlgHom.id R A := by
-  obtain ⟨g, hg⟩ := exists_adicCompletionEvalₐ_comp_eq (ker f)
+  obtain ⟨g, hg⟩ := exists_adicCompletionEvalOneₐ_comp_eq
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm.toAlgHom
   use g
   ext x

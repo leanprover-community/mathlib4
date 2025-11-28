@@ -166,6 +166,18 @@ lemma ext_evalₐ {x y : AdicCompletion I R} (H : ∀ n, evalₐ I n x = evalₐ
   have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by ext x; simp
   exact (Ideal.quotientEquivAlgOfEq R h).injective (H n)
 
+/-- The canonical projection from the `I`-adic completion to `R ⧸ I`. -/
+def evalOneₐ : AdicCompletion I R →ₐ[R] R ⧸ I :=
+  (Ideal.Quotient.factorₐ _ (by simp)).comp (evalₐ _ 1)
+
+@[simp]
+lemma evalOneₐ_of (x : R) : evalOneₐ I (of I R x) = x := rfl
+
+@[simp]
+lemma factorₐ_evalₐ_one (x : AdicCompletion I R) :
+    Ideal.Quotient.factorₐ R (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
+  rfl
+
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
   Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
@@ -385,6 +397,11 @@ lemma evalₐ_liftAlgHom (n : ℕ) (x : A) :
     evalₐ I n (liftAlgHom I f hf x) = f n x :=
   evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; exact congr($(hf hle) x)) _ _
 
+@[simp]
+lemma evalOneₐ_liftAlgHom (x : A) :
+    evalOneₐ I (liftAlgHom I f hf x) = Ideal.Quotient.factorₐ R (by simp) (f 1 x) := by
+  simp [evalOneₐ]
+
 end
 
 variable [IsAdicComplete I S]
@@ -423,6 +440,11 @@ theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
   simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
   rw [← mk_smul_top_ofAlgEquiv_symm I n x]
   simp
+
+@[simp]
+lemma mk_ofAlgEquiv_symm_eq_evalOneₐ (x : AdicCompletion I S) :
+    Ideal.Quotient.mk I ((ofAlgEquiv I).symm x) = evalOneₐ I x := by
+  simp [evalOneₐ, ← mk_ofAlgEquiv_symm]
 
 end liftRingHom
 
