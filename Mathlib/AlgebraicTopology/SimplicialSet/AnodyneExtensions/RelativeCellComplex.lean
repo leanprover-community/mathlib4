@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # The relative cell complex attached to a rank function for a pairing
@@ -19,7 +22,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 
 universe v u
 
-open CategoryTheory HomotopicalAlgebra Simplicial Limits
+open CategoryTheory HomotopicalAlgebra Simplicial Limits Opposite
 
 namespace SSet.Subcomplex.Pairing
 
@@ -213,6 +216,12 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
+lemma isPullback (j : ι) (hj : ¬ IsMax j) :
+    IsPullback (f.t j) (f.m j)
+      (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
+  w := f.w j
+  isLimit' := ⟨sorry⟩
+
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
@@ -222,7 +231,10 @@ lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     refine (isColimitMapCoconePushoutCoconeEquiv _ _).2
       (IsPushout.isColimit ?_)
     dsimp
-    sorry)⟩
+    refine Limits.Types.isPushout_of_isPullback_of_mono'
+      ((f.isPullback j hj).map ((CategoryTheory.evaluation _ _).obj (op ⦋d⦌)))
+      sorry sorry
+    )⟩
 
 end
 
