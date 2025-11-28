@@ -66,9 +66,7 @@ theorem embSigma_apply_self {k : κ} (f : ι k →₀ M) (i : ι k) :
 theorem embSigma_apply_of_ne {k k' : κ} (f : ι k →₀ M) (hk : k' ≠ k) (i : ι k') :
     embSigma f ⟨k', i⟩ = 0 := by
   apply embDomain_notin_range
-  intro ⟨j, hj⟩
-  simp only [Embedding.sigmaMk, Embedding.coeFn_mk, Sigma.mk.injEq] at hj
-  exact hk hj.1.symm
+  grind
 
 @[simp, grind =]
 theorem support_embSigma {k : κ} (f : ι k →₀ M) :
@@ -120,11 +118,7 @@ section EmbSigmaSingle
 theorem embSigma_single [Zero M] {k : κ} (i : ι k) (m : M) :
     embSigma (single i m) = single ⟨k, i⟩ m := by
   classical
-  ext ⟨k', j⟩
-  by_cases hk : k' = k
-  · subst hk
-    simp [single_apply]
-  · simp [embSigma_apply_of_ne _ hk, hk]
+  grind
 
 end EmbSigmaSingle
 
