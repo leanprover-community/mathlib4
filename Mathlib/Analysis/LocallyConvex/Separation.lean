@@ -312,7 +312,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
       (convex_singleton y) isClosed_singleton (disjoint_singleton.2 hxy)
   exact ⟨f, by linarith [hs x rfl, ht y rfl]⟩
 
-/-- A closed convex set is the intersection of halfspaces. -/
+/-- A closed convex set is an intersection of halfspaces. -/
 theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : StrongDual 𝕜 E, { x | ∃ y ∈ s, re (l x) ≤ re (l y) } = s := by
   rw [Set.iInter_setOf]
@@ -339,7 +339,7 @@ theorem iInter_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     have := lt_trans ((hLc y).1 h.some h.some_mem) (hLc y).2
     simp [p] at this
 
-/-- A closed convex set with a Lindelöf complement is the intersection of countably many
+/-- A closed convex set with a Lindelöf complement is an intersection of countably many
 halfspaces. -/
 theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (hs₃ : IsLindelof sᶜ) : ∃ (u : Set (sᶜ : Set E)) (L : u → StrongDual 𝕜 E) (c : u → ℝ),
