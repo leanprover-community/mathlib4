@@ -210,7 +210,7 @@ structure OplaxTrans (F G : B ⥤ᴸ C) where
         (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
           (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom ≫
             app a ◁ G.mapComp f g := by
-    aesop_cat
+    cat_disch
 
 namespace OplaxTrans
 
