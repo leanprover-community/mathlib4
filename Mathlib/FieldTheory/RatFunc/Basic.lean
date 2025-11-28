@@ -487,10 +487,10 @@ variable [IsDomain K]
 instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) where
   algebraMap :=
   { toFun x := RatFunc.mk (algebraMap _ _ x) 1
-    map_add' x y := by simp only [mk_one', RingHom.map_add, ofFractionRing_add]
-    map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
-    map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
-    map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero] }
+    map_add' x y := by simp only [mk_one', map_add, ofFractionRing_add]
+    map_mul' x y := by simp only [mk_one', map_mul, ofFractionRing_mul]
+    map_one' := by simp only [mk_one', map_one, ofFractionRing_one]
+    map_zero' := by simp only [mk_one', map_zero, ofFractionRing_zero] }
   smul_def' c x := by
     induction x using RatFunc.induction_on' with | _ p q hq
     rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mk_one', ← mk_smul,
@@ -956,8 +956,8 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
   classical
   induction x using RatFunc.induction_on with | _ p q hq
   have q_div_ne_zero : q / gcd p q ≠ 0 := right_div_gcd_ne_zero hq
-  rw [num_div p q, denom_div p hq, RingHom.map_mul, RingHom.map_mul, mul_div_mul_left,
-    div_eq_div_iff, ← RingHom.map_mul, ← RingHom.map_mul, mul_comm _ q, ←
+  rw [num_div p q, denom_div p hq, map_mul, map_mul, mul_div_mul_left,
+    div_eq_div_iff, ← map_mul, ← map_mul, mul_comm _ q, ←
     EuclideanDomain.mul_div_assoc, ← EuclideanDomain.mul_div_assoc, mul_comm]
   · apply gcd_dvd_right
   · apply gcd_dvd_left
@@ -976,7 +976,7 @@ theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
 
 @[simp]
 theorem num_eq_zero_iff {x : RatFunc K} : num x = 0 ↔ x = 0 :=
-  ⟨fun h => by rw [← num_div_denom x, h, RingHom.map_zero, zero_div], fun h => h.symm ▸ num_zero⟩
+  ⟨fun h => by rw [← num_div_denom x, h, map_zero, zero_div], fun h => h.symm ▸ num_zero⟩
 
 theorem num_ne_zero {x : RatFunc K} (hx : x ≠ 0) : num x ≠ 0 :=
   mt num_eq_zero_iff.mp hx
@@ -985,7 +985,7 @@ theorem num_mul_eq_mul_denom_iff {x : RatFunc K} {p q : K[X]} (hq : q ≠ 0) :
     x.num * q = p * x.denom ↔ x = algebraMap _ _ p / algebraMap _ _ q := by
   rw [← (algebraMap_injective K).eq_iff, eq_div_iff (algebraMap_ne_zero hq)]
   conv_rhs => rw [← num_div_denom x]
-  rw [RingHom.map_mul, RingHom.map_mul, div_eq_mul_inv, mul_assoc, mul_comm (Inv.inv _), ←
+  rw [map_mul, map_mul, div_eq_mul_inv, mul_assoc, mul_comm (Inv.inv _), ←
     mul_assoc, ← div_eq_mul_inv, div_eq_iff]
   exact algebraMap_ne_zero (denom_ne_zero x)
 
@@ -993,7 +993,7 @@ theorem num_denom_add (x y : RatFunc K) :
     (x + y).num * (x.denom * y.denom) = (x.num * y.denom + x.denom * y.num) * (x + y).denom :=
   (num_mul_eq_mul_denom_iff (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))).mpr <| by
     conv_lhs => rw [← num_div_denom x, ← num_div_denom y]
-    rw [div_add_div, RingHom.map_mul, RingHom.map_add, RingHom.map_mul, RingHom.map_mul]
+    rw [div_add_div, map_mul, map_add, map_mul, map_mul]
     · exact algebraMap_ne_zero (denom_ne_zero x)
     · exact algebraMap_ne_zero (denom_ne_zero y)
 
@@ -1004,8 +1004,7 @@ theorem num_denom_mul (x y : RatFunc K) :
     (x * y).num * (x.denom * y.denom) = x.num * y.num * (x * y).denom :=
   (num_mul_eq_mul_denom_iff (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))).mpr <| by
     conv_lhs =>
-      rw [← num_div_denom x, ← num_div_denom y, div_mul_div_comm, ← RingHom.map_mul, ←
-        RingHom.map_mul]
+      rw [← num_div_denom x, ← num_div_denom y, div_mul_div_comm, ← map_mul, ← map_mul]
 
 theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
     num x ∣ p ↔ ∃ q : K[X], q ≠ 0 ∧ x = algebraMap _ _ p / algebraMap _ _ q := by
@@ -1013,7 +1012,7 @@ theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
   · rintro ⟨q, rfl⟩
     obtain ⟨_hx, hq⟩ := mul_ne_zero_iff.mp hp
     use denom x * q
-    rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, div_self, mul_one, num_div_denom]
+    rw [map_mul, map_mul, ← div_mul_div_comm, div_self, mul_one, num_div_denom]
     · exact ⟨mul_ne_zero (denom_ne_zero x) hq, rfl⟩
     · exact algebraMap_ne_zero hq
   · rintro ⟨q, hq, rfl⟩
@@ -1025,7 +1024,7 @@ theorem denom_dvd {x : RatFunc K} {q : K[X]} (hq : q ≠ 0) :
   · rintro ⟨p, rfl⟩
     obtain ⟨_hx, hp⟩ := mul_ne_zero_iff.mp hq
     use num x * p
-    rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, div_self, mul_one, num_div_denom]
+    rw [map_mul, map_mul, ← div_mul_div_comm, div_self, mul_one, num_div_denom]
     exact algebraMap_ne_zero hp
   · rintro ⟨p, rfl⟩
     exact denom_div_dvd p q
@@ -1037,18 +1036,17 @@ theorem num_mul_dvd (x y : RatFunc K) : num (x * y) ∣ num x * num y := by
   · simp [hy]
   rw [num_dvd (mul_ne_zero (num_ne_zero hx) (num_ne_zero hy))]
   refine ⟨x.denom * y.denom, mul_ne_zero (denom_ne_zero x) (denom_ne_zero y), ?_⟩
-  rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
+  rw [map_mul, map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 
 theorem denom_mul_dvd (x y : RatFunc K) : denom (x * y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
   refine ⟨x.num * y.num, ?_⟩
-  rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
+  rw [map_mul, map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 
 theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
   refine ⟨x.num * y.denom + x.denom * y.num, ?_⟩
-  rw [RingHom.map_mul, RingHom.map_add, RingHom.map_mul, RingHom.map_mul, ← div_add_div,
-    num_div_denom, num_div_denom]
+  rw [map_mul, map_add, map_mul, map_mul, ← div_add_div, num_div_denom, num_div_denom]
   · exact algebraMap_ne_zero (denom_ne_zero x)
   · exact algebraMap_ne_zero (denom_ne_zero y)
 

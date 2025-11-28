@@ -53,8 +53,8 @@ lemma IsGorensteinLocalRing.of_ringEquiv {R' : Type u'} [CommRing R'] (e : R ≃
 
 end
 
-/-- A commutative ring is Cohen Macaulay if its localization at every prime
-`IsCohenMacaulayLocalRing`. -/
+/-- A commutative ring is Gorenstein if its localization at every prime
+`IsGorensteinLocalRing`. -/
 class IsGorensteinRing : Prop where
   CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsGorensteinLocalRing (Localization.AtPrime p)
 
