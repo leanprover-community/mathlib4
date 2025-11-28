@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The Positive Part of the Logarithm
@@ -19,6 +21,8 @@ estimates.
 See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for the presentation of
 `log⁺` as a Circle Average.
 -/
+
+@[expose] public section
 
 namespace Real
 
@@ -44,17 +48,16 @@ theorem posLog_def : log⁺ x = max 0 (log x) := rfl
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
   rw [posLog_def, posLog_def, log_inv]
-  by_cases h : 0 ≤ log x
+  by_cases! h : 0 ≤ log x
   · simp [h]
-  · rw [not_le] at h
-    simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
+  · simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
 
 /-- Presentation of `log⁺` in terms of `log`. -/
 theorem half_mul_log_add_log_abs : 2⁻¹ * (log x + |log x|) = log⁺ x := by
-  by_cases hr : 0 ≤ log x
+  by_cases! hr : 0 ≤ log x
   · simp [posLog, hr, abs_of_nonneg]
     ring
-  · simp [posLog, le_of_not_ge hr, abs_of_nonpos]
+  · simp [posLog, hr.le, abs_of_nonpos]
 
 @[simp] lemma posLog_zero : log⁺ 0 = 0 := by simp [posLog]
 
@@ -94,10 +97,10 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
   simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
-  by_cases h : log x ≤ 0
+  by_cases! h : log x ≤ 0
   · tauto
   · right
-    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 (not_le.1 h))) hxy
+    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
     simp only [this, and_true, ge_iff_le]
     linarith
 
@@ -154,9 +157,10 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
-/--
-Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving just two summands.
--/
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
+/-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
+just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum

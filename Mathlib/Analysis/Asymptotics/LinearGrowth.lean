@@ -3,7 +3,9 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Linear growth
@@ -25,6 +27,8 @@ Generalize statements from `EReal` to `ENNReal` (or others). This may need addit
 Lemma about coercion from `ENNReal` to `EReal`. This needs additional lemmas about
 `ENNReal.toEReal`.
 -/
+
+@[expose] public section
 
 namespace LinearGrowth
 
@@ -544,9 +548,9 @@ lemma _root_.Monotone.linearGrowthInf_comp {a : EReal} (h : Monotone u)
   -- In the latter case, we apply `le_linearGrowthInf_comp` and `linearGrowthInf_comp_le`.
   by_cases u_0 : u = ⊥
   · rw [u_0, Pi.bot_comp, linearGrowthInf_bot, ← hv.liminf_eq, mul_bot_of_pos hv₁]
-  by_cases h1 : ∃ᶠ n : ℕ in atTop, u n ≤ 0
+  by_cases! h' : ∃ᶠ n : ℕ in atTop, u n ≤ 0
   · replace h' (n : ℕ) : u n ≤ 0 := by
-      obtain ⟨m, n_m, um_1⟩ := (frequently_atTop.1 h1) n
+      obtain ⟨m, n_m, um_1⟩ := (frequently_atTop.1 h') n
       exact (h n_m).trans um_1
     have u_0' : linearGrowthInf u = 0 := by
       apply le_antisymm _ (h.linearGrowthInf_nonneg u_0)
@@ -555,7 +559,7 @@ lemma _root_.Monotone.linearGrowthInf_comp {a : EReal} (h : Monotone u)
     apply le_antisymm _ (linearGrowthInf_comp_nonneg h u_0 v_top)
     apply (linearGrowthInf_monotone fun n ↦ h' (v n)).trans_eq
     exact linearGrowthInf_const zero_ne_bot zero_ne_top
-  · replace h' := (not_frequently.1 h1).mono fun _ hn ↦ le_of_not_ge hn
+  · replace h' := h'.mono fun _ hn ↦ hn.le
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact h.linearGrowthInf_comp_le ha ha'
@@ -573,7 +577,7 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
   -- In the latter case, we apply `le_linearGrowthSup_comp` and `linearGrowthSup_comp_le`.
   by_cases u_0 : u = ⊥
   · rw [u_0, Pi.bot_comp, linearGrowthSup_bot, ← hv.liminf_eq, mul_bot_of_pos hv₁]
-  by_cases u_1 : ∀ᶠ n : ℕ in atTop, u n ≤ 0
+  by_cases! u_1 : ∀ᶠ n : ℕ in atTop, u n ≤ 0
   · have u_0' : linearGrowthSup u = 0 := by
       apply le_antisymm _ (h.linearGrowthSup_nonneg u_0)
       apply (linearGrowthSup_eventually_monotone u_1).trans_eq
@@ -582,10 +586,10 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
     apply le_antisymm _ (linearGrowthSup_comp_nonneg h u_0 v_top)
     apply (linearGrowthSup_eventually_monotone (v_top.eventually u_1)).trans_eq
     exact linearGrowthSup_const zero_ne_bot zero_ne_top
-  · replace h' := (not_eventually.1 u_1).mono fun x hx ↦ (lt_of_not_ge hx).le
+  · replace u_1 := u_1.mono fun x hx ↦ hx.le
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
-      exact linearGrowthSup_comp_le h' ha ha' v_top
+      exact linearGrowthSup_comp_le u_1 ha ha' v_top
     · rw [← hv.liminf_eq]
       exact h.le_linearGrowthSup_comp hv₁.ne.symm
 

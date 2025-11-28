@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.Probability.Moments.Tilted
+module
+
+public import Mathlib.Probability.Kernel.Condexp
+public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Moments.Tilted
 
 /-!
 # Sub-Gaussian random variables
@@ -117,6 +119,8 @@ a conditional expectation, `(μ.trim hm)`-almost surely:
   science*][vershynin2018high]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Real
 
@@ -316,7 +320,7 @@ lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε
   calc (κ ω').real {ω | ε ≤ X ω}
   -- choose the minimizer of the r.h.s. of `h` for `t ≥ 0`. That is, `t = ε / c`.
   _ ≤ exp (-(ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
-  _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
+  _ = exp (- ε ^ 2 / (2 * c)) := by congr; field
 
 end ChernoffBound
 

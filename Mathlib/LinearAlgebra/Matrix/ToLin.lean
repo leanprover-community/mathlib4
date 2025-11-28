@@ -3,17 +3,19 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Basis.Fin
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Basis.SMul
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.StdBasis
-import Mathlib.RingTheory.AlgebraTower
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Fin
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Basis.SMul
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.StdBasis
+public import Mathlib.RingTheory.AlgebraTower
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
@@ -65,6 +67,8 @@ and (presumably) adding `_left` where necessary.
 
 linear_map, matrix, linear_equiv, diagonal, det, trace
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -663,6 +667,10 @@ theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :
   congr
   exact v₁.equivFun.symm_apply_apply x
 
+theorem Matrix.repr_toLin (M : Matrix m n R) (x : M₁) :
+    v₂.repr (M.toLin v₁ v₂ x) = M.mulVec (v₁.repr x) := by
+  rw [← toMatrix_mulVec_repr v₁, toMatrix_toLin]
+
 @[simp]
 theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l R M₁)
     (b' : Basis l R M₂) :
@@ -691,7 +699,7 @@ variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 /-- The matrix of `toSpanSingleton R M₂ x` given by bases `v₁` and `v₂` is equal to
 `vecMulVec (v₂.repr x) v₁`. When `v₁ = Module.Basis.singleton`
-then this is the column matrix of `v₂.repr x`.` -/
+then this is the column matrix of `v₂.repr x`. -/
 theorem LinearMap.toMatrix_toSpanSingleton (v₁ : Basis n R R) (v₂ : Basis m R M₂) (x : M₂) :
     (toSpanSingleton R M₂ x).toMatrix v₁ v₂ = vecMulVec (v₂.repr x) v₁ := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
@@ -884,7 +892,7 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     LinearMap.toMatrix v₁ v₁ (DistribMulAction.toLinearMap R M₁ x) =
     Matrix.diagonal fun _ ↦ x := by
   ext
-  rw [LinearMap.toMatrix_apply, DistribMulAction.toLinearMap_apply, LinearEquiv.map_smul,
+  rw [LinearMap.toMatrix_apply, DistribMulAction.toLinearMap_apply, map_smul,
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
@@ -922,11 +930,11 @@ such as the trace form or norm map for algebras.
 noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
-    rw [map_zero, LinearEquiv.map_zero]
+    rw [map_zero, map_zero]
   map_one' := by
     rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by
-    rw [map_add, LinearEquiv.map_add]
+    rw [map_add, map_add]
   map_mul' x y := by
     rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
@@ -989,7 +997,7 @@ theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
   simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
-    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, LinearEquiv.map_smul, mul_smul_comm,
+    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 
 theorem smulTower_leftMulMatrix_algebraMap (x : S) :
@@ -1104,7 +1112,7 @@ variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower 
 
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
-are `A`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+are `A`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
 `(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ..., x at j-th position, ..., 0) i)ᵢⱼ` and
 `m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
 
@@ -1129,15 +1137,15 @@ def endVecRingEquivMatrixEnd :
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
   map_mul' f g := by
     ext
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply, coeFn_sum,
-      Finset.sum_apply]
+    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
+      LinearMap.coe_sum, Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp
 
 /--
 Let `M` be an `A`-module. Every `A`-linear map `Mⁿ → Mⁿ` corresponds to a `n×n`-matrix whose entries
-are `R`-linear maps `M → M`. In another word, we have`End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
+are `R`-linear maps `M → M`. In another word, we have `End(Mⁿ) ≅ Matₙₓₙ(End(M))` defined by:
 `(f : Mⁿ → Mⁿ) ↦ (x ↦ f (0, ..., x at j-th position, ..., 0) i)ᵢⱼ` and
 `m : Matₙₓₙ(End(M)) ↦ (v ↦ ∑ⱼ mᵢⱼ(vⱼ))`.
 

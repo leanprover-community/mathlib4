@@ -3,14 +3,17 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.Data.Finite.Card
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.FintypeCat
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.Limits.Types.Equalizers
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Data.Finite.Card
 
 /-!
 # Definition and basic properties of Galois categories
@@ -41,6 +44,8 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂ v₁ v₂ w t
 
@@ -250,7 +255,8 @@ noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
     (h : F.map f x = F.map g x) :
     F.map (equalizer.ι f g) ((fiberEqualizerEquiv F f g).symm ⟨x, h⟩) = x := by
-  simp [fiberEqualizerEquiv]
+  simp only [fiberEqualizerEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp,
+    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
   change ((Types.equalizerIso _ _).inv ≫ _ ≫ (F ⋙ FintypeCat.incl).map (equalizer.ι f g)) _ = _
   erw [PreservesEqualizer.iso_inv_ι, Types.equalizerIso_inv_comp_ι]
 
@@ -264,7 +270,8 @@ noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
     F.map (pullback.fst f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = a := by
-  simp [fiberPullbackEquiv]
+  simp only [fiberPullbackEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp,
+    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.fst f g)) _ = _
   erw [PreservesPullback.iso_inv_fst, Types.pullbackIsoPullback_inv_fst]
@@ -273,7 +280,8 @@ lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
 lemma fiberPullbackEquiv_symm_snd_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
     (a : F.obj A) (b : F.obj B) (h : F.map f a = F.map g b) :
     F.map (pullback.snd f g) ((fiberPullbackEquiv F f g).symm ⟨(a, b), h⟩) = b := by
-  simp [fiberPullbackEquiv]
+  simp only [fiberPullbackEquiv, comp_obj, FintypeCat.incl_obj, Functor.comp_map, Iso.toEquiv_comp,
+    Equiv.symm_trans_apply, Iso.toEquiv_symm_fun]
   change ((Types.pullbackIsoPullback _ _).inv ≫ _ ≫
     (F ⋙ FintypeCat.incl).map (pullback.snd f g)) _ = _
   erw [PreservesPullback.iso_inv_snd, Types.pullbackIsoPullback_inv_snd]
