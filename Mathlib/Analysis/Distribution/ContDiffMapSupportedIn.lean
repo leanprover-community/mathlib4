@@ -731,6 +731,13 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [Nontrivially
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
+instance : T3Space 𝓓^{n}_{K}(E, F) :=
+  have : Injective (toBoundedContinuousFunctionCLM ℝ : 𝓓^{n}_{K}(E, F) →L[ℝ] E →ᵇ F) :=
+    fun _ _ hfg ↦ ext fun x ↦ congr(($hfg : E → F) x)
+  have : T2Space 𝓓^{n}_{K}(E, F) := .of_injective_continuous this
+    (toBoundedContinuousFunctionCLM ℝ).continuous
+  inferInstance
+
 theorem seminorm_postcompLM_le [LinearMap.CompatibleSMul F F' ℝ 𝕜] {i : ℕ} (T : F →L[𝕜] F')
     (f : 𝓓^{n}_{K}(E, F)) :
     N[𝕜]_{K, n, i} (postcompLM T f) ≤ ‖T‖ * N[𝕜]_{K, n, i} f := by
