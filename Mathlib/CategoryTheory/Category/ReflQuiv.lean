@@ -156,6 +156,7 @@ instance : Category (FreeRefl V) :=
 def mk (v : V) : FreeRefl V := (Quotient.functor _).obj v
 
 /-- Induction principle for the objects of the free category on a reflexive quiver. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 def induction {motive : FreeRefl V → Sort*} (mk : ∀ v, motive (mk v)) (x : FreeRefl V) :
     motive x :=
   mk _
