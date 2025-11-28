@@ -87,7 +87,7 @@ variable {N} in
 /-- A predicate characterizing homomorphisms between additive monoids `M` and `N` that form a
 commutative triangle with the canonical map from `M` to its localization at `S` and
 some isomorphism between `N` and the localization. -/
-class IsLocalizationMap (f : M → N) where
+structure IsLocalizationMap (S : AddSubmonoid M) (f : M → N) where
   map_addUnits (y : S) : IsAddUnit (f y)
   surj (z : N) : ∃ x : M × S, z + f x.2 = f x.1
   exists_of_eq {x y} : f x = f y → ∃ c : S, c + x = c + y
@@ -114,7 +114,7 @@ variable {N} in
 commutative triangle with the canonical map from `M` to its localization at `S` and
 some isomorphism between `N` and the localization. -/
 @[to_additive (attr := mk_iff)]
-class IsLocalizationMap (f : M → N) where
+structure IsLocalizationMap (S : Submonoid M) (f : M → N) where
   map_units (y : S) : IsUnit (f y)
   surj (z : N) : ∃ x : M × S, z * f x.2 = f x.1
   exists_of_eq {x y} : f x = f y → ∃ c : S, c * x = c * y
@@ -398,7 +398,7 @@ namespace IsLocalizationMap
   rw [← (hf.map_units 1).mul_right_inj, mul_one]
   exact (map_mul ..).symm.trans congr(f $(mul_one _))
 
-@[to_additive] theorem comp_mulEquiv {f : M → N} (hf : IsLocalizationMap S f)
+@[to_additive] theorem mulEquiv_comp {f : M → N} (hf : IsLocalizationMap S f)
     {E} [EquivLike E N P] [MulEquivClass E N P] (e : E) : IsLocalizationMap S (e ∘ f) where
   map_units x := (hf.map_units x).map e
   surj y := let e : N ≃* P := e
@@ -1038,7 +1038,7 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
     Injective (f.map hy k) := fun z w hizw ↦ by
   set i := f.map hy k
   have ifkg (a : M) : i (f a) = k (g a) := f.map_eq hy a
-  let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
+  have ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
   have : k (g z') = k (g w') := by rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
   obtain surj | inj := or
   · have ⟨⟨c, hc'⟩, eq⟩ := k.exists_of_eq this
@@ -1416,10 +1416,11 @@ end OreLocalization
 
 section Group
 
-variable {M G : Type*} [CommMonoid M] [CommGroup G]
+variable {M G F : Type*} [CommMonoid M] [CommGroup G]
 
 @[to_additive] theorem Submonoid.isLocalizationMap_iff_bijective {S : Submonoid G}
-    {f : G →ₙ* M} : S.IsLocalizationMap f ↔ Bijective f where
+    [FunLike F G M] [MulHomClass F G M] {f : F} :
+    S.IsLocalizationMap f ↔ Bijective f where
   mp h := by
     refine ⟨fun g g' eq ↦ ?_, fun m ↦ ?_⟩
     · have ⟨c, eq⟩ := h.exists_of_eq eq
@@ -1427,7 +1428,7 @@ variable {M G : Type*} [CommMonoid M] [CommGroup G]
     · have ⟨x, eq⟩ := h.surj m
       use x.1 / x.2
       rw [div_eq_mul_inv, map_mul, ← eq, mul_assoc, ← map_mul, mul_inv_cancel, h.map_one, mul_one]
-  mpr h := let e : G ≃* M := ⟨Equiv.ofBijective f h, f.map_mul⟩
+  mpr h := let e : G ≃* M := ⟨Equiv.ofBijective f h, map_mul f⟩
   { map_units _ := (Group.isUnit _).map e
     surj m := have ⟨g, eq⟩ := h.2 m
       ⟨⟨g, 1⟩, congr(m * $e.map_one).trans <| (mul_one _).trans eq.symm⟩
@@ -1435,7 +1436,7 @@ variable {M G : Type*} [CommMonoid M] [CommGroup G]
 
 @[to_additive] instance Submonoid.isLocalizationMap_id (S : Submonoid G) :
     S.IsLocalizationMap (@id G) :=
-  S.isLocalizationMap_iff_bijective (f := .id _).mpr bijective_id
+  S.isLocalizationMap_iff_bijective (f := MulHom.id _).mpr bijective_id
 
 @[to_additive] theorem Submonoid.isLocalizationMap_of_group {S : Submonoid M}
     {f : M → G} (hf : f.Injective) (surj : ∀ g : G, ∃ x : M, ∃ y ∈ S, g = f x / f y) :
@@ -1454,8 +1455,7 @@ theorem AddSubmonoid.isLocalizationMap_nat_int (S : AddSubmonoid ℕ) (hS : S �
     exact ⟨(z / n + 1) * n - z, (z / n + 1) * n, nsmul_mem hnS _, by cutsat⟩
 
 instance : (⊤ : AddSubmonoid ℕ).IsLocalizationMap ((↑) : ℕ → ℤ) :=
-  AddSubmonoid.isLocalizationMap_of_addGroup
-    (fun _ _ ↦ Int.natCast_inj.mp) (⟨_, _, ⟨⟩, ·.toNat_sub_toNat_neg.symm⟩)
+  AddSubmonoid.isLocalizationMap_nat_int _ top_ne_bot
 
 end Group
 

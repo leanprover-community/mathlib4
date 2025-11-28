@@ -99,7 +99,13 @@ variable [Algebra R S] {P : Type*} [CommSemiring P]
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 abbrev IsLocalization : Prop := M.IsLocalizationMap (algebraMap R S)
 
-@[deprecated (since := "2025-08-15")] alias isLocalization_iff := Submonoid.isLocalizationMap_iff
+attribute [class] Submonoid.IsLocalizationMap
+
+theorem isLocalization_iff : IsLocalization M S ↔
+    (∀ y : M, IsUnit (algebraMap R S y)) ∧
+    (∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1) ∧
+    ∀ {x y : R}, algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y :=
+  Submonoid.isLocalizationMap_iff ..
 
 variable {M}
 
@@ -113,17 +119,17 @@ section
 
 /-- Everything in the image of `algebraMap` is a unit. -/
 theorem map_units : ∀ y : M, IsUnit (algebraMap R S y) :=
-  Submonoid.IsLocalizationMap.map_units
+  Submonoid.IsLocalizationMap.map_units ‹_›
 
 variable (M) {S}
 /-- Every element in the localization can be expressed as a quotient of an element in the
 range of `algebraMap` by the image of an element of the submonoid. -/
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
-  Submonoid.IsLocalizationMap.surj
+  Submonoid.IsLocalizationMap.surj ‹_›
 
 variable {M} in
 theorem exists_of_eq {x y : R} : algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y :=
-  Submonoid.IsLocalizationMap.exists_of_eq
+  Submonoid.IsLocalizationMap.exists_of_eq ‹_›
 
 variable (S)
 
@@ -158,7 +164,7 @@ theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M,
 variable {S}
 
 theorem injective_iff_isRegular : Injective (algebraMap R S) ↔ ∀ c : M, IsRegular (c : R) :=
-  (toLocalizationMap M S).injective_iff.trans <| .symm <| Subtype.forall
+  (toLocalizationMap M S).injective_iff.trans <| .symm Subtype.forall
 
 theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
     IsLocalization N S where
