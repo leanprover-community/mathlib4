@@ -198,6 +198,7 @@ lemma IsCoseparating.epi_iff (hP : IsCoseparating P) {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ ∀ (G : C) (_ : P G), ∀ (g₁ g₂ : Y ⟶ G), f ≫ g₁ = f ≫ g₂ → g₁ = g₂ :=
   ⟨fun _ _ _ _ _ h ↦ by simpa [cancel_epi] using h,
     fun hf ↦ ⟨fun g₁ g₂ h ↦ hP _ _  (fun G hG h' ↦ hf _ hG _ _ (by simp [reassoc_of% h]))⟩⟩
+
 theorem IsSeparating.isDetecting [Balanced C] (hP : IsSeparating P) :
     IsDetecting P := by
   intro X Y f hf
