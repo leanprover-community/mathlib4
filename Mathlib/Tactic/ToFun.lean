@@ -5,14 +5,15 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Util.AddRelatedDecl
-public meta import Mathlib.Tactic.Push
+meta import Mathlib.Util.AddRelatedDecl
+meta import Mathlib.Tactic.Push
 
 /-!
 # The `to_fun` attribute
 
-Adding `@[to_fun]` to a lemma named `F` creates a new lemma named `fun_F`, which is obtained by
-running `pull fun _ ↦ _` on the type of `F`.
+Adding `@[to_fun]` to a lemma named `foo` creates a new lemma named `fun_foo`, which is obtained by
+running `pull fun _ ↦ _` on the type of `F`. This can be useful for generating the applied form
+of a continuity lemma from the unapplied form.
 -/
 
 public meta section
@@ -33,7 +34,7 @@ syntax (name := to_fun) "to_fun" (" (" &"attr" " := " Parser.Term.attrInstance,*
 
 initialize registerBuiltinAttribute {
   name := `to_fun
-  descr := ""
+  descr := "generate a copy of a lemma where point-free functions are expanded to their `fun` form"
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
   | `(attr| to_fun $[(attr := $stx?,*)]?) => MetaM.run' do
