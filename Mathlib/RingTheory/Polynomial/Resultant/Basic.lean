@@ -902,7 +902,6 @@ lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
     have := resultant_mul_right f b g _ le_rfl
     obtain rfl | hb0 := eq_or_ne a 0
     · rw [show b * g = 1 by simpa using e, resultant_one_right] at this
-      simp at this
       simpa [hf.leadingCoeff] using this
     · rw [← resultant_add_mul_right _ _ a _ _ _ le_rfl, add_comm, mul_comm, e, ← C.map_one] at this
       · simpa [hf.leadingCoeff] using this
