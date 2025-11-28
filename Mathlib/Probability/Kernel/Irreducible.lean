@@ -57,12 +57,14 @@ namespace Kernel
 Ref. *Meyn-Tweedie* Proposition 4.2.1(ii), page 89 -/
 @[mk_iff]
 class IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
-  irreducible : ∀ ⦃A⦄, MeasurableSet A → φ A > 0 → ∀ a, ∃ (n : ℕ+), κ.pow n a A > 0
+  irreducible ⦃A⦄ (hA : MeasurableSet A) (hφA : φ A > 0) a :
+    ∃ (n : ℕ), κ.pow n a A > 0
 
-/-- Strongly `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`). -/
+/-- Strongly `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`).
+Ref. https://www.stats.ox.ac.uk/~rebeschi/teaching/AdvSim/18/notes/notes4.pdf, Definition 3.1 -/
 @[mk_iff]
 class IsStronglyIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
-  strongly_irreducible : ∀ ⦃A⦄, MeasurableSet A → φ A > 0 → ∀ a, κ a A > 0
+  strongly_irreducible ⦃A⦄ (hA : MeasurableSet A) (hφA : φ A > 0) a : κ a A > 0
 
 instance {φ : Measure α} {κ : Kernel α α} [IsStronglyIrreducible φ κ] :
     IsIrreducible φ κ :=

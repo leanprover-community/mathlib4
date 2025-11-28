@@ -223,43 +223,36 @@ instance IsSFiniteKernel.comp (η : Kernel β γ) [IsSFiniteKernel η] (κ : Ker
   simp_rw [← kernel_sum_seq κ, ← kernel_sum_seq η, comp_sum_left, comp_sum_right]
   infer_instance
 
-section Pow
+section Monoid
 
-/-- Power of a kernel. -/
-noncomputable def pow (κ : Kernel α α) : ℕ → Kernel α α
-  | 0          => Kernel.id
-  | Nat.succ n => κ.pow n ∘ₖ κ
-
-@[simp] lemma pow_zero (κ : Kernel α α) : κ.pow 0 = Kernel.id := rfl
-
-@[simp] lemma pow_succ (κ : Kernel α α) (n : ℕ) : κ.pow (n + 1) = κ.pow n ∘ₖ κ := by
-  cases n <;> simp [pow]
+noncomputable instance : Monoid (Kernel α α) where
+  mul η κ := η ∘ₖ κ
+  mul_assoc ξ η κ := comp_assoc _ _ _
+  one := Kernel.id
+  one_mul := id_comp
+  mul_one := comp_id
 
 /-! ### Chapman-Kolmogorov Equations -/
 
 /-- The **Chapman-Kolmogorov equation**, kernel composition version.
 The `n+m`-step transition kernel is the composition of the `n`-step and `m`-step kernels.
 Ref. *Meyn-Tweedie* Theorem 3.4.2, page 68 -/
-@[simp]
 theorem pow_add (κ : Kernel α α) (m n : ℕ) :
-    κ.pow (m + n) = κ.pow m ∘ₖ κ.pow n := by
-  induction n
-  case zero => simp
-  case succ n hn => rw [Nat.add_succ, pow_succ, hn, pow_succ, comp_assoc]
+    κ ^ (m + n) = (κ ^ m) ∘ₖ (κ ^ n) := _root_.pow_add κ m n
 
 /-- The **Chapman-Kolmogorov equation**, integral version. -/
 theorem pow_add_apply_eq_lintegral (κ : Kernel α α) (m n : ℕ) (a : α) {s : Set α}
     (hs : MeasurableSet s) :
-    (κ.pow (m + n)) a s = ∫⁻ b, (κ.pow n) b s ∂(κ.pow m a) := by
-  rw [add_comm]; simp [comp_apply' _ _ _ hs]
+    (κ ^ (m + n)) a s = ∫⁻ b, (κ ^ n) b s ∂((κ ^ m) a) := by
+  rw [add_comm]; simp [pow_add, comp_apply' _ _ _ hs]
 
 /-- A version of the Chapman-Kolmogorov equation useful for paths. -/
 theorem pow_succ_apply_eq_lintegral (κ : Kernel α α) (n : ℕ) (a : α) {s : Set α}
     (hs : MeasurableSet s) :
-    (κ.pow (n + 1)) a s = ∫⁻ b, κ b s ∂(κ.pow n a) := by
+    (κ ^ (n + 1)) a s = ∫⁻ b, κ b s ∂((κ ^ n) a) := by
   simpa using pow_add_apply_eq_lintegral _ n 1 _ hs
 
-end Pow
+end Monoid
 
 end Kernel
 end ProbabilityTheory
