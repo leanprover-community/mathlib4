@@ -615,7 +615,7 @@ lemma injectiveDimension_eq_depth
       (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs)))
     apply not_subsingleton_iff_nontrivial.mpr
     rw [(ext_quotient_regular_sequence_length.{v, u, v} M rs reg).nontrivial_congr]
-    apply Submodule.Quotient.nontrivial_of_lt_top _ (lt_top_iff_ne_top.mpr _)
+    apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
     apply (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator _).symm
     exact le_trans (Ideal.span_le.mpr mem) (maximalIdeal_le_jacobson _)
 
@@ -656,7 +656,7 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
     IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.span {x}) := by
   have : IsLocalRing (R ⧸ Ideal.span {x}) :=
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
-      Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
