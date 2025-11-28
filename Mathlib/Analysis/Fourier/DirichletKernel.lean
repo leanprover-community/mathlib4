@@ -10,7 +10,9 @@ public import Mathlib.Analysis.Complex.Trigonometric
 /-!
 # Dirichlet kernel
 
-The Dirichlet kernel is a family of functions related to the Fourier Transform. This file defines lemmas relevant to the Dirichlet kernel.
+The Dirichlet kernel is a family of functions related to the Fourier Transform.
+
+This file defines lemmas relevant to the Dirichlet kernel.
 
 ## References
 
@@ -37,7 +39,7 @@ theorem sum_range_cos_mul_add (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
   induction n with
   | zero => simp
   | succ n ih =>
-    simp [Finset.sum_range_succ, ih, field]
+    simp only [Finset.sum_range_succ, ih, Nat.cast_add, Nat.cast_one, add_sub_cancel_right, fieldEq]
     have : 2 * sin ((n + 1) * x / 2) * cos (n * x / 2 + a)
          - 2 * sin (n * x / 2) * cos ((n - 1) * x / 2 + a)
          = 2 * sin (x / 2) * cos (n * x + a) := by
@@ -53,7 +55,7 @@ theorem sum_range_sin_mul_add (n : ℕ) (x a : ℝ) (hx : sin (x / 2) ≠ 0) :
   induction n with
   | zero => simp
   | succ n ih =>
-    simp [Finset.sum_range_succ, ih, field]
+    simp only [Finset.sum_range_succ, ih, Nat.cast_add, Nat.cast_one, add_sub_cancel_right, fieldEq]
     have : 2 * sin (n * x / 2) * sin ((n - 1) * x / 2 + a)
          + 2 * sin (x / 2) * sin (↑n * x + a)
          = 2 * sin ((n + 1) * x / 2) * sin (n * x / 2 + a) := by
