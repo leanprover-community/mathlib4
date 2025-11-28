@@ -16,6 +16,9 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 # Ulift Functor of ModuleCat
 
+In this file, we define the obvious functor `ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R` and prove
+it is exact, fully faithful and preverves projective and injective objects.
+
 -/
 
 @[expose] public section
@@ -38,20 +41,17 @@ def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
   obj X := ModuleCat.of R (ULift.{v', v} X)
   map f := ModuleCat.ofHom <|
     ULift.moduleEquiv.symm.toLinearMap.comp (f.hom.comp ULift.moduleEquiv.toLinearMap)
-  map_id := by simp
-  map_comp f g := by
-    ext
-    simp
 
 /-- The universe lift functor for `R`-module is fully faithful. -/
 def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
 
+instance : (uliftFunctor.{v', v} R).Full := (fullyFaithfulUliftFunctor R).full
+
+instance : (uliftFunctor.{v', v} R).Faithful := (fullyFaithfulUliftFunctor R).faithful
+
 instance : (uliftFunctor R).Additive where
-  map_add {X Y f g} := by
-    simp only [uliftFunctor, hom_add, LinearMap.add_comp, LinearMap.comp_add]
-    rfl
 
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
@@ -61,9 +61,7 @@ lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) 
   intro x
   simp only [Function.comp_apply, Set.mem_range, LinearEquiv.symm_apply_eq, map_zero]
   rw [(CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mp h]
-  refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun ⟨y, hy⟩ ↦ ⟨ULift.moduleEquiv y, hy⟩⟩
-  use ULift.moduleEquiv.symm (R := R) y
-  simpa
+  cat_disch
 
 instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) := by
   have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
@@ -77,8 +75,7 @@ instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
 
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects where
   projective_obj {M} proj := by
-    let _ : Small.{max v v', u} R := small_lift R
-    let _ := (IsProjective.iff_projective M).mpr proj
+    have := small_lift R
     rw [← IsProjective.iff_projective]
     exact Module.Projective.of_equiv ULift.moduleEquiv.symm
 
@@ -93,10 +90,6 @@ section CommRing
 variable [CommRing R]
 
 instance : (uliftFunctor.{v', v} R).Linear R where
-  map_smul f r := by
-    simp only [uliftFunctor_obj, uliftFunctor_map, hom_smul, LinearMap.smul_comp,
-      LinearMap.comp_smul]
-    rfl
 
 end CommRing
 

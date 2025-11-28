@@ -152,8 +152,8 @@ def op : RetractArrow f.op g.op where
 /-- If a morphism `f` in the opposite category is a retract of `g`,
 then `f.unop` is a retract of `g.unop`. -/
 @[simps]
-def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g)
- : RetractArrow f.unop g.unop where
+def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) :
+    RetractArrow f.unop g.unop where
   i.left := h.r.right.unop
   i.right := h.r.left.unop
   i.w := by simp [← unop_comp]
