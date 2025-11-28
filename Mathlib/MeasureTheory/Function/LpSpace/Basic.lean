@@ -141,10 +141,8 @@ instance instCoeFun : CoeFun (Lp E p μ) (fun _ => α → E) :=
 
 @[ext high]
 theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
-  cases f
-  cases g
-  simp only [Subtype.mk_eq_mk]
-  exact AEEqFun.ext h
+  ext
+  exact h
 
 theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
 
