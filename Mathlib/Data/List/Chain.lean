@@ -383,18 +383,21 @@ theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain 
 
 @[deprecated (since := "2025-09-24")] alias Chain'.getElem := IsChain.getElem
 
+@[deprecated isChain_iff_getElem (since := "2025-11-25")]
 theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
-    ∀ (i : ℕ) (h : i + 1 < l.length), R (get l ⟨i, by cutsat⟩) (get l ⟨i + 1, h⟩) := by
-  simp [isChain_iff_getElem]
+    ∀ (i : Fin (l.length.pred)),
+    haveI H := Nat.sub_one_add_one (Nat.lt_of_lt_pred i.pos).ne'
+    R (l.get (i.castSucc.cast H)) (l.get (i.succ.cast H)) := by
+  simp [isChain_iff_getElem, Fin.forall_iff, Nat.lt_sub_iff_add_lt]
 
 @[deprecated (since := "2025-09-24")] alias chain'_iff_forall_getElem := isChain_iff_getElem
 @[deprecated (since := "2025-09-24")] alias chain'_iff_get := isChain_iff_get
 
+@[deprecated isChain_iff_getElem (since := "2025-11-25")]
 theorem isChain_cons_iff_get {R} {a : α} {l : List α} : IsChain R (a :: l) ↔
-    (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
-      ∀ (i : ℕ) (h : i < l.length - 1),
-        R (get l ⟨i, by cutsat⟩) (get l ⟨i+1, by cutsat⟩) := by
-  cases l <;> grind [isChain_iff_get]
+    ∀ (i : Fin l.length), R ((a :: l).get i.castSucc) ((a :: l).get i.succ) := by
+  simp only [isChain_iff_getElem, length_cons, Fin.forall_iff, Nat.add_lt_add_iff_right,
+    getElem_cons_succ, Fin.castSucc_mk, get_eq_getElem, Fin.succ_mk]
 
 theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by simp_all [isChain_iff_getElem]
@@ -403,13 +406,13 @@ theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
 
 @[deprecated (since := "2025-09-19")] alias chain_iff_get := isChain_cons_iff_get
 
-theorem isChain_reverse {l : List α} : IsChain R (reverse l) ↔ IsChain (flip R) l := by
+theorem isChain_reverse {l : List α} : l.reverse.IsChain R ↔ l.IsChain (fun a b => R b a) := by
   induction l using twoStepInduction with
   | nil => grind
   | singleton a => grind
   | cons_cons a b l IH IH2 =>
     rw [isChain_cons_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
-      isChain_split, ← reverse_cons, IH2, and_comm, isChain_pair, flip]
+      isChain_split, ← reverse_cons, IH2, and_comm, isChain_pair]
 
 @[deprecated (since := "2025-09-24")] alias chain'_reverse := isChain_reverse
 
@@ -613,7 +616,7 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
   | zero => rfl
   | succ i h =>
     rw [Function.iterate_succ', Function.comp_apply, h (by cutsat)]
-    rw [List.isChain_iff_get] at hl
+    rw [List.isChain_iff_getElem] at hl
     apply hl
 
 @[deprecated (since := "2025-09-24")]
