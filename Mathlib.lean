@@ -9462,6 +9462,7 @@ public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Monad.Basic
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
