@@ -44,10 +44,11 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
 
+instance : (uliftFunctor.{v', v} R).Full := (fullyFaithfulUliftFunctor R).full
+
+instance : (uliftFunctor.{v', v} R).Faithful := (fullyFaithfulUliftFunctor R).faithful
+
 instance : (uliftFunctor R).Additive where
-  map_add {X Y f g} := by
-    simp only [uliftFunctor, hom_add, LinearMap.add_comp, LinearMap.comp_add]
-    rfl
 
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
