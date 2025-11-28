@@ -10,7 +10,7 @@ public import Lean.Elab.Term.TermElabM
 public import Batteries.Data.Array.Basic
 public import Mathlib.Init
 public import Mathlib.Lean.Elab.Term
-public meta import Batteries.Data.Array.Basic
+meta import Batteries.Data.Array.Basic
 
 /-!
 # Support for `Category* C`.
