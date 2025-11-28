@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Tactic.Nontriviality
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Finite sets
@@ -37,6 +39,8 @@ instances since they do not compute anything.
 
 finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -664,6 +668,9 @@ theorem finite_union {s t : Set α} : (s ∪ t).Finite ↔ s.Finite ∧ t.Finite
 theorem finite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) : (f '' s).Finite ↔ s.Finite :=
   ⟨fun h => h.of_finite_image hi, Finite.image _⟩
 
+lemma finite_range_iff {f : α → β} (hf : f.Injective) : (range f).Finite ↔ Finite α := by
+  simpa [finite_univ_iff] using finite_image_iff (s := univ) hf.injOn
+
 theorem univ_finite_iff_nonempty_fintype : (univ : Set α).Finite ↔ Nonempty (Fintype α) :=
   ⟨fun h => ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
 
@@ -697,7 +704,7 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
     (insert : ∀ {a s}, a ∉ s →
       ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
     motive s hs := by
-  lift s to Finset α using id hs
+  lift s to Finset α using hs
   induction s using Finset.cons_induction_on with
   | empty => simpa
   | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)
@@ -865,9 +872,8 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
     (f '' s).Infinite ↔ s.Infinite :=
   not_congr <| finite_image_iff hi
 
-theorem infinite_range_iff {f : α → β} (hi : Injective f) :
-    (range f).Infinite ↔ Infinite α := by
-  rw [← image_univ, infinite_image_iff hi.injOn, infinite_univ_iff]
+theorem infinite_range_iff {f : α → β} (hf : Injective f) : (range f).Infinite ↔ Infinite α := by
+  simpa using (finite_range_iff hf).not
 
 protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 

@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Algebra.Colimit.DirectLimit
-import Mathlib.Data.Finset.Order
-import Mathlib.RingTheory.FreeCommRing
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Colimit.DirectLimit
+public import Mathlib.Data.Finset.Order
+public import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of rings, and fields
@@ -25,6 +27,8 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 * `Ring.DirectLimit G f`
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -44,7 +48,8 @@ variable (f : ∀ i j, i ≤ j → G i → G j)
 
 open FreeCommRing
 
-/-- The direct limit of a directed system is the rings glued together along the maps. -/
+/-- The direct limit of a directed system is the ring obtained by gluing the components along the
+maps. -/
 def DirectLimit : Type _ :=
   FreeCommRing (Σ i, G i) ⧸
     Ideal.span
@@ -148,7 +153,7 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
       intro x hx
       rw [SetLike.mem_coe, Ideal.mem_comap, mem_bot]
       rcases hx with (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩) <;>
-        simp only [RingHom.map_sub, lift_of, Hg, RingHom.map_one, RingHom.map_add, RingHom.map_mul,
+        simp only [map_sub, lift_of, Hg, map_one, map_add, map_mul,
           (g i).map_one, (g i).map_add, (g i).map_mul, sub_self])
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)

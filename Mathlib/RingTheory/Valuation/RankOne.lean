@@ -3,11 +3,13 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.Embedding
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.GroupWithZero.WithZero
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Real.Embedding
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Rank one valuations
@@ -22,6 +24,8 @@ We define rank one valuations.
 
 valuation, rank one
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -49,9 +53,9 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
     exact .comap f.toMonoidHom hf
   · intro _
     obtain ⟨f, hf⟩ := Archimedean.exists_orderAddMonoidHom_real_injective (Additive Γ₀ˣ)
-    let e := AddMonoidHom.toMultiplicative' (α := Γ₀ˣ) (β := ℝ) f
+    let e := AddMonoidHom.toMultiplicativeRight (α := Γ₀ˣ) (β := ℝ) f
     have he : StrictMono e := by
-      simp only [AddMonoidHom.coe_toMultiplicative', AddMonoidHom.coe_coe, e]
+      simp only [AddMonoidHom.coe_toMultiplicativeRight, AddMonoidHom.coe_coe, e]
       -- toAdd_strictMono is already in an applied form, do defeq abuse instead
       exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
     let rf : Multiplicative ℝ →* ℝ≥0ˣ := {
@@ -90,7 +94,7 @@ theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   rw [map_zero, hx] at hs
   exact hs.false
 
-/-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
+/-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩

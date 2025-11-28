@@ -3,11 +3,14 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Tactic.Ring
 
 /-!
 # The complex numbers
@@ -16,6 +19,8 @@ The complex numbers are modelled as ℝ^2 in the obvious way and it is shown tha
 of characteristic zero. For the result that the complex numbers are algebraically closed, see
 `Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset Algebra
 
@@ -309,23 +314,19 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
-instance addCommGroup : AddCommGroup ℂ :=
-  { zero := (0 : ℂ)
-    add := (· + ·)
-    neg := Neg.neg
-    sub := Sub.sub
-    nsmul := fun n z => n • z
-    zsmul := fun n z => n • z
-    zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    add_assoc := by intros; ext <;> simp <;> ring
-    zero_add := by intros; ext <;> simp
-    add_zero := by intros; ext <;> simp
-    add_comm := by intros; ext <;> simp <;> ring
-    neg_add_cancel := by intros; ext <;> simp }
+instance addCommGroup : AddCommGroup ℂ where
+  nsmul := (· • ·)
+  zsmul := (· • ·)
+  zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  add_assoc := by intros; ext <;> simp <;> ring
+  zero_add := by intros; ext <;> simp
+  add_zero := by intros; ext <;> simp
+  add_comm := by intros; ext <;> simp <;> ring
+  neg_add_cancel := by intros; ext <;> simp
 
 /-! ### Casts -/
 
@@ -359,12 +360,10 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     natCast_zero := by ext <;> simp
     natCast_succ _ := by ext <;> simp
     intCast_ofNat _ := by ext <;> simp
-    intCast_negSucc _ := by ext <;> simp
-    one := 1 }
+    intCast_negSucc _ := by ext <;> simp }
 
 instance commRing : CommRing ℂ :=
   { addGroupWithOne with
-    mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp <;> ring
     left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
@@ -627,7 +626,7 @@ theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
-  simp only [RingHom.map_neg, mul_neg, neg_re, normSq_neg]
+  simp only [map_neg, mul_neg, neg_re, normSq_neg]
   ring
 
 /-! ### Inversion -/
@@ -741,6 +740,8 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 
 instance instCharZero : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
+
+instance instIsAddTorsionFree : IsAddTorsionFree ℂ := IsDomain.instIsAddTorsionFreeOfCharZero _
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by

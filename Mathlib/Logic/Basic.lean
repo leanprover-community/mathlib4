@@ -3,14 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Basic
-import Batteries.Logic
-import Batteries.Tactic.Trans
-import Batteries.Util.LibraryNote
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
+module
+
+public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Basic
+public import Batteries.Logic
+public import Batteries.Tactic.Trans
+public import Batteries.Util.LibraryNote
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Data.Int.Notation
 
 /-!
 # Basic logic properties
@@ -22,6 +24,8 @@ This file is one of the earliest imports in mathlib.
 Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -95,7 +99,7 @@ class Fact (p : Prop) : Prop where
   `Fact p`. -/
   out : p
 
-library_note "fact non-instances"/--
+library_note2 «fact non-instances» /--
 In most cases, we should not have global instances of `Fact`; typeclass search is not an
 advanced proof search engine, and adding any such instance has the potential to cause
 slowdowns everywhere. We instead declare them as lemmata and make them local instances as required.
@@ -165,7 +169,7 @@ theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 
 alias by_contra := by_contradiction
 
-library_note "decidable namespace"/--
+library_note2 «decidable namespace» /--
 In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
 The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
 attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
@@ -174,7 +178,7 @@ You can check if a lemma uses the axiom of choice by using `#print axioms foo` a
 `Classical.choice` appears in the list.
 -/
 
-library_note "decidable arguments"/--
+library_note2 «decidable arguments» /--
 As mathlib is primarily classical,
 if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
 it is preferable not to introduce any `Decidable` instances that are needed in the proof
@@ -723,6 +727,10 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 
+-- This can be removed after https://github.com/leanprover/lean4/pull/11316
+-- arrives in a release candidate.
+grind_pattern Exists.choose_spec => P.choose
+
 @[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
 
 @[simp]
@@ -904,6 +912,9 @@ either branch to `a`. -/
 theorem ite_apply (f g : ∀ a, σ a) (a : α) : (ite P f g) a = ite P (f a) (g a) :=
   dite_apply P (fun _ ↦ f) (fun _ ↦ g) a
 
+theorem apply_ite_left {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (x y : α) (z : β) : f (if P then x else y) z = if P then f x z else f y z := by grind
+
 section
 variable [Decidable Q]
 
@@ -1007,7 +1018,5 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by
-  apply beq_ext
-  intro x y
-  classical
-  simp only [beq_eq_decide]
+  ext
+  simp

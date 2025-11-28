@@ -3,18 +3,20 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
-import Mathlib.Algebra.Algebra.Subalgebra.Rank
-import Mathlib.Algebra.Polynomial.Basis
-import Mathlib.LinearAlgebra.LinearDisjoint
-import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.TensorProduct.Nontrivial
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
+public import Mathlib.Algebra.Algebra.Subalgebra.Rank
+public import Mathlib.Algebra.Polynomial.Basis
+public import Mathlib.LinearAlgebra.LinearDisjoint
+public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
+public import Mathlib.RingTheory.Adjoin.Dimension
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.TensorProduct.Nontrivial
+public import Mathlib.RingTheory.Trace.Defs
 
 /-!
 
@@ -128,6 +130,8 @@ assuming `S` is commutative.
 linearly disjoint, linearly independent, tensor product
 
 -/
+
+@[expose] public section
 
 open Module
 open scoped TensorProduct
@@ -777,7 +781,7 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)

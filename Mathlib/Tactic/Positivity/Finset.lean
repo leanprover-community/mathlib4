@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Density
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.Positivity.Core
+module
+
+public meta import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public meta import Mathlib.Data.Finset.Density
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Positivity extensions for finsets
@@ -16,6 +18,8 @@ they don't know about ordered fields) or in `Tactic.Positivity.Basic` (because i
 know about finiteness).
 -/
 
+public meta section
+
 namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
@@ -24,7 +28,7 @@ open Qq Lean Meta Finset
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
-def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
+meta def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
     let some ps ← proveFinsetNonempty s | return .none
@@ -34,7 +38,7 @@ def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
 @[positivity Fintype.card _]
-def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
+meta def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
     let instβno ← synthInstanceQ q(Nonempty $β)
@@ -46,7 +50,7 @@ def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.dens _]
-def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
+meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
   match u, 𝕜, e with
   | 0, ~q(ℚ≥0), ~q(@Finset.dens $α $instα $s) =>
     let some ps ← proveFinsetNonempty s | return .none
@@ -65,7 +69,7 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.sum _ _]
-def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.sum $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
@@ -85,9 +89,9 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     else
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
+      let pα' ← synthInstanceQ q(AddLeftMono $α)
       assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $instα $pα $pα' $f $s fun i _ ↦ $pr i)
+      return .nonnegative q(@sum_nonneg $ι $α $instα $pα $f $s $pα' fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}

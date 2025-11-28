@@ -3,17 +3,19 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Open subgroups of a topological group
 
-This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
-and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
+This file builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
+and its additive version `OpenAddSubgroup`. This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
@@ -31,6 +33,8 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 * Prove that the identity component of a locally path connected group is an open subgroup.
   Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Topology Function
@@ -136,14 +140,8 @@ instance : Inhabited (OpenSubgroup G) :=
 
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
-  apply isOpen_compl_iff.1
-  refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨(fun y ↦ y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
-  · refine fun u hux hu ↦ hx ?_
-    simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
-    convert U.mul_mem (U.inv_mem hux) hu
-    simp
-  · exact U.isOpen.preimage (continuous_mul_right _)
-  · simp [one_mem]
+  have := QuotientGroup.discreteTopology U.isOpen
+  exact QuotientGroup.t1Space_iff.mp inferInstance
 
 @[to_additive]
 theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
@@ -159,24 +157,15 @@ variable {H : Type*} [Group H] [TopologicalSpace H]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.sum := OpenAddSubgroup.prod
-
 @[to_additive (attr := simp, norm_cast) coe_prod]
 theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.coe_sum := OpenAddSubgroup.coe_prod
-
 @[to_additive (attr := simp, norm_cast) toAddSubgroup_prod]
 theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Subgroup (G × H)) = (U : Subgroup G).prod V :=
   rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.toAddSubgroup_sum := OpenAddSubgroup.toAddSubgroup_prod
 
 end
 
@@ -211,7 +200,6 @@ instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
 
 @[to_additive]
 instance : OrderTop (OpenSubgroup G) where
-  top := ⊤
   le_top _ := Set.subset_univ _
 
 @[to_additive (attr := simp, norm_cast)]
@@ -291,27 +279,19 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
     IsOpen (K.subgroupOf U : Set U) :=
   Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
 
-@[to_additive]
+@[to_additive (attr := deprecated QuotientGroup.discreteTopology (since := "2025-10-09"))]
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    DiscreteTopology (G ⧸ U) := by
-  refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
-  induction g using Quotient.inductionOn with | h g =>
-  change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
-  convert_to IsOpen ((g * ·) '' U)
-  · ext g'
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
-    rw [← U.inv_mem_iff]
-    simp
-  · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
+    DiscreteTopology (G ⧸ U) :=
+  QuotientGroup.discreteTopology h
 
 @[to_additive]
 instance [ContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
-  discreteTopology U.toSubgroup U.isOpen
+  QuotientGroup.discreteTopology U.isOpen
 
 @[to_additive]
 lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
     (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
-  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
+  have : DiscreteTopology (G ⧸ U) := QuotientGroup.discreteTopology h
   finite_of_compact_of_discrete
 
 @[to_additive]
@@ -378,7 +358,7 @@ theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U 
 end Ideal
 
 /-!
-# Open normal subgroups of a topological group
+### Open normal subgroups of a topological group
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
@@ -466,7 +446,7 @@ end OpenNormalSubgroup
 end
 
 /-!
-# Existence of an open subgroup in any clopen neighborhood of the neutral element
+### Existence of an open subgroup in any clopen neighborhood of the neutral element
 
 This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,

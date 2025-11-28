@@ -3,8 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -12,6 +15,8 @@ import Mathlib.Order.Basic
 `List.Nodup` is defined in `Data/List/Basic`. In this file we prove various properties of this
 predicate.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -21,7 +26,6 @@ open Function
 variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → Prop} {a : α}
 
 namespace List
-
 
 protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
     Nodup l :=
@@ -74,17 +78,14 @@ theorem nodup_iff_injective_getElem {l : List α} :
   pairwise_iff_getElem.trans
     ⟨fun h i j hg => by
       obtain ⟨i, hi⟩ := i; obtain ⟨j, hj⟩ := j
-      rcases lt_trichotomy i j with (hij | rfl | hji)
+      rcases Nat.lt_trichotomy i j with (hij | rfl | hji)
       · exact (h i j hi hj hij hg).elim
       · rfl
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
-theorem nodup_iff_injective_get {l : List α} :
-    Nodup l ↔ Function.Injective l.get := by
-  rw [nodup_iff_injective_getElem]
-  change _ ↔ Injective (fun i => l.get i)
-  simp
+theorem nodup_iff_injective_get {l : List α} : Nodup l ↔ Function.Injective l.get :=
+  nodup_iff_injective_getElem
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
@@ -98,14 +99,7 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
 
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
-  rw [Nodup, pairwise_iff_getElem]
-  constructor
-  · intro h i j hij hj
-    rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ (by cutsat) hj hij
-  · intro h i j hi hj hij
-    rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
-    exact h i j hij hj
+  grind [List.pairwise_iff_getElem]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -126,40 +120,40 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-theorem idxOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
-    idxOf l[i] l = i :=
-  suffices (⟨idxOf l[i] l, idxOf_lt_length_iff.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
-    from Fin.val_eq_of_eq this
-  nodup_iff_injective_get.1 H (by simp)
+@[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
+theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
+    idxOf l[i] l = i := Nodup.idxOf_getElem
 
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    idxOf (get l i) l = i := by
-  simp [idxOf_getElem, H]
+    idxOf (get l i) l = i := by grind
 
-theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
+theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
       have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
-      (not_congr this).trans not_lt
+      (not_congr this).trans Nat.not_lt
 
-theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
-  nodup_iff_count_le_one.trans <| forall_congr' fun _ =>
-    ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
-     fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
+theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
+  nodup_iff_count_le_one.trans <| forall_congr' fun x => by rw [← count_pos_iff]; grind
 
+theorem get_bijective_iff [BEq α] [LawfulBEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
+  ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
+    a <| mem_iff_get.mpr <| h.surjective a,
+  fun h ↦ ⟨nodup_iff_injective_get.mp <| nodup_iff_count_eq_one.mpr fun a _ ↦ h a,
+    fun a ↦ mem_iff_get.mp <| List.one_le_count_iff.mp <| by grind⟩⟩
+
+theorem getElem_bijective_iff [BEq α] [LawfulBEq α] :
+    (fun (n : Fin l.length) ↦ l[n]).Bijective ↔ ∀ a, l.count a = 1 :=
+  get_bijective_iff
 
 @[simp]
-theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
+theorem count_eq_one_of_mem [BEq α] [LawfulBEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
+  nodup_iff_count_eq_one.mp d a h
 
-theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
-    count a l = if a ∈ l then 1 else 0 := by
-  split_ifs with h
-  · exact count_eq_one_of_mem d h
-  · exact count_eq_zero_of_not_mem h
+@[deprecated (since := "2025-11-07")] alias count_eq_of_nodup := Nodup.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)
@@ -175,6 +169,8 @@ theorem nodup_append' {l₁ l₂ : List α} :
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
   (nodup_append'.1 d).2.2
+
+protected alias Nodup.disjoint := disjoint_of_nodup_append
 
 theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
   nodup_append'.2 ⟨d₁, d₂, dj⟩
@@ -219,15 +215,14 @@ theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (
 
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
+  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.ext, fun h =>
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
 protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach]
-  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
+  grind
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using Pairwise.filter p
@@ -258,7 +253,7 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
-theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
+theorem Nodup.erase_getElem [BEq α] [LawfulBEq α] {l : List α} (hl : l.Nodup)
     (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by
   induction l generalizing i with
   | nil => simp
@@ -267,11 +262,11 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
     | zero => simp
     | succ i => grind
 
-theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
+theorem Nodup.erase_get [BEq α] [LawfulBEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by
   simp [erase_getElem, hl]
 
-theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
+theorem Nodup.diff [BEq α] [LawfulBEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _
 
 theorem nodup_flatten {L : List (List α)} :
@@ -311,16 +306,16 @@ protected theorem Nodup.filterMap {f : α → Option β} (h : ∀ a a' b, b ∈ 
 protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup := by
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
 
-protected theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
+protected theorem Nodup.insert [BEq α] [LawfulBEq α] (h : l.Nodup) : (l.insert a).Nodup :=
   if h' : a ∈ l then by rw [insert_of_mem h']; exact h
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 
-theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup := by
+theorem Nodup.union [BEq α] [LawfulBEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup := by
   induction l₁ generalizing l₂ with
   | nil => exact h
   | cons a l₁ ih => exact (ih h).insert
 
-theorem Nodup.inter [DecidableEq α] (l₂ : List α) : Nodup l₁ → Nodup (l₁ ∩ l₂) :=
+theorem Nodup.inter [BEq α] (l₂ : List α) : Nodup l₁ → Nodup (l₁ ∩ l₂) :=
   Nodup.filter _
 
 theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
@@ -330,7 +325,8 @@ theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
     simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
-theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
+theorem Nodup.mem_diff_iff [BEq α] [LawfulBEq α] (hl₁ : l₁.Nodup) :
+    a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
 
 protected theorem Nodup.set :
@@ -358,11 +354,11 @@ theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl :
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
   grind [List.pairwise_iff_forall_sublist]
 
-theorem Nodup.take_eq_filter_mem [DecidableEq α] :
+theorem Nodup.take_eq_filter_mem [BEq α] [LawfulBEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
-  | b::l, n+1, hl => by
+  | b::l, n + 1, hl => by
     rw [take_succ_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), filter_cons_of_pos (by simp)]
     congr 1
     refine List.filter_congr ?_

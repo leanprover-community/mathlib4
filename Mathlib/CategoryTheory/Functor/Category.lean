@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.NatTrans
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.NatTrans
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # The category of functors and natural transformations between two fixed categories.
@@ -24,11 +26,13 @@ However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
 
+@[expose] public section
+
 set_option mathlib.tactic.category.grind true
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [CategoryTheory universes].
+-- declare the `v`'s first; see note [category theory universes].
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open NatTrans Category CategoryTheory.Functor
