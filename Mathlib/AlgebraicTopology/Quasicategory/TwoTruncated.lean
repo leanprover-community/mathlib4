@@ -181,30 +181,13 @@ an edge that is the diagonal of a 2-simplex with spine given by `f` and `g`. The
 witnessing this property is given by `Edge.composeStruct`.
 -/
 noncomputable def Edge.comp (f : Edge x y) (g : Edge y z) : Edge x z :=
-  (Nonempty.some (Quasicategory₂.fill21 f g )).1
+  (Quasicategory₂.fill21 f g).some.1
 
 /--
 See `Edge.comp`
 -/
 noncomputable def Edge.compStruct (f : Edge x y) (g : Edge y z) : CompStruct f g (f.comp g) :=
-  (Nonempty.some (Quasicategory₂.fill21 f g )).2
-
-/--
-The edge `composeEdges f g` is the unique edge up to homotopy such that there is
-a 2-simplex with spine given by `f` and `g`.
--/
-lemma composeEdges_unique {f : Edge x y} {g : Edge y z} {h : Edge x z}
-    (s : CompStruct f g h) : HomotopicL h (comp f g) :=
-  comp_unique s (compStruct f g) .refl .refl
-
-/--
-Given two pairs of composable edges `f`, `g` and `f'`, `g'` such that `f` ≃ `f'` and
-`g` ≃ `g'`, their composites `h` and `h'` chosen by `composeEdges` are homotopic.
--/
-lemma composeEdges_homotopic {f f' : Edge x y} {g g' : Edge y z}
-    (hf : HomotopicL f f') (hg : HomotopicL g g') :
-    HomotopicL (comp f g) (comp f' g') :=
-  comp_unique (compStruct f g) (compStruct f' g') hf hg
+  (Quasicategory₂.fill21 f g).some.2
 
 /--
 The homotopy category of a 2-truncated quasicategory `A` has as objects the vertices of `A`
@@ -235,14 +218,18 @@ noncomputable
 instance : CategoryStruct (HomotopyCategory₂ A) where
   Hom x y := HomotopyCategory₂.Hom x y
   id x := Quotient.mk' (Edge.id x.pt)
-  comp := Quotient.lift₂
-    (fun f g ↦ ⟦comp f g⟧)
-    (fun _ _ _ _ hf hg ↦ Quotient.sound (composeEdges_homotopic hf hg))
+  comp := Quotient.lift₂ (fun f g ↦ ⟦comp f g⟧)
+    (fun _ _ _ _ hf hg ↦ Quotient.sound
+      (Edge.CompStruct.comp_unique (compStruct _ _) (compStruct _ _) hf hg))
 
 /--
 A vertex `x` of `A` defines an object of `HomotopyCategory₂ A`.
 -/
 def mk (x : A _⦋0⦌₂) : HomotopyCategory₂ A := ⟨x⟩
+
+omit [A.Quasicategory₂] in
+lemma HomotopyCategory₂.mk_surjective : Function.Surjective (mk : A _⦋0⦌₂ → _) :=
+  fun ⟨x⟩ ↦ ⟨x, rfl⟩
 
 /--
 Any edge in the 2-truncated simplicial set `A` defines a morphism in the homotopy category
@@ -250,18 +237,22 @@ by taking its equivalence class.
 -/
 def homMk (f : Edge x y) : mk x ⟶ mk y := ⟦f⟧
 
+lemma homMk_surjective :
+    Function.Surjective (homMk : Edge x y → _) :=
+  Quotient.mk_surjective
+
 /--
 The trivial (degenerate) edge at a vertex `x` is a representative for the
 identity morphism `x ⟶ x`.
 -/
 @[simp]
-lemma homMk_refl (x : HomotopyCategory₂ A) : homMk (Edge.id x.pt) = 𝟙 x := rfl
+lemma homMk_id (x : HomotopyCategory₂ A) : homMk (Edge.id x.pt) = 𝟙 x := rfl
 
 /--
 (Left) homotopic edges represent the same morphism in the homotopy category.
 -/
 lemma homMk_eq_of_homotopy {f f' : Edge x y} (h : HomotopicL f f') :
-  homMk f = homMk f' := Quotient.eq.mpr h
+  homMk f = homMk f' := Quotient.sound h
 
 /--
 A `CompStruct f g h` is a witness for the fact that the morphisms represented by
@@ -269,42 +260,38 @@ A `CompStruct f g h` is a witness for the fact that the morphisms represented by
 -/
 lemma Edge.CompStruct.fac {f : Edge x y} {g : Edge y z} {h : Edge x z}
     (s : CompStruct f g h) : homMk f ≫ homMk g = homMk h :=
-  homMk_eq_of_homotopy (composeEdges_unique s).symm
+  homMk_eq_of_homotopy (comp_unique (compStruct _ _) s .refl .refl)
 
 /--
-If we have a factorization `homMk f ≫ homMk g = homMk h`, we know that there exists
-some `CompStruct f g h`.
+If we have a factorization `homMk f ≫ homMk g = homMk h`, this is the choice
+of a structure `CompStruct f g h`.
 -/
-lemma Edge.CompStruct.compStruct_from_fac {f : Edge x y} {g : Edge y z} {h : Edge x z}
-    (fac : homMk f ≫ homMk g = homMk h) : Nonempty (CompStruct f g h) := by
+noncomputable def Edge.CompStruct.ofFac {f : Edge x y} {g : Edge y z} {h : Edge x z}
+    (fac : homMk f ≫ homMk g = homMk h) : CompStruct f g h := by
   dsimp [homMk, CategoryStruct.comp] at fac
   rw [Quotient.eq_iff_equiv] at fac
-  exact Quasicategory₂.fill32 (compStruct f g) (compId g) fac.some
+  exact (Quasicategory₂.fill32 (compStruct f g) (compId g) fac.some).some
 
 /--
-A combination of `Edge.CompStruct.fac` and `Edge.CompStruct.compStruct_from_fac`.
+Given edges `f`, `g` and `h` of a `2`-truncated quasicategory,
+there exists a structure `CompStruct f g h` iff
+`homMk f ≫ homMk g = homMk h` holds in the homotopy category.
 -/
-lemma Edge.CompStruct.fac_iff_compStruct {f : Edge x y} {g : Edge y z} {h : Edge x z} :
-    homMk f ≫ homMk g = homMk h ↔ Nonempty (CompStruct f g h) :=
-  ⟨compStruct_from_fac, fun ⟨s⟩ ↦ fac s⟩
+lemma Edge.CompStruct.nonempty_iff {f : Edge x y} {g : Edge y z} {h : Edge x z} :
+    Nonempty (CompStruct f g h) ↔ homMk f ≫ homMk g = homMk h :=
+  ⟨fun ⟨h⟩ ↦ h.fac, fun h ↦ ⟨.ofFac h⟩⟩
 
 noncomputable
-instance instCategoryHomotopyCategory₂ : Category (HomotopyCategory₂ A) where
-  id_comp f := by
-    rcases f with ⟨f⟩
-    apply Quotient.sound
-    exact symm (composeEdges_unique (CompStruct.idComp f))
-  comp_id f := by
-    rcases f with ⟨f⟩
-    apply Quotient.sound
-    exact symm (composeEdges_unique (CompStruct.compId f))
-  assoc f g h := by
-    rcases f, g, h with ⟨⟨f⟩, ⟨g⟩, ⟨h⟩⟩
-    apply Quotient.sound
-    apply composeEdges_unique
-    let fg := comp f g
-    apply Nonempty.some
-    exact Quasicategory₂.fill32 (compStruct f g) (compStruct g h) (compStruct fg h)
+instance : Category (HomotopyCategory₂ A) where
+  id_comp := by
+    rintro _ _ ⟨f⟩
+    exact ((compStruct _ f).comp_unique (idComp _) .refl .refl).sound
+  comp_id := by
+    rintro _ _ ⟨f⟩
+    exact ((compStruct _ _).comp_unique (compId _) .refl .refl).sound
+  assoc := by
+    rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩
+    exact (Quasicategory₂.fill31 (compStruct f g) (compStruct g h) (compStruct _ _)).some.fac
 
 end homotopy_category
 
