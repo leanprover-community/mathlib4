@@ -78,7 +78,7 @@ lemma Polynomial.localization_at_comap_maximal_isRegularRing_isRegularRing
       IsLocalization.AtPrime.comap_maximalIdeal _ p, Ideal.height_eq_primeHeight]
     apply le_trans _ (WithBot.coe_le_coe.mpr (Ideal.primeHeight_add_one_le_of_lt lt))
     rw [← Ideal.height_eq_primeHeight]
-    apply le_trans _ (WithBot.coe_le_coe.mpr (add_le_add_right ht 1))
+    apply le_trans _ (WithBot.coe_le_coe.mpr (add_le_add_left ht 1))
     rw [WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim, WithBot.coe_one, ← reg,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
     have fin : (((algebraMap R R[X]) '' (maximalIdeal R).generators) ∪ {y}).Finite :=
