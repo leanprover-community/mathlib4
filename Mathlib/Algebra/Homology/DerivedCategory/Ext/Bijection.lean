@@ -19,8 +19,10 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 
 # Bijections Between Ext
 
-In this file, we prove that map between `Ext` induced by fully faithful exact functor with certain
-conditions added is bijection.
+In this file, we prove for fully faithful exact functor `F : C ⥤ D`, either
+1. `F` preserves projective objects and `C` has enough projectives, or
+2. `F` preserves injective objects and `C` has enough injectives,
+the map between `Ext` induced by `F` is bijective.
 
 -/
 
@@ -37,19 +39,13 @@ variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-lemma Abelian.Ext.mapExt_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
-    F.mapExt X Y 0 = Ext.homEquiv₀.symm ∘ F.map ∘ Ext.homEquiv₀ := by
-  ext x
-  rcases (Ext.mk₀_bijective X Y).2 x with ⟨y, hy⟩
-  simp [← hy, Ext.mapExt_mk₀_eq_mk₀_map, Ext.homEquiv₀]
-
 open Ext
 
 lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
-    Function.Bijective (F.mapExt X Y n) := by
+    Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing X
-  · simpa [Ext.mapExt_zero] using Functor.FullyFaithful.map_bijective h X Y
+  · simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
   · rename_i n bij
     rcases EnoughProjectives.presentation X with ⟨⟨P, p⟩⟩
     let S := ShortComplex.mk (kernel.ι p) p (kernel.condition p)
@@ -90,9 +86,9 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
 
 lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
-    Function.Bijective (F.mapExt X Y n) := by
+    Function.Bijective (F.mapExtAddHom X Y n) := by
   induction n generalizing Y
-  · simpa [Ext.mapExt_zero] using Functor.FullyFaithful.map_bijective h X Y
+  · simpa [Ext.mapExactFunctor₀] using Functor.FullyFaithful.map_bijective h X Y
   · rename_i n bij
     rcases EnoughInjectives.presentation Y with ⟨⟨I, _, i⟩⟩
     let S := ShortComplex.mk i (cokernel.π i) (cokernel.condition i)
