@@ -699,8 +699,7 @@ The degree of a particular variable in a multivariate polynomial
 is equal to the degree of the single-variable polynomial
 obtained by treating the multivariable polynomial as a single variable polynomial
 over multivariable polynomials in the remaining variables
-
-Note: Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
+-/
 lemma degreeOf_eq_degree [DecidableEq σ]
     (a : σ) (p : MvPolynomial σ R) :
   degreeOf a p
