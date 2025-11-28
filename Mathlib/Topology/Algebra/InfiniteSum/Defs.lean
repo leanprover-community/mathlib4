@@ -255,7 +255,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
   filter_upwards [h1, h2] with s hs hs'
   congr 1
   simp only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_compl_iff] at hs hs'
-  grind [Set.mem_toFinset]
+  grind
 
 @[to_additive]
 theorem hasProd_fintype [Fintype β] (f : β → α) (L := unconditional β) [L.LeAtTop] :
