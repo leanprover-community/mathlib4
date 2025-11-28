@@ -250,7 +250,7 @@ theorem norm_eq_norm_adjoin (x : L) :
 variable (F E : Type*) [Field F] [Algebra K F] [Field E] [Algebra K E]
 
 variable {K} in
-theorem norm_eq_prod_roots {x : L} (hF : (minpoly K x).Splits (algebraMap K F)) :
+theorem norm_eq_prod_roots {x : L} (hF : ((minpoly K x).map (algebraMap K F)).Splits) :
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
@@ -263,7 +263,7 @@ of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
 theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
     (x : L) : algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
   have hx := Algebra.IsSeparable.isIntegral K x
-  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
+  rw [norm_eq_norm_adjoin K x, map_pow, ← adjoin.powerBasis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
