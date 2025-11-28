@@ -70,7 +70,8 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
   haveI : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
   have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
-  have hL := splits_of_splits_mul' _ ?_ (SplittingField.splits (p * minpoly F x))
+  have hL := SplittingField.splits (p * minpoly F x)
+  rw [Polynomial.map_mul, splits_mul_iff _ (map_ne_zero (minpoly.ne_zero hx))] at hL
   · let j : E →ₐ[F] L := IsSplittingField.lift E p hL.1
     refine ⟨hx, splits_of_comp _ (j : E →+* L) (j.comp_algebraMap ▸ hL.2) fun a ha ↦ ?_⟩
     rw [j.comp_algebraMap] at ha
@@ -81,8 +82,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
             IsSplittingField.adjoin_rootSet_eq_range E p (j'.restrictScalars F)]
       exact ⟨x, (j'.commutes _).trans (algHomAdjoinIntegralEquiv_symm_apply_gen F hx _)⟩
     · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]; exact hL.1
-  · rw [Polynomial.map_ne_zero_iff (algebraMap F L).injective, mul_ne_zero_iff]
-    exact ⟨hp, minpoly.ne_zero hx⟩
+  · exact Polynomial.map_ne_zero hp
 
 instance Polynomial.SplittingField.instNormal (p : F[X]) : Normal F p.SplittingField :=
   Normal.of_isSplittingField p
@@ -190,10 +190,8 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
       @IntermediateField.nonempty_algHom_of_adjoin_splits _ _ _ _ _ _ _
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
         (fun x _ ↦ ⟨(h.out x).1.tower_top,
-          splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
-            (by rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-                exact (h.out x).2)
-            (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩)
+          @IsIntegral.minpoly_splits_tower_top F K₁ E E _ _ _ _ _ _ _ _ x
+            (RingHom.toAlgebra _) _ _ (h.out x).1 (h.out x).2⟩)
         (IntermediateField.adjoin_univ _ _)
 
 @[simp]
