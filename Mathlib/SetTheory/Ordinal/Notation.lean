@@ -28,7 +28,8 @@ are defined on `ONote` and `NONote`.
 
 @[expose] public section
 
-
+-- TODO: fix all the violations in this file
+set_option linter.flexible false
 
 open Ordinal Order
 
