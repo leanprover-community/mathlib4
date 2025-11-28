@@ -5,7 +5,7 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # The "DocString" style linter

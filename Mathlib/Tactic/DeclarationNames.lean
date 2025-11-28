@@ -9,7 +9,7 @@ public meta import Lean.DeclarationRange
 public meta import Lean.ResolveName
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 This file contains functions that are used by multiple linters.
