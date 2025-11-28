@@ -57,6 +57,12 @@ theorem altitude_def {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
+@[simp] lemma altitude_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).altitude = s.altitude ∘ e.symm := by
+  ext i
+  simp_rw [altitude, reindex_points, Set.image_comp, Equiv.image_compl]
+  simp [altitude]
+
 /-- A vertex lies in the corresponding altitude. -/
 theorem mem_altitude {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     s.points i ∈ s.altitude i :=
@@ -191,6 +197,12 @@ opposite face. -/
 def altitudeFoot {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.points i)
 
+@[simp] lemma altitudeFoot_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
+    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).altitudeFoot = s.altitudeFoot ∘ e.symm := by
+  ext i
+  simp only [altitudeFoot, reindex_points, Function.comp_apply]
+  exact orthogonalProjectionSpan_congr (s.range_faceOpposite_reindex e i) rfl
+
 @[simp] lemma altitudeFoot_map {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂)
     (i : Fin (n + 1)) :
     (s.map f.toAffineMap f.injective).altitudeFoot i = f (s.altitudeFoot i) := by
@@ -241,6 +253,11 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
 from that vertex. -/
 def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
   dist (s.points i) (s.altitudeFoot i)
+
+@[simp] lemma height_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
+    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).height = s.height ∘ e.symm := by
+  ext i
+  simp [height]
 
 @[simp] lemma height_map {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂)
     (i : Fin (n + 1)) :
