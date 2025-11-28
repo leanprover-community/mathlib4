@@ -168,10 +168,11 @@ end Preord
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
   obj X := .of X.1
-  map f := f.hom.monotone.functor
+  map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where
-  map_injective h := by ext x; exact Functor.congr_obj h x
+  map_injective h := by ext x; exact Functor.congr_obj congr(($h).toFunctor) x
 
 instance : preordToCat.{u}.Full where
-  map_surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩
+  map_surjective {X Y} f := ⟨⟨f.toFunctor.obj,
+    @CategoryTheory.Functor.monotone X Y _ _ f.toFunctor⟩, rfl⟩
