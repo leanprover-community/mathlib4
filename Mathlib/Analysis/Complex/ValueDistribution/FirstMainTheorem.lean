@@ -56,7 +56,7 @@ lemma characteristic_sub_characteristic_inv (h : MeromorphicOn f ⊤) :
   _ = circleAverage (log ‖f ·‖) 0 - (logCounting f 0 - logCounting f ⊤) := by
     rw [logCounting_inv]
   _ = circleAverage (log ‖f ·‖) 0 - (divisor f Set.univ).logCounting := by
-    rw [← logCounting_zero_sub_logCounting_top]
+    rw [← ValueDistribution.log_counting_zero_sub_logCounting_top]
 
 /--
 Helper lemma for the first part of the First Main Theorem: Away from zero, the difference between
