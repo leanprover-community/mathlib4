@@ -30,7 +30,7 @@ public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
 
-# The Definition of Gorenstein (Local) Ring
+# Gorenstein Local Ring is Cohen Macaulay
 
 -/
 
@@ -54,11 +54,13 @@ section
 
 variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
+/-- The linear map `M⧸xM → N⧸xN` induced by `M → N`. -/
 def quotSMulTopLinearMap (x : R) (f : M →ₗ[R] N) : QuotSMulTop x M →ₗ[R] QuotSMulTop x N :=
   Submodule.mapQ _ _ f (fun m hm ↦ by
     rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
     simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
 
+/-- The linear equivalence `M⧸xM ≃ N⧸xN` induced by `M ≃ N`. -/
 def quotSMulTopLinearEquiv (x : R) (e : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
   __ := quotSMulTopLinearMap x e.toLinearMap
   invFun := quotSMulTopLinearMap x e.symm.toLinearMap
@@ -70,6 +72,7 @@ def quotSMulTopLinearEquiv (x : R) (e : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃�
     simp [quotSMulTopLinearMap]
 
 variable (M) in
+/-- The linear equivalence `M⧸(r1. ... rk, a)M ≃ M ⧸ (r1. ... rk)M ⧸ a • ⊤`. -/
 def Submodule.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     (eq : rs = rs' ++ [a]) : (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) ≃ₗ[R]
     QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) :=
@@ -77,6 +80,7 @@ def Submodule.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     (Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M a rs'.reverse)).trans
     (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp [Ideal.ofList_reverse])))
 
+/-- The linear equivalence `R⧸(r1. ... rk, a) ≃ R ⧸ (r1. ... rk) ⧸ a • ⊤`. -/
 def Ideal.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     (eq : rs = rs' ++ [a]) : (R ⧸ Ideal.ofList rs) ≃ₗ[R]
     QuotSMulTop a (R ⧸ Ideal.ofList rs') :=
@@ -92,6 +96,9 @@ variable [Small.{v} R] [UnivLE.{v, w}]
 
 open Pointwise
 
+/-- If `M` has projective dimension not exceeding `n`, for an `M`-regular element `a`,
+the linear equivalence `Ext M N n ⧸ a • ⊤ ≃ Ext M⧸xM N (n + 1)` induced by the long exact sequence
+`Ext M N n → Ext M N n → Ext M⧸xM N (n + 1) → 0` with first morphism scalar multiple by `a`. -/
 noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n : ℕ)
     [HasProjectiveDimensionLE M n] (a : R) (reg : IsSMulRegular M a) (N : ModuleCat.{v} R) :
     QuotSMulTop a (Ext.{w} M N n) ≃ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := by
@@ -121,8 +128,10 @@ noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n
     simp [Submodule.mem_smul_pointwise_iff_exists]
   exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
 
-noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
-    [Module.Finite R M] (rs : List R) (reg : IsRegular R rs) :
+/-- The linear equivalence `Ext (R⧸(r1, ... rk)) M k ≃ M⧸(r1, ... rk)M` for `R`-regular sequence
+`(r1, ... rk)`, this is a special case of a more general result for Koszul complex. -/
+noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) (rs : List R)
+    (reg : IsRegular R rs) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
     M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := by
   generalize len : rs.length = n
@@ -191,6 +200,7 @@ section
 omit [IsLocalRing R]
 
 omit [IsNoetherianRing R] in
+/-- For `p` a prime ideal disjoint with multiplicative set `S`, the map `S⁻¹M → Mₚ`. -/
 noncomputable def isLocalizaedModule_map_of_disjoint_map (S : Submonoid R) (A : Type*) [CommRing A]
     [Algebra R A] [IsLocalization S A] (p : Ideal A) [p.IsPrime] {M : Type*} [AddCommGroup M]
     [Module R M] {MS : Type*} [AddCommGroup MS] [Module R MS] (f : M →ₗ[R] MS)
@@ -275,7 +285,7 @@ noncomputable local instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid 
     Module R (M.localizedModule S) :=
   inferInstanceAs (Module R (Shrink.{v} (LocalizedModule S M)))
 
-lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M]
+lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M]
     {p q : PrimeSpectrum R} (lt : p < q) (eq_of_le : ∀ r : PrimeSpectrum R, p < r → r ≤ q → r = q)
     (i : ℕ) (ntr : Nontrivial (Ext.{w} (ModuleCat.of (Localization p.1.primeCompl)
       (Shrink.{v} p.1.ResidueField)) (M.localizedModule p.1.primeCompl) i)) :
@@ -378,7 +388,6 @@ section
 
 open ModuleCat.Algebra
 
---set_option pp.universes true in
 open associatedPrimes in
 lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
     supportDim R M ≤ injectiveDimension M := by
@@ -434,7 +443,7 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
         (Shrink.linearEquiv.{v} _ _).congrRight.nontrivial_congr]
       have ass := minimalPrimes_annihilator_subset_associatedPrimes R M head_min
       simp only [AssociatePrimes.mem_iff] at ass
-      have := mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes ass
+      have := mem_associatedPrimes_atPrime_of_mem_associatedPrimes ass
       simp only [AssociatePrimes.mem_iff, isAssociatedPrime_iff_exists_injective_linearMap] at this
       rcases this with ⟨_, f, hf⟩
       exact nontrivial_of_ne f 0  (LinearMap.ne_zero_of_injective hf)
@@ -573,7 +582,7 @@ lemma injectiveDimension_eq_depth
         rs reg'
       rw [IsLocalRing.depth_eq_sSup_length_regular (ModuleCat.of R (Shrink.{v} R)), ← len] at this
       nth_rw 2 [← zero_add (rs.length : ℕ∞)] at this
-      exact (ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top rs.length)).mp this
+      exact (WithTop.add_right_inj (ENat.coe_ne_top rs.length)).mp this
     have := (moduleDepth_eq_zero_of_hom_nontrivial _ _).mp depth_zero
     rcases (nontrivial_iff_exists_ne 0).mp this with ⟨f, hf⟩
     have injf : Function.Injective f := by
@@ -615,7 +624,7 @@ lemma injectiveDimension_eq_depth
       (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs)))
     apply not_subsingleton_iff_nontrivial.mpr
     rw [(ext_quotient_regular_sequence_length.{v, u, v} M rs reg).nontrivial_congr]
-    apply Submodule.Quotient.nontrivial_iff.mpr (Ne.symm _)
+    apply Submodule.Quotient.nontrivial_iff.mpr
     apply (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator _).symm
     exact le_trans (Ideal.span_le.mpr mem) (maximalIdeal_le_jacobson _)
 
