@@ -57,7 +57,7 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
 class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α where
   /-- A linear order is total. -/
-  le_total (a b : α) : a ≤ b ∨ b ≤ a
+  protected le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   toDecidableLE : DecidableLE α
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -67,9 +67,9 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
-  min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
+  protected min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
-  max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
+  protected max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
   compare a b := compareOfLessAndEq a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
