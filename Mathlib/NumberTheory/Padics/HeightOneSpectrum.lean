@@ -2,7 +2,7 @@ import Mathlib.NumberTheory.Padics.WithVal
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Int.Basic
 
-open IsDedekindDomain UniformSpace.Completion NumberField
+open IsDedekindDomain UniformSpace.Completion NumberField PadicInt
 
 namespace Rat.RingOfIntegers.HeightOneSpectrum
 
@@ -70,7 +70,7 @@ noncomputable def adicCompletionIntegers.padicIntUniformEquiv (v : HeightOneSpec
     (mapEquiv (valuationEquivPadicValuation v)).subtype fun _ ↦ by
       simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (v.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
-  e.trans PadicInt.withValIntegersUniformEquiv
+  e.trans withValIntegersUniformEquiv
 
 /-- `adicCompletionIntegers.padicIntUniformEquiv` as a ring isomorphism. -/
 noncomputable def adicCompletionIntegers.padicIntRingEquiv (v : HeightOneSpectrum (𝓞 ℚ)) :
@@ -81,22 +81,19 @@ noncomputable def adicCompletionIntegers.padicIntRingEquiv (v : HeightOneSpectru
       (valuationEquivPadicValuation v).symm.continuous).restrict _ _ fun _ ↦ by
       simpa using (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         (v.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
-  e.trans PadicInt.withValIntegersRingEquiv
+  e.trans withValIntegersRingEquiv
+
+@[simp]
+theorem adicCompletionIntegers.padicIntRingEquiv_apply (v : HeightOneSpectrum (𝓞 ℚ))
+    (x : v.adicCompletionIntegers ℚ) :
+    padicIntRingEquiv v x = adicCompletion.padicAlgEquiv v x := rfl
 
 theorem adicCompletion.padicAlgEquiv_bijOn (v : HeightOneSpectrum (𝓞 ℚ)) :
-    Set.BijOn (padicAlgEquiv v) (v.adicCompletionIntegers ℚ)
-      (PadicInt.subring (natGenerator v)) := by
-  refine ⟨?_, (padicAlgEquiv v).injective.injOn, ?_⟩
-  · intro x hx
-    simp
-    change ‖(adicCompletionIntegers.padicIntRingEquiv v ⟨x, hx⟩)‖ ≤ 1
-    exact PadicInt.norm_le_one ((adicCompletionIntegers.padicIntRingEquiv v) ⟨x, hx⟩)
-  · have := (adicCompletionIntegers.padicIntRingEquiv v).surjective
-    intro y hy
-    obtain ⟨x, hx⟩ := this ⟨y, hy⟩
-    use x
-    use x.2
-    change (adicCompletionIntegers.padicIntRingEquiv v x) = y
-    rw [hx]
+    Set.BijOn (padicAlgEquiv v) (v.adicCompletionIntegers ℚ) (subring (natGenerator v)) := by
+  refine ⟨fun x hx ↦ ?_, (padicAlgEquiv v).injective.injOn, fun y hy ↦ ?_⟩
+  · rw [← adicCompletionIntegers.padicIntRingEquiv_apply v ⟨x, hx⟩]
+    exact norm_le_one ((adicCompletionIntegers.padicIntRingEquiv v) ⟨x, hx⟩)
+  · obtain ⟨x, hx⟩ := (adicCompletionIntegers.padicIntRingEquiv v).surjective ⟨y, hy⟩
+    refine ⟨x, x.2, by rw [← adicCompletionIntegers.padicIntRingEquiv_apply, hx]⟩
 
 end Rat.RingOfIntegers.HeightOneSpectrum
