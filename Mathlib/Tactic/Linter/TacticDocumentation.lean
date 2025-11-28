@@ -8,7 +8,7 @@ module
 public meta import Batteries.Tactic.Lint.Basic
 public meta import Lean.Elab.Tactic.Doc
 public meta import Lean.Parser.Tactic.Doc
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-! # The `tacticDocs` linter
 

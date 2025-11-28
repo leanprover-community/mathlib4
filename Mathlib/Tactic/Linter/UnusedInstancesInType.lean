@@ -12,7 +12,7 @@ public meta import Lean.Linter.Basic
 import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  --shake: keep
 
 /-!
 # Linters for Unused Instances in Types
