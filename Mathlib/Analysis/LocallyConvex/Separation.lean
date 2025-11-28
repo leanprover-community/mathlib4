@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Convex.Gauge
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
-public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Separation Hahn-Banach theorem
