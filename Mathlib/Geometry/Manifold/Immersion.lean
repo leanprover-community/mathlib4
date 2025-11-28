@@ -45,6 +45,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersionAtOfComplement.congr_F`, `IsImmersionOfComplement.congr_F`:
   being an immersion (at `x`) w.r.t. `F` is stable under
   replacing the complement `F` by an isomorphic copy
+* `isOpen_isImmersionAtOfComplement` and `isOpen_isImmersionAt`:
+  the set of points where `IsImmersionAt(OfComplement)` holds is open.
 
 ## Implementation notes
 
@@ -64,7 +66,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
-* The set where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * `IsImmersionAt.prodMap`: the product of two immersions is an immersion.
@@ -356,6 +357,22 @@ lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
+/- The set of points where `IsImmersionAtOfComplement` holds is open. -/
+lemma _root_.isOpen_isImmersionAtOfComplement :
+    IsOpen {x | IsImmersionAtOfComplement F I J n f x} := by
+  rw [isOpen_iff_forall_mem_open]
+  intro x hx
+  -- Suppose `f` is an immersion at `x`: choose slice charts φ near x and ψ near f x s.t.
+  -- `f` looks like `u ↦ (u, 0)` in these charts. Then the same charts witness that `f` is an
+  -- immersion at any `y ∈ φ.source`.
+  simp only [mem_setOf_eq, IsImmersionAtOfComplement_def] at hx
+  refine ⟨hx.domChart.source, ?_, hx.domChart.open_source, hx.mem_domChart_source⟩
+  intro x' hx'
+  rw [mem_setOf_eq, IsImmersionAtOfComplement_def]
+  exact ⟨hx.domChart, hx.codChart, hx', hx.source_subset_preimage_source hx',
+    hx.domChart_mem_maximalAtlas, hx.codChart_mem_maximalAtlas, hx.source_subset_preimage_source,
+    hx.property⟩
+
 /-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
@@ -514,6 +531,14 @@ then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
 lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt I J n f x ↔ IsImmersionAt I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
+
+/- The set of points where `IsImmersionAt` holds is open. -/
+lemma _root_.isOpen_isImmersionAt :
+    IsOpen {x | IsImmersionAt I J n f x} := by
+  rw [isOpen_iff_forall_mem_open]
+  exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
+    fun y hy ↦ hy.isImmersionAt,
+    isOpen_isImmersionAtOfComplement, by simp [hx.isImmersionAtOfComplement_complement]⟩
 
 end IsImmersionAt
 
