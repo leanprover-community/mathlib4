@@ -427,6 +427,17 @@ lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormed
     (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapLM 𝕜' n i :=
   rfl
 
+lemma structureMapLM_zero_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} :
+    structureMapLM 𝕜 n 0 f x = ContinuousMultilinearMap.uncurry0 ℝ E (f x) := by
+  ext
+  simp [structureMapLM_apply_withOrder, iteratedFDeriv_zero_eq_comp]
+
+lemma structureMapLM_zero_injective :
+    Injective (structureMapLM 𝕜 n 0 : 𝓓^{n}_{K}(E, F) → E →ᵇ E [×0]→L[ℝ] F) := by
+  intro f g hfg
+  simpa [BoundedContinuousFunction.ext_iff, ContinuousMultilinearMap.ext_iff,
+    structureMapLM_zero_apply, ContDiffMapSupportedIn.ext_iff] using hfg
+
 section Topology
 
 noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
@@ -477,6 +488,23 @@ lemma structureMapCLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNorme
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (structureMapCLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapCLM 𝕜' n i :=
   rfl
+
+lemma structureMapCLM_zero_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} :
+    structureMapCLM 𝕜 n 0 f x = ContinuousMultilinearMap.uncurry0 ℝ E (f x) :=
+  structureMapLM_zero_apply 𝕜
+
+lemma structureMapCLM_zero_injective :
+    Injective (structureMapCLM 𝕜 n 0 : 𝓓^{n}_{K}(E, F) → E →ᵇ E [×0]→L[ℝ] F) :=
+  structureMapLM_zero_injective 𝕜
+
+lemma isUniformEmbedding_pi_structureMapCLM :
+    IsUniformEmbedding (ContinuousLinearMap.pi (structureMapCLM 𝕜 n) :
+      𝓓^{n}_{K}(E, F) →L[𝕜] Π i, E →ᵇ (E [×i]→L[ℝ] F)) where
+  injective f g hfg := structureMapCLM_zero_injective 𝕜 (congr($hfg 0))
+  toIsUniformInducing := by
+    simp_rw [isUniformInducing_iff_uniformSpace, ContDiffMapSupportedIn.uniformSpace_eq_iInf,
+      Pi.uniformSpace_eq, comap_iInf, ← comap_comap]
+    rfl
 
 /-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
 is continuous if and only if its composition with each structure map
