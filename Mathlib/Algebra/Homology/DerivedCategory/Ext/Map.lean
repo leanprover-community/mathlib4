@@ -314,6 +314,12 @@ lemma mapExt_mk₀_eq_mk₀_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X 
     Functor.mapCochainComplexSingleFunctor, Iso.app_inv, Iso.app_hom]
   exact NatIso.naturality_1 _ f
 
+lemma Abelian.Ext.mapExactFunctor₀ [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
+    Ext.mapExactFunctor F (X := X) (Y := Y) = Ext.homEquiv₀.symm ∘ F.map ∘ Ext.homEquiv₀ := by
+  ext x
+  rcases (Ext.mk₀_bijective X Y).2 x with ⟨y, hy⟩
+  simp [← hy, Ext.mapExt_mk₀_eq_mk₀_map, Ext.homEquiv₀]
+
 lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b : ℕ}
     (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
     (α.comp β h).mapExactFunctor F = (α.mapExactFunctor F).comp (β.mapExactFunctor F) h := by
