@@ -147,10 +147,6 @@ lemma coe_toSubgraph : C.toSubgraph.coe = C.toSimpleGraph :=
 lemma spanningCoe_toSubgraph : C.toSubgraph.spanningCoe = C.toSimpleGraph.spanningCoe :=
   spanningCoe_induce_top _
 
-@[simp]
-lemma toSubgraph_adj : C.toSubgraph.Adj = C.toSimpleGraph.spanningCoe.Adj :=
-  induce_top_adj _
-
 lemma connected_toSubgraph : C.toSubgraph.Connected :=
   ⟨C.coe_toSubgraph ▸ C.connected_toSimpleGraph⟩
 

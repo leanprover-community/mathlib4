@@ -223,10 +223,6 @@ theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induc
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
 
-lemma spanningCoe_induce_adj {s : Set V} {u v : s} :
-    (G.induce s).spanningCoe.Adj u v ↔ G.Adj u v := by
-  simp
-
 open Set.Notation in
 theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
     (G.induce u).IsCompleteBetween (u ↓∩ s) (u ↓∩ t) := by
