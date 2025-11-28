@@ -173,7 +173,7 @@ end liftOfStrictSegal
 
 open liftOfStrictSegal in
 /-- Constructor for morphisms `X ⟶ Y` between `2`-truncated simplicial sets from
-the data of maps on `0`- and `1`-simplices when `Y` is strict segal. -/
+the data of maps on `0`- and `1`-simplices when `Y` is strict Segal. -/
 def liftOfStrictSegal : X ⟶ Y where
   app := liftOfStrictSegal.app f₀ f₁ hδ₁ hδ₀ hY
   naturality _ _ φ :=
