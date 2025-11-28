@@ -6,6 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Algebra.Order.Ring.Archimedean
+public import Mathlib.Algebra.Ring.Subring.Order
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Order.Quotient
@@ -73,16 +74,9 @@ theorem mk_natCast (n : ℕ) (h : (n : K) ∈ ArchimedeanClass.Finite K) :
 theorem mk_intCast (n : ℤ) (h : (n : K) ∈ ArchimedeanClass.Finite K) :
     (⟨n, h⟩ : ArchimedeanClass.Finite K) = n := rfl
 
-instance : IsStrictOrderedRing (ArchimedeanClass.Finite K) where
-  zero_le_one := zero_le_one (α := K)
-  add_le_add_left _ _ h _ := add_le_add_left (α := K) h _
-  le_of_add_le_add_left x y z := le_of_add_le_add_left (α := K)
-  mul_lt_mul_of_pos_left x hx y z h := by
-    have := IsOrderedRing.toIsStrictOrderedRing K
-    exact mul_lt_mul_of_pos_left (α := K) h hx
-  mul_lt_mul_of_pos_right x hx y z h := by
-    have := IsOrderedRing.toIsStrictOrderedRing K
-    exact mul_lt_mul_of_pos_right (α := K) h hx
+instance : IsStrictOrderedRing (ArchimedeanClass.Finite K) :=
+  have := IsOrderedRing.toIsStrictOrderedRing K
+  Subring.toIsStrictOrderedRing _
 
 theorem not_isUnit_iff_mk_pos {x : ArchimedeanClass.Finite K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
