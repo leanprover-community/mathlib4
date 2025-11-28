@@ -422,7 +422,7 @@ theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ}
   · intro h
     simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
 
-lemma support_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
+lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support
       = Finset.image (fun m => m none) p.support := by
   ext i
@@ -440,7 +440,7 @@ theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f
     (optionEquivLeft R σ f).support.Nonempty := by
   rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
 
-theorem degree_optionEquivLeft [DecidableEq σ] {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
+theorem degree_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).degree = degreeOf none f := by
   have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
     rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image]
@@ -700,11 +700,9 @@ is equal to the natDegree of the single-variable polynomial
 obtained by treating the multivariable polynomial as a single variable polynomial
 over multivariable polynomials in the remaining variables
 -/
-lemma degreeOf_eq_natDegree [DecidableEq σ]
-    (a : σ) (p : MvPolynomial σ R) :
-  degreeOf a p
-  = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a})
-    (rename (Equiv.optionSubtypeNe a).symm p)) := by
+lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
+  degreeOf a p = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a})
+                   (rename (Equiv.optionSubtypeNe a).symm p)) := by
   rw [natDegree_optionEquivLeft, eq_comm]
   convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
   exact (Equiv.apply_eq_iff_eq_symm_apply (Equiv.optionSubtypeNe a)).mp rfl
