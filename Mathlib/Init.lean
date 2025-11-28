@@ -6,6 +6,7 @@ public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
 public import Mathlib.Tactic.Linter.DocString
+public import Mathlib.Tactic.Linter.EmptyLine
 public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.Header
@@ -16,6 +17,7 @@ public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Linter.PrivateModule
 -- The following import contains the environment extension for the unused tactic linter.
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
@@ -65,8 +67,10 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
+  linter.flexible
   linter.hashCommand
   linter.oldObtain
+  linter.privateModule
   linter.style.cases
   linter.style.induction
   linter.style.refine
@@ -74,6 +78,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
+  linter.style.emptyLine
   linter.style.lambdaSyntax
   linter.style.header
   linter.style.longLine

@@ -287,7 +287,7 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
   `omega` and `cutsat`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
@@ -304,6 +304,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
@@ -344,7 +345,7 @@ def flexible : Std.HashSet Name :=
 
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
 the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
-For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
+For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false`. -/
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases' => false
