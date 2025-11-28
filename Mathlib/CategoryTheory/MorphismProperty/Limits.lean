@@ -225,7 +225,7 @@ theorem pullback_map
     (e₁ : f = i₁ ≫ f') (e₂ : g = i₂ ≫ g') :
     P (pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂)) := by
-  have : HasPullbacksAlong (Over.mk f).hom := by aesop_cat
+  have : HasPullbacksAlong (Over.mk f).hom := by cat_disch
   have : pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
       ((pullbackSymmetry _ _).hom ≫
