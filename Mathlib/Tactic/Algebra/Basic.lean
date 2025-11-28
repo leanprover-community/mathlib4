@@ -255,20 +255,11 @@ end ExSum
   are stronger than `ring` because `algebra` occasionally requires commutativity to move between
   the base ring and the algebra. -/
 structure Cache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) extends Ring.Cache sA where
-  /-- A CommRing instance on `A`, if available. -/
-  commRing : Option Q(CommRing $A)
-  /-- A DivisionRing instance on `A`, if available. -/
-  divisionRing : Option Q(DivisionRing $A)
-  /-- A Semifield instance on `A`, if available. -/
-  semifield : Option Q(Semifield $A)
   /-- A Field instance on `A`, if available. -/
   field : Option Q(Field $A)
 
 /-- Create a new cache for `A` by doing the necessary instance searches. -/
 def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
-  commRing := (← trySynthInstanceQ q(CommRing $A)).toOption
-  divisionRing := (← trySynthInstanceQ q(DivisionRing $A)).toOption
-  semifield := (← trySynthInstanceQ q(Semifield $A)).toOption
   field := (← trySynthInstanceQ q(Field $A)).toOption
   toCache := ← Ring.mkCache sA
 }
@@ -508,17 +499,17 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     pure ⟨_, (ExProd.smul (mkNat lit)).toSum,
       (q(by simp [← Algebra.algebraMap_eq_smul_one]; exact ($p).out))⟩
   | .isNegNat rA lit p => do
-    let some crR := cR.commRing | none
-    let some crA := cA.commRing | none
-    let some rR := cR.rα | none
-    let ⟨r, vr⟩ := Ring.ExProd.mkNegNat q($sR) q($rR) lit.natLit!
+    let some crR := cR.rα | none
+    let some crA := cA.rα | none
+    -- let some rR := cR.rα | none
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNat q($sR) q(inferInstance) lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
     pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq $p))⟩
   | .isNNRat rA q n d p => do
     -- TODO: use semifields here.
-    let some dsR := cR.semifield | none
-    let some dsA := cA.semifield | none
+    let some dsR := cR.dsα | none
+    let some dsA := cA.dsα | none
     assumeInstancesCommute
     let ⟨r, vr⟩ := Ring.ExProd.mkNNRat q($sR) q(inferInstance) q n d q(IsNNRat.den_nz (α := $A) $p)
     have : $r =Q (NNRat.rawCast $n $d : $R) := ⟨⟩
@@ -762,16 +753,16 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
     | _ => els
   | ``Neg.neg, some _, _ => match e with
     | ~q(-$a) =>
-      let some crR := cacheR.commRing | els
-      let some crA := cacheA.commRing | els
+      let some crR := cacheR.rα | els
+      let some crA := cacheA.rα | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨b, vb, p⟩ ← evalNeg sAlg crR crA va
       assumeInstancesCommute
       pure ⟨b, vb, q(eval_neg $pa $p)⟩
   | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _ => match e with
     | ~q($a - $b) =>
-      let some crR := cacheR.commRing | els
-      let some crA := cacheA.commRing | els
+      let some crR := cacheR.rα | els
+      let some crA := cacheA.rα | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
       let ⟨c, vc, p⟩ ← evalSub sAlg crR crA va vb
@@ -917,7 +908,7 @@ def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Typ
   let rings ← (← collectScalarRings e).mapM getLevelQ'
   let res ← match rings with
   | [] =>
-    match ca.field, ca.czα, ca.commRing with
+    match ca.field, ca.czα, ca.rα with
     | some _, some _, _ =>
       -- A is a Field
       return ⟨0, q(ℚ)⟩
