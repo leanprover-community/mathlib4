@@ -36,8 +36,8 @@ noncomputable def basis :
       (finsuppPow ι (linearMap R S)).equiv
 
 theorem basis_apply (i) : ibc.basis b i = ε (b i) := by
-  simp [basis]
-  simp [LinearEquiv.baseChange]
+  simp only [basis, LinearEquiv.baseChange, Module.Basis.coe_ofRepr, LinearEquiv.trans_symm,
+    LinearEquiv.symm_symm, LinearEquiv.trans_apply]
   generalize_proofs _ _ _ _ ibcRA
   have : ibcRA.equiv.symm (Finsupp.single i 1) = 1 ⊗ₜ (Finsupp.single i 1) := by
     simp [LinearEquiv.symm_apply_eq, IsBaseChange.equiv_tmul]

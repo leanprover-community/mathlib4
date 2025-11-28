@@ -678,7 +678,8 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt,
         Cofan.mk_ι_app, IsColimit.fac, Fin.cases_succ]
     · intro T f₁ f₂ f₃ m₁ m₂
-      simp at m₁ m₂ ⊢
+      simp only [Discrete.functor_obj_eq_as, pair_obj_left, BinaryCofan.mk_pt, const_obj_obj,
+        BinaryCofan.mk_inl, pair_obj_right, BinaryCofan.mk_inr] at m₁ m₂ ⊢
       refine Hc.uniq (Cofan.mk T (Fin.cases f₁
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩

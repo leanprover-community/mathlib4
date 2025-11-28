@@ -168,6 +168,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
+set_option linter.flexible false in -- simp followed by positivity
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by

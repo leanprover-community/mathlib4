@@ -111,6 +111,8 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → R} {init : Fin E.order → R} (
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 
+-- TODO: there's a non-terminal simp here
+set_option linter.flexible false in
 /-- The space of solutions of `E`, as a `Submodule` over `R` of the module `ℕ → R`. -/
 def solSpace : Submodule R (ℕ → R) where
   carrier := { u | E.IsSolution u }
@@ -163,7 +165,8 @@ def tupleSucc : (Fin E.order → R) →ₗ[R] Fin E.order → R where
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    split_ifs with h <;> simp [h, mul_sum]
+    split_ifs with h <;>
+      simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply, h, ↓reduceDIte, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 
 end CommSemiring

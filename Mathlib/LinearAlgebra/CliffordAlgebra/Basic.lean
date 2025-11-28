@@ -172,6 +172,8 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   rw [lift_symm_apply, lift_symm_apply]
   simp only [h]
 
+-- TODO: fix non-terminal simp (related to the porting note)
+set_option linter.flexible false in
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.

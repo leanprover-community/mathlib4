@@ -572,6 +572,8 @@ theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
 
 variable {s t}
 
+-- TODO: find a good way to fix the linter; simp is called on four goals, with only two remaining
+set_option linter.flexible false in
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x

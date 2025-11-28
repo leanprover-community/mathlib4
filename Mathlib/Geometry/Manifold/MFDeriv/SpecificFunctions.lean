@@ -510,6 +510,7 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
     MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp_all followed by use
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)}
     (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)

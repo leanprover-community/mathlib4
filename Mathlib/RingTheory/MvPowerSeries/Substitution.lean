@@ -441,7 +441,8 @@ theorem rescale_zero :
     (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = C.comp constantCoeff := by
   classical
   ext x n
-  simp [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk, coeff_C]
+  simp only [rescale, Pi.zero_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    RingHom.coe_comp, Function.comp_apply, coeff_C]
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]

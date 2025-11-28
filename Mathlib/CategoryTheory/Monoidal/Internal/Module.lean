@@ -128,7 +128,7 @@ def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
     --   AlgCat.coe_comp]
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂ₛₗ_apply]
-    simp [ModuleCat.hom_comp, LinearMap.comp_apply]
+    simp only [hom_comp, hom_ofHom, id_coe, id_eq, LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     dsimp

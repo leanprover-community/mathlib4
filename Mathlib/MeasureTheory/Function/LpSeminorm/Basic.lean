@@ -1110,7 +1110,8 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
   by_cases hc : c = ⊤
   · by_cases hg' : eLpNorm' g p μ = 0
     · have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by
-        simp [eLpNorm'_eq_lintegral_enorm, hp', hp] at hg'
+        simp only [eLpNorm'_eq_lintegral_enorm, one_div, ENNReal.rpow_eq_zero_iff, inv_pos, hp,
+          and_true, inv_neg'', hp', and_false, or_false] at hg'
         rw [MeasureTheory.lintegral_eq_zero_iff' (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
       have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦ by simp_all

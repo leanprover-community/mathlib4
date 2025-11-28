@@ -64,6 +64,8 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 open WithZero
 
+-- TODO: fix non-terminal simp; acts on 8 goals, leaving one
+set_option linter.flexible false in
 /-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-padicValRat p x)

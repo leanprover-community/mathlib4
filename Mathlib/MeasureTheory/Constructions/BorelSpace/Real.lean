@@ -256,6 +256,8 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
   · simp only [ENNReal.mul_top', ENNReal.coe_eq_zero]
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
 
+-- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
+set_option linter.flexible false in
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>

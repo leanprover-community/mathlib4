@@ -243,6 +243,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
 
 variable [ExistsAddOfLE β]
 
+-- In the non-terminal simp below, simp runs on four goals, but only needs `exact` once.
+set_option linter.flexible false in
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)

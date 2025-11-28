@@ -915,6 +915,8 @@ lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
+-- TODO: fix two non-terminal simps below; second one uses a long lemma list
+set_option linter.flexible false in
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.

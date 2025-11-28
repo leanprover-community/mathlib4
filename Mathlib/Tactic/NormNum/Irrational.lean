@@ -36,6 +36,9 @@ namespace NormNum
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
+
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
+set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
@@ -202,7 +205,7 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
     Irrational (x ^ y) := by
   rcases hx_isNNRat with ⟨hx_inv, hx_eq⟩
   apply Irrational.of_inv
-  rw [← Real.inv_rpow (by simp [hx_eq]; positivity)]
+  rw [← Real.inv_rpow (by simp only [hx_eq, invOf_eq_inv]; positivity)]
   apply irrational_rpow_rat_rat_of_num (x_num := x_den) (x_den := x_num) _ hy_isNNRat
     (Nat.coprime_comm.mp hx_coprime) hy_coprime hd1 hd2
   refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩

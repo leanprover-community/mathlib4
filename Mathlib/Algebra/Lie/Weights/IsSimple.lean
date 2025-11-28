@@ -97,7 +97,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
   let S := rootSystem H
   have exists_root_index (γ : Weight K H L) (hγ : γ.IsNonZero) : ∃ i, S.root i = ↑γ :=
-    ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ⟩, rfl⟩
+    ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
   have h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥ := by
     by_contra h_plus_ne_bot
     let γ : Weight K H L := ⟨χ.toLinear + α.toLinear, h_plus_ne_bot⟩
@@ -106,7 +106,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index α hα₀
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv
@@ -119,7 +119,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     obtain ⟨j, hj⟩ := exists_root_index (-α) (Weight.IsNonZero.neg hα₀)
     have h_sum_in_range : S.root i + S.root j ∈ Set.range S.root := by
       rw [hi, hj, Weight.toLinear_neg, ← sub_eq_add_neg]
-      exact ⟨⟨γ, by simp [LieSubalgebra.root]; exact hγ_nonzero⟩, rfl⟩
+      exact ⟨⟨γ, by simpa [LieSubalgebra.root]⟩, rfl⟩
     have h_equiv := RootPairing.root_mem_submodule_iff_of_add_mem_invtSubmodule
       ⟨q, by rw [RootPairing.mem_invtRootSubmodule_iff]; exact hq⟩ h_sum_in_range
     rw [hi] at h_equiv

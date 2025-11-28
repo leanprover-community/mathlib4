@@ -713,6 +713,8 @@ theorem isNilpotent_of_le (M₁ M₂ : LieSubmodule R L M) (h₁ : M₁ ≤ M₂
 def maxNilpotentSubmodule :=
   sSup { N : LieSubmodule R L M | IsNilpotent L N }
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 instance instMaxNilpotentSubmoduleIsNilpotent [IsNoetherian R M] :
     IsNilpotent L (maxNilpotentSubmodule R L M) := by
   have hwf := CompleteLattice.WellFoundedGT.isSupClosedCompact (LieSubmodule R L M) inferInstance
