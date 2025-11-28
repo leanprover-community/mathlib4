@@ -3,11 +3,12 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
-import Mathlib.CategoryTheory.Bicategory.Strict.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # The bicategory of based categories
@@ -24,6 +25,8 @@ Natural transformations between based functors `F G : 𝒳 ⥤ᵇ 𝒴 ` are giv
 `BasedNatTrans F G`. These are defined as natural transformations `α` between the functors
 underlying `F` and `G` such that `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`.
 -/
+
+@[expose] public section
 
 universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 

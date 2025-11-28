@@ -3,10 +3,12 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.LiminfLimsup
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.LiminfLimsup
 
 
 /-!
@@ -18,6 +20,8 @@ limit along `L` of the sums over finsets (if this limit exists). This file only 
 machinery of summation filters - the key definitions `HasSum`, `tsum` and `summable` (and their
 product variants) are in the file `Mathlib.Topology.Algebra.InfiniteSum.Defs`.
 -/
+
+@[expose] public section
 
 open Set Filter Function
 
@@ -241,7 +245,7 @@ lemma conditional_filter_eq_map_Ici {γ} [PartialOrder γ] [LocallyFiniteOrder �
 /-- Conditional summation over `ℕ` is given by limits of sums over `Finset.range n` as `n → ∞`. -/
 @[simp high + 1] -- want this to be prioritized over `conditional_filter_eq_map_Ici`
 lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Finset.range := by
-  have (n : ℕ) : Finset.Iic n = Finset.range (n + 1) := by ext x; simp [Nat.lt_succ]
+  have (n : ℕ) : Finset.Iic n = Finset.range (n + 1) := by ext x; simp [Nat.lt_succ_iff]
   simp only [conditional_filter_eq_map_Iic, funext this]
   apply le_antisymm <;>
       rw [← Tendsto] <;>

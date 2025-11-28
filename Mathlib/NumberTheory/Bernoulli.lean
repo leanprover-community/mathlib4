@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.WellKnown
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Bernoulli numbers
@@ -48,6 +50,8 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 `sum_bernoulli : ∑ k ∈ Finset.range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
 -/
+
+@[expose] public section
 
 
 open Nat Finset Finset.Nat PowerSeries
@@ -242,9 +246,8 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   -- constant coefficient is a special case
   cases n with | zero => simp | succ n =>
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
-    coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_mul,
-    sub_zero, add_eq_zero, if_false, one_ne_zero,
-    and_false, ← RingHom.map_mul, ← map_sum]
+    coeff_one, coeff_exp, map_sub, factorial, if_pos, cast_succ, cast_mul,
+    sub_zero, add_eq_zero, if_false, one_ne_zero, and_false, ← map_mul, ← map_sum]
   cases n with | zero => simp | succ n =>
   rw [if_neg n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m

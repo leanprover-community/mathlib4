@@ -3,12 +3,14 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.CategoryTheory.Limits.Shapes.PiProd
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.CategoryTheory.Limits.Shapes.PiProd
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.Order.Interval.Finset.Nat
 /-!
 
 # ℕ-indexed products as sequential limits
@@ -23,6 +25,8 @@ exhibits `∏ M` as the limit of the tower
 Further, we prove that the transition maps in this tower are epimorphisms, in the case when each
 `f n` is an epimorphism and `C` has finite biproducts.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits.SequentialProduct
 

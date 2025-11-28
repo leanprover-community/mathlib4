@@ -3,9 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Meromorphic.Order
-import Mathlib.Topology.LocallyFinsupp
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.Order
+public import Mathlib.Topology.LocallyFinsupp
 
 /-!
 # The Divisor of a meromorphic function
@@ -14,6 +16,8 @@ This file defines the divisor of a meromorphic function and proves the most basi
 divisors. The lemma `MeromorphicOn.divisor_restrict` guarantees compatibility between restrictions
 of divisors and of meromorphic functions to subsets of their domain of definition.
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -88,7 +92,7 @@ theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (h
 
 /--
 If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
-then `f₁` and `f₂` induce the same divisors on`U`.
+then `f₁` and `f₂` induce the same divisors on `U`.
 -/
 theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
@@ -304,5 +308,23 @@ theorem negPart_divisor_add_of_analyticNhdOn_left {f₁ f₂ : 𝕜 → E} (hf�
     (divisor (f₁ + f₂) U)⁻ = (divisor f₂ U)⁻ := by
   rw [add_comm]
   exact negPart_divisor_add_of_analyticNhdOn_right hf₂ hf₁
+
+open WithTop in
+/-- The divisor of the function `z ↦ z - z₀` at `x` is `0` if `x ≠ z₀`. -/
+lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) : divisor (· - z₀) U x = 0 := by
+  by_cases hu : x ∈ U
+  · rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) hu,
+      ← untop₀_coe 0]
+    congr
+    exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr
+      ⟨(· - z₀), analyticAt_id.fun_sub analyticAt_const, by simp [sub_ne_zero_of_ne hx]⟩
+  · exact Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hu
+
+open WithTop in
+/-- The divisor of the function `z ↦ z - z₀` at `z₀` is `1`. -/
+lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : divisor (· - z₀) U z₀ = 1 := by
+  rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) h, ← untop₀_coe 1]
+  congr
+  exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
 
 end MeromorphicOn

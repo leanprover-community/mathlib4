@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
 # Transformations between oplax functors
@@ -42,6 +44,8 @@ This file could also include lax transformations between oplax functors.
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Oplax
 
@@ -275,7 +279,7 @@ def vcomp : StrongTrans F H :=
 /-- `CategoryStruct` on `B ⥤ᵒᵖᴸ C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance OplaxFunctor.instCategoryStruct : CategoryStruct (B ⥤ᵒᵖᴸ C) where
+scoped instance categoryStruct : CategoryStruct (B ⥤ᵒᵖᴸ C) where
   Hom := StrongTrans
   id := StrongTrans.id
   comp := StrongTrans.vcomp

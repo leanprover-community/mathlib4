@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Module.Rat
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Maps between tensor products of R-algebras
@@ -27,6 +29,8 @@ This file provides results about maps between tensor products of `R`-algebras.
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.cycleType
 
@@ -180,6 +184,12 @@ theorem lift_comp_includeLeft (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀
 @[simp]
 theorem lift_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y)) :
     ((lift f g hfg).restrictScalars R).comp includeRight = g :=
+  AlgHom.ext <| by simp
+
+/-- Variant with the same base that doesn't need `restrictScalars`. -/
+@[simp]
+theorem lift_comp_includeRight' (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y)) :
+    (lift f g hfg).comp includeRight = g :=
   AlgHom.ext <| by simp
 
 /-- The universal property of the tensor product of algebras.
@@ -790,3 +800,15 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
   rfl
 
 end Module
+
+/-- Given a subalgebra `C` of an `R`-algebra `A`, and an `R`-algebra `B`, the base change of `C` to
+a subalgebra of `B ⊗[R] A` -/
+def Subalgebra.baseChange {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (B : Type*) [CommSemiring B] [Algebra R B] (C : Subalgebra R A) : Subalgebra B (B ⊗[R] A) :=
+  AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
+variable {C : Subalgebra R A}
+
+lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R] x ∈ C.baseChange B :=
+  ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
