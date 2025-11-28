@@ -52,20 +52,18 @@ namespace Profinite
   with the C i disjoint, and such that ∪ C i = ∪ D i
 -/
 
-#check PairwiseDisjoint
-#check Set.InjOn.pairwiseDisjoint_image
-lemma clopen_partition_of_disjoint_closeds_in_clopens'
+lemma clopen_partition_of_disjoint_closeds_in_clopens
     {X : Type u} [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
-    {I : Type} [Finite I] {Z D : I → Set X}
+    {I : Type*} [Finite I] {Z D : I → Set X}
     (Z_closed : ∀ i, IsClosed (Z i)) (D_clopen : ∀ i, IsClopen (D i))
     (Z_subset_D : ∀ i, Z i ⊆ D i) (Z_disj : univ.PairwiseDisjoint Z) :
     ∃ C : I → Set X, (∀ i, IsClopen (C i)) ∧ (∀ i, Z i ⊆ C i) ∧ (∀ i, C i ⊆ D i) ∧
     (⋃ i, D i) ⊆ (⋃ i, C i)  ∧ (univ.PairwiseDisjoint C) := by
   induction I using Finite.induction_empty_option with
   | of_equiv e IH =>
-    obtain ⟨C, h1, h2, h3, h4, h5⟩ := @IH (Z ∘ e) (D ∘ e) (fun i ↦ Z_closed (e i)) (fun i ↦ D_clopen (e i))
-      (fun i ↦ Z_subset_D (e i)) (by
-        simpa [← e.injective.injOn.pairwiseDisjoint_image])
+    obtain ⟨C, h1, h2, h3, h4, h5⟩ := IH (Z := Z ∘ e) (D := D ∘ e)
+      (fun i ↦ Z_closed (e i)) (fun i ↦ D_clopen (e i))
+      (fun i ↦ Z_subset_D (e i)) (by simpa [← e.injective.injOn.pairwiseDisjoint_image])
     refine ⟨C ∘ e.symm, fun i ↦ h1 (e.symm i), ?_, ?_, ?_, ?_⟩
     · intro i
       simpa using h2 (e.symm i)
@@ -184,99 +182,6 @@ lemma clopen_partition_of_disjoint_closeds_in_clopens'
     exact ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩
 
 
-lemma clopen_partition_of_disjoint_closeds_in_clopens
-    {X : Type u} [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
-    {n : ℕ} {Z D : Fin n → Set X}
-    (Z_closed : ∀ i, IsClosed (Z i)) (D_clopen : ∀ i, IsClopen (D i))
-    (Z_subset_D : ∀ i, Z i ⊆ D i) (Z_disj : ∀ i j, i < j → Disjoint (Z i) (Z j)) :
-    ∃ C : Fin n → Set X, (∀ i, IsClopen (C i)) ∧ (∀ i, Z i ⊆ C i) ∧ (∀ i, C i ⊆ D i) ∧
-    (⋃ i, D i) ⊆ (⋃ i, C i)  ∧ (∀ i j, i < j → Disjoint (C i) (C j)) := by
-  induction n
-  case zero =>
-    exact ⟨fun _ ↦ univ, elim0, fun i ↦ elim0 i, fun i ↦ elim0 i, by simp, fun i j ↦ elim0 i⟩
-  case succ n ih =>
-    -- let Z' be the restriction of Z along succ : Fin n → Fin (n+1)
-    let Z' : Fin n → Set X := fun i ↦ Z (succ i)
-    have Z'_closed (i : Fin n) : IsClosed (Z' i) := Z_closed (succ i)
-    have Z'_disj (i j : Fin n) (hij : i < j) : Disjoint (Z' i) (Z' j)  :=
-      Z_disj (succ i) (succ j) (succ_lt_succ_iff.mpr hij)
-    -- find Z 0 ⊆ V ⊆ D 0 \ ⋃ Z' using clopen_sandwich
-    let U : Set X  := D 0 \ iUnion Z'
-    have U_open : IsOpen U := IsOpen.sdiff (D_clopen 0).2
-      (isClosed_iUnion_of_finite Z'_closed)
-    have Z0_subset_U : Z 0 ⊆ U := subset_diff.mpr ⟨Z_subset_D 0,
-      disjoint_iUnion_right.mpr (fun i ↦ Z_disj 0 (succ i) (succ_pos ↑↑i))⟩
-    obtain ⟨V, V_clopen, Z0_subset_V, V_subset_U⟩ :=
-      exists_clopen_of_closed_subset_open (Z_closed 0) U_open Z0_subset_U
-    have V_subset_D0 : V ⊆ D 0 := subset_trans V_subset_U diff_subset
-    -- choose Z' i ⊆ C' i ⊆ D' i = D i.succ \ V using induction hypothesis
-    let D' : Fin n → Set X := fun i ↦ D (succ i) \ V
-    have D'_clopen (i : Fin n): IsClopen (D' i) := IsClopen.diff (D_clopen i.succ) V_clopen
-    have Z'_subset_D' (i : Fin n) : Z' i ⊆ D' i := by
-      apply subset_diff.mpr
-      constructor
-      · exact Z_subset_D (succ i)
-      · apply Disjoint.mono_right V_subset_U
-        exact Disjoint.mono_left (subset_iUnion_of_subset i fun ⦃_⦄ h ↦ h) disjoint_sdiff_right
-    obtain ⟨C', C'_clopen, Z'_subset_C', C'_subset_D', C'_cover_D', C'_disj⟩ :=
-      ih Z'_closed D'_clopen Z'_subset_D' Z'_disj
-    have C'_subset_D (i : Fin n): C' i ⊆ D (succ i) := subset_trans (C'_subset_D' i) diff_subset
-    -- now choose C0 = D 0 \ ⋃ C' i
-    let C0 : Set X := D 0 \ iUnion (fun i ↦ C' i)
-    have C0_subset_D0 : C0 ⊆ D 0 := diff_subset
-    have C0_clopen : IsClopen C0 := IsClopen.diff (D_clopen 0) (isClopen_iUnion_of_finite C'_clopen)
-    have Z0_subset_C0 : Z 0 ⊆ C0 := by
-      unfold C0
-      apply subset_diff.mpr
-      constructor
-      · exact Z_subset_D 0
-      · apply Disjoint.mono_left Z0_subset_V
-        exact disjoint_iUnion_right.mpr fun i ↦ Disjoint.mono_right (C'_subset_D' i)
-          disjoint_sdiff_right
-    -- patch together to define C := cases C0 C', and verify the needed properties
-    let C : Fin (n+1) → Set X := cases C0 C'
-    have C_clopen : ∀ i, IsClopen (C i) := cases C0_clopen C'_clopen
-    have Z_subset_C : ∀ i, Z i ⊆ C i := cases Z0_subset_C0 Z'_subset_C'
-    have C_subset_D : ∀ i, C i ⊆ D i := cases C0_subset_D0 C'_subset_D
-    have C_cover_D : (⋃ i, D i) ⊆ (⋃ i, C i) := by -- messy, but I don't see easy simplification
-      intro x hx
-      rw [mem_iUnion]
-      by_cases hx0 : x ∈ C0
-      · exact ⟨0, hx0⟩
-      · by_cases hxD : x ∈ D 0
-        · have hxC' : x ∈ iUnion C' := by
-            rw [mem_diff] at hx0
-            push_neg at hx0
-            exact hx0 hxD
-          obtain ⟨i, hi⟩ := mem_iUnion.mp hxC'
-          exact ⟨i.succ, hi⟩
-        · obtain ⟨i, hi⟩ := mem_iUnion.mp hx
-          have hi' : i ≠ 0 := by
-            intro h
-            rw [h] at hi
-            tauto
-          let j := i.pred hi'
-          have hij : i = j.succ := (pred_eq_iff_eq_succ hi').mp rfl
-          rw [hij] at hi
-          have hxD' : x ∈ ⋃ i, D' i := by
-            apply mem_iUnion.mpr ⟨j, _⟩
-            apply mem_diff_of_mem hi
-            exact fun h ↦ hxD (V_subset_D0 h)
-          apply C'_cover_D' at hxD'
-          obtain ⟨k, hk⟩ := mem_iUnion.mp hxD'
-          exact ⟨k.succ, hk⟩
-    have C_disj (i j : Fin (n+1)) (hij : i < j) : Disjoint (C i) (C j) := by
-      by_cases hi : i = 0
-      · rw [hi]; rw [hi] at hij
-        rw [(pred_eq_iff_eq_succ (Fin.pos_iff_ne_zero.mp hij)).mp rfl] -- j = succ _
-        apply Disjoint.mono_right (subset_iUnion (fun i ↦ C' i) (j.pred (ne_zero_of_lt hij)))
-        exact disjoint_sdiff_left
-      · have hj : j ≠ 0 := ne_zero_of_lt hij
-        rw [(pred_eq_iff_eq_succ hi).mp rfl, (pred_eq_iff_eq_succ hj).mp rfl]
-        exact C'_disj (i.pred hi) (j.pred hj) (pred_lt_pred_iff.mpr hij)
-    exact ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩
-
-
 /-
   This is the key statement for the inductive proof of injectivity of light
   profinite spaces. Given a commutative square
@@ -304,19 +209,20 @@ lemma key_extension_lemma (X Y S T : Type u)
   -- help the instance inference a bit: T is finite
   have : Finite T := Finite.of_surjective f' f'_surj
   -- pick bijection between Fin n and S
-  obtain ⟨n, φ, ψ, h1, h2⟩ := Finite.exists_equiv_fin S
+  -- obtain ⟨n, φ, ψ, h1, h2⟩ := Finite.exists_equiv_fin S
   -- define Z i to be the image of the fiber of g at i
-  let Z : Fin n → Set Y := fun i ↦ f '' (g⁻¹' {ψ i})
+  let Z : S → Set Y := fun i ↦ f '' (g⁻¹' {i})
   have Z_closed (i) : IsClosed (Z i) :=
     (IsClosedEmbedding.isClosed_iff_image_isClosed (Continuous.isClosedEmbedding hf f_inj)).mp
     (IsClosed.preimage hg isClosed_singleton)
-  have Z_disj (i j) (hij : i < j) : Disjoint (Z i) (Z j) := by
-    rw [disjoint_image_iff f_inj]
-    apply Disjoint.preimage g
-    simpa using h2.injective.ne (by order)
+  have Z_disj : univ.PairwiseDisjoint Z := by
+    rw [Set.pairwiseDisjoint_iff]
+    simp only [image_inter_nonempty_iff, Z]
+    rintro _ _ _ _ ⟨_, rfl, ⟨_, rfl, hy⟩⟩
+    rw [f_inj hy]
   -- define D i to be the fiber of g' at f' i
-  let D : Fin n → Set Y := fun i ↦ g' ⁻¹' ( {f' (ψ i)})
-  have D_clopen i : IsClopen (D i) := IsClopen.preimage (isClopen_discrete {f' (ψ i)}) hg'
+  let D : S → Set Y := fun i ↦ g' ⁻¹' ( {f' i})
+  have D_clopen i : IsClopen (D i) := IsClopen.preimage (isClopen_discrete {f' i}) hg'
   have Z_subset_D i : Z i ⊆ D i := by
     intro z hz
     rw [mem_preimage, mem_singleton_iff]
@@ -329,8 +235,8 @@ lemma key_extension_lemma (X Y S T : Type u)
     intro y _
     simp only [mem_iUnion]
     obtain ⟨s, hs⟩ := f'_surj (g' y)
-    use φ s
-    rw [mem_preimage, h1]
+    use s
+    rw [mem_preimage]
     exact hs.symm
   -- obtain clopens Z i ⊆ C i ⊆ D i with C i disjoint, covering Y
   obtain ⟨C, C_clopen, Z_subset_C, C_subset_D, C_cover_D, C_disj⟩ :=
@@ -338,24 +244,19 @@ lemma key_extension_lemma (X Y S T : Type u)
   have C_cover_univ : ⋃ i, C i = univ :=  univ_subset_iff.mp
     (subset_trans D_cover_univ C_cover_D)
   -- define k to be the unique map sending C i to ψ i
-  have h_glue (i j : Fin n) (x : Y) (hxi : x ∈ C i) (hxj : x ∈ C j) :  ψ i = ψ j := by
-    obtain (hij | rfl | hji) := lt_trichotomy i j
-    · simpa using Set.disjoint_iff.mp (C_disj i j hij) (mem_inter hxi hxj)
-    · rfl
-    · simpa using Set.disjoint_iff.mp (C_disj j i hji) (mem_inter hxj hxi)
-  refine ⟨liftCover C (fun i _ ↦ ψ i) h_glue C_cover_univ, ?_, ?_, ?_⟩
+  have h_glue (i j : S) (x : Y) (hxi : x ∈ C i) (hxj : x ∈ C j) : i = j := by
+    rw [Set.pairwiseDisjoint_iff] at C_disj
+    apply C_disj
+    · simp
+    · simp
+    · exact ⟨x, by grind⟩
+  refine ⟨liftCover C (fun i _ ↦ i) h_glue C_cover_univ, ?_, ?_, ?_⟩
   · apply IsLocallyConstant.continuous
     rw [IsLocallyConstant.iff_isOpen_fiber]
     intro s
-    rw [← h1 s]
-    convert (C_clopen (φ s)).2
+    convert (C_clopen s).2
     ext y
-    refine ⟨?_, liftCover_of_mem⟩
-    rw [preimage_liftCover]
-    simp only [mem_iUnion, mem_image, mem_preimage, exists_and_left,
-      Subtype.exists, exists_prop, exists_eq_right, forall_exists_index, and_imp]
-    intro j hji hj
-    simpa [h2.injective hji] using hj
+    simp [preimage_liftCover]
   · ext y
     rw [Function.comp_apply]
     -- y is contained in C i for some i
@@ -365,10 +266,9 @@ lemma key_extension_lemma (X Y S T : Type u)
     exact symm (C_subset_D i hi)
   · ext x
     rw [Function.comp_apply]
-    let i := φ (g x)
-    have hC : f x ∈ C i := Z_subset_C i (by simpa [mem_image] using ⟨x, symm (h1 (g x)), rfl⟩)
+    let i := (g x)
+    have hC : f x ∈ C i := Z_subset_C i (by simpa [mem_image] using ⟨x, rfl, rfl⟩)
     rw [liftCover_of_mem hC]
-    exact h1 (g x)
 
 
 -- categorically stated versions of key_extension_lemma
