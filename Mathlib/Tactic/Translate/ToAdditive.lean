@@ -341,13 +341,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
   ("addSingle", "Single"),
-  ("add_single", "Single"),
   ("addSupport", "Support"),
-  ("add_support", "Support"),
   ("addTSupport", "TSupport"),
-  ("add_tsupport", "TSupport"),
   ("addIndicator", "Indicator"),
-  ("add_indicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation

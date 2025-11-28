@@ -130,7 +130,7 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
     ⨆ i, map (MonoidHom.mulSingle M i) (P i) = pi Set.univ P := by
   haveI := Fintype.ofFinite ι
   refine iSup_map_mulSingle_le.antisymm fun x hx => ?_
-  rw [← Finset.noncommProd_mul_single x]
+  rw [← Finset.noncommProd_mulSingle x]
   exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
 
 /-- Finite product of finitely generated submonoids is finitely generated. -/
