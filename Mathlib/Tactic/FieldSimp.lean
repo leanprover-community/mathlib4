@@ -767,6 +767,9 @@ elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? 
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
   if tk.isSome then
     let mut sideGoals ← (← cs.get).2.getMVars
+    for g in sideGoals do g.withContext do
+      -- let lctx := (← g.getDecl).lctx
+      logInfo m!"{g}"
     let currGoals ← getGoals
     if currGoals.length < numGoals then
       setGoals (sideGoals ++ currGoals)

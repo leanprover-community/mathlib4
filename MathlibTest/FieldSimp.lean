@@ -1030,11 +1030,30 @@ example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
 
 
 
+/-
+There seem to be multiple problems here.
+-/
 
--- Make sure the proof in the `then` branche isn't cached and used in the `else` branch.
-example {x y : ℚ}: (if x ≠ 0 then x * y / x else x * y / x) = if x ≠ 0 then y else y := by
+-- Magically the proof of in the then branch appears in the else branch (I think?).
+-- `DischargeM.disch` is only called once.
+example {x y : ℚ}: (if x ≠ 0 then x / x else x / x) = if x ≠ 0 then y else y := by
   field_simp
+  -- field_simp
+  apply test_sorry
 
 
+/- This doesn't happen if I replace one x/x by x^2/x^2 -/
+
+example {x y : ℚ}: (if x ≠ 0 then x^2 / x^2 else x / x) = if x ≠ 0 then y else y := by
+  field_simp
+  -- field_simp
+  apply test_sorry
+
+
+/- But then trying to display the subgoal breaks Lean as it doesn't recognize the mvar. It seems
+the mvar context is getting flushed somewhere, presumably by `simp`-/
+-- Make sure the proof in the `then` branche isn't cached and used in the `else` branch.
+example {x y : ℚ}: (if x ≠ 0 then x^2 / x^2 else x / x) = if x ≠ 0 then y else y := by
+  field_simp!
   -- field_simp
   apply test_sorry
