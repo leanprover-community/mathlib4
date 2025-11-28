@@ -536,7 +536,6 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
   exact this (F.mem_of_superset hsF hsQ)
 
 omit [TopologicalSpace X] in
-
 theorem isCompact_generateFrom' [T : TopologicalSpace X]
     {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
     (h : ∀ (ι : Type u) (U : ι → S), s ⊆ ⋃ i, U i → ∃ J : Set ι, J.Finite ∧ s ⊆ ⋃ i ∈ J, U i) :
@@ -795,7 +794,6 @@ theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
   exact isCompact_generateFrom hTS <| by simpa
 
 omit [TopologicalSpace X] in
-
 theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
     (hTS : T = generateFrom S)
     (h : ∀ (ι : Type u) (U : ι → S),
