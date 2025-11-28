@@ -19,7 +19,7 @@ theorem natGenerator_dvd_iff (v : HeightOneSpectrum (𝓞 ℚ)) {n : ℕ} :
   rw [← span_natGenerator, Ideal.mem_span_singleton]
   exact Int.ofNat_dvd.symm
 
-instance (v : HeightOneSpectrum (𝓞 ℚ)) : Fact (Nat.Prime (natGenerator v)) :=
+local instance (v : HeightOneSpectrum (𝓞 ℚ)) : Fact (Nat.Prime (natGenerator v)) :=
   ⟨Int.prime_iff_natAbs_prime.1 <| Submodule.IsPrincipal.prime_generator_of_isPrime _
     ((Ideal.map_eq_bot_iff_of_injective ringOfIntegersEquiv.injective).not.2 v.ne_bot)⟩
 
