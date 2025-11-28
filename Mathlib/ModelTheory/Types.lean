@@ -185,26 +185,20 @@ theorem mem_typeOf {φ : L[[α]].Sentence} :
 theorem formula_mem_typeOf {φ : L.Formula α} :
     Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v := by simp
 
-
+/-- The clopen set of complete types which contain a formula. -/
 def typesWith : L[[α]].Sentence → Set (CompleteType T α) := fun φ ↦ {p | φ ∈ p.toTheory}
 
-def TypeBasis : Set (Set (CompleteType T α)) := range typesWith
-
-instance : TopologicalSpace (CompleteType T α) := generateFrom TypeBasis
+instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
 
 lemma typesWith_inter (φ ψ : L[[α]].Sentence)
     : typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
   ext p
-  simp only [typesWith, Set.mem_inter_iff, Set.mem_setOf_eq]
-  erw [
-    p.isMaximal.mem_iff_models,
-    p.isMaximal.mem_iff_models,
-    p.isMaximal.mem_iff_models
-  ]
-  simp only [ModelsBoundedFormula, ←forall_and]
+  change φ ⊓ ψ ∈ (p : Set (L[[α]]).Sentence)
+    ↔ φ ∈ (p : Set (L[[α]]).Sentence) ∧ ψ ∈ (p : Set (L[[α]]).Sentence)
+  simp only [p.isMaximal.mem_iff_models, ModelsBoundedFormula, ←forall_and]
   exact forall₃_congr fun _ _ _ ↦ BoundedFormula.realize_inf
 
-lemma TypeBasisIsBasis : IsTopologicalBasis (TypeBasis (α := α) (T := T)) where
+lemma TypeBasisIsBasis : IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
   exists_subset_inter := by
     rintro t₁ ⟨φ, ht₁⟩ t₂ ⟨ψ, ht₂⟩ x hx
     refine ⟨typesWith (φ ⊓ ψ), ⟨φ ⊓ ψ, rfl⟩, ?_⟩
