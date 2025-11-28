@@ -360,7 +360,7 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] : Injective S 
       ext n
       simp only [Cone.extensions_app, NatTrans.comp_app, Functor.const_map_app,
         NatTrans.ofOpSequence_app]
-      erw [h_down]
+      rw [show k_cone.π.app n = (k_seq n.unop).1 from rfl, h_down]
     rw [← hlim]
     apply S.asLimit.uniq (k_cone.extend f)
     intro n
