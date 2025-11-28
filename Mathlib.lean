@@ -9507,6 +9507,17 @@ public import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.InfSemilattice
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Closed.Enrichment
+public import Mathlib.CategoryTheory.Closed.Functor
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete
+public import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Closed.Ideal
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Closed.Types
+public import Mathlib.CategoryTheory.Closed.Zero
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.CommSq
