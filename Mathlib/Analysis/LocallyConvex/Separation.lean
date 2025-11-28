@@ -312,6 +312,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
       (convex_singleton y) isClosed_singleton (disjoint_singleton.2 hxy)
   exact ⟨f, by linarith [hs x rfl, ht y rfl]⟩
 
+/-- A closed convex set is the intersection of halfspaces. -/
 theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : StrongDual 𝕜 E, { x | ∃ y ∈ s, re (l x) ≤ re (l y) } = s := by
   rw [Set.iInter_setOf]
@@ -321,80 +322,57 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 
+/-- A variant of `iInter_halfSpaces_eq`. -/
+theorem iInter_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ∃ (L : (sᶜ : Set E) → StrongDual 𝕜 E) (c : (sᶜ : Set E) → ℝ),
+    ⋂ y, { x | re (L y x) ≤ c y } = s := by
+  have (y : (sᶜ : Set E)) := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ y.2
+  choose L c hLc using this
+  refine ⟨L, c, ?_⟩
+  rw [iInter_setOf]
+  refine subset_antisymm (fun x hx => ?_) fun x hx l => ((hLc l).1 x hx).le
+  by_contra!
+  simp only [Subtype.forall, mem_compl_iff, mem_setOf_eq] at hx
+  linarith [(hLc ⟨x, this⟩).2, hx x this]
+
+/-- A closed convex set with a Lindelöf complement is the intersection of countably many
+halfspaces. -/
+theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
+    (hs₃ : IsLindelof sᶜ) : ∃ (u : Set (sᶜ : Set E)) (L : u → StrongDual 𝕜 E) (c : u → ℝ),
+    u.Countable ∧ ⋂ y, { x | re (L y x) ≤ c y } = s := by
+  obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_const_eq (𝕜 := 𝕜) hs₁ hs₂
+  let t : (sᶜ : Set E) → Set E := fun y => { x | re (L y x) ≤ c y }
+  have htc y : IsClosed (t y) := by
+    suffices t y = re ∘ (L y) ⁻¹' Iic (c y) from by
+      simpa [this] using IsClosed.preimage (by fun_prop) isClosed_Iic
+    grind
+  have hst : sᶜ ∩ ⋂ y, t y = ∅ := by grind
+  obtain ⟨u, hu, hu'⟩ := hs₃.elim_countable_subfamily_closed t htc hst
+  refine ⟨u, fun y => L y, fun y => c y, hu, subset_antisymm (fun z hz => ?_) ?_⟩
+  · by_contra!
+    have : z ∈ (∅ : Set E) := by
+      simp only [← hu', biInter_eq_iInter]
+      exact ⟨this, fun i hi => hz i hi⟩
+    grind
+  · rw (config := {occs := .pos [1]}) [← hLc]
+    have : u ⊆ (univ : Set (sᶜ : Set E)) := by grind
+    have := biInter_subset_biInter_left (t := t) this
+    simp only [t, biInter_eq_iInter] at this
+    convert this
+    simp
+
+/-- `IsLindelof.iInter_countable_halfSpaces_const_eq` for product spaces. -/
+theorem _root_.IsLindelof.iInter_nat_halfSpaces_const_eq {F : Type*} [AddCommGroup F] [Module ℝ F]
+    [TopologicalSpace F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F] [IsTopologicalAddGroup F]
+    [ContinuousSMul 𝕜 F] [LocallyConvexSpace ℝ F] {s : Set (E × F)} (hs₁ : Convex ℝ s)
+    (hs₂ : IsClosed s) (hs₃ : IsLindelof sᶜ) :
+    ∃ (u : Set (sᶜ : Set (E × F))) (L : u → StrongDual 𝕜 E) (T : u → StrongDual 𝕜 F) (c : u → ℝ),
+    u.Countable ∧ ⋂ y, { x | re (L y x.1) + re (T y x.2) ≤ c y } = s := by
+  obtain ⟨u, LT, c, eq1, eq2⟩ := hs₃.iInter_countable_halfSpaces_const_eq (𝕜 := 𝕜) hs₁ hs₂
+  refine ⟨u, fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, eq1, ?_⟩
+  convert eq2
+  simp [← map_add]
+
 end
-
-section Countable
-
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-  [SecondCountableTopology E]
-
-/-- A closed convex set `s` is the intersection of countably many half spaces in a separable Banach
-space. Moreover, these halfspaces are all nontrivial if `s` is nonempty and not equal to `univ`. -/
-theorem iInter_nat_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
-    ∃ (L : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ),
-    ⋂ (i : ℕ), {x | c i ≤ re (L i x)} = s ∧
-    (s.Nonempty → s ≠ univ → ∀ i, ∃ x, re (L i x) ≠ 0) := by
-  obtain rfl | hs₃ := s.eq_empty_or_nonempty
-  · exact ⟨0, 1, by simp [iInter_eq_empty_iff]⟩
-  obtain rfl | hs_univ := eq_or_ne s univ
-  · exact ⟨0, 0, by simp [nonempty_iff_ne_empty]⟩
-  -- choose a countable dense set of sᶜ
-  obtain ⟨f, hfmem, hf⟩ : ∃ f : ℕ → E, (∀ i, f i ∈ sᶜ) ∧ sᶜ ⊆ closure (range f) := by
-    have : Nonempty ↑sᶜ := (nonempty_compl.mpr hs_univ).to_subtype
-    refine ⟨fun i ↦ (denseSeq ↑sᶜ i : E), by simp, fun x hx ↦ ?_⟩
-    change ↑(Subtype.mk x hx) ∈ closure (range (((↑) : ↑sᶜ → E) ∘ _))
-    rw [range_comp, ← closure_subtype, (denseRange_denseSeq ↑sᶜ).closure_range]
-    trivial
-  -- for each point x ∈ sᶜ, use hahn banach to find a hyperplane that separates s and an open ball
-  -- around x
-  have φc i : ∃ (φ : E →L[𝕜] 𝕜) (c : ℝ),
-      (∀ a ∈ ball (f i) (infDist (f i) s), re (φ a) < c) ∧ ∀ b ∈ s, c ≤ re (φ b) :=
-    geometric_hahn_banach_open (convex_ball _ _) isOpen_ball hs₁ disjoint_ball_infDist
-  choose L c hLc using φc
-  refine ⟨L, c, ?_, fun _ _ j ↦ ?_⟩
-  · ext x
-    simp only [mem_iInter, mem_setOf_eq]
-    refine ⟨fun hx ↦ ?_, fun hx i ↦ (hLc i).2 x hx⟩
-    contrapose! hx
-    have pos : 0 < infDist x s / 2 := by
-      refine div_pos ?_ (by positivity)
-      exact (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp hx
-    obtain ⟨_, ⟨i, rfl⟩, hi⟩ := Metric.mem_closure_iff.mp (hf hx) _ pos
-    refine ⟨i, (hLc i).1 _ ?_⟩
-    have hfix : infDist (f i) s ≥ infDist x s / 2 := by
-      by_contra! hp
-      obtain ⟨y, hy1, hy2⟩ := (infDist_lt_iff hs₃).mp hp
-      have hxy : dist x y < infDist x s := by linarith [dist_triangle x (f i) y]
-      exact notMem_of_dist_lt_infDist hxy hy1
-    rw [mem_ball]
-    linarith
-  · obtain hl | hr := le_or_gt (c j) 0
-    · use f j
-      have : re (L j (f j)) < c j := (hLc j).1 _ <| mem_ball_self <|
-        (IsClosed.notMem_iff_infDist_pos hs₂ hs₃).mp (hfmem j)
-      linarith
-    · obtain ⟨x, hxs⟩ := hs₃
-      use x
-      have : c j ≤ re (L j x) := (hLc j).2 _ hxs
-      linarith
-
-/-- `iInter_nat_halfSpaces_eq` for product spaces. -/
-theorem iInter_nat_halfSpaces_eq_of_prod {F : Type*} {s : Set (E × F)} [NormedAddCommGroup F]
-    [NormedSpace ℝ F] [Module 𝕜 F] [ContinuousSMul 𝕜 F] [SecondCountableTopology F]
-    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
-    ∃ (L : ℕ → E →L[𝕜] 𝕜) (T : ℕ → F →L[𝕜] 𝕜) (c : ℕ → ℝ),
-    ⋂ (i : ℕ), {(x, y) | c i ≤ re (L i x) + re (T i y)} = s
-    ∧ (s.Nonempty → s ≠ univ → ∀ i, ∃ (x : E) (y : F), re (L i x) + re (T i y) ≠ 0) := by
-  obtain ⟨LT, c, eq1, eq2⟩ := iInter_nat_halfSpaces_eq (𝕜 := 𝕜) hs₁ hs₂
-  refine ⟨fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, ?_,
-    fun hs₃ hsne i ↦ ?_⟩
-  · rw [← eq1]
-    refine iInter_congr fun i ↦ ?_
-    ext
-    simp [← map_add]
-  · obtain ⟨z, hz⟩ := eq2 hs₃ hsne i
-    exact ⟨z.1, z.2, by simpa [← map_add] using hz⟩
-
-end Countable
 
 end RCLike
