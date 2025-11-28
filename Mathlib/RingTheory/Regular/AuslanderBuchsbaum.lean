@@ -330,7 +330,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
           rw [← hm, ← ENat.coe_one, ← ENat.coe_sub, ← ENat.coe_add, ENat.coe_inj,
             Nat.sub_one_add_one eq0]
       rw [add_comm, ← this]
-      apply add_le_add_right
+      apply add_le_add_left
       apply le_sSup
       intro i hi
       have lt2 : i + 1 < n := by

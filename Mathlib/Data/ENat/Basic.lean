@@ -292,7 +292,6 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-@[simp]
 lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
   cases n <;> simp
 
@@ -376,12 +375,6 @@ lemma add_left_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inje
 lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (n + ·) := by
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
-
-lemma add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
-  ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
-
-lemma add_left_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : c + a = c + b ↔ a = b :=
-  ⟨fun h ↦ ENat.add_right_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
 
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
   WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
@@ -594,18 +587,15 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
 
 lemma WithBot.add_natCast_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
-  by_cases eqbot : a = ⊥
-  · simp [eqbot, WithBot.bot_add] at h
-    rw [WithBot.add_coe_eq_bot_iff.mp h.symm, eqbot]
-  · by_cases eqbot' : b = ⊥
-    · absurd eqbot
-      simpa [eqbot'] using h
-    · have : a.unbot eqbot + c = b.unbot eqbot' + c := by
-        apply WithBot.coe_inj.mp
-        convert h
-        repeat simpa using by rfl
-      rw [← WithBot.coe_unbot a eqbot, ← WithBot.coe_unbot b eqbot', WithBot.coe_inj]
-      simpa [ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top c)] using this
+  induction a with
+  | bot => exact (WithBot.add_coe_eq_bot_iff.mp (h.symm.trans (bot_add _))).symm
+  | coe a =>
+    induction b with
+    | bot => simp at h
+    | coe b =>
+      have : (c : WithBot ℕ∞) = (c : ℕ∞) := rfl
+      simp only [this, ← coe_add, coe_inj] at h
+      simpa using (WithTop.add_right_inj (ENat.coe_ne_top c)).mp h
 
 lemma WithBot.natCast_add_cancel (a b : WithBot ℕ∞) (c : ℕ) : c + a = c + b ↔ a = b := by
   rw [add_comm _ a, add_comm _ b]

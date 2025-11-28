@@ -67,7 +67,7 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
         moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
       have ge' : (depth S.X₁) + i ≥ ringKrullDim R := by
-        apply le_trans _ (add_le_add_right (WithBot.coe_le_coe.mpr ge) i)
+        apply le_trans _ (add_le_add_left (WithBot.coe_le_coe.mpr ge) i)
         have : IsLocalRing.depth S.X₂ = IsLocalRing.depth (ModuleCat.of R R) := by
           let _ : Nontrivial S.X₂ := surjf.nontrivial
           exact (free_depth_eq_ring_depth S.X₂ _).trans

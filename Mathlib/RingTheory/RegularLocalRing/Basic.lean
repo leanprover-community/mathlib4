@@ -58,8 +58,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
      LinearIndependent (ResidueField R) ((⇑(maximalIdeal R).toCotangent).comp (Set.inclusion sub)),
      IsRegularLocalRing (R ⧸ Ideal.span (S : Set R)) ∧
      (ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card = ringKrullDim R)].TFAE := by
-  have : Nontrivial (R ⧸ Ideal.span (S : Set R)) :=
-    Ideal.Quotient.nontrivial (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
+  have : Nontrivial (R ⧸ Ideal.span (S : Set R)) := Ideal.Quotient.nontrivial_iff.mpr
+    (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr sub))
   have lochom : IsLocalHom (Ideal.Quotient.mk (Ideal.span (S : Set R))) :=
     IsLocalHom.of_surjective _ (Ideal.Quotient.mk_surjective)
   tfae_have 1 → 2 := by
@@ -165,7 +165,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
       apply Module.finrank_quotient_add_finrank_le
     have : ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card ≤
       (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span (S : Set R)))) + S.card :=
-      add_le_add_right (ringKrullDim_le_spanFinrank_maximalIdeal _) _
+      add_le_add_left (ringKrullDim_le_spanFinrank_maximalIdeal _) _
     exact ⟨(WithBot.add_natCast_cancel _ _ S.card).mp
       (le_antisymm (ge.trans le) this), le_antisymm (this.trans ge) le⟩
   tfae_have 3 → 1 := by
