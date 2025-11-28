@@ -12,15 +12,13 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 # `Module.End R M` is a central algebra
 -/
 
-@[expose] public section
-
 open Module Free
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M]
 
 /-- The center of endomorphisms on a vector space is trivial,
 in other words, it is a central algebra. -/
-instance Algebra.IsCentral.end : IsCentral R (End R M) where
+public instance Algebra.IsCentral.end : IsCentral R (End R M) where
   out T hT := by
     nontriviality M
     let b := chooseBasis R M
