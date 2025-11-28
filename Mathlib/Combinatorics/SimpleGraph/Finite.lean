@@ -220,8 +220,7 @@ theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype 
 
 theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
     (h : G.degree v ≠ 0) : Nontrivial V := by
-  apply not_subsingleton_iff_nontrivial.mp
-  by_contra
+  by_contra!
   simp_all [degree_eq_zero_of_subsingleton]
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :

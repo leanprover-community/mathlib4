@@ -159,7 +159,7 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   intro k
   by_cases hk : k = 0
   · simp only [hk, h, coeff_C_zero]
-  · simp only [coeff_C_ne_zero hk, RingHom.map_zero, Commute.zero_left]
+  · simp only [coeff_C_ne_zero hk, map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
@@ -449,6 +449,11 @@ theorem mul_X_add_natCast_comp {n : ℕ} :
 theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
     (p * q).comp r = p.comp r * q.comp r :=
   eval₂_mul _ _
+
+@[simp]
+theorem mul_comp_neg_X {R : Type*} [Ring R] (p q : R[X]) :
+    (p * q).comp (-X) = p.comp (-X) * q.comp (-X) :=
+  eval₂_mul_noncomm C (-X) fun _ ↦ Commute.symm (commute_X _).neg_left
 
 @[simp]
 theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
