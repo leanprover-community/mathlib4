@@ -585,6 +585,7 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexInduction
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
@@ -1430,6 +1431,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -1588,6 +1590,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.WithLp
 public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.Calculus.Gradient.Basic
 public import Mathlib.Analysis.Calculus.Implicit
+public import Mathlib.Analysis.Calculus.ImplicitContDiff
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
@@ -2245,11 +2248,13 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Grothendieck
+public import Mathlib.CategoryTheory.Bicategory.InducedBicategory
 public import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Monad.Basic
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
@@ -2294,17 +2299,6 @@ public import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.InfSemilattice
 public import Mathlib.CategoryTheory.ChosenFiniteProducts.Over
-public import Mathlib.CategoryTheory.Closed.Cartesian
-public import Mathlib.CategoryTheory.Closed.Enrichment
-public import Mathlib.CategoryTheory.Closed.Functor
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
-public import Mathlib.CategoryTheory.Closed.FunctorToTypes
-public import Mathlib.CategoryTheory.Closed.Ideal
-public import Mathlib.CategoryTheory.Closed.Monoidal
-public import Mathlib.CategoryTheory.Closed.Types
-public import Mathlib.CategoryTheory.Closed.Zero
 public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.CategoryTheory.CommSq
@@ -2753,6 +2747,17 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Monoidal.Center
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
+public import Mathlib.CategoryTheory.Monoidal.Closed.Functor
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Complete
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.Closed.Zero
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.CommComon_
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
@@ -2893,6 +2898,7 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.Directed
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.Limits
@@ -2907,6 +2913,7 @@ public import Mathlib.CategoryTheory.Products.Unitor
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Quotient.Linear
 public import Mathlib.CategoryTheory.Quotient.Preadditive
+public import Mathlib.CategoryTheory.RepresentedBy
 public import Mathlib.CategoryTheory.Retract
 public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Shift.Basic
@@ -3537,7 +3544,8 @@ public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Data.Int.CharZero
 public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Data.Int.DivMod
-public import Mathlib.Data.Int.Fib
+public import Mathlib.Data.Int.Fib.Basic
+public import Mathlib.Data.Int.Fib.Lemmas
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Int.Interval
@@ -5490,6 +5498,7 @@ public import Mathlib.Order.PrimeIdeal
 public import Mathlib.Order.PrimeSeparator
 public import Mathlib.Order.Prod.Lex.Hom
 public import Mathlib.Order.PropInstances
+public import Mathlib.Order.Quotient
 public import Mathlib.Order.Radical
 public import Mathlib.Order.Rel.GaloisConnection
 public import Mathlib.Order.RelClasses
@@ -5990,6 +5999,7 @@ public import Mathlib.RingTheory.Localization.Module
 public import Mathlib.RingTheory.Localization.NormTrace
 public import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.RingTheory.Localization.Pi
+public import Mathlib.RingTheory.Localization.Rat
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra

@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Enrichment
+public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 
 /-!

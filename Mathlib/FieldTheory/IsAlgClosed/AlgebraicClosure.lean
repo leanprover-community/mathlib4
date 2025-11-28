@@ -91,8 +91,8 @@ theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
   rw [Finset.prod_coe_sort (f := fun x : _ × ℕ ↦ X - C x.1), (Multiset.toEnumFinset _)
     |>.prod_eq_multiset_prod, ← Function.comp_def (X - C ·) Prod.fst, ← Multiset.map_map,
     Multiset.map_toEnumFinset_fst, map_map, AlgHom.comp_algebraMap]
-  conv in map _ _ => rw [eq_prod_roots_of_splits (Monics.splits_finsetProd h)]
-  rw [f.2, map_one, C_1, one_mul, sub_self, coeff_zero]
+  conv in map _ _ => rw [Splits.eq_prod_roots (Monics.splits_finsetProd h)]
+  rw [leadingCoeff_map, f.2, map_one, C_1, one_mul, sub_self, coeff_zero]
 
 variable (k)
 
