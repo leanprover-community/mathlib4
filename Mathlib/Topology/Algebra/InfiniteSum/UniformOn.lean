@@ -119,6 +119,11 @@ theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn 
     tendsto_nhds_unique_inseparable (hp.hasProd hx) (hp.hasProd hx).multipliable.hasProd
 
 @[to_additive]
+theorem multipliableUniformlyOn_iff_hasProdUniformlyOn :
+    MultipliableUniformlyOn f s ↔ HasProdUniformlyOn f (∏' i, f i ·) s :=
+  ⟨MultipliableUniformlyOn.hasProdUniformlyOn, HasProdUniformlyOn.multipliableUniformlyOn⟩
+
+@[to_additive]
 lemma HasProdUniformlyOn.mono {t : Set β}
     (h : HasProdUniformlyOn f g t) (hst : s ⊆ t) : HasProdUniformlyOn f g s :=
   hasProdUniformlyOn_iff_tendstoUniformlyOn.mpr <| h.tendstoUniformlyOn.mono hst
