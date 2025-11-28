@@ -65,23 +65,21 @@ section
 
 variable {R' : Type u'} [CommRing R'] (e : R ≃+* R')
 
+attribute [local instance] RingHomInvPair.of_ringEquiv
+
 lemma hasInjectiveDimensionLT_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
-    (e' : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          M ≃ₛₗ[e.toRingHom] N) (n : ℕ) [HasInjectiveDimensionLT M n] :
+    (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) (n : ℕ) [HasInjectiveDimensionLT M n] :
     HasInjectiveDimensionLT N n := by
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
   apply (hasInjectiveDimensionLT_iff.{v'} _ n).mpr (fun i hi L x ↦ ?_)
   apply @Subsingleton.eq_zero _ _ ?_ x
   apply ext_subsingleton_of_quotients N i (fun I ↦ ?_)
-  let e''' : (R ⧸ (I.comap e)) ≃ₛₗ[e.toRingHom] (R' ⧸ I) := {
+  let e''' : (R ⧸ (I.comap e)) ≃ₛₗ[RingHomClass.toRingHom e] (R' ⧸ I) := {
     __ := Ideal.quotientEquiv (I.comap e) I e (I.map_comap_eq_self_of_equiv e).symm
     map_smul' r x := by
       rcases Ideal.Quotient.mk_surjective x with ⟨y, hy⟩
       simp [Ideal.quotientMap, ← hy, Algebra.smul_def] }
-  let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ (I.comap e)))) ≃ₛₗ[e.toRingHom]
+  let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ (I.comap e)))) ≃ₛₗ[RingHomClass.toRingHom e]
     (ModuleCat.of R' (Shrink.{v', u'} (R' ⧸ I))) :=
     ((Shrink.linearEquiv.{v} R _).trans e''').trans (Shrink.linearEquiv.{v'} R' _).symm
   rw [(ModuleCat.extSemiLinearEquivOfSemiLinearEquiv.{v, v'} e e'' e' i).subsingleton_congr]
@@ -89,12 +87,8 @@ lemma hasInjectiveDimensionLT_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
 
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
-    (e' : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          M ≃ₛₗ[e.toRingHom] N) :
+    (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) :
     injectiveDimension M = injectiveDimension N := by
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot => simpa [injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton] using
