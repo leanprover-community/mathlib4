@@ -466,7 +466,7 @@ end Order.Preimage
 
 
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
-strict relation `s`. Compare `Preorder.lt_iff_le_not_ge`. This is mostly meant to provide dot
+strict relation `s`. Compare `lt_iff_le_not_ge`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
 class IsNonstrictStrictOrder (α : Type*) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) :
     Prop where
