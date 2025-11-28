@@ -236,14 +236,14 @@ the centroid of an n-dimensional face and is orthogonal to the
 opposite edge (in 2 dimensions, this is the same as an altitude).
 This definition is only intended to be used when `i₁ ≠ i₂`. -/
 def mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) : AffineSubspace ℝ P :=
-  mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points) (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓
+  mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points) (ℝ ∙ (s.points i₁ -ᵥ s.points i₂))ᗮ ⊓
     affineSpan ℝ (Set.range s.points)
 
 /-- The definition of a Monge plane. -/
 theorem mongePlane_def {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) :
     s.mongePlane i₁ i₂ =
       mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points)
-          (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓
+          (ℝ ∙ (s.points i₁ -ᵥ s.points i₂))ᗮ ⊓
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
@@ -273,7 +273,7 @@ theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i�
 /-- The direction of a Monge plane. -/
 theorem direction_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} :
     (s.mongePlane i₁ i₂).direction =
-      (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
+      (ℝ ∙ (s.points i₁ -ᵥ s.points i₂))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
   rw [mongePlane_def, direction_inf_of_mem_inf s.mongePoint_mem_mongePlane, direction_mk',
     direction_affineSpan]
 
@@ -283,11 +283,11 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
     {p : P} (h : ∀ i₂, i₁ ≠ i₂ → p ∈ s.mongePlane i₁ i₂) : p = s.mongePoint := by
   rw [← @vsub_eq_zero_iff_eq V]
   have h' : ∀ i₂, i₁ ≠ i₂ → p -ᵥ s.mongePoint ∈
-      (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
+      (ℝ ∙ (s.points i₁ -ᵥ s.points i₂))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
     intro i₂ hne
     rw [← s.direction_mongePlane, vsub_right_mem_direction_iff_mem s.mongePoint_mem_mongePlane]
     exact h i₂ hne
-  have hi : p -ᵥ s.mongePoint ∈ ⨅ i₂ : { i // i₁ ≠ i }, (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ := by
+  have hi : p -ᵥ s.mongePoint ∈ ⨅ i₂ : { i // i₁ ≠ i }, (ℝ ∙ (s.points i₁ -ᵥ s.points i₂))ᗮ := by
     rw [Submodule.mem_iInf]
     exact fun i => (Submodule.mem_inf.1 (h' i i.property)).1
   rw [Submodule.iInf_orthogonal, ← Submodule.span_iUnion] at hi
