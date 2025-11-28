@@ -712,6 +712,7 @@ theorem degree_optionEquivLeft [DecidableEq σ] {f : MvPolynomial (Option σ) R}
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
     Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty h), Finset.max_eq_sup_coe, h₁]
 
+-- todo dedup above
 lemma natDegree_optionEquivLeft' [DecidableEq σ]
     (p : MvPolynomial (Option σ) R) :
   Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
