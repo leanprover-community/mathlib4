@@ -40,8 +40,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
-* `IsImmersionAtOfComplement.congr_F`: being an immersion at `x` is stable under replacing the
-  complement `F` by an isomorphic copy
+* `IsImmersionAtOfComplement.congr_F`: being an immersion at `x` w.r.t. `F`
+  is stable under replacing the complement `F` by an isomorphic copy
 
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
@@ -334,7 +334,7 @@ lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') 
   intro x hx
   simp
 
-/-- Being an immersion at `x` is stable under replacing `F` by an isomorphic copy. -/
+/-- Being an immersion at `x` w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
@@ -512,21 +512,6 @@ being an immersion at `x` includes a choice of linear isomorphism between `E × 
 -/
 def IsImmersionOfComplement (f : M → N) : Prop := ∀ x, IsImmersionAtOfComplement F I J n f x
 
-namespace IsImmersionOfComplement
-
-variable {f g : M → N}
-
-/-- If `f` is an immersion, it is an immersion at each point. -/
-lemma isImmersionAt (h : IsImmersionOfComplement F I J n f) (x : M) :
-    IsImmersionAtOfComplement F I J n f x := h x
-
-/-- If `f = g` and `f` is an immersion, so is `g`. -/
-theorem congr (h : IsImmersionOfComplement F I J n f) (heq : f = g) :
-    IsImmersionOfComplement F I J n g :=
-  heq ▸ h
-
-end IsImmersionOfComplement
-
 variable (I J n) in
 /-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
@@ -542,6 +527,44 @@ each `x ∈ M` w.r.t. to potentially varying complements: see `isImmersionAt` fo
 -/
 def IsImmersion (f : M → N) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
+
+namespace IsImmersionOfComplement
+
+variable {f g : M → N}
+
+/-- If `f` is an immersion, it is an immersion at each point. -/
+lemma isImmersionAt (h : IsImmersionOfComplement F I J n f) (x : M) :
+    IsImmersionAtOfComplement F I J n f x := h x
+
+/-- If `f = g` and `f` is an immersion, so is `g`. -/
+theorem congr (h : IsImmersionOfComplement F I J n f) (heq : f = g) :
+    IsImmersionOfComplement F I J n g :=
+  heq ▸ h
+
+lemma trans_F (h : IsImmersionOfComplement F I J n f) (e : F ≃L[𝕜] F') :
+    IsImmersionOfComplement F' I J n f :=
+  fun x ↦ (h x).trans_F e
+
+/-- Being an immersion w.r.t. `F` is stable under replacing `F` by an isomorphic copy. -/
+lemma congr_F (e : F ≃L[𝕜] F') :
+    IsImmersionOfComplement F I J n f ↔ IsImmersionOfComplement F' I J n f :=
+  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+
+/-- If `f` is an immersion w.r.t. some complement `F`, it is an immersion.
+
+Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
+while being an immersion requires the existence of a complement in the same universe as
+the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`.
+-/
+lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
+  by_cases! hM : IsEmpty M
+  · sorry -- missing lemma?!
+  inhabit M
+  let x : M := Inhabited.default
+  use (h x).smallComplement, by infer_instance, by infer_instance
+  exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
+
+end IsImmersionOfComplement
 
 namespace IsImmersion
 
