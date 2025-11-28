@@ -49,7 +49,7 @@ namespace Truncated
 section liftOfStrictSegal
 /-! The goal of this section is to define `SSet.Truncated.liftOfStrictSegal`
 which allows to construct of morphism `X ⟶ Y` of `2`-truncated simplicial sets
-from the data of maps on `0`- and `1`-simplices when `Y` is strict segal.
+from the data of maps on `0`- and `1`-simplices when `Y` is strict Segal.
 -/
 
 variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌₂) (f₁ : X _⦋1⦌₂ → Y _⦋1⦌₂)
