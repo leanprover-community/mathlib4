@@ -19,7 +19,11 @@ open MonomialOrder Finsupp
 
 open scoped MonomialOrder
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] {f g : MvPolynomial σ R}
+variable {σ : Type*} {R : Type*}
+
+section CommSemiring
+
+variable [CommSemiring R] {f g : MvPolynomial σ R}
 
 section LinearOrder
 
@@ -42,14 +46,18 @@ theorem degLex_totalDegree_monotone (h : degLex.degree f ≼[degLex] degLex.degr
 
 end LinearOrder
 
-theorem totalDegree_mul_of_isDomain [IsCancelMulZero R] (hf : f ≠ 0) (hg : g ≠ 0) :
+section IsCancelMulZero
+
+variable [IsCancelMulZero R]
+
+theorem totalDegree_mul_of_isDomain (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
   cases exists_wellOrder σ
   rw [← degree_degLexDegree (σ := σᵒᵈ), ← degree_degLexDegree (σ := σᵒᵈ),
     ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
   simp
 
-theorem totalDegree_le_of_dvd_of_isDomain [IsCancelMulZero R] (h : f ∣ g) (hg : g ≠ 0) :
+theorem totalDegree_le_of_dvd_of_isDomain (h : f ∣ g) (hg : g ≠ 0) :
     f.totalDegree ≤ g.totalDegree := by
   obtain ⟨r, rfl⟩ := h
   rw [totalDegree_mul_of_isDomain]
@@ -57,15 +65,15 @@ theorem totalDegree_le_of_dvd_of_isDomain [IsCancelMulZero R] (h : f ∣ g) (hg 
   · exact fun h ↦ hg (by simp [h])
   · exact fun h ↦ hg (by simp [h])
 
-theorem dvd_C_iff_exists [IsCancelMulZero R] {a : R} (ha : a ≠ 0) :
-    f ∣ MvPolynomial.C a ↔ ∃ b, b ∣ a ∧ f = MvPolynomial.C b := by
+theorem dvd_C_iff_exists {a : R} (ha : a ≠ 0) :
+    f ∣ C a ↔ ∃ b, b ∣ a ∧ f = C b := by
   constructor
   · intro hf
     use MvPolynomial.coeff 0 f
     suffices f.totalDegree = 0 by
       rw [totalDegree_eq_zero_iff_eq_C] at this
       refine ⟨?_, this⟩
-      rw [this, MvPolynomial.C_dvd_iff_dvd_coeff] at hf
+      rw [this, C_dvd_iff_dvd_coeff] at hf
       convert hf 0
       simp
     apply Nat.eq_zero_of_le_zero
@@ -74,10 +82,15 @@ theorem dvd_C_iff_exists [IsCancelMulZero R] {a : R} (ha : a ≠ 0) :
   · rintro ⟨b, hab, rfl⟩
     exact _root_.map_dvd MvPolynomial.C hab
 
-variable {R : Type*} [CommRing R]
-  {p q r : MvPolynomial σ R}
+end IsCancelMulZero
 
-theorem dvd_monomial_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R] [IsCancelMulZero R] {p q r : MvPolynomial σ R}
+
+theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by
   rw [show monomial n a = monomial n 1 * C a from by
     rw [mul_comm, C_mul_monomial, mul_one],
@@ -94,7 +107,7 @@ theorem dvd_monomial_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} {a : R} 
     use C b, hmn, map_dvd C hb
     rwa [mul_comm, C_mul_monomial, mul_one]
 
-theorem dvd_monomial_one_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
+theorem dvd_monomial_one_iff_exists {n : σ →₀ ℕ} :
     p ∣ monomial n 1 ↔ ∃ m u, m ≤ n ∧ IsUnit u ∧ p = monomial m u := by
   rcases subsingleton_or_nontrivial R with hR | hR
   · simp only [Subsingleton.allEq _ p, dvd_refl, isUnit_iff_eq_one, and_true, exists_eq_right,
@@ -105,7 +118,7 @@ theorem dvd_monomial_one_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
   intro m
   simp_rw [isUnit_iff_dvd_one]
 
-theorem dvd_X_iff_exists [IsCancelMulZero R] {i : σ} :
+theorem dvd_X_iff_exists {i : σ} :
     p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • X i) := by
   rw [show (X i : MvPolynomial σ R) = monomial (Finsupp.single i 1) 1 from
     by rfl]
@@ -135,5 +148,7 @@ theorem dvd_X_iff_exists [IsCancelMulZero R] {i : σ} :
   · rintro ⟨hb, hp | hp⟩
     · use 0; simp [hb, hp]
     · use Finsupp.single i 1, le_refl _, hb, by simp [hp, smul_monomial]
+
+end CommRing
 
 end MvPolynomial
