@@ -24,9 +24,8 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M
 in other words, it is a central algebra. -/
 instance Algebra.IsCentral.end : IsCentral R (End R M) where
   out T hT := by
-    have h' (f : M →ₗ[R] R) (y v : M) : f (T v) • y = f v • T y := by
-      simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
     nontriviality M
     let b := chooseBasis R M
     let i := b.index_nonempty.some
-    exact ⟨b.coord i (T (b i)), LinearMap.ext fun y ↦ by simpa using h' (b.coord i) y (b i)⟩
+    refine ⟨b.coord i (T (b i)), LinearMap.ext fun y ↦ ?_⟩
+    simpa using congr($(Subalgebra.mem_center_iff.mp hT <| (b.coord i).smulRight y) (b i))
