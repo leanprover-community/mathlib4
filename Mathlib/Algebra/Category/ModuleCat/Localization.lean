@@ -61,8 +61,10 @@ instance ModuleCat.localizedModule_isLocalizedModule [Small.{v} R] (M : ModuleCa
 noncomputable def ModuleCat.localizedModule_map [Small.{v} R] {M N : ModuleCat.{v} R}
     (S : Submonoid R) (f : M ⟶ N) : (M.localizedModule S) ⟶ (N.localizedModule S) :=
   ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModule_mkLinearMap S)
-    (N.localizedModule_mkLinearMap S) (Localization S) (ModuleCat.homLinearEquiv (S := R) f)
+    (N.localizedModule_mkLinearMap S) (Localization S) f.hom
 
+/-- Shrink of localization is a functor, sending `M` to `M.localizedModule S` and
+`f : M1 ⟶ M2` to `IsLocalizedModule.mapExtendScalars S _ _ (Localization S) f.hom`. -/
 noncomputable def ModuleCat.localizedModule_functor [Small.{v} R] (S : Submonoid R) :
     ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S) where
   obj M := M.localizedModule S
