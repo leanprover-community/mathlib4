@@ -89,7 +89,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
   have hb₀ : ((Algebra.norm ℤ) b : ℝ) ≠ 0 := by simp [hb]
   refine (eq_div_of_mul_eq hb₀ ?_).symm
   norm_cast
-  rw [coe_norm_int a, coe_norm_int b, ← MonoidHom.map_mul, div_mul_cancel₀ _
+  rw [coe_norm_int a, coe_norm_int b, ← map_mul, div_mul_cancel₀ _
     (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
 
 open FinitePlace in
