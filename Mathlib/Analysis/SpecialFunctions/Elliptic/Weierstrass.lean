@@ -187,6 +187,7 @@ This is mainly a tool for calculations where one would want to omit a diverging 
 def ℘Except (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
+set_option linter.flexible false in -- simp followed by positivity
 lemma hasSumLocallyUniformly_℘Except (l₀ : ℂ) :
     HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
