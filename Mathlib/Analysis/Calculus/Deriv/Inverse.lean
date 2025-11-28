@@ -109,8 +109,7 @@ either because it has derivative zero or because it isn't differentiable at this
 theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] x, f y = c) :
     derivWithin f s x = 0 := by
   by_cases hf : DifferentiableWithinAt 𝕜 f s x
-  · contrapose h
-    rw [not_frequently]
+  · contrapose! h
     exact hf.hasDerivWithinAt.eventually_ne h
   · exact derivWithin_zero_of_not_differentiableWithinAt hf
 
