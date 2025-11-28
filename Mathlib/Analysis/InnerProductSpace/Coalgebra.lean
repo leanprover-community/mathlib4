@@ -39,11 +39,10 @@ open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
 theorem LinearIsometryEquiv.adjoint_toLinearMap_eq_symm {K : Type*}
     [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [FiniteDimensional 𝕜 K] (e : A ≃ₗᵢ[𝕜] K) :
-    adjoint e.toLinearMap = e.symm.toLinearMap := by
+    adjoint e.toLinearMap = e.symm.toLinearMap :=
   have := FiniteDimensional.complete 𝕜 A
   have := FiniteDimensional.complete 𝕜 K
-  calc adjoint e.toLinearMap = (ContinuousLinearMap.adjoint ↑e).toLinearMap := rfl
-    _ = e.symm.toLinearMap := congr($e.adjoint_eq_symm)
+  congr($e.adjoint_eq_symm)
 
 namespace InnerProductSpace
 
