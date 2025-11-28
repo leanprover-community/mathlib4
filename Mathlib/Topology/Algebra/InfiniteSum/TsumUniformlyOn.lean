@@ -64,15 +64,15 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
 
 end UniformlyOn
 
-variable {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
-    [NormedAddCommGroup F] [NormedSpace E F] {s : Set E}
+variable {ι 𝕜 F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {s : Set 𝕜}
 
 /-- The `derivWithin` of a sum whose derivative is absolutely and uniformly convergent sum on an
 open set `s` is the sum of the derivatives of sequence of functions on the open set `s` -/
-theorem derivWithin_tsum {f : ι → E → F} (hs : IsOpen s) {x : E} (hx : x ∈ s)
+theorem derivWithin_tsum {f : ι → 𝕜 → F} (hs : IsOpen s) {x : 𝕜} (hx : x ∈ s)
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
-    (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
+    (hf2 : ∀ n r, r ∈ s → DifferentiableAt 𝕜 (f n) r) :
     derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x := by
   apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
   apply HasDerivAt.hasDerivWithinAt
@@ -90,12 +90,12 @@ open set `s`, and for each `1 ≤ k ≤ m`, the series of `k`-th iterated deriva
 `∑ (iteratedDerivWithin k fₙ s) (z)`
 is summable locally uniformly on `s`, and each `fₙ` is `m`-times differentiable, then the `m`-th
 iterated derivative of the sum is the sum of the `m`-th iterated derivatives. -/
-theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
-    {x : E} (hx : x ∈ s) (hsum : ∀ t ∈ s, Summable (fun n : ι ↦ f n t))
+theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen s)
+    {x : 𝕜} (hx : x ∈ s) (hsum : ∀ t ∈ s, Summable (fun n : ι ↦ f n t))
     (h : ∀ k, 1 ≤ k → k ≤ m → SummableLocallyUniformlyOn
       (fun n ↦ (iteratedDerivWithin k (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n k r, k ≤ m → r ∈ s →
-      DifferentiableAt E (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
+      DifferentiableAt 𝕜 (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
     iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
   induction m generalizing x with
   | zero => simp
