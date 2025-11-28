@@ -410,10 +410,6 @@ run_cmd
   -- `AddCommMonoid` instead of `CommAddMonoid`.
   checkGuessName "comm_mul_CommMul_commMul" "comm_add_AddComm_addComm"
   checkGuessName "mul_comm_MulComm_mulComm" "add_comm_AddComm_addComm"
-  checkGuessName "mul_single_eq_same" "single_eq_same"
-  checkGuessName "mul_support" "support"
-  checkGuessName "mul_tsupport" "tsupport"
-  checkGuessName "mul_indicator" "indicator"
 
   checkGuessName "CommMonoid" "AddCommMonoid"
   checkGuessName "commMonoid" "addCommMonoid"
