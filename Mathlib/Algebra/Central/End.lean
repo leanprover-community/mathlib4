@@ -27,7 +27,6 @@ instance Algebra.IsCentral.end : IsCentral R (End R M) where
     have h' (f : M →ₗ[R] R) (y v : M) : f (T v) • y = f v • T y := by
       simpa using congr($(Subalgebra.mem_center_iff.mp hT <| f.smulRight y) v)
     nontriviality M
-    obtain ⟨x, hx⟩ := exists_ne (0 : M)
     let b := chooseBasis R M
     let i := b.index_nonempty.some
     exact ⟨b.coord i (T (b i)), LinearMap.ext fun y ↦ by simpa using h' (b.coord i) y (b i)⟩
