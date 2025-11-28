@@ -361,18 +361,8 @@ lemma congr_F (e : F ≃L[𝕜] F') :
 /- The set of points where `IsImmersionAtOfComplement` holds is open. -/
 lemma _root_.isOpen_isImmersionAtOfComplement :
     IsOpen {x | IsImmersionAtOfComplement F I J n f x} := by
-  rw [isOpen_iff_forall_mem_open]
-  intro x hx
-  -- Suppose `f` is an immersion at `x`: choose slice charts φ near x and ψ near f x s.t.
-  -- `f` looks like `u ↦ (u, 0)` in these charts. Then the same charts witness that `f` is an
-  -- immersion at any `y ∈ φ.source`.
-  simp only [mem_setOf_eq, IsImmersionAtOfComplement_def] at hx
-  refine ⟨hx.domChart.source, ?_, hx.domChart.open_source, hx.mem_domChart_source⟩
-  intro x' hx'
-  rw [mem_setOf_eq, IsImmersionAtOfComplement_def]
-  exact ⟨hx.domChart, hx.codChart, hx', hx.source_subset_preimage_source hx',
-    hx.domChart_mem_maximalAtlas, hx.codChart_mem_maximalAtlas, hx.source_subset_preimage_source,
-    hx.property⟩
+  simp_rw [IsImmersionAtOfComplement_def]
+  exact isOpen_liftSourceTargetPropertyAt
 
 -- Can grind prove the next two lemmas, after sufficient future tagging?
 -- Which of these two proofs is better?
