@@ -81,10 +81,6 @@ theorem mk_natCast (n : ℕ) (h : (n : K) ∈ ArchimedeanClass.Finite K) :
 theorem mk_intCast (n : ℤ) (h : (n : K) ∈ ArchimedeanClass.Finite K) :
     (⟨n, h⟩ : ArchimedeanClass.Finite K) = n := rfl
 
-instance : IsStrictOrderedRing (ArchimedeanClass.Finite K) :=
-  have := IsOrderedRing.toIsStrictOrderedRing K
-  Subring.toIsStrictOrderedRing _
-
 theorem not_isUnit_iff_mk_pos {x : ArchimedeanClass.Finite K} : ¬ IsUnit x ↔ 0 < mk x.1 :=
   Valuation.Integer.not_isUnit_iff_valuation_lt_one
 
