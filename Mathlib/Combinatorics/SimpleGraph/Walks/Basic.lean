@@ -263,11 +263,11 @@ theorem edges_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 theorem length_support {u v : V} (p : G.Walk u v) : p.support.length = p.length + 1 := by
   induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := by
   induction p <;> simp [*]
 
-@[simp]
+@[simp, grind =]
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
 
 theorem dart_fst_mem_support_of_mem_darts {u v : V} :
