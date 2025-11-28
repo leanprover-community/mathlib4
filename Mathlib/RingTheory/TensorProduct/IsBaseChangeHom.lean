@@ -83,9 +83,7 @@ noncomputable def linearMapRightBaseChangeEquiv
     apply LinearEquiv.bijective
   suffices f.toLinearMap.comp (linearMapRightBaseChangeHom S M ε) =
       (finitePow ι ibc).equiv.toLinearMap.comp e'.toLinearMap by
-    simp only [this, LinearEquiv.comp_coe, LinearEquiv.toLinearMap_inj, h']
-    rw [← LinearEquiv.trans_assoc]
-    simp
+    simp [h', this, ← LinearEquiv.trans_assoc e'.symm e']
   ext φ i
   simp
   simp [f, e', linearMapRightBaseChangeHom, LinearEquiv.baseChange, equiv_tmul,

@@ -369,8 +369,6 @@ theorem Ico_union_Ico_eq_Ico (h₁ : a ≤ b) (h₂ : b ≤ c) : Ico a b ∪ Ico
 theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   grind
 
--- TODO: find a good way to fix the non-terminal simp
-set_option linter.flexible false in
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
   grind
@@ -434,8 +432,6 @@ theorem Ioc_union_Ioc_eq_Ioc (h₁ : a ≤ b) (h₂ : b ≤ c) : Ioc a b ∪ Ioc
 theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
   grind
 
--- TODO: fix a good way to fix the linter; the exact only applies to one of five goals
-set_option linter.flexible false in
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
   grind
