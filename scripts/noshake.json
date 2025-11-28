@@ -515,6 +515,8 @@
   "Mathlib.CategoryTheory.Iso": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Functor.Basic":
   ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
+  "Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax":
+  ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax":
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
