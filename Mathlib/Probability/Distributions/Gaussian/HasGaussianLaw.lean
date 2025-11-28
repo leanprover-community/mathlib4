@@ -26,7 +26,6 @@ measure `P`, the random variable `X` has a Gaussian distribution, i.e. `IsGaussi
 Gaussian random variable
 -/
 
-
 open MeasureTheory WithLp Complex Finset
 open scoped ENNReal NNReal
 
