@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Julian Komaromy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Julian Komaromy
+Authors: Julian Komaromy, Joël Riou
 -/
 module
 
@@ -222,23 +222,22 @@ instance : CategoryStruct (HomotopyCategory₂ A) where
     (fun _ _ _ _ hf hg ↦ Quotient.sound
       (Edge.CompStruct.comp_unique (compStruct _ _) (compStruct _ _) hf hg))
 
-/--
-A vertex `x` of `A` defines an object of `HomotopyCategory₂ A`.
--/
-def mk (x : A _⦋0⦌₂) : HomotopyCategory₂ A := ⟨x⟩
+namespace HomotopyCategory₂
 
 omit [A.Quasicategory₂] in
-lemma HomotopyCategory₂.mk_surjective : Function.Surjective (mk : A _⦋0⦌₂ → _) :=
+/--
+TODO
+-/
+lemma mk_surjective : Function.Surjective (mk : A _⦋0⦌₂ → _) :=
   fun ⟨x⟩ ↦ ⟨x, rfl⟩
 
 /--
 Any edge in the 2-truncated simplicial set `A` defines a morphism in the homotopy category
 by taking its equivalence class.
 -/
-def homMk (f : Edge x y) : mk x ⟶ mk y := ⟦f⟧
+def homMk (f : Edge x y) : HomotopyCategory₂.mk x ⟶ .mk y := ⟦f⟧
 
-lemma homMk_surjective :
-    Function.Surjective (homMk : Edge x y → _) :=
+lemma homMk_surjective : Function.Surjective (homMk : Edge x y → _) :=
   Quotient.mk_surjective
 
 /--
@@ -248,25 +247,39 @@ identity morphism `x ⟶ x`.
 @[simp]
 lemma homMk_id (x : HomotopyCategory₂ A) : homMk (Edge.id x.pt) = 𝟙 x := rfl
 
+lemma HomotopicL.sound {f g : Edge x y} (h : HomotopicL f g) :
+    homMk f = homMk g := Quotient.sound h
+
+end HomotopyCategory₂
+
+open HomotopyCategory₂
+
 /--
-(Left) homotopic edges represent the same morphism in the homotopy category.
+Left homotopic edges represent the same morphism in the homotopy category.
 -/
-lemma homMk_eq_of_homotopy {f f' : Edge x y} (h : HomotopicL f f') :
-  homMk f = homMk f' := Quotient.sound h
+lemma HomotopicL.congr_homotopyCategory₂HomMk {f g : Edge x y} (h : HomotopicL f g) :
+    homMk f = homMk g := Quotient.sound h
+
+/--
+Right homotopic edges represent the same morphism in the homotopy category.
+-/
+lemma HomotopicR.congr_homotopyCategory₂HomMk {f g : Edge x y} (h : HomotopicR f g) :
+    homMk f = homMk g := Quotient.sound h.homotopicL
 
 /--
 A `CompStruct f g h` is a witness for the fact that the morphisms represented by
 `f` and `g` compose to the morphism represented by `h`.
 -/
-lemma Edge.CompStruct.fac {f : Edge x y} {g : Edge y z} {h : Edge x z}
+lemma Edge.CompStruct.homotopyCategory₂_fac {f : Edge x y} {g : Edge y z} {h : Edge x z}
     (s : CompStruct f g h) : homMk f ≫ homMk g = homMk h :=
-  homMk_eq_of_homotopy (comp_unique (compStruct _ _) s .refl .refl)
+  (comp_unique (compStruct _ _) s .refl .refl).congr_homotopyCategory₂HomMk
 
 /--
 If we have a factorization `homMk f ≫ homMk g = homMk h`, this is the choice
 of a structure `CompStruct f g h`.
 -/
-noncomputable def Edge.CompStruct.ofFac {f : Edge x y} {g : Edge y z} {h : Edge x z}
+noncomputable def Edge.CompStruct.ofHomotopyCategory₂Fac
+    {f : Edge x y} {g : Edge y z} {h : Edge x z}
     (fac : homMk f ≫ homMk g = homMk h) : CompStruct f g h := by
   dsimp [homMk, CategoryStruct.comp] at fac
   rw [Quotient.eq_iff_equiv] at fac
@@ -279,19 +292,22 @@ there exists a structure `CompStruct f g h` iff
 -/
 lemma Edge.CompStruct.nonempty_iff {f : Edge x y} {g : Edge y z} {h : Edge x z} :
     Nonempty (CompStruct f g h) ↔ homMk f ≫ homMk g = homMk h :=
-  ⟨fun ⟨h⟩ ↦ h.fac, fun h ↦ ⟨.ofFac h⟩⟩
+  ⟨fun ⟨h⟩ ↦ h.homotopyCategory₂_fac, fun h ↦ ⟨.ofHomotopyCategory₂Fac h⟩⟩
 
 noncomputable
 instance : Category (HomotopyCategory₂ A) where
   id_comp := by
     rintro _ _ ⟨f⟩
-    exact ((compStruct _ f).comp_unique (idComp _) .refl .refl).sound
+    exact ((compStruct _ f).comp_unique (idComp _) .refl .refl).congr_homotopyCategory₂HomMk
   comp_id := by
     rintro _ _ ⟨f⟩
-    exact ((compStruct _ _).comp_unique (compId _) .refl .refl).sound
+    exact ((compStruct _ _).comp_unique (compId _) .refl .refl).congr_homotopyCategory₂HomMk
   assoc := by
     rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩
-    exact (Quasicategory₂.fill31 (compStruct f g) (compStruct g h) (compStruct _ _)).some.fac
+    exact (Quasicategory₂.fill31
+      (compStruct f g)
+      (compStruct g h)
+      (compStruct _ _)).some.homotopyCategory₂_fac
 
 end homotopy_category
 
