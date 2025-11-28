@@ -413,7 +413,7 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
         ((h.models_not_iff φ).1 hφn)
 
 /-- A complete theory is the `completeTheory` Th(M) of one of its models. -/
-theorem isComplete_eq_complete_theory (h : T.IsComplete) (M : ModelType T) :
+theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
     {φ | T ⊨ᵇ φ} = L.completeTheory M := by
   ext φ
   simp only [Set.mem_setOf_eq, L.mem_completeTheory]
