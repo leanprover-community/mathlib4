@@ -3,15 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.MvPolynomial.Degrees
-public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
@@ -676,46 +675,64 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
   · rw [Polynomial.natDegree, degree_finSuccEquiv c, Nat.cast_withBot, WithBot.unbotD_coe]
 
-lemma optionEquivLeft_support [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
+theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
+    m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
+  apply Iff.intro
+  · intro h
+    simpa [← optionEquivLeft_coeff_coeff] using h
+  · intro h
+    simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
+
+-- Analogous to `finSuccEquiv_support`
+lemma support_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support
       = Finset.image (fun m => m none) p.support := by
-  -- Note: We cannot use `finSuccEquiv_support` to prove this because `σ` is not necessarily finite
-  -- We might prove that from this though
-  -- What needs to happen now is that we replicate the proof of `finSuccEquiv_support` here,
-  -- suitably modified
-  -- to do this, we need an analogue of `Finsupp.cons` for `Option`
-  ext m
+  ext i
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
-  · rintro ⟨m', hm'⟩
-    -- refine' ⟨cons m m', _, cons_zero _ _⟩
-    -- rw [← support_coeff_finSuccEquiv]
-    -- simpa using hm
-    sorry
+  · rintro ⟨m, hm⟩
+    refine ⟨optionElim i m, ?_, optionElim_apply_none _ _⟩
+    rw [← support_coeff_optionEquivLeft]
+    simpa using hm
   · rintro ⟨m, h, rfl⟩
-    sorry
+    refine ⟨some m, ?_⟩
+    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_optionEquivLeft, optionElim_some]
 
+theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
+    (optionEquivLeft R σ f).support.Nonempty := by
+  rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
 
-lemma natDegree_OptionEquivLeft [DecidableEq σ]
+theorem degree_optionEquivLeft [DecidableEq σ] {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
+    (optionEquivLeft R σ f).degree = degreeOf none f := by
+  -- TODO: these should be lemmas
+  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
+  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
+  have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
+    rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image, h₀]
+  rw [Polynomial.degree, ← h', Nat.cast_withBot,
+    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty h), Finset.max_eq_sup_coe, h₁]
+
+lemma natDegree_optionEquivLeft' [DecidableEq σ]
     (p : MvPolynomial (Option σ) R) :
   Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
    = p.degreeOf none := by
-  unfold Polynomial.natDegree degreeOf degrees degree
-  rw [Finset.max_eq_sup_coe, optionEquivLeft_support]
-  simp [optionEquivLeft_apply]
-  unfold
-  -- simp
+  by_cases c : p = 0
+  · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
+  · rw [Polynomial.natDegree, degree_optionEquivLeft c, Nat.cast_withBot, WithBot.unbotD_coe]
 
-  aesop
-  sorry
+/--
+The degree of a particular variable in a multivariate polynomial
+is equal to the degree of the single-variable polynomial
+obtained by treating the multivariable polynomial as a single variable polynomial
+over multivariable polynomials in the remaining variables
 
-/-- Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
+Note: Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
 lemma degreeOf_eq_degree [DecidableEq σ]
     (a : σ) (p : MvPolynomial σ R) :
   degreeOf a p
   = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a})
     (rename (Equiv.optionSubtypeNe a).symm p)) := by
-  rw [natDegree_OptionEquivLeft, eq_comm]
+  rw [natDegree_optionEquivLeft, eq_comm]
   convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
   exact (Equiv.apply_eq_iff_eq_symm_apply (Equiv.optionSubtypeNe a)).mp rfl
 
