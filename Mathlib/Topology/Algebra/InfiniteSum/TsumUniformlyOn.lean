@@ -31,6 +31,8 @@ open Set Metric TopologicalSpace Function Filter
 
 open scoped Topology NNReal
 
+section UniformlyOn
+
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 theorem HasSumUniformlyOn.of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
@@ -63,18 +65,7 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
   obtain ⟨u, hu1, hu2⟩ := hu K hK hKc
   exact ⟨u, hu1, by filter_upwards using hu2⟩
 
-variable {ι : Type*} [AddCommMonoid α] {f : ι → β → α} {s : Set β} [UniformSpace α]
-  [ContinuousAdd α] [TopologicalSpace β] {x : β}
-
-section Continuous
-
-/-- An infinite sum of continuous functions that converges locally uniformly on a set
-is continuous. -/
-theorem SummableLocallyUniformlyOn.continuousOn_tsum (hf : ∀ i, ContinuousOn (f i) s)
-    (h : SummableLocallyUniformlyOn f s) : ContinuousOn (fun x => ∑' n, f n x) s :=
-  h.hasSumLocallyUniformlyOn.continuousOn <| .of_forall fun _ ↦ by fun_prop
-
-end Continuous
+end UniformlyOn
 
 section Differentiable
 
@@ -117,6 +108,9 @@ theorem SummableLocallyUniformlyOn.derivWithin_tsum (hs : IsOpen s) (hx : x ∈ 
     derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x :=
   (h.hasDerivAt_tsum hs hx hf hf2).hasDerivWithinAt.derivWithin (hs.uniqueDiffWithinAt hx)
 
+@[deprecated (since := "2025-11-28")]
+alias derivWithin_tsum := SummableLocallyUniformlyOn.derivWithin_tsum
+
 /-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
 open set `s`, and for each `1 ≤ k ≤ m`, the series of `k`-th iterated derivatives
 `∑ (iteratedDerivWithin k fₙ s) (z)` is summable locally uniformly on `s`, and each `fₙ` is
@@ -143,6 +137,9 @@ theorem SummableLocallyUniformlyOn.iteratedDerivWithin_tsum (m : ℕ) (hs : IsOp
       · exact ((h m (by cutsat) (by cutsat)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
         (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))
+
+@[deprecated (since := "2025-11-28")]
+alias iteratedDerivWithin_tsum := SummableLocallyUniformlyOn.iteratedDerivWithin_tsum
 
 /-- If a sequence of functions `fₙ` is such that for each `0 ≤ k ≤ N`, the series of `k`-th
 iterated derivatives `∑ (iteratedDerivWithin k fₙ s) (z)` is summable locally uniformly on `s`, and
@@ -171,7 +168,7 @@ theorem SummableLocallyUniformlyOn.contDiffOn_tsum {N : ℕ∞} (hs : IsOpen s)
       rw [← iteratedDerivWithin_succ]
     · refine SummableLocallyUniformlyOn.iteratedDerivWithin_tsum m hs hx hsum (fun k _ hk => ?_)
         (fun n k r hk hr => ?_)
-      · exact h k (LE.le.trans (mod_cast hk) hm.le)
-      · exact ((hf n).2 k (LT.lt.trans (mod_cast hk) hm)).differentiableAt (q r hr)
+      · exact h k (le_trans (mod_cast hk) hm.le)
+      · exact ((hf n).2 k (lt_trans (mod_cast hk) hm)).differentiableAt (q r hr)
 
 end Differentiable

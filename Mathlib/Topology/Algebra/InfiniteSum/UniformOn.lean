@@ -507,3 +507,13 @@ lemma HasProdLocallyUniformly.tendstoLocallyUniformly_finsetRange
     (h.hasProdLocallyUniformlyOn (s := .univ)).tendstoLocallyUniformlyOn_finsetRange
 
 end LocallyUniformly
+
+/-- An infinite product of continuous functions that converges locally uniformly on a set
+is continuous. -/
+@[to_additive /-- An infinite sum of continuous functions that converges locally uniformly on a set
+is continuous. -/]
+theorem MultipliableLocallyUniformlyOn.continuousOn_tsum {ι α β : Type*}
+    [UniformSpace α] [CommMonoid α] [ContinuousMul α] [TopologicalSpace β]
+    {f : ι → β → α} {s : Set β} (hf : ∀ i, ContinuousOn (f i) s)
+    (h : MultipliableLocallyUniformlyOn f s) : ContinuousOn (fun x => ∏' n, f n x) s :=
+  h.hasProdLocallyUniformlyOn.continuousOn <| .of_forall fun _ ↦ by fun_prop
