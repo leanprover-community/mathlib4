@@ -118,7 +118,6 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
 include hσ in
 lemma hσ'₁ (x : X _⦋1⦌₂) :
     f₂ f₀ f₁ hδ₁ hδ₀ hY (X.map (σ₂ 1).op x) = Y.map (σ₂ 1).op (f₁ x) := by
-  have := hσ
   apply (hY.spineEquiv 2).injective
   ext i
   fin_cases i
