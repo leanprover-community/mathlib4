@@ -104,12 +104,12 @@ variable [UnivLE.{v, w}] [UnivLE.{v, w'}]
 
 namespace ModuleCat
 
+attribute [local instance] RingHomInvPair.of_ringEquiv
+
 noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
-    (M N : ModuleCat.{v} R') (n : ℕ) :
-    letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-    letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-    Ext.{w} M N n →ₛₗ[e.symm.toRingHom] Ext.{w'} ((ModuleCat.restrictScalars e.toRingHom).obj M)
-    ((ModuleCat.restrictScalars e.toRingHom).obj N) n where
+    (M N : ModuleCat.{v} R') (n : ℕ) : Ext.{w} M N n →ₛₗ[RingHomClass.toRingHom e.symm]
+    Ext.{w'} ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M)
+    ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N) n where
   __ := Functor.mapExtAddHom.{w, w'} (ModuleCat.restrictScalars.{v} e.toRingHom) M N n
   map_smul' r x := by
     simp only [RingEquiv.toRingHom_eq_coe, Functor.mapExtAddHom, Ext.smul_eq_comp_mk₀,
@@ -119,47 +119,37 @@ noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     ext
     simp
 
+instance : (restrictScalars (RingHomClass.toRingHom e)).IsEquivalence :=
+  restrictScalars_isEquivalence_of_ringEquiv e
+
 noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
-    (M N : ModuleCat.{v} R') (n : ℕ) :
-    letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-    letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-    Ext.{w} M N n ≃ₛₗ[e.symm.toRingHom] Ext.{w'} ((ModuleCat.restrictScalars e.toRingHom).obj M)
-    ((ModuleCat.restrictScalars e.toRingHom).obj N) n :=
-  let _ : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-  let _ : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+    (M N : ModuleCat.{v} R') (n : ℕ) : Ext.{w} M N n ≃ₛₗ[RingHomClass.toRingHom e.symm]
+    Ext.{w'} ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M)
+    ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N) n :=
   LinearEquiv.ofBijective (ModuleCat.extRestrictScalarsSemiLinearMap.{w, w'} e M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects.{w, w'}
-    (ModuleCat.restrictScalars.{v} e.toRingHom)
+    (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e))
     (ModuleCat.restrictScalarsEquivalenceOfRingEquiv e).fullyFaithfulFunctor M N n)
 
 noncomputable def iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
-    (e' : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          M ≃ₛₗ[e.toRingHom] M') : M ≅ ((ModuleCat.restrictScalars e.toRingHom).obj M') :=
-  let e : M ≃ₗ[R] ((ModuleCat.restrictScalars e.toRingHom).obj M') := {
+    (e' : M ≃ₛₗ[RingHomClass.toRingHom e] M') :
+    M ≅ ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') :=
+  let e : M ≃ₗ[R] ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') := {
     __ := e'
     map_smul' r m := by simp }
   e.toModuleIso
 
 noncomputable def extSemiLinearEquivOfSemiLinearEquiv_equal_universe [Small.{v} R] [Small.{v} R']
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v} R'}
-    (e1 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          M ≃ₛₗ[e.toRingHom] M')
-    (e2 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          N ≃ₛₗ[e.toRingHom] N')
-    (n : ℕ) : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-    letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-    Ext.{w} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w'} M N n :=
-  let e3 : Ext.{w'} ((ModuleCat.restrictScalars e.toRingHom).obj M')
-    ((ModuleCat.restrictScalars e.toRingHom).obj N') n ≃ₗ[R] Ext.{w'} M N n := {
-      __ := (((extFunctorObj.{w'} ((ModuleCat.restrictScalars e.toRingHom).obj M') n).mapIso
+    (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
+    (n : ℕ) :  Ext.{w} M' N' n ≃ₛₗ[RingHomClass.toRingHom e.symm] Ext.{w'} M N n :=
+  let e3 : Ext.{w'} ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M')
+    ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N') n ≃ₗ[R] Ext.{w'} M N n := {
+      __ := (((extFunctorObj.{w'}
+        ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') n).mapIso
         (ModuleCat.iso_restrictScalars e e2).symm).trans (((extFunctor.{w'} n).mapIso
         (ModuleCat.iso_restrictScalars e e1).op).app N)).addCommGroupIsoToAddEquiv
       map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
   (ModuleCat.extRestrictScalarsSemiLinearEquiv.{w, w'} e M' N' n).trans e3
 
 end ModuleCat
@@ -170,24 +160,19 @@ section
 
 variable (e : R ≃+* R') [UnivLE.{v, w}] [UnivLE.{v', w'}]
 
+attribute [local instance] RingHomInvPair.of_ringEquiv
+
 noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R'}
-    (e1 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          M ≃ₛₗ[e.toRingHom] M')
-    (e2 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          N ≃ₛₗ[e.toRingHom] N')
-    (n : ℕ) : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-    letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-    Ext.{w'} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w} M N n :=
+    (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
+    (n : ℕ) : Ext.{w'} M' N' n ≃ₛₗ[RingHomClass.toRingHom e.symm] Ext.{w} M N n :=
   letI : Small.{max v v'} R := small_lift R
   letI : Small.{max v v'} R' := small_lift R'
-  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
-  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-  let e1' : (uliftFunctor.{v'} R).obj M ≃ₛₗ[e.toRingHom] (uliftFunctor.{v} R').obj M' :=
+  let e1' : (uliftFunctor.{v'} R).obj M ≃ₛₗ[RingHomClass.toRingHom e]
+    (uliftFunctor.{v} R').obj M' :=
     (ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm
-  let e2' : (uliftFunctor.{v'} R).obj N ≃ₛₗ[e.toRingHom] (uliftFunctor.{v} R').obj N' :=
+  let e2' : (uliftFunctor.{v'} R).obj N ≃ₛₗ[RingHomClass.toRingHom e]
+    (uliftFunctor.{v} R').obj N' :=
     (ULift.moduleEquiv.trans e2).trans ULift.moduleEquiv.symm
   ((ModuleCat.extUliftLinearEquiv.{w', max v v'} M' N' n).trans
     (extSemiLinearEquivOfSemiLinearEquiv_equal_universe e e1' e2' n)).trans
