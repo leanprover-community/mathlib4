@@ -18,7 +18,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 open Module Free
 
-variable {R V : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M]
 
 /-- The center of endomorphisms on a vector space is trivial,
 in other words, it is a central algebra. -/
