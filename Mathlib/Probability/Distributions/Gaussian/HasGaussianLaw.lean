@@ -41,6 +41,7 @@ variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableS
 
 /-- The predicate `HasGaussianLaw X P` means that under the measure `P`,
 `X` has a Gaussian distribution. -/
+@[fun_prop]
 structure HasGaussianLaw (X : Ω → E) (P : Measure Ω) : Prop where
   protected isGaussian_map : IsGaussian (P.map X)
 
