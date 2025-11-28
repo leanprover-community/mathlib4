@@ -75,7 +75,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     let _ : Module p.ResidueField Nₚ' :=
       Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
     have := AssociatePrimes.mem_iff.mp
-      (associatedPrimes.mem_associatePrimes_localizedModule_atPrime_of_mem_associatedPrimes pass)
+      (associatedPrimes.mem_associatedPrimes_atPrime_of_mem_associatedPrimes pass)
     rcases this.2 with ⟨x, hx⟩
     have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
     rcases exists_ne (α := Module.Dual p.ResidueField Nₚ') 0 with ⟨g, hg⟩
@@ -170,7 +170,7 @@ lemma exist_isRegular_tfae_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
     have ntr' : Nontrivial M' :=
-      Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
+      Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
     have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
       rw [lt_top_iff_ne_top]
       by_contra eq
@@ -249,7 +249,7 @@ lemma exist_isRegular_tfae_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (
         exact Submodule.smul_mono_left
           ((span_singleton_le_iff_mem I).mpr (mem a List.mem_cons_self))
       have Qntr : Nontrivial M' :=
-        Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
+        Submodule.Quotient.nontrivial_iff.mpr (lt_of_lt_of_le' smul_lt le_smul).ne
       have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
         rw [lt_top_iff_ne_top]
         by_contra eq
@@ -294,7 +294,7 @@ lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ 
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
     ].TFAE := by
   have ntrQ : Nontrivial (R ⧸ I) := by
-    apply Submodule.Quotient.nontrivial_of_lt_top _ (lt_top_iff_ne_top.mpr _)
+    apply Submodule.Quotient.nontrivial_iff.mpr (lt_top_iff_ne_top.mpr _).ne
     by_contra eq
     absurd smul_lt
     simp [eq]
@@ -668,7 +668,7 @@ lemma IsLocalRing.ideal_depth_eq_sSup_length_regular [IsLocalRing R] [IsNoetheri
     [Nontrivial M] : I.depth M = sSup {(List.length rs : ℕ∞) | (rs : List R)
     (_ : RingTheory.Sequence.IsRegular M rs) (_ : ∀ r ∈ rs, r ∈ I) } := by
   let _ := Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm
-  let _ : Nontrivial (R ⧸ I) := Quotient.nontrivial netop
+  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop
   have smul_lt : I • (⊤ : Submodule R M) < ⊤ := lt_of_le_of_lt
       (Submodule.smul_mono (le_maximalIdeal netop) (le_refl _))
       (Ne.lt_top' (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
@@ -730,7 +730,7 @@ lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Smal
 lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
     I.depth (ModuleCat.of R (Shrink.{v} R)) = I.depth (ModuleCat.of R R) := by
   simp only [Ideal.depth]
-  let _ : Nontrivial (R ⧸ I) := Submodule.Quotient.nontrivial_of_lt_top I lt_top
+  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr lt_top.ne
   let _ : Nontrivial R := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt I ⊤ lt_top)
   let e : (of R (Shrink.{u, u} (R ⧸ I))) ≅ (of R (R ⧸ I)) :=
     (Shrink.linearEquiv.{u, u} R (R ⧸ I)).toModuleIso
@@ -788,7 +788,7 @@ lemma moduleDepth_quotSMulTop_succ_eq_moduleDepth (N M : ModuleCat.{v} R) (x : R
         enat_to_nat
         omega
       rw [add_comm, ← this]
-      apply add_le_add_right
+      apply add_le_add_left
       apply le_sSup
       intro i hi
       have lt2 : i + 1 < n := by
@@ -920,14 +920,14 @@ lemma IsLocalRing.depth_quotient_regular_succ_eq_depth [IsLocalRing R] [IsNoethe
     (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
       have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
-        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+        Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
     IsLocalRing.depth (ModuleCat.of (R ⧸ x • (⊤ : Ideal R)) (R ⧸ x • (⊤ : Ideal R))) + 1 =
     IsLocalRing.depth (ModuleCat.of R R) := by
   have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
-        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+        Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
   have loc_hom : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
   have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
@@ -942,7 +942,7 @@ lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth [IsLocalRing R] [IsN
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) :=
-        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+        Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
       have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
@@ -950,13 +950,13 @@ lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth [IsLocalRing R] [IsN
     IsLocalRing.depth (ModuleCat.of R R) := by
   let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
-      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
   letI : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
     have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
-      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
     have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
@@ -970,9 +970,8 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRi
     [IsNoetherianRing R] (rs : List R) (reg : RingTheory.Sequence.IsWeaklyRegular R rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     letI : IsLocalRing (R ⧸ Ideal.ofList rs) :=
-      have : Nontrivial (R ⧸ Ideal.ofList rs) :=
-        Submodule.Quotient.nontrivial_of_lt_top _
-          (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))
+      have : Nontrivial (R ⧸ Ideal.ofList rs) := Submodule.Quotient.nontrivial_iff.mpr
+        (ne_top_of_le_ne_top IsPrime.ne_top' (span_le.mpr mem))
       have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList rs)) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
@@ -993,8 +992,8 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRi
     | x :: rs' =>
       let _ : IsLocalRing (R ⧸ Ideal.ofList (x :: rs')) :=
         have : Nontrivial (R ⧸ Ideal.ofList (x :: rs')) :=
-          Submodule.Quotient.nontrivial_of_lt_top _
-          (lt_of_le_of_lt (span_le.mpr mem) (Ne.lt_top IsPrime.ne_top'))
+          Submodule.Quotient.nontrivial_iff.mpr
+          (ne_top_of_le_ne_top IsPrime.ne_top' (span_le.mpr mem))
         have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList (x :: rs'))) :=
           IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
         IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
@@ -1003,7 +1002,7 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRi
       simp only [Nat.cast_add, Nat.cast_one, ← add_assoc,
        ← depth_quotient_regular_succ_eq_depth x ((isWeaklyRegular_cons_iff _ x rs').mp reg).1 mem.1]
       have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
-        Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul] using mem.1)
+        Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul] using mem.1)
       have loc_hom : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
