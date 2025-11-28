@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Uniformly locally doubling measures
@@ -22,6 +24,8 @@ This file records basic facts about uniformly locally doubling measures.
   * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
   appearing in the definition of a uniformly locally doubling measure.
 -/
+
+@[expose] public section
 
 noncomputable section
 

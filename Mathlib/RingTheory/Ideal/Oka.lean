@@ -3,7 +3,9 @@ Copyright (c) 2025 Anthony Fernandes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Fernandes, Marc Robin
 -/
-import Mathlib.RingTheory.Ideal.Colon
+module
+
+public import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Oka predicates
@@ -22,6 +24,8 @@ This file introduces the notion of Oka predicates and standard results about the
 - [stacks-project]: The Stacks project, [tag 05K7](https://stacks.math.columbia.edu/tag/05K7)
 - [lam_reyes_2009]: *Oka and Ako ideal families in commutative rings*, 2009
 -/
+
+@[expose] public section
 
 namespace Ideal
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.Harmonic.GammaDeriv
+module
+
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 /-!
 # Asymptotics of `ζ s` as `s → 1`
@@ -28,6 +30,8 @@ By combining these formulae, one deduces that the limit of `ζ s - 1 / (s - 1)` 
 exists and is equal to `γ`. Finally, using this and the Riemann removable singularity criterion
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
+
+@[expose] public section
 
 open Real Set MeasureTheory Filter Topology
 

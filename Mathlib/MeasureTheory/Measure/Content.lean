@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.MeasureTheory.Measure.MeasureSpace
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Contents
@@ -48,6 +50,8 @@ When the space is locally compact, `μ.measure` is also regular.
 * Paul Halmos (1950), Measure Theory, §53
 * <https://en.wikipedia.org/wiki/Content_(measure_theory)>
 -/
+
+@[expose] public section
 
 
 universe u v w

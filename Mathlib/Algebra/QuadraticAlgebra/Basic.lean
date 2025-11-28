@@ -3,10 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.QuadraticAlgebra
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.QuadraticAlgebra.Defs
+public import Mathlib.Algebra.Star.Unitary
 
 /-! # Quadratic algebras : involution and norm.
 
@@ -26,8 +26,9 @@ We prove :
   `w.norm` isn't a zero divisor in `R`.
 
 * If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
-`
 -/
+
+@[expose] public section
 
 namespace QuadraticAlgebra
 
@@ -202,12 +203,12 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 theorem norm_coe (r : R) : norm (r : QuadraticAlgebra R a b) = r ^ 2 := by simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
-  by simp [norm_def, pow_two]
+theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
+  simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
-  by simp [norm_def, pow_two]
+theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
+  simp [norm_def, pow_two]
 
 theorem coe_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
     ((norm z : R) : QuadraticAlgebra R a b) = z * star z := by
@@ -230,7 +231,7 @@ theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
   · simp only [isUnit_iff_exists]
     rintro ⟨r, hr, hr'⟩
     rw [← coe_inj (R := R) (a := a) (b := b), coe_mul,
-      coe_norm_eq_mul_star , mul_assoc, coe_one] at hr
+      coe_norm_eq_mul_star, mul_assoc, coe_one] at hr
     refine ⟨_, hr, ?_⟩
     rw [mul_comm, hr]
 

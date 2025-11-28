@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Ordinal.FixedPoint
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
 # Cofinality
@@ -27,6 +29,8 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 * The cofinality is defined for ordinals.
   If `c` is a cardinal number, its cofinality is `c.ord.cof`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -393,6 +397,9 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
     simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
       succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
 
+-- TODO: find a good way to fix the non-terminal simp
+-- it is called on four goals, only one of which requires the `exact`
+set_option linter.flexible false in
 @[simp]
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
   ⟨inductionOn o fun α r _ z => by

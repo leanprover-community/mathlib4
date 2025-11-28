@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Monotone.Basic
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Inequalities on iterates
@@ -15,6 +17,8 @@ two self-maps that commute with each other.
 Current selection of inequalities is motivated by formalization of the rotation number of
 a circle homeomorphism.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -86,6 +90,8 @@ variable {β : Type*} {g : β → β} {h : β → α}
 
 open Function
 
+-- TODO: is there a nice way to avoid the non-terminal simp?
+set_option linter.flexible false in
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
   apply hf.seq_le_seq n <;> intros <;>

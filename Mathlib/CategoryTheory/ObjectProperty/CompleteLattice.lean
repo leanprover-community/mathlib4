@@ -3,13 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # ObjectProperty is a complete lattice
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -43,6 +47,13 @@ lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := b
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊔ Q).IsClosedUnderIsomorphisms := by
   simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self, isoClosure_sup, isoClosure_eq_self]
+
+instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
+    IsClosedUnderIsomorphisms (P ⊓ Q) where
+  of_iso e h := ⟨IsClosedUnderIsomorphisms.of_iso e h.1, IsClosedUnderIsomorphisms.of_iso e h.2⟩
+
+instance : IsClosedUnderIsomorphisms (⊤ : ObjectProperty C) where
+  of_iso := by simp
 
 end
 
