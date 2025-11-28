@@ -83,7 +83,7 @@ section Preorder
 variable [ts : TopologicalSpace α] [Preorder α]
 
 /-- A countable preordered set equipped with the order topology is second countable. -/
-instance {α : Type*} [Preorder α] [TopologicalSpace α] [OrderTopology α] [Countable α] :
+instance (priority := 100) [OrderTopology α] [Countable α] :
     SecondCountableTopology α := by
   refine ⟨{ s : Set α | ∃ a, s = Ioi a ∨ s = Iio a }, ?_, ?_⟩
   · let f1 : α → Set α := fun a => Ioi a
