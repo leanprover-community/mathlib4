@@ -149,8 +149,9 @@ def OneTruncation₂.ofNerve₂.natIso :
   NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C)
     (fun F ↦ ReflPrefunctor.ext (by cat_disch) (fun x y f ↦ by
       obtain ⟨f, rfl, rfl⟩ := f
-      simp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso,
+      dsimp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso,
         Quiv.isoOfEquiv, nerveHomEquiv_apply]
+      simp only [comp_id, id_comp]
       rfl))
 
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
