@@ -152,6 +152,9 @@ lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
 
+@[simp]
+lemma Equiv_to_continuous_eq [CompactSpace α] (f : C(α, γ)) :
+    (continuousMapEquiv f).toContinuousMap = f := rfl
 end Basics
 
 /-! ### Algebraic structure
@@ -215,18 +218,20 @@ instance [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C_c(α, β) :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
-instance [AddZeroClass β] [ContinuousAdd β] : Add C_c(α, β) :=
-  ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
+section AddZeroClass
+variable [AddZeroClass β] [ContinuousAdd β]
+instance : Add C_c(α, β) where add f g := ⟨f + g, HasCompactSupport.add f.2 g.2⟩
 
-@[simp]
-theorem coe_add [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : ⇑(f + g) = f + g :=
-  rfl
+@[simp] lemma coe_add (f g : C_c(α, β)) : ⇑(f + g) = f + g := rfl
 
-theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : (f + g) x = f x + g x :=
-  rfl
+@[simp] lemma toContinuousMap_add (f g : C_c(α, β)) :
+    (f + g).toContinuousMap = f.toContinuousMap + g.toContinuousMap := rfl
 
-instance [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C_c(α, β) :=
-  DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
+lemma add_apply (f g : C_c(α, β)) : (f + g) x = f x + g x := rfl
+
+instance : AddZeroClass C_c(α, β) := DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
+
+end AddZeroClass
 
 /-- Coercion to a function as a `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → β where
@@ -234,18 +239,20 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
   map_zero' := coe_zero
   map_add' := coe_add
 
-instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
-    SMul R C_c(α, β) :=
-  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
+section SMulWithZero
+variable [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β]
 
-@[simp, norm_cast]
-theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
-    (f : C_c(α, β)) : ⇑(r • f) = r • ⇑f :=
-  rfl
+instance : SMul R C_c(α, β) where
+  smul r f := ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩
 
-theorem smul_apply [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
-    (f : C_c(α, β)) (x : α) : (r • f) x = r • f x :=
-  rfl
+@[simp, norm_cast] lemma coe_smul (r : R) (f : C_c(α, β)) : ⇑(r • f) = r • ⇑f := rfl
+
+@[simp] lemma toContinuousMap_smul (r : R) (f : C_c(α, β)) :
+    (r • f).toContinuousMap = r • f.toContinuousMap := rfl
+
+lemma smul_apply (r : R) (f : C_c(α, β)) (x : α) : (r • f) x = r • f x := rfl
+
+end SMulWithZero
 
 section AddMonoid
 
