@@ -688,11 +688,10 @@ theorem deriv_norm_ofReal_cpow (c : ℂ) {t : ℝ} (ht : 0 < t) :
     rw [Complex.norm_cpow_eq_rpow_re_of_pos hx]
 
 lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
-    deriv (fun (x : ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
-  calc deriv (fun (x : ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1) := by
-              rw [Real.deriv_rpow_const' p]
-       _ =Θ[atTop] fun x => x ^ (p-1) :=
-              Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
+    deriv (fun (x : ℝ) ↦ x ^ p) =Θ[atTop] fun x => x ^ (p - 1) := by
+  calc deriv (fun (x : ℝ) ↦ x ^ p) = fun x => p * x ^ (p - 1) := Real.deriv_rpow_const' p
+    _ =Θ[atTop] fun x ↦ x ^ (p - 1) :=
+      Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
 
 lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
     deriv (fun (x : ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
