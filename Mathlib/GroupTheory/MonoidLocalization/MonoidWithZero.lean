@@ -46,6 +46,10 @@ protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 :
   have ⟨ms, eq⟩ := f.surj 0
   rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
 
+protected theorem IsLocalizationMap.map_zero {F} [FunLike F M N] [MulHomClass F M N] {f : F}
+    (hf : IsLocalizationMap S f) : f 0 = 0 :=
+  LocalizationMap.map_zero ⟨MulHomClass.toMulHom f, hf⟩
+
 instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
   map_zero f := by
     have ⟨ms, eq⟩ := f.surj 0

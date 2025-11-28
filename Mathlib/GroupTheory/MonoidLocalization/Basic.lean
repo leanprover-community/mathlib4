@@ -1434,7 +1434,7 @@ variable {M G F : Type*} [CommMonoid M] [CommGroup G]
       ⟨⟨g, 1⟩, congr(m * $e.map_one).trans <| (mul_one _).trans eq.symm⟩
     exists_of_eq eq := by simp [h.1 eq] }
 
-@[to_additive] instance Submonoid.isLocalizationMap_id (S : Submonoid G) :
+@[to_additive] theorem Submonoid.isLocalizationMap_id (S : Submonoid G) :
     S.IsLocalizationMap (@id G) :=
   S.isLocalizationMap_iff_bijective (f := MulHom.id _).mpr bijective_id
 
@@ -1454,7 +1454,8 @@ theorem AddSubmonoid.isLocalizationMap_nat_int (S : AddSubmonoid ℕ) (hS : S �
     have key : z < n * (z / n + 1) := Nat.lt_mul_div_succ _ <| Nat.pos_of_ne_zero hn0
     exact ⟨(z / n + 1) * n - z, (z / n + 1) * n, nsmul_mem hnS _, by cutsat⟩
 
-instance : (⊤ : AddSubmonoid ℕ).IsLocalizationMap ((↑) : ℕ → ℤ) :=
+theorem AddSubmonoid.isLocalizationMap_top_nat_int :
+    (⊤ : AddSubmonoid ℕ).IsLocalizationMap ((↑) : ℕ → ℤ) :=
   AddSubmonoid.isLocalizationMap_nat_int _ top_ne_bot
 
 end Group
