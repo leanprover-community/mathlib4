@@ -400,7 +400,7 @@ def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
 lemma adj_counit (V) [ReflQuiver V] :
     adj.unit.app (ReflQuiv.of V) = Cat.toFreeRefl V := rfl
 
-lemma adj_unit (D : Type*) [Category D] :
+lemma adj_unit_app (D : Type*) [Category D] :
     adj.counit.app (Cat.of D) = Cat.FreeRefl.lift (𝟭rq D) := rfl
 
 variable {V : Type*} [ReflQuiver V]
