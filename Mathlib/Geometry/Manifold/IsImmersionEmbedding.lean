@@ -558,7 +558,10 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 -/
 lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
   by_cases! hM : IsEmpty M
-  · sorry -- missing lemma?!
+  · rw [IsImmersion]
+    -- TODO: need to find a dummy candidate here... or copy-paste the same smallness lemmas...
+    use sorry, sorry, sorry
+    exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
   use (h x).smallComplement, by infer_instance, by infer_instance
