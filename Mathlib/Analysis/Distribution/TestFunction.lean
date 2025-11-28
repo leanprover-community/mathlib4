@@ -384,6 +384,17 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
 
+variable (𝕜) in
+theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+    Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
+  fun f g ↦ by simp [toBoundedContinuousFunctionCLM, toBoundedContinuousFunctionLM]
+
+instance : T3Space 𝓓^{n}(Ω, F) :=
+  have : T2Space 𝓓^{n}(Ω, F) := .of_injective_continuous
+    (injective_toBoundedContinuousFunctionCLM ℝ)
+    (toBoundedContinuousFunctionCLM ℝ).continuous
+  inferInstance
+
 end ToBoundedContinuousFunctionCLM
 
 end TestFunction
