@@ -444,6 +444,21 @@ theorem isComplete_iff_models_elementarily_equivalent :
       exact models_sentence_iff.2 fun N => (Sentence.realize_not N).2
         (mt (elementarilyEquivalent_iff.1 (h M N) φ).2 hφ)
 
+/-- If a theory is complete all its models are elementarily equivalent. -/
+theorem models_elementarily_equivalent
+    (h : T.IsComplete)
+    (M N : Type*) [L.Structure M] [L.Structure N]
+    [M ⊨ T] [N ⊨ T] [Nonempty M] [Nonempty N] :
+    ElementarilyEquivalent L M N := by
+  rcases h with ⟨_, hCompl⟩
+  refine (elementarilyEquivalent_iff (L := L) (M := M) (N := N)).2 ?_
+  intro φ
+  rcases hCompl φ with hφ | hφ
+  · exact iff_of_true (hφ.realize_sentence M) (hφ.realize_sentence N)
+  · exact iff_of_false
+      ((Sentence.realize_not M).1 (hφ.realize_sentence M))
+      ((Sentence.realize_not N).1 (hφ.realize_sentence N))
+
 end IsComplete
 
 /-- A theory is maximal when it is satisfiable and contains each sentence or its negation.
