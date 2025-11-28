@@ -155,59 +155,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
-#check iter_deriv_pow
-
-variable (r : ℝ) (x : ℝ) (k : ℕ)
-#check x ^ r
-#check (ascPochhammer ℝ k).eval x
-
---theorem differentiableWithinAt_rpow
-
-theorem differentiableAt_rpow (r x : ℝ) : DifferentiableAt ℝ (fun x ↦ x ^ r) x ↔ x ≠ 0 ∨ 0 ≤ r := by
-  sorry
-  --⟨fun H => NormedField.continuousAt_zpow.1 H.continuousAt, fun H =>
-    --(hasDerivAt_zpow m x H).differentiableAt⟩
-
-theorem deriv_rpow (r x : ℝ) : deriv (fun x ↦ x ^ r) x = r * x ^ (r - 1) := by
-  by_cases h : ∃ k : ℤ, r = k
-  · obtain ⟨k, hk⟩ := h
-    rw [hk]
-    norm_cast
-    apply deriv_zpow
-  push_neg at h
-  by_cases h' : x ≠ 0 ∨ 0 ≤ r
-  ·
-    apply (Real.hasDerivAt_rpow_const h').deriv
-  push_neg at h'
-  simp [h']
-  rw [deriv_zero_of_not_differentiableAt]
-  · simp only [zero_eq_mul]
-    right
-    refine Real.zero_rpow ?_
-    specialize h 1
-    grind
-  rw [differentiableAt_rpow]
-  simp [h'.2]
-
-
-theorem iter_deriv_rpow (r x : ℝ) (k : ℕ) :
-    deriv^[k] (fun (x : ℝ) ↦ x ^ r) x = (descPochhammer ℝ k).eval r * x ^ (r - k) := by
-  apply funext_iff.mp
-  induction k with
-  | zero =>
-    simp
-  | succ k IH =>
-    simp only [iterate_succ', comp_apply, Nat.cast_add, Nat.cast_one]
-    rw [IH]
-    ext y
-    rw [deriv_const_mul_field, deriv_rpow, ← mul_assoc]
-    congr 2
-    · simp [descPochhammer_succ_right]
-    · grind
-
-#exit
-
-
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for bilinear maps. -/
