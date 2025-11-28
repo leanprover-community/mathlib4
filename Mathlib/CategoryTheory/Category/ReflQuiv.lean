@@ -200,6 +200,7 @@ lemma morphismPropertyHomMk_homMk {x y : V} (e : x ⟶ y) :
   rw [MorphismProperty.ofHoms_iff]
   exact ⟨⟨x, y, e⟩, rfl⟩
 
+@[elab_as_elim, induction_eliminator]
 lemma hom_induction {motive : ∀ {x y : FreeRefl V} (_ : x ⟶ y), Prop}
     (id : ∀ (x : V), motive (homMk (𝟙rq x)))
     (comp_homMk : ∀ {x y z : V} (f : mk x ⟶ mk y) (g : y ⟶ z),
