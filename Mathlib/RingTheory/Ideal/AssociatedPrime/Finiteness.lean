@@ -3,10 +3,14 @@ Copyright (c) 2025 Jinzhao Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzhao Pan
 -/
-import Mathlib.Order.RelSeries
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+module
+
+public import Mathlib.Order.RelSeries
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 
@@ -35,6 +39,8 @@ associated primes.
   finitely generated module over a Noetherian ring.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -87,7 +93,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
       s.head = ⊥ ∧ s.last = ⊤ := by
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩
-  have := Submodule.Quotient.nontrivial_of_lt_top _ hN.lt_top
+  have := Submodule.Quotient.nontrivial_iff.mpr hN
   obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
   have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
@@ -155,3 +161,19 @@ theorem associatedPrimes.finite : (associatedPrimes A M).Finite := by
     simp [LinearEquiv.AssociatedPrimes.eq f, this]
   | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
     exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_exact hf hfg)
+
+/-- Every maximal ideal of a commutative Noetherian total ring of fractions `A` is
+an associated prime of the `A`-module `A`. -/
+theorem Ideal.IsMaximal.mem_associatedPrimes_of_isFractionRing [IsFractionRing A A]
+    (I : Ideal A) [hI : I.IsMaximal] : I ∈ associatedPrimes A A :=
+  have fin := associatedPrimes.finite A A
+  have ⟨P, hP⟩ := (I.subset_union_prime_finite fin (f := id) 0 0 fun _ h _ _ ↦ h.isPrime).1 <| by
+    simp_rw [id, biUnion_associatedPrimes_eq_compl_nonZeroDivisors]
+    exact fun x hx h ↦ hI.ne_top <| I.eq_top_of_isUnit_mem hx
+      (IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mp ‹_› h)
+  hI.eq_of_le hP.1.isPrime.ne_top hP.2 ▸ hP.1
+
+/-- A commutative Noetherian total ring of fractions is semilocal. -/
+instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
+  (MaximalSpectrum.equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <|
+    (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)

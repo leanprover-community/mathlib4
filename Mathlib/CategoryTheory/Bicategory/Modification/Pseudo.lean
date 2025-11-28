@@ -3,8 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
-import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
+public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
 /-!
 # Modifications between transformations of pseudofunctors
@@ -24,6 +26,8 @@ Given two pseudofunctors `F` and `G`, we define:
   namespace, so you need to run `open scoped Pseudofunctor.StrongTrans` to access it.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
 
@@ -48,18 +52,15 @@ structure Modification where
   /-- The underlying family of 2-morphism. -/
   app (a : B) : η.app a ⟶ θ.app a
   /-- The naturality condition. -/
-  naturality :
-    ∀ {a b : B} (f : a ⟶ b),
+  naturality {a b : B} (f : a ⟶ b) :
       F.map f ◁ app b ≫ (θ.naturality f).hom =
-        (η.naturality f).hom ≫ app a ▷ G.map f := by aesop_cat
+        (η.naturality f).hom ≫ app a ▷ G.map f := by cat_disch
 
 attribute [reassoc (attr := simp)] Modification.naturality
 
-variable {η θ}
-
 namespace Modification
 
-variable (Γ : Modification η θ)
+variable {η θ} (Γ : Modification η θ)
 
 /-- The modification between the corresponding strong transformation of the underlying oplax
 functors. -/
@@ -110,18 +111,16 @@ variable (η) in
 @[simps]
 def id : Modification η η where app a := 𝟙 (η.app a)
 
-instance : Inhabited (Modification η η) :=
-  ⟨Modification.id η⟩
-
 /-- Vertical composition of modifications. -/
 @[simps]
 def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
   app a := Γ.app a ≫ Δ.app a
 
-
 end Modification
 
-/-- Category structure on the strong transformations between pseudofunctors. -/
+/-- Category structure on the strong transformations between pseudofunctors.
+
+Note that this a scoped instance in the `Pseudofunctor.StrongTrans` namespace. -/
 @[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
@@ -142,7 +141,7 @@ by giving object level isomorphisms, and checking naturality only in the forward
 def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality : ∀ {a b} (f : a ⟶ b),
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
-        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) :
+        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
   hom := { app a := (app a).hom }
   inv :=

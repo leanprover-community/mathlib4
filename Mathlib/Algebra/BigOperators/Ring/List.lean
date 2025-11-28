@@ -3,18 +3,22 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Commute
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in rings
 
 This file contains the results concerning the interaction of list big operators with rings.
 -/
+
+@[expose] public section
 
 open MulOpposite List
 
