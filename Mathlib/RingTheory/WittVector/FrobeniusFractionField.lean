@@ -242,8 +242,8 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
   simp [field, FractionRing.p_nonzero p k]
   convert congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
-  · simp only [RingHom.map_mul]
-  · simp only [RingHom.map_mul]
+  · simp only [map_mul]
+  · simp only [map_mul]
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
     ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
