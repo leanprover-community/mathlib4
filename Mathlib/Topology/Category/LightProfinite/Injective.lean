@@ -185,11 +185,9 @@ lemma key_extension_lemma (X Y S T : Type u)
   have Z_subset_D i : Z i ⊆ D i := by
     intro z hz
     rw [mem_preimage, mem_singleton_iff]
-    obtain ⟨x, hx1, hx2⟩ := (mem_image _ _ _).mp hz
-    rw [← hx2]
+    obtain ⟨x, _, _⟩ := (mem_image _ _ _).mp hz
     have h_comm' : g' (f x) = f' (g x) := congr_fun h_comm x
-    convert rfl
-    exact (eq_of_mem_singleton hx1).symm
+    simp_all
   have D_cover_univ : univ ⊆ (⋃ i, D i) := by
     intro y _
     simp only [mem_iUnion]
@@ -205,29 +203,20 @@ lemma key_extension_lemma (X Y S T : Type u)
   -- define k to be the unique map sending C i to ψ i
   have h_glue (i j : S) (x : Y) (hxi : x ∈ C i) (hxj : x ∈ C j) : i = j := by
     rw [Set.pairwiseDisjoint_iff] at C_disj
-    apply C_disj
-    · simp
-    · simp
-    · exact ⟨x, by grind⟩
-  refine ⟨liftCover C (fun i _ ↦ i) h_glue C_cover_univ, ?_, ?_, ?_⟩
-  · apply IsLocallyConstant.continuous
-    rw [IsLocallyConstant.iff_isOpen_fiber]
+    exact C_disj (by simp) (by simp) ⟨x, by grind⟩
+  refine ⟨liftCover C (fun i _ ↦ i) h_glue C_cover_univ, IsLocallyConstant.continuous ?_, ?_, ?_⟩
+  · rw [IsLocallyConstant.iff_isOpen_fiber]
     intro s
     convert (C_clopen s).2
     ext y
     simp [preimage_liftCover]
   · ext y
-    rw [Function.comp_apply]
     -- y is contained in C i for some i
     have hy : y ∈ ⋃ i, C i := by simp [C_cover_univ]
     obtain ⟨i, hi⟩ := mem_iUnion.mp hy
-    rw [liftCover_of_mem hi]
-    exact symm (C_subset_D i hi)
+    simpa [liftCover_of_mem hi] using symm (C_subset_D i hi)
   · ext x
-    rw [Function.comp_apply]
-    let i := (g x)
-    have hC : f x ∈ C i := Z_subset_C i (by simpa [mem_image] using ⟨x, rfl, rfl⟩)
-    rw [liftCover_of_mem hC]
+    simp [liftCover_of_mem <| Z_subset_C (g x) (by simpa [mem_image] using ⟨x, rfl, rfl⟩)]
 
 
 -- categorically stated versions of key_extension_lemma
