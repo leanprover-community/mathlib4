@@ -15,6 +15,9 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 /-!
 # Standard part function
 
+Given a finite element in a non-archimedean field, the standard part function rounds it to the
+unique closest real number. That is, it chops off any infinitesimals.
+
 Let `K` be a linearly ordered field. The subset of finite elements (i.e. those bounded by a natural
 number) is a `ValuationSubring`, which means we can construct its residue field
 `FiniteResidueField`, roughly corresponding to the finite elements quotiented by infinitesimals.
@@ -28,6 +31,10 @@ standard part function on `Hyperreal`.
 ## Todo
 
 Redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`.
+
+## References
+
+* https://en.wikipedia.org/wiki/Standard_part_function
 -/
 
 @[expose] public section
