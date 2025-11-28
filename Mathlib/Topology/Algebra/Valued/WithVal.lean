@@ -128,18 +128,6 @@ theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} :
 theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} :
     a < b ↔ v (equiv v a) < v (equiv v b) := .rfl
 
-@[simp]
-theorem equiv_equivWithVal_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : WithVal v) :
-    equiv w (equivWithVal v w x) = equiv v x := rfl
-
-@[simp]
-theorem equiv_equivWithVal_symm_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : WithVal w) :
-    equiv v ((equivWithVal v w).symm x) = equiv w x := rfl
-
-@[simp]
-theorem equivWithVal_symm_equiv_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : R) :
-    (equivWithVal v w).symm ((equiv w).symm x) = (equiv v).symm x := rfl
-
 end Ring
 
 section CommRing
