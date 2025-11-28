@@ -385,6 +385,8 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 
 open Topology
 
+-- The non-terminal simp has a large simp set
+set_option linter.flexible false in
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
   rw [contMDiffAt_iff]
