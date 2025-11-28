@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
+public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 /-!
 # Integral over a circle in `ℂ`
@@ -61,6 +63,8 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 integral, circle, Cauchy integral
 -/
+
+@[expose] public section
 
 variable {E : Type*} [NormedAddCommGroup E]
 
@@ -200,6 +204,13 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
   rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
     = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
   exact IntervalIntegrable.sum s h
+
+/-- Sums of circle integrable functions are circle integrable. -/
+theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
+  convert CircleIntegrable.sum s h
+  simp
 
 /-- `finsum`s of circle integrable functions are circle integrable. -/
 protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :

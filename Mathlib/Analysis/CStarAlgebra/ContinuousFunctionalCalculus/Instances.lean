@@ -3,12 +3,14 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Spectrum
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.Normed.Algebra.Spectrum
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.Complex.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-! # Instances of the continuous functional calculus
 
@@ -27,6 +29,8 @@ import Mathlib.Analysis.RCLike.Lemmas
 
 continuous functional calculus, normal, selfadjoint
 -/
+
+@[expose] public section
 
 open Topology
 

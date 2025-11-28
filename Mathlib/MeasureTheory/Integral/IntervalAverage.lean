@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Average
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Integral average over an interval
@@ -25,6 +27,8 @@ We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_aver
 
 -/
 
+@[expose] public section
+
 
 open MeasureTheory Set TopologicalSpace
 
@@ -32,7 +36,8 @@ open scoped Interval
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a w.r.t. the Lebesgue measure. -/
+/-- `⨍ x in a..b, f x` is the average of `f` over the interval `Ι a b` w.r.t. the Lebesgue
+measure. -/
 notation3 "⨍ "(...)" in "a".."b",
   "r:60:(scoped f => average (Measure.restrict volume (uIoc a b)) f) => r
 

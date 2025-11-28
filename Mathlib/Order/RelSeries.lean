@@ -3,13 +3,17 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Rel
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Rel
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Series of a relation
@@ -18,6 +22,8 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
 
 -/
+
+@[expose] public section
 
 open scoped SetRel
 
@@ -98,10 +104,10 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
 
 @[simp]
 lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
-  rfl
+  by simp [toList, singleton]
 
 lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
-  rw [List.isChain_iff_get]
+  simp_rw [List.isChain_iff_getElem, length_toList, add_lt_add_iff_right]
   intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
@@ -115,7 +121,7 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) : RelSeries r where
   length := x.length - 1
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
-  step i := List.isChain_iff_get.mp hx i _
+  step i := List.isChain_iff_getElem.mp hx i _
 
 @[deprecated (since := "2025-09-24")] alias fromListChain' := fromListIsChain
 

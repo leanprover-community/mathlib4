@@ -3,13 +3,17 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Order.CompleteSublattice
+module
+
+public import Mathlib.Order.CompleteSublattice
 
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`
 
 This file provides lemmas for the `SetLike` instance for elements of `CompleteSublattice (Set X)`
 -/
+
+@[expose] public section
 
 attribute [local instance] SetLike.instSubtypeSet
 

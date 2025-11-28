@@ -3,10 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Coherent
-import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.UniformSpace.UniformApproximation
+module
+
+public import Mathlib.Topology.Coherent
+public import Mathlib.Topology.UniformSpace.Equiv
+public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.UniformSpace.UniformApproximation
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -130,6 +132,8 @@ connection API to do most of the work.
 
 uniform convergence
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -506,7 +510,7 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] :
     IsClosed {f : α →ᵤ β | Continuous (toFun f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
   rw [← tendsto_id', UniformFun.tendsto_iff_tendstoUniformly] at huf
-  exact huf.continuous (le_principal_iff.mp hu)
+  exact huf.continuous <| Eventually.frequently (le_principal_iff.mp hu)
 
 variable {α} (β) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
@@ -725,6 +729,22 @@ protected theorem uniformContinuous_restrict (h : s ∈ 𝔖) :
   change _ ≤ _
   simp only [UniformOnFun.uniformSpace, map_le_iff_le_comap, iInf_uniformity]
   exact iInf₂_le s h
+
+theorem isUniformEmbedding_toFun_finite :
+    IsUniformEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) := by
+  refine ⟨⟨?_⟩, Function.injective_id⟩
+  simp_rw [Pi.uniformity, comap_iInf, comap_comap]
+  refine HasBasis.ext (HasBasis.iInf' fun i ↦ (basis_sets _).comap _)
+    (UniformOnFun.hasBasis_uniformity α β _ ⟨∅, finite_empty⟩
+      (directedOn_of_sup_mem fun _ _ ↦ .union))
+    (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, ⋂ x ∈ S, U x⟩, ⟨⟨hS, biInter_mem hS |>.mpr hU⟩,
+      fun f hf ↦ mem_iInter₂.mpr fun x hx ↦ mem_iInter₂.mp (hf x hx) x hx⟩⟩)
+    (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, fun _ ↦ U⟩, ⟨hS, fun _ _ ↦ hU⟩, fun f hf x hx ↦
+      mem_iInter₂.mp hf x hx⟩)
+
+theorem isEmbedding_toFun_finite :
+    IsEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) :=
+  (isUniformEmbedding_toFun_finite α β).isEmbedding
 
 variable {α}
 
@@ -1075,7 +1095,7 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] (h : IsCoherentWith 𝔖
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
-  exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
+  exact (huf s hs).continuousOn <| Eventually.frequently <| hu fun _ ↦ Continuous.continuousOn
 
 variable (𝔖) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
