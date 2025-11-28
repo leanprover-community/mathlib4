@@ -178,8 +178,7 @@ instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTot
     ← isTotallyReal_iff_le_maximalRealSubfield, ← isTotallyReal_iff_le_maximalRealSubfield]
   exact ⟨hE, hF⟩
 
-instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
-    [∀ i, IsTotallyReal (k i)] [∀ i, Algebra.IsIntegral (k i) K] :
+instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   obtain hι | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
   · rw [iSup_of_empty]
@@ -187,7 +186,7 @@ instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
   · rw [isTotallyReal_iff_le_maximalRealSubfield, iSup_le_iff]
     exact fun i ↦ IsTotallyReal.le_maximalRealSubfield (k i)
 
-theorem maximalRealSubfield_eq_top_iff_isTotallyReal [Algebra.IsIntegral ℚ K] :
+theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
   mp h := by
     have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
