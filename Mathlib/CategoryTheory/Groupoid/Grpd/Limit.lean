@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.CategoryTheory.Category.Cat.Limit
-import Mathlib.CategoryTheory.Groupoid.Grpd.Free
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.Limit
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Free
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # The category of small groupoids has all small limits.
@@ -15,6 +17,9 @@ of small categories `Cat`. Hence it inherits all limits that exist in `Cat`.
 Since the `Cat` has all small limits, `Grpd` also has all small limits.
 
 -/
+
+@[expose] public section
+
 noncomputable section
 
 universe u

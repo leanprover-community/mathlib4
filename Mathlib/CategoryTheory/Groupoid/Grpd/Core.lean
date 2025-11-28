@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.CategoryTheory.Groupoid.Grpd
-import Mathlib.CategoryTheory.Core
-import Mathlib.CategoryTheory.Adjunction.Reflective
+module
+
+public import Mathlib.CategoryTheory.Groupoid.Grpd
+public import Mathlib.CategoryTheory.Core
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # The forgetful-core adjunction
@@ -22,6 +24,8 @@ to the forgetful functor from `Grpd ⥤ Cat`.
 * An instance that `Grpd.forgetToCat` is coreflective.
 
 -/
+
+@[expose] public section
 
 universe v u v₁ u₁
 

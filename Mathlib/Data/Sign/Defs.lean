@@ -3,16 +3,23 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Sign type
 
 This file defines the type of signs $\{-1, 0, 1\}$ and its basic arithmetic instances.
 -/
+
+@[expose] public section
 
 -- Don't generate unnecessary `sizeOf_spec` lemmas which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
@@ -208,13 +215,13 @@ def cast : SignType → α
   | pos => 1
   | neg => -1
 
-/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left.
-
-`outParam`-wise it could be a `Coe`, but we don't want to try applying this instance for a
-coercion to any `α`.
+/--
+This can't be a `CoeTail` or `Coe` instance because we don't want it to fire when `SignType` isn't
+involved in the coercion (or `CoeHead` or `CoeOut` because of `outParam`s). The only other
+user-exposed option is `CoeDep` then, which allows us to match on both given and expected type.
 -/
-instance : CoeTail SignType α :=
-  ⟨cast⟩
+instance (s : SignType) : CoeDep SignType s α :=
+  ⟨cast s⟩
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
 lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
