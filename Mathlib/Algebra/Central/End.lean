@@ -29,5 +29,5 @@ instance Algebra.IsCentral.end : IsCentral R (End R M) where
     nontriviality M
     obtain ⟨x, hx⟩ := exists_ne (0 : M)
     let b := chooseBasis R M
-    have ⟨i, hi⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr hx <| Finsupp.ext h
+    let i := b.index_nonempty.some
     exact ⟨b.coord i (T (b i)), LinearMap.ext fun y ↦ by simpa using h' (b.coord i) y (b i)⟩
