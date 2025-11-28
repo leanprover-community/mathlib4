@@ -3,8 +3,11 @@ Copyright (c) 2024 Wanyi He. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.Module.Torsion
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.Module.Torsion.Basic
+
 /-!
 # Characteristic of the ring of linear Maps
 
@@ -17,7 +20,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
   the characteristic of `R` is equal to the characteristic of the `R`-linear
   endomorphisms of `M` when `M` contains a non-torsion element `x`.
 
-## Notations
+## Notation
 
 - `R` is a commutative semiring
 - `M` is a `R`-module
@@ -29,6 +32,8 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
   compared to `Module.charP_end`.
 
 -/
+
+@[expose] public section
 
 namespace Module
 
@@ -57,4 +62,3 @@ instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
 instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
     ExpChar (D →ₗ[Subring.center D] D) p :=
   expChar_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p
-

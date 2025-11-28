@@ -3,9 +3,11 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.CategoryTheory.Sites.Spaces
-import Mathlib.Topology.Sheaves.Sheaf
-import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Spaces
+public import Mathlib.Topology.Sheaves.Sheaf
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 /-!
 
@@ -17,9 +19,11 @@ on spaces.
 
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
 functor from a topological basis to `TopologicalSpace.Opens` is cover dense, that open maps
-induce cover preserving functors, and that open embeddings induce continuous functors.
+induce cover-preserving functors, and that open embeddings induce continuous functors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

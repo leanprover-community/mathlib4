@@ -3,15 +3,17 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-! Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
-the monoidal category structure on categories of homological complexes (TODO).
+monoidal category structure on categories of homological complexes (TODO).
 
 The most important definition is that of `TotalComplexShape c₁ c₂ c₁₂` given
 three complex shapes `c₁`, `c₂`, `c₁₂`: it allows the definition of a total
@@ -24,13 +26,15 @@ satisfying certain properties (see `ComplexShape.TensorSigns`).
 
 -/
 
+@[expose] public section
+
 assert_not_exists Field TwoSidedIdeal
 
 variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
   (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c₃ : ComplexShape I₃)
   (c₁₂ : ComplexShape I₁₂) (c₂₃ : ComplexShape I₂₃) (c : ComplexShape J)
 
-/-- A total complex shape for three complexes shapes `c₁`, `c₂`, `c₁₂` on three types
+/-- A total complex shape for three complex shapes `c₁`, `c₂`, `c₁₂` on three types
 `I₁`, `I₂` and `I₁₂` consists of the data and properties that will allow the construction
 of a total complex functor `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂` which
 sends `K` to a complex which in degree `i₁₂ : I₁₂` consists of the coproduct
@@ -132,13 +136,13 @@ lemma add_rel (r : I) {p q : I} (hpq : c.Rel p q) : c.Rel (r + p) (r + q) :=
 
 @[simp]
 lemma ε_zero : c.ε 0 = 1 := by
-  apply MonoidHom.map_one
+  apply map_one
 
 lemma ε_succ {p q : I} (hpq : c.Rel p q) : c.ε q = - c.ε p :=
   TensorSigns.ε'_succ p q hpq
 
 lemma ε_add (p q : I) : c.ε (p + q) = c.ε p * c.ε q := by
-  apply MonoidHom.map_mul
+  apply map_mul
 
 lemma next_add (p q : I) (hp : c.Rel p (c.next p)) :
     c.next (p + q) = c.next p + q :=

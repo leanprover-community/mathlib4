@@ -3,9 +3,10 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Topology.IsLocalHomeomorph
 
 /-!
 # Local diffeomorphisms between manifolds
@@ -56,6 +57,8 @@ local diffeomorphism, manifold
 
 -/
 
+@[expose] public section
+
 open Manifold Set TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -78,7 +81,7 @@ structure PartialDiffeomorph extends PartialEquiv M N where
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
 /-- Coercion of a `PartialDiffeomorph` to function.
-Note that a `PartialDiffeomorph` is not `DFunLike` (like `PartialHomeomorph`),
+Note that a `PartialDiffeomorph` is not `DFunLike` (like `OpenPartialHomeomorph`),
 as `toFun` doesn't determine `invFun` outside of `target`. -/
 instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun⟩
@@ -99,12 +102,15 @@ namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
-def toPartialHomeomorph : PartialHomeomorph M N where
+def toOpenPartialHomeomorph : OpenPartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
   open_source := Φ.open_source
   open_target := Φ.open_target
   continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
+
+@[deprecated (since := "2025-08-29")] alias
+  toPartialHomeomorph := toOpenPartialHomeomorph
 
 /-- The inverse of a local diffeomorphism. -/
 protected def symm : PartialDiffeomorph J I N M n where
@@ -124,7 +130,8 @@ protected theorem mdifferentiableAt (hn : 1 ≤ n) {x : M} (hx : x ∈ Φ.source
     MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
-/- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
+/- We could add lots of additional API (following `Diffeomorph` and `OpenPartialHomeomorph`),
+such as
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
 As this declaration is meant for internal use only, we keep it simple. -/
@@ -248,7 +255,7 @@ lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
     {f : M → N} (hf : IsLocalDiffeomorph I J n f) (s : Set M) : IsLocalDiffeomorphOn I J n f s :=
   fun x ↦ hf x
 
-/-! # Basic properties of local diffeomorphisms -/
+/-! ### Basic properties of local diffeomorphisms -/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
 variable {I J n}
@@ -296,7 +303,7 @@ theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeo
   apply IsLocalHomeomorphOn.mk
   intro x hx
   choose U hyp using hf ⟨x, hx⟩
-  exact ⟨U.toPartialHomeomorph, hyp⟩
+  exact ⟨U.toOpenPartialHomeomorph, hyp⟩
 
 /-- A local diffeomorphism is a local homeomorphism. -/
 theorem IsLocalDiffeomorph.isLocalHomeomorph (hf : IsLocalDiffeomorph I J n f) :
@@ -335,8 +342,8 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
   -- have (x y) : EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
   have aux (x) : EqOn g (Φ x).symm (Φ x).target :=
     eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
-      (LeftInvOn.congr_left ((Φ x).toPartialHomeomorph).rightInvOn
-        ((Φ x).toPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
+      (LeftInvOn.congr_left ((Φ x).toOpenPartialHomeomorph).rightInvOn
+        ((Φ x).toOpenPartialHomeomorph).symm_mapsTo (hyp x).2.symm)
       (fun _y hy ↦ (Φ x).map_target hy)
   exact {
     toFun := f
@@ -351,9 +358,6 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
       apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
-
-@[deprecated (since := "2025-03-24")] alias
-IslocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorph_of_bijective
 
 end Basic
 
@@ -386,7 +390,7 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
       hf.localInverse_left_inv hf.localInverse_mem_target]
   continuous_toFun := (mfderiv I J f x).cont
   continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
-  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_add' := fun x_1 y ↦ map_add _ x_1 y
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]

@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.IsNormal
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.PPWithUniv
+module
+
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.IsNormal
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -50,10 +52,12 @@ A conditionally complete linear order with bot structure is registered on ordina
 `0`, the ordinal corresponding to the empty type, and `Inf` is the minimum for nonempty sets and `0`
 for the empty set by convention.
 
-## Notations
+## Notation
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module Field
 
@@ -335,7 +339,6 @@ protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
 protected theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 :=
   bot_lt_iff_ne_bot
 
-@[simp]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 
@@ -505,7 +508,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv _ := Subtype.ext_val (typein_enum _ _)
+  left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
@@ -761,9 +764,6 @@ instance add : Add Ordinal.{u} :=
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinal_type_eq⟩
 
 instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
-  add := (· + ·)
-  zero := 0
-  one := 1
   zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinal_type_eq
   add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinal_type_eq
   add_assoc o₁ o₂ o₃ :=
@@ -807,10 +807,10 @@ instance instAddRightMono : AddRightMono Ordinal.{u} where
     simp [f.map_rel_iff]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
-  simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
+  simpa only [add_zero] using add_le_add_right (Ordinal.zero_le b) a
 
 theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
-  simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
+  simpa only [zero_add] using add_le_add_left (Ordinal.zero_le b) a
 
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left
@@ -1252,7 +1252,7 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
-/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+/-- If a cardinal `c` is nonzero, then `c.ord.toType` has a least element. -/
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.toType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))

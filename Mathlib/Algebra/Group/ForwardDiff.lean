@@ -3,15 +3,17 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Module.Submodule.LinearMap
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Degree
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 /-!
 # Forward difference operators and Newton series
@@ -30,6 +32,8 @@ We prove two key formulae about this operator:
 We also prove some auxiliary results about iterated forward differences of the function
 `n ↦ n.choose k`.
 -/
+
+@[expose] public section
 
 open Finset Nat Function Polynomial
 
@@ -104,9 +108,9 @@ def shiftₗ : Module.End ℤ (M → G) := fwdDiffₗ M G h + 1
 lemma shiftₗ_apply (f : M → G) (y : M) : shiftₗ M G h f y = f (y + h) := by simp [shiftₗ, fwdDiff]
 
 lemma shiftₗ_pow_apply (f : M → G) (k : ℕ) (y : M) : (shiftₗ M G h ^ k) f y = f (y + k • h) := by
-  induction' k with k IH generalizing f
-  · simp
-  · simp [pow_add, IH (shiftₗ M G h f), shiftₗ_apply, add_assoc, add_nsmul]
+  induction k generalizing f with
+  | zero => simp
+  | succ k IH => simp [pow_add, IH (shiftₗ M G h f), shiftₗ_apply, add_assoc, add_nsmul]
 
 end fwdDiff_aux
 
@@ -122,9 +126,9 @@ open fwdDiff_aux
 
 @[simp] lemma fwdDiff_iter_const_smul {R : Type*} [Monoid R] [DistribMulAction R G]
     (r : R) (f : M → G) (n : ℕ) : Δ_[h]^[n] (r • f) = r • Δ_[h]^[n] f := by
-  induction' n with n IH generalizing f
-  · simp only [iterate_zero, id_eq]
-  · simp only [iterate_succ_apply, fwdDiff_const_smul, IH]
+  induction n generalizing f with
+  | zero => simp only [iterate_zero, id_eq]
+  | succ n IH => simp only [iterate_succ_apply, fwdDiff_const_smul, IH]
 
 @[simp] lemma fwdDiff_iter_finset_sum {α : Type*} (s : Finset α) (f : α → M → G) (n : ℕ) :
     Δ_[h]^[n] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h]^[n] (f k) := by
@@ -149,7 +153,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
               = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
-    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
+    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
 lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
@@ -181,9 +185,10 @@ lemma fwdDiff_choose (j : ℕ) : Δ_[1] (fun x ↦ x.choose (j + 1) : ℕ → �
 
 lemma fwdDiff_iter_choose (j k : ℕ) :
     Δ_[1]^[k] (fun x ↦ x.choose (k + j) : ℕ → ℤ) = fun x ↦ x.choose j := by
-  induction' k with k IH generalizing j
-  · simp only [zero_add, iterate_zero, id_eq]
-  · simp only [iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
+  induction k generalizing j with
+  | zero => simp only [zero_add, iterate_zero, id_eq]
+  | succ k IH =>
+    simp only [iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
 
 lemma fwdDiff_iter_choose_zero (m n : ℕ) :
     Δ_[1]^[n] (fun x ↦ x.choose m : ℕ → ℤ) 0 = if n = m then 1 else 0 := by
@@ -217,7 +222,7 @@ We prove formulae about the forward difference operator applied to polynomials:
   The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
 * `fwdDiff_iter_sum_mul_pow_eq_zero` :
   The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
-    sums over `range n`.
+    sums over `range n`).
 -/
 
 variable {R : Type*} [CommRing R]
@@ -235,23 +240,24 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
     rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
     exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
+      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; cutsat), nsmul_zero]
 
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
 -/
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     Δ_[1]^[n] (fun (r : R) ↦ r ^ n) = n ! := by
-  induction' n with n IH
-  · aesop
-  · have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
+  induction n with
+  | zero => aesop
+  | succ n IH =>
+    have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
       ∑ i ∈ range (n + 1), (n + 1).choose i • fun r ↦ r ^ i := by
       ext x
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
     simp_rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul,
        sum_range_succ]
     simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), mul_zero]
+      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; cutsat), mul_zero]
 
 theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
     Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by
@@ -275,7 +281,7 @@ theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
 
 /--
 The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
-sums over `range n`.
+sums over `range n`).
 -/
 theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     Δ_[1]^[n] (fun r : R ↦ ∑ k ∈ range n, P k * r ^ k) = 0 := by

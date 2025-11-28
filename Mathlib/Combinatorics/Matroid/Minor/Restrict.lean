@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Dual
+module
+
+public import Mathlib.Combinatorics.Matroid.Dual
 
 /-!
 # Matroid Restriction
@@ -63,6 +65,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
 reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -237,8 +241,7 @@ instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
   coe := Matroidᵣ.toMatroid
 
 @[simp] theorem Matroidᵣ.coe_inj {M₁ M₂ : Matroidᵣ α} :
-    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := by
-  cases M₁; cases M₂; simp
+    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := Matroidᵣ.ext_iff.symm
 
 instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)

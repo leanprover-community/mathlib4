@@ -3,12 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
 
 /-!
-# `Finset`s are a boolean algebra
+# `Finset`s are a Boolean algebra
 
 This file provides the `BooleanAlgebra (Finset α)` instance, under the assumption that `α` is a
 `Fintype`.
@@ -16,8 +18,10 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 ## Main results
 
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
-* `Finset.booleanAlgebra`: `Finset α` is a boolean algebra if `α` is finite
+* `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -58,6 +62,10 @@ theorem univ_nontrivial_iff :
 theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
+
+@[simp] lemma singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ := by
+  apply SetLike.coe_ne_coe.1
+  simp
 
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
