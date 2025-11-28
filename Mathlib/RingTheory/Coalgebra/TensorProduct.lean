@@ -76,7 +76,9 @@ of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstr
 scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction $var with
-      | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
+      | zero =>
+        -- avoid the more general `map_zero` for performance reasons
+        simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
       | add _ _ h₁ h₂ =>
         -- avoid the more general `map_add` for performance reasons
