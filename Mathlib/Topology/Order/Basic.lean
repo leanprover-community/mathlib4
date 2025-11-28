@@ -82,6 +82,15 @@ section Preorder
 
 variable [ts : TopologicalSpace α] [Preorder α]
 
+/-- A countable preordered set equipped with the order topology is second countable. -/
+instance {α : Type*} [Preorder α] [TopologicalSpace α] [OrderTopology α] [Countable α] :
+    SecondCountableTopology α := by
+  refine ⟨{ s : Set α | ∃ a, s = Ioi a ∨ s = Iio a }, ?_, ?_⟩
+  · let f1 : α → Set α := fun a => Ioi a
+    let f2 : α → Set α := fun a => Iio a
+    exact Countable.mono (fun s hs => by grind) ((countable_range f1).union (countable_range f2))
+  · simp [OrderTopology.topology_eq_generate_intervals]
+
 instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
   ⟨by
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
@@ -588,14 +597,6 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [OrderTopology �
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
   exact (hc.image _).union (hc.image _)
-
-/-- A countable linearly ordered set equipped with the order topology is second countable. -/
-instance [OrderTopology α] [Countable α] : SecondCountableTopology α := by
-  refine ⟨{ s : Set α | ∃ a, s = Ioi a ∨ s = Iio a }, ?_, ?_⟩
-  · let f1 : α → Set α := fun a => Ioi a
-    let f2 : α → Set α := fun a => Iio a
-    exact Countable.mono (fun s hs => by grind) ((countable_range f1).union (countable_range f2))
-  · simp [OrderTopology.topology_eq_generate_intervals]
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
