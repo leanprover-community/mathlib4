@@ -707,20 +707,6 @@ theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
   rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
   exact norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 (zero_le _)
 
-theorem norm_iteratedFDeriv_apply_le_withOrder {i : ℕ} (hin : i ≤ n)
-    {f : 𝓓^{n}_{K}(E, F)} {x : E} :
-    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, n, i} f :=
-  calc
-      ‖iteratedFDeriv ℝ i f x‖
-  _ = ‖structureMapLM ℝ n i f x‖ := by simp [structureMapLM_apply_withOrder, hin]
-  _ ≤ ‖structureMapLM ℝ n i f‖ := BoundedContinuousFunction.norm_coe_le_norm _ _
-  _ = N[𝕜]_{K, n, i} f := rfl
-
-theorem norm_iteratedFDeriv_apply_le {i : ℕ}
-    {f : 𝓓_{K}(E, F)} {x : E} :
-    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, i} f :=
-  norm_iteratedFDeriv_apply_le_withOrder 𝕜 (mod_cast le_top)
-
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
@@ -758,7 +744,7 @@ theorem seminorm_postcompLM_le [LinearMap.CompatibleSMul F F' ℝ 𝕜] {i : ℕ
   _ = ‖T'.compContinuousMultilinearMap (iteratedFDeriv ℝ i f x)‖ := by
         rw [T'.iteratedFDeriv_comp_left f.contDiff.contDiffAt (mod_cast hi)]
   _ ≤ ‖T'‖ * ‖iteratedFDeriv ℝ i f x‖ := T'.norm_compContinuousMultilinearMap_le _
-  _ ≤ ‖T'‖ * N[ℝ]_{K, n, i} f := by grw [norm_iteratedFDeriv_apply_le_withOrder ℝ hi]
+  _ ≤ ‖T'‖ * N[ℝ]_{K, n, i} f := by grw [norm_iteratedFDeriv_apply_le_seminorm_withOrder ℝ hi]
 
 variable {𝕜} in
 -- Note: generalizing this to a semilinear setting would require a semilinear version of
