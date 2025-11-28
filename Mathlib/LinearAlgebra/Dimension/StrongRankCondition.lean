@@ -553,6 +553,17 @@ theorem not_strongRankCondition_iff_finrank_fin_fun_eq_zero [Nontrivial R] :
   · rw [or_iff_not_imp_left, ← Ne, ← one_le_iff_ne_zero, one_le_rank_iff] at eq
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
 
+/-- If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
+If `R` is a ring, the assumption is equivalent to `R` being a left-Noetherian ring, but this
+is not necessarily the case for semirings: `ℕ` is a Noetherian semiring but `ℕ²` is not a
+Noetherian `ℕ`-module. -/
+theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian R (Fin n → R)] :
+    StrongRankCondition R :=
+  (strongRankCondition_iff_succ R).2 fun n f hf ↦
+    have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
+    not_isNoetherian_of_linearMap_prod_injective
+      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective) inferInstance
+
 end StrongRankCondition
 
 namespace Submodule
