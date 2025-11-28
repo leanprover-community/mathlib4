@@ -1,13 +1,16 @@
 /-
 Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Thomas R. Murrills
 -/
-import Lean.Util.CollectLevelParams
-import Lean.Elab.Term.TermElabM
-import Batteries.Data.Array.Basic
-import Mathlib.Init
-import Mathlib.Lean.Elab.Term
+module
+
+public import Lean.Util.CollectLevelParams
+public import Lean.Elab.Term.TermElabM
+public import Batteries.Data.Array.Basic
+public import Mathlib.Init
+public import Mathlib.Lean.Elab.Term
+public meta import Batteries.Data.Array.Basic
 
 /-!
 # Support for `Category* C`.
@@ -38,7 +41,7 @@ open Lean Meta Elab Term
 Insert `newLevel` immediately after the elements of `levelNames` which are in `us`, or at the
 front of the list (as the most recent level) if there are no such elements.
 -/
-private def insertAfterLevels (us : Array Name) (levelNames : List Name) (newLevel : Name) :=
+private meta def insertAfterLevels (us : Array Name) (levelNames : List Name) (newLevel : Name) :=
   match (us.filterMap fun nm => levelNames.findIdx? (· == nm)).max? with
   | some idx => levelNames.insertIdx (idx + 1) newLevel
   | none => newLevel :: levelNames
