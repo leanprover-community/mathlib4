@@ -87,13 +87,13 @@ theorem rank_le_one_iff [Module.Free K V] :
       intro v
       simp [h' v]
     · use b i
-      have h' : (K ∙ b i) = ⊤ :=
+      have h' : K ∙ b i = ⊤ :=
         (subsingleton_range b).eq_singleton_of_mem (mem_range_self i) ▸ b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
   · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
+    have h : K ∙ v₀ = ⊤ := by
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
