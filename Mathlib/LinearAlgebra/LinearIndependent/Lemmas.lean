@@ -646,8 +646,7 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
-  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
-  exact Iff.rfl
+  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]; rfl
 
 theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
@@ -660,6 +659,12 @@ only have a module over a semiring. -/
 theorem LinearIndependent.fin_cons {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
   linearIndependent_fin_cons.2 ⟨hv, hx⟩
+
+/-- See `LinearIndependent.fin_snoc'` for an uglier version that works if you
+only have a module over a semiring. -/
+lemma LinearIndependent.fin_snoc {n} {v : Fin n → V} (hv : LinearIndependent K v)
+    (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
+  linearIndependent_fin_snoc.2 ⟨hv, hx⟩
 
 theorem linearIndependent_fin_succ {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔
