@@ -276,10 +276,10 @@ variable {s : BoundingSieve}
 
 $S = ∑_{l|P, l≤\sqrt{y}} g(l)$ -/
 def selbergTerms : ArithmeticFunction ℝ :=
-  s.nu.pmul (.prodPrimeFactors fun p ↦  1 / (1 - s.nu p))
+  s.nu.pmul (.prodPrimeFactors fun p ↦  (1 - s.nu p)⁻¹)
 
 theorem selbergTerms_apply (d : ℕ) :
-    s.selbergTerms d = s.nu d * ∏ p ∈ d.primeFactors, 1 / (1 - s.nu p) := by
+    s.selbergTerms d = s.nu d * ∏ p ∈ d.primeFactors, (1 - s.nu p)⁻¹ := by
   unfold selbergTerms
   by_cases h : d = 0
   · simp [h]
@@ -290,7 +290,7 @@ theorem selbergTerms_apply (d : ℕ) :
 theorem selbergTerms_pos {l : ℕ} (hl : l ∣ s.prodPrimes) : 0 < s.selbergTerms l := by
   rw [selbergTerms_apply]
   refine mul_pos (nu_pos_of_dvd_prodPrimes hl) <| prod_pos fun p hp ↦ ?_
-  rw [one_div_pos]
+  rw [inv_pos]
   have hp_prime : p.Prime := prime_of_mem_primeFactors hp
   have hp_dvd : p ∣ s.prodPrimes := (Nat.dvd_of_mem_primeFactors hp).trans hl
   linarith only [s.nu_lt_one_of_prime p hp_prime hp_dvd]
@@ -301,8 +301,8 @@ theorem selbergTerms_isMultiplicative : ArithmeticFunction.IsMultiplicative s.se
 
 theorem one_div_selbergTerms_eq_conv_moebius_nu {l : ℕ} (hl : Squarefree l)
     (hnu_nonzero : s.nu l ≠ 0) :
-    1 / s.selbergTerms l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ := by
-  simp only [selbergTerms_apply, one_div, mul_inv, inv_inv,
+    (s.selbergTerms l)⁻¹ = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ := by
+  simp only [selbergTerms_apply, mul_inv, inv_inv,
     Finset.prod_inv_distrib, s.nu_mult.prodPrimeFactors_one_sub_of_squarefree _ hl, mul_sum]
   rw [← Nat.sum_divisorsAntidiagonal fun i _ : ℕ ↦ (s.nu l)⁻¹ * (↑(μ i) * s.nu i)]
   refine sum_congr rfl fun ⟨d, e⟩ hd ↦ ?_
@@ -313,7 +313,7 @@ theorem one_div_selbergTerms_eq_conv_moebius_nu {l : ℕ} (hl : Squarefree l)
   simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
 theorem nu_inv_eq_conv_one_div_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
-    (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then 1 / s.selbergTerms l else 0 := by
+    (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
   rw [eq_comm, ←sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
   have hd_pos : 0 < d := Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero prodPrimes_ne_zero hdP
   revert hdP; revert d
@@ -332,7 +332,7 @@ theorem sum_divisors_selbergTerms_eq_selbergTerms_mul_nu_inv {d : ℕ} (hd : d �
       simp_rw [← sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hd,
         sum_div_divisors d s.selbergTerms]
     _ = s.selbergTerms d *
-          ∑ l ∈ divisors s.prodPrimes, if l ∣ d then 1 / s.selbergTerms l else 0 := by
+          ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
       simp_rw [← sum_filter, mul_sum]
       refine sum_congr rfl fun l hl ↦ ?_
       simp only [mem_filter, mem_divisors, ne_eq] at hl
@@ -377,17 +377,17 @@ theorem mainSum_lambdaSquared_eq_quad_form (w : ℕ → ℝ) :
   eigenvalues given by `1/selbergTerms` -/
 theorem mainSum_lambdaSquared_eq_diag_quad_form (w : ℕ → ℝ) :
     s.mainSum (lambdaSquared w) =
-      ∑ l ∈ divisors s.prodPrimes, 1 / s.selbergTerms l *
+      ∑ l ∈ divisors s.prodPrimes, (s.selbergTerms l)⁻¹ *
         (∑ d ∈ divisors s.prodPrimes, if l ∣ d then s.nu d * w d else 0) ^ 2 := by
   calc mainSum (lambdaSquared w) =
     ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes, (∑ l ∈ divisors s.prodPrimes,
-      if l ∣ d1.gcd d2 then 1 / s.selbergTerms l * (s.nu d1 * w d1) * (s.nu d2 * w d2) else 0)
+      if l ∣ d1.gcd d2 then (s.selbergTerms l)⁻¹ * (s.nu d1 * w d1) * (s.nu d2 * w d2) else 0)
         := ?caseA
     _ = ∑ l ∈ divisors s.prodPrimes, ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
-      if l ∣ Nat.gcd d1 d2 then 1 / s.selbergTerms l * (s.nu d1 * w d1) * (s.nu d2 * w d2) else 0
+      if l ∣ Nat.gcd d1 d2 then (s.selbergTerms l)⁻¹ * (s.nu d1 * w d1) * (s.nu d2 * w d2) else 0
         := ?caseB
     _ = ∑ l ∈ divisors s.prodPrimes,
-      1 / s.selbergTerms l * (∑ d ∈ divisors s.prodPrimes, if l ∣ d then s.nu d * w d else 0) ^ 2
+      (s.selbergTerms l)⁻¹ * (∑ d ∈ divisors s.prodPrimes, if l ∣ d then s.nu d * w d else 0) ^ 2
         := ?caseC
   case caseA =>
     rw [mainSum_lambdaSquared_eq_quad_form w]
