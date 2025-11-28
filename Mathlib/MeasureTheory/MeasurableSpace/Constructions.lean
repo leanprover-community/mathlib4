@@ -883,6 +883,17 @@ lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Mea
 
 end prop
 
+@[fun_prop]
+lemma Measurable.eq_const {_ : MeasurableSpace α} [MeasurableSpace β] [MeasurableSingletonClass β]
+    {f : α → β} (hf : Measurable f) (a : β) : Measurable fun x => f x = a :=
+  measurableSet_setOf.mp (measurableSet_eq.preimage hf)
+
+@[fun_prop]
+lemma Measurable.const_eq {_ : MeasurableSpace α} [MeasurableSpace β] [MeasurableSingletonClass β]
+    {f : α → β} (hf : Measurable f) (a : β) : Measurable fun x => a = f x := by
+  conv => enter [1, x]; rw [eq_comm]
+  exact .eq_const hf a
+
 section Set
 variable [MeasurableSpace β] {g : β → Set α}
 
@@ -892,6 +903,8 @@ instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; in
 
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
   unfold Set; infer_instance
+
+@[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
@@ -979,3 +992,31 @@ lemma measurable_piCurry_symm : Measurable (Equiv.piCurry X).symm := measurable_
 end Sigma
 
 end curry
+
+variable (α) in
+/-- Typeclass for a measurable space `α` for which the diagonal of `α × α` is measurable. -/
+class MeasurableEq [MeasurableSpace α] where
+  measurableSet_diagonal : MeasurableSet (diagonal α)
+
+export MeasurableEq (measurableSet_diagonal)
+
+attribute [measurability] measurableSet_diagonal
+
+theorem measurableSet_eq_fun {m : MeasurableSpace α} [MeasurableSpace β] [MeasurableEq β]
+    {f g : α → β} (hf : Measurable f) (hg : Measurable g) : MeasurableSet {x | f x = g x} :=
+  measurableSet_diagonal.preimage (hf.prodMk hg)
+
+@[fun_prop]
+theorem Measurable.eq {m : MeasurableSpace α} [MeasurableSpace β] [MeasurableEq β]
+    {f g : α → β} (hf : Measurable f) (hg : Measurable g) : Measurable fun x => f x = g x :=
+  measurableSet_setOf.mp (measurableSet_eq_fun hf hg)
+
+instance [MeasurableSpace α] [MeasurableEq α] : MeasurableSingletonClass α := by
+  constructor
+  simp_rw [← setOf_eq_eq_singleton, measurableSet_setOf]
+  measurability
+
+instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] : MeasurableEq α := by
+  constructor
+  simp_rw [← Set.range_diag, Set.range_eq_iUnion]
+  measurability

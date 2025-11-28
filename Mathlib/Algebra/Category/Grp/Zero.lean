@@ -39,6 +39,15 @@ theorem isZero_of_subsingleton (G : GrpCat) [Subsingleton G] : IsZero G := by
 instance : HasZeroObject GrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
+@[to_additive]
+lemma subsingleton_of_isZero {G : GrpCat} (h : Limits.IsZero G) :
+    Subsingleton G :=
+  (h.iso (isZero_of_subsingleton <| .of PUnit)).groupIsoToMulEquiv.subsingleton
+
+@[to_additive]
+lemma isZero_iff_subsingleton {G : GrpCat} : Limits.IsZero G ↔ Subsingleton G :=
+  ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
+
 end GrpCat
 
 namespace CommGrpCat
@@ -55,5 +64,14 @@ theorem isZero_of_subsingleton (G : CommGrpCat) [Subsingleton G] : IsZero G := b
 @[to_additive AddCommGrpCat.hasZeroObject]
 instance : HasZeroObject CommGrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
+
+@[to_additive]
+lemma subsingleton_of_isZero {G : CommGrpCat} (h : Limits.IsZero G) :
+    Subsingleton G :=
+  (h.iso (isZero_of_subsingleton <| .of PUnit)).commGroupIsoToMulEquiv.subsingleton
+
+@[to_additive]
+lemma isZero_iff_subsingleton {G : CommGrpCat} : Limits.IsZero G ↔ Subsingleton G :=
+  ⟨fun h ↦ subsingleton_of_isZero h, fun _ ↦ isZero_of_subsingleton G⟩
 
 end CommGrpCat

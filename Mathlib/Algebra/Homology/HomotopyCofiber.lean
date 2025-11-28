@@ -31,7 +31,7 @@ morphisms `φ₀ φ₁ : K ⟶ M` and a homotopy `h : Homotopy φ₀ φ₁`,
 see `cylinder.desc`. There is also a homotopy equivalence
 `cylinder.homotopyEquiv K : HomotopyEquiv K.cylinder K`. From the construction of
 the cylinder, we deduce the lemma `Homotopy.map_eq_of_inverts_homotopyEquivalences`
-which assert that if a functor inverts homotopy equivalences, then the image of
+which asserts that if a functor inverts homotopy equivalences, then the images of
 two homotopic maps are equal.
 
 -/
@@ -432,8 +432,7 @@ noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
 @[reassoc (attr := simp)]
 lemma inlX_π (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (π K).f j = 0 := by
-  erw [homotopyCofiber.inlX_desc_f]
-  simp [Homotopy.equivSubZero]
+  simp [HomologicalComplex.cylinder.π, HomologicalComplex.cylinder.desc, Homotopy.equivSubZero]
 
 @[reassoc (attr := simp)]
 lemma inrX_π (i : ι) :
