@@ -3,9 +3,13 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Algebra.Algebra.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Tactic.Ring.RingNF
+
 import Mathlib.Tactic.Algebra.Lemmas
-import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # The `algebra` tactic
@@ -37,6 +41,8 @@ with polynomials, but would be an issue when working with a number field over it
 
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic Mathlib.Meta AtomM
+
+public meta section
 
 namespace Mathlib.Tactic.Algebra
 
