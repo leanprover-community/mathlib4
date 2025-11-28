@@ -2254,6 +2254,7 @@ public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Monad.Basic
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
@@ -3543,7 +3544,8 @@ public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Data.Int.CharZero
 public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Data.Int.DivMod
-public import Mathlib.Data.Int.Fib
+public import Mathlib.Data.Int.Fib.Basic
+public import Mathlib.Data.Int.Fib.Lemmas
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Int.Interval
