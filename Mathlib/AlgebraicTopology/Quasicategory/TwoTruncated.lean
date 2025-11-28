@@ -226,7 +226,8 @@ namespace HomotopyCategory₂
 
 omit [A.Quasicategory₂] in
 /--
-TODO
+The function `HomotopyCategory₂.mk` taking a vertex of `A` and sending it to the corresponding
+object of `HomotopyCategory₂ A` is surjective.
 -/
 lemma mk_surjective : Function.Surjective (mk : A _⦋0⦌₂ → _) :=
   fun ⟨x⟩ ↦ ⟨x, rfl⟩
@@ -246,9 +247,6 @@ identity morphism `x ⟶ x`.
 -/
 @[simp]
 lemma homMk_id (x : HomotopyCategory₂ A) : homMk (Edge.id x.pt) = 𝟙 x := rfl
-
-lemma HomotopicL.sound {f g : Edge x y} (h : HomotopicL f g) :
-    homMk f = homMk g := Quotient.sound h
 
 end HomotopyCategory₂
 
