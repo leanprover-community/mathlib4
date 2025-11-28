@@ -809,7 +809,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
 theorem ker_toSpanSingleton {x : M} (h : x ≠ 0) : LinearMap.ker (toSpanSingleton R M x) = ⊥ :=
   SetLike.ext fun _ => smul_eq_zero.trans <| or_iff_left_of_imp fun h' => (h h').elim
 
-theorem ker_toSpanSingleton_eq_bot_iff {x : R} :
+@[simp] theorem ker_toSpanSingleton_eq_bot_iff {x : R} :
     ker (toSpanSingleton R R x) = ⊥ ↔ x ∈ nonZeroDivisorsRight R :=
   le_bot_iff.symm
 
