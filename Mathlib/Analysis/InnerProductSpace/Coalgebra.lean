@@ -30,7 +30,7 @@ This comes up in non-commutative graph theory for example.
 variable {𝕜 A : Type*} [RCLike 𝕜] [NormedAddCommGroup A] [InnerProductSpace 𝕜 A]
   [FiniteDimensional 𝕜 A]
 
-open TensorProduct LinearMap LinearIsometryEquiv
+open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
 theorem LinearIsometryEquiv.adjoint_toLinearMap_eq_symm {K : Type*}
     [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [FiniteDimensional 𝕜 K] (e : A ≃ₗᵢ[𝕜] K) :
@@ -40,7 +40,9 @@ theorem LinearIsometryEquiv.adjoint_toLinearMap_eq_symm {K : Type*}
   calc adjoint e.toLinearMap = (ContinuousLinearMap.adjoint ↑e).toLinearMap := rfl
     _ = e.symm.toLinearMap := congr($e.adjoint_eq_symm)
 
-section toCoalgebra
+namespace InnerProductSpace
+
+section coalgebraOfAlgebra
 variable {A : Type*} [NormedRing A] [InnerProductSpace 𝕜 A] [FiniteDimensional 𝕜 A]
   [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
@@ -54,7 +56,7 @@ PR#24040 addresses this. -/
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map. -/
-noncomputable abbrev Algebra.coalgebraOfFiniteDimensionalInnerProductSpace :
+noncomputable abbrev coalgebraOfAlgebra :
     Coalgebra 𝕜 A where
   comul := adjoint (mul' 𝕜 A)
   counit := adjoint (Algebra.linearMap 𝕜 A)
@@ -73,16 +75,26 @@ noncomputable abbrev Algebra.coalgebraOfFiniteDimensionalInnerProductSpace :
       ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
     congr 1; ext; simp
 
-end toCoalgebra
+scoped[InnerProductSpace.CoalgebraOfAlgebra] attribute [instance]
+  InnerProductSpace.coalgebraOfAlgebra
 
-namespace Coalgebra
+namespace CoalgebraOfAlgebra
+
+theorem comul_def : comul (R := 𝕜) (A := A) = adjoint (mul' 𝕜 A) := rfl
+theorem counit_def : counit (R := 𝕜) (A := A) = adjoint (Algebra.linearMap 𝕜 A) := rfl
+
+end CoalgebraOfAlgebra
+
+end coalgebraOfAlgebra
+
+section algebraOfCoalgebra
 variable [Coalgebra 𝕜 A]
 
 -- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
 where multiplication is given by `x * y = (adjoint comul) (x ⊗ₜ y)` and
 `1 = (adjoint counit) (1 : 𝕜)`. -/
-noncomputable abbrev ringOfFiniteDimensionalInnerProductSpace :
+noncomputable abbrev ringOfCoalgebra :
     Ring A where
   mul x y := adjoint (comul (R := 𝕜) (A := A)) (x ⊗ₜ y)
   left_distrib x y z := by simp [HMul.hMul, tmul_add]
@@ -110,24 +122,24 @@ noncomputable abbrev ringOfFiniteDimensionalInnerProductSpace :
       adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
 
-attribute [local instance] Coalgebra.ringOfFiniteDimensionalInnerProductSpace
+attribute [local instance] InnerProductSpace.ringOfCoalgebra
 
-lemma ringOfFiniteDimensionalInnerProductSpace_mul_def (x y : A) :
+lemma ringOfCoalgebra_mul_def (x y : A) :
     x * y = adjoint (comul (R := 𝕜) (A := A)) (x ⊗ₜ y) := rfl
 
 -- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with a coalgebra structure induces an algebra
 structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`, `1 = (adjoint counit) 1` and
 `algebraMap = adjoint counit`. -/
-noncomputable abbrev algebraOfFiniteDimensionalInnerProductSpace : Algebra 𝕜 A where
+noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 A where
   algebraMap :=
   { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := A))
     map_one' := rfl
     map_mul' x y := by
-      simp_rw [ringOfFiniteDimensionalInnerProductSpace_mul_def, ← map_tmul, ← adjoint_map,
-        ← comp_apply, ← adjoint_comp, ← lTensor_comp_rTensor, comp_assoc,
-        rTensor_counit_comp_comul, adjoint_comp, ← toLinearMap_symm_lid,
-        ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
+      simp_rw [ringOfCoalgebra_mul_def, ← map_tmul, ← adjoint_map, ← comp_apply, ← adjoint_comp,
+        ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, adjoint_comp,
+        ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
+        adjoint_toLinearMap_eq_symm]
       simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
         coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
       rw [← smul_eq_mul, ← _root_.map_smul]
@@ -135,17 +147,18 @@ noncomputable abbrev algebraOfFiniteDimensionalInnerProductSpace : Algebra 𝕜 
     map_add' := map_add _ }
   commutes' r x := by
     dsimp
-    simp_rw [ringOfFiniteDimensionalInnerProductSpace_mul_def, ← rTensor_tmul, ← lTensor_tmul,
-      ← adjoint_lTensor, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul,
+    simp_rw [ringOfCoalgebra_mul_def, ← rTensor_tmul, ← lTensor_tmul, ← adjoint_lTensor,
+      ← adjoint_rTensor, ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul,
       lTensor_counit_comp_comul, ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
       ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     rfl
   smul_def' r x := by
     dsimp
-    simp_rw [ringOfFiniteDimensionalInnerProductSpace_mul_def, ← rTensor_tmul, ← adjoint_rTensor,
-      ← comp_apply, ← adjoint_comp, rTensor_counit_comp_comul, ← toLinearMap_symm_lid,
+    simp_rw [ringOfCoalgebra_mul_def, ← rTensor_tmul, ← adjoint_rTensor, ← comp_apply,
+      ← adjoint_comp, rTensor_counit_comp_comul, ← toLinearMap_symm_lid,
       ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     rfl
 
-end Coalgebra
+end algebraOfCoalgebra
+end InnerProductSpace
