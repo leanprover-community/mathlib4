@@ -305,7 +305,7 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
 -- TODO: prove this in terms of `IsAntichain.finite_of_wellQuasiOrdered`
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  refine not_infinite.1 fun hi => ?_
+  by_contra! hi
   obtain ⟨m, n, hmn, h⟩ := hp (hi.natEmbedding _)
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)

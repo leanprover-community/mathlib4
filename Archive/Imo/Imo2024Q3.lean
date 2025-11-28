@@ -161,22 +161,20 @@ lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hi
     (hc.apply_add_one_lt_of_apply_eq hj h ha.symm).ne'
 
 lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
-  by_contra hi
+  by_contra! hi
   have hr : (Set.range a).Infinite := by
     contrapose! hi with hr
-    rw [Set.not_infinite, ← Set.finite_coe_iff] at hr
+    rw [← Set.finite_coe_iff] at hr
     obtain ⟨n, hn⟩ := Finite.exists_infinite_fiber (Set.rangeFactorization a)
     rw [Set.infinite_coe_iff, Set.preimage] at hn
     simp only [Set.mem_singleton_iff, Set.rangeFactorization, Subtype.ext_iff] at hn
     exact ⟨↑n, hn⟩
-  simp only [not_exists, Set.not_infinite] at hi
   have hinj : Set.InjOn (fun i ↦ Nat.nth (a · = i) 0 + 1) (Set.range a \ Set.Ico 0 (M a N)) := by
     rintro _ ⟨⟨_, rfl⟩, hi⟩ _ ⟨⟨_, rfl⟩, hj⟩ h
     simp only [Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
     simp only [add_left_inj] at h
     convert congr(a $h) using 1 <;> simp [apply_nth_zero]
-  refine Set.not_infinite.2 (hi 1) (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_)
-    (hr.diff (Set.finite_Ico _ _)))
+  refine (Set.infinite_of_injOn_mapsTo hinj (fun i hi ↦ ?_) (hr.diff (Set.finite_Ico _ _))) (hi 1)
   simp only [Set.mem_diff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi
   rcases hi with ⟨⟨_, rfl⟩, hi⟩
   exact hc.apply_nth_add_one_eq toFinset_card_pos
@@ -313,7 +311,7 @@ lemma infinite_setOf_apply_eq_iff_small {j : ℕ} (hj : 0 < j) :
 
 lemma finite_setOf_apply_eq_iff_not_small {j : ℕ} (hj : 0 < j) :
     {i | a i = j}.Finite ↔ ¬Small a j := by
-  simpa only [Set.not_infinite] using (hc.infinite_setOf_apply_eq_iff_small hj).not
+  contrapose!; exact hc.infinite_setOf_apply_eq_iff_small hj
 
 lemma finite_setOf_apply_eq_k_add_one : {i | a i = k a + 1}.Finite := by
   rw [hc.finite_setOf_apply_eq_iff_not_small (by omega), Small]

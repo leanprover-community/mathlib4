@@ -475,8 +475,7 @@ integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers
 such that `(p : ZMod q) = a`. -/
 theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
-  by_contra H
-  rw [Set.not_infinite] at H
+  by_contra! H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 

@@ -157,7 +157,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
+  contrapose!
+  rw [← lt_top_iff_ne_top, encard_lt_top_iff]
 
 alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
 
