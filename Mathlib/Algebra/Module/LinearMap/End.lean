@@ -409,8 +409,8 @@ def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M whe
     apply mul_smul
 
 @[simp]
-theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
-    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x c = f c • x :=
+theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) :
+    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x = smulRight f x :=
   rfl
 
 end CommSemiring

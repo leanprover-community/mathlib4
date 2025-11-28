@@ -27,21 +27,6 @@ variable {R K V : Type*} [CommSemiring R] [Semifield K] [AddCommMonoid V] [Modul
 
 open Module LinearMap End Free
 
-/-- This takes in a linear map `f : End R V →ₗ End R V`, a dual `y : Dual R V`,
-and an element `z : V`, and constructs a linear operator on `V` such that
-`x ↦ f (smulRightₗ y x) z`. -/
-private def auxLinear (f : End R V →ₗ[R] End R V) (y : Dual R V) (z : V) : End R V :=
-  applyₗ z ∘ₗ f ∘ₗ smulRightₗ y
-
-@[simp] private theorem auxLinear_apply (f : End R V →ₗ[R] End R V) (y : Dual R V) (x z : V) :
-  auxLinear f y z x = f (smulRight y x) z := rfl
-
-private theorem auxLinear_map_apply (f : End R V →ₐ[R] End R V) (y : Dual R V)
-    (z : V) (A : End R V) (x : V) :
-    auxLinear f y z (A x) = f A (auxLinear f y z x) := by
-  simp_rw [auxLinear_apply, coe_coe, ← mul_apply, ← map_mul]
-  congr; ext; simp
-
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
 theorem AlgEquiv.eq_linearEquivAlgConj [Free K V] (f : End K V ≃ₐ[K] End K V) :
@@ -54,18 +39,21 @@ theorem AlgEquiv.eq_linearEquivAlgConj [Free K V] (f : End K V ≃ₐ[K] End K V
   obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRight v u) z = (0 : End K V) z := by
     rw [← not_forall, ← LinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
-  set T := auxLinear f v z
-  have this A x : T (A x) = f A (T x) := auxLinear_map_apply f.toAlgHom v z A x
+  set T := applyₗ z ∘ₗ f.toLinearMap ∘ₗ smulRightₗ v
+  have hT x : T x = f (smulRight v x) z := rfl
+  have this A x : T (A x) = f A (T x) := by
+    simp only [hT, ← mul_apply, ← map_mul]
+    congr; ext; simp
   have surj : Function.Surjective T := fun w ↦ by
     obtain ⟨d, hd⟩ := exists_dual_eq_one K hz
-    exact ⟨f.symm (smulRightₗ d w) u, by simp [T, this, hd]⟩
+    exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
       apply f.injective <| ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
-      simp_rw [← this, smulRightₗ_apply, map_smul, hxy]
+      simp_rw [← this, smulRightₗ_apply, smulRight_apply, map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
-  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| auxLinear_map_apply f v z A).symm⟩
+  exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (ext <| this _).symm⟩
 
 /-- Alternate statement of `coe_eq_linearEquiv_conj`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Free K V] :

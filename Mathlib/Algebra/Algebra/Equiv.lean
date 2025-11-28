@@ -847,7 +847,6 @@ of algebras provided here unless `e 1 = 1`. -/
           ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, one_mul]
 
 section algConj
-
 variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
   [AddCommMonoid M₂] [Module R M₂] [Semiring S] [Module S M₁] [Module S M₂]
   [SMulCommClass S R M₁] [SMulCommClass S R M₂] [SMul R S] [IsScalarTower R S M₁]
@@ -858,7 +857,7 @@ variable (R) in
 endomorphisms. -/
 @[simps!] def LinearEquiv.algConj (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
   __ := e.conjRingEquiv
-  commutes' := fun _ ↦ by ext; change e.restrictScalars R _ = _; simp
+  commutes' _ := by ext; change e.restrictScalars R _ = _; simp
 
 theorem LinearEquiv.algConj_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
     e.algConj R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl
