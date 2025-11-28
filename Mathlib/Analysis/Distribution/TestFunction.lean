@@ -34,7 +34,7 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 ## Main statements
 
-- `TestFunction.continuous_iff_continuous_comp` a linear map from `𝓓^{n}(E, F)`
+- `TestFunction.continuous_iff_continuous_comp`: a linear map from `𝓓^{n}(E, F)`
   to a locally convex space is continuous iff its restriction to `𝓓^{n}_{K}(E, F)` is
   continuous for each compact set `K`. We will later translate this concretely in terms
   of seminorms.
@@ -58,8 +58,7 @@ open scoped BoundedContinuousFunction NNReal Topology
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {n : ℕ∞}
 
 variable (Ω F n) in
@@ -303,7 +302,7 @@ noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
 noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
   isUniformAddGroup_of_addCommGroup
 
---TODO: deduce for `RCLike` field `𝕂`
+-- TODO: deduce for `RCLike` field `𝕂`
 noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
   continuousSMul_sInf fun _ ⟨_, _, ht, _⟩ ↦ ht
 
