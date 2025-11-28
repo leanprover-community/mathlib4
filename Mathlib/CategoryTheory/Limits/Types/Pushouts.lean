@@ -268,7 +268,7 @@ lemma eq_or_eq_of_isPushout (h : IsPushout t l r b)
 lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
     (x₄ : X₄) : (∃ x₂, r x₂ = x₄) ∨ ∃ x₃, b x₃ = x₄ ∧ x₃ ∉ Set.range l := by
   obtain h₁ | ⟨x₃, hx₃⟩ := eq_or_eq_of_isPushout h x₄
-  · refine Or.inl h₁
+  · exact Or.inl h₁
   · by_cases h₂ : x₃ ∈ Set.range l
     · obtain ⟨x₁, rfl⟩ := h₂
       exact Or.inl ⟨t x₁, by simpa only [← hx₃] using congr_fun h.w x₁⟩
