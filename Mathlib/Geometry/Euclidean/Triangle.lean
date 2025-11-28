@@ -451,4 +451,53 @@ theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
   rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
   simpa using (angle_lt_iff_dist_lt h).not
 
+/-- The greatest angle of a possibly degenerate triangle is at least `π / 3`. -/
+lemma pi_div_three_le_angle_of_le_of_le {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₂ p₃ p₁ ≤ ∠ p₁ p₂ p₃)
+    (h₃₁₂ : ∠ p₃ p₁ p₂ ≤ ∠ p₁ p₂ p₃) : π / 3 ≤ ∠ p₁ p₂ p₃ := by
+  by_cases h : p₂ = p₁
+  · rw [h, angle_self_left]
+    linarith [Real.pi_pos]
+  · linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
+/-- The greatest angle of a possibly degenerate triangle is more than `π / 3`, unless all angles
+are equal. -/
+lemma pi_div_three_lt_angle_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₂ p₃ p₁ ≤ ∠ p₁ p₂ p₃)
+    (h₃₁₂ : ∠ p₃ p₁ p₂ ≤ ∠ p₁ p₂ p₃)
+    (hne : ∠ p₁ p₂ p₃ ≠ ∠ p₂ p₃ p₁ ∨ ∠ p₁ p₂ p₃ ≠ ∠ p₃ p₁ p₂ ∨ ∠ p₂ p₃ p₁ ≠ ∠ p₃ p₁ p₂) :
+    π / 3 < ∠ p₁ p₂ p₃ := by
+  by_cases h : p₂ = p₁
+  · rw [h, angle_self_left]
+    linarith [Real.pi_pos]
+  · rcases hne with hne | hne | hne <;>
+      rcases hne.lt_or_gt with hne | hne <;>
+      linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
+/-- The least angle of a possibly degenerate triangle is at most `π / 3`, unless all three vertices
+are equal. -/
+lemma angle_le_pi_div_three_of_le_of_le {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₁ p₂ p₃ ≤ ∠ p₂ p₃ p₁)
+    (h₃₁₂ : ∠ p₁ p₂ p₃ ≤ ∠ p₃ p₁ p₂) (hnd : p₁ ≠ p₂ ∨ p₁ ≠ p₃ ∨ p₂ ≠ p₃) :
+    ∠ p₁ p₂ p₃ ≤ π / 3 := by
+  by_cases h : p₂ = p₁
+  · subst h
+    simp_all [angle_self_of_ne]
+    linarith [Real.pi_pos]
+  · linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
+/-- The least angle of a possibly degenerate triangle is less than `π / 3`, unless all angles are
+equal. -/
+lemma angle_lt_pi_div_three_of_le_of_le_of_ne {p₁ p₂ p₃ : P} (h₂₃₁ : ∠ p₁ p₂ p₃ ≤ ∠ p₂ p₃ p₁)
+    (h₃₁₂ : ∠ p₁ p₂ p₃ ≤ ∠ p₃ p₁ p₂)
+    (hne : ∠ p₁ p₂ p₃ ≠ ∠ p₂ p₃ p₁ ∨ ∠ p₁ p₂ p₃ ≠ ∠ p₃ p₁ p₂ ∨ ∠ p₂ p₃ p₁ ≠ ∠ p₃ p₁ p₂) :
+    ∠ p₁ p₂ p₃ < π / 3 := by
+  by_cases h : p₂ = p₁
+  · subst h
+    by_cases h₂₃ : p₂ = p₃
+    · subst h₂₃
+      simp at hne
+    · simp_all [angle_self_of_ne]
+      linarith [Real.pi_pos]
+  · rcases hne with hne | hne | hne <;>
+      rcases hne.lt_or_gt with hne | hne <;>
+      linarith [angle_add_angle_add_angle_eq_pi p₃ h]
+
 end EuclideanGeometry
