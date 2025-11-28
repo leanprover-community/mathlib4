@@ -31,8 +31,8 @@ variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteCo
 
 /-- The commute of `CochainComplex.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
 noncomputable def Functor.mapCochainComplexSingleFunctor (n : ℤ) :
-    (CochainComplex.singleFunctor C n) ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
-      F ⋙ (CochainComplex.singleFunctor D n) :=
+    CochainComplex.singleFunctor C n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
+      F ⋙ CochainComplex.singleFunctor D n :=
   HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n
 
 section Ext
@@ -158,6 +158,9 @@ lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y
 
 lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     ⇑(F.mapExtLinearMap R X Y n) = Ext.mapExactFunctor F := rfl
+
+lemma Functor.mapExtLinearMap_apply [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
+    (e : Ext X Y n) : F.mapExtLinearMap R X Y n e = e.mapExactFunctor F := rfl
 
 end Ext
 
