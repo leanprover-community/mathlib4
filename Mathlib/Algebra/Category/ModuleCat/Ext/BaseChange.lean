@@ -244,12 +244,12 @@ noncomputable def ModuleCat.extendScalars'.mapExtLinearMap [Module.Flat R S]
   ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n)
 
 lemma ModuleCat.extendScalars'.mapExtLinearMap_eq_mapExt [Module.Flat R S]
-  (M N : ModuleCat.{v} R) (n : ℕ) : extendScalars'.mapExtLinearMap.{v, v'} S M N n =
-    (ModuleCat.extendScalars'.{v, v'} R S).mapExt M N n := rfl
+  (M N : ModuleCat.{v} R) (n : ℕ) : ⇑(extendScalars'.mapExtLinearMap.{v, v'} S M N n) =
+    Ext.mapExactFunctor (ModuleCat.extendScalars'.{v, v'} R S) := rfl
 
 open ModuleCat
 
-set_option maxHeartbeats 350000 in
+set_option maxHeartbeats 230000 in
 -- The dimension shifting is just too complicated
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
@@ -342,11 +342,9 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
         LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         bilinearComp_apply_apply, LinearMap.coe_restrictScalars, h₃, g, g', h₂]
-      have : (ModuleCat.extendScalars'.{v, v'} R S).mapExt T.X₃ T.X₁ 1 T_exact.extClass =
-        TS_exact.extClass :=
-        Ext.mapExt_extClass_eq_extClass_map (ModuleCat.extendScalars'.{v, v'} R S) T_exact
-      erw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt]
-      rw [Ext.mapExt_comp_eq_comp_mapExt, this]
+      rw [← Ext.mapExt_extClass_eq_extClass_map (ModuleCat.extendScalars'.{v, v'} R S) T_exact]
+      exact Ext.mapExt_comp_eq_comp_mapExt (ModuleCat.extendScalars'.{v, v'} R S)
+        T_exact.extClass x (add_comm 1 n)
 
 /-- If `MS` in `ModuleCat S` is base change of an `R`-module `M`,
 then it is isomporhic to `(ModuleCat.extendScalars' R S).obj M`. -/
