@@ -116,7 +116,9 @@ def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : M
 
 end Modification
 
-/-- Category structure on the strong transformations between pseudofunctors. -/
+/-- Category structure on the strong transformations between pseudofunctors.
+
+Note that this a scoped instance in the `Pseudofunctor.StrongTrans` namespace. -/
 @[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
