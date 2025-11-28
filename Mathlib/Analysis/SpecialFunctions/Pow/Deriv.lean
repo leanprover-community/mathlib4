@@ -469,7 +469,7 @@ theorem contDiffAt_rpow_const {x p : ℝ} {n : ℕ} (h : x ≠ 0 ∨ ↑n ≤ p)
     ContDiffAt ℝ n (fun x : ℝ => x ^ p) x :=
   h.elim contDiffAt_rpow_const_of_ne contDiffAt_rpow_const_of_le
 
-theorem iter_deriv_rpow (r x : ℝ) (k : ℕ) :
+theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
     deriv^[k] (fun (x : ℝ) ↦ x ^ r) x = (descPochhammer ℝ k).eval r * x ^ (r - k) := by
   apply funext_iff.mp
   induction k with
