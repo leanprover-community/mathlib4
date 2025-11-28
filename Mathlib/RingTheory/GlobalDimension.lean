@@ -14,16 +14,25 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-!
 # The Global Dimension of a Ring
 
-In this file, we define the projective dimension of an module and global dimension of ring
-and their basic properties.
+In this file, we define the global dimension of ring and proved some of its basic properties.
 
 # Main definition and results
 
-* `projectiveDimension` : Given `X : C` where `C` is abelian,
-  return its projective dimension as `WithBot ℕ∞`
-
 * `globalDimension` : The global (homological) dimension of a (commutative) ring defined as
   the supremum of projective dimension over all modules.
+
+* `globalDimension_le_tfae` : For natrual number `n`, `globalDimension R ≤ n` iff all
+  finitely generated modules over `R` has projective dimension not exceeding `n` iff for all
+  `i ≥ n + 1`, `Ext N M i` vanish.
+
+* `globalDimension_eq_sup_projectiveDimension_finite` : Global dimension is equal to the supremum of
+  projective dimension over finitely generated modules.
+
+# TODO
+
+1. Take injective dimension into consideration in `globalDimension_le_tfae`.
+2. Reduce vanishing of all `Ext N M i`, `i ≥ n + 1` to vanishing of `Ext N M (n + 1)`.
+3. Prove that global dimension is invariant of universe if assuming `Small.{v} R`.
 
 -/
 
