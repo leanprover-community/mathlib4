@@ -207,7 +207,7 @@ lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[n
 
 /- The set of points where `LiftSourceTargetPropertyAt` holds is open. -/
 lemma _root_.isOpen_liftSourceTargetPropertyAt :
-    IsOpen {x | LiftSourceTargetPropertyAt I I' n g x P} := by
+    IsOpen {x | LiftSourceTargetPropertyAt I J n g x P} := by
   rw [isOpen_iff_forall_mem_open]
   intro x hx
   -- Suppose the lifted property `P` holds at `x`:
