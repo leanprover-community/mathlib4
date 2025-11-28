@@ -3,13 +3,17 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-import Mathlib.CategoryTheory.Monoidal.Transport
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 
 # Transporting a closed monoidal structure along an equivalence of categories
 -/
+
+@[expose] public section
 
 open CategoryTheory Monoidal
 
