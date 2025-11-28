@@ -10,6 +10,13 @@ public import Mathlib.Analysis.Complex.Trigonometric
 /-!
 # Dirichlet kernel
 
+The Dirichlet kernel is a family of functions related to the Fourier Transform. This file defines lemmas relevant to the Dirichlet kernel.
+
+## References
+
+* https://en.wikipedia.org/wiki/Dirichlet_kernel
+
+
 ## TODO
 
 - Define the Dirichlet kernel
