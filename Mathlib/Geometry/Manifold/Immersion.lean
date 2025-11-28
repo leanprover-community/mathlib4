@@ -51,6 +51,8 @@ This shortens the overall argument, as the definition of submersions has the sam
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
+* `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
+* `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 
 ## Implementation notes
 
@@ -70,8 +72,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
-* `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
-* `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
@@ -642,6 +642,28 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isImmersionAtOfComplement_complement.prodMap hg.isImmersionAtOfComplement_complement
     |>.isImmersionAt
 
+/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
+`continuousAt` is part of the public API -/
+private theorem continuousOn (h : IsImmersionAt I J n f x) :
+    ContinuousOn f h.domChart.source :=
+  h.isImmersionAtOfComplement_complement.continuousOn
+
+/-- A `C^k` immersion at `x` is continuous at `x`. -/
+theorem continuousAt (h : IsImmersionAt I J n f x) : ContinuousAt f x :=
+  h.isImmersionAtOfComplement_complement.continuousAt
+
+variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+
+/-- This lemma is marked private since `h.domChart` is an arbitrary representative:
+`contMDiffAt` is part of the public API -/
+private theorem contMDiffOn (h : IsImmersionAt I J n f x) :
+    ContMDiffOn I J n f h.domChart.source :=
+  h.isImmersionAtOfComplement_complement.contMDiffOn
+
+/-- A `C^k` immersion at `x` is `C^k` at `x`. -/
+theorem contMDiffAt (h : IsImmersionAt I J n f x) : ContMDiffAt I J n f x :=
+  h.isImmersionAtOfComplement_complement.contMDiffAt
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -718,6 +740,11 @@ lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f 
   use (h x).smallComplement, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
+/-- A `C^k` immersion is `C^k` -/
+theorem contMDiff [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersionOfComplement F I J n f) : ContMDiff I J n f :=
+  fun x ↦ (h x).contMDiffAt
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -764,6 +791,11 @@ theorem prodMap {f : M → N} {g : M' → N'}
     (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
     IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
   (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
+
+/-- A `C^k` immersion is `C^k` -/
+theorem contMDiff [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersion I J n f) : ContMDiff I J n f :=
+  h.isImmersionOfComplement_complement.contMDiff
 
 end IsImmersion
 
