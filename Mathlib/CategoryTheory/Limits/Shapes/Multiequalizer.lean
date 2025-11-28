@@ -91,6 +91,10 @@ def MultispanShape.ofLinearOrder (ι : Type w) [LinearOrder ι] : MultispanShape
   fst x := x.1.1
   snd x := x.1.2
 
+instance : Unique (MultispanShape.ofLinearOrder Bool).L where
+  default := ⟨⟨False, True⟩, by simp⟩
+  uniq := by rintro ⟨⟨(_ | _), (_ | _)⟩, _⟩ <;> tauto
+
 /-- The type underlying the multiequalizer diagram. -/
 inductive WalkingMulticospan (J : MulticospanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMulticospan J
