@@ -63,18 +63,13 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  -- todo: rename to `splits_of_separable`
-  factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
+  splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ ↦ IsAlgClosed.factors p⟩
+  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
 
 variable {k} {K}
-
-theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
-    p.Splits :=
-  factors_of_separable p hp
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
