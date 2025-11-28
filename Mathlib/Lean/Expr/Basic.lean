@@ -11,7 +11,7 @@ public import Batteries.Tactic.Alias
 public import Lean.Elab.Binders
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import Mathlib.Tactic.Linter.Header  --shake: keep
 
 /-!
 # Additional operations on Expr and related types

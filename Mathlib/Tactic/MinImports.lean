@@ -11,7 +11,7 @@ public meta import ImportGraph.Imports
 public meta import ImportGraph.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-! # `#min_imports in` a command to find minimal imports
 
