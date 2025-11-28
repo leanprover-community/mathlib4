@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Bijection
 
 # Ext Commute with Ulift Functor
 
+In this file, we prove `Ext` commute with ulift functor, then use this to obtain
+compatibility of `Ext` with (semi) linear equiv of general universe level.
+
 -/
 
 @[expose] public section
@@ -29,6 +32,7 @@ variable [UnivLE.{v, w}] [UnivLE.{max v v', w'}]
 instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
+/-- The linear equivalence `Ext M N n ≃ₗ[R] Ext (ULift M) (ULift N) n`. -/
 noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
     letI : Small.{max v v'} R := small_lift R
     Ext.{w} M N n ≃ₗ[R] Ext.{w'} ((uliftFunctor.{v', v} R).obj M)
@@ -49,6 +53,8 @@ section
 
 variable [UnivLE.{v, w}] [UnivLE.{v', w'}]
 
+/-- Given linear equivalence of `R`-modules `M ≃ₗ[R] M'` and `N ≃ₗ[R] N'`,
+the linear equivalence `Ext M N n ≃ₗ[R] Ext M' N' n`. -/
 noncomputable def ModuleCat.extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R} (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
     Ext.{w} M N n ≃ₗ[R] Ext.{w'} M' N' n :=
@@ -106,6 +112,7 @@ namespace ModuleCat
 
 attribute [local instance] RingHomInvPair.of_ringEquiv
 
+/-- The forward function of `ModuleCat.extRestrictScalarsSemiLinearEquiv`. -/
 noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) : Ext.{w} M N n →ₛₗ[RingHomClass.toRingHom e.symm]
     Ext.{w'} ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M)
@@ -122,6 +129,8 @@ noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
 instance : (restrictScalars (RingHomClass.toRingHom e)).IsEquivalence :=
   restrictScalars_isEquivalence_of_ringEquiv e
 
+/-- For `R'` module `M N` and ring isomorphism `R ≃+* R'`,
+the semi-linear equivalence `Ext (↑R M) (↑R N) n ≃ Ext M N n` -/
 noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) : Ext.{w} M N n ≃ₛₗ[RingHomClass.toRingHom e.symm]
     Ext.{w'} ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M)
@@ -131,6 +140,7 @@ noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e))
     (ModuleCat.restrictScalarsEquivalenceOfRingEquiv e).fullyFaithfulFunctor M N n)
 
+/-- Given semi linear equiv `M ≃ M'`, the categorical isomorphism `M ≅ ↑R M'` -/
 noncomputable def iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
     (e' : M ≃ₛₗ[RingHomClass.toRingHom e] M') :
     M ≅ ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') :=
@@ -139,6 +149,8 @@ noncomputable def iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v}
     map_smul' r m := by simp }
   e.toModuleIso
 
+/-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`
+within same universe, the semi linear equivalence `Ext M N n ≃ Ext M' N' n`. -/
 noncomputable def extSemiLinearEquivOfSemiLinearEquiv_equal_universe [Small.{v} R] [Small.{v} R']
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v} R'}
     (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
@@ -162,6 +174,8 @@ variable (e : R ≃+* R') [UnivLE.{v, w}] [UnivLE.{v', w'}]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv
 
+/-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`,
+the semi linear equivalence `Ext M N n ≃ Ext M' N' n`. -/
 noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R'}
     (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
