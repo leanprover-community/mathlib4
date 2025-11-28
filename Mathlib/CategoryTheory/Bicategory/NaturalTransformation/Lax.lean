@@ -200,7 +200,7 @@ structure OplaxTrans (F G : B ⥤ᴸ C) where
   /-- Naturality of the oplax naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
-    aesop_cat
+    cat_disch
   naturality_id (a : B) :
       F.mapId a ▷ app a ≫ naturality (𝟙 a) =
         (λ_ (app a)).hom ≫ (ρ_ (app a)).inv ≫ app a ◁ G.mapId a := by
