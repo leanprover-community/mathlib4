@@ -919,7 +919,7 @@ lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
 
-variable [Countable α] {s t : β → Set α}
+variable [Countable α]
 
 lemma MeasurableSet.setOf_finite : MeasurableSet {s : Set α | s.Finite} :=
   Countable.setOf_finite.measurableSet
@@ -936,7 +936,7 @@ lemma MeasurableSet.sep_infinite {S : Set (Set α)} (hS : MeasurableSet S) :
   hS.inter .setOf_infinite
 
 @[fun_prop]
-protected lemma Measurable.subset (hs : Measurable s) (hs : Measurable t) :
+protected lemma Measurable.subset {s t : β → Set α} (hs : Measurable s) (hs : Measurable t) :
     Measurable fun a ↦ s a ⊆ t a :=
   .forall fun i ↦ .imp (by fun_prop) (by fun_prop)
 
