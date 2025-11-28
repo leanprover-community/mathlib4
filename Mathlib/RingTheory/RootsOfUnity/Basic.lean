@@ -98,7 +98,7 @@ theorem rootsOfUnity_le_of_dvd (h : k ∣ l) : rootsOfUnity k M ≤ rootsOfUnity
 
 theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f ≤ rootsOfUnity k N := by
   rintro _ ⟨ζ, h, rfl⟩
-  simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
+  simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, map_one]
 
 instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 

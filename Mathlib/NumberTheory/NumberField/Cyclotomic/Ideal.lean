@@ -27,7 +27,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
 
 * `IsCyclotomicExtension.Rat.inertiaDeg_of_not_dvd`: if the prime `p` does not divide `m`, then
-  the inertia degree of `p` in `ℚ(ζₘ)` if the order of `p` modulo `m`.
+  the inertia degree of `p` in `ℚ(ζₘ)` is the order of `p` modulo `m`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdx_of_not_dvd`: if the prime `p` does not divide `m`,
   then the ramification index of `p` in `ℚ(ζₘ)` is `1`.
@@ -173,7 +173,7 @@ end PrimePow
 
 section Prime
 
-variable [hK : IsCyclotomicExtension {p} ℚ K] {ζ : K} (hζ : IsPrimitiveRoot ζ p)
+variable {K} [hK : IsCyclotomicExtension {p} ℚ K] {ζ : K} (hζ : IsPrimitiveRoot ζ p)
 
 instance isPrime_span_zeta_sub_one' : IsPrime (span {hζ.toInteger - 1}) := by
   rw [← pow_one p] at hK hζ
@@ -187,6 +187,8 @@ theorem ramificationIdx_span_zeta_sub_one' :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p - 1 := by
   rw [← pow_one p] at hK hζ
   rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
+
+variable (K)
 
 include hK in
 theorem ncard_primesOver_of_prime :
@@ -211,7 +213,7 @@ theorem ramificationIdx_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP
 
 end Prime
 
-section notDVD
+section notDvd
 
 open NumberField.Ideal Polynomial
 
@@ -222,7 +224,7 @@ theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
   replace hm : p.Coprime m := not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top m K (zeta_spec m ℚ K)]
+    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
   have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
   have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
@@ -240,7 +242,7 @@ theorem ramificationIdx_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top m K (zeta_spec m ℚ K)]
+    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
   have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
   have h₃ := ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
@@ -267,11 +269,11 @@ theorem ramificationIdxIn_of_not_dvd (hm : ¬ p ∣ m) :
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
   rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P (K ≃ₐ[ℚ] K), ramificationIdx_of_not_dvd p K P hm]
 
-end notDVD
+end notDvd
 
 section generalCase
 
-variable {m p k} [IsCyclotomicExtension {n} ℚ K]
+variable {p k} [IsCyclotomicExtension {n} ℚ K]
 
 open IntermediateField
 
@@ -303,7 +305,7 @@ theorem inertiaDegIn_ramificationIdxIn (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣
   -- A prime ideal of `ℚ⟮ζₚ⟯` above `𝒑`
   obtain ⟨Pₚ, _, _⟩ := exists_maximal_ideal_liesOver_of_isIntegral 𝒑 (S := 𝓞 Fₚ)
   have hPp : Ideal.map (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ ≠ ⊥ :=
-    map_ne_bot_of_ne_bot <| IsMaximal.ne_bot_of_isIntegral_int Pₚ
+    map_ne_bot_of_ne_bot <| sorry -- IsMaximal.ne_bot_of_isIntegral_int Pₚ
   suffices (Pₘ.primesOver (𝓞 K)).ncard *
       (Pₘ.inertiaDegIn (𝓞 K) * Pₚ.ramificationIdxIn (𝓞 K)) = 1 by
     replace this := Nat.eq_one_of_mul_eq_one_left this

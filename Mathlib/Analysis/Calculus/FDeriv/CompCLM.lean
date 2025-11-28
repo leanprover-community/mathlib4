@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
-public import Mathlib.Analysis.NormedSpace.Alternating.Basic
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-!
 # Multiplicative operations on derivatives
