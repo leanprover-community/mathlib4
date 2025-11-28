@@ -12,7 +12,7 @@ public import Mathlib.Probability.Kernel.Composition.Comp
 
 A kernel `κ : Kernel α α` is `φ`-irreducible, for a given measure `φ` on `α`,
 if for every measurable set `A` with positive measure under `φ`,
-there exists a positive integer `n` such that for every `a : α`, we have `κ.pow n a A > 0`.
+there exists a positive integer `n` such that for every `a : α`, we have `(κ ^ n) a A > 0`.
 
 When the kernel `κ` is the transition kernel of a Markov chain,
 this precisely means that the Markov chain is `φ`-irreducible,
@@ -58,7 +58,7 @@ Ref. *Meyn-Tweedie* Proposition 4.2.1(ii), page 89 -/
 @[mk_iff]
 class IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
   irreducible ⦃A⦄ (hA : MeasurableSet A) (hφA : φ A > 0) a :
-    ∃ (n : ℕ), κ.pow n a A > 0
+    ∃ (n : ℕ), (κ ^ n) a A > 0
 
 /-- Strongly `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`).
 Ref. https://www.stats.ox.ac.uk/~rebeschi/teaching/AdvSim/18/notes/notes4.pdf, Definition 3.1 -/
