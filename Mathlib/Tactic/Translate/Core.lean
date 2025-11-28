@@ -165,8 +165,8 @@ structure TranslateData : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
   /-- `argInfoAttr` stores the declarations that need some extra information to be translated. -/
   argInfoAttr : NameMapExtension ArgInfo
-  /-- The `do_translate`/`dont_translate` attribute specifies whether operations on
-  the given type should be translated. `dont_translate` can be used for types that are translated,
+  /-- The global `do_translate`/`dont_translate` attribute specifies whether operations on
+  a given type should be translated. `dont_translate` can be used for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
   `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
   can be translated.
