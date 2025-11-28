@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Lifting.Right
-public import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 public import Mathlib.CategoryTheory.Groupoid.Discrete
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monad.Comonadicity

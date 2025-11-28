@@ -6,7 +6,7 @@ Authors: Daniel Carranza, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # A closed monoidal category is enriched in itself

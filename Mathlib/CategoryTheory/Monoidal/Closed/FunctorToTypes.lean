@@ -6,7 +6,7 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Functor.FunctorHom
-public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Functors to Type are closed.
