@@ -1447,15 +1447,11 @@ variable {M G : Type*} [CommMonoid M] [CommGroup G]
 theorem AddSubmonoid.isLocalizationMap_nat_int (S : AddSubmonoid ℕ) (hS : S ≠ ⊥) :
     S.IsLocalizationMap ((↑) : ℕ → ℤ) :=
   S.isLocalizationMap_of_addGroup (fun _ _ ↦ Int.natCast_inj.mp) fun z ↦ by
-    obtain hz | hz := le_or_gt 0 z
-    · lift z to ℕ using hz
-      exact ⟨z, 0, zero_mem _, by simp⟩
-    have ⟨n, hnS, hn0⟩ := (S.bot_or_exists_ne_zero).resolve_left hS
-    lift z % n to ℕ using z.emod_nonneg (by exact_mod_cast hn0) with x hx
-    have : z / n < 0 := Int.ediv_neg_of_neg_of_pos hz (by omega)
-    lift -(z / n) to ℕ using by omega with y hy
-    use x, y * n, nsmul_mem hnS y
-    rw [← z.emod_add_ediv_mul n, ← hx, Int.natCast_mul, hy, Int.neg_mul, sub_neg_eq_add]
+    obtain ⟨z, rfl | rfl⟩ := z.eq_nat_or_neg
+    · exact ⟨z, 0, zero_mem _, by cutsat⟩
+    have ⟨n, hnS, hn0⟩ := S.bot_or_exists_ne_zero.resolve_left hS
+    have key : z < n * (z / n + 1) := Nat.lt_mul_div_succ _ <| Nat.pos_of_ne_zero hn0
+    exact ⟨(z / n + 1) * n - z, (z / n + 1) * n, nsmul_mem hnS _, by cutsat⟩
 
 instance : (⊤ : AddSubmonoid ℕ).IsLocalizationMap ((↑) : ℕ → ℤ) :=
   AddSubmonoid.isLocalizationMap_of_addGroup
