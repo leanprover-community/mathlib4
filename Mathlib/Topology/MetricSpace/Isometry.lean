@@ -257,11 +257,11 @@ theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 
-/-- An embedding from a topological space to a metric space is an isometry with respect to the
-induced metric space structure on the source space. -/
-theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
-  let _ := h.comapMetricSpace f
+/-- An embedding from a topological space to a pseudometric space is an isometry with respect to the
+induced pseudometric space structure on the source space. -/
+theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [PseudoMetricSpace β]
+    {f : α → β} (h : IsEmbedding f) : (letI := h.comapPseudoMetricSpace; Isometry f) :=
+  let _ := h.comapPseudoMetricSpace
   Isometry.of_dist_eq fun _ _ => rfl
 
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
