@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 
 In this file, we define the de Rham period ring \(\mathbb{B}_dR^+\) and
 the de Rham ring \(\mathbb{B}_dR\). We define a generalized version of
-these period rings following Scholze. When `O` is the ring of integers
+these period rings following Scholze. When `R` is the ring of integers
 of `ℂ_p`, they coincide with the classical de Rham period rings.
 
 ## Main definitions
@@ -30,13 +30,15 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 3. Show that ker θ is principal when the base ring is
 integral perfectoid.
 
-Currently, the period ring `BDeRhamPlus` takes the ring of integers `O` as the input.
+Currently, the period ring `BDeRhamPlus` takes the ring of integers `R` as the input.
 After the perfectoid theory is developed, we can modify it to
 take a perfectoid field as the input.
 
 ## Reference
 
-* [Scholze, *p-adic Hodge theory for rigid-analytic varieties*](scholze2013adic)
+* [Fontaine, *Sur Certains Types de Représentations p-Adiques du Groupe de Galois d'un Corps Local;
+Construction d'un Anneau de Barsotti-Tate*][fontaine1982certains]
+* [Scholze, *p-adic Hodge theory for rigid-analytic varieties*][scholze2013adic]
 
 ## Tags
 Period rings, p-adic Hodge theory
@@ -48,52 +50,52 @@ universe u
 
 open Ideal WittVector
 
-variable (O : Type u) [CommRing O] (p : ℕ) [Fact (Nat.Prime p)]
-    [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
+variable (R : Type u) [CommRing R] (p : ℕ) [Fact p.Prime]
+    [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
 
-local notation A "^♭" => PreTilt A p
-local notation "𝕎" => WittVector p
+local notation "𝕎 " A:100 => WittVector p A
+local notation A "♭" => PreTilt A p
 
 noncomputable section
 
 /--
-The Fontaine's θ map inverting `p`. Note that if `p = 0` in `O`, then this is the zero map.
+The Fontaine's θ map inverting `p`. Note that if `p = 0` in `R`, then this is the zero map.
 -/
 def fontaineThetaInvertP :
-    Localization.Away (M := 𝕎 (O^♭)) (p : 𝕎 (O^♭)) →+* Localization.Away (p : O) :=
-  Localization.awayLift ((algebraMap O _).comp (fontaineTheta O p)) (p : 𝕎 (O^♭))
-      (by simpa using IsLocalization.Away.algebraMap_isUnit (p : O))
+    Localization.Away (M := 𝕎 R♭) (p : 𝕎 R♭) →+* Localization.Away (p : R) :=
+  Localization.awayLift ((algebraMap R _).comp (fontaineTheta R p)) (p : 𝕎 (R♭))
+      (by simpa using IsLocalization.Away.algebraMap_isUnit (p : R))
 
 /--
 The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
-It is the completion of `𝕎 (O^♭)` inverting `p` with respect to the kernel of
-the Fontaine's θ map. When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
-with the classical de Rham period ring. Note that if `p = 0` in `O`,
+It is the completion of `𝕎 (R♭)` inverting `p` with respect to the kernel of
+the Fontaine's θ map. When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
+with the classical de Rham period ring. Note that if `p = 0` in `R`,
 then this
 definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
-  AdicCompletion (R := (Localization.Away (M := 𝕎 (O^♭)) p))
-      (RingHom.ker <| fontaineThetaInvertP O p) (Localization.Away (M := 𝕎 (O^♭)) p)
+  AdicCompletion (R := (Localization.Away (M := 𝕎 (R♭)) p))
+      (RingHom.ker <| fontaineThetaInvertP R p) (Localization.Away (M := 𝕎 (R♭)) p)
 
-instance : CommRing (BDeRhamPlus O p) := AdicCompletion.instCommRing _
+instance : CommRing (BDeRhamPlus R p) := AdicCompletion.instCommRing _
 
 /--
 The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
 It is defined as \(\mathbb{B}_dR^+\) inverting the generators of the ideal `ker θ`.
 Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`
 after we show that it is principal.
-When \(O = \mathcal{O}_{\mathbb{C}_p}\), it coincides
+When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring.
-Note that if `p = 0` in `O`, then this definition is the zero ring.
+Note that if `p = 0` in `R`, then this definition is the zero ring.
 -/
 def BDeRham : Type u :=
-  Localization (M := BDeRhamPlus O p) <| Submonoid.closure <|
-    {a | (RingHom.ker (fontaineThetaInvertP O p)) = Ideal.span {a}}.image
-    (AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP O p))) _)
+  Localization (M := BDeRhamPlus R p) <| Submonoid.closure <|
+    (AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP R p))) _) ''
+      {a | (RingHom.ker (fontaineThetaInvertP R p)) = Ideal.span {a}}
 
-local notation "𝔹_dR^+(" O ")" => BDeRhamPlus O p
+local notation "𝔹_dR^+(" R ")" => BDeRhamPlus R p
 
-local notation "𝔹_dR(" O ")" => BDeRham O p
+local notation "𝔹_dR(" R ")" => BDeRham R p
 
 end

@@ -1182,7 +1182,7 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
 
 theorem liftOfSurjective_comp_apply (hf : Function.Surjective f)
     (g : { g : A →+* C // RingHom.ker f ≤ RingHom.ker g }) (x : A) :
-    ((f.liftOfSurjective hf) g) (f x) = (g : A →+* C) x :=
+    (f.liftOfSurjective hf) g (f x) = (g : A →+* C) x :=
   RingHom.liftOfRightInverse_comp_apply f _ _ g x
 
 theorem liftOfSurjective_comp (hf : Function.Surjective f)
@@ -1191,8 +1191,8 @@ theorem liftOfSurjective_comp (hf : Function.Surjective f)
   RingHom.liftOfRightInverse_comp f _ _ g
 
 theorem eq_liftOfSurjective (hf : Function.Surjective f) (g : A →+* C)
-    (hg : RingHom.ker f ≤ RingHom.ker g)
-    (h : B →+* C) (hh : h.comp f = g) : h = (f.liftOfSurjective hf) ⟨g, hg⟩ :=
+    (hg : RingHom.ker f ≤ RingHom.ker g) (h : B →+* C) (hh : h.comp f = g) :
+    h = f.liftOfSurjective hf ⟨g, hg⟩ :=
   RingHom.eq_liftOfRightInverse f _ _ g _ _ hh
 
 end RingHom
