@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Equalizers and coequalizers
@@ -893,6 +894,67 @@ theorem equalizer.isoSourceOfSelf_inv :
     (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) := by
   ext
   simp [equalizer.isoSourceOfSelf]
+
+
+section
+
+variable {f g : X ⟶ Y} {Z : C} (h : Z ⟶ X)
+
+/--
+Given a fork `s` on morphisms `f, g : X ⟶ Y` and a pullback cone `c` on `s.ι : s.pt ⟶ X` and a
+morphism `h : Z ⟶ X`, the projection `c.snd : c.pt ⟶ Z` induces a fork on `h ≫ f` and `h ≫ g`.
+```
+c.pt → Z
+|      |
+v      v
+s.pt → X ⇉ Y
+```
+-/
+def precompFork (s : Fork f g) (c : PullbackCone s.ι h) : Fork (h ≫ f) (h ≫ g) :=
+  Fork.ofι c.snd <| by
+    rw [← c.condition_assoc, ← c.condition_assoc, s.condition]
+
+/--
+Any fork on `h ≫ f` and `h ≫ g` lifts to a pullback along `h` of an equalizer of `f` and `g`.
+-/
+def liftPrecomp {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : IsLimit c)
+    (s' : Fork (h ≫ f) (h ≫ g)) :
+    s'.pt ⟶ (precompFork h s c).pt :=
+  hc.lift <| PullbackCone.mk
+    (hs.lift <| Fork.ofι (s'.ι ≫ h)
+      (by
+        simp only [Functor.const_obj_obj, parallelPair_obj_zero, Category.assoc]
+        rw [s'.condition]))
+    s'.ι
+
+/-- The pullback of an equalizer is an equalizer. -/
+def isLimitPrecompFork {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : IsLimit c) :
+    IsLimit (precompFork h s c) :=
+  Fork.IsLimit.mk _
+    (fun s' ↦ liftPrecomp h hs hc s')
+    (by simp [liftPrecomp, precompFork])
+    (fun s' m h ↦ hc.hom_ext <| by
+      apply PullbackCone.equalizer_ext
+      · simp only [liftPrecomp, Fork.ofι_pt, IsLimit.fac, PullbackCone.mk_π_app]
+        apply hs.hom_ext
+        apply Fork.equalizer_ext
+        simp only [Fork.ι_ofι, precompFork] at h
+        simp [c.condition, reassoc_of% h]
+      · simpa [liftPrecomp] using h)
+
+lemma hasEqualizer_precomp_of_equalizer {s : Fork f g} (hs : IsLimit s)
+    {c : PullbackCone s.ι h} (hc : IsLimit c) :
+    HasEqualizer (h ≫ f) (h ≫ g) :=
+  HasLimit.mk
+    { cone := precompFork h s c
+      isLimit := isLimitPrecompFork h hs hc }
+
+instance hasEqualizer_precomp_of_hasEqualizer [HasEqualizer f g] [HasPullback (equalizer.ι f g) h] :
+    HasEqualizer (h ≫ f) (h ≫ g) :=
+  hasEqualizer_precomp_of_equalizer h
+    (equalizerIsEqualizer f g) (pullback.isLimit (equalizer.ι f g) h)
+
+end
 
 section
 
