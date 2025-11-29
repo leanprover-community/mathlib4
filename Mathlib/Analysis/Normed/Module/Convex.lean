@@ -77,12 +77,7 @@ theorem convexHull_sphere_eq_closedBall [Nontrivial F] (x : F) {r : ℝ} (hr : 0
   refine subset_antisymm (convexHull_min sphere_subset_closedBall (convex_closedBall 0 r))
     (fun x h ↦ mem_convexHull_iff.mpr fun U hU_sub hU ↦ ?_)
   have zero_mem : (0 : F) ∈ U := by
-    #adaptation_note
-    /--
-    This `norm_num` was `grind` until nightly-2025-11-26.
-    The problem has been minmized as https://github.com/leanprover/lean4/pull/11410
-    -/
-    have _ : Invertible (2 : ℝ) := by use 2⁻¹ <;> norm_num
+    have _ : Invertible (2 : ℝ) := by use 2⁻¹ <;> grind
     obtain ⟨z, hz⟩ := NormedSpace.sphere_nonempty (E := F).mpr hr
     rw [← midpoint_self_neg (R := ℝ) (x := z)]
     exact Convex.midpoint_mem hU (hU_sub hz) <| hU_sub (by simp_all)
