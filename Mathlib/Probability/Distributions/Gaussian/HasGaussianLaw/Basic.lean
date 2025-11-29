@@ -73,23 +73,22 @@ variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E
 
 open scoped RealInnerProductSpace in
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
-    charFun (P.map X) t = exp (P[fun ω ↦ ⟪t, X ω⟫] * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
+    charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
   rw [hX.isGaussian_map.charFun_eq, integral_map hX.aemeasurable (by fun_prop),
-    variance_map (by fun_prop) hX.aemeasurable]
+    variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
   rfl
 
 variable [NormedSpace ℝ E]
 
 lemma charFunDual_map_eq (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
-    charFunDual (P.map X) L = exp (P[L ∘ X] * I - Var[L ∘ X; P] / 2) := by
+    charFunDual (P.map X) L = exp ((P[L ∘ X] : ℝ) * I - Var[L ∘ X; P] / 2) := by
   rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
-    variance_map (by fun_prop) hX.aemeasurable]
+    variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
   rfl
 
 lemma charFunDual_map_eq_fun (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
-    charFunDual (P.map X) L = exp ((∫ ω, L (X ω) ∂P : ℂ) * I - Var[fun ω ↦ L (X ω); P] / 2) := by
-  rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
-    variance_map (by fun_prop) hX.aemeasurable]
+    charFunDual (P.map X) L = exp ((∫ ω, L (X ω) ∂P) * I - Var[fun ω ↦ L (X ω); P] / 2) := by
+  rw [hX.charFunDual_map_eq]
   rfl
 
 /-- A Gaussian random variable has moments of all orders. -/
