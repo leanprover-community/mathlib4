@@ -416,15 +416,10 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
 
 theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
-  apply Iff.intro
-  · intro h
-    simpa [← optionEquivLeft_coeff_coeff] using h
-  · intro h
-    simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
+  simp [← optionEquivLeft_coeff_coeff]
 
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
-    (optionEquivLeft R σ p).support
-      = Finset.image (fun m => m none) p.support := by
+    (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
   ext i
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
@@ -443,17 +438,14 @@ theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f
 theorem degree_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).degree = degreeOf none f := by
   have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
-    rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image]
-    rfl
+    rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image, Function.comp_def]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty R h), Finset.max_eq_sup_coe]
-  rfl
+    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty R h), Finset.max_eq_sup_coe,
+    Function.comp_def]
 
 @[simp]
-lemma natDegree_optionEquivLeft [DecidableEq σ]
-    (p : MvPolynomial (Option σ) R) :
-  Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
-   = p.degreeOf none := by
+lemma natDegree_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
+    Polynomial.natDegree (optionEquivLeft R σ p) = p.degreeOf none := by
   by_cases c : p = 0
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
   · rw [Polynomial.natDegree, degree_optionEquivLeft R c, Nat.cast_withBot, WithBot.unbotD_coe]
@@ -692,17 +684,17 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
   · rw [Polynomial.natDegree, degree_finSuccEquiv c, Nat.cast_withBot, WithBot.unbotD_coe]
 
 /--
-The degree of a particular variable in a multivariate polynomial
-is equal to the natDegree of the single-variable polynomial
+The `MvPolynomial.degreeOf` of a particular variable in a multivariate polynomial
+is equal to the `Polynomial.natDegree` of the single-variable polynomial
 obtained by treating the multivariable polynomial as a single variable polynomial
 over multivariable polynomials in the remaining variables
 -/
 lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
-  degreeOf a p = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a})
-                   (rename (Equiv.optionSubtypeNe a).symm p)) := by
+    degreeOf a p =
+      (optionEquivLeft R {b // b ≠ a} (rename (optionSubtypeNe a).symm p)).natDegree := by
   rw [natDegree_optionEquivLeft, eq_comm]
   convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
-  exact (Equiv.apply_eq_iff_eq_symm_apply (Equiv.optionSubtypeNe a)).mp rfl
+  rw [Equiv.optionSubtypeNe_symm_apply, dif_pos rfl]
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
     degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
