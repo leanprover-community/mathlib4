@@ -116,8 +116,10 @@ alias tail := IsAdmissible.of_cons
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
 
-theorem pairwise {m L} (hL : IsAdmissible m L) : L.Pairwise (· < ·) :=
-  hL.isChain.pairwise
+theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
+  hL.isChain.sortedLT
+
+@[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
 
 @[deprecated  (since := "2025-10-16")]
 alias sorted := pairwise
@@ -125,7 +127,7 @@ alias sorted := pairwise
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 @[grind →]
 lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
-    ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.pairwise
+    ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.sortedLT.pairwise
 
 @[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=

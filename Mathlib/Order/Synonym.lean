@@ -75,6 +75,11 @@ theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
 theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
 
+@[simp] theorem toDual_trans_ofDual : (toDual (α := α)).trans ofDual = Equiv.refl _ := rfl
+@[simp] theorem ofDual_trans_toDual : (ofDual (α := α)).trans toDual = Equiv.refl _ := rfl
+@[simp] theorem toDual_comp_ofDual : (toDual (α := α)) ∘ ofDual = id := rfl
+@[simp] theorem ofDual_comp_toDual : (ofDual (α := α)) ∘ toDual = id := rfl
+
 theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
 
 theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
