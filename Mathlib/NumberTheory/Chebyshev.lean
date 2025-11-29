@@ -39,14 +39,18 @@ open ArithmeticFunction hiding log
 
 namespace Chebyshev
 
+/-- The sum of `ArithmeticFunction.vonMangoldt` over integers `n ≤ x`. -/
 noncomputable def psi (x : ℝ) :=
     ∑ n ∈ Ioc 0 ⌊ x⌋₊, Λ n
 
+@[inherit_doc]
 scoped notation "ψ" => Chebyshev.psi
 
+/-- The sum of `log p` over primes `p ≤ x`. -/
 noncomputable def theta (x : ℝ) :=
     ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime, log p
 
+@[inherit_doc]
 scoped notation "θ" => Chebyshev.theta
 
 theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x :=
