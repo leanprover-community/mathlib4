@@ -687,8 +687,8 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
   · rw [Polynomial.natDegree, degree_finSuccEquiv c, Nat.cast_withBot, WithBot.unbotD_coe]
 
 /--
-The degree of a particular variable in a multivariate polynomial
-is equal to the natDegree of the single-variable polynomial
+The `MvPolynomial.degreeOf` of a particular variable in a multivariate polynomial
+is equal to the `Polynomial.natDegree` of the single-variable polynomial
 obtained by treating the multivariable polynomial as a single variable polynomial
 over multivariable polynomials in the remaining variables
 -/
