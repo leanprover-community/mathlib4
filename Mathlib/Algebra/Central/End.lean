@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Central.TensorProduct
 
 /-!
 # `Module.End R M` is a central algebra
+
+This file shows that the algebra of endomorphisms on free modules is central,
+and, as a corollary, that Azumaya algebras are central.
 -/
 
 open Module Free
