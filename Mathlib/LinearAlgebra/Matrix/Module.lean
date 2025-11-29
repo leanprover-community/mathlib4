@@ -14,9 +14,10 @@ public import Mathlib.LinearAlgebra.Pi
 
 ## Main Results
 
-- `Matrix.matrixModule`: This instance shows `ι → M` is a module over `Matrix ι ι R`, and the action
-  of it is a generalization of `Matrix.mulVec`.
-- `LinearMap.mapModule`: This defines a linear map from `ι → M` to `ι → N` over
+- `Matrix.Module.matrixModule`: This instance shows `ι → M` is a module over `Matrix ι ι R`, and
+  the action of it is a generalization of `Matrix.mulVec`, this is only available in the
+  `Matrix.Module` namespace.
+- `LinearMap.mapMatrixModule`: This defines a linear map from `ι → M` to `ι → N` over
   `Matrix ι ι R` induced by a linear map from `M` to `N` and together with `Matrix.matrixModule`
   it gives a functor from the category of `R`-modules to the category of `Matrix ι ι R`-modules.
 
