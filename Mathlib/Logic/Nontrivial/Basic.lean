@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Logic.Unique
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.Attr.Register
@@ -102,10 +101,3 @@ instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α 
 @[nontriviality]
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)
-
-instance [DecidableEq α] [Nontrivial α] :
-    Nontrivial (Equiv.Perm α) := by
-  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
-  exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
-
-

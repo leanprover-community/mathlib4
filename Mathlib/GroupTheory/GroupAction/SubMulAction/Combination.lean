@@ -43,6 +43,11 @@ The obvious map from `α` to `1.Combination α`, as an equivariant map.
 
 -/
 
+instance (α : Type*) [DecidableEq α] [Nontrivial α] :
+    Nontrivial (Equiv.Perm α) := by
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
+
 variable (G : Type*) [Group G] (α : Type*) [MulAction G α]
 
 /-- The type of combinations of `n` elements of a type `α` -/
