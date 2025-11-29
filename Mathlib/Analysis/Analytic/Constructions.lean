@@ -672,58 +672,35 @@ lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) 
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-lemma AnalyticWithinAt.fun_zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
-    (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
-    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
-  simpa [← zpow_natCast, hn] using hf.pow n.toNat
-
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
 lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
-    AnalyticWithinAt 𝕜 (f ^ n) s z :=
-  fun_zpow_nonneg hf hn
-
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
-lemma AnalyticAt.fun_zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
-    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
+    AnalyticWithinAt 𝕜 (f ^ n) s z := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
 lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
-    AnalyticAt 𝕜 (f ^ n) z :=
-  fun_zpow_nonneg hf hn
-
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
-lemma AnalyticOn.fun_zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
-    (hn : 0 ≤ n) :
-    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s := by
+    AnalyticAt 𝕜 (f ^ n) z := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
 lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
     (hn : 0 ≤ n) :
-    AnalyticOn 𝕜 (f ^ n) s :=
-  fun_zpow_nonneg hf hn
+    AnalyticOn 𝕜 (f ^ n) s := by
+  simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
-lemma AnalyticOnNhd.fun_zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOnNhd 𝕜 f s)
-    (hn : 0 ≤ n) :
-    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s := by
-  simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
-  apply pow hf
-
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
 lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOnNhd 𝕜 f s)
     (hn : 0 ≤ n) :
-    AnalyticOnNhd 𝕜 (f ^ n) s :=
-  fun_zpow_nonneg hf hn
+    AnalyticOnNhd 𝕜 (f ^ n) s := by
+  simp_rw [(Eq.symm (Int.toNat_of_nonneg hn) : n = OfNat.ofNat n.toNat), zpow_ofNat]
+  apply pow hf
 
 /-!
 ### Restriction of scalars
@@ -902,50 +879,30 @@ lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} :
   analyticOnNhd_inv.analyticOn
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticWithinAt.fun_inv {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
-    (f0 : f x ≠ 0) :
-    AnalyticWithinAt 𝕜 (fun x ↦ (f x)⁻¹) s x :=
-  (analyticAt_inv f0).comp_analyticWithinAt fa
-
-/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+@[to_fun] -- TODO: copy the doc-string to the generated declaration!
 theorem AnalyticWithinAt.inv {f : E → 𝕝} {x : E} {s : Set E} (fa : AnalyticWithinAt 𝕜 f s x)
     (f0 : f x ≠ 0) :
     AnalyticWithinAt 𝕜 f⁻¹ s x :=
-  fun_inv fa f0
+  (analyticAt_inv f0).comp_analyticWithinAt fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-@[fun_prop]
-theorem AnalyticAt.fun_inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x :=
+@[to_fun (attr := fun_prop)] -- TODO: copy the doc-string to the generated declaration!
+theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
+    AnalyticAt 𝕜 f⁻¹ x :=
   (analyticAt_inv f0).comp fa
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-@[fun_prop]
-theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 : f x ≠ 0) :
-    AnalyticAt 𝕜 f⁻¹ x :=
-  fa.fun_inv f0
-
-/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticOn.fun_inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
-  fun x m ↦ (fa x m).inv (f0 x m)
-
-/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+@[to_fun] -- TODO: copy the doc-string to the generated declaration!
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 f⁻¹ s :=
-  fun_inv fa f0
-
-/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticOnNhd.fun_inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
-    (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
+@[to_fun] -- TODO: copy the doc-string to the generated declaration!
 theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s)
     (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOnNhd 𝕜 f⁻¹ s :=
-  fun_inv fa f0
+  fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/
