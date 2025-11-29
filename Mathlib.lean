@@ -5734,6 +5734,7 @@ public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.ClassGroup
 public import Mathlib.RingTheory.Coalgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 public import Mathlib.RingTheory.Coalgebra.Convolution
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.GroupLike
