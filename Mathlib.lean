@@ -3121,6 +3121,7 @@ public import Mathlib.Combinatorics.Derangements.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.Orientation
+public import Mathlib.Combinatorics.DiHypergraph.Basic
 public import Mathlib.Combinatorics.Enumerative.Bell
 public import Mathlib.Combinatorics.Enumerative.Catalan
 public import Mathlib.Combinatorics.Enumerative.Composition
