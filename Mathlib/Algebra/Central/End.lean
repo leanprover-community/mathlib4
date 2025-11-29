@@ -16,7 +16,7 @@ open Module Free
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] [Free R M]
 
-/-- The center of endomorphisms on a vector space is trivial,
+/-- The center of endomorphisms on a free module is trivial,
 in other words, it is a central algebra. -/
 public instance Algebra.IsCentral.end : IsCentral R (End R M) where
   out T hT := by
