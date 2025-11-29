@@ -69,7 +69,8 @@ theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x
   · rw [nextOr, nextOr, IH]
     simpa [h] using x_mem
 
-@[deprecated (since := "2025-11-22")]
+@[deprecated "Use `grind [nextOr_eq_nextOr_of_mem_dropLast, dropLast_concat_getLast]` to get the \
+  original statement" (since := "2025-11-29")]
 alias nextOr_eq_nextOr_of_mem_of_ne := nextOr_eq_nextOr_of_mem_dropLast
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
@@ -158,7 +159,9 @@ theorem next_cons_eq_next_of_mem_dropLast (h : x ∈ l.dropLast) (y : α) (hy : 
       next l x (mem_of_mem_dropLast h) := by
   rwa [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_dropLast]
 
-@[deprecated (since := "2025-11-22")]
+@[deprecated "Use \
+  `grind [next_cons_eq_next_of_mem_dropLast, dropLast_concat_getLast, ne_nil_of_mem]` to get the \
+  original statement" (since := "2025-11-29")]
 alias next_ne_head_ne_getLast := next_cons_eq_next_of_mem_dropLast
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
