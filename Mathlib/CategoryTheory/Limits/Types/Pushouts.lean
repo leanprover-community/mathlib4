@@ -274,6 +274,9 @@ lemma eq_or_eq_of_isPushout' (h : IsPushout t l r b)
       exact Or.inl ⟨t x₁, by simpa only [← hx₃] using congr_fun h.w x₁⟩
     · exact Or.inr ⟨x₃, hx₃, h₂⟩
 
+/-- A pushout square in `Type` where the top map is injective is a pullback square.
+This is also essentially the lemma `isPullback_of_isPushout_of_mono_left`
+from the file `CategoryTheory.Adhesive` in the case of the adhesive category of types. -/
 lemma isPullback_of_isPushout (h : IsPushout t l r b) (ht : Function.Injective t) :
     IsPullback t l r b := by
   rw [isPullback_iff]
