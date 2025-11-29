@@ -414,7 +414,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some, Polynomial.map_C,
     eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
-theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
+theorem mem_support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
   apply Iff.intro
   · intro h
@@ -430,11 +430,11 @@ lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
   constructor
   · rintro ⟨m, hm⟩
     refine ⟨optionElim i m, ?_, optionElim_apply_none _ _⟩
-    rw [← support_coeff_optionEquivLeft]
+    rw [← mem_support_coeff_optionEquivLeft]
     simpa using hm
   · rintro ⟨m, h, rfl⟩
     refine ⟨some m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_optionEquivLeft, optionElim_some]
+    rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_optionEquivLeft, optionElim_some]
 
 theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).support.Nonempty := by
@@ -602,13 +602,16 @@ theorem coeff_eval_eq_eval_coeff (s' : S₁ → R) (f : Polynomial (MvPolynomial
     (i : ℕ) : Polynomial.coeff (Polynomial.map (eval s') f) i = eval s' (Polynomial.coeff f i) := by
   simp only [Polynomial.coeff_map]
 
-theorem support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {m : Fin n →₀ ℕ} :
+theorem mem_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {m : Fin n →₀ ℕ} :
     m ∈ ((finSuccEquiv R n f).coeff i).support ↔ m.cons i ∈ f.support := by
   apply Iff.intro
   · intro h
     simpa [← finSuccEquiv_coeff_coeff] using h
   · intro h
     simpa [mem_support_iff, ← finSuccEquiv_coeff_coeff m f i] using h
+
+@[deprecated (since := "2025-11-28")] alias support_coeff_finSuccEquiv :=
+mem_support_coeff_finSuccEquiv
 
 /--
 The `totalDegree` of a multivariable polynomial `p` is at least `i` more than the `totalDegree` of
@@ -627,7 +630,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
-  · rw [← support_coeff_finSuccEquiv]
+  · rw [← mem_support_coeff_finSuccEquiv]
     exact hσ1
 
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
@@ -637,11 +640,11 @@ theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
   constructor
   · rintro ⟨m, hm⟩
     refine ⟨cons i m, ?_, cons_zero _ _⟩
-    rw [← support_coeff_finSuccEquiv]
+    rw [← mem_support_coeff_finSuccEquiv]
     simpa using hm
   · rintro ⟨m, h, rfl⟩
     refine ⟨tail m, ?_⟩
-    rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
+    rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_finSuccEquiv, cons_tail]
 
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by
@@ -666,12 +669,6 @@ lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i
     x ∈ Finsupp.cons i '' ((finSuccEquiv R n f).coeff i).support ↔
       x ∈ f.support ∧ x 0 = i := by
   simpa using congr(x ∈ $image_support_finSuccEquiv)
-
-lemma mem_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
-    x ∈ ((finSuccEquiv R n f).coeff i).support ↔ x.cons i ∈ f.support := by
-  rw [← (Finsupp.cons_right_injective i).mem_finset_image (a := x),
-    image_support_finSuccEquiv]
-  simp only [Finset.mem_filter, mem_support_iff, ne_eq, cons_zero, and_true]
 
 -- TODO: generalize `finSuccEquiv R n` to an arbitrary ZeroHom
 theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
@@ -714,7 +711,7 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
   rw [← Finsupp.cons_succ j i m]
   exact Finset.le_sup
     (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
-    (support_coeff_finSuccEquiv.1 hm)
+    (mem_support_coeff_finSuccEquiv.1 hm)
 
 /-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
 and suppose that `σ ≃ Fin n`.
