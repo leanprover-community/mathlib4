@@ -211,6 +211,8 @@ lemma le_iff_adj {G H : SimpleGraph V} : G ≤ H ↔ ∀ v w, G.Adj v w → H.Ad
 theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Prop) = (· ≤ ·) :=
   rfl
 
+lemma le_iff_adj {H : SimpleGraph V} : G ≤ H ↔ ∀ v w, G.Adj v w → H.Adj v w := .rfl
+
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (SimpleGraph V) where
   max x y :=
@@ -495,8 +497,8 @@ variable {G G₁ G₂}
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
   rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
 
-/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_from_edgeSet`,
-allows proving `(G \ from_edgeSet s).edge_set = G.edgeSet \ s` by `simp`. -/
+/-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
+allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
     G.edgeSet \ (s \ { e | e.IsDiag }) = G.edgeSet \ s := by
@@ -640,6 +642,9 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
+
+@[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
+    fromEdgeSet s ≤ G ↔ s \ {e | e.IsDiag} ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
 instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   rw [edgeSet_fromEdgeSet s]
