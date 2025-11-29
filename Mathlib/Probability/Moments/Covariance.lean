@@ -139,10 +139,10 @@ lemma covariance_const_mul_left (c : ℝ) : cov[fun ω ↦ c * X ω, Y; μ] = c 
 lemma covariance_const_mul_right (c : ℝ) : cov[X, fun ω ↦ c * Y ω; μ] = c * cov[X, Y; μ] :=
   covariance_smul_right c
 
-lemma covariance_mul_const_left (c : ℝ) : cov[fun ω ↦ X ω * c, Y; μ] = c * cov[X, Y; μ] := by
+lemma covariance_mul_const_left (c : ℝ) : cov[fun ω ↦ X ω * c, Y; μ] = cov[X, Y; μ] * c := by
   simp [mul_comm, covariance_const_mul_left]
 
-lemma covariance_mul_const_right (c : ℝ) : cov[X, fun ω ↦ Y ω * c; μ] = c * cov[X, Y; μ] := by
+lemma covariance_mul_const_right (c : ℝ) : cov[X, fun ω ↦ Y ω * c; μ] = cov[X, Y; μ] * c := by
   simp [mul_comm, covariance_const_mul_right]
 
 @[deprecated (since := "2025-11-29")] alias covariance_mul_left := covariance_const_mul_left

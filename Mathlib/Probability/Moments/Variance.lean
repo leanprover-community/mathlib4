@@ -187,7 +187,7 @@ theorem variance_const_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
   rfl
 
 theorem variance_mul_const (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
-    variance (fun ω => X ω * c) μ = c ^ 2 * variance X μ := by
+    variance (fun ω => X ω * c) μ = variance X μ * c ^ 2 := by
   simp [mul_comm, variance_const_mul]
 
 @[deprecated (since := "2025-11-29")] alias variance_mul := variance_const_mul
