@@ -63,37 +63,44 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
 
 end IsOpenCover
 
-section IrreducibleSpace
+section Irreducible
 
 open Function
 
-/-- Irreducibility can be checked on an open cover with pairwise non-empty intersections. -/
-theorem IrreducibleSpace.of_isOpenCover {X ι : Type*} [TopologicalSpace X] [hι : Nonempty ι]
-    {U : ι → TopologicalSpace.Opens X} (hU : TopologicalSpace.IsOpenCover U)
-    (hn : Pairwise ((¬ Disjoint · ·) on U))
-    (h : ∀ i, IrreducibleSpace ↥(U i)) :
-    IrreducibleSpace X := by
-  have h' (i : _) : IsIrreducible (U i).carrier :=
-    IsIrreducible.of_subtype _
-  let i : ι := Classical.choice (α := ι) hι
-  rcases exists_mem_irreducibleComponents_subset_of_isIrreducible (U i).carrier (h' i)
-    with ⟨u, hu, hUu⟩
-  by_cases huniv : u = Set.univ
-  · rw [huniv] at hu
-    exact (irreducibleSpace_def _).mpr hu.1
-  · have huo : IsOpen uᶜ :=
-      IsClosed.isOpen_compl (self := isClosed_of_mem_irreducibleComponents u hu)
-    push_neg at huniv
-    rw [u.ne_univ_iff_exists_notMem] at huniv
-    choose a ha using huniv
-    choose j haj using hU.exists_mem a
-    have hji : j ≠ i := fun hji' ↦ ha <| hUu <| hji' ▸ haj
-    rcases Set.inter_nonempty_iff_exists_left.mp
-      ((h' j).2 (U i) uᶜ (U i).isOpen huo
-      (not_disjoint_iff_nonempty_inter.mp (by simpa using hn hji)) ⟨a, ⟨haj, ha⟩⟩).right
-      with ⟨x, hx₁, hx₂⟩
-    exfalso; exact hx₂ <| hUu hx₁
+/-- (Pre)Irreducibility of an open set can be checked on a cover by opens
+with pairwise non-empty intersections. -/
+theorem IsPreirreducible.of_subset_iUnion {X ι : Type*} [TopologicalSpace X]
+    {U : ι → Opens X} (hn : Pairwise ((¬ Disjoint · ·) on U))
+    (h : ∀ i, IsPreirreducible ((U i) : Set X))
+    {s : Set X} (hs : IsOpen s) (hsU : s ⊆ ⋃ i, U i) :
+    IsPreirreducible s := by
+  rcases s.eq_empty_or_nonempty with he | hne
+  · rw [he]; exact isPreirreducible_empty
+  · choose x hx using hne
+    choose i hi using mem_iUnion.mp <| hsU hx
+    rcases exists_mem_irreducibleComponents_subset_of_isIrreducible (U i).carrier ⟨⟨x, hi⟩, h i⟩
+      with ⟨u, hu, hUu⟩
+    by_cases huniv : s ⊆ u
+    · exact hu.1.2.open_subset hs huniv
+    · have huo : IsOpen uᶜ :=
+        IsClosed.isOpen_compl (self := isClosed_of_mem_irreducibleComponents u hu)
+      rcases not_subset.mp huniv with ⟨a, ⟨ha₁, ha₂⟩⟩
+      choose j haj using mem_iUnion.mp <| hsU ha₁
+      have hji : j ≠ i := fun hji' ↦ ha₂ <| hUu <| hji' ▸ haj
+      rcases inter_nonempty_iff_exists_left.mp
+        ((h j) (U i) uᶜ (U i).isOpen huo
+        (not_disjoint_iff_nonempty_inter.mp (by simpa using hn hji)) ⟨a, ⟨haj, ha₂⟩⟩).right
+        with ⟨x, hx₁, hx₂⟩
+      exfalso; exact hx₂ <| hUu hx₁
 
-end IrreducibleSpace
+/-- (Pre)Irreducibility can be checked on an open cover with pairwise non-empty intersections. -/
+theorem PreirreducibleSpace.of_isOpenCover {X ι : Type*} [TopologicalSpace X]
+    {U : ι → Opens X} (hn : Pairwise ((¬ Disjoint · ·) on U)) (hU : IsOpenCover U)
+    (h : ∀ i, PreirreducibleSpace (U i)) :
+    PreirreducibleSpace X :=
+  have h' (i : _) : IsPreirreducible (U i).carrier := IsPreirreducible.of_subtype
+  ⟨IsPreirreducible.of_subset_iUnion hn h' isOpen_univ (by simpa using hU.iSup_set_eq_univ)⟩
+
+end Irreducible
 
 end TopologicalSpace
