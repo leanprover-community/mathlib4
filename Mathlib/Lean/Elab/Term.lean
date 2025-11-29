@@ -38,7 +38,7 @@ where
   /-- Check if `namePrefix.appendIndexAfter n` is unused, else recurse with `n+1`. -/
   go n : Name :=
     let u := namePrefix.appendIndexAfter n
-    if usedLevelNames.elem u then go (n+1) else u
+    if usedLevelNames.contains u then go (n+1) else u
 
 /--
 Creates a fresh `Level` parameter which does not appear in the current state's `levelNames`, and
