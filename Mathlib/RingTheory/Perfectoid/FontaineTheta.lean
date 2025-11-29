@@ -184,6 +184,7 @@ end WittVector
 
 variable [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
 
+/-- If the Frobenius map is surjective on `R/pR`, then the Fontaine's θ map is surjective. -/
 theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP R p) p)) :
     Function.Surjective (fontaineTheta R p) := by
   have : Ideal.map (fontaineTheta R p) (span {(p : 𝕎 R♭)}) = 𝔭 := by
