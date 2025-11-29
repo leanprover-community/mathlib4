@@ -62,7 +62,7 @@ theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
   rcases hs with ⟨j, hj⟩
   have : Nonempty ι := Nonempty.intro j
   refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
-    iSup_le_iff.mpr (fun i ↦ ?_)) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
+    iSup_le_iff.mpr fun i ↦ ?_) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
       fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
   by_cases h : i ∈ s
   · simpa only [iSup_pos h] using by apply le_biSup _ h
