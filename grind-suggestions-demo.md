@@ -1,5 +1,7 @@
 # Grind Suggestions Demo
 
+> **AI agents:** Read the instructions at the bottom of this file before starting.
+
 This document demonstrates the `grind? +suggestions` tactic, which can automatically
 discover minimal `grind only [...]` invocations to replace complex manual proofs.
 
@@ -10,25 +12,16 @@ discover minimal `grind only [...]` invocations to replace complex manual proofs
 3. Pick the simplest suggestion (usually the one without internal `#xxxx` references)
 4. Verify the replacement compiles
 
-## Demo Instructions
-
-For each example below:
-1. Open the file in VS Code
-2. Find the theorem/definition
-3. Replace the indicated proof section with `grind? +suggestions`
-4. Wait for diagnostics or run `lake build <module>`
-5. Apply the suggested `grind only [...]` replacement
-6. Verify it compiles
-
 ---
 
 ## Example 1: zpow_add'
 
-**File:** `Mathlib/Algebra/GroupWithZero/Basic.lean`
-**Definition:** `zpow_add'`
+**File:** `Mathlib/Algebra/GroupWithZero/Basic.lean:430` — `zpow_add'`
 
-**Original proof:**
+This 10-line case-splitting proof becomes a single `grind only`:
+
 ```lean
+-- Before
 lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     a ^ (m + n) = a ^ m * a ^ n := by
   by_cases hm : m = 0
@@ -40,10 +33,8 @@ lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     simp only [false_or, not_true, Ne, hm, hn, false_and, or_false] at h
     rw [zero_zpow _ h, zero_zpow _ hm, zero_mul]
   · exact zpow_add₀ ha m n
-```
 
-**Replacement:**
-```lean
+-- After
 lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     a ^ (m + n) = a ^ m * a ^ n := by
   grind only [mul_eq_zero_of_ne_zero_imp_eq_zero, zpow_add₀, mul_left_eq_self₀,
@@ -54,11 +45,12 @@ lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
 
 ## Example 2: lcm_dedup
 
-**File:** `Mathlib/Algebra/GCDMonoid/Multiset.lean`
-**Definition:** `lcm_dedup`
+**File:** `Mathlib/Algebra/GCDMonoid/Multiset.lean:87` — `lcm_dedup`
 
-**Original proof (inductive step):**
+The inductive step with case analysis and associativity rewrites simplifies:
+
 ```lean
+-- Before
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
     by_cases h : a ∈ s; swap; · simp [IH, h]
@@ -66,10 +58,8 @@ theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
     unfold lcm
     rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
     apply lcm_eq_of_associated_left (associated_normalize _)
-```
 
-**Replacement:**
-```lean
+-- After
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
     grind only [lcm_mono, dedup_cons_of_mem, dedup_cons_of_notMem, dedup_ext, lcm_cons,
@@ -80,20 +70,19 @@ theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
 
 ## Example 3: cases_head_iff
 
-**File:** `Mathlib/Logic/Relation.lean`
-**Definition:** `cases_head_iff`
+**File:** `Mathlib/Logic/Relation.lean:348` — `cases_head_iff`
 
-**Original proof:**
+A manual iff proof with pattern matching:
+
 ```lean
+-- Before
 theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
   use cases_head
   rintro (rfl | ⟨c, hac, hcb⟩)
   · rfl
   · exact head hac hcb
-```
 
-**Replacement:**
-```lean
+-- After
 theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
   grind only [cases_tail_iff, cases_head, head]
 ```
@@ -102,11 +91,12 @@ theorem cases_head_iff : ReflTransGen r a b ↔ a = b ∨ ∃ c, r a c ∧ ReflT
 
 ## Example 4: removeNone_aux
 
-**File:** `Mathlib/Logic/Equiv/Option.lean`
-**Definition:** `removeNone_aux`
+**File:** `Mathlib/Logic/Equiv/Option.lean:74` — `removeNone_aux`
 
-**Original proof (the `show` block):**
+A nested proof inside a definition:
+
 ```lean
+-- Before
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h
   else
@@ -116,10 +106,8 @@ def removeNone_aux (x : α) : β :=
         intro hn
         rw [Option.not_isSome_iff_eq_none, ← hn] at h
         exact Option.some_ne_none _ (e.injective h)
-```
 
-**Replacement:**
-```lean
+-- After
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h
   else
@@ -130,26 +118,22 @@ def removeNone_aux (x : α) : β :=
 
 ---
 
-## Example 5: has_good_supp_iff (partial)
+## Example 5: has_good_supp_iff (partial replacement)
 
-**File:** `Mathlib/Data/QPF/Univariate/Basic.lean`
-**Definition:** `has_good_supp_iff`
+**File:** `Mathlib/Data/QPF/Univariate/Basic.lean:573` — `has_good_supp_iff`
 
-This example shows replacing just part of a proof. The `intro h'` section at the end
-of the proof can be replaced.
+Sometimes only part of a proof can be replaced. The `intro h'` section at the end:
 
-**Original proof fragment:**
 ```lean
+-- Before (just the final section)
   intro h'
   refine ⟨a, f, xeq.symm, ?_⟩; intro i
   apply h'; rw [mem_supp]
   intro a' f' xeq'
   apply h a' f' xeq'
   apply mem_image_of_mem _ (mem_univ _)
-```
 
-**Replacement:**
-```lean
+-- After
   intro h'
   grind only [supp_eq, = setOf_false, mem_supp, = subset_def, = mem_image, ← mem_univ]
 ```
@@ -158,11 +142,12 @@ of the proof can be replaced.
 
 ## Example 6: prod_subset_prod_iff
 
-**File:** `Mathlib/Data/Set/Prod.lean`
-**Definition:** `prod_subset_prod_iff`
+**File:** `Mathlib/Data/Set/Prod.lean:303` — `prod_subset_prod_iff`
 
-**Original proof:**
+A 12-line proof with case splits and image reasoning:
+
 ```lean
+-- Before
 theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
@@ -175,10 +160,8 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
   · intro H
     simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
     exact prod_mono H.1 H.2
-```
 
-**Replacement:**
-```lean
+-- After
 theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
   grind only [prod_eq_empty_iff, prod_subset_iff, prod_mono, = subset_def,
     mem_empty_iff_false, mem_prod, empty_subset]
@@ -188,11 +171,12 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
 
 ## Example 7: xPrevIsoSelf
 
-**File:** `Mathlib/Algebra/Homology/HomologicalComplex.lean`
-**Definition:** `xPrevIsoSelf`
+**File:** `Mathlib/Algebra/Homology/HomologicalComplex.lean:405` — `xPrevIsoSelf`
 
-**Original proof (the `by` block):**
+A proof inside a definition using `dsimp`, `push_neg`, and contradiction:
+
 ```lean
+-- Before
 def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
   eqToIso <|
     congr_arg C.X
@@ -202,10 +186,8 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
         push_neg; intro i hi
         have : c.prev j = i := c.prev_eq' hi
         rw [this] at h; contradiction)
-```
 
-**Replacement:**
-```lean
+-- After
 def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
   eqToIso <|
     congr_arg C.X
@@ -216,11 +198,12 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
 
 ## Example 8: isSheaf_sup
 
-**File:** `Mathlib/CategoryTheory/Sites/Coverage.lean`
-**Definition:** `isSheaf_sup`
+**File:** `Mathlib/CategoryTheory/Sites/Coverage.lean:509` — `isSheaf_sup`
 
-**Original proof:**
+A category theory proof with rewrites and case analysis:
+
 ```lean
+-- Before
 theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
     (Presieve.IsSheaf (K ⊔ L).toGrothendieck) P ↔
     (Presieve.IsSheaf K.toGrothendieck) P ∧ (Presieve.IsSheaf L.toGrothendieck) P := by
@@ -232,10 +215,8 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
   rcases hR with hR | hR
   · exact h.1 R hR
   · exact h.2 R hR
-```
 
-**Replacement:**
-```lean
+-- After
 theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
     (Presieve.IsSheaf (K ⊔ L).toGrothendieck) P ↔
     (Presieve.IsSheaf K.toGrothendieck) P ∧ (Presieve.IsSheaf L.toGrothendieck) P := by
@@ -243,3 +224,17 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
 ```
 
 ---
+
+## If you're Claude Code, being asked to demo this file:
+
+Follow these steps for each example:
+
+1. **Open the file in VS Code:** `code <filepath>`
+2. **Make the edit:** Replace the original proof with `grind? +suggestions`
+3. **Wait for diagnostics** to show the suggestions
+4. **Apply the simplest suggestion** (usually the one without `#xxxx` references)
+5. **Verify it compiles:** via diagnostics
+6. **Revert the file:** `git checkout -- <filepath>`
+
+This creates a visual demo where the audience sees files opening in VS Code tabs and
+watches the proof transformation happen live.
