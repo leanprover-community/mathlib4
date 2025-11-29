@@ -33,6 +33,7 @@ variable {K : Type*} [Field K] (v : Valuation K ℤᵐ⁰) (L : Type*) [Field L]
 
 namespace ValuationSubring
 
+-- Shortcut instance with potential performance benefit
 instance : Algebra v.valuationSubring L := inferInstance
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
@@ -48,6 +49,7 @@ theorem isIntegral_of_mem_ringOfIntegers' {x : integralClosure v.valuationSubrin
 
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
+-- Shortcut instance with potential performance benefit
 instance : IsScalarTower v.valuationSubring L E := inferInstance
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
