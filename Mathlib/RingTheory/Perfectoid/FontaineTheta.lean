@@ -164,7 +164,7 @@ theorem mk_fontaineTheta (x : 𝕎 R♭) :
   apply_fun Ideal.quotEquivOfEq (pow_one (p : R) ▸ Ideal.span_singleton_pow (p : R) 1) at this
   simp only [quotEquivOfEq_mk] at this
   rw [this]
-  simp [fontaineThetaModPPow, ghostComponent_apply, RingHom.one_def, PreTilt]
+  simp [fontaineThetaModPPow, ghostComponent_apply, RingHom.one_def]
 
 @[simp]
 theorem fontaineTheta_teichmuller (x : R♭) : fontaineTheta R p (teichmuller p x) = x.untilt := by

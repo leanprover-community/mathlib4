@@ -491,6 +491,7 @@ section coeff
 
 variable {O p}
 
+/-- The `n`-th coefficient of an element of the perfection of `O/(p)`. -/
 def coeff (n : ℕ) : PreTilt O p →+* ModP O p := Perfection.coeff (ModP O p) p n
 
 theorem coeff_def (n : ℕ) (x : PreTilt O p) : coeff n x = Perfection.coeff _ _ n x :=
