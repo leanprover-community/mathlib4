@@ -231,10 +231,11 @@ Follow these steps for each example:
 
 1. **Open the file in VS Code at the right line:** `code -g <filepath>:<line>`
 2. **Make the edit:** Replace the original proof with `grind? +suggestions`
-3. **Wait for diagnostics** to show the suggestions
+3. **Diagnostics appear automatically** in system reminders after edits - do NOT sleep or wait
 4. **Apply the simplest suggestion** (usually the one without `#xxxx` references)
-5. **Verify it compiles:** via diagnostics
+5. **Verify it compiles:** diagnostics will show any errors automatically
 6. **Revert the file:** `git checkout -- <filepath>`
 
-This creates a visual demo where the audience sees files opening in VS Code tabs and
-watches the proof transformation happen live.
+You don't need to `sleep` to wait for diagnostics. They appear automatically in `<system-reminder><new-diagnostics>` blocks after each edit. Just proceed immediately.
+
+This creates a visual demo where the audience sees files opening in VS Code tabs and watches the proof transformation happen live.
