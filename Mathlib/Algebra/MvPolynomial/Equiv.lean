@@ -440,8 +440,8 @@ theorem degree_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
   have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
     rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image, Function.comp_def]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty R h), Finset.max_eq_sup_coe]
-  rfl
+    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty R h), Finset.max_eq_sup_coe,
+    Function.comp_def]
 
 @[simp]
 lemma natDegree_optionEquivLeft [DecidableEq σ]
