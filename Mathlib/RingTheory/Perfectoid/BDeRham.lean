@@ -63,21 +63,20 @@ noncomputable section
 The Fontaine's θ map inverting `p`. Note that if `p = 0` in `R`, then this is the zero map.
 -/
 def fontaineThetaInvertP :
-    Localization.Away (M := 𝕎 R♭) (p : 𝕎 R♭) →+* Localization.Away (p : R) :=
-  Localization.awayLift ((algebraMap R _).comp (fontaineTheta R p)) (p : 𝕎 (R♭))
+    Localization.Away (p : 𝕎 R♭) →+* Localization.Away (p : R) :=
+  Localization.awayLift ((algebraMap R _).comp (fontaineTheta R p)) (p : 𝕎 R♭)
       (by simpa using IsLocalization.Away.algebraMap_isUnit (p : R))
 
 /--
 The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
-It is the completion of `𝕎 (R♭)` inverting `p` with respect to the kernel of
+It is the completion of `𝕎 R♭` inverting `p` with respect to the kernel of
 the Fontaine's θ map. When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring. Note that if `p = 0` in `R`,
 then this
 definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
-  AdicCompletion (R := (Localization.Away (M := 𝕎 (R♭)) p))
-      (RingHom.ker <| fontaineThetaInvertP R p) (Localization.Away (M := 𝕎 (R♭)) p)
+  AdicCompletion (RingHom.ker (fontaineThetaInvertP R p)) (Localization.Away (p : 𝕎 R♭))
 
 instance : CommRing (BDeRhamPlus R p) := AdicCompletion.instCommRing _
 
@@ -92,7 +91,7 @@ Note that if `p = 0` in `R`, then this definition is the zero ring.
 -/
 def BDeRham : Type u :=
   Localization (M := BDeRhamPlus R p) <| Submonoid.closure <|
-    (AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP R p))) _) ''
+    AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP R p))) _ ''
       {a | (RingHom.ker (fontaineThetaInvertP R p)) = Ideal.span {a}}
 
 local notation "𝔹_dR^+(" R ")" => BDeRhamPlus R p
