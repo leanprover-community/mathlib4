@@ -5,8 +5,8 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Central.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Azumaya.Defs
+import Mathlib.Algebra.Central.TensorProduct
 
 /-!
 # `Module.End R M` is a central algebra
@@ -25,3 +25,10 @@ public instance Algebra.IsCentral.end : IsCentral R (End R M) where
     let i := b.index_nonempty.some
     refine ⟨b.coord i (T (b i)), LinearMap.ext fun y ↦ ?_⟩
     simpa using congr($(Subalgebra.mem_center_iff.mp hT <| (b.coord i).smulRight y) (b i))
+
+/-- An Azumaya algebra is a central algebra. -/
+public instance Algebra.IsCentral.azumaya {A : Type*} [Semiring A] [Algebra R A]
+    [IsAzumaya R A] [Module.Free R A] [FaithfulSMul R Aᵐᵒᵖ] : IsCentral R A :=
+  have := Algebra.IsCentral.of_algEquiv R _ (A ⊗[R] Aᵐᵒᵖ)
+    (AlgEquiv.ofBijective (AlgHom.mulLeftRight R A) IsAzumaya.bij).symm
+  Algebra.IsCentral.left_of_tensor R A Aᵐᵒᵖ <| FaithfulSMul.algebraMap_injective _ _
