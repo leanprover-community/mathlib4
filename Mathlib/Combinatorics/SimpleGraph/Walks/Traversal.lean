@@ -140,6 +140,10 @@ lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
 lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬p.Nil) : p.snd ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
+lemma support_getElem_one_eq_snd {p : G.Walk u v} (hnil : ¬p.Nil) :
+    p.support[1]'(by grind [length_support, not_nil_iff_lt_length]) = p.snd := by
+  grind [getVert_eq_support_getElem, not_nil_iff_lt_length]
+
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 
@@ -163,6 +167,15 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
+
+lemma penultimate_mem_dropLast_support {p : G.Walk u v} (h : ¬p.Nil) :
+    p.penultimate ∈ p.support.dropLast := by
+  have := adj_penultimate h |>.ne
+  grind [getVert_mem_support, List.dropLast_concat_getLast, getLast_support]
+
+lemma support_getElem_length_sub_one_eq_penultimate {p : G.Walk u v} :
+    p.support[p.length - 1]'(by grind [length_support]) = p.penultimate := by
+  grind [getVert_eq_support_getElem]
 
 /-- The first dart of a walk. -/
 @[simps]
