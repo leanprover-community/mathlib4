@@ -419,8 +419,7 @@ theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ}
   simp [← optionEquivLeft_coeff_coeff]
 
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
-    (optionEquivLeft R σ p).support
-      = Finset.image (fun m => m none) p.support := by
+    (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
   ext i
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
   constructor
