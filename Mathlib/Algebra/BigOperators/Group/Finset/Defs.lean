@@ -642,7 +642,6 @@ open AddOpposite
 
 @[simp] lemma op_prod (f : ι → M) : op (∏ i ∈ s, f i) = ∏ i ∈ s, op (f i) := map_prod opMulEquiv ..
 
-open AddOpposite in
 @[simp] lemma unop_prod (f : ι → Mᵐᵒᵖ) : unop (∏ i ∈ s, f i) = ∏ i ∈ s, unop (f i) :=
   map_prod opMulEquiv.symm ..
 
