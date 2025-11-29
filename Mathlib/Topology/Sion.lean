@@ -152,7 +152,7 @@ theorem isPreconnected_C [TopologicalSpace E]
     (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x ↦ f x y)
     (b : β) (y : Y) :
     IsPreconnected (C X f b y) :=
-  (hfy' y.val y.prop).isPreconnected_preimage
+  (hfy' y.val y.prop).isPreconnected_preimage_subtype
 
 -- private
 theorem C_subset_union [AddCommGroup F] [Module ℝ F]
@@ -257,7 +257,6 @@ theorem isClosed_J
     simp only [← disjoint_iff_inter_eq_empty.mp (disjoint_C ha hb')]
     apply Set.subset_inter hz'
     apply subset_trans (monotone_C _ hbb'.le) hz'2
-
     -- The first goal is to rewrite hfy (lsc of (f ⬝ y)) into an ∀ᶠ form
   simp only [UpperSemicontinuousOn, UpperSemicontinuousWithinAt] at hfx
   have := lt_of_le_of_lt hx hbb'
@@ -292,7 +291,6 @@ theorem exists_lt_iInf_of_lt_iInf_of_sup
   obtain ⟨a, ha, ha'⟩ := LowerSemicontinuousOn.exists_isMinOn
     ne_X kX (LowerSemicontinuousOn.sup (hfy y1 hy1) (hfy y2 hy2))
   obtain ⟨t', htt', ht'⟩ := exists_between (ht a ha)
-
   let J1 := J X Y f t t' ⟨y1, hy1⟩ ⟨y2, hy2⟩
   have mem_J1_iff : ∀ (z : F) (hz : z ∈ segment ℝ y1 y2),
       ⟨z, hz⟩ ∈ J1 ↔ C X f t z ⊆ C X f t' y1 :=
@@ -454,7 +452,7 @@ theorem minimax
       · intro ht
         obtain ⟨x, hx⟩ := ne_X
         exact ⟨x, hx, ht ▸ hsup_y x hx⟩
-    simp [this] at hinf_sup
+    simp only [this, lowerBounds_singleton, mem_Iic] at hinf_sup
     rw [← hinf_sup]
   -- when `Y` is not empty
   rw [← forall_lt_iff_le]
@@ -465,7 +463,8 @@ theorem minimax
     simp only [mem_iInter, mem_setOf_eq] at hx
     rw [lt_isGLB_iff hinf_sup] at ht
     obtain ⟨c, hc, htc⟩ := ht
-    simp [mem_lowerBounds] at hc
+    simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂] at hc
     have hxX : x ∈ X := by
       obtain ⟨y, hy⟩ := ne_Y
       exact (hx y hy).1
@@ -484,7 +483,7 @@ theorem minimax
         ne_X kX hfy hfy' cY hfx hfx' cX
         (t := t)
         (toFinite _) (Subtype.coe_image_subset Y ↑s)
-  simp [lt_isLUB_iff hsup_inf]
+  simp only [lt_isLUB_iff hsup_inf, mem_setOf_eq, exists_exists_and_eq_and]
   use y0 hs', hy0 hs'
   specialize ht0 hs'
   obtain ⟨a, ha, h⟩ := LowerSemicontinuousOn.exists_isMinOn ne_X kX (hfy (y0  hs') (hy0 hs'))
