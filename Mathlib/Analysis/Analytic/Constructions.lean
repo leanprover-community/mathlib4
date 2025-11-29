@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
+import Mathlib.Tactic.ToFun
 
 /-!
 # Various ways to combine analytic functions
@@ -102,16 +103,12 @@ theorem AnalyticWithinAt.add (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticWithinAt
 
-@[fun_prop]
-theorem AnalyticAt.fun_add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (fun z ↦ f z + g z) x :=
+@[to_fun (attr := fun_prop)]
+theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
+    AnalyticAt 𝕜 (f + g) x :=
   let ⟨_, hpf⟩ := hf
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
-
-@[fun_prop]
-theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
-  hf.fun_add hg
 
 theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (-f) (-pf) s x r :=
@@ -142,14 +139,10 @@ theorem AnalyticWithinAt.neg (hf : AnalyticWithinAt 𝕜 f s x) : AnalyticWithin
   let ⟨_, hpf⟩ := hf
   hpf.neg.analyticWithinAt
 
-@[fun_prop]
-theorem AnalyticAt.fun_neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ -f z) x :=
+@[to_fun (attr := fun_prop)]
+theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   let ⟨_, hpf⟩ := hf
   hpf.neg.analyticAt
-
-@[fun_prop]
-theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
-  hf.fun_neg
 
 @[simp] lemma analyticAt_neg : AnalyticAt 𝕜 (-f) x ↔ AnalyticAt 𝕜 f x where
   mp hf := by simpa using hf.neg
@@ -177,15 +170,10 @@ theorem AnalyticWithinAt.sub (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
     AnalyticWithinAt 𝕜 (f - g) s x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-@[fun_prop]
-theorem AnalyticAt.fun_sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (fun z ↦ f z - g z) x := by
-  simpa only [sub_eq_add_neg] using hf.add hg.neg
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
-    AnalyticAt 𝕜 (f - g) x :=
-  hf.fun_sub hg
+    AnalyticAt 𝕜 (f - g) x := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
@@ -214,14 +202,10 @@ theorem AnalyticWithinAt.const_smul (hf : AnalyticWithinAt 𝕜 f s x) :
   let ⟨_, hpf⟩ := hf
   hpf.const_smul.analyticWithinAt
 
-@[fun_prop]
-theorem AnalyticAt.fun_const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z ↦ c • f z) x :=
+@[to_fun (attr := fun_prop)]
+theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   let ⟨_, hpf⟩ := hf
   hpf.const_smul.analyticAt
-
-@[fun_prop]
-theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
-  hf.fun_const_smul
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
@@ -604,18 +588,11 @@ lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
   (analyticAt_smul _).comp₂_analyticWithinAt hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
-@[fun_prop]
-lemma AnalyticAt.fun_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
-    (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (fun x ↦ f x • g x) z :=
-  (analyticAt_smul _).comp₂ hf hg
-
-/-- Scalar multiplication of one analytic function by another. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)] -- TODO: preserve the doc-string on AnalyticAt.fun_smul!
 lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
-  hf.fun_smul hg
+  (analyticAt_smul _).comp₂ hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
 lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
@@ -637,16 +614,10 @@ lemma AnalyticWithinAt.mul {f g : E → A} {s : Set E} {z : E}
   (analyticAt_mul _).comp₂_analyticWithinAt hf hg
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
-@[fun_prop]
-lemma AnalyticAt.fun_mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
-    AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
-  (analyticAt_mul _).comp₂ hf hg
-
-/-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
-@[fun_prop]
+@[to_fun (attr := fun_prop)] -- TODO: copy the doc-string to AnalyticAt.fun_mul
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f * g) z :=
-  hf.fun_mul hg
+  (analyticAt_mul _).comp₂ hf hg
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E}
@@ -661,9 +632,10 @@ lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma AnalyticWithinAt.fun_pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
+lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
     (n : ℕ) :
-    AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
+    AnalyticWithinAt 𝕜 (f ^ n) s z := by
   induction n with
   | zero =>
     simp only [pow_zero]
@@ -673,43 +645,23 @@ lemma AnalyticWithinAt.fun_pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticW
     exact hm.mul hf
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z)
-    (n : ℕ) :
-    AnalyticWithinAt 𝕜 (f ^ n) s z :=
-  AnalyticWithinAt.fun_pow hf n
-
-/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-@[fun_prop]
-lemma AnalyticAt.fun_pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
-    AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
+@[to_fun (attr := fun_prop)] -- TODO: copy the doc-string to the generated lemma
+lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
+    AnalyticAt 𝕜 (f ^ n) z := by
   rw [← analyticWithinAt_univ] at hf ⊢
   exact hf.pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-@[fun_prop]
-lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) :
-    AnalyticAt 𝕜 (f ^ n) z :=
-  AnalyticAt.fun_pow hf n
-
-/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma AnalyticOn.fun_pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
-  fun _ m ↦ (hf _ m).pow n
-
-/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
     AnalyticOn 𝕜 (f ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma AnalyticOnNhd.fun_pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
-    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
-  fun _ m ↦ (hf _ m).pow n
-
-/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+@[to_fun] -- TODO: copy the doc-string to the generated lemma
 lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (f ^ n) s :=
-  AnalyticOnNhd.fun_pow hf n
+  fun _ m ↦ (hf _ m).pow n
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
 nonnegative. -/
