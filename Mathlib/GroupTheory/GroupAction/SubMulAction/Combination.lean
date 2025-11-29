@@ -43,8 +43,9 @@ The obvious map from `α` to `1.Combination α`, as an equivariant map.
 
 -/
 
-instance (α : Type*) [DecidableEq α] [Nontrivial α] :
+instance (α : Type*) [Nontrivial α] :
     Nontrivial (Equiv.Perm α) := by
+  have : DecidableEq α := Classical.typeDecidableEq α
   obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
   exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
 
