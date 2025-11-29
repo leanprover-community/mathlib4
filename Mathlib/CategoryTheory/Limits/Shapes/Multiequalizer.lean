@@ -33,7 +33,7 @@ Prove that the limit of any diagram is a multiequalizer (and similarly for colim
 
 namespace CategoryTheory.Limits
 
-universe w w' v u
+universe t w w' v u
 
 /-- The shape of a multiequalizer diagram. It involves two types `L` and `R`,
 and two maps `R → L`. -/
@@ -90,6 +90,10 @@ def MultispanShape.ofLinearOrder (ι : Type w) [LinearOrder ι] : MultispanShape
   R := ι
   fst x := x.1.1
   snd x := x.1.2
+
+instance : Unique (MultispanShape.ofLinearOrder Bool).L where
+  default := ⟨⟨False, True⟩, by simp⟩
+  uniq := by rintro ⟨⟨(_ | _), (_ | _)⟩, _⟩ <;> tauto
 
 /-- The type underlying the multiequalizer diagram. -/
 inductive WalkingMulticospan (J : MulticospanShape.{w, w'}) : Type max w w'
@@ -153,6 +157,10 @@ variable {J : MultispanShape.{w, w'}}
 instance [Inhabited J.L] : Inhabited (WalkingMultispan J) :=
   ⟨left default⟩
 
+instance [Small.{t} J.L] [Small.{t} J.R] : Small.{t} (WalkingMultispan J) :=
+  small_of_surjective (f := Sum.elim WalkingMultispan.left WalkingMultispan.right)
+    (by rintro (_ | _) <;> aesop)
+
 -- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
 /-- Morphisms for `WalkingMultispan`. -/
@@ -187,6 +195,42 @@ lemma Hom.id_eq_id (X : WalkingMultispan J) : Hom.id X = 𝟙 X := rfl
 @[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+
+instance (a : WalkingMultispan J) : Unique (a ⟶ a) where
+  default := 𝟙 _
+  uniq := by rintro ⟨⟩; rfl
+
+instance (a b : J.L) : Subsingleton (left a ⟶ left b) := by
+  by_cases h : a = b
+  · subst h
+    infer_instance
+  · have : IsEmpty (left a ⟶ left b) := ⟨by rintro ⟨⟩; simp at h⟩
+    infer_instance
+
+instance (a b : J.R) : Subsingleton (right a ⟶ right b) := by
+  by_cases h : a = b
+  · subst h
+    infer_instance
+  · have : IsEmpty (right a ⟶ right b) := ⟨by rintro ⟨⟩; simp at h⟩
+    infer_instance
+
+instance (a : J.R) (b : J.L) : IsEmpty (right a ⟶ left b) := ⟨by rintro ⟨⟩⟩
+
+instance : LocallySmall.{t} (WalkingMultispan J) where
+  hom_small := by
+    rintro (l | r) (l' | r')
+    · infer_instance
+    · let T₁ := { u : Unit // J.fst l = r' }
+      let T₂ := { u : Unit // J.snd l = r' }
+      let f : T₁ ⊕ T₂ → (left l ⟶ right r') :=
+        Sum.elim (fun ⟨_, h⟩ ↦ by subst h; exact Hom.fst l)
+          (fun ⟨_, h⟩ ↦ by subst h; exact Hom.snd l)
+      refine small_of_surjective (f := f) ?_
+      rintro (_ | _)
+      · exact ⟨Sum.inl ⟨⟨⟩, rfl⟩, rfl⟩
+      · exact ⟨Sum.inr ⟨⟨⟩, rfl⟩, rfl⟩
+    · infer_instance
+    · infer_instance
 
 variable (J) in
 /-- The bijection `WalkingMultispan J ≃ J.L ⊕ J.R`. -/

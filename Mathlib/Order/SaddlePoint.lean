@@ -33,7 +33,7 @@ variable (X : Set E) (Y : Set F) (f : E → F → β)
 
 /-- The trivial minimax inequality -/
 theorem iSup₂_iInf₂_le_iInf₂_iSup₂ [CompleteLinearOrder β] :
-  ⨆ y ∈ Y, ⨅ x ∈ X, f x y ≤ ⨅ x ∈ X, ⨆ y ∈ Y, f x y := by
+    ⨆ y ∈ Y, ⨅ x ∈ X, f x y ≤ ⨅ x ∈ X, ⨆ y ∈ Y, f x y := by
   rw [iSup₂_le_iff]; intro y hy
   rw [le_iInf₂_iff]; intro x hx
   exact iInf₂_le_of_le x hx (le_iSup₂_of_le y hy (le_refl _))
