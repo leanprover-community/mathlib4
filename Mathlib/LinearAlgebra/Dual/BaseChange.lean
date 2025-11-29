@@ -67,7 +67,7 @@ end Module.Dual
 
 namespace IsBaseChange
 
-open TensorProduct
+open Module TensorProduct
 
 variable {R : Type*} [CommSemiring R]
   {V : Type*} [AddCommMonoid V] [Module R V]
@@ -77,8 +77,8 @@ variable {R : Type*} [CommSemiring R]
 
 /-- The base change of an element of the dual. -/
 noncomputable def toDual :
-    Module.Dual R V →ₗ[R] Module.Dual A W :=
-  IsBaseChange.linearMapLeftRightHom ibc (Algebra.linearMap R A)
+    Dual R V →ₗ[R] Dual A W :=
+  linearMapLeftRightHom ibc (Algebra.linearMap R A)
 
 theorem toDual_comp_apply (f : Module.Dual R V) (v : V) :
     ibc.toDual f (j v) = algebraMap R A (f v) := by
@@ -106,19 +106,19 @@ noncomputable def toDualBaseChange :
     | tmul b f =>
       simp [TensorProduct.smul_tmul', mul_smul]
 
-theorem toDualBaseChange_tmul (a : A) (f : Module.Dual R V) (v : V) :
+theorem toDualBaseChange_tmul (a : A) (f : Dual R V) (v : V) :
     (ibc.toDualBaseChange (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
   simp [toDualBaseChange, toDual_comp_apply]
 
-variable [Module.Free R V] [Module.Finite R V]
+variable [Free R V] [Module.Finite R V]
 
 /-- The linear equivalence underlying `IsBaseChange.dual`. -/
 noncomputable def toDualBaseChangeLinearEquiv :
-    A ⊗[R] Module.Dual R V ≃ₗ[A] Module.Dual A W := by
+    A ⊗[R] Dual R V ≃ₗ[A] Dual A W := by
   apply LinearEquiv.ofBijective ibc.toDualBaseChange
-  let b := Module.Free.chooseBasis R V
-  set ι := Module.Free.ChooseBasisIndex R V
-  have : Fintype ι := Module.Free.ChooseBasisIndex.fintype R V
+  let b := Free.chooseBasis R V
+  set ι := Free.ChooseBasisIndex R V
+  have : Fintype ι := Free.ChooseBasisIndex.fintype R V
   have ibc' : IsBaseChange A (Algebra.linearMap R A) := linearMap R A
   have ibc'_pow := ibc'.finitePow ι
   suffices ibc.toDualBaseChange = (((b.constr R).symm.baseChange ..).trans ibc'_pow.equiv).trans
@@ -132,7 +132,7 @@ noncomputable def toDualBaseChangeLinearEquiv :
   | zero => simp
   | tmul v =>
     simp only [toDualBaseChange_tmul, one_mul]
-    conv_lhs => rw [← Module.Basis.sum_equivFun b v, map_sum]
+    conv_lhs => rw [← Basis.sum_equivFun b v, map_sum]
     simp [LinearEquiv.baseChange, IsBaseChange.equiv_tmul,
       basis_repr_comp_apply, b.constr_symm_apply]
   | smul a w h => simp [h]
