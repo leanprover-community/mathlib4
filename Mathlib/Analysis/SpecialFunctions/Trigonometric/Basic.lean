@@ -816,6 +816,59 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   congr
   ring
 
+/- TODO: Make a `simproc` to automatically normalise `cos (m * π /  n)` for integers `m` and `n`.
+   See the discussion at https://github.com/leanprover-community/mathlib4/pull/25009 -/
+
+/-- `cos ((n - 1) * π / n) = - cos π / n`. -/
+@[simp]
+theorem cos_ofNat_mul_pi_div_ofNat_of_eq_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) - 1 := by norm_num) :
+    cos (ofNat(m) * π / ofNat(n)) = - cos (π / ofNat(n)) := by
+  rw [← cos_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `cos ((2 * n - 1) * π / n) = cos π / n` -/
+@[simp]
+theorem cos_ofNat_mul_pi_div_ofNat_of_eq_two_mul_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = 2 * (ofNat(n) : ℝ) - 1 := by norm_num) :
+    cos (ofNat(m) * π / ofNat(n)) = cos (π / ofNat(n)) := by
+  rw [← cos_two_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `cos ((n + 1) * π / n) = - cos π / n` -/
+@[simp]
+theorem cos_ofNat_mul_pi_div_ofNat_of_eq_add_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) + 1 := by norm_num) :
+    cos (ofNat(m) * π / ofNat(n)) = - cos (π / ofNat(n)) := by
+  rw [← cos_add_pi, div_add' _ _ _ (NeZero.ne _), h]
+  ring_nf
+
+/- TODO: Make a `simproc` to automatically normalise `sin (m * π /  n)` for integers `m` and `n`. -/
+
+/-- `sin ((n - 1) * π / n) = sin π / n`. -/
+@[simp]
+theorem sin_ofNat_mul_pi_div_ofNat_of_eq_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) - 1 := by norm_num) :
+    sin (ofNat(m) * π / ofNat(n)) = sin (π / ofNat(n)) := by
+  rw [← sin_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `sin ((2 * n - 1) * π / n) = - sin π / n` -/
+@[simp]
+theorem sin_ofNat_mul_pi_div_ofNat_of_eq_two_mul_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = 2 * (ofNat(n) : ℝ) - 1 := by norm_num) :
+    sin (ofNat(m) * π / ofNat(n)) = - sin (π / ofNat(n)) := by
+  rw [← sin_two_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `sin ((n + 1) * π / n) = - sin π / n` -/
+@[simp]
+theorem sin_ofNat_mul_pi_div_ofNat_of_eq_add_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) + 1 := by norm_num) :
+    sin (ofNat(m) * π / ofNat(n)) = - sin (π / ofNat(n)) := by
+  rw [← sin_add_pi, div_add' _ _ _ (NeZero.ne _), h]
+  ring_nf
+
 theorem quadratic_root_cos_pi_div_five :
     letI c := cos (π / 5)
     4 * c ^ 2 - 2 * c - 1 = 0 := by
@@ -970,6 +1023,32 @@ theorem tan_nat_mul_pi_sub (x : ℝ) (n : ℕ) : tan (n * π - x) = -tan x :=
 
 theorem tan_int_mul_pi_sub (x : ℝ) (n : ℤ) : tan (n * π - x) = -tan x :=
   tan_neg x ▸ tan_periodic.int_mul_sub_eq n
+
+/- TODO: Make a `simproc` to automatically normalise `tan (m * π /  n)` for integers `m` and `n`. -/
+
+/-- `tan ((n - 1) * π / n) = - tan π / n`. -/
+@[simp]
+theorem tan_ofNat_mul_pi_div_ofNat_of_eq_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) - 1 := by norm_num) :
+    tan (ofNat(m) * π / ofNat(n)) = - tan (π / ofNat(n)) := by
+  rw [← tan_pi_sub, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `tan ((2 * n - 1) * π / n) = - tan π / n` -/
+@[simp]
+theorem tan_ofNat_mul_pi_div_ofNat_of_eq_two_mul_sub_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = 2 * (ofNat(n) : ℝ) - 1 := by norm_num) :
+    tan (ofNat(m) * π / ofNat(n)) = - tan (π / ofNat(n)) := by
+  rw [← tan_nat_mul_pi_sub _ 2, sub_div' (NeZero.ne _), h]
+  ring_nf
+
+/-- `tan ((n + 1) * π / n) = tan π / n` -/
+@[simp]
+theorem tan_ofNat_mul_pi_div_ofNat_of_eq_add_one {m n} [NeZero (ofNat(n) : ℝ)]
+    (h : ofNat(m) = (ofNat(n) : ℝ) + 1 := by norm_num) :
+    tan (ofNat(m) * π / ofNat(n)) = tan (π / ofNat(n)) := by
+  rw [← tan_add_pi (π / ofNat(n)), div_add' _ _ _ (NeZero.ne _), h]
+  ring_nf
 
 theorem tendsto_sin_pi_div_two : Tendsto sin (𝓝[<] (π / 2)) (𝓝 1) := by
   convert continuous_sin.continuousWithinAt.tendsto
