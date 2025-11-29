@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 In this file, we define the de Rham period ring \(\mathbb{B}_dR^+\) and
 the de Rham ring \(\mathbb{B}_dR\). We define a generalized version of
 these period rings following Scholze. When `R` is the ring of integers
-of `ℂ_p`, they coincide with the classical de Rham period rings.
+of `ℂₚ` (`PadicComplexInt`), they coincide with the classical de Rham period rings.
 
 ## Main definitions
 
@@ -27,8 +27,7 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 
 1. Extend the θ map to \(\mathbb{B}_dR^+\)
 2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
-3. Show that ker θ is principal when the base ring is
-integral perfectoid.
+3. Show that ker θ is principal when the base ring is integral perfectoid.
 
 Currently, the period ring `BDeRhamPlus` takes the ring of integers `R` as the input.
 After the perfectoid theory is developed, we can modify it to
@@ -63,21 +62,20 @@ noncomputable section
 The Fontaine's θ map inverting `p`. Note that if `p = 0` in `R`, then this is the zero map.
 -/
 def fontaineThetaInvertP :
-    Localization.Away (M := 𝕎 R♭) (p : 𝕎 R♭) →+* Localization.Away (p : R) :=
-  Localization.awayLift ((algebraMap R _).comp (fontaineTheta R p)) (p : 𝕎 (R♭))
+    Localization.Away (p : 𝕎 R♭) →+* Localization.Away (p : R) :=
+  Localization.awayLift ((algebraMap R _).comp (fontaineTheta R p)) (p : 𝕎 R♭)
       (by simpa using IsLocalization.Away.algebraMap_isUnit (p : R))
 
 /--
 The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
-It is the completion of `𝕎 (R♭)` inverting `p` with respect to the kernel of
-the Fontaine's θ map. When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
+It is the completion of `𝕎 R♭` inverting `p` with respect to the kernel of
+the Fontaine's θ map. When \(R = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring. Note that if `p = 0` in `R`,
 then this
 definition is the zero ring.
 -/
 def BDeRhamPlus : Type u :=
-  AdicCompletion (R := (Localization.Away (M := 𝕎 (R♭)) p))
-      (RingHom.ker <| fontaineThetaInvertP R p) (Localization.Away (M := 𝕎 (R♭)) p)
+  AdicCompletion (RingHom.ker (fontaineThetaInvertP R p)) (Localization.Away (p : 𝕎 R♭))
 
 instance : CommRing (BDeRhamPlus R p) := AdicCompletion.instCommRing _
 
@@ -86,17 +84,16 @@ The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
 It is defined as \(\mathbb{B}_dR^+\) inverting the generators of the ideal `ker θ`.
 Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`
 after we show that it is principal.
-When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
+When \(R = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring.
 Note that if `p = 0` in `R`, then this definition is the zero ring.
 -/
 def BDeRham : Type u :=
   Localization (M := BDeRhamPlus R p) <| Submonoid.closure <|
-    (AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP R p))) _) ''
+    AdicCompletion.of ((RingHom.ker (fontaineThetaInvertP R p))) _ ''
       {a | (RingHom.ker (fontaineThetaInvertP R p)) = Ideal.span {a}}
 
 local notation "𝔹_dR^+(" R ")" => BDeRhamPlus R p
-
 local notation "𝔹_dR(" R ")" => BDeRham R p
 
 end
