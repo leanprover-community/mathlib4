@@ -14,16 +14,16 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 /-! # Base change properties for modules of linear maps
 
 * `IsBaseChange.linearMapRight`:
-  If `M` has a finite basis and `P` is a base change of `N` to `S`,
+  If `M` is finite free and `P` is a base change of `N` to `S`,
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.linearMapLeftRight`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   if `Q` is a base change of `N` to `S`,
   then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.end`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
@@ -120,6 +120,16 @@ theorem linearMapLeftRightHom_apply
     linearMapLeftRightHom j β f p = ((liftBaseChangeEquiv S) (β ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
+theorem linearMapLeftRightHom_comp_apply
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) (m : M) :
+    linearMapLeftRightHom j β f (α m) = β (f m) := by
+  simp [linearMapLeftRightHom_apply, IsBaseChange.equiv_symm_apply]
+
+theorem linearMapLeftRightHom_comp
+    {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) :
+    (linearMapLeftRightHom j β f).restrictScalars R ∘ₗ α = β ∘ₗ f := by
+  ext; simp [linearMapLeftRightHom_comp_apply]
+
 variable [Module.Free R M] [Module.Finite R M]
 
 theorem linearMapLeftRight {α : M →ₗ[R] P} (j : IsBaseChange S α)
@@ -154,14 +164,6 @@ theorem endHom_apply
 variable [Module.Free R M] [Module.Finite R M]
 
 theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    IsBaseChange S (endHom j) := by
-  apply of_equiv <|
-      (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
-  intro f
-  ext p
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
-
-theorem « end » {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     IsBaseChange S (endHom j) := by
   apply of_equiv <|
       (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
