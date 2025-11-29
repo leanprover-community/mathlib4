@@ -459,9 +459,9 @@ section ProdDomain
 /-!
 ### Case of a product space domain
 
-Here we identify `E` with `E₁ × E₂`, `G` with `E₁` and `g : E → G` with the first projection. Now
-given `f : E₁ × E₂ → F` and its two partial derivatives, the second invertible, we may construct an
-instance of the `ImplicitFunctionData` data structure and extract `ψ : E₁ → E₂` with the desired
+Given `f : E₁ × E₂ → F` and its two partial derivatives, the second invertible, we may construct an
+`ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁` where the first function is `f`, and the second function is
+`Prod.fst : E₁ × E₂ → E₁`. We may then extract `ψ : E₁ → E₂` with the desired
 properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain`. A formula
 for the first derivative of `ψ` is immediately derived.
 -/
@@ -471,7 +471,7 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 E₂] [CompleteSpace E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
 /-- Given linear maps `f₁ : E₁ →L[𝕜] F` and `f₂ : E₂ ≃L[𝕜] F` (the second invertible) and that
-`HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E → F` and `g : E → G` in
+`HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E₁ × E₂ → F` and `Prod.fst : E₁ × E₂ → E₁` in
 the original formulation are complementary and construct an object of type `ImplicitFunctionData`
 thereby permitting use of the general machinery provided above. -/
 def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
