@@ -50,8 +50,9 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance (α : Type*) [h : Inhabited α] : Inhabited αᵒᵈ := h
 instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ := h
+instance (α : Type*) [h : Inhabited α] : Inhabited αᵒᵈ := h
+instance (α : Type*) [h : Nontrivial α] : Nontrivial αᵒᵈ := h
 instance (α : Type*) [h : Unique α] : Unique αᵒᵈ := h
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
@@ -178,6 +179,7 @@ instance (α : Type*) [h : DecidableEq α] : DecidableEq (Lex α) := h
 
 instance (α : Type*) [h : Inhabited α] : Inhabited (Lex α) := h
 instance (α : Type*) [h : Nonempty α] : Nonempty (Lex α) := h
+instance (α : Type*) [h : Nontrivial α] : Nontrivial (Lex α) := h
 instance (α : Type*) [h : Unique α] : Unique (Lex α) := h
 
 instance {α γ} [H : CoeFun α γ] : CoeFun (Lex α) γ where
@@ -235,6 +237,7 @@ instance (α : Type*) [h : DecidableEq α] : DecidableEq (Colex α) := h
 
 instance (α : Type*) [h : Inhabited α] : Inhabited (Colex α) := h
 instance (α : Type*) [h : Nonempty α] : Nonempty (Colex α) := h
+instance (α : Type*) [h : Nontrivial α] : Nontrivial (Colex α) := h
 instance (α : Type*) [h : Unique α] : Unique (Colex α) := h
 
 instance {α γ} [H : CoeFun α γ] : CoeFun (Colex α) γ where
