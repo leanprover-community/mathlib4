@@ -43,6 +43,8 @@ The obvious map from `α` to `1.Combination α`, as an equivariant map.
 
 -/
 
+@[expose] public section
+
 instance (α : Type*) [Nontrivial α] :
     Nontrivial (Equiv.Perm α) := by
   have : DecidableEq α := Classical.typeDecidableEq α
