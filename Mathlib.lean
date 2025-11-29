@@ -12729,6 +12729,7 @@ public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.RelSeries
 public import Mathlib.Order.Restriction
+public import Mathlib.Order.SaddlePoint
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
