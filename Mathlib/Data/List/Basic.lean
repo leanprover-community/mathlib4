@@ -540,11 +540,11 @@ theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
-theorem idxOf_le_prefix (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
+theorem IsPrefix.idxOf_le (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
   obtain ⟨l₃, rfl⟩ := hl
   grind
 
-theorem idxOf_eq_of_mem_prefix (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁) :
+theorem IsPrefix.idxOf_eq_of_mem (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁) :
     l₁.idxOf a = l₂.idxOf a := by
   obtain ⟨l₃, rfl⟩ := hl
   exact idxOf_append_of_mem ha |>.symm
