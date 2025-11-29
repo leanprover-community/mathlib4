@@ -176,14 +176,17 @@ theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
 theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 
+@[grind =]
 theorem sup_idem (a : α) : a ⊔ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊔ ·) := ⟨sup_idem⟩
 
+@[grind =]
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 
 instance : Std.Commutative (α := α) (· ⊔ ·) := ⟨sup_comm⟩
 
+@[grind _=_]
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 
@@ -364,14 +367,17 @@ theorem inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a
 theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
   inf_le_inf le_rfl h
 
+@[grind =]
 theorem inf_idem (a : α) : a ⊓ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) := ⟨inf_idem⟩
 
+@[grind =]
 theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
 
 instance : Std.Commutative (α := α) (· ⊓ ·) := ⟨inf_comm⟩
 
+@[grind _=_]
 theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := @sup_assoc αᵒᵈ _ _ _ _
 
 instance : Std.Associative (α := α) (· ⊓ ·) := ⟨inf_assoc⟩
