@@ -34,46 +34,53 @@ lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a 
 
 namespace Mathlib.Meta.Positivity
 
-variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
+variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα? : Option Q(PartialOrder $α))
 
 /-- The result of `positivity` running on an expression `e` of type `α`. -/
-inductive Strictness (e : Q($α)) where
-  | positive (pf : Q(0 < $e))
-  | nonnegative (pf : Q(0 ≤ $e))
+inductive Strictness (pα? : Option Q(PartialOrder $α)) (e : Q($α)) where
+  | positive {ltα : Q(LT $α)} (pf : Q(0 < $e))
+  | nonnegative {leα : Q(LE $α)} (pf : Q(0 ≤ $e))
   | nonzero (pf : Q($e ≠ 0))
   | none
   deriving Repr
 
 /-- Gives a generic description of the `positivity` result. -/
-def Strictness.toString {e : Q($α)} : Strictness zα pα e → String
+def Strictness.toString {e : Q($α)} : Strictness zα pα? e → String
   | positive _ => "positive"
   | nonnegative _ => "nonnegative"
   | nonzero _ => "nonzero"
   | none => "none"
 
 /-- Extract a proof that `e` is positive, if possible, from `Strictness` information about `e`. -/
-def Strictness.toPositive {e} : Strictness zα pα e → Option Q(0 < $e)
+def Strictness.toPositive (pα : Q(PartialOrder $α)) {e} :
+    Strictness zα (some pα) e → Option Q(0 < $e)
   | .positive pf => some pf
   | _ => .none
 
 /-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
 -/
-def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
-  | .positive pf => some q(le_of_lt $pf)
+def Strictness.toNonneg (pα : Q(PartialOrder $α)) {e} :
+    Strictness zα (some pα) e → Option Q(0 ≤ $e)
+  | .positive pf => do
+    assumeInstancesCommute
+    some q(le_of_lt $pf)
   | .nonnegative pf => some pf
   | _ => .none
 
 /-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
-def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
-  | .positive pf => some q(ne_of_gt $pf)
+def Strictness.toNonzero {e} : Strictness zα pα? e → Option Q($e ≠ 0)
+  | .positive pf => do
+    let some _ := pα? | .none
+    assumeInstancesCommute
+    some q(ne_of_gt $pf)
   | .nonzero pf => some pf
   | _ => .none
 
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
-  eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
-    MetaM (Strictness zα pα e)
+  eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
+    MetaM (Strictness zα pα? e)
 
 /-- Read a `positivity` extension from a declaration of the right type. -/
 def mkPositivityExt (n : Name) : ImportM PositivityExt := do
@@ -191,25 +198,26 @@ lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedR
     rw [eq]
     exact ne_iff_lt_or_gt.2 (Or.inl neg)
 
-variable {zα pα} in
+variable {zα pα?} in
 /-- Converts a `MetaM Strictness` which can fail
 into one that never fails and returns `.none` instead. -/
-def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) :=
+def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα? e)) : MetaM (Strictness zα pα? e) :=
   try t catch e =>
     trace[Tactic.positivity.failure] "{e.toMessageData}"
     pure .none
 
-variable {zα pα} in
+variable {zα pα?} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
 def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
-    (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
+    (t : m (Strictness zα pα? e)) : m (Strictness zα pα? e) := do
   match ← t with
   | .none => failure
   | r => pure r
 
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
-def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone do
+def normNumPositivity (pα : Q(PartialOrder $α)) (e : Q($α))
+    : MetaM (Strictness zα pα e) := catchNone do
   match ← NormNum.derive e with
   | .isBool .. => failure
   | .isNat _ lit p =>
@@ -291,7 +299,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       pure (.nonnegative q(nonneg_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
-def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
+def positivityCanon (pα : Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let _add ← synthInstanceQ q(AddMonoid $α)
   let _le ← synthInstanceQ q(PartialOrder $α)
   let _i ← synthInstanceQ q(CanonicallyOrderedAdd $α)
@@ -299,33 +307,46 @@ def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
   pure (.nonnegative q(zero_le $e))
 
 /-- A variation on `assumption` when the hypothesis is `lo ≤ e` where `lo` is a numeral. -/
-def compareHypLE (lo e : Q($α)) (p₂ : Q($lo ≤ $e)) : MetaM (Strictness zα pα e) := do
+def compareHypLE (pα : Q(PartialOrder $α)) (lo e : Q($α)) (p₂ : Q($lo ≤ $e)) :
+    MetaM (Strictness zα pα e) := do
   match ← normNumPositivity zα pα lo with
-  | .positive p₁ => pure (.positive q(lt_of_lt_of_le $p₁ $p₂))
-  | .nonnegative p₁ => pure (.nonnegative q(le_trans $p₁ $p₂))
+  | .positive p₁ => do
+    assumeInstancesCommute
+    pure (.positive q(lt_of_lt_of_le $p₁ $p₂))
+  | .nonnegative p₁ => do
+    assumeInstancesCommute
+    pure (.nonnegative q(le_trans $p₁ $p₂))
   | _ => pure .none
 
 /-- A variation on `assumption` when the hypothesis is `lo < e` where `lo` is a numeral. -/
-def compareHypLT (lo e : Q($α)) (p₂ : Q($lo < $e)) : MetaM (Strictness zα pα e) := do
+def compareHypLT (pα : Q(PartialOrder $α)) (lo e : Q($α)) (p₂ : Q($lo < $e)) :
+    MetaM (Strictness zα pα e) := do
   match ← normNumPositivity zα pα lo with
-  | .positive p₁ => pure (.positive q(lt_trans $p₁ $p₂))
-  | .nonnegative p₁ => pure (.positive q(lt_of_le_of_lt $p₁ $p₂))
+  | .positive p₁ => do
+    assumeInstancesCommute
+    pure (.positive q(lt_trans $p₁ $p₂))
+  | .nonnegative p₁ => do
+    assumeInstancesCommute
+    pure (.positive q(lt_of_le_of_lt $p₁ $p₂))
   | _ => pure .none
 
 /-- A variation on `assumption` when the hypothesis is `x = e` where `x` is a numeral. -/
-def compareHypEq (e x : Q($α)) (p₂ : Q($x = $e)) : MetaM (Strictness zα pα e) := do
+def compareHypEq (pα : Q(PartialOrder $α)) (e x : Q($α)) (p₂ : Q($x = $e)) :
+    MetaM (Strictness zα pα e) := do
   match ← normNumPositivity zα pα x with
   | .positive p₁ => pure (.positive q(lt_of_lt_of_eq $p₁ $p₂))
   | .nonnegative p₁ => pure (.nonnegative q(le_of_le_of_eq $p₁ $p₂))
   | .nonzero p₁ => pure (.nonzero q(ne_of_ne_of_eq' $p₁ $p₂))
   | .none => pure .none
 
+
 initialize registerTraceClass `Tactic.positivity
 initialize registerTraceClass `Tactic.positivity.failure
 
 /-- A variation on `assumption` which checks if the hypothesis `ldecl` is `a [</≤/=] e`
 where `a` is a numeral. -/
-def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) := do
+def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
+    MetaM (Strictness zα pα e) := do
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with
@@ -357,7 +378,7 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
       match rhs with
       | ~q(0) => pure <| .nonnegative q(ge_of_eq $p)
       | _ => compareHypEq zα pα e rhs q(Eq.symm $p)
-  | ~q(@Ne.{u + 1} $α' $lhs $rhs) =>
+  | ~q(@Ne.{u+1} $α' $lhs $rhs) =>
     let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
     match lhs, rhs with
     | ~q(0), _ =>
@@ -369,46 +390,81 @@ def compareHyp (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e) :
     | _, _ => pure .none
   | _ => pure .none
 
-variable {zα pα} in
+def compareHypNonzero (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα .none e) := do
+  have e' : Q(Prop) := ldecl.type
+  let p : Q($e') := .fvar ldecl.fvarId
+  match e' with
+  | ~q(@Ne.{u+1} $α' $lhs $rhs) =>
+    let .defEq (_ : $α =Q $α') ← isDefEqQ α α' | pure .none
+    match lhs, rhs with
+    | ~q(0), _ =>
+      let .defEq _ ← isDefEqQ e rhs | pure .none
+      pure <| .nonzero q(Ne.symm $p)
+    | _, ~q(0) =>
+      let .defEq _ ← isDefEqQ e lhs | pure .none
+      pure <| .nonzero q($p)
+    | _, _ => pure .none
+  | _ => pure .none
+
+variable {zα pα?} in
 /-- The main combinator which combines multiple `positivity` results.
 It assumes `t₁` has already been run for a result, and runs `t₂` and takes the best result.
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
-def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
-    MetaM (Strictness zα pα e) := do
+def orElse {e : Q($α)} (t₁ : Strictness zα pα? e) (t₂ : MetaM (Strictness zα pα? e)) :
+    MetaM (Strictness zα pα? e) := do
   match t₁ with
   | .none => catchNone t₂
   | p@(.positive _) => pure p
   | .nonnegative p₁ =>
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
-    | .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
+    | .nonzero p₂ =>
+      let some _ := pα? | throwError "cannot synth PartialOrd for {α}"
+      assumeInstancesCommute
+      pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
     | _ => pure (.nonnegative p₁)
   | .nonzero p₁ =>
     match ← catchNone t₂ with
     | p@(.positive _) => pure p
-    | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
+    | .nonnegative p₂ =>
+      let some _ := pα? | throwError "cannot synth PartialOrd for {α}"
+      assumeInstancesCommute
+      pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
     | _ => pure (.nonzero p₁)
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
-def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
+def core (e : Q($α)) : MetaM (Strictness zα pα? e) := do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
     try
-      result ← orElse result <| ext.eval zα pα e
+      result ← orElse result <| ext.eval zα pα? e
     catch err =>
       trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
-  result ← orElse result <| normNumPositivity zα pα e
-  result ← orElse result <| positivityCanon zα pα e
-  if let .positive _ := result then
+  trace[Tactic.positivity] "current result from ext: {result.toString}" -- ??
+  match pα? with
+  | some pα =>
+    result ← orElse result <| normNumPositivity zα pα e
+    result ← orElse result <| positivityCanon zα pα e
+    if let .positive _ := result then
+      trace[Tactic.positivity] "{e} => {result.toString}"
+      return result
+    for ldecl in ← getLCtx do
+      if !ldecl.isImplementationDetail then
+        result ← orElse result <| compareHyp zα pα e ldecl
     trace[Tactic.positivity] "{e} => {result.toString}"
-    return result
-  for ldecl in ← getLCtx do
-    if !ldecl.isImplementationDetail then
-      result ← orElse result <| compareHyp zα pα e ldecl
-  trace[Tactic.positivity] "{e} => {result.toString}"
-  throwNone (pure result)
+    throwNone (pure result)
+  | .none =>
+    if let .nonzero _ := result then
+      trace[Tactic.positivity] "{e} => {result.toString}"
+      return result
+    for ldecl in ← getLCtx do
+      if !ldecl.isImplementationDetail then
+        result ← orElse result <| compareHypNonzero zα e ldecl
+    trace[Tactic.positivity] "{e} => {result.toString}"
+    throwNone (pure result)
+
 
 private inductive OrderRel : Type
 | le : OrderRel -- `0 ≤ a`
@@ -425,8 +481,8 @@ inequality was established) together with the proof as an expression. -/
 def bestResult (e : Expr) : MetaM (Bool × Expr) := do
   let ⟨u, α, _⟩ ← inferTypeQ' e
   let zα ← synthInstanceQ q(Zero $α)
-  let pα ← synthInstanceQ q(PartialOrder $α)
-  match ← try? (Meta.Positivity.core zα pα e) with
+  let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
+  match ← try? (Meta.Positivity.core zα pα? e) with
   | some (.positive pf) => pure (true, pf)
   | some (.nonnegative pf) => pure (false, pf)
   | _ => throwError "could not establish the nonnegativity of {e}"
@@ -445,26 +501,41 @@ def solve (t : Q(Prop)) : MetaM Expr := do
     let zα ← synthInstanceQ q(Zero $α)
     assumeInstancesCommute
     let .true ← isDefEq z q(0 : $α) | throwError "not a positivity goal"
-    let pα ← synthInstanceQ q(PartialOrder $α)
+    let pα? ← try? <| synthInstanceQ q(PartialOrder $α)
     assumeInstancesCommute
-    let r ← catchNone <| Meta.Positivity.core zα pα e
+    let r ← catchNone <| Meta.Positivity.core zα pα? e
     let throw (a b : String) : MetaM Expr := throwError
       "failed to prove {a}, but it would be possible to prove {b} if desired"
-    let p ← show MetaM Expr from match relDesired, r with
-    | .lt, .positive p
-    | .le, .nonnegative p
-    | .ne, .nonzero p => pure p
-    | .le, .positive p => pure q(le_of_lt $p)
-    | .ne, .positive p => pure q(ne_of_gt $p)
-    | .ne', .positive p => pure q(ne_of_lt $p)
-    | .ne', .nonzero p => pure q(Ne.symm $p)
-    | .lt, .nonnegative _ => throw "strict positivity" "nonnegativity"
-    | .lt, .nonzero _ => throw "strict positivity" "nonzeroness"
-    | .le, .nonzero _ => throw "nonnegativity" "nonzeroness"
-    | .ne, .nonnegative _
-    | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
-    | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
-    pure p
+    if let some _ := pα? then
+      let p ← show MetaM Expr from match relDesired, r with
+      | .lt, .positive p
+      | .le, .nonnegative p
+      | .ne, .nonzero p => pure p
+      | .le, .positive p => do
+        assumeInstancesCommute
+        pure q(le_of_lt $p)
+      | .ne, .positive p => do
+        assumeInstancesCommute
+        pure q(ne_of_gt $p)
+      | .ne', .positive p => do
+        assumeInstancesCommute
+        pure q(ne_of_lt $p)
+      | .ne', .nonzero p => pure q(Ne.symm $p)
+      | .lt, .nonnegative _ => throw "strict positivity" "nonnegativity"
+      | .lt, .nonzero _ => throw "strict positivity" "nonzeroness"
+      | .le, .nonzero _ => throw "nonnegativity" "nonzeroness"
+      | .ne, .nonnegative _
+      | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
+      | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
+      pure p
+    else
+      let p ← show MetaM Expr from match relDesired, r with
+      | .ne, .nonzero p => pure p
+      | .ne', .nonzero p => pure q(Ne.symm $p)
+      | .lt, .nonzero _ => throw "strict positivity" "nonzeroness"
+      | .le, .nonzero _ => throw "nonnegativity" "nonzeroness"
+      | _, _ => throwError "failed to prove nonzeroness"
+      pure p
   match t with
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
