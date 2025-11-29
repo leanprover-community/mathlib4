@@ -178,7 +178,7 @@ theorem QuasiconvexOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
 
 theorem QuasilinearOn.isPreconnected_preimage_subtype {s : Set E} {t : β}
     (hfc : QuasilinearOn ℝ s f) :
-    IsPreconnected (s ↓∩ (f ⁻¹' Iic t)) :=
+    IsPreconnected (s ↓∩ f ⁻¹' Iic t) :=
   hfc.left.isPreconnected_preimage_subtype
 
 end Preconnected
