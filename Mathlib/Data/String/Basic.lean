@@ -3,16 +3,21 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.String.Lemmas
-import Mathlib.Data.List.Lex
-import Mathlib.Data.Char
-import Mathlib.Algebra.Order.Group.Nat
+module
+
+public import Batteries.Data.String.Lemmas
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.Char
+public import Mathlib.Algebra.Order.Group.Nat
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
 # Strings
 
 Supplementary theorems about the `String` type.
 -/
+
+@[expose] public section
 
 namespace String
 
@@ -36,7 +41,7 @@ instance decidableLT' : DecidableLT String := by
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
-def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
+@[no_expose] def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
     (it₁ it₂ : Legacy.Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
       i₁.get s₁ = i₂.get s₂ →
@@ -63,7 +68,7 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
   | case1 s₁ s₂ h₁ h₂ h ih =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
-    · simp [Legacy.Iterator.next, String.Pos.Raw.next, get_cons_addChar]
+    · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
     · simpa [Legacy.Iterator.curr, get_cons_addChar] using h
   | case2 s₁ s₂ h₁ h₂ h =>

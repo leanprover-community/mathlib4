@@ -3,10 +3,12 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.GroupTheory.Coprod.Basic
-import Mathlib.GroupTheory.Complement
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.Complement
 
 /-!
 
@@ -30,6 +32,8 @@ and Hanna Neumann.
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -557,6 +561,8 @@ theorem prod_smul (g : HNNExtension G A B φ) (w : NormalWord d) :
     rw [← mul_right_inj x, ← ih]
     simp
 
+-- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
+set_option linter.flexible false in
 @[simp]
 theorem prod_smul_empty (w : NormalWord d) :
     (w.prod φ) • empty = w := by

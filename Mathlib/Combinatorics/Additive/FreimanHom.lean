@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.ZMod.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Freiman homomorphisms
@@ -59,6 +61,8 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
   `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
 * Affine maps are Freiman homomorphisms.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
@@ -402,6 +406,8 @@ lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
       simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn] using huk
     exact ⟨congr_arg _, CharP.natCast_injOn_Iio _ (n + 1) (this hsA hs) (this htA ht)⟩
 
+-- TODO: find a good way to fix the non-terminal simp
+set_option linter.flexible false in
 /-- **No wrap-around principle**.
 
 The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k` elements of `ℕ`

@@ -3,9 +3,11 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Dynamical entourages
@@ -34,6 +36,8 @@ Add product of entourages.
 In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
 these dynamical entourages.
 -/
+
+@[expose] public section
 
 namespace Dynamics
 
@@ -75,9 +79,11 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   simp only [map_iterate, _root_.ball_preimage]
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
+set_option linter.flexible false in -- simp followed by infer_instance
 instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
   simp [dynEntourage]; infer_instance
 
+set_option linter.flexible false in -- simp followed by infer_instance
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
   simp [dynEntourage]; infer_instance
 

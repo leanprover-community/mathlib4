@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Partial homeomorphisms
@@ -54,6 +56,8 @@ For design notes, see `PartialEquiv.lean`.
 If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology
 

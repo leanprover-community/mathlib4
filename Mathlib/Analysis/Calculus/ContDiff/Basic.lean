@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Higher differentiability of composition
@@ -31,6 +33,8 @@ In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : 
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -359,7 +363,7 @@ theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap
   · intro x hx
     simp only [(hf.zero_eq (g x) hx).symm, Function.comp_apply]
     change (p (g x) 0 fun _ : Fin 0 => g 0) = p (g x) 0 0
-    rw [ContinuousLinearMap.map_zero]
+    rw [map_zero]
     rfl
   · intro m hm x hx
     convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x

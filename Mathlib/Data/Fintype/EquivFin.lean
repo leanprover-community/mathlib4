@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.NodupEquivFin
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.List.NodupEquivFin
 
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`
@@ -32,6 +34,8 @@ We provide `Infinite` instances for
 * type constructors: `Multiset α`, `List α`
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -235,7 +239,7 @@ theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
   card_le_one_iff.trans subsingleton_iff.symm
 
 theorem one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
-  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
+  contrapose!; exact card_le_one_iff_subsingleton
 
 theorem exists_ne_of_one_lt_card (h : 1 < card α) (a : α) : ∃ b : α, b ≠ a :=
   haveI : Nontrivial α := one_lt_card_iff_nontrivial.1 h

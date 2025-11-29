@@ -3,19 +3,21 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Int.Order.Units
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fintype
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Data.Finset.Sigma
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Logic.Equiv.Fintype
+public import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -26,6 +28,8 @@ associating a `ℤˣ` sign with a permutation.
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -359,7 +363,7 @@ variable [Fintype α]
 
 @[simp]
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
-  MonoidHom.map_mul sign f g
+  map_mul sign f g
 
 @[simp]
 theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
@@ -367,15 +371,15 @@ theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
 
 @[simp]
 theorem sign_one : sign (1 : Perm α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_refl : sign (Equiv.refl α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
-  rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
+  rw [map_inv sign f, Int.units_inv_eq_self]
 
 @[simp]
 theorem sign_symm (e : Perm α) : sign e.symm = sign e :=

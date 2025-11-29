@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.ZMod.Coprime
-import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-import Mathlib.NumberTheory.LSeries.Linearity
-import Mathlib.NumberTheory.LSeries.Nonvanishing
+module
+
+public import Mathlib.Data.ZMod.Coprime
+public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
+public import Mathlib.NumberTheory.LSeries.Linearity
+public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
@@ -65,6 +67,8 @@ We give two versions of **Dirichlet's Theorem**:
 
 prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
+
+@[expose] public section
 
 /-!
 ### Auxiliary statements
@@ -471,8 +475,7 @@ integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers
 such that `(p : ZMod q) = a`. -/
 theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
-  by_contra H
-  rw [Set.not_infinite] at H
+  by_contra! H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 

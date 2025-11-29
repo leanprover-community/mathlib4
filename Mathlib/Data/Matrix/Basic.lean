@@ -3,12 +3,14 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.RingEquiv
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices
@@ -27,6 +29,8 @@ as having the right type. Instead, `Matrix.of` should be used.
 Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -603,6 +607,10 @@ theorem mapMatrix_id : (RingHom.id α).mapMatrix = RingHom.id (Matrix m m α) :=
 theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
+
+protected lemma _root_.Matrix.map_pow {α β : Type*} [Semiring α] [Semiring β]
+    (M : Matrix m m α) (f : α →+* β) (a : ℕ) : (M ^ a).map f = (M.map f) ^ a :=
+  f.mapMatrix.map_pow M a
 
 end RingHom
 

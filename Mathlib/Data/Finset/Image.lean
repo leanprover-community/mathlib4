@@ -3,15 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Finset.Attach
-import Mathlib.Data.Finset.Disjoint
-import Mathlib.Data.Finset.Erase
-import Mathlib.Data.Finset.Filter
-import Mathlib.Data.Finset.Range
-import Mathlib.Data.Finset.Lattice.Lemmas
-import Mathlib.Data.Finset.SDiff
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Data.Finset.Attach
+public import Mathlib.Data.Finset.Disjoint
+public import Mathlib.Data.Finset.Erase
+public import Mathlib.Data.Finset.Filter
+public import Mathlib.Data.Finset.Range
+public import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Data.Finset.SDiff
+public import Mathlib.Data.Fintype.Defs
 
 /-! # Image and map operations on finite sets
 
@@ -31,6 +33,8 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 -/
+
+@[expose] public section
 assert_not_exists Monoid IsOrderedMonoid
 
 variable {α β γ : Type*}
@@ -314,9 +318,7 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
-  refine ⟨fun h => ?_, Finset.mem_image_of_mem f⟩
-  obtain ⟨y, hy, heq⟩ := mem_image.1 h
-  exact hf heq ▸ hy
+  grind
 
 
 @[simp, norm_cast]
@@ -428,8 +430,7 @@ theorem erase_image_subset_image_erase [DecidableEq α] (f : α → β) (s : Fin
 
 @[simp]
 theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Finset α) (a : α) :
-    (s.erase a).image f = (s.image f).erase (f a) :=
-  coe_injective <| by push_cast [Set.image_diff hf, Set.image_singleton]; rfl
+    (s.erase a).image f = (s.image f).erase (f a) := by grind
 
 @[simp]
 theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ := mod_cast Set.image_eq_empty (f := f) (s := s)

@@ -3,10 +3,12 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Markus Himmel
 -/
-import Mathlib.SetTheory.Game.Birthday
-import Mathlib.SetTheory.Game.Impartial
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.SetTheory.Game.Impartial
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Specific.Nim` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -32,6 +34,8 @@ Sprague-Grundy theorem, since that requires the type of `nim` to be
 moves. We expose `toLeftMovesNim` and `toRightMovesNim` to conveniently convert an ordinal less than
 `o` into a left or right move of `nim o`, and vice versa.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -189,7 +193,7 @@ instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
   rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
-  use toRightMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
+  use toRightMovesNim ⟨0, pos_iff_ne_zero.2 ho⟩
   simp
 
 @[simp]

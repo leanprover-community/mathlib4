@@ -3,13 +3,17 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yi Yuan
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Fin.Rotate
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.Perm.Option
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 # Permutations of `Fin n`
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 
@@ -450,7 +454,7 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
   · simp [cycleIcc_of_lt ch2, cycleIcc_of_le_of_le ch ch1, cycleIcc_of_le_of_le ch (le_of_lt ch2)]
     split_ifs
     repeat cutsat
-  · simp [cycleIcc_of_le_of_le ch2 ch1, cycleIcc_of_le_of_le ch ch1]
+  · simp only [Function.comp_apply, cycleIcc_of_le_of_le ch2 ch1, cycleIcc_of_le_of_le ch ch1]
     split_ifs with h
     · exact val_eq_of_eq (cycleIcc_of_last hij)
     · simp [cycleIcc_of_gt (lt_of_le_of_lt ch2 (lt_add_one_of_succ_lt (by cutsat)))]

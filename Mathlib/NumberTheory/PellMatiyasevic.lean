@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.NumberTheory.Zsqrtd.Basic
+module
+
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Pell's equation and Matiyasevic's theorem
@@ -47,6 +49,8 @@ numbers but instead Davis' variant of using solutions to Pell's equation.
 Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
 
 -/
+
+@[expose] public section
 
 
 namespace Pell
@@ -234,6 +238,8 @@ theorem n_lt_xn (n) : n < xn a1 n :=
 theorem x_pos (n) : 0 < xn a1 n :=
   lt_of_le_of_lt (Nat.zero_le n) (n_lt_xn a1 n)
 
+-- TODO: fix non-terminal simp
+set_option linter.flexible false in
 theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     b ≤ pellZd a1 n → ∃ n, b = pellZd a1 n
   | 0, _ => fun h1 _ hl => ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩

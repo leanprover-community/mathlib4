@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Finset.Lattice.Lemmas
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
@@ -26,6 +28,8 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 * `Finset.eraseInduction`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -708,9 +712,7 @@ theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : #s ≤ 1
   Finset.card_le_one_iff.2 fun {_ _ _ _} => Subsingleton.elim _ _
 
 theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact card_le_one
+  contrapose!; exact card_le_one
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]

@@ -3,9 +3,11 @@ Copyright (c) 2025 X. Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-import Mathlib.NumberTheory.NumberField.Units.Regulator
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # CM-extension of number fields
@@ -47,6 +49,8 @@ results for the general case can be deduced for the CM case by using the isomorp
 `equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
 
 -/
+
+@[expose] public section
 
 open NumberField ComplexEmbedding InfinitePlace Algebra
 
@@ -255,7 +259,7 @@ by the complex conjugation, see `IsCMField.unitsComplexConj_eq_self_iff`.
 -/
 def realUnits : Subgroup (𝓞 K)ˣ := (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom).range
 
-omit [IsCMField K] in
+omit [NumberField K] [IsCMField K] in
 theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
     u ∈ realUnits K ↔ ∃ v : (𝓞 K⁺)ˣ, algebraMap (𝓞 K⁺) (𝓞 K) v = u := by
   simp [realUnits, MonoidHom.mem_range, RingHom.toMonoidHom_eq_coe, Units.ext_iff]
@@ -436,7 +440,7 @@ end maximalRealSubfield
 
 namespace CMExtension
 
-variable (F K : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Field K] [NumberField K]
+variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [NumberField K]
   [IsTotallyComplex K] [Algebra F K] [IsQuadraticExtension F K]
 
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :

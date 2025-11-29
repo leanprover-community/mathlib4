@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+module
+
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # Complex trigonometric functions
@@ -16,6 +18,8 @@ Several facts about the real trigonometric functions have the proofs deferred he
 as they are most easily proved by appealing to the corresponding fact for complex trigonometric
 functions, or require additional imports which are not available in that file.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -37,7 +41,7 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   ring
 
 theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
-  rw [← not_exists, not_iff_not, cos_eq_zero_iff]
+  contrapose!; exact cos_eq_zero_iff
 
 theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := by
   rw [← Complex.cos_sub_pi_div_two, cos_eq_zero_iff]
@@ -52,7 +56,7 @@ theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := 
     ring
 
 theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
-  rw [← not_exists, not_iff_not, sin_eq_zero_iff]
+  contrapose!; exact sin_eq_zero_iff
 
 /-- The tangent of a complex number is equal to zero
 iff this number is equal to `k * π / 2` for an integer `k`.
@@ -65,7 +69,7 @@ theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ
   simp [field, mul_comm, eq_comm]
 
 theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, (k * π / 2 : ℂ) ≠ θ := by
-  rw [← not_exists, not_iff_not, tan_eq_zero_iff]
+  contrapose!; exact tan_eq_zero_iff
 
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
@@ -77,6 +81,8 @@ See also `Complex.tan_eq_zero_iff` for a version that takes into account junk va
 theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
     cos x = cos y ↔ cos x - cos y = 0 := sub_eq_zero.symm

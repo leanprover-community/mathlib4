@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Localization
-import Mathlib.CategoryTheory.Sites.CompatibleSheafification
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Sites.Localization
+public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-! # Functors which preserve sheafification
 
@@ -38,6 +40,8 @@ suitable limits and colimits.
 * construct an isomorphism `Sheaf.composeAndSheafify J F ≅ sheafCompose J F`
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -143,7 +147,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     erw [adj₁.unit.naturality f]
     dsimp only [Functor.comp_map]
     rw [whiskerRight_comp, (W _).precomp_iff _ _ (h P₁)]
-    apply Localization.LeftBousfield.W_of_isIso
+    apply ObjectProperty.isLocal_of_isIso
 
 section HasSheafCompose
 

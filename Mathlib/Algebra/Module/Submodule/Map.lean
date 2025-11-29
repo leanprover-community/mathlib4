@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Module.Submodule.LinearMap
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Module.Submodule.LinearMap
 
 /-!
 # `map` and `comap` for `Submodule`s
@@ -23,6 +25,8 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 
 submodule, subspace, linear map, pushforward, pullback
 -/
+
+@[expose] public section
 
 open Function Pointwise Set
 

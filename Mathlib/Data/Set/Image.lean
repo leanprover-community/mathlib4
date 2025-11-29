@@ -3,12 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Batteries.Tactic.Congr
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Data.Set.SymmDiff
-import Mathlib.Data.Set.Inclusion
+module
+
+public import Batteries.Tactic.Congr
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Set.SymmDiff
+public import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -31,6 +33,8 @@ import Mathlib.Data.Set.Inclusion
 set, sets, image, preimage, pre-image, range
 
 -/
+
+@[expose] public section
 
 assert_not_exists WithTop OrderIso
 
@@ -1100,10 +1104,7 @@ alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_ex
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by
-  ext y
-  rcases em (y ∈ range f) with (⟨x, rfl⟩ | hx)
-  · simp [hf.eq_iff]
-  · grind
+  grind
 
 theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
     g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]

@@ -3,14 +3,15 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
+module
 
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
-import Mathlib.CategoryTheory.Category.ReflQuiv
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.CategoryTheory.Category.Cat.Terminal
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.CategoryTheory.Category.ReflQuiv
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+public import Mathlib.CategoryTheory.Category.Cat.Terminal
 
 /-!
 
@@ -35,6 +36,8 @@ In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we sh
 nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
 -/
+
+@[expose] public section
 
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
@@ -153,7 +156,9 @@ def OneTruncation₂.ofNerve₂.natIso :
     nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
   NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) (by
   · intro C D F
-    fapply ReflPrefunctor.ext <;> simp
+    fapply ReflPrefunctor.ext <;>
+    simp only [comp_obj, oneTruncation₂_obj, ReflQuiv.of_val,
+      ReflQuiv.forget_obj, Functor.comp_map, ReflQuiv.forget_map]
     · exact fun _ ↦ rfl
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
@@ -164,7 +169,8 @@ def OneTruncation₂.ofNerve₂.natIso :
         ComposableArrows.obj', Fin.zero_eta, Fin.isValue, ReflQuiv.comp_eq_comp, Nat.reduceAdd,
         op_map, Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
-      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
+      simp [nerveMap_app, nerveHomEquiv, ReflQuiv.isoOfEquiv,
+        ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
 end
 
@@ -303,11 +309,13 @@ def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
   map {S T} F := mapHomotopyCategory F
   map_id S := by
     apply Quotient.lift_unique'
-    simp [mapHomotopyCategory, Quotient.lift_spec]
+    simp only [mapHomotopyCategory, comp_obj, oneTruncation₂_obj, Cat.freeRefl_obj_α,
+      ReflQuiv.of_val, Functor.comp_map, CategoryTheory.Functor.map_id, Quotient.lift_spec]
     exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
   map_comp {S T U} F G := by
     apply Quotient.lift_unique'
-    simp [mapHomotopyCategory, SSet.Truncated.HomotopyCategory.quotientFunctor]
+    simp only [mapHomotopyCategory, comp_obj, oneTruncation₂_obj, Cat.freeRefl_obj_α,
+      ReflQuiv.of_val, Functor.comp_map, map_comp, HomotopyCategory.quotientFunctor]
     rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
       Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
@@ -324,6 +332,11 @@ def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFun
 end
 
 end
+
+/-- For a simplicial set `X`, the underlying type of `hoFunctor.obj X` is equivalent to `X _⦋0⦌`. -/
+def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
+  (Quotient.equiv.{u,u} _).trans (Quotient.equiv _)
+
 section
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus

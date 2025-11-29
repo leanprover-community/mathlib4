@@ -3,8 +3,10 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import Mathlib.RingTheory.PowerSeries.PiTopology
+module
+
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.RingTheory.PowerSeries.PiTopology
 
 /-!
 # Generating functions for partitions
@@ -32,6 +34,8 @@ can be interpreted as assuming $f(i, 0) = 1$ and $f(0, c) = 0$ for $c \ne 0$. In
 respect the actual value of $f(0, c)$ and $f(i, 0)$, but it makes the otherwise finite sum and
 product potentially infinite.
 -/
+
+@[expose] public section
 
 open Finset PowerSeries
 open scoped PowerSeries.WithPiTopology
@@ -131,7 +135,7 @@ private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : 
     ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
   simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
   apply prod_subset_one_on_sdiff
-  · grind [Multiset.mem_toFinset, mem_Icc]
+  · grind
   · intro x hx
     rw [mem_sdiff, Multiset.mem_toFinset] at hx
     have hx0 : x ≠ 0 := fun h ↦ hs0 (h ▸ hx.1)

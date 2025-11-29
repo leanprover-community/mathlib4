@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Max
-import Mathlib.Order.ULift
-import Mathlib.Tactic.ByCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.Max
+public import Mathlib.Order.ULift
+public import Mathlib.Tactic.ByCases
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Util.AssertExists
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -23,6 +25,8 @@ instances for `Prop` and `fun`.
 * `BoundedOrder α`: Order with a top and bottom element.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monotone
 
@@ -122,6 +126,7 @@ alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
   le_top.ge_iff_eq
 
+@[grind ←=, grind →] -- This tells grind that to prove `a = ⊤` it suffices to prove `⊤ ≤ a`.
 theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h
 
@@ -287,6 +292,7 @@ alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
   bot_le.ge_iff_eq'
 
+@[grind ←=, grind →] -- This tells grind that to prove `a = ⊥` it suffices to prove `a ≤ ⊥`.
 theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
 

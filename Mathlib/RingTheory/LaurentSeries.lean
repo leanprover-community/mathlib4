@@ -3,15 +3,17 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.HahnSeries.PowerSeries
-import Mathlib.RingTheory.HahnSeries.Summable
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.HahnSeries.PowerSeries
+public import Mathlib.RingTheory.HahnSeries.Summable
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 
 /-!
@@ -83,6 +85,8 @@ type with a zero. They are denoted `R⸨X⸩`.
   to `K⟦X⟧`.
 
 -/
+
+@[expose] public section
 universe u
 
 open scoped PowerSeries
@@ -276,7 +280,7 @@ instance of_powerSeries_localization [CommRing R] :
   surj z := by
     by_cases! h : 0 ≤ z.order
     · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
-      simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
+      simp only [map_one, mul_one, map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
     · refine ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, ?_⟩

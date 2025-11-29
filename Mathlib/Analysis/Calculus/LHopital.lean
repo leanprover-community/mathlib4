@@ -3,8 +3,10 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # L'Hôpital's rule for 0/0 indeterminate forms
@@ -29,6 +31,8 @@ namespace.
 L'Hôpital's rule, L'Hopital's rule
 -/
 
+@[expose] public section
+
 
 open Filter Set
 
@@ -46,6 +50,8 @@ to be satisfied on an explicitly-provided interval.
 
 namespace HasDerivAt
 
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
+set_option linter.flexible false in
 theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)
     (hgg' : ∀ x ∈ Ioo a b, HasDerivAt g (g' x) x) (hg' : ∀ x ∈ Ioo a b, g' x ≠ 0)
     (hfa : Tendsto f (𝓝[>] a) (𝓝 0)) (hga : Tendsto g (𝓝[>] a) (𝓝 0))
@@ -81,7 +87,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasD
     apply eventually_nhdsWithin_of_forall
     intro x hx
     have := cmp x hx
-    try simp
+    simp
     linarith [this]
 
 theorem lhopital_zero_right_on_Ico (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x)

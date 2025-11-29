@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Ultraproducts
-import Mathlib.ModelTheory.Bundled
-import Mathlib.ModelTheory.Skolem
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.ModelTheory.Ultraproducts
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.ModelTheory.Skolem
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -40,6 +42,8 @@ This file deals with the satisfiability of first-order theories, as well as equi
 - Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
   of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 -/
+
+@[expose] public section
 
 
 
@@ -369,8 +373,8 @@ theory iff there is a finite subset `T0` of the theory such that `φ` is modeled
 theorem models_iff_finset_models {φ : L.Sentence} :
     T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
   simp only [models_iff_not_satisfiable]
-  rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
-  push_neg
+  rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  contrapose!
   letI := Classical.decEq (Sentence L)
   constructor
   · intro h T0 hT0

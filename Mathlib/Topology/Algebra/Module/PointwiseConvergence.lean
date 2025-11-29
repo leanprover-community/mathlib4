@@ -3,8 +3,10 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Topology of pointwise convergence on continous linear maps
@@ -34,6 +36,8 @@ continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 -/
 
+@[expose] public section
+
 /-! ### Topology of pointwise convergence -/
 
 variable {α ι : Type*} [TopologicalSpace α]
@@ -62,9 +66,11 @@ notation:25 E " →Lₚₜ[" R "] " F => PointwiseConvergenceCLM (RingHom.id R) 
 
 namespace PointwiseConvergenceCLM
 
+instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
+  UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
+
 instance continuousEvalConst : ContinuousEvalConst (E →SLₚₜ[σ] F) E F :=
-  UniformConvergenceCLM.continuousEvalConst _ _ _
-    (sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩)
+  UniformConvergenceCLM.continuousEvalConst _ _ _ Set.sUnion_finite_eq_univ
 
 protected theorem hasBasis_nhds_zero_of_basis
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :

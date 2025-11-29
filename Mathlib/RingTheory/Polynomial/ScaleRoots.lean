@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Factors
+module
+
+public import Mathlib.Algebra.Polynomial.Factors
 
 /-!
 # Scaling the roots of a polynomial
@@ -11,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Factors
 This file defines `scaleRoots p s` for a polynomial `p` in one variable and a ring element `s` to
 be the polynomial with root `r * s` for each root `r` of `p` and proves some basic results about it.
 -/
+
+@[expose] public section
 
 
 variable {R S A K : Type*}
@@ -284,13 +288,13 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
-lemma Factors.scaleRoots {p : R[X]} (hp : p.Factors) (r : R) :
-    (p.scaleRoots r).Factors := by
+lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
+    (p.scaleRoots r).Splits := by
   cases subsingleton_or_nontrivial R
   · rwa [Subsingleton.elim (p.scaleRoots r) p]
   obtain rfl | hp0 := eq_or_ne p 0
   · simp
-  obtain ⟨m, hm⟩ := factors_iff_exists_multiset'.mp hp
+  obtain ⟨m, hm⟩ := splits_iff_exists_multiset'.mp hp
   rw [hm, mul_scaleRoots', scaleRoots_C]
   · clear hm
     refine .mul (.C _) ?_

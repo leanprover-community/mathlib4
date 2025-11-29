@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Data.List.Chain
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Data.List.Chain
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free groups
@@ -48,6 +50,8 @@ distinguish the quotient types more easily.
 
 free group, Newman's diamond lemma, Church-Rosser theorem
 -/
+
+@[expose] public section
 
 open Relation
 open scoped List
@@ -791,7 +795,7 @@ def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β wher
   invFun := map e.symm
   left_inv x := by simp [map.comp]
   right_inv x := by simp [map.comp]
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive (attr := simp)]
 theorem freeGroupCongr_refl : freeGroupCongr (Equiv.refl α) = MulEquiv.refl _ :=
@@ -882,6 +886,9 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
 
+-- TODO: find a good way to fix the linter
+-- simp applies to two goals at once, with different simp sets
+set_option linter.flexible false in
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by

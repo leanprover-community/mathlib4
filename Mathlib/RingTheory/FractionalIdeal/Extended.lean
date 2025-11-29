@@ -3,7 +3,9 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom, Xavier Roblot
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Extension of fractional ideals
@@ -30,6 +32,8 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 
 fractional ideal, fractional ideals, extended, extension
 -/
+
+@[expose] public section
 
 open IsLocalization FractionalIdeal Submodule
 
@@ -124,7 +128,7 @@ theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L
   apply Submodule.span_eq_span
   · rintro _ ⟨y, hy, rfl⟩
     obtain ⟨i, hi, j, hj, rfl⟩ := (mem_add I J y).mp <| SetLike.mem_coe.mp hy
-    rw [RingHom.map_add]
+    rw [map_add]
     exact add_mem (Submodule.subset_span ⟨i, Set.mem_union_left _ hi, by simp⟩)
       (Submodule.subset_span ⟨j, Set.mem_union_right _ hj, by simp⟩)
   · rintro _ ⟨y, hy, rfl⟩

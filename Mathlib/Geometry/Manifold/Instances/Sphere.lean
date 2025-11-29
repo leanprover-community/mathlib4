@@ -3,17 +3,19 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.Normed.Module.Ball.Action
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Normed.Module.Ball.Action
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Tactic.Module
 
 /-!
 # Manifold structure on the sphere
@@ -63,6 +65,8 @@ naive expression `EuclideanSpace ℝ (Fin (finrank ℝ E - 1))` for the model sp
 
 Relate the stereographic projection to the inversion of the space.
 -/
+
+@[expose] public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
@@ -472,7 +476,7 @@ private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
 
-Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E`).
+Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E)`.
 In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
 canonical. -/
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :

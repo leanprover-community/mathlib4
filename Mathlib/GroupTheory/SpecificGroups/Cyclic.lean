@@ -3,14 +3,16 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Order.Hom.TypeTags
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.ZMod.Aut
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Tactic.Group
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Algebra.Order.Hom.TypeTags
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.ZMod.Aut
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Tactic.Group
 
 /-!
 # Cyclic groups
@@ -38,6 +40,8 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 
 cyclic group
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -118,7 +122,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
   obtain ⟨m, hm⟩ := hG (σ h)
   refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
-  rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
+  rw [map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 
 @[to_additive]
 lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
@@ -621,14 +625,18 @@ end CommGroup
 end IsSimpleGroup
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_isCyclic_and_prime_card [Finite α] [CommGroup α] :
-    IsSimpleGroup α ↔ IsCyclic α ∧ (Nat.card α).Prime := by
-  constructor
-  · intro h
-    exact ⟨IsSimpleGroup.isCyclic, IsSimpleGroup.prime_card⟩
-  · rintro ⟨_, hp⟩
-    haveI : Fact (Nat.card α).Prime := ⟨hp⟩
-    exact isSimpleGroup_of_prime_card rfl
+theorem Group.is_simple_iff_prime_card [Finite α] [Group α] [IsMulCommutative α] :
+    IsSimpleGroup α ↔ (Nat.card α).Prime :=
+  ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
+
+@[to_additive]
+theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
+    IsSimpleGroup α ↔ (Nat.card α).Prime :=
+  have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
+  Group.is_simple_iff_prime_card
+
+@[deprecated (since := "2025-11-19")]
+alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
 
 section SpecificInstances
 
@@ -637,9 +645,8 @@ instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, m
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
   isAddCyclic_of_surjective (Int.castRingHom _) ZMod.intCast_surjective
 
-instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
-  AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
-    ⟨inferInstance, by simpa using (Fact.out : p.Prime)⟩
+instance ZMod.instIsSimpleAddGroup {p : ℕ} [hp : Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+  AddCommGroup.is_simple_iff_prime_card.2 (by simpa using hp.out)
 
 end SpecificInstances
 

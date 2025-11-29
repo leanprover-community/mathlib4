@@ -3,12 +3,14 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
@@ -77,6 +79,8 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 [van der Waerden, *Free products of groups*][MR25465]
 
 -/
+
+@[expose] public section
 
 
 open Set
@@ -228,12 +232,12 @@ instance : Group (CoprodI G) :=
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
-      | one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
+      | one => rw [map_one, MulOpposite.unop_one, one_mul]
       | of m ih =>
         change of _⁻¹ * of _ = 1
         rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | mul x y ihx ihy =>
-        rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
+        rw [map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
@@ -337,7 +341,7 @@ def rcons {i} (p : Pair M i) : Word M :=
 
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
-  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
+  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, map_one, one_mul]
   else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by

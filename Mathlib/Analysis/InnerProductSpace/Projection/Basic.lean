@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
-import Mathlib.Analysis.InnerProductSpace.Symmetric
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
+public import Mathlib.Analysis.InnerProductSpace.Symmetric
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # The orthogonal projection
@@ -29,6 +31,8 @@ The orthogonal projection construction is adapted from
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -444,7 +448,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     simp [Submodule.span_zero_singleton 𝕜]
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> match_scalars <;> field_simp [hv']
