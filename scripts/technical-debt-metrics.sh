@@ -125,6 +125,11 @@ deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ 
 
 printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
 printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
+
+# Number of undocumented tactics. For a list of undocumented tactics, run:
+#   lake env lean scripts/undocumented_tactics.lean
+# keeping `COUNT_ONLY` unset.
+COUNT_ONLY=1 lake env lean scripts/undocumented_tactics.lean
 }
 
 report () {
