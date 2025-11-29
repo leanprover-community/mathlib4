@@ -57,19 +57,21 @@ theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
   · exact if_neg h
 
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
-theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
-    (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
+theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x ∈ xs.dropLast) :
+    nextOr xs x d = nextOr xs x d' := by
   induction xs with
   | nil => cases x_mem
   | cons y ys IH => ?_
   rcases ys with - | ⟨z, zs⟩
-  · simp at x_mem x_ne
-    contradiction
+  · simp at x_mem
   by_cases h : x = y
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
-    · simpa [h] using x_mem
-    · simpa using x_ne
+    simpa [h] using x_mem
+
+@[deprecated "Use `grind [nextOr_eq_nextOr_of_mem_dropLast, dropLast_concat_getLast]` to get the \
+  original statement" (since := "2025-11-29")]
+alias nextOr_eq_nextOr_of_mem_of_ne := nextOr_eq_nextOr_of_mem_dropLast
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction xs with
@@ -152,12 +154,15 @@ theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
 theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) x h = z :=
   next_cons_cons_eq' l x x z h rfl
 
-theorem next_ne_head_ne_getLast (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
-    (hx : x ≠ getLast (y :: l) (cons_ne_nil _ _)) :
-    next (y :: l) x h = next l x (by simpa [hy] using h) := by
-  rw [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_of_ne]
-  · assumption
-  · rwa [getLast_cons] at hx
+theorem next_cons_eq_next_of_mem_dropLast (h : x ∈ l.dropLast) (y : α) (hy : x ≠ y) :
+    next (y :: l) x (mem_cons_of_mem _ <| mem_of_mem_dropLast h) =
+      next l x (mem_of_mem_dropLast h) := by
+  rwa [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_dropLast]
+
+@[deprecated "Use \
+  `grind [next_cons_eq_next_of_mem_dropLast, dropLast_concat_getLast, ne_nil_of_mem]` to get the \
+  original statement" (since := "2025-11-29")]
+alias next_ne_head_ne_getLast := next_cons_eq_next_of_mem_dropLast
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
@@ -265,7 +270,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
-    · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
+    · rw [next_cons_eq_next_of_mem_dropLast _ _ _ _ hx']
       · simp only [getElem_cons_succ]
         rw [next_getElem (y::l), ← getElem_cons_succ (a := x)]
         · congr
@@ -274,11 +279,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
             Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
         · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
         · exact hn.of_cons
-      · rw [getLast_eq_getElem]
-        intro h
-        have := nodup_iff_injective_get.1 hn h
-        simp at this; simp [this] at hi'
-      · rw [getElem_cons_succ]; exact get_mem _ _
+      · grind [dropLast_concat_getLast]
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
