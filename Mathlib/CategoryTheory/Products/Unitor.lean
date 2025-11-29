@@ -28,13 +28,13 @@ variable (C : Type u) [Category.{v} C]
 @[simps]
 def leftUnitor : Discrete (PUnit : Type w) × C ⥤ C where
   obj X := X.2
-  map f := f.2
+  map f := f.prod.2
 
 /-- The right unitor functor `C × 1 ⥤ C` -/
 @[simps]
 def rightUnitor : C × Discrete (PUnit : Type w) ⥤ C where
   obj X := X.1
-  map f := f.1
+  map f := f.prod.1
 
 /-- The left inverse unitor `C ⥤ 1 × C` -/
 @[simps]

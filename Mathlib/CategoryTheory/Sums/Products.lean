@@ -41,7 +41,7 @@ def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
       map η := whiskerLeft (inl_ A A') η ×ₘ whiskerLeft (inr_ A A') η }
   inverse :=
     { obj F := Functor.sum' F.1 F.2
-      map η := NatTrans.sum' η.1 η.2 }
+      map η := NatTrans.sum' η.prod.1 η.prod.2 }
   unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
   counitIso := NatIso.ofComponents (fun F ↦
     (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
@@ -107,7 +107,7 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ⟶ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ⟶ Sum.inr_ A A' ⋙ G) :
     F ⟶ G :=
   (Sum.functorEquiv A A' B).unit.app F ≫
-    (Sum.functorEquiv A A' B).inverse.map ((η₁, η₂) :) ≫
+    (Sum.functorEquiv A A' B).inverse.map (η₁ ×ₘ η₂ :) ≫
       (Sum.functorEquiv A A' B).unitInv.app G
 
 @[simp]
@@ -143,7 +143,7 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
 namespace Swap
 
 /-- `functorEquiv A A' B` transforms `Swap.equivalence` into `Prod.braiding`. -/
-@[simps! hom_app_fst hom_app_snd inv_app_fst inv_app_snd]
+@[simps! hom_app_prod_fst hom_app_prod_snd inv_app_prod_fst inv_app_prod_snd]
 def equivalenceFunctorEquivFunctorIso :
     ((equivalence A A').congrLeft.trans <| functorEquiv A' A B).functor ≅
       ((functorEquiv A A' B).trans <| Prod.braiding (A ⥤ B) (A' ⥤ B)).functor :=
@@ -159,7 +159,8 @@ section CompatibilityWithProductAssociator
 variable (T : Type*) [Category T]
 
 /-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
-@[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]
+@[simps! hom_app_prod_fst hom_app_prod_snd_prod_fst hom_app_prod_snd_prod_snd inv_app_prod_fst
+  inv_app_prod_snd_prod_fst inv_app_prod_snd_prod_snd]
 def associativityFunctorEquivNaturalityFunctorIso :
     ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
       Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
