@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Metrizable.Basic
 
 /-!
@@ -253,18 +254,23 @@ protected noncomputable def UniformSpace.metricSpace (X : Type*) [UniformSpace X
     [IsCountablyGenerated (𝓤 X)] [T0Space X] : MetricSpace X :=
   @MetricSpace.ofT0PseudoMetricSpace X (UniformSpace.pseudoMetricSpace X) _
 
-/-- A uniform space with countably generated `𝓤 X` is pseudo metrizable. -/
-instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
-    [IsCountablyGenerated (𝓤 X)] : TopologicalSpace.PseudoMetrizableSpace X := by
-  letI := UniformSpace.pseudoMetricSpace X
-  infer_instance
-
 /-- A T₀ uniform space with countably generated `𝓤 X` is metrizable. This is not an instance to
 avoid loops. -/
 theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (𝓤 X)] [T0Space X] :
-    TopologicalSpace.MetrizableSpace X := by
-  letI := UniformSpace.metricSpace X
-  infer_instance
+    TopologicalSpace.MetrizableSpace X := inferInstance
+
+/-- Construct on a pseudometrizable space a pseudometric compatible with the topology. -/
+noncomputable def TopologicalSpace.pseudoMetrizableSpacePseudoMetric (X : Type*)
+    [TopologicalSpace X] [TopologicalSpace.PseudoMetrizableSpace X] : PseudoMetricSpace X :=
+  letI := TopologicalSpace.pseudoMetrizableSpaceUniformity X
+  haveI := TopologicalSpace.pseudoMetrizableSpaceUniformity_countably_generated X
+  UniformSpace.pseudoMetricSpace X
+
+/-- Construct on a metrizable space a metric compatible with the topology. -/
+noncomputable def TopologicalSpace.metrizableSpaceMetric (X : Type*) [TopologicalSpace X]
+    [TopologicalSpace.MetrizableSpace X] : MetricSpace X :=
+  letI := pseudoMetrizableSpacePseudoMetric X
+  .ofT0PseudoMetricSpace X
 
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
 from the more general `EMetric.subset_countable_closure_of_almost_dense_set`. -/
@@ -283,12 +289,6 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
 
 variable {α : Type*}
 open TopologicalSpace
-
-instance (priority := 100) DiscreteTopology.metrizableSpace
-    [TopologicalSpace α] [DiscreteTopology α] :
-    MetrizableSpace α := by
-  obtain rfl := DiscreteTopology.eq_bot (α := α)
-  exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _
 
 instance (priority := 100) PseudoEMetricSpace.pseudoMetrizableSpace
     [PseudoEMetricSpace α] : PseudoMetrizableSpace α :=
