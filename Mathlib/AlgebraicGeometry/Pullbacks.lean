@@ -670,6 +670,11 @@ lemma pullbackSpecIso_inv_fst :
     (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
   limit.isoLimitCone_inv_π _ _
 
+@[reassoc]
+lemma pullbackSpecIso_inv_fst' :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) := by
+  simp [← cancel_epi (pullbackSpecIso R S T).hom]
+
 /--
 The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
@@ -708,11 +713,6 @@ is the second projection.
 lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
-
-@[reassoc]
-lemma pullbackSpecIso_inv_fst' :
-    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) := by
-  simp [← cancel_epi (pullbackSpecIso R S T).hom]
 
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_base :
