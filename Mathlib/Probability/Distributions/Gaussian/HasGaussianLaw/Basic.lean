@@ -135,33 +135,20 @@ lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ 
     have := hX.isGaussian_map
     rw [← AEMeasurable.map_map_of_aemeasurable]
     · infer_instance
-    all_goals fun_prop (disch := assumption)
-
-lemma map_fun (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
-  hX.map L
+    all_goals fun_prop
 
 lemma map_equiv (hX : HasGaussianLaw X P) (L : E ≃L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map L.toContinuousLinearMap
-
-lemma map_equiv_fun (hX : HasGaussianLaw X P) (L : E ≃L[ℝ] F) :
-    HasGaussianLaw (fun ω ↦ L (X ω)) P := hX.map_equiv L
 
 section SpecificMaps
 
 lemma smul (c : ℝ) (hX : HasGaussianLaw X P) : HasGaussianLaw (c • X) P :=
   hX.map (.lsmul ℝ ℝ c)
 
-lemma fun_smul (c : ℝ) (hX : HasGaussianLaw X P) :
-    HasGaussianLaw (fun ω ↦ c • (X ω)) P :=
-  hX.smul c
-
 lemma neg (hX : HasGaussianLaw X P) : HasGaussianLaw (-X) P := by
   have : -X = (-1 : ℝ) • X := by simp
   rw [this]
   exact hX.smul _
-
-lemma fun_neg (hX : HasGaussianLaw X P) : HasGaussianLaw (fun ω ↦ -(X ω)) P :=
-  hX.neg
 
 section Prod
 
@@ -194,20 +181,12 @@ lemma add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
   rw [this]
   exact hXY.map _
 
-lemma fun_add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw (fun ω ↦ X ω + Y ω) P :=
-  hXY.add
-
 lemma sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
     HasGaussianLaw (X - Y) P := by
   have : X - Y = (ContinuousLinearMap.fst ℝ E E - ContinuousLinearMap.snd ℝ E E) ∘
       (fun ω ↦ (X ω, Y ω)) := by ext; simp
   rw [this]
   exact hXY.map _
-
-lemma fun_sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw (fun ω ↦ X ω - Y ω) P :=
-  hXY.sub
 
 end Prod
 
