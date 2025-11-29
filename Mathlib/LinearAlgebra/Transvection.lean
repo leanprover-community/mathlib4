@@ -348,9 +348,9 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
     suffices LinearMap.toMatrix b b (LinearMap.transvection f v) = Matrix.transvection i j 1 by
       rw [this, Matrix.det_transvection_of_ne i j hi 1, hfv, add_zero]
     ext x y
-    rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply]
-    simp [Matrix.transvection]
-    simp [hj.1, hj.2]
+    rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply, Matrix.transvection]
+    simp only [hj.2, Module.Basis.coord_apply, Module.Basis.repr_self, hj.1, map_add, map_smul,
+      Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Matrix.add_apply]
     apply congr_arg₂
     · by_cases h : x = y
       · rw [h]; simp
@@ -375,10 +375,10 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
         simp [Function.update_of_ne hj]
       · simp
     ext x y
-    rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply]
-    simp [Matrix.diagonal]
-    rw [hv, Function.update_apply, Module.Basis.repr_self, Pi.one_apply]
-    rw [hf]
+    rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply, Matrix.diagonal]
+    simp only [map_add, Module.Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
+      Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.of_apply]
+    rw [hv, Function.update_apply, Module.Basis.repr_self, Pi.one_apply, hf]
     simp only [smul_apply, Module.Basis.coord_apply, Module.Basis.repr_self, smul_eq_mul,
       Finsupp.single_eq_same, mul_one]
     split_ifs with hxy hxi
