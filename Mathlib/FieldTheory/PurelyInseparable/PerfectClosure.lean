@@ -311,7 +311,7 @@ theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable [Algebra.IsSeparabl
     Submodule.span F (Set.range (v · ^ q ^ n)) = ⊤ := by
   rw [← Algebra.top_toSubmodule, ← top_toSubalgebra, ← adjoin_univ,
     adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n,
-    adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x,
+    adjoin_toSubalgebra_of_isAlgebraic fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x,
     Set.image_univ, Algebra.adjoin_eq_span]
   have := (MonoidHom.mrange (powMonoidHom (α := E) (q ^ n))).closure_eq
   simp only [MonoidHom.mrange, powMonoidHom, MonoidHom.coe_mk, OneHom.coe_mk,
