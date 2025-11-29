@@ -3,9 +3,11 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie
 -/
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 ## Main Results
@@ -19,6 +21,8 @@ import Mathlib.LinearAlgebra.Pi
 ## Tags
 matrix, module
 -/
+
+@[expose] public section
 
 variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
@@ -40,17 +44,17 @@ scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
     simp [add_smul, Finset.sum_add_distrib]
   zero_smul v := funext fun i ↦ show ∑ _, _ = _ by simp
 
-lemma smulVec_def (N : Matrix ι ι R) (v : ι → M) :
+lemma smul_def (N : Matrix ι ι R) (v : ι → M) :
     N • v = fun i ↦ ∑ j : ι, N i j • v j := rfl
 
-lemma smulVec_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun i ↦ N i j • v j := by
-  ext; simp [smulVec_def]
+lemma smul_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun i ↦ N i j • v j := by
+  ext; simp [smul_def]
 
 @[simp]
-lemma smul_vec_apply (N : Matrix ι ι R) (v : ι → M) (i : ι) :
+lemma smul_apply (N : Matrix ι ι R) (v : ι → M) (i : ι) :
     (N • v) i = ∑ j : ι, N i j • v j := rfl
 
-instance (S) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+scoped instance (S : Type*) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
     IsScalarTower R (Matrix ι ι S) (ι → M) where
   smul_assoc _ _ _ := by ext; simp [Finset.smul_sum]
 
@@ -60,6 +64,7 @@ namespace LinearMap
 
 open Matrix.Module
 
+variable (ι) in
 /-- The induced linear map from `Mⁿ` to `Nⁿ` by a linear map `f : M → N`, this is the matrix linear
   version of `LinearMap.compLeft`. -/
 @[simps]
@@ -69,12 +74,23 @@ def mapMatrixModule (f : M →ₗ[R] N) : (ι → M) →ₗ[Matrix ι ι R] (ι 
   map_smul' _ _ := by ext; simp
 
 @[simp]
-lemma id_mapMatrixModule :
-    LinearMap.id.mapMatrixModule = .id (R := Matrix ι ι R) (M := ι → M) := by
+lemma mapMatrixModule_id :
+    LinearMap.id.mapMatrixModule ι = .id (R := Matrix ι ι R) (M := ι → M) := by
   ext; simp
 
-lemma comp_mapMatrixModule (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
-    (g ∘ₗ f).mapMatrixModule (ι := ι) = g.mapMatrixModule ∘ₗ f.mapMatrixModule := by
+@[simp]
+lemma mapMatrixModule_id_apply (v : ι → M) :
+    LinearMap.id.mapMatrixModule ι (R := R) v = v := by
+  simp
+
+lemma mapMatrixModule_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    (g ∘ₗ f).mapMatrixModule ι = g.mapMatrixModule ι ∘ₗ f.mapMatrixModule ι := by
   ext; simp
+
+@[simp]
+lemma mapMatrixModule_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (v : ι → M) :
+    (g ∘ₗ f).mapMatrixModule ι v =
+      g.mapMatrixModule ι (f.mapMatrixModule ι v) := by
+  simp [mapMatrixModule_comp]
 
 end LinearMap
