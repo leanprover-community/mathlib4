@@ -6,12 +6,12 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.AffineSpace.Restrict
-public import Mathlib.Tactic.FailIfNoProgress
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries
@@ -176,6 +176,21 @@ theorem diam_image (s : Set P) : Metric.diam (f '' s) = Metric.diam s :=
 theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
   f.isometry.diam_range
 
+/-- Interpret an affine isometry as a continuous affine map. -/
+def toContinuousAffineMap : P →ᴬ[𝕜] P₂ := { f with cont := f.continuous }
+
+theorem toContinuousAffineMap_injective :
+    Function.Injective (toContinuousAffineMap : _ → P →ᴬ[𝕜] P₂) := fun x _ h =>
+  coeFn_injective (congr_arg _ h : ⇑x.toContinuousAffineMap = _)
+
+@[simp]
+theorem toContinuousAffineMap_inj {f g : P →ᵃⁱ[𝕜] P₂} :
+    f.toContinuousAffineMap = g.toContinuousAffineMap ↔ f = g :=
+  toContinuousAffineMap_injective.eq_iff
+
+@[simp]
+theorem coe_toContinuousAffineMap : ⇑f.toContinuousAffineMap = f := rfl
+
 @[simp]
 theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
     Continuous (f ∘ g) ↔ Continuous g :=
@@ -195,6 +210,10 @@ theorem id_apply (x : P) : (AffineIsometry.id : P →ᵃⁱ[𝕜] P) x = x :=
 
 @[simp]
 theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜 P :=
+  rfl
+
+@[simp]
+theorem id_toContinuousAffineMap : id.toContinuousAffineMap = ContinuousAffineMap.id 𝕜 P :=
   rfl
 
 instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
@@ -261,6 +280,11 @@ theorem subtypeₐᵢ_toAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
     s.subtypeₐᵢ.toAffineMap = s.subtype :=
   rfl
 
+@[simp]
+theorem subtypeₐᵢ_toContinuousAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
+    s.subtypeₐᵢ.toContinuousAffineMap = s.subtypeA :=
+  rfl
+
 end AffineSubspace
 
 variable (𝕜 P P₂)
@@ -313,6 +337,9 @@ theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P ≃ᵃⁱ[𝕜] 
 @[ext]
 theorem ext {e e' : P ≃ᵃⁱ[𝕜] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   toAffineEquiv_injective <| AffineEquiv.ext h
+
+theorem coeFn_injective : @Injective (P ≃ᵃⁱ[𝕜] P₂) (P → P₂) (fun f => f) :=
+  DFunLike.coe_injective
 
 /-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
@@ -413,6 +440,38 @@ protected theorem continuousOn {s} : ContinuousOn e s :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
   e.continuous.continuousWithinAt
 
+/-- Interpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
+def toContinuousAffineEquiv : P ≃ᴬ[𝕜] P₂ :=
+  { e.toAffineEquiv, e.toHomeomorph with }
+
+theorem toContinuousAffineEquiv_injective :
+    Function.Injective (toContinuousAffineEquiv : _ → P ≃ᴬ[𝕜] P₂) := fun x _ h =>
+  coeFn_injective (congr_arg _ h : ⇑x.toContinuousAffineEquiv = _)
+
+@[simp]
+theorem toContinuousAffineEquiv_inj {f g : P ≃ᵃⁱ[𝕜] P₂} :
+    f.toContinuousAffineEquiv = g.toContinuousAffineEquiv ↔ f = g :=
+  toContinuousAffineEquiv_injective.eq_iff
+
+@[simp]
+theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
+  rfl
+
+/-- Reinterpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
+instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
+  ⟨fun e => e.toContinuousAffineEquiv⟩
+
+instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
+  ⟨fun e => e.toContinuousAffineEquiv.toContinuousAffineMap⟩
+
+@[simp]
+theorem coe_coe : ⇑(e : P ≃ᴬ[𝕜] P₂) = e :=
+  rfl
+
+@[simp]
+theorem coe_coe' : ⇑(e : P →ᴬ[𝕜] P₂) = e :=
+  rfl
+
 variable (𝕜 P)
 
 /-- Identity map as an `AffineIsometryEquiv`. -/
@@ -431,6 +490,9 @@ theorem coe_refl : ⇑(refl 𝕜 P) = id :=
 @[simp]
 theorem toAffineEquiv_refl : (refl 𝕜 P).toAffineEquiv = AffineEquiv.refl 𝕜 P :=
   rfl
+
+@[simp]
+theorem toContinuousAffineEquiv_refl : (refl 𝕜 P).toContinuousAffineEquiv = .refl 𝕜 P := rfl
 
 @[simp]
 theorem toIsometryEquiv_refl : (refl 𝕜 P).toIsometryEquiv = IsometryEquiv.refl P :=
@@ -464,6 +526,14 @@ theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
 
 @[simp]
 theorem coe_symm_toAffineEquiv : ⇑e.toAffineEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toContinuousAffineEquiv_symm :
+    e.symm.toContinuousAffineEquiv = e.toContinuousAffineEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv.symm = e.symm :=
   rfl
 
 @[simp]
