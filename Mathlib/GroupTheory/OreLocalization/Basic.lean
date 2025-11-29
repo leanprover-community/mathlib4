@@ -33,6 +33,17 @@ a denominator `s : S`.
 ## Tags
 localization, Ore, non-commutative
 
+## Implementation detail
+
+Some of the declarations are marked reducible to avoid diamonds with
+`Mathlib/Algebra/Module/LocalizedModule/Basic.lean`. This causes a significant performance
+regression, most notabaly in `Mathlib/AlgebraicGeometry/AffineSpace.lean`.
+Also see https://github.com/leanprover-community/mathlib4/pull/31862.
+
+We shall investigate if there are ways to improve performances. For example by introducing
+typeclasses to unify the two constructions on this and `LocalizedModule`, or by marking some
+downstream constructions (e.g. `Spec.structureSheaf`) as irreducible.
+
 -/
 
 @[expose] public section
@@ -202,7 +213,7 @@ theorem lift₂Expand_of {C : Sort*} {P : X → S → X → S → C}
   rfl
 
 @[to_additive]
-private def smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
+private abbrev smul' (r₁ : R) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁)
 
 @[to_additive]
@@ -230,7 +241,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
 
 /-- The multiplication on the Ore localization of monoids. -/
 @[to_additive]
-private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
+private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (smul' r s) fun r₁ r₂ s' hs => by
     rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
@@ -251,11 +262,10 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   /-- the vector addition on the Ore localization of additive monoids. -/]
-protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
-  liftExpand smul'' fun r₁ r₂ s hs => by
-    ext x
+protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+  liftExpand (smul'' · · x) (fun r₁ r₂ s hs => by
     cases x with | _ x s₂
     change OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
     rcases oreCondition r₁ s₂ with ⟨r₁', s₁', h₁⟩
@@ -273,7 +283,7 @@ protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
     simp only [Submonoid.smul_def, Submonoid.coe_mul, smul_smul, mul_assoc, h₄]
     congr 1
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
-    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]
+    rw [mul_assoc _ r₃', ← h₃, ← mul_assoc, ← mul_assoc]) y
 
 @[to_additive]
 instance : SMul R[S⁻¹] X[S⁻¹] :=
@@ -327,14 +337,14 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
 @[to_additive (attr := irreducible) /-- `0` in the additive localization, defined as `0 -ₒ 0`. -/]
-protected def one : R[S⁻¹] := 1 /ₒ 1
+protected def one [One X] : X[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
-instance : One R[S⁻¹] :=
+instance [One X] : One X[S⁻¹] :=
   ⟨OreLocalization.one⟩
 
 @[to_additive]
-protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 := by
+protected theorem one_def [One X] : (1 : X[S⁻¹]) = 1 /ₒ 1 := by
   with_unfolding_all rfl
 
 @[to_additive]
@@ -384,10 +394,9 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
 
 /-- `npow` of `OreLocalization` -/
-@[to_additive (attr := irreducible) /-- `nsmul` of `AddOreLocalization` -/]
-protected def npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
+@[to_additive /-- `nsmul` of `AddOreLocalization` -/]
+protected abbrev npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
 
-unseal OreLocalization.npow in
 @[to_additive]
 instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
@@ -451,7 +460,7 @@ def numeratorUnit (s : S) : Units R[S⁻¹] where
 fraction `r /ₒ 1`. -/
 @[to_additive /-- The additive homomorphism from `R` to `AddOreLocalization R S`,
   mapping `r : R` to the difference `r -ₒ 0`. -/]
-def numeratorHom : R →* R[S⁻¹] where
+abbrev numeratorHom : R →* R[S⁻¹] where
   toFun r := r /ₒ 1
   map_one' := by with_unfolding_all rfl
   map_mul' _ _ := mul_div_one.symm
