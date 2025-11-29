@@ -61,8 +61,7 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
         convert (eq_whisker pullback.condition Limits.prod.snd :
           (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.one) = _) using 1 <;> simp))
 
--- TODO: find a good way to fix the non-terminal simp at J0
-set_option linter.flexible false in
+set_option linter.flexible false in -- non-terminal `simp at J0`; TODO fix nicely!
 /-- Show the equalizing cone is a limit -/
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
   lift c := pullback.lift (c.π.app _) (c.π.app _)
