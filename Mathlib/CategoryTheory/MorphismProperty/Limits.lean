@@ -880,9 +880,8 @@ alias hasPullback := HasPullbacks.hasPullback
 instance [P.HasPullbacks] {X Y : C} {f : X ⟶ Y} : P.HasPullbacksAlong f where
   hasPullback _ := hasPullback _
 
-instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong f]
-    [P.IsStableUnderBaseChangeAlong g] [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] :
-    P.HasPullbacksAlong (f ≫ g) where
+instance {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong g]
+    [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] : P.HasPullbacksAlong (f ≫ g) where
   hasPullback h p :=
     have : HasPullback h g := HasPullbacksAlong.hasPullback h p
     have : HasPullback (pullback.snd h g) f := HasPullbacksAlong.hasPullback (pullback.snd h g)
