@@ -59,8 +59,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     specialize H₂ 1 x (sqrt x) (sqrt x) zero_lt_one
     grind [sqrt_pos]
   have h₃ : ∀ x > 0, f x = x ∨ f x = 1 / x := by simpa [sub_eq_zero] using h₂
-  by_contra! h
-  rcases h with ⟨⟨b, hb, hfb₁⟩, ⟨a, ha, hfa₁⟩⟩
+  by_contra! ⟨⟨b, hb, hfb₁⟩, ⟨a, ha, hfa₁⟩⟩
   obtain hfa₂ := Or.resolve_right (h₃ a ha) hfa₁
   -- f(a) ≠ 1/a, f(a) = a
   obtain hfb₂ := Or.resolve_left (h₃ b hb) hfb₁

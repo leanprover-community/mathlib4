@@ -240,8 +240,7 @@ theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
   have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by apply left_ne_zero_of_mul
   have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by
-    by_contra!
-    obtain ⟨h1, h2⟩ := this
+    by_contra! ⟨h1, h2⟩
     simp only [h2, rpow_zero, ne_self_iff_false] at h1
   rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
   · simp

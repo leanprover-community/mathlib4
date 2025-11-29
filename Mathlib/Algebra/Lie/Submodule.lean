@@ -532,7 +532,7 @@ instance [Nontrivial M] : Nontrivial (LieSubmodule R L M) :=
 theorem nontrivial_iff_ne_bot {N : LieSubmodule R L M} : Nontrivial N ↔ N ≠ ⊥ := by
   constructor <;> contrapose!
   · rintro rfl
-    by_contra! h; rcases h with
+    by_contra!
       ⟨⟨m₁, h₁ : m₁ ∈ (⊥ : LieSubmodule R L M)⟩, ⟨m₂, h₂ : m₂ ∈ (⊥ : LieSubmodule R L M)⟩, h₁₂⟩
     simp [(LieSubmodule.mem_bot _).mp h₁, (LieSubmodule.mem_bot _).mp h₂] at h₁₂
   · rw [LieSubmodule.eq_bot_iff]
