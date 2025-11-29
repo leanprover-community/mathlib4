@@ -56,10 +56,30 @@ theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] {f : ι → α} (hf : BddAbov
     ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
   WithTop.coe_iInf (α := αᵒᵈ) hf
 
+theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
+    {α : Type*} [CompleteLattice α] (f : ι → α) :
+    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
+  rcases hs with ⟨j, hj⟩
+  have : Nonempty ι := Nonempty.intro j
+  refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
+    iSup_le_iff.mpr fun i ↦ ?_) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
+      fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
+  by_cases h : i ∈ s
+  · simpa only [iSup_pos h] using by apply le_biSup _ h
+  · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
+
 @[norm_cast]
 theorem WithBot.coe_iInf [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
     ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
   WithTop.coe_iSup (α := αᵒᵈ) _ h
+
+theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
+    ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
+  refine le_antisymm (by simpa using fun _ ↦ biInf_le _) <|
+    (le_iInf_iff.mpr fun i ↦ ?_).trans_eq (WithBot.coe_iInf _ (OrderBot.bddBelow _)).symm
+  by_cases h : i ∈ s
+  · simpa only [iInf_pos h] using by apply biInf_le _ h
+  · simp [iInf_neg h]
 
 end
 
