@@ -52,6 +52,18 @@ variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup (GL (Fin 2) �
 local notation "I∞" => comap Complex.im atTop
 local notation "𝕢" => Periodic.qParam
 
+namespace UpperHalfPlane
+
+/-- The value of `f` at the cusp `∞` (or an arbitrary choice of value if this limit is not
+well-defined). -/
+def valueAtInfty (f : ℍ → ℂ) : ℂ := limUnder atImInfty f
+
+lemma IsZeroAtImInfty.valueAtInfty_eq_zero {f : ℍ → ℂ} (hf : IsZeroAtImInfty f) :
+    valueAtInfty f = 0 :=
+  hf.limUnder_eq
+
+end UpperHalfPlane
+
 namespace SlashInvariantFormClass
 
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
@@ -117,6 +129,14 @@ lemma analyticAt_cuspFunction_zero [ModularFormClass F Γ k] [Γ.HasDetPlusMinus
     (fun q hq ↦ (differentiableAt_cuspFunction _ hh hΓ hq).differentiableWithinAt)
     (by simpa only [ball_zero_eq] using Metric.ball_mem_nhds (0 : ℂ) zero_lt_one)
 
+lemma cuspFunction_apply_zero [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    cuspFunction h f 0 = valueAtInfty f := by
+  refine (Tendsto.limUnder_eq ?_).symm
+  nth_rw 1 [← funext fun τ ↦ eq_cuspFunction f τ hΓ hh.ne']
+  refine (analyticAt_cuspFunction_zero f hh hΓ).continuousAt.tendsto.comp ?_
+  exact ((Periodic.qParam_tendsto hh).mono_right nhdsWithin_le_nhds).comp tendsto_coe_atImInfty
+
 variable (h) in
 /-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
 def qExpansion : PowerSeries ℂ :=
@@ -125,6 +145,11 @@ def qExpansion : PowerSeries ℂ :=
 lemma qExpansion_coeff (m : ℕ) :
     (qExpansion h f).coeff m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0 := by
   simp [qExpansion]
+
+lemma qExpansion_coeff_zero [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    (qExpansion h f).coeff 0 = valueAtInfty f := by
+  simp [qExpansion_coeff, cuspFunction_apply_zero f hh hΓ]
 
 lemma hasSum_qExpansion_of_abs_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
@@ -220,13 +245,41 @@ lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] [Γ.HasDetP
     simp only [circleMap, ofReal_exp, ← exp_add, zero_add, τ, UpperHalfPlane.coe_mk_subtype, R]
     congr 1
     push_cast
-    ring_nf
-    rw [I_sq]
-    ring_nf
+    have := I_sq
+    grind
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show u + t * I = τ by rfl, show ⟨↑τ, τ.2⟩ = τ by rfl,
     eq_cuspFunction f _ hΓ hh.ne', smul_eq_mul, pow_succ, push_cast]
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
+
+lemma isCusp_of_mem_strictPeriods (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods)
+    [DiscreteTopology Γ] [Γ.HasDetPlusMinusOne] :
+    IsCusp OnePoint.infty Γ := by
+  rw [Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty] at hΓ
+  refine Γ.strictWidthInfty_pos_iff.mp <| Γ.strictWidthInfty_nonneg.lt_of_ne' fun h0 ↦ hh.ne' ?_
+  simpa only [h0, AddSubgroup.zmultiples_zero_eq_bot, AddSubgroup.mem_bot] using hΓ
+
+theorem exp_decay_sub_atImInfty [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) := by
+  have hi : IsCusp OnePoint.infty Γ := isCusp_of_mem_strictPeriods hh hΓ
+  convert ((periodic_comp_ofComplex f hΓ).exp_decay_sub_of_bounded_at_inf hh
+    (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
+        fun _ ↦ differentiableAt_comp_ofComplex f)
+    (bounded_at_infty_comp_ofComplex f hi)).comp_tendsto tendsto_coe_atImInfty
+  simp only [comp_apply, ofComplex_apply, ← cuspFunction_apply_zero f hh hΓ, cuspFunction]
+
+/-- Version of `exp_decay_sub_atImInfty` stating a less precise result but easier to apply in
+practice (not specifying the growth rate precisely). Note that the `Fact` hypothesis is
+automatically synthesized for arithmetic subgroups. -/
+theorem exp_decay_sub_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+    [DiscreteTopology Γ] [Fact (IsCusp OnePoint.infty Γ)] :
+    ∃ h > 0, (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] (fun τ ↦ Real.exp (-h * τ.im)) := by
+  have hh : 0 < Γ.strictWidthInfty := Γ.strictWidthInfty_pos_iff.mpr Fact.out
+  have hΓ : Γ.strictWidthInfty ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
+  refine ⟨2 * π / Γ.strictWidthInfty, div_pos Real.two_pi_pos hh, ?_⟩
+  convert exp_decay_sub_atImInfty f hh hΓ using 3 with τ
+  ring_nf
 
 end ModularFormClass
 
@@ -247,15 +300,7 @@ theorem cuspFunction_apply_zero {f : ℍ → ℂ} (hf : IsZeroAtImInfty f) (hh :
 theorem exp_decay_atImInfty [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hf : IsZeroAtImInfty f) (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) := by
-  have hi : IsCusp OnePoint.infty Γ := by
-    rw [Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty] at hΓ
-    refine Γ.strictWidthInfty_pos_iff.mp <| Γ.strictWidthInfty_nonneg.lt_of_ne' fun h0 ↦ hh.ne' ?_
-    simpa only [h0, AddSubgroup.zmultiples_zero_eq_bot, AddSubgroup.mem_bot] using hΓ
-  simpa [comp_def] using
-    ((periodic_comp_ofComplex f hΓ).exp_decay_of_zero_at_inf hh
-      (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-        fun _ ↦ differentiableAt_comp_ofComplex f)
-      hf.zero_at_infty_comp_ofComplex).comp_tendsto tendsto_coe_atImInfty
+  simpa [hf.valueAtInfty_eq_zero] using exp_decay_sub_atImInfty f hh hΓ
 
 /-- Version of `exp_decay_atImInfty` stating a less precise result but easier to apply in practice
 (not specifying the growth rate precisely). Note that the `Fact` hypothesis is automatically
@@ -263,38 +308,33 @@ synthesized for arithmetic subgroups. -/
 theorem exp_decay_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] [Fact (IsCusp OnePoint.infty Γ)] (hf : IsZeroAtImInfty f) :
     ∃ h > 0, f =O[atImInfty] fun τ ↦ Real.exp (-h * τ.im) := by
-  have hh : 0 < Γ.strictWidthInfty := Γ.strictWidthInfty_pos_iff.mpr Fact.out
-  have hΓ : Γ.strictWidthInfty ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
-  refine ⟨2 * π / Γ.strictWidthInfty, div_pos Real.two_pi_pos hh, ?_⟩
-  convert hf.exp_decay_atImInfty hh hΓ using 3 with τ
-  ring
+  simpa [hf.valueAtInfty_eq_zero] using exp_decay_sub_atImInfty' f
 
 end UpperHalfPlane.IsZeroAtImInfty
 
 namespace CuspFormClass
 
-@[deprecated "use IsZeroAtImInfty.zero_atInfty_comp_ofComplex" (since := "2025-10-13")]
-theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] [Fact (IsCusp OnePoint.infty Γ)] :
+include Γ k -- can't be inferred from statements but shouldn't be omitted
+variable [CuspFormClass F Γ k]
+
+theorem zero_at_infty_comp_ofComplex [Fact (IsCusp OnePoint.infty Γ)] :
     ZeroAtFilter I∞ (f ∘ ofComplex) :=
   (zero_at_infty f).comp tendsto_comap_im_ofComplex
 
-@[deprecated UpperHalfPlane.IsZeroAtImInfty.cuspFunction_apply_zero (since := "2025-10-13")]
-theorem cuspFunction_apply_zero [CuspFormClass F Γ k] [Γ.HasDetPlusMinusOne]
-    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
-    cuspFunction h f 0 = 0 :=
-  have hi : IsCusp OnePoint.infty Γ := by
-    rw [Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty] at hΓ
-    refine Γ.strictWidthInfty_pos_iff.mp <| Γ.strictWidthInfty_nonneg.lt_of_ne' fun h0 ↦ hh.ne' ?_
-    simpa only [h0, AddSubgroup.zmultiples_zero_eq_bot, AddSubgroup.mem_bot] using hΓ
-  (OnePoint.isZeroAt_infty_iff.mp <| CuspFormClass.zero_at_cusps f hi).cuspFunction_apply_zero hh
+variable [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
 
-theorem exp_decay_atImInfty [CuspFormClass F Γ k] [Γ.HasDetPlusMinusOne]
-    [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+theorem cuspFunction_apply_zero (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
+    cuspFunction h f 0 = 0 :=
+  haveI : Fact (IsCusp OnePoint.infty Γ) := ⟨isCusp_of_mem_strictPeriods hh hΓ⟩
+  (CuspFormClass.zero_at_infty f).cuspFunction_apply_zero hh
+
+theorem exp_decay_atImInfty (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
-  have hi : IsCusp OnePoint.infty Γ := by
-    rw [Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty] at hΓ
-    refine Γ.strictWidthInfty_pos_iff.mp <| Γ.strictWidthInfty_nonneg.lt_of_ne' fun h0 ↦ hh.ne' ?_
-    simpa only [h0, AddSubgroup.zmultiples_zero_eq_bot, AddSubgroup.mem_bot] using hΓ
-  (OnePoint.isZeroAt_infty_iff.mp <| CuspFormClass.zero_at_cusps f hi).exp_decay_atImInfty hh hΓ
+  haveI : Fact (IsCusp OnePoint.infty Γ) := ⟨isCusp_of_mem_strictPeriods hh hΓ⟩
+  (CuspFormClass.zero_at_infty f).exp_decay_atImInfty hh hΓ
+
+theorem exp_decay_atImInfty' [Fact (IsCusp OnePoint.infty Γ)] :
+    ∃ h > 0, f =O[atImInfty] fun τ ↦ Real.exp (-h * τ.im) :=
+  (CuspFormClass.zero_at_infty f).exp_decay_atImInfty'
 
 end CuspFormClass
