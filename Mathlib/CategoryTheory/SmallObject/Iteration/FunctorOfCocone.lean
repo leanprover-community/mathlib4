@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
 # The functor from `Set.Iic j` deduced from a cocone
@@ -14,6 +15,8 @@ an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -135,14 +138,14 @@ lemma ofCoconeObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ 
 when `c : Cocone F`. -/
 @[simps!]
 def restrictionLTOfCoconeIso :
-    SmallObject.restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
+    SmallObject.restrictionLT (ofCocone c) (le_refl j) ≅ F :=
   NatIso.ofComponents (fun ⟨i, hi⟩ ↦ ofCoconeObjIso c i hi)
     (by intros; apply ofCoconeObjIso_hom_naturality)
 
 variable {c} in
-/-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (Preorder.le_refl j)`. -/
+/-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (le_refl j)`. -/
 def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
-    IsColimit (coconeOfLE (ofCocone c) (Preorder.le_refl j)) :=
+    IsColimit (coconeOfLE (ofCocone c) (le_refl j)) :=
   (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
     (IsColimit.ofIsoColimit hc
       (Cocones.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by

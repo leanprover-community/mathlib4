@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
-import Mathlib.Algebra.Homology.HomotopyCofiber
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
+public import Mathlib.Algebra.Homology.HomotopyCofiber
 
 /-! # The mapping cone of a morphism of cochain complexes
 
@@ -17,6 +19,8 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 - `mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -49,11 +53,18 @@ variable {F G : CochainComplex C ℤ} (φ : F ⟶ G)
 variable [HasHomotopyCofiber φ]
 
 /-- The mapping cone of a morphism of cochain complexes indexed by `ℤ`. -/
-noncomputable def mappingCone := homotopyCofiber φ
+noncomputable def mappingCone : CochainComplex C ℤ := homotopyCofiber φ
 
 namespace mappingCone
 
 open HomComplex
+
+@[simp]
+lemma isZero_X_iff (i : ℤ) :
+    IsZero ((mappingCone φ).X i) ↔ IsZero (F.X (i + 1)) ∧ IsZero (G.X i) := by
+  have := HasHomotopyCofiber.hasBinaryBiproduct φ i (i + 1) rfl
+  rw [← biprod_isZero_iff]
+  exact (homotopyCofiber.XIsoBiprod φ i (i + 1) rfl).isZero_iff
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
@@ -62,7 +73,7 @@ noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
 
-/-- The first projection from the mapping cone, as a cocyle of degree `1`. -/
+/-- The first projection from the mapping cone, as a cocycle of degree `1`. -/
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
   Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by cutsat) (by
     ext p _ rfl

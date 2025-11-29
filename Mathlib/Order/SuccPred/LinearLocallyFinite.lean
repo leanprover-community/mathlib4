@@ -3,13 +3,15 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Linear locally finite orders
@@ -52,6 +54,8 @@ About `toZ`:
   `OrderIso` between `ι` and `Finset.range ((toZ ⊥ ⊤).toNat + 1)`.
 
 -/
+
+@[expose] public section
 
 
 open Order

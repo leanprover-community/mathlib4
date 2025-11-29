@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.LocallyDirected
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.AlgebraicGeometry.Gluing
+module
+
+public import Mathlib.CategoryTheory.LocallyDirected
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.AlgebraicGeometry.Gluing
 
 /-!
 # Locally directed covers
@@ -21,6 +23,8 @@ be covered by a subcover of `𝒰`. In particular, if `𝒰` is a Zariski cover,
 Many natural covers are naturally directed, most importantly the cover of all affine
 opens of a scheme.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -123,6 +127,7 @@ variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
 
 instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
 
+set_option linter.flexible false in -- TODO: fix the non-terminal simp at the end
 instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
   trans {i j} hij := pullback.map f (𝒰.f i) f (𝒰.f j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)

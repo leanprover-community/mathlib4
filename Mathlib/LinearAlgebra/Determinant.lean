@@ -3,16 +3,18 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.Tactic.FieldSimp
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathlib.RingTheory.Finiteness.Cardinality
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+public import Mathlib.RingTheory.Finiteness.Cardinality
 /-!
 # Determinant of families of vectors
 
@@ -39,6 +41,8 @@ types used for indexing.
 
 basis, det, determinant
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -239,8 +243,7 @@ theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
   · have : Module.Finite A M := by
       rcases H with ⟨s, ⟨hs⟩⟩
       exact Module.Finite.of_basis hs
-    simp only [← det_toMatrix (Module.finBasis A M), LinearEquiv.map_smul,
-      Fintype.card_fin, Matrix.det_smul]
+    simp only [← det_toMatrix (Module.finBasis A M), map_smul, Fintype.card_fin, Matrix.det_smul]
   · classical
       have : Module.finrank A M = 0 := finrank_eq_zero_of_not_exists_basis H
       simp [coe_det, H, this]
@@ -249,7 +252,7 @@ theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
   haveI := Classical.decEq ι
   cases nonempty_fintype ι
-  rwa [← det_toMatrix b, LinearEquiv.map_zero, det_zero]
+  rwa [← det_toMatrix b, map_zero, det_zero]
 
 /-- In a finite-dimensional vector space, the zero map has determinant `1` in dimension `0`,
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
@@ -257,7 +260,7 @@ the determinant to be `1`. -/
 @[simp]
 theorem det_zero [Module.Free A M] :
     LinearMap.det (0 : M →ₗ[A] M) = (0 : A) ^ Module.finrank A M := by
-  simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, MonoidHom.map_one]
+  simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, map_one]
 
 theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
   rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
@@ -554,7 +557,7 @@ nonrec def det : M [⋀^ι]→ₗ[R] R where
       (fun v i x y ↦ by
         simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
       (fun u i c x ↦ by
-        simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
+        simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, map_smul]
         apply det_updateCol_smul)
   map_eq_zero_of_eq' := by
     intro v i j h hij

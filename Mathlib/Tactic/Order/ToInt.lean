@@ -3,10 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Batteries.Data.List.Pairwise
-import Mathlib.Tactic.Order.CollectFacts
-import Batteries.Tactic.GeneralizeProofs
-import Mathlib.Util.Qq
+module
+
+public meta import Batteries.Data.List.Pairwise
+public meta import Mathlib.Tactic.Order.CollectFacts
+public meta import Batteries.Tactic.GeneralizeProofs
+public meta import Mathlib.Util.Qq
 
 /-!
 # Translating linear orders to ℤ
@@ -24,6 +26,8 @@ the problem becomes NP-hard, and the idea is to reuse a smart and efficient proc
 
 Migrate to `grind` when it is ready.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order.ToInt
 
@@ -48,8 +52,8 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
   generalize_proofs _ hi hj
   rw [← hi.choose_spec, ← hj.choose_spec] at h_eq
   conv_lhs => rw [← hi.choose_spec, ← hj.choose_spec]
-  have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
-      (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
+  have := li.pairwise_mergeSort (le := fun a b ↦ decide (a ≤ b))
+      (fun a b c ↦ by simpa using le_trans) (by simpa using le_total)
   rw [List.pairwise_iff_get] at this
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h

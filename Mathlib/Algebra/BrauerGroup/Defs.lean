@@ -3,10 +3,12 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Central.Defs
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Matrix.Reindex
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!
 # Definition of Brauer group of a field K
@@ -29,6 +31,8 @@ that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 Brauer group, Central simple algebra, Galois Cohomology
 -/
 
+@[expose] public section
+
 universe u v
 
 /-- `CSA` is the set of all finite-dimensional central simple algebras over a field `K`. For the
@@ -47,8 +51,8 @@ instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
 attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
-/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer Equivalent
-  if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
+/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer equivalent
+  if there exist `n, m ∈ ℕ+` such that `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
 abbrev IsBrauerEquivalent (A B : CSA K) : Prop :=
   ∃ n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
 
