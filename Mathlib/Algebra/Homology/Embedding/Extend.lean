@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.Opposite
+module
+
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.Opposite
 
 /-!
 # The extension of a homological complex by an embedding of complex shapes
@@ -17,6 +19,8 @@ leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalCo
 This construction first appeared in the Liquid Tensor Experiment.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -79,8 +83,7 @@ lemma XOpIso_hom_d_op (i j : Option ι) :
       simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
   | some i, some j => by
       dsimp [XOpIso]
-      simp only [d_eq _ rfl rfl, Option.some.injEq, d_eq, op_comp, assoc,
-        id_comp, comp_id]
+      simp only [d_eq _ rfl rfl, op_comp, assoc, id_comp, comp_id]
       rfl
   | some _, none => by
       simp only [d_none_eq_zero, d_none_eq_zero', comp_zero, zero_comp, op_zero]
@@ -141,11 +144,7 @@ lemma isZero_extend_X' (i' : ι') (hi' : e.r i' = none) :
 
 lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.extend e).X i') :=
-  K.isZero_extend_X' e i' (by
-    obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
-    · exact hi'
-    · exfalso
-      exact hi' _ (e.f_eq_of_r_eq_some hi))
+  K.isZero_extend_X' e i' (ComplexShape.Embedding.r_eq_none e i' hi')
 
 instance : (K.extend e).IsStrictlySupported e where
   isZero i' hi' := K.isZero_extend_X e i' hi'
@@ -175,7 +174,7 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
 
 variable {K L M}
 
-/-- Given an ambedding `e : c.Embedding c'` of complexes shapes, this is the
+/-- Given an embedding `e : c.Embedding c'` of complexes shapes, this is the
 morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 `HomologicalComplex C c`. -/
 noncomputable def extendMap : K.extend e ⟶ L.extend e where
@@ -267,6 +266,60 @@ lemma extendMap_add [Preadditive C] {K L : HomologicalComplex C c} (φ φ' : K �
   · obtain ⟨i, hi⟩ := hi'
     simp [extendMap_f _ e hi]
   · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+section
+
+variable [HasZeroMorphisms C] [DecidableEq ι]
+  (e : c.Embedding c') (X : C)
+
+@[simp]
+lemma extend_single_d (i : ι) (j' k' : ι') :
+    (((single C c i).obj X).extend e).d j' k' = 0 := by
+  by_cases hj : ∃ j, e.f j = j'
+  · obtain ⟨j, rfl⟩ := hj
+    by_cases hk : ∃ k, e.f k = k'
+    · obtain ⟨k, rfl⟩ := hk
+      simp [extend_d_eq _ _ rfl rfl]
+    · exact IsZero.eq_of_tgt (isZero_extend_X _ _ _ (by tauto)) _ _
+  · exact IsZero.eq_of_src (isZero_extend_X _ _ _ (by tauto)) _ _
+
+variable [DecidableEq ι'] (i : ι) (i' : ι')
+
+/-- The extension of a single complex is a single complex. -/
+noncomputable def extendSingleIso (h : e.f i = i') :
+    ((single C c i).obj X).extend e ≅ (single C c' i').obj X where
+  hom :=
+    mkHomToSingle
+      ((((single C c i).obj X).extendXIso e h).hom ≫ (singleObjXSelf c i X).hom) (by simp)
+  inv :=
+    mkHomFromSingle
+      ((singleObjXSelf c i X).inv ≫ (((single C c i).obj X).extendXIso e h).inv) (by simp)
+  hom_inv_id := by
+    ext j'
+    by_cases hj : ∃ j, e.f j = j'
+    · obtain ⟨j, hj⟩ := hj
+      by_cases hij : j = i
+      · obtain rfl : i' = j' := by rw [← hj, hij, h]
+        simp
+      · exact ((isZero_single_obj_X _ _ _ _ hij).of_iso
+          (((single C c i).obj X).extendXIso e hj)).eq_of_src _ _
+    · exact IsZero.eq_of_src (isZero_extend_X _ _ _ (by tauto)) _ _
+
+@[reassoc]
+lemma extendSingleIso_hom_f (h : e.f i = i') :
+    (extendSingleIso e X i i' h).hom.f i' =
+      (((single C c i).obj X).extendXIso e h).hom ≫ (singleObjXSelf c i X).hom ≫
+        (singleObjXSelf c' i' X).inv := by
+  simp [extendSingleIso]
+
+@[reassoc]
+lemma extendSingleIso_inv_f (h : e.f i = i') :
+    (extendSingleIso e X i i' h).inv.f i' =
+      (singleObjXSelf c' i' X).hom ≫ (singleObjXSelf c i X).inv ≫
+        (((single C c i).obj X).extendXIso e h).inv := by
+  simp [extendSingleIso]
+
+end
 
 end HomologicalComplex
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Monad.Equalizer
+module
+
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Monad.Equalizer
 
 /-!
 # Adjoint lifting
@@ -55,6 +57,8 @@ Please try to keep them in sync.
 * Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)
 * A unified approach to the lifting of adjoints (AJ Power, 1988)
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -152,7 +156,7 @@ noncomputable def constructRightAdjoint [∀ X : B, RegularMono (adj₁.unit.app
   rw [constructRightAdjointEquiv_symm_apply, constructRightAdjointEquiv_symm_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
-  simp only [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
+  simp only [Adjunction.homEquiv_counit]
   erw [Fork.IsLimit.homIso_natural, Fork.IsLimit.homIso_natural]
   simp only [Fork.ofι_pt, Functor.map_comp, assoc, limit.cone_x]
   erw [adj₂.homEquiv_naturality_left, Equiv.rightInverse_symm]
@@ -169,7 +173,7 @@ See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
 lemma isLeftAdjoint_triangle_lift {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (adj₁ : F ⊣ U)
     [∀ X, RegularMono (adj₁.unit.app X)] [HasCoreflexiveEqualizers C]
-    [(L ⋙ F).IsLeftAdjoint ] : L.IsLeftAdjoint where
+    [(L ⋙ F).IsLeftAdjoint] : L.IsLeftAdjoint where
   exists_rightAdjoint :=
     ⟨LiftRightAdjoint.constructRightAdjoint L _ adj₁ (Adjunction.ofIsLeftAdjoint _),
       ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
@@ -186,10 +190,10 @@ lemma isLeftAdjoint_triangle_lift_comonadic (F : B ⥤ A) [ComonadicLeftAdjoint 
       infer_instance
     refine ((Adjunction.ofIsLeftAdjoint
       (L' ⋙ (Comonad.comparison (comonadicAdjunction F)).inv)).ofNatIsoLeft ?_).isLeftAdjoint
-    exact isoWhiskerLeft L (Comonad.comparison _).asEquivalence.unitIso.symm ≪≫ L.leftUnitor
+    exact Functor.isoWhiskerLeft L (Comonad.comparison _).asEquivalence.unitIso.symm ≪≫ L.leftUnitor
   let this : (L' ⋙ Comonad.forget (comonadicAdjunction F).toComonad).IsLeftAdjoint := by
     refine ((Adjunction.ofIsLeftAdjoint (L ⋙ F)).ofNatIsoLeft ?_).isLeftAdjoint
-    exact isoWhiskerLeft L (Comonad.comparisonForget (comonadicAdjunction F)).symm
+    exact Functor.isoWhiskerLeft L (Comonad.comparisonForget (comonadicAdjunction F)).symm
   let this : ∀ X, RegularMono ((Comonad.adj (comonadicAdjunction F).toComonad).unit.app X) := by
     intro X
     simp only [Comonad.adj_unit]

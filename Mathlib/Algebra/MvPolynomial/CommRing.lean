@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
 # Multivariate polynomials over a ring
@@ -32,6 +34,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -57,11 +61,11 @@ variable (σ a a')
 
 @[simp]
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
-  RingHom.map_sub _ _ _
+  map_sub _ _ _
 
 @[simp]
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
-  RingHom.map_neg _ _
+  map_neg _ _
 
 @[simp]
 theorem coeff_neg (m : σ →₀ ℕ) (p : MvPolynomial σ R) : coeff m (-p) = -coeff m p :=
@@ -90,8 +94,6 @@ theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
   simpa [degrees_def] using AddMonoidAlgebra.supDegree_sub_le
-
-@[deprecated (since := "2024-12-28")] alias degrees_sub := degrees_sub_le
 
 end Degrees
 
@@ -177,15 +179,8 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hf : ∀ m : σ →₀ ℕ, m ∈ f.support → k ≤ m x → coeff m f = coeff m g)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
-  classical
   rw [degreeOf_lt_iff h]
-  intro m hm
-  by_contra! hc
-  have h := support_sub σ f g hm
-  simp only [mem_support_iff, Ne, coeff_sub, sub_eq_zero] at hm
-  rcases Finset.mem_union.1 h with cf | cg
-  · exact hm (hf m cf hc)
-  · exact hm (hg m cg hc)
+  grind [degreeOf_lt_iff, mem_support_iff, coeff_sub]
 
 end DegreeOf
 

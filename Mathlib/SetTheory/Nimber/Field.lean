@@ -3,9 +3,16 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimber multiplication and division
@@ -23,6 +30,8 @@ uses mutual induction and mimics the definition for the surreal inverse. This de
 
 - Show the nimbers are algebraically closed.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -187,10 +196,10 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
 termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_left ha)
-  mul_right_cancel_of_ne_zero ha h := by
+  mul_right_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_right ha)
 

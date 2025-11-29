@@ -3,14 +3,18 @@ Copyright (c) 2024 Artie Khovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artie Khovanov
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Subgroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Subgroup.Defs
 
 /-!
 # Squares and even elements
 
 This file defines the subgroup of squares / even elements in an abelian group.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 
@@ -22,8 +26,8 @@ variable (S) in
 In a commutative semigroup `S`, `Subsemigroup.square S` is the subsemigroup of squares in `S`.
 -/
 @[to_additive
-"In a commutative additive semigroup `S`, `AddSubsemigroup.even S`
-is the subsemigroup of even elements in `S`."]
+/-- In a commutative additive semigroup `S`, `AddSubsemigroup.even S`
+is the subsemigroup of even elements in `S`. -/]
 def square : Subsemigroup S where
   carrier := {s : S | IsSquare s}
   mul_mem' := IsSquare.mul
@@ -44,8 +48,8 @@ variable (M) in
 In a commutative monoid `M`, `Submonoid.square M` is the submonoid of squares in `M`.
 -/
 @[to_additive
-"In a commutative additive monoid `M`, `AddSubmonoid.even M`
-is the submonoid of even elements in `M`."]
+/-- In a commutative additive monoid `M`, `AddSubmonoid.even M`
+is the submonoid of even elements in `M`. -/]
 def square : Submonoid M where
   __ := Subsemigroup.square M
   one_mem' := IsSquare.one
@@ -69,8 +73,8 @@ variable (G) in
 In an abelian group `G`, `Subgroup.square G` is the subgroup of squares in `G`.
 -/
 @[to_additive
-"In an abelian additive group `G`, `AddSubgroup.even G` is
-the subgroup of even elements in `G`."]
+/-- In an abelian additive group `G`, `AddSubgroup.even G` is
+the subgroup of even elements in `G`. -/]
 def square : Subgroup G where
   __ := Submonoid.square G
   inv_mem' := IsSquare.inv

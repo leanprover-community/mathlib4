@@ -3,16 +3,20 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Dynamics.PeriodicPts.Defs
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Dynamics.PeriodicPts.Defs
 
 /-!
 # Extra lemmas about periodic points
 -/
+
+@[expose] public section
 
 open Nat Set
 
@@ -91,8 +95,8 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   obtain ⟨m, n, heq, hne⟩ : ∃ m n, f^[m] x = f^[n] x ∧ m ≠ n := by
     simpa [Injective] using not_injective_infinite_finite (f^[·] x)
   rcases lt_or_gt_of_ne hne with hlt | hlt
-  · exact mk_mem_periodicPts (by omega) (iterate_cancel h heq.symm)
-  · exact mk_mem_periodicPts (by omega) (iterate_cancel h heq)
+  · exact mk_mem_periodicPts (by cutsat) (iterate_cancel h heq.symm)
+  · exact mk_mem_periodicPts (by cutsat) (iterate_cancel h heq)
 
 @[deprecated (since := "2025-04-27")]
 alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
@@ -120,10 +124,7 @@ variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
-  eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
-
-@[deprecated (since := "2025-04-18")]
-alias minimalPeriod_prod_map := minimalPeriod_prodMap
+  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
 
 theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_left _ _

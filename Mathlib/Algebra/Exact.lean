@@ -3,10 +3,11 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
 
@@ -26,7 +27,7 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 * add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
 
-
+@[expose] public section
 
 variable {R M M' N N' P P' : Type*}
 
@@ -76,7 +77,7 @@ lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
     Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
   letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
   have : ((0 : Set.range g) : P) = 0 := rfl
-  simp [Exact, Subtype.range_coe, Set.rangeFactorization, Subtype.ext_iff, this]
+  simp [Exact, Set.rangeFactorization, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -280,7 +281,7 @@ lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
 
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
-  forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
+  forall_congr' fun _ => iff_congr (map_eq_zero_iff _ h) Iff.rfl
 
 namespace Exact
 
@@ -338,7 +339,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
   · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using DFunLike.congr_arg g e
@@ -377,7 +378,7 @@ def Exact.splitInjectiveEquiv
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
       suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
@@ -468,7 +469,7 @@ lemma Exact.exact_mapQ_iff
   dsimp only [mapQ]
   rw [← ker_comp, range_liftQ, liftQ_mkQ, ker_comp, range_comp, comap_map_eq,
     ker_mkQ, ker_mkQ, ← hfg.linearMap_ker_eq, sup_comm,
-    ← LE.le.le_iff_eq (sup_le hqr (ker_le_comap g)),
+    ← (sup_le hqr (ker_le_comap g)).ge_iff_eq',
     ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
 
 end Function
@@ -524,5 +525,11 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
     (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
+
+@[simp]
+lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
+    (hg : Function.Surjective g) (x : N) :
+    (h.linearEquivOfSurjective hg).symm (g x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 end Ring

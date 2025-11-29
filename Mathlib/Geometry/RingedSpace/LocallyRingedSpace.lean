@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Geometry.RingedSpace.Basic
-import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Geometry.RingedSpace.Basic
+public import Mathlib.Geometry.RingedSpace.Stalks
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # The category of locally ringed spaces
@@ -15,6 +17,8 @@ We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
 `IsLocalHom` on the stalk maps).
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -79,12 +83,12 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
-  X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
+    X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
 
 @[simp, nolint simpVarHead]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
-    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
-  Hom.toShHom ⟨f, hf⟩ = f := rfl
+    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) : Hom.toShHom ⟨f, hf⟩ = f :=
+  rfl
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
@@ -277,7 +281,7 @@ def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
 noncomputable
 instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where
   default := LocallyRingedSpace.emptyTo X
-  uniq f := by ext ⟨⟩ x; aesop_cat
+  uniq f := by ext ⟨⟩ x; cat_disch
 
 /-- The empty space is initial in `LocallyRingedSpace`. -/
 noncomputable
@@ -287,10 +291,10 @@ def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.I
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
-  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_image, Set.mem_setOf_eq, Subtype.exists,
-    exists_and_right, exists_eq_right, Opens.coe_bot, Set.mem_empty_iff_false,
+  simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
+    Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
-  intros hx
+  intro hx
   rw [map_zero, isUnit_zero_iff]
   change (0 : X.presheaf.stalk x) ≠ (1 : X.presheaf.stalk x)
   exact zero_ne_one
@@ -321,7 +325,7 @@ lemma iso_hom_base_inv_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
 @[simp]
 lemma iso_hom_base_inv_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
     (e.inv.base (e.hom.base x)) = x := by
-  show (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[simp]
@@ -333,7 +337,7 @@ lemma iso_inv_base_hom_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
 @[simp]
 lemma iso_inv_base_hom_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
     (e.hom.base (e.inv.base y)) = y := by
-  show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 section Stalks
@@ -440,7 +444,7 @@ variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : I
   (V : Opens U) (x : U) (hx : x ∈ V)
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
-of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`. -/
+of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`. -/
 noncomputable
 def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
   X.toPresheafedSpace.restrictStalkIso h x

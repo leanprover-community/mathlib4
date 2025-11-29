@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # Quadratic forms over the complex numbers
@@ -13,6 +15,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 a sum of squares.
 
 -/
+
+@[expose] public section
 
 
 namespace QuadraticForm
@@ -48,12 +52,12 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
         Pi.single_eq_of_ne hij.symm, smul_eq_mul, smul_eq_mul,
         mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
-  simp_rw [Basis.unitsSMul_apply]
+  simp_rw [Module.Basis.unitsSMul_apply]
   erw [hsum, smul_eq_mul]
   split_ifs with h
   · simp only [h, zero_smul, zero_mul]
   have hww' : w' j = w j := by simp only [w, dif_neg h, Units.val_mk0]
-  simp -zeta only [one_mul, Units.val_mk0, smul_eq_mul]
+  simp -zeta only [one_mul, smul_eq_mul]
   rw [hww']
   suffices v j * v j = w j ^ (-(1 / 2 : ℂ)) * w j ^ (-(1 / 2 : ℂ)) * w j * v j * v j by
     rw [this]; ring
