@@ -913,10 +913,12 @@ open Bornology
 
 variable {R K : Type*}
 
-lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K]
-    [NormedAddGroup R] [SMulWithZero K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
-    {f : α → K} {g : α → R} {l : Filter α}
-    (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x • g x‖)
+section NormedAddCommGroup
+variable [NormedRing K] [IsDomain K] [NormedAddCommGroup R]
+variable [Module K R] [Module.IsTorsionFree K R] [NormSMulClass K R]
+
+lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → R}
+    {l : Filter α} (hmul : IsBoundedUnder (· ≤ ·) l fun x ↦ ‖f x • g x‖)
     (hf : Tendsto f l (cobounded K)) :
     Tendsto g l (𝓝 0) := by
   obtain ⟨c, hc⟩ := hmul.eventually_le
@@ -930,11 +932,6 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
     _ ≤ c / ‖f x‖ := by rwa [norm_smul, ← le_div_iff₀' (by positivity)] at hfgc
     _ ≤ c / (c / ε) := by gcongr
     _ = ε := div_div_cancel₀ hc0.ne'
-
-section
-
-variable [NormedRing K] [NormedAddCommGroup R]
-variable [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
 
 lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
     {f₁ f₂ : α → K} {g : α → R} {t : R} {l : Filter α}
@@ -964,10 +961,10 @@ lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [Linear
     apply Eventually.mono _ (fun x h ↦ norm_le_norm_of_abs_le_abs h)
     simpa using ⟨0, fun _ h ↦ mod_cast Nat.abs_floor_sub_le h⟩
 
-end
+end NormedAddCommGroup
 
 lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
-    [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
+    [Module K R] [Module.IsTorsionFree K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
     (hg : Tendsto (fun n : ℕ ↦ (n : R) * g n) atTop (𝓝 t)) :
     Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) :=

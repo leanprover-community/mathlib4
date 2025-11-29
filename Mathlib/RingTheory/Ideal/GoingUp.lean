@@ -323,7 +323,7 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
-instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
+instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [Module.IsTorsionFree R S]
     (P : Ideal R) [P.IsPrime] :
     Nonempty (primesOver P S) := by
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
@@ -405,7 +405,7 @@ end IsIntegral
 section IsIntegral
 
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
-  [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
+  [Algebra A B] [Module.IsTorsionFree A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
 instance primesOver.isMaximal : Q.1.IsMaximal :=
   Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p

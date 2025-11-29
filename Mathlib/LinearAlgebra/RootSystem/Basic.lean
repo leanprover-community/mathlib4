@@ -93,7 +93,7 @@ unique.
 
 Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings. -/
 @[ext]
-protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
+protected lemma ext [CharZero R] [Module.IsTorsionFree R M]
     {P₁ P₂ : RootPairing ι R M N}
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root)
@@ -118,7 +118,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
 
-private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisors R M]
+private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [Module.IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -159,7 +159,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
 
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M]
+def mk' [CharZero R] [Module.IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -189,7 +189,7 @@ variable [Finite ι] (P : RootSystem ι R M N)
 /-- In characteristic zero if there is no torsion, a finite root system is determined entirely by
 its roots. -/
 @[ext]
-protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
+protected lemma ext [CharZero R] [Module.IsTorsionFree R M]
     {P₁ P₂ : RootSystem ι R M N}
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root) :
@@ -214,7 +214,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
 
-private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulDivisors R M]
+private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [Module.IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
