@@ -198,10 +198,10 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 /-- The `R`-algebra `HahnSeries ℕ A` is isomorphic to `PowerSeries A`. -/
 @[simps!]
 def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
-  { toPowerSeries with
-    commutes' := fun r => by
+  .ofCommutes toPowerSeries
+    fun r => by
       ext n
-      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
+      cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply]
 
 variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 

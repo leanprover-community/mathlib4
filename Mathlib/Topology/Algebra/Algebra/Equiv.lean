@@ -91,7 +91,7 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
 instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
-  commutes f := f.commutes'
+  map_smulₛₗ f := f.map_smul'
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
@@ -250,8 +250,8 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
   ContinuousAlgHom.ext e.symm_apply_apply
 
 @[simp]
-theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id := by
-  exact funext <| e.symm_apply_apply
+theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id :=
+  funext <| e.symm_apply_apply
 
 @[simp]
 theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=

@@ -45,7 +45,6 @@ open scoped ENNReal
 
 section LpPiLp
 
-
 variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
 
 section Finite
@@ -149,7 +148,6 @@ noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →
     map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
-
 variable {𝕜 E}
 
 theorem coe_lpBCFₗᵢ (f : lp (fun _ : α ↦ E) ∞) : (lpBCFₗᵢ E 𝕜 f : α → E) = f :=
@@ -167,7 +165,6 @@ noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R
   { @AddEquiv.lpBCF _ R _ _ _ with
     map_mul' := fun _f _g => rfl }
 
-
 variable {R}
 
 theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF R f : α → R) = f :=
@@ -183,8 +180,7 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBCF A with commutes' := fun _k ↦ rfl }
-
+  .ofCommutes (RingEquiv.lpBCF A) fun _k ↦ rfl
 
 variable {α A 𝕜}
 

@@ -132,9 +132,9 @@ theorem exists_lift
   · intro B _ I hI _; exact FormallySmooth.comp_surjective R A I hI
   · intro B _ I J hIJ h₁ h₂ _ g
     let this : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
-      { (DoubleQuot.quotQuotEquivQuotSup I J).trans
-          (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)) with
-        commutes' := fun x => rfl }
+      .ofCommutes ((DoubleQuot.quotQuotEquivQuotSup I J).trans
+          (Ideal.quotEquivOfEq (sup_eq_right.mpr hIJ)))
+        fun _ => rfl
     obtain ⟨g', e⟩ := h₂ (this.symm.toAlgHom.comp g)
     obtain ⟨g', rfl⟩ := h₁ g'
     replace e := congr_arg this.toAlgHom.comp e

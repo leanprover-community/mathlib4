@@ -222,7 +222,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
   letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
-  · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
+  · let e' : B₁ ≃ₐ[A₁] B₂ := .ofCommutes e₂ fun _ ↦ rfl
     rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
     simp [e']
   intro c x

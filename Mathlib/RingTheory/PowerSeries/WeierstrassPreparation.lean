@@ -484,6 +484,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
     exact ⟨0, by simp [H.isWeierstrassDivisorAt'.mod_coe_eq_self (hfdeg.trans_eq h1)]⟩
   right_inv f := by exact H.isWeierstrassDivisorAt'.mk_mod'_eq_self
+  map_smul' := by simp
 
 end Equiv
 

@@ -664,7 +664,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
   rw [RingHom.comp_assoc] at this
   convert this
   refine RingHom.ext fun x => ?_
-  exact ((renameEquiv R e).commutes' x).symm
+  simp
 
 end MvPolynomial
 

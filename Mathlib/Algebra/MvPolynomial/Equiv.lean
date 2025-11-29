@@ -65,7 +65,8 @@ variable (R) [CommSemiring R]
 polynomials over the ground ring.
 -/
 @[simps]
-def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
+def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] :=
+  .ofCommutes {
   toFun := eval₂ Polynomial.C fun _ => Polynomial.X
   invFun := Polynomial.eval₂ MvPolynomial.C (X PUnit.unit)
   left_inv := by
@@ -85,8 +86,8 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
       rw [Polynomial.eval₂_mul, Polynomial.eval₂_pow, Polynomial.eval₂_X, Polynomial.eval₂_C,
         eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
   map_mul' _ _ := eval₂_mul _ _
-  map_add' _ _ := eval₂_add _ _
-  commutes' _ := eval₂_C _ _ _
+  map_add' _ _ := eval₂_add _ _ }
+  fun _ => eval₂_C _ _ _
 
 theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
     MvPolynomial.pUnitAlgEquiv R (MvPolynomial.monomial d r)
@@ -132,9 +133,9 @@ variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommS
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
-@[simps apply]
+@[simps! apply]
 def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPolynomial σ A₁ ≃ₐ[R] MvPolynomial σ A₂ :=
-  { mapAlgHom (e : A₁ →ₐ[R] A₂), mapEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
+  .ofCommutes (mapEquiv σ (e : A₁ ≃+* A₂)) (mapAlgHom (e : A₁ →ₐ[R] A₂)).commutes
 
 @[simp]
 theorem mapAlgEquiv_refl : mapAlgEquiv σ (AlgEquiv.refl : A₁ ≃ₐ[R] A₁) = AlgEquiv.refl :=
@@ -297,13 +298,11 @@ with coefficients in multivariable polynomials in the other type.
 -/
 @[simps!]
 def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
-  { sumRingEquiv R S₁ S₂ with
-    commutes' := by
-      intro r
+  .ofCommutes (sumRingEquiv R S₁ S₂)
+    fun r => by
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) :) := rfl
       have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
-        Equiv.coe_fn_mk, B, sumToIter_C, A] }
+      simp [sumRingEquiv, mvPolynomialEquivMvPolynomial, A]
 
 lemma sumAlgEquiv_comp_rename_inr :
     (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inr) = IsScalarTower.toAlgHom R
