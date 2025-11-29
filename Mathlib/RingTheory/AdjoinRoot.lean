@@ -343,10 +343,8 @@ theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f
 @[simp]
 theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftAlgHom f (Algebra.ofId R S) (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
-  suffices AlgHom.equalizer ϕ (liftAlgHom f _ (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
-    exact (AlgHom.ext fun x => (SetLike.ext_iff.mp this x).mpr Algebra.mem_top).symm
-  rw [eq_top_iff, ← adjoinRoot_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
-  exact (@lift_root _ _ _ _ _ _ _ (aeval_algHom_eq_zero f ϕ)).symm
+  ext
+  simp
 
 set_option linter.deprecated false in
 @[deprecated liftAlgHom_eq_algHom (since := "2025-10-10")]

@@ -5521,6 +5521,7 @@ public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.RelSeries
 public import Mathlib.Order.Restriction
+public import Mathlib.Order.SaddlePoint
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
@@ -5629,6 +5630,7 @@ public import Mathlib.Probability.Kernel.Invariance
 public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+public import Mathlib.Probability.Kernel.Irreducible
 public import Mathlib.Probability.Kernel.MeasurableIntegral
 public import Mathlib.Probability.Kernel.MeasurableLIntegral
 public import Mathlib.Probability.Kernel.Posterior
