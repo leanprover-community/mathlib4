@@ -76,7 +76,9 @@ open Limits
 instance isStableUnderRetracts_colimitsCardinalClosure [Fact κ.IsRegular] :
     (P.colimitsCardinalClosure κ).IsStableUnderRetracts := by
   have := P.isClosedUnderColimitsOfShape_colimitsCardinalClosure κ
-    WalkingParallelPair (HasCardinalLT.of_le (by simp; infer_instance)
+    WalkingParallelPair (HasCardinalLT.of_le (by
+      simp only [hasCardinalLT_aleph0_iff]
+      infer_instance)
     (Cardinal.IsRegular.aleph0_le Fact.out))
   infer_instance
 
