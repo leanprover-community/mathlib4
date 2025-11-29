@@ -789,10 +789,10 @@ abbrev IsIndepSet (s : Set α) : Prop :=
   s.Pairwise (fun v w ↦ ¬G.Adj v w)
 
 theorem isIndepSet_iff : G.IsIndepSet s ↔ s.Pairwise (fun v w ↦ ¬G.Adj v w) :=
-  Iff.rfl
+  .rfl
 
 theorem isIndepSet_iff_isAntichain_adj : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
-  Iff.rfl
+  .rfl
 
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
