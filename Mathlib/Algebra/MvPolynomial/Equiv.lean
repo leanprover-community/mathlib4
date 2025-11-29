@@ -416,11 +416,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
 
 theorem support_coeff_optionEquivLeft {f : MvPolynomial (Option σ) R} {i : ℕ} {m : σ →₀ ℕ} :
     m ∈ ((optionEquivLeft R σ f).coeff i).support ↔ m.optionElim i ∈ f.support := by
-  apply Iff.intro
-  · intro h
-    simpa [← optionEquivLeft_coeff_coeff] using h
-  · intro h
-    simpa [mem_support_iff, ← optionEquivLeft_coeff_coeff] using h
+  simp [← optionEquivLeft_coeff_coeff]
 
 lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support
