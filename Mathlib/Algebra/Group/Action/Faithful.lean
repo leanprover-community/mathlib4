@@ -89,7 +89,4 @@ scalar towers, then `P / N / M` is also a scalar tower.
 
 open MulOpposite in
 instance [SMul α M] [FaithfulSMul α M] : FaithfulSMul α Mᵐᵒᵖ where
-  eq_of_smul_eq_smul {a1 a2} h := by
-    change ∀ _, op _ = op _ at h
-    simp_rw [op_inj] at h
-    exact FaithfulSMul.eq_of_smul_eq_smul fun m ↦ h (op m)
+  eq_of_smul_eq_smul h := FaithfulSMul.eq_of_smul_eq_smul fun m ↦ op_inj.mp <| h (op m)
