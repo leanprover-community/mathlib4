@@ -93,7 +93,10 @@ def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
   BinaryFan.IsLimit.mk (binaryFan Y Z)
     (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [Over.w u, Over.w v])) (by simp))
     (by cat_disch) (by cat_disch)
-    (fun a b m h₁ h₂ => by ext; apply hom_ext (f := Y.hom) (g := Z.hom) <;> aesop)
+    (fun a b m h₁ h₂ => by
+      ext
+      dsimp [Over.map, Comma.mapRight]
+      cat_disch)
 
 end
 
