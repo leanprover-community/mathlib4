@@ -163,9 +163,6 @@ theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
   ext p
   simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
 
-theorem « end » {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    IsBaseChange S (endHom j) := _root_.IsBaseChange.end j
-
 end End
 
 end IsBaseChange
