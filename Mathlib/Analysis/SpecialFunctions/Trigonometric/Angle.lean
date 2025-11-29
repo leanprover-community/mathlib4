@@ -649,10 +649,11 @@ theorem cos_pos_iff_abs_toReal_lt_pi_div_two {θ : Angle} : 0 < cos θ ↔ |θ.t
   rw [lt_iff_le_and_ne, lt_iff_le_and_ne, cos_nonneg_iff_abs_toReal_le_pi_div_two, ←
     and_congr_right]
   rintro -
-  rw [Ne, Ne, not_iff_not, @eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
+  contrapose
+  rw [@eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
 
 theorem cos_neg_iff_pi_div_two_lt_abs_toReal {θ : Angle} : cos θ < 0 ↔ π / 2 < |θ.toReal| := by
-  rw [← not_le, ← not_le, not_iff_not, cos_nonneg_iff_abs_toReal_le_pi_div_two]
+  contrapose!; exact cos_nonneg_iff_abs_toReal_le_pi_div_two
 
 theorem abs_cos_eq_abs_sin_of_two_nsmul_add_two_nsmul_eq_pi {θ ψ : Angle}
     (h : (2 : ℕ) • θ + (2 : ℕ) • ψ = π) : |cos θ| = |sin ψ| := by

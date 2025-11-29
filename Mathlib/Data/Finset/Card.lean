@@ -712,9 +712,7 @@ theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : #s ≤ 1
   Finset.card_le_one_iff.2 fun {_ _ _ _} => Subsingleton.elim _ _
 
 theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact card_le_one
+  contrapose!; exact card_le_one
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]

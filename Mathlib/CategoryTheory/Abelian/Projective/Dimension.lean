@@ -271,7 +271,7 @@ lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
 
 lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
-  rw [← not_iff_not, not_le, not_not, projectiveDimension_lt_iff]
+  contrapose!; exact projectiveDimension_lt_iff
 
 lemma projectiveDimension_eq_bot_iff (X : C) :
     projectiveDimension X = ⊥ ↔ Limits.IsZero X := by
