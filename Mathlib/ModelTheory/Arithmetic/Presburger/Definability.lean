@@ -12,6 +12,7 @@ public import Mathlib.ModelTheory.Definability
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.Group.Submonoid.Finsupp
+import Mathlib.LinearAlgebra.Dimension.Basic
 import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
@@ -166,27 +167,12 @@ theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
       apply hS at ht
       rw [isProperLinearSet_iff] at ht
       rcases ht with ⟨a, t, ht, rfl⟩
-      have hcard : t.card ≤ 1 := by
-        by_contra hcard
-        simp only [not_le, Finset.one_lt_card_iff] at hcard
-        rcases hcard with ⟨a, b, ha, hb, hab⟩
-        have hb' : b ≠ 0 := by
-          intro hb'
-          apply ht.zero_notMem_image
-          simp [← hb', hb]
-        revert ht
-        simp only [imp_false, not_linearIndepOn_finset_iffₛ, id_eq]
-        refine ⟨Pi.single a b, Pi.single b a, ?_, a, ha, ?_⟩
-        · simpa [Pi.single_apply, ha, hb] using mul_comm b a
-        · simp [hab, hb']
+      have hcard : t.card ≤ 1 := by simpa [CommSemiring.rank_self] using ht.cardinal_le_rank
       simp_rw [Finset.card_le_one_iff_subset_singleton, Finset.subset_singleton_iff] at hcard
       rcases hcard with ⟨b, (rfl | rfl)⟩
       · refine ⟨a + 1, 1, zero_lt_one, fun x hx => ?_⟩
         simp [(Nat.lt_of_succ_le hx).ne', (Nat.lt_of_succ_le (Nat.le_succ_of_le hx)).ne']
-      · have hb : b ≠ 0 := by
-          intro hb
-          apply ht.zero_notMem_image
-          simp [hb]
+      · have hb : b ≠ 0 := by simpa [ne_comm] using ht.zero_notMem_image
         rw [Nat.ne_zero_iff_zero_lt] at hb
         refine ⟨a, b, hb, fun x hx => ?_⟩
         simp only [Finset.coe_singleton, mem_vadd_set, SetLike.mem_coe,
