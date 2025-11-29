@@ -4667,6 +4667,7 @@ public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 public import Mathlib.LinearAlgebra.SModEq
 public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.LinearAlgebra.SModEq.Prime
 public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.LinearAlgebra.SesquilinearForm
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
@@ -6222,6 +6223,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Support
 public import Mathlib.RingTheory.SurjectiveOnStalks
+public import Mathlib.RingTheory.Teichmuller
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 public import Mathlib.RingTheory.TensorProduct.Finite
