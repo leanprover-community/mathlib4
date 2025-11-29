@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Order.Fin.SuccAboveOrderIso
@@ -311,6 +312,31 @@ def nonDegenerateEquiv {n d : ℕ} :
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
+
+instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
+  degenerate_eq_top i hi := by
+    ext x
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+    by_contra hx
+    have : Mono (objEquiv x) := by rwa [← mem_nonDegenerate_iff_mono]
+    have := SimplexCategory.len_le_of_mono (objEquiv x)
+    dsimp at this
+    cutsat
+
+instance (n : SimplexCategory) (d : SimplexCategoryᵒᵖ) :
+    Finite ((stdSimplex.{u}.obj n).obj d) := by
+  rw [objEquiv.finite_iff]
+  infer_instance
+
+instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).Finite := by
+  induction n using SimplexCategory.rec with | _ n
+  exact finite_of_hasDimensionLT _ (n + 1) inferInstance
+
+instance {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
+    SSet.Finite (Subcomplex.ofSimplex x) := by
+  obtain ⟨f, rfl⟩ := yonedaEquiv.surjective x
+  rw [← Subcomplex.range_eq_ofSimplex]
+  infer_instance
 
 end stdSimplex
 
