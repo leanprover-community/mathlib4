@@ -149,6 +149,7 @@ public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.Algebra.Category.ModuleCat.Algebra
+public import Mathlib.Algebra.Category.ModuleCat.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
@@ -165,6 +166,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
 public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
@@ -5859,6 +5861,7 @@ public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
 public import Mathlib.RingTheory.Generators
+public import Mathlib.RingTheory.GlobalDimension
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -5974,6 +5977,7 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 public import Mathlib.RingTheory.LocalProperties.Projective
+public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.LocalProperties.Semilocal
 public import Mathlib.RingTheory.LocalProperties.Submodule
