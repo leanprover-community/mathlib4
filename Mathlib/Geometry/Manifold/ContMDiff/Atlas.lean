@@ -322,13 +322,9 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
       have : (f' ∘ φ.extend I) = (ψ.extend J ∘ f) ∘ ((φ.extend I).symm ∘ (φ.extend I)) := by
         simp only [f', Function.comp_assoc]
       intro x hx
-      rw [this, Function.comp_apply]
-      congr
-      simp only [comp_apply]
-      apply φ.extend_left_inv (hs hx)
-    have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) s := by
-      apply h.comp ((contMDiffOn_extend hφ).mono hs)
-      exact subset_preimage_image (↑(φ.extend I)) s
+      simp_rw [this, comp_apply, φ.extend_left_inv (hs hx)]
+    have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) s :=
+      h.comp ((contMDiffOn_extend hφ).mono hs) <| subset_preimage_image (↑(φ.extend I)) s
     have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := by
       apply ContMDiffOn.comp (t := (ψ.extend J).target) ?_ this ?_
       · rw [ψ.extend_target']
@@ -349,10 +345,7 @@ theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ :
     have aux : (φ.extend I) '' s ⊆ (φ.extend I).symm ⁻¹' s := by
       rintro x ⟨x', hx', rfl⟩
       rwa [mem_preimage, φ.extend_left_inv (hs hx')]
-    have := ((contMDiffOn_extend hψ).comp h hmaps).comp ((contMDiffOn_extend_symm hφ).mono this) aux
-    apply this.mono le_rfl
-
-#exit
+    exact ((contMDiffOn_extend hψ).comp h hmaps).comp ((contMDiffOn_extend_symm hφ).mono this) aux
 
 /-- This is a smooth analogue of `continuousWithinAt_writtenInExtend_iff`. -/
 theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
