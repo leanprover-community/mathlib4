@@ -85,7 +85,7 @@ instance liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :
 
 theorem inertiaDeg_span_zeta_sub_one : inertiaDeg 𝒑 (span {hζ.toInteger - 1}) = 1 := by
   have := liesOver_span_zeta_sub_one p k hζ
-  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
+  rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, pow_inertiaDeg_eq_absNorm' _ hp.out,
     absNorm_span_zeta_sub_one]
 
 attribute [local instance] FractionRing.liftAlgebra in
