@@ -707,7 +707,7 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
   let m := AtomM.recurse s {} (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
+  transformAtLocation (m ·) "field_simp" (ifUnchanged := .error) (mayCloseGoalFromHyp := true) loc
 
 /--
 The goal of the `field_simp` conv tactic is to bring an expression in a (semi-)field over a common

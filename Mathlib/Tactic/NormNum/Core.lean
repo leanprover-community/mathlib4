@@ -248,7 +248,7 @@ def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) :
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let loc := expandOptLocation loc
   transformAtNondepPropLocation (fun e ctx ↦ deriveSimp ctx useSimp e) "norm_num" loc
-    (failIfUnchanged := false) (mayCloseGoalFromHyp := true) ctx
+    (ifUnchanged := .silent) (mayCloseGoalFromHyp := true) ctx
 
 end Meta.NormNum
 

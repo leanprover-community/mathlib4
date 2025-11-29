@@ -505,7 +505,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
-  transformAtLocation (m ·) "abel_nf" loc (failIfUnchanged := true) false
+  transformAtLocation (m ·) "abel_nf" loc (ifUnchanged := .error) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
