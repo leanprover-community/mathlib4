@@ -43,7 +43,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 
 @[norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 
-theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
+theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by grind
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
@@ -65,14 +65,14 @@ alias le_self_pow_two := le_self_sq
 @[norm_cast] lemma abs_natCast (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (natCast_nonneg n)
 
 theorem natAbs_sub_pos_iff {i j : ℤ} : 0 < natAbs (i - j) ↔ i ≠ j := by
-  rw [natAbs_pos, ne_eq, sub_eq_zero]
+  grind
 
 theorem natAbs_sub_ne_zero_iff {i j : ℤ} : natAbs (i - j) ≠ 0 ↔ i ≠ j :=
   Nat.ne_zero_iff_zero_lt.trans natAbs_sub_pos_iff
 
 @[simp]
 theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
-  rw [← zero_add 1, lt_add_one_iff, abs_nonpos_iff]
+  grind
 
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
   rw [le_iff_lt_or_eq, abs_lt_one_iff]

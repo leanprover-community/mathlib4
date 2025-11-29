@@ -350,26 +350,55 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
   simp [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds,
     FiniteMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜]
 
+variable {X : Type*} [TopologicalSpace X] {μs : X → ProbabilityMeasure Ω}
+
 /-- The characterization of weak convergence of probability measures by the condition that the
-integrals of every bounded nonnegative continuous function are continuous. -/
-theorem continuous_iff_forall_continuous_lintegral {X : Type*} [TopologicalSpace X]
-    {μs : X → ProbabilityMeasure Ω} :
+integrals of every continuous bounded nonnegative function are continuous. -/
+lemma continuous_iff_forall_continuous_lintegral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
     forall_swap (α := X)]
 
 /-- The characterization of weak convergence of probability measures by the usual (defining)
-condition that the integrals of every bounded continuous function are continuous. -/
-theorem continuous_iff_forall_continuous_integral {X : Type*} [TopologicalSpace X]
-    {μs : X → ProbabilityMeasure Ω} :
+condition that the integrals of every continuous bounded function are continuous. -/
+lemma continuous_iff_forall_continuous_integral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
     forall_swap (α := X)]
 
-lemma continuous_integral_boundedContinuousFunction
-    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
-    Continuous fun μ : ProbabilityMeasure α ↦ ∫ x, f x ∂μ :=
+lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
+    (f : X →ᵇ ℝ≥0) : Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=
+  continuous_iff_forall_continuous_lintegral.1 continuous_id _
+
+lemma continuous_integral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
+    (f : X →ᵇ ℝ) : Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
   continuous_iff_forall_continuous_integral.1 continuous_id _
+
+variable [CompactSpace Ω]
+
+/-- The characterization of weak convergence of probability measures by the condition that the
+integrals of every continuous bounded nonnegative function are continuous. -/
+lemma continuous_iff_forall_continuousMap_continuous_lintegral :
+    Continuous μs ↔ ∀ f : C(Ω, ℝ≥0), Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) :=
+  continuous_iff_forall_continuous_lintegral.trans
+    (ContinuousMap.equivBoundedOfCompact ..).symm.forall_congr_left
+
+/-- The characterization of weak convergence of probability measures by the usual (defining)
+condition that the integrals of every continuous bounded function are continuous. -/
+lemma continuous_iff_forall_continuousMap_continuous_integral :
+    Continuous μs ↔ ∀ f : C(Ω, ℝ), Continuous fun x ↦ ∫ ω, f ω ∂(μs x) :=
+  continuous_iff_forall_continuous_integral.trans
+    (ContinuousMap.equivBoundedOfCompact ..).symm.forall_congr_left
+
+variable [CompactSpace X] [MeasurableSpace X] [OpensMeasurableSpace X] {F : Type*}
+
+lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapClass F X ℝ≥0] (f : F) :
+    Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=
+  continuous_iff_forall_continuousMap_continuous_lintegral.1 continuous_id ⟨f, map_continuous f⟩
+
+lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F X ℝ] (f : F) :
+    Continuous fun μ : ProbabilityMeasure X ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
 end convergence_in_distribution -- section
 
