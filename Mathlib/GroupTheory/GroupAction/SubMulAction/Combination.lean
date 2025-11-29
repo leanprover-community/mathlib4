@@ -269,7 +269,7 @@ theorem mem_compl {s : n.Combination α} {a : α} :
   Finset.mem_compl
 
 theorem compl_compl :
-    (compl G α <| n.add_comm m ▸ hm).comp (compl G α hm) = .id G := by
+    (compl G α <| (n.add_comm m).trans hm hm).comp (compl G α hm) = .id G := by
   ext s a
   change a ∈ (compl G α _).comp (compl G α hm) s ↔ a ∈ s
   simp [MulActionHom.comp_apply, mem_compl]
