@@ -9,13 +9,12 @@ public import Mathlib.Topology.Semicontinuous
 
 /-! # Two lemmas about sublevel sets and semicontinuity related to compactness
 
-* `Set.isCompact_leSublevelOn`, the sublevels of a lower semicontinuous function
-  on a compact set are compact.
+* `Set.isCompact_inter_preimage_Iic`, the sublevels
+  of a lower semicontinuous function on a compact set are compact.
 
-* `Set.inter_leSublevelOn_empty_iff_exists_finset_inter`,
-  an intersection of sublevels of a lower semicontinuous function
-  on a compact set is empty if and only if
-  a finite sub-intersection is already empty.
+* `Set.biInter_sep_map_le_eq_empty_iff_exists_finset`, an intersection
+  of sublevel sets of a lower semicontinuous function on a compact set
+  is empty if and only if a finite sub-intersection is already empty.
 
 -/
 
@@ -29,12 +28,12 @@ open scoped Set.Notation
 variable {ι α β : Type*} [TopologicalSpace α] {A : Set α}
     [LinearOrder β] {f : ι → α → β}
 
-theorem isCompact_sep_map_le {f : α → β}
+theorem isCompact_inter_preimage_Iic {f : α → β}
     (hfA : LowerSemicontinuousOn f A) (kA : IsCompact A) (b : β) :
-    IsCompact ({x ∈ A | f x ≤ b}) := by
+    IsCompact (A ∩ f ⁻¹' Iic b) := by
   rw [lowerSemicontinuousOn_iff_preimage_Iic] at hfA
   obtain ⟨v, hv, hv'⟩ := hfA b
-  suffices {x | x ∈ A ∧ f x ≤ b} = A ∩ v by
+  suffices A ∩ f ⁻¹' Iic b = A ∩ v by
     rw [this]
     exact kA.inter_right hv
   aesop
@@ -56,7 +55,7 @@ theorem biInter_sep_map_le_eq_empty_iff_exists_finset
       obtain ⟨i, hi, hi', hi''⟩ := hu
       use ⟨i, hi⟩, hi'
       simpa using hi''
-    apply kA.elim_finite_subfamily_closedOn (fun i ↦ { x| f i x ≤ b })
+    apply kA.elim_finite_subfamily_isClosed_subtype (fun i ↦ { x| f i x ≤ b })
     · intro i hi
       specialize hfi i hi
       rw [← lowerSemicontinuous_restrict_iff, lowerSemicontinuous_iff_isClosed_preimage] at hfi
