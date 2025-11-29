@@ -358,10 +358,10 @@ lemma congr_F (e : F ≃L[𝕜] F') :
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
 /- The set of points where `IsImmersionAtOfComplement` holds is open. -/
-lemma isOpen :
+lemma _root_.IsOpen.isImmersionAtOfComplement :
     IsOpen {x | IsImmersionAtOfComplement F I J n f x} := by
   simp_rw [IsImmersionAtOfComplement_def]
-  exact LiftSourceTargetPropertyAt.isOpen
+  exact .liftSourceTargetPropertyAt
 
 /-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
@@ -523,12 +523,12 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
 /- The set of points where `IsImmersionAt` holds is open. -/
-lemma isOpen :
+lemma _root_.IsOpen.isImmersionAt :
     IsOpen {x | IsImmersionAt I J n f x} := by
   rw [isOpen_iff_forall_mem_open]
   exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
-    fun y hy ↦ hy.isImmersionAt,
-    IsImmersionAtOfComplement.isOpen, by simp [hx.isImmersionAtOfComplement_complement]⟩
+    fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
+    by simp [hx.isImmersionAtOfComplement_complement]⟩
 
 end IsImmersionAt
 
