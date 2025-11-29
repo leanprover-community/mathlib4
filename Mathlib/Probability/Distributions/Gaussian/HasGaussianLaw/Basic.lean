@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.Basic
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
 public import Mathlib.Probability.HasLaw
 
 import Mathlib.Probability.Distributions.Gaussian.Fernique
@@ -37,12 +38,6 @@ section Basic
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableSpace E]
   {X Y : Ω → E}
-
-/-- The predicate `HasGaussianLaw X P` means that under the measure `P`,
-`X` has a Gaussian distribution. -/
-@[fun_prop]
-structure HasGaussianLaw (X : Ω → E) (P : Measure Ω) : Prop where
-  protected isGaussian_map : IsGaussian (P.map X)
 
 lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : X =ᵐ[P] Y) :
     HasGaussianLaw Y P where
