@@ -272,7 +272,7 @@ def lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : AdjoinRoot f →+* S 
   apply Ideal.Quotient.lift _ (eval₂RingHom i x)
   intro g H
   rcases mem_span_singleton.1 H with ⟨y, hy⟩
-  rw [hy, RingHom.map_mul, coe_eval₂RingHom, h, zero_mul]
+  rw [hy, map_mul, coe_eval₂RingHom, h, zero_mul]
 
 variable {i : R →+* S} {a : S} (h : f.eval₂ i a = 0)
 
@@ -337,16 +337,14 @@ theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
   have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
-  rw [aeval_def, ← h, ← RingHom.map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
+  rw [aeval_def, ← h, ← map_zero ϕ.toRingHom, ← eval₂_root f, hom_eval₂]
   rfl
 
 @[simp]
 theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftAlgHom f (Algebra.ofId R S) (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
-  suffices AlgHom.equalizer ϕ (liftAlgHom f _ (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
-    exact (AlgHom.ext fun x => (SetLike.ext_iff.mp this x).mpr Algebra.mem_top).symm
-  rw [eq_top_iff, ← adjoinRoot_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
-  exact (@lift_root _ _ _ _ _ _ _ (aeval_algHom_eq_zero f ϕ)).symm
+  ext
+  simp
 
 set_option linter.deprecated false in
 @[deprecated liftAlgHom_eq_algHom (since := "2025-10-10")]
@@ -631,7 +629,7 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
     Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
   · apply natDegree_le_of_dvd
-    · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
+    · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, map_zero]
       exact mk_eq_zero.1 this
     · exact q_monic.ne_zero
   · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
