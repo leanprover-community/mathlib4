@@ -69,7 +69,7 @@ def fontaineThetaInvertP :
 /--
 The de Rham period ring \(\mathbb{B}_dR^+\) for general perfectoid ring.
 It is the completion of `𝕎 R♭` inverting `p` with respect to the kernel of
-the Fontaine's θ map. When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
+the Fontaine's θ map. When \(R = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring. Note that if `p = 0` in `R`,
 then this
 definition is the zero ring.
@@ -84,7 +84,7 @@ The de Rham period ring \(\mathbb{B}_dR\) for general perfectoid ring.
 It is defined as \(\mathbb{B}_dR^+\) inverting the generators of the ideal `ker θ`.
 Mathematically, this is equivalent to inverting *a* generator of the ideal `ker θ`
 after we show that it is principal.
-When \(R = \mathcal{R}_{\mathbb{C}_p}\), it coincides
+When \(R = \mathcal{O}_{\mathbb{C}_p}\), it coincides
 with the classical de Rham period ring.
 Note that if `p = 0` in `R`, then this definition is the zero ring.
 -/
@@ -94,7 +94,6 @@ def BDeRham : Type u :=
       {a | (RingHom.ker (fontaineThetaInvertP R p)) = Ideal.span {a}}
 
 local notation "𝔹_dR^+(" R ")" => BDeRhamPlus R p
-
 local notation "𝔹_dR(" R ")" => BDeRham R p
 
 end
