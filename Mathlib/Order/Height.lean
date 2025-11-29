@@ -56,12 +56,10 @@ theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s
     ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   by_cases h' : n = 0
   · exact ⟨∅, by simp [h']⟩
-  · have : ∃ t ⊆ s, IsChain r t ∧ n ≤ t.encard := by
+  · obtain ⟨t, ht₁, ht₂, ht₃⟩ : ∃ t ⊆ s, IsChain r t ∧ n ≤ t.encard := by
       contrapose! h
       refine iSup_lt_iff.mpr ⟨n - 1, ?_, fun m ↦ ENat.le_sub_one_of_lt <| h m.1 m.2.1 m.2.2⟩
-      norm_cast
-      exact Nat.sub_one_lt h'
-    obtain ⟨t, ht₁, ht₂, ht₃⟩ := this
+      exact_mod_cast Nat.sub_one_lt h'
     obtain ⟨u, hu₁, hu₂⟩ := exists_subset_encard_eq ht₃
     exact ⟨u, hu₁.trans ht₁, hu₂, ht₂.mono hu₁⟩
 
