@@ -229,7 +229,7 @@ partial def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath :=
   -- all directories inside `path`
   let subDirs ← (← path.readDir).map (·.path) |>.filterM (do FilePath.isDir ·)
   for dir in subDirs do
-    -- if the sub directory is not matched by a label,
+    -- if the subdirectory is not matched by a label,
     -- we go recursively into it
     if (getMatchingLabels #[dir]).size == 0 then
       notMatched := notMatched ++ (← findUncoveredPaths dir exceptions)
