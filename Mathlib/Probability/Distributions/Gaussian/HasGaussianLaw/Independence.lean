@@ -34,8 +34,8 @@ section Diagonal
 
 namespace ContinuousLinearMap
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
-  [∀ i, NormedSpace ℝ (E i)]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+  {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
   (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ)
 
 #count_heartbeats in
@@ -78,30 +78,19 @@ end ContinuousLinearMap
 
 end Diagonal
 
-public section Independence
+public section
 
 namespace ProbabilityTheory
 
-lemma nonempty_of_nontrivial_pi {ι : Type*} (α : ι → Type*) [h : Nontrivial (Π i, α i)] :
-    Nonempty ι := by
-  contrapose! h
-  infer_instance
+section Pi
 
-@[nontriviality]
-lemma IsProbabilityMeasure.isGaussian_of_subsingleton {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] {mE : MeasurableSpace E} [BorelSpace E] (μ : Measure E)
-    [IsProbabilityMeasure μ] [Subsingleton E] : IsGaussian μ := by
-  have : μ = .dirac 0 := by
-    ext s -
-    exact Subsingleton.set_cases (by simp) (by simp) s
-  rw [this]
-  infer_instance
+variable {ι : Type*} [Fintype ι] {E : ι → Type*}
+  [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)]
+  [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
+  {X : Π i, Ω → (E i)}
 
 open ContinuousLinearMap in
-lemma iIndepFun.hasGaussianLaw {E : ι → Type*}
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)]
-    [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
-    {X : Π i, Ω → (E i)} (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndepFun X P) :
+lemma iIndepFun.hasGaussianLaw  (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndepFun X P) :
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
   isGaussian_map := by
     have := hX.isProbabilityMeasure
@@ -358,5 +347,3 @@ lemma IndepFun.hasGaussianLaw_sub {E : Type*} [NormedAddCommGroup E]
     all_goals fun_prop
 
 end ProbabilityTheory
-
-end Independence
