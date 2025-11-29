@@ -588,11 +588,18 @@ lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
   (analyticAt_smul _).comp₂_analyticWithinAt hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
-@[to_fun (attr := fun_prop)] -- TODO: preserve the doc-string on AnalyticAt.fun_smul!
 lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
     (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
   (analyticAt_smul _).comp₂ hf hg
+
+-- TODO: using `to_fun` on `AnalyticAt.mul` generates the same lemmas as `smul`, not this one
+/-- Scalar multiplication of one analytic function by another. -/
+@[fun_prop]
+lemma AnalyticAt.fun_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
+    (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
+    AnalyticAt 𝕜 (fun x ↦ f x • g x) z :=
+  hf.smul hg
 
 /-- Scalar multiplication of one analytic function by another. -/
 lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
