@@ -10,6 +10,8 @@ public import Mathlib.Data.Matrix.Mul
 public import Mathlib.LinearAlgebra.Pi
 
 /-!
+# Mₙ(R)-module structure on `Mⁿ`
+
 ## Main Results
 
 - `Matrix.matrixModule`: This instance shows `ι → M` is a module over `Matrix ι ι R`, and the action
