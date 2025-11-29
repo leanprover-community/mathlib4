@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 
 set_option autoImplicit true
-example (a b : ℕ) (foo : False)  : a < b := by
+example (a b : ℕ) (foo : False) : a < b := by
   by_contra!
   guard_hyp this : b ≤ a
   exact foo
@@ -36,6 +36,23 @@ example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra! : ¬ ¬ ¬ P
   guard_hyp this : ¬ ¬ ¬ P
   exact bar
+
+/--
+error: Type mismatch
+  h✝
+has type
+  b ≤ a
+but is expected to have type
+  a ≤ b
+---
+error: unsolved goals
+a b : ℕ
+this : a ≤ b
+⊢ False
+-/
+#guard_msgs in
+example (a b : ℕ) : a < b := by
+  by_contra! : a ≤ b
 
 variable [LinearOrder α] [One α] [Mul α]
 
