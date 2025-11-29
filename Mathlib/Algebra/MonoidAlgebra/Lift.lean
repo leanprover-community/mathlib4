@@ -100,7 +100,9 @@ lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : 
   liftNC_single _ _ _ _
 
 variable (M) in
-/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
+/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings.
+
+See also `RingEquiv.monoidAlgebraCongrLeft`. -/
 noncomputable def mapRangeRingHom (f : R →+* S) : MonoidAlgebra R M →+* MonoidAlgebra S M :=
   liftNCRingHom (singleOneRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
 
@@ -198,7 +200,9 @@ lemma liftNCRingHom_single (f : k →+* R) (g : Multiplicative G →* R) (h_comm
   liftNC_single _ _ _ _
 
 variable (M) in
-/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
+/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings.
+
+See also `RingEquiv.addMonoidAlgebraCongrLeft`. -/
 noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] :=
   liftNCRingHom (singleZeroRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
 
