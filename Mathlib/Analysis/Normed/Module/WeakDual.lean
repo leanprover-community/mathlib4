@@ -3,9 +3,12 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Operator.Completeness
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Operator.Completeness
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Weak dual of normed space
@@ -79,6 +82,8 @@ give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a su
 weak-star, weak dual
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -254,5 +259,57 @@ the weak-star topology. -/
 theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
+
+open TopologicalSpace
+
+variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
+
+/-- In a separable normed space, there exists a sequence of continuous functions that
+separates points of the weak dual. -/
+lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜),
+    (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x ≠ y → ∃ n, gs n x ≠ gs n y) := by
+  use (fun n φ ↦ φ (denseSeq V n))
+  constructor
+  · exact fun _ ↦ eval_continuous _
+  · intro w y w_ne_y
+    contrapose! w_ne_y
+    exact DFunLike.ext'_iff.mpr <| (map_continuous w).ext_on
+      (denseRange_denseSeq V) (map_continuous y) (by grind [Set.eqOn_range])
+
+/-- A compact subset of the dual space of a separable space is metrizable. -/
+lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
+  have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
+  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 V
+  exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
+    (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
+    fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
+
+variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
+
+theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 V)}
+    (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
+    IsSeqCompact s := by
+  have b_isCompact' : CompactSpace s :=
+    isCompact_iff_compactSpace.mp <| isCompact_of_bounded_of_closed hb hc
+  have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
+    metrizable_of_isCompact 𝕜 V s <| isCompact_of_bounded_of_closed hb hc
+  have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 V)) :=
+    continuous_iff_seqContinuous.mp continuous_subtype_val
+  simpa using IsSeqCompact.range seq_cont_phi
+
+/-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in
+a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 V`. -/
+theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
+    IsSeqCompact (polar 𝕜 s) :=
+  isSeqCompact_of_isBounded_of_isClosed (s := polar 𝕜 s) _ _
+    (NormedSpace.isBounded_polar_of_mem_nhds_zero 𝕜 s_nhd) (isClosed_polar _ _)
+
+/-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
+normed space `V` are sequentially compact in the weak-* topology. -/
+theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
+    IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
+  isSeqCompact_of_isBounded_of_isClosed 𝕜 V Metric.isBounded_closedBall
+    (isClosed_closedBall x' r)
 
 end WeakDual

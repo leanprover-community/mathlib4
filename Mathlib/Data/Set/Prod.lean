@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.SProd
-import Mathlib.Data.Sum.Basic
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.SProd
+public import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -23,6 +25,8 @@ This file contains basic results on the following notions, which are defined in 
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -568,6 +572,8 @@ theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
 
 variable {s t}
 
+-- TODO: find a good way to fix the linter; simp is called on four goals, with only two remaining
+set_option linter.flexible false in
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x

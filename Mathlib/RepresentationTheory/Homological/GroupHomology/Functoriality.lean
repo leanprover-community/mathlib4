@@ -3,7 +3,9 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 /-!
 # Functoriality of group homology
@@ -32,6 +34,8 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   `A`, defined using the corestriction and coinflation map in degree 1.
 
 -/
+
+@[expose] public section
 
 universe v u
 

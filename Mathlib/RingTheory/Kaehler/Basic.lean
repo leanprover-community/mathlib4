@@ -3,12 +3,14 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Derivation.ToSquareZero
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.EssentialFiniteness
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+module
+
+public import Mathlib.RingTheory.Derivation.ToSquareZero
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # The module of Kähler differentials
@@ -43,6 +45,8 @@ import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 - Define the `IsKaehlerDifferential` predicate.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -366,7 +370,7 @@ local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :
-    Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
+    Derivation R S Ω[S⁄R] ≃ₗ[S] Derivation R S (ideal R S).cotangentIdeal :=
   LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
@@ -517,7 +521,7 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination :
       Submodule.mkQ _ := by
   apply Finsupp.lhom_ext
   intro a b
-  conv_rhs => rw [← Finsupp.smul_single_one a b, LinearMap.map_smul]
+  conv_rhs => rw [← Finsupp.smul_single_one a b, map_smul]
   simp [KaehlerDifferential.derivationQuotKerTotal_apply]
 
 theorem KaehlerDifferential.kerTotal_eq :
@@ -708,7 +712,7 @@ noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[
 @[simp]
 theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
     KaehlerDifferential.mapBaseChange R A B (x ⊗ₜ y) = x • KaehlerDifferential.map R R A B y := by
-  conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', LinearMap.map_smul]
+  conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', map_smul]
   congr 1
   exact IsBaseChange.lift_eq _ _ _
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.CategoryTheory.Groupoid.Grpd
-import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
-import Mathlib.CategoryTheory.Adjunction.Reflective
+module
+
+public import Mathlib.CategoryTheory.Groupoid.Grpd
+public import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Free groupoid functor
@@ -24,6 +26,8 @@ Given a type `C` and a category instance on `C`:
 -/
 
 universe v u
+
+@[expose] public section
 
 namespace CategoryTheory
 namespace Grpd

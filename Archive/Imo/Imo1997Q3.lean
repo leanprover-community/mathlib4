@@ -53,6 +53,7 @@ lemma sign_eq_of_abs_sub_le {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) 
   rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
   simp_all [abs_of_pos, abs_of_neg, abs_le] <;> linarith
 
+set_option linter.flexible false in
 lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : sign a = sign b) : c < |a + b| := by
   rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
@@ -82,7 +83,7 @@ lemma sign_eq_of_contra
       rw [mem_compl, mem_insert, mem_singleton, not_or] at mj
       exact swap_apply_of_ne_of_ne mj.1 mj.2
     rw [cg, add_sub_add_right_eq_sub,
-      sum_pair (castSucc_lt_succ _).ne, sum_pair (castSucc_lt_succ _).ne,
+      sum_pair castSucc_lt_succ.ne, sum_pair castSucc_lt_succ.ne,
       Perm.mul_apply, Perm.mul_apply, ← hi, swap_apply_left, swap_apply_right,
       add_comm, add_sub_add_comm, ← sub_mul, ← sub_mul,
       val_succ, coe_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,

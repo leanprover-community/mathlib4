@@ -3,13 +3,17 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Module
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Star
 
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/
+
+@[expose] public section
 
 
 

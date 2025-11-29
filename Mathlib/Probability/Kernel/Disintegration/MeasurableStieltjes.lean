@@ -3,10 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.MeasureTheory.Measure.Stieltjes
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.MeasureTheory.Measure.Stieltjes
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Measurable parametric Stieltjes functions
@@ -40,6 +42,8 @@ Finally, we define `stieltjesOfMeasurableRat`, composition of `toRatCDF` and
   function `α → StieltjesFunction`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter TopologicalSpace
 

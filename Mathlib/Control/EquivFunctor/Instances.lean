@@ -3,14 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Control.EquivFunctor
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Control.EquivFunctor
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # `EquivFunctor` instances
 
 We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
+
+@[expose] public section
 
 
 open Equiv
@@ -25,13 +29,18 @@ instance EquivFunctorPerm : EquivFunctor Perm where
   map_refl' α := by ext; simp
   map_trans' _ _ := by ext; simp
 
+-- TODO: find a good way to fix the linter
+-- squeezing the simp makes the second subgoal fail
+set_option linter.flexible false in
 -- There is a classical instance of `LawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
 instance EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
   map_refl' α := by ext; simp
   map_trans' k h := by
-    ext _ a; simp; constructor <;> intro h'
+    ext _ a
+    simp
+    constructor <;> intro h'
     · let ⟨a, ha₁, ha₂⟩ := h'
       rw [← ha₂]; simpa
     · exists (Equiv.symm k) ((Equiv.symm h) a)

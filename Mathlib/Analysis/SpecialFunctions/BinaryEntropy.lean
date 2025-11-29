@@ -3,8 +3,10 @@ Copyright (c) 2023 Adomas Baliuka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adomas Baliuka
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions
@@ -47,6 +49,8 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
 
 entropy, Shannon, binary, nit, nepit
 -/
+
+@[expose] public section
 
 namespace Real
 variable {q : ℕ} {p : ℝ}

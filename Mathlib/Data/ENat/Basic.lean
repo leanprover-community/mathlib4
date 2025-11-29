@@ -3,14 +3,16 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.ENat.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -33,6 +35,8 @@ of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for ad
 for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
 similarly for multiplication.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -248,6 +252,8 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
+-- TODO: fix the linter violations, perhaps using a tactics which allows avoiding the rename_i
+set_option linter.flexible false in
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
@@ -288,7 +294,6 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-@[simp]
 lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
   cases n <;> simp
 

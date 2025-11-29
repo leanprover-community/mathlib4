@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
-import Mathlib.Algebra.Lie.Sl2
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
+public import Mathlib.Algebra.Lie.Sl2
 
 /-!
 # Relations in Geck's construction of a Lie algebra associated to a root system
@@ -22,6 +24,8 @@ satisfying relations associated to the Cartan matrix of the input root system.
   triples.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
