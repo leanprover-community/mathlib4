@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Matrix.Module
 
 ## Main definitions
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
-  `LinearMap.mapModule` and `Matrix.matrixModule`.
+  `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
 
 ## TODO (Edison)
 - Prove `R` and `Mₙ(R)` are morita-equivalent.
