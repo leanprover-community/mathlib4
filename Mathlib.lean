@@ -7244,12 +7244,14 @@ public import Mathlib.Topology.Sheaves.Sheafify
 public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.Sion
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
 public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
 public import Mathlib.Topology.StoneCech
+public import Mathlib.Topology.Sublevel
 public import Mathlib.Topology.TietzeExtension
 public import Mathlib.Topology.Ultrafilter
 public import Mathlib.Topology.UniformSpace.AbsoluteValue
