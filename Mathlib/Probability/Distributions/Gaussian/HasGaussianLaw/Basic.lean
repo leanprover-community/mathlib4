@@ -16,6 +16,13 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 In this file we prove basic properties of Gaussian random variables.
 
+# Implementation details
+
+Many lemmas are duplicated with an expanded form of some function. For instance there is
+`HasGaussianLaw.add` and `HasGaussianLaw.fun_add`. The reason is that if someone wants for instance
+to rewrite using `HasGaussianLaw.charFunDual_map_eq` and provide the proof of `HasGaussianLaw`
+directly through dot notation, the lemma used must syntactically correspond to the random variable.
+
 ## Tags
 
 Gaussian random variable
@@ -97,6 +104,7 @@ lemma charFunDual_map_eq (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
   rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
     variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
   rfl
+
 lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq
     [IsFiniteMeasure P] (hX : AEMeasurable X P) :
     HasGaussianLaw X P ↔ ∀ L,
@@ -135,20 +143,33 @@ lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ 
     have := hX.isGaussian_map
     rw [← AEMeasurable.map_map_of_aemeasurable]
     · infer_instance
-    all_goals fun_prop
+    all_goals fun_prop (disch := assumption)
+
+lemma map_fun (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
+  hX.map L
 
 lemma map_equiv (hX : HasGaussianLaw X P) (L : E ≃L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map L.toContinuousLinearMap
+
+lemma map_equiv_fun (hX : HasGaussianLaw X P) (L : E ≃L[ℝ] F) :
+    HasGaussianLaw (fun ω ↦ L (X ω)) P := hX.map_equiv L
 
 section SpecificMaps
 
 lemma smul (c : ℝ) (hX : HasGaussianLaw X P) : HasGaussianLaw (c • X) P :=
   hX.map (.lsmul ℝ ℝ c)
 
+lemma fun_smul (c : ℝ) (hX : HasGaussianLaw X P) :
+    HasGaussianLaw (fun ω ↦ c • (X ω)) P :=
+  hX.smul c
+
 lemma neg (hX : HasGaussianLaw X P) : HasGaussianLaw (-X) P := by
   have : -X = (-1 : ℝ) • X := by simp
   rw [this]
   exact hX.smul _
+
+lemma fun_neg (hX : HasGaussianLaw X P) : HasGaussianLaw (fun ω ↦ -(X ω)) P :=
+  hX.neg
 
 section Prod
 
@@ -181,12 +202,20 @@ lemma add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
   rw [this]
   exact hXY.map _
 
+lemma fun_add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+    HasGaussianLaw (fun ω ↦ X ω + Y ω) P :=
+  hXY.add
+
 lemma sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
     HasGaussianLaw (X - Y) P := by
   have : X - Y = (ContinuousLinearMap.fst ℝ E E - ContinuousLinearMap.snd ℝ E E) ∘
       (fun ω ↦ (X ω, Y ω)) := by ext; simp
   rw [this]
   exact hXY.map _
+
+lemma fun_sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+    HasGaussianLaw (fun ω ↦ X ω - Y ω) P :=
+  hXY.sub
 
 end Prod
 
@@ -223,6 +252,13 @@ lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
     ext; simp
   rw [this]
   exact hX.map _
+
+lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E] [SecondCountableTopology E]
+    {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+    HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by
+  convert hX.sum
+  simp
 
 end Pi
 
