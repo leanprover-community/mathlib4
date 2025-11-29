@@ -21,6 +21,8 @@ one of the vertices in the set.
 * `SimpleGraph.vertexCoverNum G`: The vertex cover number, e.g. the size of a minimal vertex cover.
 -/
 
+@[expose] public section
+
 namespace SimpleGraph
 
 variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
