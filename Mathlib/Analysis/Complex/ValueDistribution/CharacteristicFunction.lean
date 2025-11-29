@@ -87,7 +87,7 @@ theorem characteristic_zero_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
 Asymptotically, the characteristic function of `f * g` at zero is less than or
 equal to the sum of the characteristic functions of `f` and `g`, respectively.
 -/
-theorem characteristic_zero_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
+theorem characteristic_zero_mul_eventuallyLE {f₁ f₂ : ℂ → ℂ}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) 0 ≤ᶠ[Filter.atTop] characteristic f₁ 0 + characteristic f₂ 0 := by
@@ -111,7 +111,7 @@ theorem characteristic_top_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
 Asymptotically, the characteristic function of `f * g` at `⊤` is less than or
 equal to the sum of the characteristic functions of `f` and `g`, respectively.
 -/
-theorem characteristic_top_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
+theorem characteristic_top_mul_eventuallyLE {f₁ f₂ : ℂ → ℂ}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (h₂f₂ : ∀ z, meromorphicOrderAt f₂ z ≠ ⊤) :
     characteristic (f₁ * f₂) ⊤ ≤ᶠ[Filter.atTop] characteristic f₁ ⊤ + characteristic f₂ ⊤ := by
