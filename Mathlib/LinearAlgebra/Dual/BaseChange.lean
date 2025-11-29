@@ -32,8 +32,6 @@ Generalize for more general modules of linear maps.
 
 @[expose] public section
 
-universe u v
-
 namespace Module.Dual
 
 open TensorProduct LinearEquiv
@@ -44,7 +42,7 @@ variable {R : Type*} [CommSemiring R]
   (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Equivalent modules have equivalent duals. -/
-def congr (e : V ≃ₗ[R] W) :
+@[simps!] def congr (e : V ≃ₗ[R] W) :
     Module.Dual R V ≃ₗ[R] Module.Dual R W :=
   LinearEquiv.congrLeft R R e
 
@@ -59,10 +57,10 @@ theorem baseChange_apply_tmul (f : Module.Dual R V) (a : A) (v : V) :
 
 variable {B : Type*} [CommSemiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
+open AlgebraTensorModule in
 theorem baseChange_baseChange (f : Module.Dual R V) :
     ((f.baseChange A).baseChange B) =
-      (congr (TensorProduct.AlgebraTensorModule.cancelBaseChange R A B B V)).symm
-       (f.baseChange B) := by
+      (congr (cancelBaseChange R A B B V)).symm (f.baseChange B) := by
   ext; simp [congr, congrLeft]
 
 end Module.Dual
@@ -78,34 +76,25 @@ variable {R : Type*} [CommSemiring R]
   {j : V →ₗ[R] W} (ibc : IsBaseChange A j)
 
 /-- The base change of an element of the dual. -/
-noncomputable def toDual (f : Module.Dual R V) :
-    Module.Dual A W :=
-  (f.baseChange A).congr ibc.equiv
-
-theorem toDual_comp_apply (f : Module.Dual R V) (v : V) :
-    ibc.toDual f (j v) = algebraMap R A (f v) := by
-  simp [toDual, Module.Dual.congr, LinearEquiv.congrLeft,
-    IsBaseChange.equiv_symm_apply, Algebra.algebraMap_eq_smul_one]
-
-/-- The base change of an element of the dual. -/
-noncomputable def toDualHom :
+noncomputable def toDual :
     Module.Dual R V →ₗ[R] Module.Dual A W :=
   IsBaseChange.linearMapLeftRightHom ibc (Algebra.linearMap R A)
 
-theorem toDualHom_apply :
-    ⇑ibc.toDualHom = ibc.toDual := by
-  ext f w
-  induction w using ibc.inductionOn with
-  | zero => simp
-  | add x y hx hy => simp [hx, hy]
-  | tmul v => simp [toDual_comp_apply, toDualHom, linearMapLeftRightHom_comp_apply]
-  | smul a w h => simp [h]
+theorem toDual_comp_apply (f : Module.Dual R V) (v : V) :
+    ibc.toDual f (j v) = algebraMap R A (f v) := by
+  simp [toDual, linearMapLeftRightHom_comp_apply]
+
+theorem toDual_apply (f : Module.Dual R V) :
+    ibc.toDual f = (f.baseChange A).congr ibc.equiv := by
+  apply ibc.algHom_ext
+  intro v
+  simp [toDual_comp_apply, Algebra.algebraMap_eq_smul_one]
 
 /-- The linear map underlying `IsBaseChange.toDualBaseChangeLinearEquiv`. -/
-noncomputable def toDualBaseChangeHom :
+noncomputable def toDualBaseChange :
     A ⊗[R] Module.Dual R V →ₗ[A] Module.Dual A W where
   toAddHom := (TensorProduct.lift {
-    toFun a := a • ibc.toDualHom
+    toFun a := a • ibc.toDual
     map_add' a b := by simp [add_smul]
     map_smul' r a := by simp }).toAddHom
   map_smul' a g := by
@@ -117,22 +106,22 @@ noncomputable def toDualBaseChangeHom :
     | tmul b f =>
       simp [TensorProduct.smul_tmul', mul_smul]
 
-theorem toDualBaseChangeHom_tmul (a : A) (f : Module.Dual R V) (v : V) :
-    (ibc.toDualBaseChangeHom (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
-  simp [toDualBaseChangeHom, toDualHom_apply, toDual_comp_apply]
+theorem toDualBaseChange_tmul (a : A) (f : Module.Dual R V) (v : V) :
+    (ibc.toDualBaseChange (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
+  simp [toDualBaseChange, toDual_comp_apply]
 
 variable [Module.Free R V] [Module.Finite R V]
 
 /-- The linear equivalence underlying `IsBaseChange.dual`. -/
 noncomputable def toDualBaseChangeLinearEquiv :
     A ⊗[R] Module.Dual R V ≃ₗ[A] Module.Dual A W := by
-  apply LinearEquiv.ofBijective ibc.toDualBaseChangeHom
+  apply LinearEquiv.ofBijective ibc.toDualBaseChange
   let b := Module.Free.chooseBasis R V
   set ι := Module.Free.ChooseBasisIndex R V
   have : Fintype ι := Module.Free.ChooseBasisIndex.fintype R V
   have ibc' : IsBaseChange A (Algebra.linearMap R A) := linearMap R A
   have ibc'_pow := ibc'.finitePow ι
-  suffices ibc.toDualBaseChangeHom = (((b.constr R).symm.baseChange ..).trans ibc'_pow.equiv).trans
+  suffices ibc.toDualBaseChange = (((b.constr R).symm.baseChange ..).trans ibc'_pow.equiv).trans
     ((ibc.basis b).constr A) by
     rw [this]
     apply LinearEquiv.bijective
@@ -142,16 +131,16 @@ noncomputable def toDualBaseChangeLinearEquiv :
   induction w using ibc.inductionOn with
   | zero => simp
   | tmul v =>
-    simp only [toDualBaseChangeHom_tmul, one_mul]
+    simp only [toDualBaseChange_tmul, one_mul]
     conv_lhs => rw [← Module.Basis.sum_equivFun b v, map_sum]
     simp [LinearEquiv.baseChange, IsBaseChange.equiv_tmul,
       basis_repr_comp_apply, b.constr_symm_apply]
   | smul a w h => simp [h]
   | add x y hx hy => simp [map_add, hx, hy]
 
-theorem dual : IsBaseChange A (ibc.toDualHom) := by
+theorem dual : IsBaseChange A (ibc.toDual) := by
   apply of_equiv (toDualBaseChangeLinearEquiv ibc)
   intro f
-  simp [toDualBaseChangeLinearEquiv, toDualBaseChangeHom]
+  simp [toDualBaseChangeLinearEquiv, toDualBaseChange]
 
 end IsBaseChange
