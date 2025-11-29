@@ -182,22 +182,21 @@ theorem fontaineTheta_teichmuller (x : R♭) : fontaineTheta R p (teichmuller p 
 
 end WittVector
 
-variable [Fact ¬IsUnit (p : O)] [IsAdicComplete (span {(p : O)}) O]
+variable [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
 
-theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP O p) p)) :
-    Function.Surjective (fontaineTheta O p) := by
-  have : Ideal.map (fontaineTheta O p) (span {(p : 𝕎 (O^♭))}) = span {(p : O)} := by
+theorem surjective_fontaineTheta (hF : Function.Surjective (frobenius (ModP R p) p)) :
+    Function.Surjective (fontaineTheta R p) := by
+  have : Ideal.map (fontaineTheta R p) (span {(p : 𝕎 R♭)}) = 𝔭 := by
     simp [map_span]
-  have _ : IsHausdorff ((span {(p : 𝕎 (O^♭))}).map (fontaineTheta O p)) O := by
+  have _ : IsHausdorff ((span {(p : 𝕎 R♭)}).map (fontaineTheta R p)) R := by
     rw [this]
     infer_instance
-  apply surjective_of_mk_map_comp_surjective (fontaineTheta O p) (I := span {(p : 𝕎 (O^♭))})
+  apply surjective_of_mk_map_comp_surjective (fontaineTheta R p) (I := span {(p : 𝕎 R♭)})
   simp only [RingHom.coe_comp]
-  suffices h : Function.Surjective (Ideal.Quotient.mk (span {(p : O)}) ∘
-      (fontaineTheta O p)) by
+  suffices h : Function.Surjective (Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p) by
     convert h
-  have : (Ideal.Quotient.mk (span {(p : O)})) ∘ (fontaineTheta O p) = (fun x ↦
-      Perfection.coeff (ModP O p) _ 0 x) ∘ fun (x : 𝕎 (O^♭)) ↦ (x.coeff 0) := by
+  have : Ideal.Quotient.mk 𝔭 ∘ fontaineTheta R p = (fun x ↦
+      PreTilt.coeff 0 x) ∘ fun (x : 𝕎 R♭) ↦ (x.coeff 0) := by
     ext
     simp [mk_fontaineTheta]
   rw [this]
