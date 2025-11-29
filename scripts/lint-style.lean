@@ -127,6 +127,9 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     |>.erase `Mathlib.Lean.Elab.Tactic.Meta
     |>.erase `Mathlib.Lean.ContextInfo
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
+    |>.erase `Mathlib.Lean.Elab.InfoTree
+    |>.erase `Mathlib.Lean.Environment
+    |>.erase `Mathlib.Lean.Expr.Basic
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
       directly, but should import Mathlib.Init instead: {mismatch}\n\
