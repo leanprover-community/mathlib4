@@ -691,7 +691,7 @@ over multivariable polynomials in the remaining variables
 -/
 lemma degreeOf_eq_natDegree [DecidableEq σ] (a : σ) (p : MvPolynomial σ R) :
     degreeOf a p =
-      (optionEquivLeft R {b // b ≠ a} (rename (optionSubtypeNe a).symm p)).natDegree := by
+      (optionEquivLeft R {b // b ≠ a} (rename (Equiv.optionSubtypeNe a).symm p)).natDegree := by
   rw [natDegree_optionEquivLeft, eq_comm]
   convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
   rw [Equiv.optionSubtypeNe_symm_apply, dif_pos rfl]
