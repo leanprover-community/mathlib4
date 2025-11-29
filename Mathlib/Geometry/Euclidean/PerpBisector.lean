@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Convex.Between
 
 /-!
 # Perpendicular bisector of a segment
@@ -122,6 +123,52 @@ end AffineSubspace
 open AffineSubspace
 
 namespace EuclideanGeometry
+
+/-- If `b` is strictly between `a` and `c`, and `p - a` is perpendicular to `b - a`,
+then `p` is closer to `b` than to `c`. -/
+theorem dist_lt_of_sbtw_of_inner_eq_zero {a b c p : P}
+    (h_sbtw : Sbtw ℝ a b c)
+    (h_inner : ⟪p -ᵥ a, b -ᵥ a⟫ = 0) :
+    dist p b < dist p c := by
+  obtain ⟨t, ⟨ht0, ht1⟩, hb_eq⟩ := h_sbtw.mem_image_Ioo
+  set v := c -ᵥ a
+  have hb : b -ᵥ a = t • v := by simp [← hb_eq, AffineMap.lineMap_apply, v]
+  have hpc : ⟪p -ᵥ a, v⟫ = 0 := by simpa [ht0.ne', hb, inner_smul_right] using h_inner
+  have hb_sq : dist p b ^ 2 = dist p a ^ 2 + t^2 * ‖v‖^2 := by
+    rw [dist_eq_norm_vsub, dist_eq_norm_vsub,
+        show p -ᵥ b = (p -ᵥ a) - t • v by rw [← hb, vsub_sub_vsub_cancel_right],
+        ← real_inner_self_eq_norm_sq, ← real_inner_self_eq_norm_sq, inner_sub_left, inner_sub_right,
+        inner_sub_right, inner_smul_right, inner_smul_left, inner_smul_left, inner_smul_right,
+        real_inner_comm (p -ᵥ a) v, hpc]
+    simp [real_inner_self_eq_norm_sq]
+    ring
+  have hc_sq : dist p c ^ 2 = dist p a ^ 2 + ‖c -ᵥ a‖^2 := by
+    rw [dist_eq_norm_vsub, dist_eq_norm_vsub, ← real_inner_self_eq_norm_sq,
+        ← real_inner_self_eq_norm_sq, ← vsub_sub_vsub_cancel_right, inner_sub_left, inner_sub_right,
+        inner_sub_right, real_inner_comm (p -ᵥ a) (c -ᵥ a), hpc]
+    simp only [sub_zero, zero_sub, sub_neg_eq_add, add_right_inj]
+    exact real_inner_self_eq_norm_sq (c -ᵥ a)
+  have ht_sq_lt : t^2 < 1 := by
+    rw [sq_lt_one_iff₀ ht0.le]
+    exact ht1
+  have hv_pos : 0 < ‖v‖^2 :=
+    sq_pos_of_pos (norm_pos_iff.mpr (vsub_ne_zero.mpr h_sbtw.left_ne_right.symm))
+  have h_sq_ineq : dist p b ^ 2 < dist p c ^ 2 := by
+    rw [hb_sq, hc_sq]
+    have : t ^ 2 * ‖v‖ ^ 2 < ‖v‖ ^ 2 := mul_lt_of_lt_one_left hv_pos ht_sq_lt
+    linarith
+  simpa only [Real.sqrt_sq dist_nonneg] using Real.sqrt_lt_sqrt (sq_nonneg _) h_sq_ineq
+
+/-- If `p` lies on the perpendicular bisector of `ab` and `b` is strictly between `a` and `c`,
+then `p` is closer to `b` than to `c`. -/
+theorem dist_lt_of_sbtw_of_mem_perpBisector {a b c p : P}
+    (h_sbtw : Sbtw ℝ a b c)
+    (hp : p ∈ AffineSubspace.perpBisector a b) :
+    dist p b < dist p c :=
+  dist_lt_of_sbtw_of_inner_eq_zero
+    (h_sbtw.trans_left_right (sbtw_midpoint_of_ne ℝ h_sbtw.left_ne)) <| by
+    rw [right_vsub_midpoint, inner_smul_right,
+        mem_perpBisector_iff_inner_eq_zero.mp hp, invOf_eq_inv, mul_zero]
 
 /-- Suppose that `c₁` is equidistant from `p₁` and `p₂`, and the same applies to `c₂`. Then the
 vector between `c₁` and `c₂` is orthogonal to that between `p₁` and `p₂`. (In two dimensions, this
