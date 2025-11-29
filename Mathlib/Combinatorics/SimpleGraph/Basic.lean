@@ -520,8 +520,16 @@ theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, 
 theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
   simp [← le_bot_iff, le_iff_adj]
 
+theorem eq_bot_iff_forall_not_adj : G = ⊥ ↔ ∀ a b : V, ¬G.Adj a b := by
+  contrapose!
+  exact ne_bot_iff_exists_adj
+
 theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
   simp [← top_le_iff, le_iff_adj]
+
+theorem eq_top_iff_exists_not_adj : G = ⊤ ↔ ∀ a b : V, a = b ∨ G.Adj a b := by
+  contrapose!
+  exact ne_top_iff_exists_not_adj
 
 variable (G G₁ G₂)
 
