@@ -487,7 +487,8 @@ def unitHomEquiv (X : SSet.{u}) :
 
 theorem unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
     hoFunctor.unitHomEquiv X x = Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x := by
-  simp [unitHomEquiv]
+  simp only [Cat.of_α, unitHomEquiv, Equiv.trans_apply,
+    Functor.CoreMonoidal.toMonoidal_toLaxMonoidal]
   rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
   rfl
 
