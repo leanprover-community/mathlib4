@@ -3,12 +3,14 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Convolution
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
+module
+
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # The Beta function, and further properties of the Gamma function
@@ -36,6 +38,8 @@ refined properties of the Gamma function using these relations.
 * `Real.Gamma_ne_zero`, `Real.GammaSeq_tendsto_Gamma`,
   `Real.Gamma_mul_Gamma_one_sub`, `Real.Gamma_mul_Gamma_add_half`: real versions of the above.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -385,7 +389,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     intro j
     push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j
-    field_simp; ring
+    field
   simp_rw [this]
   rw [Finset.prod_mul_distrib, ← Nat.cast_prod, Finset.prod_pow,
     Finset.prod_range_add_one_eq_factorial, Nat.cast_pow,
@@ -405,7 +409,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
       neg_eq_iff_eq_neg] at hk
     rw [hk]
     cases k
-    · rw [Int.ofNat_eq_coe, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
+    · rw [Int.ofNat_eq_natCast, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel_left,
         Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) ?_
@@ -517,6 +521,11 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
     exact differentiableAt_id.mul (ihn.comp s (f := fun s => s + 1) <|
       differentiableAt_id.add_const (1 : ℂ))
+
+lemma betaIntegral_eq_Gamma_mul_div (u v : ℂ) (hu : 0 < u.re) (hv : 0 < v.re) :
+    betaIntegral u v = Gamma u * Gamma v / Gamma (u + v) := by
+  rw [Gamma_mul_Gamma_eq_betaIntegral hu hv,
+      mul_div_cancel_left₀ _ (Gamma_ne_zero_of_re_pos (add_pos hu hv))]
 
 end Complex
 

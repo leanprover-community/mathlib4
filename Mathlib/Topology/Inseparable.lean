@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
-import Mathlib.Order.UpperLower.Closure
-import Mathlib.Order.UpperLower.Fibration
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Fibration
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -35,6 +37,8 @@ We also prove various basic properties of the relation `Inseparable`.
 
 topological space, separation setoid
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Topology
@@ -630,9 +634,6 @@ theorem comap_mk_nhdsSet_image : comap mk (𝓝ˢ (mk '' s)) = 𝓝ˢ s :=
 is the neighborhood of its equivalence class. -/
 theorem map_mk_nhds : map mk (𝓝 x) = 𝓝 (mk x) := by
   rw [← comap_mk_nhds_mk, map_comap_of_surjective surjective_mk]
-
-@[deprecated map_mk_nhds (since := "2025-03-21")]
-theorem nhds_mk (x : X) : 𝓝 (mk x) = .map mk (𝓝 x) := .symm <| map_mk_nhds ..
 
 theorem map_mk_nhdsSet : map mk (𝓝ˢ s) = 𝓝ˢ (mk '' s) := by
   rw [← comap_mk_nhdsSet_image, map_comap_of_surjective surjective_mk]

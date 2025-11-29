@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Circuit
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Combinatorics.Matroid.Circuit
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Matroid loops and coloops
@@ -51,6 +53,8 @@ For `M` : Matroid `α`:
 * `M.Loopless` is a typeclass meaning `M` has no loops.
 * `M.removeLoops` is the matroid obtained from `M` by restricting to its set of nonloop elements.
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {M N : Matroid α} {e f : α} {F X C I : Set α}
 
@@ -476,8 +480,6 @@ lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
 
 lemma isColoop_iff_mem_coloops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
 
-@[deprecated (since := "2025-04-01")] alias isColoop_iff_mem_loops := isColoop_iff_mem_coloops
-
 @[simp]
 lemma dual_loops : M✶.loops = M.coloops := rfl
 
@@ -808,7 +810,9 @@ lemma loopless_iff_forall_not_isLoop : M.Loopless ↔ ∀ e ∈ M.E, ¬ M.IsLoop
 
 lemma loopless_iff_forall_isCircuit : M.Loopless ↔ ∀ C, M.IsCircuit C → C.Nontrivial := by
   suffices (∃ x ∈ M.E, M.IsLoop x) ↔ ∃ x, M.IsCircuit x ∧ x.Subsingleton by
-    simpa [loopless_iff_forall_not_isLoop, ← not_iff_not (a := ∀ _, _)]
+    rw [loopless_iff_forall_not_isLoop]
+    contrapose!
+    exact this
   refine ⟨fun ⟨e, _, he⟩ ↦ ⟨{e}, he.isCircuit, by simp⟩, fun ⟨C, hC, hCs⟩ ↦ ?_⟩
   obtain (rfl | ⟨e, rfl⟩) := hCs.eq_empty_or_singleton
   · simpa using hC.nonempty

@@ -3,21 +3,34 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.Polynomial.Eval.Algebra
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Polynomial.Monomial
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.Polynomial.Eval.Algebra
+public import Mathlib.Algebra.Polynomial.Eval.Degree
+public import Mathlib.Algebra.Polynomial.Monomial
 
 /-!
 # Theory of univariate polynomials
 
 We show that `A[X]` is an R-algebra when `A` is an R-algebra.
 We promote `eval₂` to an algebra hom in `aeval`.
+
+## Main definitions
+
+- `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
+the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
+
+- `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
+coefficients of a polynomial in `S[X]`.
+
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 
@@ -176,6 +189,18 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
   rfl
+
+lemma coeff_mapAlgHom_apply (f : A →ₐ[R] B) (p : A[X]) (n : ℕ) :
+    coeff (mapAlgHom f p) n = f (coeff p n) := by
+  simp
+
+lemma lcoeff_comp_mapAlgHom_eq (f : A →ₐ[R] B) (n : ℕ) :
+    (lcoeff B n).restrictScalars R ∘ₗ (mapAlgHom f).toLinearMap =
+      f.toLinearMap ∘ₗ (lcoeff A n).restrictScalars R := by
+  ext f; simp
+
+lemma mapAlgHom_monomial (f : A →ₐ[R] B) (n : ℕ) (a : A) :
+    mapAlgHom f (monomial n a) = monomial n (f a) := by simp
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -364,6 +389,10 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   AlgHom.congr_fun (@aeval_X_left R _) p
 
+lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
+    aeval X p = map (algebraMap R S) p :=
+  rfl
+
 theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A) (φ X) p := by
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 
@@ -475,10 +504,9 @@ theorem isRoot_of_eval₂_map_eq_zero (hf : Function.Injective f) {r : R} :
   apply hf
   rw [← eval₂_hom, h, f.map_zero]
 
-theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] {p : R[X]}
-    (inj : Function.Injective (algebraMap R S)) {r : R} (hr : aeval (algebraMap R S r) p = 0) :
-    p.IsRoot r :=
-  isRoot_of_eval₂_map_eq_zero inj hr
+theorem isRoot_of_aeval_algebraMap_eq_zero [Algebra R S] [FaithfulSMul R S] {p : R[X]} {r : R}
+    (hr : p.aeval (algebraMap R S r) = 0) : p.IsRoot r :=
+  isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective _ _) hr
 
 end Semiring
 
@@ -532,6 +560,19 @@ theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
 
 end aevalTower
 
+open LinearMap TensorProduct in
+lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
+    [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
+      X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
+        (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
+    induction sn using TensorProduct.induction_on with
+    | zero => simp
+    | add x y hx hy => simp [hx, hy]
+    | tmul s n =>
+      simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
+      rw [smul_tmul', smul_eq_mul, mul_comm, C_mul_X_pow_eq_monomial]
+
+
 end CommSemiring
 
 section CommRing
@@ -574,7 +615,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   have bound :=
     calc
       (p * (X - C r)).natDegree ≤ p.natDegree + (X - C r).natDegree := natDegree_mul_le
-      _ ≤ p.natDegree + 1 := add_le_add_left (natDegree_X_sub_C_le _) _
+      _ ≤ p.natDegree + 1 := by grw [natDegree_X_sub_C_le]
       _ < p.natDegree + 2 := lt_add_one _
   rw [sum_over_range' _ _ (p.natDegree + 2) bound]
   swap

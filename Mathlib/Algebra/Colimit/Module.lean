@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Algebra.Colimit.DirectLimit
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finset.Order
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Colimit.DirectLimit
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Congruence.Defs
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of modules and abelian groups
@@ -26,6 +28,8 @@ so as to make the operations (addition etc.) "computable".
 * `AddCommGroup.DirectLimit G f`
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -47,32 +51,27 @@ inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
   | of_map {i j} (h : i ≤ j) (x : G i) :
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
 
+/-- The congruence relation to quotient the direct sum by to obtain the direct limit. -/
+def DirectLimit.moduleCon [DecidableEq ι] : ModuleCon R (DirectSum ι G) :=
+  SMulCon.addConGen' (Eqv f) <| by rintro _ _ _ ⟨⟩; simpa only [← map_smul] using .of_map ..
+
 variable (G)
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
-def DirectLimit [DecidableEq ι] : Type _ := (addConGen <| DirectLimit.Eqv f).Quotient
+def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.moduleCon f).Quotient
 
 namespace DirectLimit
 
 section Basic
 
 instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
-  AddCon.addCommMonoid _
+  inferInstanceAs (AddCommMonoid (moduleCon f).Quotient)
 
-instance module : Module R (DirectLimit G f) where
-  smul r := AddCon.lift _ ((AddCon.mk' _).comp <| smulAddHom R _ r) <|
-    AddCon.addConGen_le fun x y ⟨_, _⟩ ↦ (AddCon.eq _).mpr <| by
-      simpa only [smulAddHom_apply, ← map_smul] using .of _ _ (.of_map _ _)
-  one_smul := by rintro ⟨⟩; exact congr_arg _ (one_smul _ _)
-  mul_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (mul_smul _ _ _)
-  smul_zero _ := congr_arg _ (smul_zero _)
-  smul_add _ := by rintro ⟨⟩ ⟨⟩; exact congr_arg _ (smul_add _ _ _)
-  add_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (add_smul _ _ _)
-  zero_smul := by rintro ⟨⟩; exact congr_arg _ (zero_smul _ _)
+instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
     (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs (AddCommGroup <| AddCon.Quotient _)
+  inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
 
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
@@ -100,11 +99,11 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
     ∃ i x, of R ι G f i x = z :=
   Nonempty.elim (by infer_instance) fun ind : ι ↦
     Quotient.inductionOn' z fun z ↦
-      DirectSum.induction_on z ⟨ind, 0, LinearMap.map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
+      DirectSum.induction_on z ⟨ind, 0, map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ ↦
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
-          rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          rw [map_add, of_f, of_f, ihx, ihy]
           rfl ⟩
 
 theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimit G f) :

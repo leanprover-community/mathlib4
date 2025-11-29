@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.CategoryTheory.PathCategory.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating
@@ -15,6 +17,8 @@ objects and morphisms in this category.
 This category admits a canonical functor `toSimplexCategory` to the usual simplex category.
 The fact that this functor is an equivalence will be recorded in a separate file.
 -/
+
+@[expose] public section
 open CategoryTheory
 
 /-- The objects of the free simplex quiver are the natural numbers. -/
@@ -148,7 +152,7 @@ lemma hom_induction (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (comp_δ f i hrec)
     · simpa using (comp_σ f i hrec)
 
-/-- An induction principle for reasonning about morphisms in SimplexCategoryGenRel, where we compose
+/-- An induction principle for reasoning about morphisms in SimplexCategoryGenRel, where we compose
 with generators on the right. -/
 lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     (id : ∀ {n : ℕ}, P (𝟙 (mk n)))
@@ -174,7 +178,7 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     · simpa using (δ_comp g i hrec)
     · simpa using (σ_comp g i hrec)
 
-/-- An induction principle for reasonning about objects in `SimplexCategoryGenRel`. This should be
+/-- An induction principle for reasoning about objects in `SimplexCategoryGenRel`. This should be
 used instead of identifying an object with `mk` of its `len`. -/
 @[elab_as_elim, cases_eliminator]
 protected def rec {P : SimplexCategoryGenRel → Sort*}

@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Defs
+module
+
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Prime spectrum of a commutative (semi)ring
@@ -39,6 +41,8 @@ and Chris Hughes (on an earlier repository).
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
+@[expose] public section
+
 -- A dividing line between this file and `Mathlib/RingTheory/Spectrum/Prime/Topology.lean` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
@@ -65,7 +69,7 @@ lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := b
     exact ⟨⟨I, hI.isPrime⟩⟩
 
 lemma isEmpty_iff_subsingleton : IsEmpty (PrimeSpectrum R) ↔ Subsingleton R := by
-  rw [← not_iff_not, not_isEmpty_iff, not_subsingleton_iff_nontrivial, nonempty_iff_nontrivial]
+  contrapose!; exact nonempty_iff_nontrivial
 
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
   nonempty_iff_nontrivial.mpr inferInstance
@@ -297,8 +301,6 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
 theorem zeroLocus_eq_univ_iff (s : Set R) :
     zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
   rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
-
-@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
 
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=

@@ -3,9 +3,11 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.RingTheory.PowerBasis
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # A predicate on adjoining roots of polynomial
@@ -55,6 +57,8 @@ Using `IsAdjoinRoot` to map out of `S`:
 * `IsAdjoinRootMonic.minpoly_eq`: the minimal polynomial of the adjoined root of `f` is equal to
   `f`, if `f` is irreducible and monic, and `R` is a GCD domain
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -727,7 +731,7 @@ theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
 abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
     IsAdjoinRoot E (minpoly F α) :=
-  mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα hα₂)
+  mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα.isAlgebraic hα₂)
 
 /-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement

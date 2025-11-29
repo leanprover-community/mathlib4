@@ -3,16 +3,20 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Match.MatcherInfo
-import Lean.Meta.Tactic.Delta
-import Std.Data.HashMap.Basic
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Match.MatcherInfo
+public import Lean.Meta.Tactic.Delta
+public import Std.Data.HashMap.Basic
 
 /-!
 # Additional functions on `Lean.Name`.
 
 We provide `allNames` and `allNamesByModule`.
 -/
+
+public section
 
 open Lean Meta Elab
 

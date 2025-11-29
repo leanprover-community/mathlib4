@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-! Tools for compatibilities between Dold-Kan equivalences
 
@@ -37,6 +39,8 @@ unit and counit isomorphisms of `equivalence`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category Functor

@@ -3,15 +3,17 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+module
+
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DiffContOnCl
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula
@@ -25,6 +27,8 @@ Banach space with second countable topology.
 In the following theorems, if the name ends with `off_countable`, then the actual theorem assumes
 differentiability at all but countably many points of the set mentioned below.
 
+### Rectangle integrals
+
 * `Complex.integral_boundary_rect_of_hasFDerivAt_real_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and *real* differentiable on its interior, then
   its integral over the boundary of this rectangle is equal to the integral of
@@ -34,6 +38,8 @@ differentiability at all but countably many points of the set mentioned below.
 * `Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and is *complex* differentiable on its interior,
   then its integral over the boundary of this rectangle is equal to zero.
+
+### Annuli and circles
 
 * `Complex.circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable`: If a
   function `f : ℂ → E` is continuous on a closed annulus `{z | r ≤ |z - c| ≤ R}` and is complex
@@ -55,6 +61,8 @@ differentiability at all but countably many points of the set mentioned below.
   disc the integral of `(z - w)⁻¹ • f z` over the boundary of the disc is equal to `2πif(w)`.
   Two versions of the lemma put the multiplier `2πi` at the different sides of the equality.
 
+### Analyticity
+
 * `Complex.hasFPowerSeriesOnBall_of_differentiable_off_countable`: If `f : ℂ → E` is continuous
   on a closed disc of positive radius and is complex differentiable on the corresponding open disc,
   then it is analytic on the corresponding open disc, and the coefficients of the power series are
@@ -71,6 +79,13 @@ differentiability at all but countably many points of the set mentioned below.
 * `Differentiable.hasFPowerSeriesOnBall`: If `f : ℂ → E` is differentiable everywhere then the
   `cauchyPowerSeries f z R` is a formal power series representing `f` at `z` with infinite
   radius of convergence (this holds for any choice of `0 < R`).
+
+### Higher derivatives
+
+* `Complex.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable`
+  **Cauchy integral formula for derivatives**: formula for the higher derivatives of `f` at the
+  centre `c` of a disc in terms of circle integrals of `f w / (w - c) ^ (n + 1)` around the
+  boundary circle.
 
 ## Implementation details
 
@@ -143,6 +158,8 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
+@[expose] public section
+
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology
@@ -154,6 +171,11 @@ universe u
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 namespace Complex
+
+section rectangle
+/-!
+## Functions on rectangles
+-/
 
 /-- Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
 `z w : ℂ`, is *real* differentiable at all but countably many points of the corresponding open
@@ -280,6 +302,13 @@ theorem integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w 
     H.mono <|
       inter_subset_inter (preimage_mono Ioo_subset_Icc_self) (preimage_mono Ioo_subset_Icc_self)
 
+end rectangle
+
+section annulus
+/-!
+## Functions on annuli
+-/
+
 /-- If `f : ℂ → E` is continuous on the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`,
 and is complex differentiable at all but countably many points of its interior,
 then the integrals of `f z / (z - c)` (formally, `(z - c)⁻¹ • f z`)
@@ -334,7 +363,14 @@ theorem circleIntegral_eq_of_differentiable_on_annulus_off_countable {c : ℂ} {
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = ∮ z in C(c, r), f z := circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _
 
+end annulus
+
 variable [CompleteSpace E]
+
+section circle
+/-!
+## Circle integrals
+-/
 
 /-- **Cauchy integral formula** for the value at the center of a disc. If `f` is continuous on a
 punctured closed disc of radius `R`, is differentiable at all but countably many points of the
@@ -382,7 +418,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       rw [norm_smul, norm_inv, hz, ← dist_eq_norm]
       refine mul_le_mul_of_nonneg_left (hδ _ ⟨?_, hzne⟩).le (inv_nonneg.2 hr0.le)
       rwa [mem_closedBall_iff_norm, hz]
-    _ = ε := by field_simp
+    _ = ε := by field
 
 /--
 **Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous on a
@@ -533,6 +569,13 @@ theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w
   simpa only [smul_eq_mul, div_eq_inv_mul] using
     circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
 
+end circle
+
+section analyticity
+/-!
+## Applications to analyticity
+-/
+
 /-- If `f : ℂ → E` is continuous on a closed ball of positive radius and is differentiable at all
 but countably many points of the corresponding open ball, then it is analytic on the open ball with
 coefficients of the power series given by Cauchy integral formulas. -/
@@ -649,5 +692,72 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       intro z m
       exact (d z m).differentiableWithinAt
     exact h _ m
+
+end analyticity
+
+section derivatives
+/-!
+## Circle integrals for higher derivatives
+
+TODO: add a version for `w ∈ Metric.ball c R`.
+-/
+
+variable {R : ℝ} {f : ℂ → E} {c : ℂ} {s : Set ℂ}
+
+/-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
+differentiable on its interior away from a countable set. -/
+lemma circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
+    (h0 : 0 < R) (n : ℕ) (hs : s.Countable)
+    (hc : ContinuousOn f (closedBall c R)) (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
+    ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c := by
+  have := hasFPowerSeriesOnBall_of_differentiable_off_countable (R := ⟨R, h0.le⟩) hs hc hd h0
+      |>.factorial_smul 1 n
+  rw [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod, Finset.prod_const_one, one_smul] at this
+  rw [← this, cauchyPowerSeries_apply, ← Nat.cast_smul_eq_nsmul ℂ, ← mul_smul, ← mul_smul,
+    div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero]
+  simp [← mul_smul, pow_succ, mul_comm]
+
+/-- **Cauchy integral formula for the first order derivative**, assuming `f` is continuous on a
+closed ball and differentiable on its interior away from a countable set. -/
+lemma differentiable_on_off_countable_deriv_eq_smul_circleIntegral
+    (h0 : 0 < R) (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
+    (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
+    ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
+  simpa using circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
+    h0 1 hs hc hd
+
+/-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
+differentiable on its interior. -/
+lemma _root_.DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul
+    (h0 : 0 < R) (n : ℕ) (hc : DiffContOnCl ℂ f (ball c R)) :
+    ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
+  c.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable h0 n
+    Set.countable_empty hc.continuousOn_ball fun _ hx ↦ hc.differentiableAt isOpen_ball hx.1
+
+/-- **Cauchy integral formula for the first order derivative**, assuming `f` is continuous on a
+closed ball and differentiable on its interior. -/
+lemma _root_.DiffContOnCl.deriv_eq_smul_circleIntegral (h0 : 0 < R)
+    (hc : DiffContOnCl ℂ f (ball c R)) :
+    ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
+  simpa using DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
+
+/-- **Cauchy integral formula for derivatives**, assuming `f` is differentiable on a closed ball. -/
+lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0 < R) (n : ℕ)
+    (hc : DifferentiableOn ℂ f (closedBall c R)) :
+    ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
+  (hc.mono closure_ball_subset_closedBall).diffContOnCl
+    |>.circleIntegral_one_div_sub_center_pow_smul h0 n
+
+/-- **Cauchy integral formula for the first order derivative**, assuming `f` is differentiable on
+a closed ball. -/
+lemma _root_.DifferentiableOn.deriv_eq_smul_circleIntegral (h0 : 0 < R)
+    (hc : DifferentiableOn ℂ f (closedBall c R)) :
+    ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
+  simpa using DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
+
+end derivatives
 
 end Complex
