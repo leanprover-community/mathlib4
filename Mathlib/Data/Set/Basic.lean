@@ -846,7 +846,7 @@ theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a
 theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
   inter_comm _ _
 
-theorem sep_of_subset {α : Type*} {s t : Set α} {p : α → Prop} (hst : s ⊆ t) :
+theorem sep_eq_inter_sep {α : Type*} {s t : Set α} {p : α → Prop} (hst : s ⊆ t) :
     {x ∈ s | p x} = s ∩ {x ∈ t | p x} := by
   rw [← inter_setOf_eq_sep s p, ← inter_setOf_eq_sep t p,
     ← inter_assoc, ← left_eq_inter.mpr hst]
