@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.HasLaw
 
+import Mathlib.Probability.Distributions.Gaussian.Fernique
+
 /-!
 # Gaussian random variables
 
@@ -29,11 +31,12 @@ open MeasureTheory ENNReal WithLp Complex
 
 namespace ProbabilityTheory
 
-variable {Ω E F : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
+variable {Ω E F ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 section Basic
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableSpace E]
+  {X Y : Ω → E}
 
 /-- The predicate `HasGaussianLaw X P` means that under the measure `P`,
 `X` has a Gaussian distribution. -/
@@ -41,7 +44,7 @@ variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableS
 structure HasGaussianLaw (X : Ω → E) (P : Measure Ω) : Prop where
   protected isGaussian_map : IsGaussian (P.map X)
 
-lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : ∀ᵐ ω ∂P, X ω = Y ω) :
+lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : X =ᵐ[P] Y) :
     HasGaussianLaw Y P where
   isGaussian_map := by
     rw [← Measure.map_congr h]
@@ -76,9 +79,7 @@ end Basic
 
 namespace HasGaussianLaw
 
-variable
-  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
 open scoped RealInnerProductSpace in
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
@@ -100,6 +101,23 @@ lemma charFunDual_map_eq_fun (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
   rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
     variance_map (by fun_prop) hX.aemeasurable]
   rfl
+
+/-- A Gaussian random variable has moments of all orders. -/
+lemma memLp [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P)
+    {p : ℝ≥0∞} (hp : p ≠ ∞) :
+    MemLp X p P := by
+  rw [← Function.id_comp X, ← memLp_map_measure_iff]
+  · exact hX.isGaussian_map.memLp_id _ p hp
+  all_goals fun_prop
+
+lemma memLp_two [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
+    MemLp X 2 P := hX.memLp (by norm_num)
+
+lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
+    Integrable X P :=
+  memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
+
+variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P where
   isGaussian_map := by
@@ -184,7 +202,7 @@ end Prod
 
 section Pi
 
-variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
   [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 
