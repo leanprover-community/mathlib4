@@ -106,11 +106,9 @@ theorem chainHeight_eq_top_iff :
 @[simp]
 theorem chainHeight_eq_zero_iff : s.chainHeight r = 0 ↔ s = ∅ := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · by_contra! hh
-    obtain ⟨x, hx⟩ := hh
-    simp only [chainHeight, iSup_eq_zero, encard_eq_zero, Subtype.forall] at h
-    have := h {x}
-    simp [hx] at this
+  · simp only [chainHeight, iSup_eq_zero, encard_eq_zero, Subtype.forall, and_imp] at h
+    ext x
+    simpa using h {x}
   · simp_all [chainHeight]
 
 @[simp]
