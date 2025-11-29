@@ -77,4 +77,12 @@ theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   norm_cast at ⊢ this
   linarith
 
+theorem psi_eq_psi_coe_floor (x : ℝ) : ψ x = ψ ⌊x⌋₊ := by
+  unfold psi
+  rw [floor_natCast]
+
+theorem theta_eq_theta_coe_floor (x : ℝ) : θ x = θ ⌊x⌋₊ := by
+  unfold theta
+  rw [floor_natCast]
+
 end Chebyshev
