@@ -15,12 +15,23 @@ import Mathlib.Probability.Independence.CharacteristicFunction
 /-!
 # Independence of Gaussian random variables
 
-In this file we define a predicate `HasGaussianLaw X P`, which states that under the probability
-measure `P`, the random variable `X` has a Gaussian distribution, i.e. `IsGaussian (P.map X)`.
+In this file we prove some results linking Gaussian random variables and independence. It is
+a well known fact that if `(X, Y)` is Gaussian, then `X` and `Y` are independent if their covariance
+is zero. We prove many versions of this theorem in different settings: in Banach spaces,
+Hilbert spaces, and for families of real random variables.
 
-## Main definition
+We also prove that independent Gaussian random variables are jointly Gaussian.
 
-* `HasGaussianLaw X P`: The random variable `X` has a Gaussian distribution under the measure `P`.
+## Main statements
+
+* `iIndepFun.hasGaussianLaw`: Independent Gaussian random variables are jointly Gaussian,
+  indexed version.
+* `IndepFun.hasGaussianLaw`: Independent Gaussian random variables are jointly Gaussian,
+  product version.
+* `HasGaussianLaw.iIndepFun_of_covariance_eq_zero`: If $(X_i)_{i \in \iota}$ are jointly Gaussian,
+  then they are independent if for all $i \ne j$, \mathrm{Cov}(X_i, X_j) = 0$.
+* `HasGaussianLaw.indepFun_of_covariance_eq_zero`: If $(X, Y)$ is Gaussian,
+  then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$.
 
 ## Tags
 
@@ -31,6 +42,7 @@ open MeasureTheory WithLp Complex Finset ContinuousLinearMap
 open scoped ENNReal NNReal RealInnerProductSpace
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
 
 section Diagonal
 
@@ -139,6 +151,7 @@ end Prod
 end ContinuousLinearMap
 
 end Diagonal
+
 
 public section
 
@@ -253,7 +266,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fi
 
 /-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if for all $i \ne j$,
 \mathrm{Cov}(X_i, X_j) = 0$. -/
-lemma HasGaussianLaw.iIndepFun_of_covariance {X : ι → Ω → ℝ}
+lemma HasGaussianLaw.iIndepFun_of_covariance_eq_zero {X : ι → Ω → ℝ}
     (h1 : HasGaussianLaw (fun ω ↦ (X · ω)) P) (h2 : ∀ i j : ι, i ≠ j → cov[X i, X j; P] = 0) :
     iIndepFun X P := by
   refine h1.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ ?_
@@ -362,6 +375,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Fintype ι] [F
       EuclideanSpace.basisFun_inner]
     exact fun j ↦ (h.snd.eval j).memLp_two.const_mul _
 
+/-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$. -/
 lemma HasGaussianLaw.indepFun_of_covariance_eq_zero {X Y : Ω → ℝ}
     (h1 : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) (h2 : cov[X, Y; P] = 0) :
     IndepFun X Y P := by
@@ -408,7 +422,10 @@ lemma iIndepFun.hasGaussianLaw_fun_sub [CompleteSpace E] {X Y : Ω → E}
   (h.hasGaussianLaw hX hY).sub
 
 /-- If `X` and `Y` are two Gaussian random variables such that `X` and `Y - X` are independent,
-then `Y - X` is Gaussian. -/
+then `Y - X` is Gaussian.
+
+This lemma is useful to prove that a process with independent increments and whose marginals
+are Gaussian has Gaussian increments. -/
 lemma IndepFun.hasGaussianLaw_sub_of_sub {X Y : Ω → E} (hX : HasGaussianLaw X P)
     (hY : HasGaussianLaw Y P) (h : IndepFun X (Y - X) P) :
     HasGaussianLaw (Y - X) P := by
