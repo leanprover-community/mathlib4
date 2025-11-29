@@ -112,12 +112,13 @@ lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒ�
   colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
       (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
 
-@[reassoc]
+@[reassoc (attr := elementwise)]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
+attribute [simp] toPresheafFiber_naturality_apply
 variable {FC : A → A → Type*} {CC : A → Type w'}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
   [ConcreteCategory.{w'} A FC]
@@ -125,14 +126,6 @@ variable {FC : A → A → Type*} {CC : A → Type w'}
 section
 
 variable {P Q : Cᵒᵖ ⥤ A}
-
-@[simp]
-lemma toPresheafFiber_naturality_apply (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X)
-    (p : ToType (P.obj (op X))) :
-    Φ.presheafFiber.map g (Φ.toPresheafFiber X x P p)  =
-      Φ.toPresheafFiber X x Q (g.app (op X) p) := by
-  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
-  exact congr_fun ((forget A).congr_map (Φ.toPresheafFiber_naturality g X x)) p
 
 variable [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
 
