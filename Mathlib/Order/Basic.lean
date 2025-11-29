@@ -390,6 +390,36 @@ theorem forall_gt_iff_le : (∀ ⦃c⦄, a < c → b < c) ↔ b ≤ a :=
 @[deprecated (since := "2025-06-07")] alias le_of_forall_lt' := le_of_forall_gt
 @[deprecated (since := "2025-06-07")] alias forall_lt_iff_le' := forall_gt_iff_le
 
+theorem le_of_forall_lt_imp_ne (H : ∀ c < a, c ≠ b) : a ≤ b :=
+  le_of_not_gt fun hb ↦ H b hb rfl
+
+theorem lt_of_forall_le_imp_ne (H : ∀ c ≤ a, c ≠ b) : a < b :=
+  lt_of_not_ge fun hb ↦ H b hb rfl
+
+theorem le_of_forall_gt_imp_ne (H : ∀ c, a < c → c ≠ b) : b ≤ a :=
+  le_of_not_gt fun hb ↦ H b hb rfl
+
+theorem lt_of_forall_ge_imp_ne (H : ∀ c, a ≤ c → c ≠ b) : b < a :=
+  lt_of_not_ge fun hb ↦ H b hb rfl
+
+alias le_of_forall_ne := le_of_forall_lt_imp_ne
+alias lt_of_forall_ne := lt_of_forall_le_imp_ne
+
+theorem forall_lt_imp_ne_iff_le : (∀ c < a, c ≠ b) ↔ a ≤ b :=
+  ⟨le_of_forall_lt_imp_ne, fun ha _ hc ↦ (hc.trans_le ha).ne⟩
+
+theorem forall_le_imp_ne_iff_lt : (∀ c ≤ a, c ≠ b) ↔ a < b :=
+  ⟨lt_of_forall_le_imp_ne, fun ha _ hc ↦ (hc.trans_lt ha).ne⟩
+
+theorem forall_gt_imp_ne_iff_le : (∀ c, a < c → c ≠ b) ↔ b ≤ a :=
+  ⟨le_of_forall_gt_imp_ne, fun ha _ hc ↦ (ha.trans_lt hc).ne'⟩
+
+theorem forall_ge_imp_ne_iff_lt : (∀ c, a ≤ c → c ≠ b) ↔ b < a :=
+  ⟨lt_of_forall_ge_imp_ne, fun ha _ hc ↦ (ha.trans_le hc).ne'⟩
+
+alias forall_ne_iff_le := forall_lt_imp_ne_iff_le
+alias forall_ne_iff_lt := forall_le_imp_ne_iff_lt
+
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
 
