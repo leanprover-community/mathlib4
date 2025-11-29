@@ -537,7 +537,8 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 E₂] [CompleteSpace E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
 /-- Given linear maps `f₁ : E₁ →L[𝕜] F` and `f₂ : E₂ ≃L[𝕜] F` (the second invertible) and that
-`HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E₁ × E₂ → F` and `Prod.fst : E₁ × E₂ → E₁` in
+`HasStrictFDerivAt f (f₁.coprod f₂) x`, we prove that the kernels of `f : E₁ × E₂ → F` and
+`Prod.fst : E₁ × E₂ → E₁` in
 the original formulation are complementary and construct an object of type `ImplicitFunctionData`
 thereby permitting use of the general machinery provided above. -/
 def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
@@ -547,14 +548,14 @@ def implicitFunDataOfProdDomain {f : E₁ × E₂ → F} {x : E₁ × E₂}
   rightFun := Prod.fst
   pt := x
   leftDeriv := f₁.coprod f₂
-  left_has_deriv := dfx
+  hasStrictFDerivAt_leftFun := dfx
   rightDeriv := ContinuousLinearMap.fst 𝕜 E₁ E₂
-  right_has_deriv := hasStrictFDerivAt_fst
-  left_range := by
+  hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
+  range_leftDeriv := by
     rw [ContinuousLinearMap.range_coprod]
     convert sup_top_eq _
     exact LinearEquivClass.range f₂
-  right_range := Submodule.range_fst
+  range_rightDeriv := Submodule.range_fst
   isCompl_ker := by
     constructor
     · rw [Submodule.disjoint_def]
