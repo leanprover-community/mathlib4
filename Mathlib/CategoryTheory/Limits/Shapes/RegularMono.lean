@@ -332,6 +332,9 @@ theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
+/--
+Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
+-/
 def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
     (c : PullbackCone f f) (hc : IsLimit c) :
     IsColimit (Cofork.ofπ f c.condition) where

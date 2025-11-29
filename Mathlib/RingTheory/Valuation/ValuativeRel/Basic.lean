@@ -485,7 +485,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     simp only [ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_le_mk, Submonoid.coe_mul]
     conv_lhs => apply mul_mul_mul_comm
     conv_rhs => apply mul_mul_mul_comm
-    exact rel_mul_left _ hab
+    exact rel_mul_right _ hab
 
 instance : Inv (ValueGroupWithZero R) where
   inv := ValueGroupWithZero.lift (fun x s => by
@@ -558,6 +558,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
+set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
