@@ -92,9 +92,12 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
 
-theorem lex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
+theorem Lex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 section LinearOrder
 
@@ -143,7 +146,7 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     fun j hj ↦ notMem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_gt hj,
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 
-@[deprecated lex_lt_iff (since := "2025-10-12")]
+@[deprecated Lex.lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
