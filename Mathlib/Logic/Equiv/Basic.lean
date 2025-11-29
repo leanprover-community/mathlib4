@@ -8,6 +8,7 @@ module
 public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.Lift
 
 /-!
@@ -719,6 +720,11 @@ theorem swap_injective_of_right (a : α) :
     Function.Injective (fun x ↦ Equiv.swap x a) := by
   simp_rw [swap_comm _ a]
   exact swap_injective_of_left a
+
+instance (α : Type*) [Nontrivial α] : Nontrivial (Equiv.Perm α) := by
+  have : DecidableEq α := Classical.typeDecidableEq α
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
 
 lemma image_swap_of_mem_of_notMem {α : Type*} [DecidableEq α] {s : Set α} {i j : α}
     (hi : i ∈ s) (hj : j ∉ s) : s.image (swap i j) = insert j s \ {i} :=
