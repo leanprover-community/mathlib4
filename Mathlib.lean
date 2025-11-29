@@ -5991,6 +5991,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.LocalRing.SeparableResidueField
 public import Mathlib.RingTheory.LocalRing.Subring
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AsSubring
