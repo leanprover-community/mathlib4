@@ -236,6 +236,15 @@ lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦
   simp_rw [← PiLp.continuousLinearEquiv_symm_apply p ℝ]
   exact hX.map_equiv _
 
+lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E] [SecondCountableTopology E]
+    {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+    HasGaussianLaw (∑ i, X i) P := by
+  have : ∑ i, X i = ⇑(∑ i, ContinuousLinearMap.proj (R := ℝ) i) ∘ (fun ω ↦ (X · ω)) := by
+    ext; simp
+  rw [this]
+  exact hX.map _
+
 end Pi
 
 end SpecificMaps
