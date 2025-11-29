@@ -318,8 +318,8 @@ end ae
 open Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
-(This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
-σ-finite), see `measure_toMeasurable_inter_of_sFinite`).
+This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
+σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
@@ -405,6 +405,10 @@ function. -/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
+
+/-- A function is `m`-`AEMeasurable` with respect to a measure `μ` if it coincides almost everywhere
+with a `m`-measurable function. -/
+scoped[MeasureTheory] notation "AEMeasurable[" m "]" => @AEMeasurable _ _ _ m
 
 add_aesop_rules safe tactic
   (rule_sets := [Measurable])

@@ -6,6 +6,8 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
 # Bivariate polynomials
@@ -205,7 +207,7 @@ section aevalAeval
 
 noncomputable section
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 /-- `aevalAeval x y` is the `R`-algebra evaluation morphism sending a two-variable polynomial
   `p : R[X][Y]` to `p(x,y)`. -/
@@ -228,6 +230,8 @@ theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
 theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
 
+-- TODO: fix non-terminal simp
+set_option linter.flexible false in
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
   simp [← C_mul_X_pow_eq_monomial]; ac_rfl
@@ -254,6 +258,69 @@ theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
 end
 
 end aevalAeval
+
+namespace Bivariate
+section MvPolynomial
+
+variable {R : Type*} [CommSemiring R]
+
+variable (R) in
+/-- The equiv between `R[X][Y]` and `R[X, Y]`. -/
+noncomputable
+def equivMvPolynomial : R[X][Y] ≃ₐ[R] MvPolynomial (Fin 2) R :=
+  .ofAlgHom (aevalAeval (.X 0) (.X 1)) (MvPolynomial.aeval ![.C X, X])
+    (by ext i; fin_cases i <;> simp) (by ext <;> simp)
+
+@[simp]
+lemma equivMvPolynomial_C_C {a} : equivMvPolynomial R (C (C a)) = .C a := by
+  simp [equivMvPolynomial]
+
+@[simp]
+lemma equivMvPolynomial_C_X : equivMvPolynomial R (C X) = .X 0 := by
+  simp [equivMvPolynomial]
+
+@[simp]
+lemma equivMvPolynomial_X : equivMvPolynomial R X = .X 1 := by
+  simp [equivMvPolynomial]
+
+@[simp]
+lemma equivMvPolynomial_symm_X_0 : (equivMvPolynomial R).symm (.X 0) = C X := by
+  simp [equivMvPolynomial]
+
+@[simp]
+lemma equivMvPolynomial_symm_X_1 : (equivMvPolynomial R).symm (.X 1) = X := by
+  simp [equivMvPolynomial]
+
+@[simp]
+lemma equivMvPolynomial_symm_C (a : R) : (equivMvPolynomial R).symm (.C a) = C (C a) := by
+  simp [equivMvPolynomial]
+
+lemma pderiv_zero_equivMvPolynomial {R : Type*} [CommRing R] (p : R[X][Y]) :
+    (equivMvPolynomial R p).pderiv 0 = equivMvPolynomial R
+      (PolynomialModule.equivPolynomialSelf (derivative'.mapCoeffs p)) := by
+  induction p using Polynomial.induction_on' with
+  | add p q _ _ => aesop
+  | monomial n p =>
+  induction p using Polynomial.induction_on' with
+  | add p q _ _ => aesop
+  | monomial m a =>
+    simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
+    simp [map_nsmul]
+
+lemma pderiv_one_equivMvPolynomial (p : R[X][Y]) :
+    (equivMvPolynomial R p).pderiv 1 = equivMvPolynomial R (derivative p) := by
+  induction p using Polynomial.induction_on' with
+  | add p q _ _ => aesop
+  | monomial n p =>
+  induction p using Polynomial.induction_on' with
+  | add p q _ _ => aesop
+  | monomial m a =>
+    simp_rw [← Polynomial.C_mul_X_pow_eq_monomial]
+    simp [derivative_pow]
+
+end MvPolynomial
+
+end Bivariate
 
 end Polynomial
 

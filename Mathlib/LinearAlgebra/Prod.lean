@@ -466,6 +466,20 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [this] at h
   simpa [this] using h
 
+/-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
+equivalence between `C` and `range f`. -/
+@[simps!]
+noncomputable def kerComplementEquivRange {R M M₂ : Type*} [Ring R] [AddCommGroup M]
+    [AddCommGroup M₂] [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) {C : Submodule R M}
+    (h : IsCompl C (LinearMap.ker f)) : C ≃ₗ[R] range f :=
+  .ofBijective (codRestrict (range f) f (mem_range_self f) ∘ₗ C.subtype)
+  ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
+   by
+    rintro ⟨-, x, rfl⟩
+    obtain ⟨y, z, hy, hz, rfl⟩ := codisjoint_iff_exists_add_eq.mp h.codisjoint x
+    use ⟨y, hy⟩
+    simpa [Subtype.ext_iff]⟩
+
 end LinearMap
 
 namespace Submodule
