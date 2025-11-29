@@ -97,14 +97,14 @@ def subMulAction [DecidableEq α] : SubMulAction G (Finset α) where
   smul_mem' g s := (Finset.card_smul_finset g s).trans
 
 @[to_additive]
-local instance [DecidableEq α] : MulAction G (n.Combination α) :=
+instance [DecidableEq α] : MulAction G (n.Combination α) :=
   (subMulAction G α n).mulAction
 
 variable {G}
 
 @[to_additive (attr := simp)]
 theorem coe_smul [DecidableEq α] {n : ℕ} {g : G} {s : n.Combination α} :
-    ((g • s : n.Combination α) : Finset α) = (g • s) :=
+    ((g • s : n.Combination α) : Finset α) = g • s :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
 
 theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
@@ -118,24 +118,18 @@ theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    intro hs
-    apply has'
-    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at hs
-    rw [← hs]
-    simpa only [coe_vadd, vadd_mem_vadd_finset_iff, ← mem_coe_iff]
-  · ext1 s
-    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq]
-    suffices (g +ᵥ s : Finset α) = (AddAction.toPerm g : Equiv.Perm α) '' (s : Finset α) by
-      rw [← Subtype.coe_inj, ← Finset.coe_inj, this]
-      simp [h]
-    simp
+    contrapose! has'
+    simp only [AddAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
+    rw [← has']
+    simpa [← mem_coe_iff]
+  · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
+    simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
 
 /-- If an additive group `G` acts faithfully on `α`,
 then it acts faithfully on `n.Combination α`,
 provided `1 ≤ n < ENat.card α`. -/
 theorem faithfulVAdd {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
-    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
-    [FaithfulVAdd G α] :
+    [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulVAdd G α] :
     FaithfulVAdd G (n.Combination α) := by
   rw [faithfulVAdd_iff]
   intro g hg
@@ -154,24 +148,17 @@ theorem mulAction_faithful {G : Type*} [Group G] {α : Type*} [MulAction G α] {
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    intro hs
-    apply has'
-    simp only [MulAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at hs
-    rw [← hs]
+    contrapose! has'
+    simp only [MulAction.toPerm_apply, Equiv.Perm.coe_one, id_eq] at has'
+    rw [← has']
     simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]
-  · ext1 s
-    simp only [MulAction.toPerm_apply, Equiv.Perm.coe_one, id_eq]
-    suffices ((g • s : n.Combination α) : Finset α) =
-      (MulAction.toPerm g : Equiv.Perm α) '' (s : Finset α) by
-      rw [← Subtype.coe_inj, ← Finset.coe_inj, this]
-      simp [h]
-    simp
+  · simp only [Equiv.ext_iff, MulAction.toPerm_apply] at h ⊢
+    simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
 
 /-- If a group `G` acts faithfully on `α`,
 then it acts faithfull on `n.Combination α`,
 provided `1 ≤ n < ENat.card α`. -/
-theorem faithfulSMul [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α)
-    [FaithfulSMul G α] :
+theorem faithfulSMul [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α] :
     FaithfulSMul G (n.Combination α) := by
   rw [faithfulSMul_iff]
   intro g hg
@@ -191,7 +178,6 @@ def mulActionHom_of_embedding [DecidableEq α] :
     (Fin n ↪ α) →[G] n.Combination α where
   toFun f := ⟨Finset.univ.map f, by rw [mem_iff, Finset.card_map, Finset.card_fin]⟩
   map_smul' g f := by
-    simp only [id]
     rw [← Subtype.coe_inj, Subtype.coe_mk, coe_smul,
       f.smul_def, Finset.smul_finset_def,
       ← Finset.map_map, Finset.map_eq_image]
@@ -231,27 +217,15 @@ variable {α} in
 /-- If `0 < n < ENat.card α`, then `n.Combination α` is nontrivial. -/
 theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     Nontrivial (n.Combination α) := by
-  obtain ⟨t, ht⟩ := Cardinal.exists_finset_le_card α (n + 1)
-    (by rwa [← Cardinal.natCast_le_toENat_iff, cast_add,
-      cast_one, ENat.add_one_le_iff (ENat.coe_ne_top n)])
-  obtain ⟨s, hst, hsn⟩ := t.exists_subset_card_eq ht
-  have : ∃ f : Fin (n + 1) ↪ α, Finset.univ.map f = s := by
-    apply Function.Embedding.exists_of_card_eq_finset
-    simp [hsn]
-  obtain ⟨f, hf⟩ := this
-  rw [nontrivial_iff]
-  let j := Fin.castSuccEmb.trans f
-  use ⟨Finset.univ.map ((Fin.castLEEmb n.le_succ).trans f), by simp⟩
-  use ⟨Finset.univ.map ((Fin.succAboveEmb 0).trans f), by simp⟩
-  simp only [ne_eq, Subtype.mk.injEq]
-  intro h
-  suffices f 0 ∉ Finset.univ.map ((Fin.succAboveEmb 0).trans f) by
-    apply this
-    rw [← h, mem_map]
-    use ⟨0, h1⟩
-    simp
-  simp
+  classical
+  have h : Nontrivial α :=
+    (ENat.one_lt_card_iff_nontrivial α).mp (lt_of_le_of_lt (one_le_cast.mpr h1) h2)
+  have : FaithfulSMul (Equiv.Perm α) (Combination α n) := Nat.Combination.faithfulSMul h1 h2
+  have h := (smul_left_injective' (M := Equiv.Perm α) (α := Combination α n)).nontrivial
+  contrapose! h
+  infer_instance
 
+variable {α} in
 /-- A variant of `Nat.Combination.nontrivial` that uses `Nat.card`. -/
 theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
     Nontrivial (n.Combination α) := by
