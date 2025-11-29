@@ -57,9 +57,9 @@ def toRepresentation (ρ' : Subrepresentation ρ) : Representation A G ρ'.toSub
 
 instance : Max (Subrepresentation ρ) where
   max ρ₁ ρ₂ := .mk (ρ₁.toSubmodule ⊔ ρ₂.toSubmodule) <| by
-      simp only [Submodule.forall_mem_sup, map_add]
+      simp only [AddSubmonoid.forall_mem_sup, map_add]
       intro g x₁ hx₁ x₂ hx₂
-      exact Submodule.mem_sup.mpr
+      exact AddSubmonoid.mem_sup.mpr
         ⟨ρ g x₁, ρ₁.apply_mem_toSubmodule g hx₁, ρ g x₂, ρ₂.apply_mem_toSubmodule g hx₂, rfl⟩
 
 instance : Min (Subrepresentation ρ) where
