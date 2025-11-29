@@ -16,6 +16,13 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 In this file we prove basic properties of Gaussian random variables.
 
+# Implementation details
+
+Many lemmas are duplicated with an expanded form of some function. For instance there is
+`HasGaussianLaw.add` and `HasGaussianLaw.fun_add`. The reason is that if someone wants for instance
+to rewrite using `HasGaussianLaw.charFunDual_map_eq` and provide the proof of `HasGaussianLaw`
+directly through dot notation, the lemma used must syntactically correspond to the random variable.
+
 ## Tags
 
 Gaussian random variable
@@ -97,6 +104,7 @@ lemma charFunDual_map_eq (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
   rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
     variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
   rfl
+
 lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq
     [IsFiniteMeasure P] (hX : AEMeasurable X P) :
     HasGaussianLaw X P ↔ ∀ L,
@@ -244,6 +252,13 @@ lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
     ext; simp
   rw [this]
   exact hX.map _
+
+lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E] [SecondCountableTopology E]
+    {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+    HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by
+  convert hX.sum
+  simp
 
 end Pi
 
