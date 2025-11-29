@@ -432,10 +432,7 @@ def mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h : Associated (p.map f)
   .ofRingHom
     (map f p q h.symm.dvd)
     (map f.symm q p <| by
-      -- FIXME: Coercion hell
-      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id _ := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
+      simpa [Polynomial.map_map] using map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
 @[simp] lemma coe_mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h) :
@@ -443,10 +440,7 @@ def mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h : Associated (p.map f)
 
 @[simp] lemma symm_mapRingEquiv (f : R ≃+* S) (p : R[X]) (q : S[X]) (h) :
     (mapRingEquiv f p q h).symm = mapRingEquiv f.symm q p (by
-      -- FIXME: Coercion hell
-      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id _ := by ext; exact f.symm_apply_apply _
-      simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
+      simpa [Polynomial.map_map] using associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable [CommRing U] [Algebra R S] [Algebra R T] [Algebra R U]
 
@@ -474,7 +468,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
     (mapAlgHom f.symm q p <| by
       -- FIXME: Coercion hell
       have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id _ := by ext; exact f.symm_apply_apply _
+          (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
@@ -485,7 +479,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
     (mapAlgEquiv f p q h).symm = mapAlgEquiv f.symm q p (by
       -- FIXME: Coercion hell
       have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id _ := by ext; exact f.symm_apply_apply _
+          (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable (R) in
