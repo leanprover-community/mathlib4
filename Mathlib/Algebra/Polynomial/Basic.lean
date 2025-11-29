@@ -1133,10 +1133,10 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 
 theorem C_neg : C (-a) = -C a :=
-  RingHom.map_neg C a
+  map_neg C a
 
 theorem C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub C a b
+  map_sub C a b
 
 end Ring
 
