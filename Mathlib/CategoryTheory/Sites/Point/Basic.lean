@@ -99,6 +99,7 @@ noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ 
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
 as a natural transformation. -/
+@[simps]
 noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
     (evaluation Cᵒᵖ A).obj (op X) ⟶ Φ.presheafFiber where
   app := Φ.toPresheafFiber X x
