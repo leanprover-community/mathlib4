@@ -6,25 +6,352 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
-public import Mathlib.RingTheory.Polynomial.GaussLemma
-public import Mathlib.Tactic.LinearCombination
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.Relrank
+public import Mathlib.GroupTheory.Perm.ClosureSwap
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+public import Mathlib.RingTheory.Invariant.Basic
 
 /-!
-# Irreducibility of Selmer Polynomials
+# Irreducibility and Galois Groups of Selmer Polynomials
 
-This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
+This file shows that the Selmer polynomial `X ^ n - X - 1` is irreducible with Galois group `S_n`.
 
 ## Main results
 
 - `X_pow_sub_X_sub_one_irreducible`: The Selmer polynomials `X ^ n - X - 1` are irreducible.
-
-TODO: Show that the Selmer polynomials have full Galois group.
+- `X_pow_sub_X_sub_one_gal`: The Selmer polynomial `X ^ n - X - 1` has Galois group `S_n`.
 -/
 
 @[expose] public section
 
+-- PR #29688
+section GeneralGalois
+
+variable (G K L : Type*) [Group G] [Field K] [Field L] [Algebra K L] [MulSemiringAction G L]
+   (H H' : Subgroup G) (F F' : IntermediateField K L)
+
+namespace IsGaloisGroup
+
+variable [hGKL : IsGaloisGroup G K L]
+
+protected theorem finite [FiniteDimensional K L] : Finite G := by
+  apply Nat.finite_of_card_ne_zero
+  rw [hGKL.card_eq_finrank]
+  exact Module.finrank_pos.ne'
+
+end IsGaloisGroup
+
+end GeneralGalois
+
+section Inertia
+
+open scoped Pointwise
+
+-- PR #30666
+section ram
+
+variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
+variable [IsIntegralClosure 𝒪 ℤ K]
+
+lemma NumberField.exists_not_isUramifiedAt_int (H : 1 < Module.finrank ℚ K) :
+    ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), P ≠ ⊥ ∧ ¬ Algebra.IsUnramifiedAt ℤ P :=
+  sorry
+
+end ram
+
+section ram
+
+open IsGaloisGroup
+
+open NumberField
+
+instance tada1 {K : Type*} [Field K] [NumberField K] (m : Ideal (𝓞 K)) [m.IsMaximal] :
+    Finite (𝓞 K ⧸ m) :=
+  m.finiteQuotientOfFreeOfNeBot (m.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
+
+theorem Ideal.IsMaximal.ne_bot_of_isIntegral_int {R : Type*} [CommRing R]
+    [CharZero R] [Algebra.IsIntegral ℤ R] (I : Ideal R) [I.IsMaximal] : I ≠ ⊥ :=
+  Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField
+    (isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R) h)
+
+theorem genthm₀ (K : Type*) [Field K] [NumberField K]
+    (G : Type*) [Group G] [MulSemiringAction G K]
+    [IsGaloisGroup G ℚ K] :
+    ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  have : Finite G := IsGaloisGroup.finite G ℚ K
+  set H : Subgroup G := ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G
+  set F : IntermediateField ℚ K := FixedPoints.intermediateField H
+  suffices Module.finrank ℚ F ≤ 1 by
+    rw [eq_top_iff, ← fixingSubgroup_fixedPoints G ℚ K H, ← le_fixedPoints_iff_le_fixingSubgroup,
+      fixedPoints_top, le_bot_iff, ← IntermediateField.finrank_eq_one_iff]
+    exact le_antisymm this Module.finrank_pos
+  suffices h : ∀ (m : Ideal (𝓞 F)) (hm : m.IsMaximal), Algebra.IsUnramifiedAt ℤ m by
+    contrapose! h
+    obtain ⟨p, h1, h2, h3⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝓞 F) h
+    exact ⟨p, h1, h3⟩
+  intro m _
+  have hm2 := Ideal.IsMaximal.ne_bot_of_isIntegral_int m
+  rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain hm2]
+  obtain ⟨m, hm, ⟨rfl⟩⟩ := Ideal.exists_maximal_ideal_liesOver_of_isIntegral (S := 𝓞 K) m
+  rw [Ideal.under_under]
+  have hm1 := Ideal.IsMaximal.ne_bot_of_isIntegral_int (m.under ℤ)
+  have h : m.toAddSubgroup.inertia G ≤ H :=
+    le_iSup (fun m : MaximalSpectrum (𝓞 K) ↦ m.asIdeal.toAddSubgroup.inertia G) ⟨m, hm⟩
+  replace h : Nat.card (m.toAddSubgroup.inertia H) = Nat.card (m.toAddSubgroup.inertia G) := by
+    rw [← Subgroup.map_subgroupOf_eq_of_le h, Subgroup.card_subtype,
+      AddSubgroup.subgroupOf_inertia]
+  let := Ideal.Quotient.field m
+  let := Ideal.Quotient.field (m.under (𝓞 F))
+  let := Ideal.Quotient.field (m.under ℤ)
+  -- todo: clean up once #30934 is merged
+  rw [Ideal.card_inertia_eq_ramificationIdxIn (G := H) (m.under (𝓞 F)) hm2 m,
+    Ideal.card_inertia_eq_ramificationIdxIn (G := G) (m.under ℤ) hm1 m,
+    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under (𝓞 F)) m H,
+    Ideal.ramificationIdxIn_eq_ramificationIdx (m.under ℤ) m G] at h
+  have key := Ideal.ramificationIdx_algebra_tower (Ideal.map_ne_bot_of_ne_bot hm2)
+    (Ideal.map_ne_bot_of_ne_bot hm1) Ideal.map_comap_le
+  rwa [h, right_eq_mul₀ (Ideal.IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver m hm1)] at key
+
+-- generalize from `𝓞 K` to `IsIntegralClosure`?
+theorem genthm (K : Type*) [Field K] [NumberField K]
+    (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K]
+    (G : Type*) [Group G] [MulSemiringAction G K]
+    [MulSemiringAction G R] [IsGaloisGroup G ℚ K] :
+    ⨆ m : MaximalSpectrum R, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  sorry
+
+end ram
+
+end Inertia
 
 namespace Polynomial
+
+section Moore
+
+theorem aeval_smul {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (f : R[X])
+    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G) (x : S) :
+    aeval (g • x) f = g • (aeval x f) := by
+  rw [← MulSemiringAction.toAlgHom_apply R, aeval_algHom_apply, MulSemiringAction.toAlgHom_apply]
+
+instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+    [NoZeroSMulDivisors R S] (f : R[X])
+    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] :
+    MulAction G (f.rootSet S) where
+  smul g x := ⟨g • x.1, by
+    rw [mem_rootSet_of_ne (ne_zero_of_mem_rootSet x.2), aeval_smul,
+      aeval_eq_zero_of_mem_rootSet x.2, smul_zero]⟩
+  one_smul x := Subtype.ext (one_smul G x.1)
+  mul_smul g h x := Subtype.ext (mul_smul g h x.1)
+
+theorem rootSet.coe_smul
+    {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+    [NoZeroSMulDivisors R S] {f : R[X]}
+    {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    (g : G) (x : f.rootSet S) : (g • x : f.rootSet S) = g • (x : S) := rfl
+
+theorem Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
+    [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
+  simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
+
+theorem fiddly''' {α β : Type*} [Finite α] {f : α → β} (hf : Function.Surjective f) :
+    Nat.card α ≤ Nat.card β + 1 ↔ ∀ a b c d,
+      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
+  rcases isEmpty_or_nonempty α
+  · simp
+  let g := Function.surjInv hf
+  rw [← Set.ncard_range_of_injective (Function.injective_surjInv hf),
+    ← Set.ncard_add_ncard_compl (Set.range g), add_le_add_iff_left]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [Set.ncard_le_one_iff_subset_singleton] at h
+    obtain ⟨x, hx⟩ := h
+    suffices ∀ a b : α, f a = f b → a ≠ b → a = x ∨ a = g (f x) by grind
+    intro a b hfab hab
+    by_cases ha : a ∈ Set.range g
+    · obtain ⟨a, rfl⟩ := ha
+      rw [Function.surjInv_eq hf] at hfab
+      subst hfab
+      by_cases hb : b ∈ Set.range g
+      · obtain ⟨b, rfl⟩ := hb
+        rw [Function.surjInv_eq hf] at hab
+        contradiction
+      · exact Or.inr (congrArg (fun y ↦ g (f y)) (hx hb))
+    · exact Or.inl (hx ha)
+  · rw [Set.ncard_le_one]
+    simp only [Set.mem_compl_iff, Set.mem_range, not_exists, ← ne_eq]
+    intro a ha b hb
+    simpa [(ha (f b)).symm] using congrArg (a ∈ ·) (h a (g (f a)) b (g (f b))
+      (Function.surjInv_eq hf (f a)).symm (Function.surjInv_eq hf (f b)).symm
+      (ha (f a)).symm (hb (f b)).symm)
+
+theorem fiddly' {α β : Type*} (s : Set α) [Finite s] (f : α → β) :
+    s.ncard ≤ (f '' s).ncard + 1 ↔ ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, ∀ d ∈ s,
+      f a = f b → f c = f d → a ≠ b → c ≠ d → {a, b} = ({c, d} : Set α) := by
+  simpa [Subtype.ext_iff, ← Set.image_val_inj, Set.image_insert_eq] using
+    fiddly''' (Set.surjective_mapsTo_image_restrict f s)
+
+theorem tada -- R = ℤ, S = 𝓞 K
+    {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+    [NoZeroSMulDivisors R S]
+    (f : R[X]) (hmon : f.Monic) [DecidableEq (f.rootSet S)]
+    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    (m : MaximalSpectrum S)
+     -- all roots already present (so no new roots in `S ⧸ m`)
+    (hf : (f.map (algebraMap R S)).Splits)
+    -- at most one collision
+    (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
+    ∀ g ∈ m.asIdeal.toAddSubgroup.inertia G,
+      MulAction.toPermHom G (f.rootSet S) g = 1 ∨
+        (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
+  intro g hg
+  let π : S →ₐ[R] S ⧸ m.asIdeal := Ideal.Quotient.mkₐ R m.asIdeal
+  have hπ (x : S) (hx : x ∈ f.rootSet S): π x ∈ f.rootSet (S ⧸ m.asIdeal) := by
+    unfold π
+    rw [hmon.mem_rootSet, aeval_algHom_apply, aeval_eq_zero_of_mem_rootSet hx, map_zero]
+  have hπ (x : S) : π (g • x) = π x := (Ideal.Quotient.mk_eq_mk_iff_sub_mem (g • x) x).mpr (hg x)
+  rw [or_iff_not_imp_left]
+  intro hg'
+  rw [Equiv.ext_iff, not_forall] at hg'
+  obtain ⟨x, hx⟩ := hg'
+  change g • x ≠ x at hx
+  refine ⟨g • x, x, hx, ?_⟩
+  ext z
+  rw [Equiv.swap_apply_def]
+  have h0 : f.rootSet (S ⧸ m.asIdeal) = π '' f.rootSet S := by
+    classical
+    have key := Monic.roots_map_of_card_eq_natDegree (hmon.map (algebraMap R S))
+      (π : S →+* S ⧸ m.asIdeal) hf.natDegree_eq_card_roots.symm
+    rw [map_map, π.comp_algebraMap] at key
+    simp [rootSet, aroots, ← key, Multiset.toFinset_map]
+  rw [h0] at h
+  split_ifs with hz hz'
+  · subst hz
+    simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
+    have key := (fiddly' (f.rootSet S) π).mp h
+      (g • g • x) (g • g • x).2 (g • x) (g • x).2 (g • x) (g • x).2 x x.2
+    simp [hπ] at key
+    simp [← Polynomial.rootSet.coe_smul] at key
+    simp [hx] at key
+    replace key := congrArg (fun s ↦ (x : S) ∈ s) key
+    simp [hx.symm] at key
+    exact key.symm
+  · simp [hz']
+  · simp only [MulAction.toPermHom_apply, MulAction.toPerm_apply, SetLike.coe_eq_coe]
+    have key := (fiddly' (f.rootSet S) π).mp h (g • z) (g • z).2 z z.2 (g • x) (g • x).2 x x.2
+    simp [hπ] at key
+    simp [← Polynomial.rootSet.coe_smul] at key
+    simp [hx] at key
+    rw [not_imp_comm] at key
+    apply key
+    contrapose! key
+    replace key := congrArg (fun s ↦ (z : S) ∈ s) key
+    simp [hz, hz'] at key
+
+theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+    [NoZeroSMulDivisors R S] (f : R[X])
+    (hf : f.Monic) (hf' : (f.map (algebraMap R S)).Splits)
+    (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    [MulAction.IsPretransitive G (f.rootSet S)]
+    (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤)
+    (h : ∀ m : MaximalSpectrum S, (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
+    Function.Surjective (MulAction.toPermHom G (f.rootSet S)) := by
+  classical
+  let X : Set G := ⋃ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G
+  have hS1 : Subgroup.closure X = ⊤ := by
+    simpa only [X, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
+  have hS2 : ∀ σ ∈ X, MulAction.toPermHom G (f.rootSet S) σ = 1 ∨
+      (MulAction.toPermHom G (f.rootSet S) σ).IsSwap := by
+    intro σ hσ
+    simp only [X, Set.mem_iUnion] at hσ
+    obtain ⟨m, hm⟩ := hσ
+    have := tada f hf G m hf' (h m) σ hm
+    exact this
+  exact surjective_of_isSwap_of_isPretransitive' X hS2 hS1
+
+open Equiv Pointwise
+
+open IntermediateField
+
+theorem switchinglemma {F : Type*} [Field F] (p : F[X])
+    (E₁ E₂ : Type*) [Field E₁] [Algebra F E₁] [Field E₂] [Algebra F E₂]
+    [Fact (p.map (algebraMap F E₁)).Splits] [Fact (p.map (algebraMap F E₂)).Splits] :
+    Gal.galActionHom p E₁ =
+      ((Polynomial.Gal.rootsEquivRoots p E₂).symm.trans
+        (Polynomial.Gal.rootsEquivRoots p E₁)).permCongrHom.toMonoidHom.comp
+        (Gal.galActionHom p E₂)
+       := by
+  ext
+  simp [permCongrHom, permCongrHom, Gal.galActionHom, Polynomial.Gal.smul_def]
+
+attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
+
+attribute [local instance] Gal.splits_ℚ_ℂ
+
+attribute [-instance] Gal.smul Gal.galAction -- todo: redefine in more general semiring context
+
+open NumberField
+
+theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
+    -- condition on at most on root collision mod p :
+    Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
+  classical
+  let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
+  have hf := hf₀.map (algebraMap ℤ ℚ)
+  let K := f.SplittingField
+  have : Fact (f.map (algebraMap ℚ K)).Splits := ⟨SplittingField.splits f⟩
+  have : NumberField K := by constructor
+  have : IsGalois ℚ K := by constructor
+  let R := 𝓞 K
+  let G := f.Gal
+  suffices Function.Surjective (Gal.galActionHom f K) by
+    use Polynomial.Gal.galActionHom_injective f ℂ
+    rw [switchinglemma f ℂ K]
+    exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
+      (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_surjective _).mpr this
+  have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
+    intro x hx
+    rw [hf.mem_rootSet, aeval_map_algebraMap, aeval_algebraMap_apply,
+      aeval_eq_zero_of_mem_rootSet hx, map_zero]
+  let φ : f₀.rootSet R → f.rootSet K := hφ.restrict
+  have hφ1 : ∀ g : G, ∀ x : f₀.rootSet R, φ (g • x) = g • φ x := by
+    intro g x
+    ext
+    exact (rootSet.coe_smul g (φ x)).symm
+  have hφ2 : Function.Bijective φ := by
+    rw [Function.Bijective, hφ.restrict_inj, hφ.restrict_surjective_iff]
+    refine ⟨RingOfIntegers.coe_injective.injOn, ?_⟩
+    -- surjective
+    sorry
+  suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
+    sorry
+  -- suffices Function.Bijective (Gal.galActionHom f K) by
+  --   rw [switchinglemma f ℂ K]
+  --   exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
+  --     (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
+  have : MulAction.IsPretransitive G (f.rootSet K) := by
+    convert Gal.galAction_isPretransitive f K
+      (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
+    ext
+    -- diamond...
+    sorry
+  -- need a bijection between f₀.rootSet R and
+  have : MulAction.IsPretransitive G (f₀.rootSet R) := by
+    sorry
+  have : FaithfulSMul G (f₀.rootSet R) := by
+    sorry
+  refine tada' (S := R) f₀ hf₀ ?_ G ?_ ?_
+  · sorry
+  · have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
+    exact genthm₀ K G
+  · sorry
+
+end Moore
 
 open scoped Polynomial
 
@@ -77,6 +404,29 @@ theorem X_pow_sub_X_sub_one_irreducible_rat (hn1 : n ≠ 1) : Irreducible (X ^ n
     (X_pow_sub_X_sub_one_irreducible hn1)
   · rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
       Polynomial.map_X] at h
-  · exact hp.symm ▸ (trinomial_monic zero_lt_one hn).isPrimitive
+  · exact hp ▸ (trinomial_monic zero_lt_one hn).isPrimitive
+
+open Equiv Pointwise
+
+open IntermediateField
+
+attribute [local instance] Gal.splits_ℚ_ℂ
+
+theorem X_pow_sub_X_sub_one_gal :
+    Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
+  rcases le_or_gt n 1 with hn | hn
+  · have : Subsingleton ((X ^ n - X - 1 : ℚ[X]).rootSet ℂ) := by
+      apply Finset.card_le_one_iff_subsingleton_coe.mp
+      grw [Multiset.toFinset_card_le, card_roots', natDegree_map_le, natDegree_sub_le,
+        natDegree_sub_le, natDegree_X_pow, natDegree_X, natDegree_one, hn, max_self, Nat.max_zero]
+    have : Unique ((X ^ n - X - 1 : ℚ[X]).Gal) := by
+      refine Gal.uniqueGalOfSplits _ (Splits.of_natDegree_le_one (by compute_degree!))
+    apply Unique.bijective
+  have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
+    simp only [trinomial, C_neg, C_1]; ring
+  have h := tada'' (X ^ n - X - 1) (hp ▸ trinomial_monic zero_lt_one hn)
+    (X_pow_sub_X_sub_one_irreducible hn.ne')
+  rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
+    Polynomial.map_X] at h
 
 end Polynomial
