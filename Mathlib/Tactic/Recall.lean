@@ -45,8 +45,7 @@ elab_rules : command
   | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
     let declName := id.getId
     addConstInfo id declName
-    let some info := (← getEnv).find? declName
-      | throwError "unknown constant '{declName}'"
+    let info ← getConstInfo declName
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
     let newId := ({ namePrefix := declName : DeclNameGenerator }.mkUniqueName (← getEnv) `recall).1
     let newId := mkIdentFrom id newId
