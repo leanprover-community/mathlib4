@@ -431,7 +431,7 @@ lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     refine ⟨some m, ?_⟩
     rwa [← coeff, zero_apply, ← mem_support_iff, mem_support_coeff_optionEquivLeft, optionElim_some]
 
-theorem support_optionEquivLeft_nonempty {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
+theorem nonempty_support_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     (optionEquivLeft R σ f).support.Nonempty := by
   rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
 
@@ -440,7 +440,7 @@ theorem degree_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
   have h' : ((optionEquivLeft R σ f).support.sup fun x => x) = degreeOf none f := by
     rw [degreeOf_eq_sup, support_optionEquivLeft, Finset.sup_image, Function.comp_def]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (support_optionEquivLeft_nonempty R h), Finset.max_eq_sup_coe,
+    Finset.coe_sup_of_nonempty (nonempty_support_optionEquivLeft R h), Finset.max_eq_sup_coe,
     Function.comp_def]
 
 @[simp]
@@ -663,9 +663,12 @@ lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i
   simpa using congr(x ∈ $image_support_finSuccEquiv)
 
 -- TODO: generalize `finSuccEquiv R n` to an arbitrary ZeroHom
-theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
+theorem nonempty_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).support.Nonempty := by
   rwa [Polynomial.support_nonempty, EmbeddingLike.map_ne_zero_iff]
+
+@[deprecated (since := "2025-11-28")] alias support_finSuccEquiv_nonempty :=
+nonempty_support_finSuccEquiv
 
 theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).degree = degreeOf 0 f := by
@@ -675,7 +678,7 @@ theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
   have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
     rw [degreeOf_eq_sup, support_finSuccEquiv, Finset.sup_image, h₀]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,
-    Finset.coe_sup_of_nonempty (support_finSuccEquiv_nonempty h), Finset.max_eq_sup_coe, h₁]
+    Finset.coe_sup_of_nonempty (nonempty_support_finSuccEquiv h), Finset.max_eq_sup_coe, h₁]
 
 theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).natDegree = degreeOf 0 f := by
