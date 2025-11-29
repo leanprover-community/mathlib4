@@ -551,8 +551,25 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
 
 /-- The additive equivalence `K ⟶ L⟦n⟧ ≃+ Cocycle K L n`. -/
 @[simps! -isSimp apply symm_apply]
-def equivHomShift : (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
+def equivHomShift :
+    (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
   (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
+
+/-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
+@[simps]
+def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
+    Cocycle K L n ≃+ Cocycle (K⟦a⟧) L n' where
+  toFun γ := γ.leftShift a n' hn'
+  invFun γ := γ.leftUnshift n hn'
+  left_inv γ := by cat_disch
+  right_inv γ := by cat_disch
+  map_add' γ γ' := by cat_disch
+
+/-- The additive equivalence `(K⟦n⟧) ⟶ L ≃+ Cocycle K L m` when `m + n = 0`. -/
+@[simps! -isSimp apply symm_apply]
+def equivHomShift' (n m : ℤ) (h : m + n = 0) :
+    ((K⟦n⟧) ⟶ L) ≃+ Cocycle K L m :=
+  (equivHom _ _).trans (leftShiftAddEquiv _ _ _ h).symm
 
 end Cocycle
 
