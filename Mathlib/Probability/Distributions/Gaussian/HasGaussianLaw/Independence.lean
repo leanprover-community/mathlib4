@@ -110,7 +110,7 @@ lemma iIndepFun.hasGaussianLaw (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndepF
     simp only [← LinearMap.sum_single_apply E (fun i ↦ ∫ ω, X i ω ∂P), map_sum, ofReal_sum,
       sum_mul, diagonalStrongDual_apply, sum_div, ← sum_sub_distrib, exp_sum]
     congr with i
-    rw [(h i).charFunDual_map_eq, integral_complex_ofReal, Function.comp_def, integral_comp_comm,
+    rw [(h i).charFunDual_map_eq, Function.comp_def, integral_comp_comm,
       covarianceBilinDual_self_eq_variance, variance_map]
     · simp [Function.comp_def]
     any_goals fun_prop
@@ -131,7 +131,7 @@ lemma HasGaussianLaw.iIndepFun_of_cov (h : HasGaussianLaw (fun ω i ↦ X i ω) 
   simp_rw [h.charFunDual_map_eq_fun, fun i ↦ (h.eval i).charFunDual_map_eq_fun, ← Complex.exp_sum,
     sum_sub_distrib, ← sum_mul, this]
   congr
-  · simp_rw [Complex.ofReal_sum]
+  · simp_rw [← Complex.ofReal_sum]
     rw [integral_finset_sum _ fun i _ ↦ ((h.eval i).map_fun _).integrable.ofReal]
   · rw [variance_fun_sum fun i ↦ ((h.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
@@ -219,8 +219,7 @@ lemma HasGaussianLaw.indepFun_of_cov [NormedSpace ℝ E] [NormedSpace ℝ F]
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
     ext; simp only [Function.comp_apply, ← comp_inl_add_comp_inr, Pi.add_apply]
   rw [h.charFunDual_map_eq, h.fst.charFunDual_map_eq, h.snd.charFunDual_map_eq, ← exp_add,
-    sub_add_sub_comm, ← add_mul, integral_complex_ofReal, integral_complex_ofReal,
-    integral_complex_ofReal, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
+    sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
     variance_add, h', mul_zero, add_zero]
   · congr
   · exact (h.fst.map _).memLp_two
@@ -342,13 +341,22 @@ lemma IndepFun.hasGaussianLaw_sub {E : Type*} [NormedAddCommGroup E]
     HasGaussianLaw (Y - X) P where
   isGaussian_map := by
     have : IsProbabilityMeasure P := hX.isProbabilityMeasure
-    rw [isGaussian_iff_charFunDual_eq]
+    simp_rw [isGaussian_iff_charFunDual_eq, integral_complex_ofReal]
     intro L
     apply mul_left_cancel₀ (a := charFunDual (P.map X) L)
     · simp [hX.charFunDual_map_eq]
     rw [← Pi.mul_apply, ← h.charFunDual_map_add_eq_mul, add_sub_cancel, hX.charFunDual_map_eq,
-      ← exp_add, sub_add_sub_comm, ← add_mul, integral_map, ← integral_add, variance_map, ← add_div,
-      ← IndepFun.variance_add]
+      ← exp_add, sub_add_sub_comm, ← add_mul, integral_map, ← ofReal_add, ← integral_add,
+      variance_map, ← add_div, ← ofReal_add, ← IndepFun.variance_add, hY.charFunDual_map_eq]
+    · congr with ω <;> simp
+    any_goals fun_prop
+    · exact (hX.map L).memLp_two
+    · rw [map_comp_sub]
+      exact (hY.map L).memLp_two.sub (hX.map L).memLp_two
+    · exact h.comp (by fun_prop) (by fun_prop)
+    · exact (hX.map L).integrable
+    · simp_rw [Pi.sub_def, map_sub]
+      exact (hY.map L).integrable.sub (hX.map L).integrable
     -- rw [← Pi.mul_apply, ← h.charFunDual_map_add_eq_mul, add_sub_cancel, hY.charFunDual_map_eq,
     --   hX.charFunDual_map_eq, ← Complex.exp_add, ofReal_sub]
     -- · push_cast
