@@ -141,13 +141,13 @@ variable {s : Set E} {f : E → β}
 theorem Convex.quasiconvexOn_restrict {t : Set E} (hf : QuasiconvexOn 𝕜 s f) (hst : t ⊆ s)
     (ht : Convex 𝕜 t) : QuasiconvexOn 𝕜 t f := by
   intro b
-  rw [Set.sep_of_subset hst]
+  rw [Set.sep_eq_inter_sep hst]
   exact Convex.inter ht (hf b)
 
 theorem Convex.quasiconcaveOn_restrict {t : Set E} (hf : QuasiconcaveOn 𝕜 s f) (hst : t ⊆ s)
     (ht : Convex 𝕜 t) : QuasiconcaveOn 𝕜 t f := by
   intro b
-  rw [Set.sep_of_subset hst]
+  rw [Set.sep_eq_inter_sep hst]
   exact Convex.inter ht (hf b)
 
 end Restriction
