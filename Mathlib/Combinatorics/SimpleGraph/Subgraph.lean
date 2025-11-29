@@ -442,11 +442,12 @@ theorem verts_spanningCoe_injective :
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
+instance : PartialOrder G.Subgraph where
+  __ := PartialOrder.lift _ verts_spanningCoe_injective
+  le x y := x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
+
 instance distribLattice : DistribLattice G.Subgraph :=
-  { show DistribLattice G.Subgraph from
-      verts_spanningCoe_injective.distribLattice _
-        (fun _ _ => rfl) fun _ _ => rfl with
-    le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
+  verts_spanningCoe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
