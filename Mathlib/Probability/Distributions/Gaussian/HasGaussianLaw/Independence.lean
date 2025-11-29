@@ -36,15 +36,15 @@ namespace ContinuousLinearMap
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
   {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
-  (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ)
+  {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
 
-#count_heartbeats in
 /-- Given `L i : (E i)' × (E i)' → ℝ` a family of continuous bilinear forms,
 `diagonalStrongDual L` is a continuous bilinear form is the continuous bilinear form over
 `(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
 `∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`. -/
 noncomputable
-def diagonalStrongDual : StrongDual ℝ (Π i, E i) →L[ℝ] StrongDual ℝ (Π i, E i) →L[ℝ] ℝ :=
+def diagonalStrongDual (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ) :
+    StrongDual ℝ (Π i, E i) →L[ℝ] StrongDual ℝ (Π i, E i) →L[ℝ] ℝ :=
   letI g : LinearMap.BilinForm ℝ (StrongDual ℝ (Π i, E i)) := LinearMap.mk₂ ℝ
     (fun x y ↦ ∑ i, L i (x ∘L (single ℝ E i)) (y ∘L (single ℝ E i)))
     (fun x y z ↦ by simp [Finset.sum_add_distrib])
@@ -85,12 +85,15 @@ namespace ProbabilityTheory
 section Pi
 
 variable {ι : Type*} [Fintype ι] {E : ι → Type*}
-  [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)]
+  [∀ i, NormedAddCommGroup (E i)] [∀ i, MeasurableSpace (E i)]
   [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
-  {X : Π i, Ω → (E i)}
+
+section NormedSpace
+
+variable [∀ i, NormedSpace ℝ (E i)] {X : Π i, Ω → (E i)}
 
 open ContinuousLinearMap in
-lemma iIndepFun.hasGaussianLaw  (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndepFun X P) :
+lemma iIndepFun.hasGaussianLaw (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndepFun X P) :
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
   isGaussian_map := by
     have := hX.isProbabilityMeasure
@@ -111,10 +114,7 @@ lemma iIndepFun.hasGaussianLaw  (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndep
     · exact (h i).integrable
 
 open ContinuousLinearMap in
-lemma HasGaussianLaw.iIndepFun_of_cov {E : ι → Type*}
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)]
-    [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
-    {X : Π i, Ω → (E i)} (h : HasGaussianLaw (fun ω i ↦ X i ω) P)
+lemma HasGaussianLaw.iIndepFun_of_cov (h : HasGaussianLaw (fun ω i ↦ X i ω) P)
     (h' : ∀ i j, i ≠ j → ∀ (L₁ : StrongDual ℝ (E i)) (L₂ : StrongDual ℝ (E j)),
       cov[L₁ ∘ (X i), L₂ ∘ (X j); P] = 0) :
     iIndepFun X P := by
