@@ -298,7 +298,7 @@ theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.ma
   | nil => rfl
   | cons _ w => by
     rw [mapToSubgraph, Walk.map, map_map]
-    exact congr_arg₂ _ rfl w.map_mapToSubgraph_hom
+    exact congrArg₂ _ rfl w.map_mapToSubgraph_hom
 
 /-- Mapping a walk to its own subgraph and then to `G[s]` where `s` contains the walk's support is
 the same as inducing the walk to `s`. -/
