@@ -292,14 +292,19 @@ theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 -- This works generally to prove inequalities between numeric cardinals.
 theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
 
-theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
-    ∃ s : Finset α, n ≤ s.card := by
+theorem exists_finset_eq_card {α} {n : ℕ} (h : n ≤ #α) :
+    ∃ s : Finset α, n = s.card := by
   obtain hα|hα := finite_or_infinite α
   · let hα := Fintype.ofFinite α
-    use Finset.univ
-    simpa only [mk_fintype, Nat.cast_le] using h
+    obtain ⟨t, -, rfl⟩ := @Finset.exists_subset_card_eq α .univ n <| by simpa using h
+    exact ⟨t, rfl⟩
   · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, hs.ge⟩
+    exact ⟨s, hs.symm⟩
+
+theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card :=
+  have ⟨s, eq⟩ := exists_finset_eq_card h
+  ⟨s, eq.le⟩
 
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
   contrapose! H
