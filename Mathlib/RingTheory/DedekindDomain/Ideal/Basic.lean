@@ -167,7 +167,7 @@ theorem dimensionLEOne : DimensionLEOne A := by
   obtain ⟨z, hzM, hzp⟩ := SetLike.exists_of_lt hM
   -- We have `z * y ∈ M * (M⁻¹ * P) = P`.
   have zy_mem := mul_mem_mul (mem_coeIdeal_of_mem A⁰ hzM) hx
-  rw [← RingHom.map_mul, ← mul_assoc, mul_inv_cancel₀ M'_ne, one_mul] at zy_mem
+  rw [← map_mul, ← mul_assoc, mul_inv_cancel₀ M'_ne, one_mul] at zy_mem
   obtain ⟨zy, hzy, zy_eq⟩ := (mem_coeIdeal A⁰).mp zy_mem
   rw [IsFractionRing.injective A (FractionRing A) zy_eq] at hzy
   -- But `P` is a prime ideal, so `z ∉ P` implies `y ∈ P`, as desired.
@@ -259,18 +259,18 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
   · exact coeIdeal_ne_zero.mpr hI0.ne'
   · rintro y₀ hy₀
     obtain ⟨y, h_Iy, rfl⟩ := (mem_coeIdeal _).mp hy₀
-    rw [mul_comm, ← mul_assoc, ← RingHom.map_mul]
+    rw [mul_comm, ← mul_assoc, ← map_mul]
     have h_yb : y * b ∈ J := by
       apply hle
       rw [Multiset.prod_cons]
       exact Submodule.smul_mem_smul h_Iy hbZ
     rw [Ideal.mem_span_singleton'] at h_yb
     rcases h_yb with ⟨c, hc⟩
-    rw [← hc, RingHom.map_mul, mul_assoc, mul_inv_cancel₀ hnz_fa, mul_one]
+    rw [← hc, map_mul, mul_assoc, mul_inv_cancel₀ hnz_fa, mul_one]
     apply coe_mem_one
   · refine mt (mem_one_iff _).mp ?_
     rintro ⟨x', h₂_abs⟩
-    rw [← div_eq_mul_inv, eq_div_iff_mul_eq hnz_fa, ← RingHom.map_mul] at h₂_abs
+    rw [← div_eq_mul_inv, eq_div_iff_mul_eq hnz_fa, ← map_mul] at h₂_abs
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
@@ -412,7 +412,7 @@ open FractionalIdeal Ideal
 
 noncomputable instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
   { Function.Injective.cancelCommMonoidWithZero (coeIdealHom A⁰ (FractionRing A)) coeIdeal_injective
-    (RingHom.map_zero _) (RingHom.map_one _) (RingHom.map_mul _) (RingHom.map_pow _) with }
+    (map_zero _) (map_one _) (map_mul _) (map_pow _) with }
 
 instance Ideal.isDomain : IsDomain (Ideal A) where
 

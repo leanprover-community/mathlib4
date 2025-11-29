@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Presheaf
 /-!
 
@@ -275,11 +275,14 @@ hypothesis, where that prefunctor the central hypothesis is conjugated by the is
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
+-- TODO: fix non-terminal simp (acting on two goals, with different large simp sets)
+set_option linter.flexible false in
 /-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
     (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
-  simp [oneTruncation₂]
+  simp only [oneTruncation₂, ReflQuiv.of_val, toNerve₂.mk'_app, toNerve₂.mk.app_zero, Cat.of_α,
+    toNerve₂.mk.app_one, Nat.reduceAdd, Fin.isValue]
   refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
   · exact ComposableArrows.ext₀ rfl
   · exact ComposableArrows.ext₀ rfl
@@ -299,24 +302,9 @@ end
 underlying refl prefunctors. -/
 theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
-  have eq₀ (x : X _⦋0⦌₂) : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
   have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
     congr((($hyp).map ⟨x, rfl, rfl⟩).1)
-  ext ⟨⟨n, hn⟩⟩ x
-  induction n using SimplexCategory.rec with | _ n
-  match n with
-  | 0 => apply eq₀
-  | 1 => apply eq₁
-  | 2 =>
-    apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
-    · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
-      refine congr(($(F.naturality pt.op) x).obj 0).symm.trans ?_
-      refine .trans ?_ congr(($(G.naturality pt.op) x).obj 0)
-      exact congr($(eq₀ _).obj 0)
-    · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
-      have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)
-      have h2 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (G.naturality (op ar)) x)
-      exact h1.symm.trans <| .trans (congr_arg_heq (fun x => x.map' 0 1) (eq₁ _)) h2
+  exact IsStrictSegal.hom_ext eq₁
 
 /-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.app (X : SSet.Truncated.{u} 2) :
@@ -416,6 +404,8 @@ instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful :=
   Functor.Faithful.of_comp_iso
     (G := oneTruncation₂) (H := ReflQuiv.forget) OneTruncation₂.ofNerve₂.natIso
 
+-- TODO: fix non-terminal simp (large simp sets)
+set_option linter.flexible false in
 instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
   map_surjective := by
     intro X Y F
@@ -465,7 +455,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         simp [uF', nerveFunctor₂, SSet.truncation, ReflQuiv.comp_eq_comp, uF, Fhk] <;>
         [let ι := ι0₂; let ι := ι1₂; let ι := ι2₂] <;>
       · replace := congr_arg (·.obj 0) (congr_fun (F.naturality ι.op) hk)
-        dsimp [oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,
+        dsimp [nerve_map, oneTruncation₂, ComposableArrows.left, SimplicialObject.truncation,
           nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂] at this ⊢
         convert this.symm
         apply ComposableArrows.ext₀; rfl

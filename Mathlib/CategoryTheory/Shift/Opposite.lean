@@ -146,7 +146,7 @@ variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
 The functor `F.op`, seen as a functor from `OppositeShift C A` to `OppositeShift D A`.
 (We will use this to carry a `CommShift` instance for the naive shifts on the opposite category.
 Then, in the pretriangulated case, we will be able to put a `CommShift` instance on `F.op`
-for the modified shifts and not deal with instance clashes.
+for the modified shifts and not deal with instance clashes.)
 -/
 def OppositeShift.functor : OppositeShift C A ⥤ OppositeShift D A := F.op
 

@@ -5,7 +5,7 @@ Authors: Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
