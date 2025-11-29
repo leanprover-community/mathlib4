@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 In this file, we define the de Rham period ring \(\mathbb{B}_dR^+\) and
 the de Rham ring \(\mathbb{B}_dR\). We define a generalized version of
 these period rings following Scholze. When `R` is the ring of integers
-of `ℂ_p`, they coincide with the classical de Rham period rings.
+of `ℂₚ` (`PadicComplexInt`), they coincide with the classical de Rham period rings.
 
 ## Main definitions
 
@@ -27,8 +27,7 @@ of `ℂ_p`, they coincide with the classical de Rham period rings.
 
 1. Extend the θ map to \(\mathbb{B}_dR^+\)
 2. Show that \(\mathbb{B}_dR^+\) is a discrete valuation ring.
-3. Show that ker θ is principal when the base ring is
-integral perfectoid.
+3. Show that ker θ is principal when the base ring is integral perfectoid.
 
 Currently, the period ring `BDeRhamPlus` takes the ring of integers `R` as the input.
 After the perfectoid theory is developed, we can modify it to

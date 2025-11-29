@@ -98,9 +98,9 @@ theorem ghostComponentModPPow_map_mk (n : ℕ) (x : 𝕎 R) :
   RingHom.liftOfSurjective_comp_apply ..
 
 @[simp]
-theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (R ⧸ 𝔭))
-    (h : 𝔭 ^ (0 + 1) = 𝔭) : quotEquivOfEq h (ghostComponentModPPow 0 x) = ghostComponent 0 x := by
-  choose y hy using map_surjective _ Ideal.Quotient.mk_surjective x
+theorem quotEquivOfEq_ghostComponentModPPow (x : 𝕎 (R ⧸ 𝔭)) (h : 𝔭 ^ (0 + 1) = 𝔭) :
+    quotEquivOfEq h (ghostComponentModPPow 0 x) = ghostComponent 0 x := by
+  obtain ⟨y, hy⟩ := map_surjective _ Ideal.Quotient.mk_surjective x
   simp [← hy, ghostComponent_apply]
 
 variable [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
@@ -117,7 +117,7 @@ variable (R p) in
 /--
 The Fontaine's theta map modulo `p^(n+1)`.
 It is the composition of the following ring homomorphisms.
-`𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/p) --gh_n-> O/p^(n+1)`
+`𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/p) --gh_n-> R/p^(n+1)`
 -/
 def fontaineThetaModPPow (n : ℕ) : 𝕎 R♭ →+* R ⧸ 𝔭 ^ (n + 1) :=
   (ghostComponentModPPow n).comp (((WittVector.map (Perfection.coeff _ p 0))).comp
@@ -133,22 +133,22 @@ theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
   apply eq_of_apply_teichmuller_eq ((factorPowSucc _ _).comp (fontaineThetaModPPow R p (n + 1)))
     (fontaineThetaModPPow R p n)
   · use n + 1
-    have : (p : (R ⧸ 𝔭 ^ (n + 1))) = Ideal.Quotient.mk (𝔭 ^ (n + 1)) (p : R) := by
+    have : p = Ideal.Quotient.mk (𝔭 ^ (n + 1)) p := by
       simp [map_natCast]
     rw [this, ← map_pow, Ideal.Quotient.eq_zero_iff_mem]
     exact Ideal.pow_mem_pow (mem_span_singleton_self _) _
   simp [PreTilt, fontaineThetaModPPow]
 
 theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 R♭) :
-    (factorPowSucc _ _) ((fontaineThetaModPPow R p (n + 1)) x) = fontaineThetaModPPow R p n x := by
+    factorPowSucc _ _ ((fontaineThetaModPPow R p (n + 1)) x) = fontaineThetaModPPow R p n x := by
   simp [← factorPowSucc_comp_fontaineThetaModPPow n]
 
 open IsAdicComplete
 
 variable (R p) in
 /--
-The Fontaine's θ map from `𝕎 R♭` to `O`.
-It is the limit of the ring maps `fontaineThetaModPPow n` from `𝕎 R♭` `O/p^(n+1)`.
+The Fontaine's θ map from `𝕎 R♭` to `R`.
+It is the limit of the ring maps `fontaineThetaModPPow n` from `𝕎 R♭` to `R/p^(n+1)`.
 -/
 def fontaineTheta : 𝕎 R♭ →+* R :=
   Order.succ_strictMono.liftRingHom 𝔭 _ (factorPowSucc_comp_fontaineThetaModPPow _)
