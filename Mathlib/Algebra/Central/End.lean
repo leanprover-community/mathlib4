@@ -31,6 +31,6 @@ public instance Algebra.IsCentral.end : IsCentral R (End R M) where
 
 /-- An Azumaya algebra is a central algebra. -/
 public instance Algebra.IsCentral.azumaya {A : Type*} [Semiring A] [Algebra R A]
-    [IsAzumaya R A] [Module.Free R A] [FaithfulSMul R Aᵐᵒᵖ] : IsCentral R A :=
-  have := of_algEquiv R _ _ (AlgEquiv.ofBijective (AlgHom.mulLeftRight R A) IsAzumaya.bij).symm
+    [IsAzumaya R A] [Free R A] [FaithfulSMul R Aᵐᵒᵖ] : IsCentral R A :=
+  have := of_algEquiv R _ _ (AlgEquiv.ofBijective (.mulLeftRight R A) IsAzumaya.bij).symm
   left_of_tensor R A Aᵐᵒᵖ <| FaithfulSMul.algebraMap_injective _ _
