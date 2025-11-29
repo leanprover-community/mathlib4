@@ -456,13 +456,12 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
 
 /-- If a non-zero polynomial splits, then it has no repeated roots on that field
 if and only if it is separable. -/
-theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : (f.map (RingHom.id F)).Splits) :
+theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
     f.roots.Nodup ↔ f.Separable := by
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf h (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.splits_of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -471,7 +470,6 @@ if and only if it is separable. -/
 @[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : (f.map (algebraMap F K)).Splits) : (f.aroots K).Nodup ↔ f.Separable := by
-  rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
   rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
@@ -497,7 +495,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     · apply Finset.mem_mk.mpr
       · rw [mem_roots (show h.map i ≠ 0 from map_ne_zero h_ne_zero)]
         rw [IsRoot.def, ← eval₂_eq_eval_map, eval₂_hom, h_root]
-        exact RingHom.map_zero i
+        exact map_zero i
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
 
@@ -505,9 +503,9 @@ theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f)
     (sp : Splits (f.map i)) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
   classical
-  obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
+  obtain ⟨s, h⟩ := splits_iff_exists_multiset.1 sp
   use s.toFinset
-  rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq]
+  rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq, leadingCoeff_map]
   apply nodup_of_separable_prod
   apply Separable.of_mul_right
   rw [← h]
@@ -586,12 +584,23 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
-variable {L} in
-lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
-    (H : IsSeparable F x) : IsSeparable F (f x) := by
-  rwa [IsSeparable, minpoly.algHom_eq _ hf]
+variable {L}
 
-variable {E : Type*}
+lemma isSeparable_map_iff [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L)
+    (hf : Function.Injective f) : IsSeparable F (f x) ↔ IsSeparable F x := by
+  simp_rw [IsSeparable, minpoly.algHom_eq _ hf]
+
+lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
+    (H : IsSeparable F x) : IsSeparable F (f x) :=
+  (isSeparable_map_iff f hf).mpr H
+
+lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
+    Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
+  simp_rw [Algebra.isSeparable_def, Subtype.forall,
+    ← isSeparable_map_iff S.val Subtype.val_injective]
+  rfl
+
+variable (L) {E : Type*}
 
 section AlgEquiv
 

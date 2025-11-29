@@ -151,11 +151,11 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
     rw [hb', zero_pow hn] at hb
     exact ha' hb.symm
   let s := ((X ^ n - C a).map i).roots
-  have hs : _ = _ * (s.map _).prod := eq_prod_roots_of_splits h
-  rw [leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
+  have hs : _ = _ * (s.map _).prod := h.eq_prod_roots
+  rw [leadingCoeff_map, leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
   have hs' : Multiset.card s = n := (natDegree_eq_card_roots h).symm.trans natDegree_X_pow_sub_C
   apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
-  rw [leadingCoeff_X_pow_sub_one hn', RingHom.map_one, C_1, one_mul, Multiset.map_map]
+  rw [leadingCoeff_X_pow_sub_one hn', map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
     rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
   have key1 : (X ^ n - 1 : F[X]).map i = C (i a⁻¹) * ((X ^ n - C a).map i).comp (C b * X) := by
@@ -181,8 +181,9 @@ theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).
   · exact gal_X_pow_sub_one_isSolvable n
   · rw [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C]
     apply gal_X_pow_sub_C_isSolvable_aux
+    rw [map_id]
     have key := SplittingField.splits (X ^ n - 1 : F[X])
-    rwa [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, map_X,
+    rwa [Polynomial.map_sub, Polynomial.map_pow, map_X,
       Polynomial.map_one] at key
 
 end GalXPowSubC
@@ -205,11 +206,11 @@ def solvableByRad : IntermediateField F E where
   carrier := IsSolvableByRad F
   zero_mem' := by
     change IsSolvableByRad F 0
-    convert IsSolvableByRad.base (E := E) (0 : F); rw [RingHom.map_zero]
+    convert IsSolvableByRad.base (E := E) (0 : F); rw [map_zero]
   add_mem' := by apply IsSolvableByRad.add
   one_mem' := by
     change IsSolvableByRad F 1
-    convert IsSolvableByRad.base (E := E) (1 : F); rw [RingHom.map_one]
+    convert IsSolvableByRad.base (E := E) (1 : F); rw [map_one]
   mul_mem' := by apply IsSolvableByRad.mul
   inv_mem' := IsSolvableByRad.inv
   algebraMap_mem' := IsSolvableByRad.base
@@ -281,11 +282,11 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
     · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
     · exact hn (by rw [← @natDegree_C F, ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
-  · exact ⟨splits_of_splits_of_dvd _ hp (SplittingField.splits (p.comp (X ^ n)))
-      (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval]))⟩
+  · exact ⟨(SplittingField.splits (p.comp (X ^ n))).splits_of_dvd (map_ne_zero hp)
+      ((map_dvd_map' _).mpr (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval])))⟩
   · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα ?_
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [natDegree_X_pow])
-    · obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).1 (SplittingField.splits p)
+    · obtain ⟨s, hs⟩ := splits_iff_exists_multiset.1 (SplittingField.splits p)
       rw [map_comp, Polynomial.map_pow, map_X, hs, mul_comp, C_comp]
       apply gal_mul_isSolvable (gal_C_isSolvable _)
       rw [multiset_prod_comp]
@@ -304,9 +305,9 @@ open IntermediateField
 theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
   let p := minpoly F α
   let q := minpoly F β
-  have hpq := Polynomial.splits_of_splits_mul _
-    (mul_ne_zero (minpoly.ne_zero (isIntegral α)) (minpoly.ne_zero (isIntegral β)))
-    (SplittingField.splits (p * q))
+  have hpq := SplittingField.splits (p * q)
+  rw [Polynomial.map_mul, splits_mul_iff (map_ne_zero (minpoly.ne_zero (isIntegral α)))
+    (map_ne_zero (minpoly.ne_zero (isIntegral β)))] at hpq
   let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
       intro x hx

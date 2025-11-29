@@ -149,23 +149,25 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   constructor
   · rintro ⟨i, _, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
-  intro hia
+  rintro ⟨hi₀, hia⟩
   have hn := Int.emod_add_mul_ediv n a
   obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
-    · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
-      refine hn.symm.le.trans (add_le_add_right ?_ _)
-      simpa only [zero_add] using add_le_add hia.left (Int.emod_lt_of_pos n ha).le
-    · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
-      rw [mul_add, mul_one, ← add_assoc, hn]
-    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
+    · calc
+        n = 0 + n % a + a * (n / a) := by simp [hn]
+        _ ≤ i + a + a * (n / a) := by gcongr; exact (Int.emod_lt_of_pos n ha).le
+        _ = i + a * (n / a + 1) := by grind
+    · calc
+        i + a * (n / a + 1) < n % a + a * (n / a + 1) := by gcongr
+        _ = n + a := by rw [mul_add, mul_one, ← add_assoc, hn]
+    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hi₀ hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · exact hn.symm.le.trans (add_le_add_right hi _)
+    · exact hn.symm.le.trans (add_le_add_left hi _)
     · rw [add_comm n a]
-      refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
+      refine add_lt_add_of_lt_of_le hia (le_trans ?_ hn.le)
       simp only [le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
-    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
+    · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hi₀ hia]
 
 end Int
 
