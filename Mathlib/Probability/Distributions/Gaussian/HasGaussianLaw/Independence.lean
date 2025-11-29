@@ -36,18 +36,20 @@ section Diagonal
 
 namespace ContinuousLinearMap
 
+section Pi
+
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
   {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
   {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
 
 /-- Given `L i : (E i)' × (E i)' → ℝ` a family of continuous bilinear forms,
-`diagonalStrongDual L` is a continuous bilinear form is the continuous bilinear form over
+`diagonalStrongDualPi L` is a continuous bilinear form is the continuous bilinear form over
 `(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
 `∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`.
 
 This is an implementation detail used in `iIndepFun.hasGaussianLaw`. -/
 noncomputable
-def diagonalStrongDual (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ) :
+def diagonalStrongDualPi (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ) :
     StrongDual ℝ (Π i, E i) →L[ℝ] StrongDual ℝ (Π i, E i) →L[ℝ] ℝ :=
   letI g : LinearMap.BilinForm ℝ (StrongDual ℝ (Π i, E i)) := LinearMap.mk₂ ℝ
     (fun x y ↦ ∑ i, L i (x ∘L (single ℝ E i)) (y ∘L (single ℝ E i)))
@@ -63,6 +65,55 @@ def diagonalStrongDual (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDu
     grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_single_le_one]
     simp
 
+lemma diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
+    diagonalStrongDualPi L x y = ∑ i, L i (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
+
+lemma toBilinForm_diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
+    (diagonalStrongDualPi L).toBilinForm x y =
+    ∑ i, (L i).toBilinForm (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
+
+lemma isPosSemidef_diagonalStrongDualPi (hL : ∀ i, (L i).toBilinForm.IsPosSemidef) :
+    (diagonalStrongDualPi L).toBilinForm.IsPosSemidef where
+  eq x y := by
+    simp_rw [toBilinForm_diagonalStrongDualPi_apply, fun i ↦ (hL i).eq]
+  nonneg x := by
+    rw [toBilinForm_diagonalStrongDualPi_apply]
+    exact sum_nonneg fun i _ ↦ (hL i).nonneg _
+
+end Pi
+
+section Prod
+
+variable {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {L₁ : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ}
+  {L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ}
+
+/-- Given `L₁ : E' × E' → ℝ` and `L₂ : F' × F' → ℝ` two continuous bilinear forms,
+`diagonalStrongDualProd L` is a continuous bilinear form is the continuous bilinear form over
+`(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
+`∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`.
+
+This is an implementation detail used in `IndepFun.hasGaussianLaw`. -/
+noncomputable
+def diagonalStrongDualProd
+    (L₁ : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ)
+    (L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ) :
+    StrongDual ℝ (E × F) →L[ℝ] StrongDual ℝ (E × F) →L[ℝ] ℝ :=
+  letI g : LinearMap.BilinForm ℝ (StrongDual ℝ (E × F)) := LinearMap.mk₂ ℝ
+    (fun x y ↦ L₁ (x ∘L (inl ℝ E F)) (y ∘L (inl ℝ E F)) + L₂ (x ∘L (inr ℝ E F)) (y ∘L (inr ℝ E F)))
+    (fun x y z ↦ by simp [add_add_add_comm])
+    (fun c m n ↦ by simp [mul_add])
+    (fun x y z ↦ by simp [add_add_add_comm])
+    (fun c m n ↦ by simp [mul_add])
+  LinearMap.mkContinuous₂ g (‖L₁‖ + ‖L₂‖) <| by
+    intro x y
+    simp only [LinearMap.mk₂_apply, g]
+    grw [norm_add_le, add_mul, add_mul]
+    gcongr
+    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inl_le_one]
+      simp
+
 lemma diagonalStrongDual_apply (x y : StrongDual ℝ (Π i, E i)) :
     diagonalStrongDual L x y = ∑ i, L i (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
 
@@ -77,6 +128,8 @@ lemma isPosSemidef_diagonalStrongDual (hL : ∀ i, (L i).toBilinForm.IsPosSemide
   nonneg x := by
     rw [toBilinForm_diagonalStrongDual_apply]
     exact sum_nonneg fun i _ ↦ (hL i).nonneg _
+
+end Pi
 
 end ContinuousLinearMap
 
@@ -289,7 +342,15 @@ section AddSub
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [SecondCountableTopology E]
 
-lemma iIndepFun.hasGaussianLaw_sum
+lemma iIndepFun.hasGaussianLaw_sum [CompleteSpace E] {ι : Type*} [Fintype ι] {X : ι → Ω → E}
+    (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iIndepFun X P) :
+    HasGaussianLaw (∑ i, X i) P :=
+  (hX2.hasGaussianLaw hX1).sum
+
+lemma iIndepFun.hasGaussianLaw_add [CompleteSpace E] {X Y : Ω → E}
+    (hX : HasGaussianLaw X P) (hY : HasGaussianLaw Y P) (h : X ⟂ᵢ[P] Y) :
+    HasGaussianLaw (X + Y) P :=
+  (h.hasGaussianLaw hX1).sum
 
 /-- If `X` and `Y` are two Gaussian random variables such that `X` and `Y - X` are independent,
 then `Y - X` is Gaussian. -/
