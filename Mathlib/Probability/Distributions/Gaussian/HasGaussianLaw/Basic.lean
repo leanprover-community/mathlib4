@@ -14,12 +14,7 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 /-!
 # Gaussian random variables
 
-In this file we define a predicate `HasGaussianLaw X P`, which states that under the probability
-measure `P`, the random variable `X` has a Gaussian distribution, i.e. `IsGaussian (P.map X)`.
-
-## Main definition
-
-* `HasGaussianLaw X P`: The random variable `X` has a Gaussian distribution under the measure `P`.
+In this file we prove basic properties of Gaussian random variables.
 
 ## Tags
 
