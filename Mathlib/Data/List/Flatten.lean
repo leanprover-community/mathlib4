@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 module
 
+public import Mathlib.Data.List.Induction
 public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Util.AssertExists
 
@@ -45,5 +46,16 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
 theorem append_flatten_map_append (L : List (List α)) (x : List α) :
     x ++ (L.map (· ++ x)).flatten = (L.map (x ++ ·)).flatten ++ x := by
   induction L with grind
+
+theorem head_flatten_of_head_ne_nil {l : List (List α)} (hl : l ≠ []) (hl' : l.head hl ≠ []) :
+    l.flatten.head (flatten_ne_nil_iff.2 ⟨_, head_mem hl, hl'⟩) =
+      (l.head hl).head hl' := by
+  cases l with grind
+
+theorem getLast_flatten_of_getLast_ne_nil {l : List (List α)} (hl : l ≠ [])
+    (hl' : l.getLast hl ≠ []) :
+    l.flatten.getLast (flatten_ne_nil_iff.2 ⟨_, getLast_mem hl, hl'⟩) =
+      (l.getLast hl).getLast hl' := by
+  cases l using reverseRecOn with grind
 
 end List
