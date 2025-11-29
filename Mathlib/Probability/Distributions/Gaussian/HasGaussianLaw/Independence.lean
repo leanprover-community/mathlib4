@@ -38,7 +38,7 @@ We also prove that independent Gaussian random variables are jointly Gaussian.
 Gaussian random variable
 -/
 
-open MeasureTheory WithLp Complex Finset ContinuousLinearMap
+open MeasureTheory WithLp Complex Finset ContinuousLinearMap InnerProductSpace
 open scoped ENNReal NNReal RealInnerProductSpace
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
@@ -168,24 +168,24 @@ section NormedSpace
 variable [∀ i, NormedSpace ℝ (E i)] {X : Π i, Ω → (E i)}
 
 /-- Independent Gaussian random variables are jointly Gaussian. -/
-lemma iIndepFun.hasGaussianLaw (h : ∀ i, HasGaussianLaw (X i) P) (hX : iIndepFun X P) :
+lemma iIndepFun.hasGaussianLaw (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iIndepFun X P) :
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
   isGaussian_map := by
-    have := hX.isProbabilityMeasure
+    have := hX2.isProbabilityMeasure
     rw [isGaussian_iff_gaussian_charFunDual]
     classical
     refine ⟨fun i ↦ ∫ x, x ∂P.map (X i),
       .diagonalStrongDualPi (fun i ↦ covarianceBilinDual (P.map (X i))),
       isPosSemidef_diagonalStrongDualPi (fun _ ↦ isPosSemidef_covarianceBilinDual), fun L ↦ ?_⟩
-    rw [(iIndepFun_iff_charFunDual_pi (by fun_prop)).1 hX]
+    rw [(iIndepFun_iff_charFunDual_pi (by fun_prop)).1 hX2]
     simp only [← LinearMap.sum_single_apply E (fun i ↦ ∫ x, x ∂P.map (X i)), map_sum, ofReal_sum,
       sum_mul, diagonalStrongDualPi_apply, sum_div, ← sum_sub_distrib, exp_sum]
     congr with i
-    rw [(h i).isGaussian_map.charFunDual_eq, integral_complex_ofReal, integral_comp_id_comm,
+    rw [(hX1 i).isGaussian_map.charFunDual_eq, integral_complex_ofReal, integral_comp_id_comm,
       covarianceBilinDual_self_eq_variance]
     · rfl
-    · exact (h i).isGaussian_map.memLp_two_id
-    · exact (h i).isGaussian_map.integrable_id
+    · exact (hX1 i).isGaussian_map.memLp_two_id
+    · exact (hX1 i).isGaussian_map.integrable_id
 
 /-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if they are
 uncorrelated. -/
@@ -225,8 +225,8 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_inner
     (h : ∀ i j, i ≠ j → ∀ (x : E i) (y : E j),
       cov[fun ω ↦ ⟪x, X i ω⟫, fun ω ↦ ⟪y, X j ω⟫; P] = 0) :
     iIndepFun X P :=
-  hX.iIndepFun_of_covariance_strongDual fun i j hij _ _ ↦ by
-    simpa [← InnerProductSpace.inner_toDual_symm_eq_self] using h i j hij ..
+  hX.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ by
+    simpa using h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
 
 end InnerProductSpace
 
@@ -236,10 +236,10 @@ section Real
 if for all $i_1 \ne i_2 \in \iota$ and for all $j_1 \in \kappa_{i_1}, j_2 \in \kappa_{i_2}$,
 $\mathrm{Cov}(X_{i_1, j_1}, X_{i_2, j_2}) = 0$. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fintype (κ i)]
-    {X : (i : ι) → κ i → Ω → ℝ} (h : HasGaussianLaw (fun ω i j ↦ X i j ω) P)
-    (h' : ∀ i j, i ≠ j → ∀ k l, cov[X i k, X j l; P] = 0) :
+    {X : (i : ι) → κ i → Ω → ℝ} (hX : HasGaussianLaw (fun ω i j ↦ X i j ω) P)
+    (h : ∀ i j, i ≠ j → ∀ k l, cov[X i k, X j l; P] = 0) :
     iIndepFun (fun i ω j ↦ X i j ω) P := by
-  have := h.isProbabilityMeasure
+  have := hX.isProbabilityMeasure
   have : (fun i ω j ↦ X i j ω) = fun i ↦ (ofLp ∘ (toLp 2 ∘ fun ω j ↦ X i j ω)) := by ext; simp
   rw [this]
   refine iIndepFun.comp (HasGaussianLaw.iIndepFun_of_covariance_inner ?_ fun i j hij x y ↦ ?_) _
@@ -249,29 +249,29 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fi
         map_add' x y := by ext; simp
         map_smul' m x := by ext; simp
         cont := by fun_prop }
-    exact h.map L
+    exact hX.map L
   rw [← (EuclideanSpace.basisFun _ _).sum_repr x, ← (EuclideanSpace.basisFun _ _).sum_repr y]
   simp_rw [sum_inner, inner_smul_left]
   rw [covariance_fun_sum_fun_sum]
   · simp only [EuclideanSpace.basisFun_repr, conj_trivial, Function.comp_apply,
       EuclideanSpace.basisFun_inner]
     refine sum_eq_zero fun k _ ↦ sum_eq_zero fun l _ ↦ ?_
-    rw [covariance_const_mul_left, covariance_const_mul_right, h' i j hij k l, mul_zero, mul_zero]
+    rw [covariance_const_mul_left, covariance_const_mul_right, h i j hij k l, mul_zero, mul_zero]
   · simp only [EuclideanSpace.basisFun_repr, conj_trivial, Function.comp_apply,
       EuclideanSpace.basisFun_inner]
-    exact fun j ↦ ((h.eval i).eval j).memLp_two.const_mul _
+    exact fun j ↦ ((hX.eval i).eval j).memLp_two.const_mul _
   · simp only [EuclideanSpace.basisFun_repr, conj_trivial, Function.comp_apply,
       EuclideanSpace.basisFun_inner]
-    exact fun i ↦ ((h.eval j).eval i).memLp_two.const_mul _
+    exact fun i ↦ ((hX.eval j).eval i).memLp_two.const_mul _
 
 /-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if for all $i \ne j$,
 \mathrm{Cov}(X_i, X_j) = 0$. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_eq_zero {X : ι → Ω → ℝ}
-    (h1 : HasGaussianLaw (fun ω ↦ (X · ω)) P) (h2 : ∀ i j : ι, i ≠ j → cov[X i, X j; P] = 0) :
-    iIndepFun X P := by
-  refine h1.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ ?_
-  simp [← InnerProductSpace.inner_toDual_symm_eq_self, Function.comp_def,
-    covariance_mul_const_right, covariance_mul_const_left, h2, hij]
+    (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (h : ∀ i j : ι, i ≠ j → cov[X i, X j; P] = 0) :
+    iIndepFun X P :=
+  hX.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ by
+    simp [Function.comp_def, ← toDual_symm_apply, covariance_mul_const_right,
+      covariance_mul_const_left, h, hij]
 
 end Real
 
@@ -317,39 +317,40 @@ lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω �
 
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if they are uncorrelated. -/
 lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [NormedSpace ℝ F]
-    {X : Ω → E} {Y : Ω → F} (h : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
-    (h' : ∀ (L₁ : StrongDual ℝ E) (L₂ : StrongDual ℝ F), cov[L₁ ∘ X, L₂ ∘ Y; P] = 0) :
+    {X : Ω → E} {Y : Ω → F} (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
+    (h : ∀ (L₁ : StrongDual ℝ E) (L₂ : StrongDual ℝ F), cov[L₁ ∘ X, L₂ ∘ Y; P] = 0) :
     IndepFun X Y P := by
-  have := h.isProbabilityMeasure
-  rw [indepFun_iff_charFunDual_prod h.fst.aemeasurable h.snd.aemeasurable]
+  have := hXY.isProbabilityMeasure
+  rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
     ext; simp [- coe_comp', ← comp_inl_add_comp_inr]
-  rw [h.charFunDual_map_eq, h.fst.charFunDual_map_eq, h.snd.charFunDual_map_eq, ← exp_add,
+  rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
-    variance_add, h', mul_zero, add_zero]
+    variance_add, h, mul_zero, add_zero]
   · rfl
-  · exact (h.fst.map _).memLp_two
-  · exact (h.snd.map _).memLp_two
-  · exact (h.fst.map _).integrable
-  · exact (h.snd.map _).integrable
+  · exact (hXY.fst.map _).memLp_two
+  · exact (hXY.snd.map _).memLp_two
+  · exact (hXY.fst.map _).integrable
+  · exact (hXY.snd.map _).integrable
 
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if they are uncorrelated. -/
 lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
-    {X : Ω → E} {Y : Ω → F} (h : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
-    (h' : ∀ x y, cov[fun ω ↦ ⟪x, X ω⟫, fun ω ↦ ⟪y, Y ω⟫; P] = 0) :
+    {X : Ω → E} {Y : Ω → F} (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P)
+    (h : ∀ x y, cov[fun ω ↦ ⟪x, X ω⟫, fun ω ↦ ⟪y, Y ω⟫; P] = 0) :
     IndepFun X Y P :=
-  h.indepFun_of_covariance_strongDual fun _ _ ↦ by
-    simpa [← InnerProductSpace.inner_toDual_symm_eq_self] using h' ..
+  hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
+    simpa using h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
 
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,
 $\mathrm{Cov}(X_i, Y_j) = 0$. -/
 lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Fintype ι] [Fintype κ]
-    {X : ι → Ω → ℝ} {Y : κ → Ω → ℝ} (h : HasGaussianLaw (fun ω ↦ (fun i ↦ X i ω, fun j ↦ Y j ω)) P)
-    (h' : ∀ i j, cov[X i, Y j; P] = 0) :
+    {X : ι → Ω → ℝ} {Y : κ → Ω → ℝ}
+    (hXY : HasGaussianLaw (fun ω ↦ (fun i ↦ X i ω, fun j ↦ Y j ω)) P)
+    (h : ∀ i j, cov[X i, Y j; P] = 0) :
     IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) P := by
-  have := h.isProbabilityMeasure
+  have := hXY.isProbabilityMeasure
   have hX : (fun ω i ↦ X i ω) = (ofLp ∘ (toLp 2 ∘ fun ω i ↦ X i ω)) := by ext; simp
   have hY : (fun ω j ↦ Y j ω) = (ofLp ∘ (toLp 2 ∘ fun ω j ↦ Y j ω)) := by ext; simp
   rw [hX, hY]
@@ -360,28 +361,28 @@ lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Fintype ι] [F
           (PiLp.continuousLinearEquiv 2 ℝ (fun _ ↦ ℝ)).symm.toContinuousLinearMap) ∘
           (fun ω ↦ (fun i ↦ X i ω, fun j ↦ Y j ω)) := by ext <;> simp
     rw [this]
-    exact h.map _
+    exact hXY.map _
   rw [← (EuclideanSpace.basisFun _ _).sum_repr x, ← (EuclideanSpace.basisFun _ _).sum_repr y]
   simp_rw [sum_inner, inner_smul_left]
   rw [covariance_fun_sum_fun_sum]
   · simp only [EuclideanSpace.basisFun_repr, conj_trivial, Function.comp_apply,
       EuclideanSpace.basisFun_inner]
     refine sum_eq_zero fun k _ ↦ sum_eq_zero fun l _ ↦ ?_
-    rw [covariance_const_mul_left, covariance_const_mul_right, h', mul_zero, mul_zero]
+    rw [covariance_const_mul_left, covariance_const_mul_right, h, mul_zero, mul_zero]
   · simp only [EuclideanSpace.basisFun_repr, conj_trivial, Function.comp_apply,
     EuclideanSpace.basisFun_inner]
-    exact fun i ↦ (h.fst.eval i).memLp_two.const_mul _
+    exact fun i ↦ (hXY.fst.eval i).memLp_two.const_mul _
   · simp only [EuclideanSpace.basisFun_repr, conj_trivial, Function.comp_apply,
       EuclideanSpace.basisFun_inner]
-    exact fun j ↦ (h.snd.eval j).memLp_two.const_mul _
+    exact fun j ↦ (hXY.snd.eval j).memLp_two.const_mul _
 
 /-- If $(X, Y)$ is Gaussian, then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$. -/
 lemma HasGaussianLaw.indepFun_of_covariance_eq_zero {X Y : Ω → ℝ}
-    (h1 : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) (h2 : cov[X, Y; P] = 0) :
-    IndepFun X Y P := by
-  refine h1.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ ?_
-  simp [← InnerProductSpace.inner_toDual_symm_eq_self, Function.comp_def,
-    covariance_mul_const_right, covariance_mul_const_left, h2]
+    (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) (h : cov[X, Y; P] = 0) :
+    IndepFun X Y P :=
+  hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
+    simp [Function.comp_def, ← toDual_symm_apply, covariance_mul_const_right,
+      covariance_mul_const_left, h]
 
 end IndepFun
 

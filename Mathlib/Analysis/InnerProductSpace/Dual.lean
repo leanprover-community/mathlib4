@@ -186,10 +186,6 @@ theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).s
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
 @[simp]
-lemma inner_toDual_symm_eq_self (L : StrongDual 𝕜 E) :
-  inner 𝕜 ((toDual 𝕜 E).symm L) = L := by ext; simp
-
-@[simp]
 lemma toLinearIsometry_toDual :
     (toDual 𝕜 E).toLinearIsometry = toDualMap 𝕜 E := rfl
 
