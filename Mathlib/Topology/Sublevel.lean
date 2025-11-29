@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Semicontinuous
 
-/-! # Two lemmas about sublevels and semicontinuity related to compactness
+/-! # Two lemmas about sublevel sets and semicontinuity related to compactness
 
 * `Set.isCompact_leSublevelOn`, the sublevels of a lower semicontinuous function
   on a compact set are compact.
@@ -29,7 +29,7 @@ open scoped Set.Notation
 variable {ι α β : Type*} [TopologicalSpace α] {A : Set α}
     [LinearOrder β] {f : ι → α → β}
 
-theorem isCompact_leSublevelOn {f : α → β}
+theorem isCompact_sep_map_le {f : α → β}
     (hfA : LowerSemicontinuousOn f A) (kA : IsCompact A) (b : β) :
     IsCompact ({x ∈ A | f x ≤ b}) := by
   rw [lowerSemicontinuousOn_iff_preimage_Iic] at hfA
@@ -39,7 +39,7 @@ theorem isCompact_leSublevelOn {f : α → β}
     exact kA.inter_right hv
   aesop
 
-theorem inter_leSublevelOn_empty_iff_exists_finset_inter
+theorem biInter_sep_map_le_eq_empty_iff_exists_finset
     (kA : IsCompact A)
     {I : Set ι} (ne_I : I.Nonempty) {b : β}
     (hfi : ∀ i ∈ I, LowerSemicontinuousOn (f i) A) :

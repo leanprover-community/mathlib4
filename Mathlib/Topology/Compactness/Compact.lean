@@ -921,7 +921,7 @@ open scoped Set.Notation in
 /-- An elimination theorem for empty intersections of a family of sets
 in a compact subset which are closed in the compact subset
 but not necessarily in the ambient space. -/
-theorem IsCompact.elim_finite_subfamily_closedOn
+theorem IsCompact.elim_finite_subfamily_isClosed_subtype
     {X : Type*} [TopologicalSpace X] {s : Set X} (ks : IsCompact s)
     {ι : Type*} (t : ι → Set X) {I : Set ι}
     (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
