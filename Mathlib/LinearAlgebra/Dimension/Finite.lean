@@ -99,8 +99,7 @@ theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=
   rank_zero_iff_forall_zero.trans (subsingleton_iff_forall_eq 0).symm
 
 theorem rank_pos_iff_exists_ne_zero : 0 < Module.rank R M ↔ ∃ x : M, x ≠ 0 := by
-  rw [← not_iff_not]
-  simpa using rank_zero_iff_forall_zero
+  contrapose!; rw [nonpos_iff_eq_zero]; exact rank_zero_iff_forall_zero
 
 theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
   rank_pos_iff_exists_ne_zero.trans (nontrivial_iff_exists_ne 0).symm
@@ -464,7 +463,7 @@ theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R 
 lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]
     {S : Submodule R M} [Module.Finite R S] :
     1 ≤ finrank R S ↔ S ≠ ⊥ := by
-  simp [← not_iff_not]
+  contrapose!; rw [Nat.lt_one_iff, finrank_eq_zero]
 
 @[simp]
 theorem Set.finrank_empty [Nontrivial R] :

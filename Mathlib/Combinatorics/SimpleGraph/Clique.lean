@@ -370,7 +370,7 @@ theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGr
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
-  rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
+  contrapose!; exact not_cliqueFree_iff n
 
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :

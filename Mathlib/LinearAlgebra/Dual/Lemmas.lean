@@ -202,8 +202,7 @@ theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=
 
 @[simp]
 theorem nontrivial_dual_iff : Nontrivial (Dual K V) ↔ Nontrivial V := by
-  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
-    subsingleton_dual_iff]
+  contrapose!; exact subsingleton_dual_iff K
 
 instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance

@@ -558,8 +558,7 @@ theorem eq_single_iff_length {n : ℕ} (h : 0 < n) {c : Composition n} :
 
 theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
     c ≠ single n hn ↔ ∀ i, c.blocksFun i < n := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   constructor
   · rintro rfl
     exact ⟨⟨0, by simp⟩, by simp⟩

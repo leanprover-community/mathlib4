@@ -72,8 +72,7 @@ theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     k < (b.digits n).length ↔ b ^ k ≤ n := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   exact digits_length_le_iff hb n
 
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :

@@ -276,9 +276,9 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
   · exact
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
-  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
-  push_neg
-  simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
+  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+  set_option push_neg.use_distrib true in contrapose!
+  simp_rw [not_lt_top_iff, not_bot_lt_iff]
   exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/

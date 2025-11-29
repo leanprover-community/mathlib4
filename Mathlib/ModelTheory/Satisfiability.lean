@@ -373,8 +373,8 @@ theory iff there is a finite subset `T0` of the theory such that `φ` is modeled
 theorem models_iff_finset_models {φ : L.Sentence} :
     T ⊨ᵇ φ ↔ ∃ T0 : Finset L.Sentence, (T0 : L.Theory) ⊆ T ∧ (T0 : L.Theory) ⊨ᵇ φ := by
   simp only [models_iff_not_satisfiable]
-  rw [← not_iff_not, not_not, isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
-  push_neg
+  rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
+  contrapose!
   letI := Classical.decEq (Sentence L)
   constructor
   · intro h T0 hT0

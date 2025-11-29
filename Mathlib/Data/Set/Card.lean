@@ -353,10 +353,10 @@ theorem encard_le_one_iff_subsingleton : s.encard ≤ 1 ↔ s.Subsingleton := by
   tauto
 
 theorem one_lt_encard_iff_nontrivial : 1 < s.encard ↔ s.Nontrivial := by
-  rw [← not_iff_not, not_lt, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton]
+  contrapose!; exact encard_le_one_iff_subsingleton
 
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
-  rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
+  contrapose!; exact encard_le_one_iff
 
 theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b ≠ a := by
   by_contra! h'
