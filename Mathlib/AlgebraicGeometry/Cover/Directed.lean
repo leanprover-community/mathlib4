@@ -162,6 +162,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
       Category.assoc, iso]
     convert P.pullback_fst _ _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
+    infer_instance
 
 end BaseChange
 
