@@ -672,8 +672,8 @@ lemma pullbackSpecIso_inv_fst :
 
 @[reassoc]
 lemma pullbackSpecIso_inv_fst' :
-    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) := by
-  simp [← cancel_epi (pullbackSpecIso R S T).hom]
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) :=
+  pullbackSpecIso_inv_fst ..
 
 /--
 The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
@@ -700,8 +700,8 @@ lemma pullbackSpecIso_hom_fst :
 
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_fst' :
-    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap S _)) = pullback.fst _ _ := by
-  simp [Algebra.TensorProduct.algebraMap_def]
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap S _)) = pullback.fst _ _ :=
+  pullbackSpecIso_hom_fst ..
 
 /--
 The composition of the isomorphism `pullbackSpecIso R S T` (from the pullback of
