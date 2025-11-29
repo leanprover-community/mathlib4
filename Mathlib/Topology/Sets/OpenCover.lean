@@ -63,9 +63,11 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
 
 end IsOpenCover
 
+end TopologicalSpace
+
 section Irreducible
 
-open Function
+open TopologicalSpace Function
 
 /-- (Pre)Irreducibility of an open set can be checked on a cover by opens
 with pairwise non-empty intersections. -/
@@ -102,5 +104,3 @@ theorem PreirreducibleSpace.of_isOpenCover {X ι : Type*} [TopologicalSpace X]
   ⟨IsPreirreducible.of_subset_iUnion hn h' isOpen_univ (by simpa using hU.iSup_set_eq_univ)⟩
 
 end Irreducible
-
-end TopologicalSpace
