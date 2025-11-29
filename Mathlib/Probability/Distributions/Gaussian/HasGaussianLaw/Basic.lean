@@ -8,8 +8,7 @@ module
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.HasLaw
 
-import Mathlib.Probability.Distributions.Gaussian.CharFun
-import Mathlib.Probability.Independence.CharacteristicFunction
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Gaussian random variables
@@ -32,6 +31,8 @@ open scoped ENNReal NNReal
 variable {Ω ι E F : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
 
 public section
+
+open MeasureTheory ENNReal WithLp Complex
 
 namespace ProbabilityTheory
 
@@ -81,9 +82,28 @@ end Basic
 namespace HasGaussianLaw
 
 variable
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
-  (L : E →L[ℝ] F)
+open scoped RealInnerProductSpace in
+lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
+    charFun (P.map X) t = exp (P[fun ω ↦ ⟪t, X ω⟫] * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
+  rw [hX.isGaussian_map.charFun_eq, integral_map hX.aemeasurable (by fun_prop),
+    variance_map (by fun_prop) hX.aemeasurable]
+  rfl
+
+variable [NormedSpace ℝ E]
+
+lemma charFunDual_map_eq (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
+    charFunDual (P.map X) L = exp (P[L ∘ X] * I - Var[L ∘ X; P] / 2) := by
+  rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
+    variance_map (by fun_prop) hX.aemeasurable]
+  rfl
+
+lemma charFunDual_map_eq_fun (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
+    charFunDual (P.map X) L = exp ((∫ ω, L (X ω) ∂P : ℂ) * I - Var[fun ω ↦ L (X ω); P] / 2) := by
+  rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
+    variance_map (by fun_prop) hX.aemeasurable]
+  rfl
 
 /-- A Gaussian random variable has moments of all orders. -/
 lemma memLp [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P)
@@ -100,22 +120,20 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
     Integrable X P :=
   memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
 
-lemma map (hX : HasGaussianLaw X P) : HasGaussianLaw (L ∘ X) P where
+lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P where
   isGaussian_map := by
     have := hX.isGaussian_map
     rw [← AEMeasurable.map_map_of_aemeasurable]
     · infer_instance
     all_goals fun_prop (disch := assumption)
 
-lemma map_fun (hX : HasGaussianLaw X P) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
+lemma map_fun (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
   hX.map L
 
-variable (L : E ≃L[ℝ] F)
-
-lemma map_equiv (hX : HasGaussianLaw X P) : HasGaussianLaw (L ∘ X) P :=
+lemma map_equiv (hX : HasGaussianLaw X P) (L : E ≃L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map L.toContinuousLinearMap
 
-lemma map_equiv_fun (hX : HasGaussianLaw X P) :
+lemma map_equiv_fun (hX : HasGaussianLaw X P) (L : E ≃L[ℝ] F) :
     HasGaussianLaw (fun ω ↦ L (X ω)) P := hX.map_equiv L
 
 section SpecificMaps
