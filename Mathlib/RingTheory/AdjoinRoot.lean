@@ -466,7 +466,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
   .ofAlgHom
     (mapAlgHom f p q h.symm.dvd)
     (mapAlgHom f.symm q p <| by
-      -- FIXME: Coercion hell
+      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/pull/21031
       have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
           (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
@@ -477,7 +477,7 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
 
 @[simp] lemma symm_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
     (mapAlgEquiv f p q h).symm = mapAlgEquiv f.symm q p (by
-      -- FIXME: Coercion hell
+      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/pull/21031
       have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
           (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
