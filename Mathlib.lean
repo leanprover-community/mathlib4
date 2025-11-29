@@ -3859,6 +3859,7 @@ public import Mathlib.Data.Real.Pi.Wallis
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.StandardPart
 public import Mathlib.Data.Real.Star
 public import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Data.Rel
