@@ -80,7 +80,6 @@ lemma mapMatrixModule_id :
     LinearMap.id.mapMatrixModule ι = .id (R := Matrix ι ι R) (M := ι → M) := by
   ext; simp
 
-@[simp]
 lemma mapMatrixModule_id_apply (v : ι → M) :
     LinearMap.id.mapMatrixModule ι (R := R) v = v := by
   simp
