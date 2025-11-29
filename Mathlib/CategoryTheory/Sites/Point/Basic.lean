@@ -39,7 +39,7 @@ In particular, the fiber of a presheaf identifies to the fiber of
 its associated sheaf.
 
 We show that both `Φ.presheafFiber` and `Φ.sheafFiber`
-commute to finite limits and to arbitrary colimits.
+commute with finite limits and with arbitrary colimits.
 
 -/
 
