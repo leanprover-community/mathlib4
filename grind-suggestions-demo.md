@@ -229,7 +229,7 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
 
 Follow these steps for each example:
 
-1. **Open the file in VS Code:** `code <filepath>`
+1. **Open the file in VS Code at the right line:** `code -g <filepath>:<line>`
 2. **Make the edit:** Replace the original proof with `grind? +suggestions`
 3. **Wait for diagnostics** to show the suggestions
 4. **Apply the simplest suggestion** (usually the one without `#xxxx` references)
