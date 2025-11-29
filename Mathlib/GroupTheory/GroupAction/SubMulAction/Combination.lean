@@ -276,9 +276,8 @@ theorem compl_compl :
 
 theorem compl_bijective :
     Function.Bijective (compl G α hm) :=
-  let e : _ ≃ _ := ⟨compl G α hm, compl G α (n.add_comm m ▸ hm),
-    fun _ ↦ congr($(compl_compl G α _) _), fun _ ↦ congr($(compl_compl G α _) _)⟩
-  e.bijective
+  Function.bijective_iff_has_inverse.mpr ⟨compl G α ((n.add_comm m).trans hm),
+    DFunLike.ext_iff.mp (compl_compl G α hm), DFunLike.ext_iff.mp (compl_compl G α _)⟩
 
 end
 
