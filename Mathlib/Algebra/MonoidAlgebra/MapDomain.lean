@@ -30,21 +30,31 @@ variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
 /-- Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/
-@[to_additive /--
+@[to_additive (attr := simps) /--
 Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/]
-abbrev mapDomain (f : M → N) (v : MonoidAlgebra R M) : MonoidAlgebra R N := Finsupp.mapDomain f v
+def mapDomain (f : M → N) (x : MonoidAlgebra R M) : MonoidAlgebra R N :=
+  .ofCoeff <| Finsupp.mapDomain f x.coeff
+
+@[to_additive (attr := simp)]
+lemma mapDomain_zero (f : M → N) : mapDomain f (0 : MonoidAlgebra R M) = 0 := by ext; simp
 
 @[to_additive]
-lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → MonoidAlgebra R M) :
-    mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
+lemma mapDomain_add (f : M → N) (x y : MonoidAlgebra R M) :
+    mapDomain f (x + y) = mapDomain f x + mapDomain f y := by
+  ext; simp [Finsupp.mapDomain_add]
 
 @[to_additive]
-lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := Finsupp.mapDomain_single
+lemma mapDomain_sum (f : M → N) (s : M →₀ S) (v : M → S → MonoidAlgebra R M) :
+    mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := by
+  ext; simp [Finsupp.mapDomain_sum]
+
+@[to_additive (relevant_arg := M) (attr := simp)]
+lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; simp
 
 @[to_additive]
 lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
-  Finsupp.mapDomain_injective hf
+  ofCoeff_injective.comp <| (Finsupp.mapDomain_injective hf).comp coeff_injective
 
 @[to_additive (dont_translate := R) (attr := simp) mapDomain_one]
 theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F M N] (f : F) :
@@ -66,7 +76,9 @@ If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `Finsupp.mapDomain f` is a ring homomorphism between their monoid algebras. -/]
 def mapDomainRingHom {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     MonoidAlgebra R M →+* MonoidAlgebra R N where
-  __ : MonoidAlgebra R M →+ MonoidAlgebra R N := Finsupp.mapDomain.addMonoidHom f
+  toFun := mapDomain f
+  map_zero' := mapDomain_zero _
+  map_add' := mapDomain_add _
   map_one' := mapDomain_one f
   map_mul' := mapDomain_mul f
 
