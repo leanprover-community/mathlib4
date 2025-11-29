@@ -50,8 +50,6 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ := h
-instance (α : Type*) [h : Inhabited α] : Inhabited αᵒᵈ := h
 instance (α : Type*) [h : Nontrivial α] : Nontrivial αᵒᵈ := h
 instance (α : Type*) [h : Unique α] : Unique αᵒᵈ := h
 
