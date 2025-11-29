@@ -92,6 +92,33 @@ theorem splits_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
     Splits f :=
   splits_of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
 
+theorem _root_.IsUnit.splits [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Splits f :=
+  splits_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
+
+@[deprecated (since := "2025-11-27")]
+alias splits_of_isUnit := IsUnit.splits
+
+theorem splits_of_natDegree_le_one_of_invertible {f : R[X]}
+    (hf : f.natDegree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits := by
+  obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hf
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
+  · replace h : Invertible a := by simpa [leadingCoeff, ha] using h
+    rw [← mul_invOf_cancel_left a b, C_mul, ← mul_add]
+    exact (Splits.C a).mul (Splits.X_add_C _)
+
+theorem splits_of_degree_le_one_of_invertible {f : R[X]}
+    (hf : f.degree ≤ 1) (h : Invertible f.leadingCoeff) : f.Splits :=
+  splits_of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hf) h
+
+theorem splits_of_natDegree_le_one_of_monic {f : R[X]} (hf : f.natDegree ≤ 1) (h : Monic f) :
+    f.Splits :=
+  splits_of_natDegree_le_one_of_invertible hf (h.leadingCoeff ▸ invertibleOne)
+
+theorem splits_of_degree_le_one_of_monic {f : R[X]} (hf : f.degree ≤ 1) (h : Monic f) :
+    f.Splits :=
+  splits_of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hf) h
+
 end Semiring
 
 section CommSemiring
@@ -146,6 +173,35 @@ theorem Splits.natDegree_le_one_of_irreducible {f : R[X]} (hf : Splits f)
     grw [hm, this, natDegree_mul_le]
     simp
 
+theorem Splits.comp_of_natDegree_le_one_of_invertible {f g : R[X]} (hf : f.Splits)
+    (hg : g.natDegree ≤ 1) (h : Invertible g.leadingCoeff) : (f.comp g).Splits := by
+  rcases lt_or_eq_of_le hg with hg | hg
+  · rw [eq_C_of_natDegree_eq_zero (Nat.lt_one_iff.mp hg)]
+    simp
+  obtain ⟨m, hm⟩ := splits_iff_exists_multiset'.mp hf
+  rw [hm, mul_comp, C_comp, multiset_prod_comp]
+  refine (Splits.C _).mul (multisetProd ?_)
+  simp only [Multiset.mem_map]
+  rintro - ⟨-, ⟨a, -, rfl⟩, rfl⟩
+  apply splits_of_natDegree_le_one_of_invertible (by simpa)
+  rw [leadingCoeff, hg] at h
+  simpa [leadingCoeff, hg]
+
+theorem Splits.comp_of_degree_le_one_of_invertible {f g : R[X]} (hf : f.Splits)
+    (hg : g.degree ≤ 1) (h : Invertible g.leadingCoeff) : (f.comp g).Splits :=
+  hf.comp_of_natDegree_le_one_of_invertible (natDegree_le_of_degree_le hg) h
+
+theorem Splits.comp_of_natDegree_le_one_of_monic {f g : R[X]} (hf : f.Splits)
+    (hg : g.natDegree ≤ 1) (h : Monic g) : (f.comp g).Splits :=
+  hf.comp_of_natDegree_le_one_of_invertible hg (h.leadingCoeff ▸ invertibleOne)
+
+theorem Splits.comp_of_degree_le_one_of_monic {f g : R[X]} (hf : f.Splits)
+    (hg : g.degree ≤ 1) (h : Monic g) : (f.comp g).Splits :=
+  hf.comp_of_natDegree_le_one_of_monic (natDegree_le_of_degree_le hg) h
+
+theorem Splits.comp_X_add_C {f : R[X]} (hf : f.Splits) (a : R) : (f.comp (X + C a)).Splits :=
+  hf.comp_of_natDegree_le_one_of_monic (natDegree_add_C.trans_le natDegree_X_le) (monic_X_add_C a)
+
 end CommSemiring
 
 section Ring
@@ -194,6 +250,9 @@ theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
     contradiction
   obtain ⟨m, rfl⟩ := Multiset.exists_cons_of_mem ha
   exact ⟨a, hm ▸ by simp⟩
+
+theorem Splits.comp_X_sub_C {f : R[X]} (hf : f.Splits) (a : R) : (f.comp (X - C a)).Splits :=
+  hf.comp_of_natDegree_le_one_of_monic (natDegree_sub_C.trans_le natDegree_X_le) (monic_X_sub_C a)
 
 variable [IsDomain R]
 
@@ -249,15 +308,18 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     have := ih (by aesop) hg₀ (f * g) rfl  (splits_X_sub_C_mul_iff.mp h) hn
     aesop
 
-theorem Splits.of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
+theorem Splits.splits_of_dvd (hg : Splits g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Splits f := by
   obtain ⟨g, rfl⟩ := hfg
   exact ((splits_mul_iff (by aesop) (by aesop)).mp hg).1
+
+@[deprecated (since := "2025-11-27")]
+alias Splits.of_dvd := Splits.splits_of_dvd
 
 -- Todo: Remove or fix name once `Splits` is gone.
 theorem Splits.splits (hf : Splits f) :
     f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
   or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
-    (hf.of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
+    (hf.splits_of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
 
 lemma map_sub_sprod_roots_eq_prod_map_eval
     (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Splits) :
@@ -304,6 +366,33 @@ section Field
 
 variable [Field R]
 
+theorem Splits.comp_of_natDegree_le_one {f g : R[X]} (hf : f.Splits) (hg : g.natDegree ≤ 1) :
+    (f.comp g).Splits := by
+  rcases eq_or_ne g 0 with rfl | hg0
+  · simp
+  · exact Splits.comp_of_natDegree_le_one_of_invertible hf hg
+      (invertibleOfNonzero (leadingCoeff_ne_zero.mpr hg0))
+
+theorem Splits.comp_of_degree_le_one {f g : R[X]} (hf : f.Splits) (hg : g.degree ≤ 1) :
+    (f.comp g).Splits :=
+  hf.comp_of_natDegree_le_one (natDegree_le_of_degree_le hg)
+
+theorem splits_iff_comp_splits_of_natDegree_eq_one {f g : R[X]} (hg : g.natDegree = 1) :
+    f.Splits ↔ (f.comp g).Splits := by
+  refine ⟨fun hf ↦ hf.comp_of_natDegree_le_one hg.le, fun hf ↦ ?_⟩
+  obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hg.le
+  have ha : a ≠ 0 := by contrapose! hg; simp [hg]
+  have : f = (f.comp (C a * X + C b)).comp ((C a⁻¹ * (X - C b))) := by
+    simp only [comp_assoc, add_comp, mul_comp, C_comp, X_comp]
+    rw [← mul_assoc, ← C_mul, mul_inv_cancel₀ ha, C_1, one_mul, sub_add_cancel, comp_X]
+  rw [this]
+  refine Splits.comp_of_natDegree_le_one hf ?_
+  rw [natDegree_C_mul (mt inv_eq_zero.mp ha), natDegree_X_sub_C]
+
+theorem splits_iff_comp_splits_of_degree_eq_one {f g : R[X]} (hg : g.degree = 1) :
+    f.Splits ↔ (f.comp g).Splits :=
+  splits_iff_comp_splits_of_natDegree_eq_one (natDegree_eq_of_degree_eq_some hg)
+
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name.
 theorem splits_iff_splits {f : R[X]} :
@@ -317,8 +406,7 @@ theorem splits_iff_splits {f : R[X]} :
   · simp [hf0]
   obtain ⟨u, hu⟩ := factors_prod hf0
   rw [← hu]
-  refine (Splits.multisetProd fun g hg ↦ ?_).mul
-    (splits_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit u.isUnit))
+  refine (Splits.multisetProd fun g hg ↦ ?_).mul u.isUnit.splits
   exact Splits.of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
 
 end Field
