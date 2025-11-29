@@ -117,6 +117,7 @@ end LinearOrder
 section OrderedMonoid
 variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
+set_option linter.flexible false in -- simp followed by gcongr
 instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
