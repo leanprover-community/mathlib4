@@ -23,9 +23,6 @@ open Lean Elab Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-
 @[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 

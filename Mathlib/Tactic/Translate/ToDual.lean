@@ -31,9 +31,6 @@ open Lean Meta Elab Command Std Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
-
 @[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
