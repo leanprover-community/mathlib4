@@ -76,7 +76,7 @@ theorem WithBot.coe_iInf [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)
 theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
   refine le_antisymm (by simpa using fun _ ↦ biInf_le _) <|
-    (le_iInf_iff.mpr (fun i ↦ ?_)).trans_eq (WithBot.coe_iInf _ (OrderBot.bddBelow _)).symm
+    (le_iInf_iff.mpr fun i ↦ ?_).trans_eq (WithBot.coe_iInf _ (OrderBot.bddBelow _)).symm
   by_cases h : i ∈ s
   · simpa only [iInf_pos h] using by apply biInf_le _ h
   · simp [iInf_neg h]
