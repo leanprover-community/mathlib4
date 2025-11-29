@@ -714,6 +714,7 @@ theorem neg_one_mul {R} [CommRing R] {a b : R} (_ : (Int.negOfNat (nat_lit 1)).r
 theorem neg_mul {R} [CommRing R] (a₁ : R) (a₂) {a₃ b : R}
     (_ : -a₃ = b) : -(a₁ ^ a₂ * a₃) = a₁ ^ a₂ * b := by subst_vars; simp
 
+attribute [-instance] NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring in
 /-- Negates a monomial `va` to get another monomial.
 
 * `-c = (-c)` (for `c` coefficient)
@@ -762,6 +763,7 @@ def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum sα a) :
 theorem sub_pf {R} [CommRing R] {a b c d : R}
     (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
 
+attribute [-instance] NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring in
 /-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a - b = a + -b`
@@ -1147,6 +1149,7 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
   let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
   pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
+attribute [-instance] NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring in
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
 * `c⁻¹ = (c⁻¹)` if `c` is a constant
@@ -1195,6 +1198,7 @@ theorem div_pf {R} [Semifield R] {a b c d : R}
     (_ : b⁻¹ = c) (_ : a * c = d) : a / b = d := by
   subst_vars; simp [div_eq_mul_inv]
 
+attribute [-instance] NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring in
 /-- Divides two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a / b = a * b⁻¹`
