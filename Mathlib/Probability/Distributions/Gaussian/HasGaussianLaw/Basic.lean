@@ -25,20 +25,18 @@ measure `P`, the random variable `X` has a Gaussian distribution, i.e. `IsGaussi
 Gaussian random variable
 -/
 
-open MeasureTheory WithLp Complex Finset
-open scoped ENNReal NNReal
-
-variable {Ω ι E F : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → E}
-
 public section
 
 open MeasureTheory ENNReal WithLp Complex
 
 namespace ProbabilityTheory
 
+variable {Ω E F ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+
 section Basic
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableSpace E]
+  {X Y : Ω → E}
 
 /-- The predicate `HasGaussianLaw X P` means that under the measure `P`,
 `X` has a Gaussian distribution. -/
@@ -46,7 +44,7 @@ variable [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableS
 structure HasGaussianLaw (X : Ω → E) (P : Measure Ω) : Prop where
   protected isGaussian_map : IsGaussian (P.map X)
 
-lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : ∀ᵐ ω ∂P, X ω = Y ω) :
+lemma HasGaussianLaw.congr {Y : Ω → E} (hX : HasGaussianLaw X P) (h : X =ᵐ[P] Y) :
     HasGaussianLaw Y P where
   isGaussian_map := by
     rw [← Measure.map_congr h]
@@ -81,9 +79,8 @@ end Basic
 
 namespace HasGaussianLaw
 
-variable
-  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
+
 open scoped RealInnerProductSpace in
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
     charFun (P.map X) t = exp (P[fun ω ↦ ⟪t, X ω⟫] * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
@@ -119,6 +116,8 @@ lemma memLp_two [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianL
 lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
     Integrable X P :=
   memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
+
+variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P where
   isGaussian_map := by
