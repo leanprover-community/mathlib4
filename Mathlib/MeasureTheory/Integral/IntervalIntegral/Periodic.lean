@@ -36,7 +36,7 @@ open scoped MeasureTheory NNReal ENNReal
 ## Measures and integrability on ℝ and on the circle
 -/
 
-@[measurability]
+@[fun_prop]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
