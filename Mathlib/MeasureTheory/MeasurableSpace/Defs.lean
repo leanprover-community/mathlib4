@@ -253,7 +253,6 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 
 @[measurability]

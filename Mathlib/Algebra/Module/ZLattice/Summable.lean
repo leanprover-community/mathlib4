@@ -168,6 +168,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
+set_option linter.flexible false in -- simp followed by positivity
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
@@ -219,8 +220,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
     refine hr.le.trans ?_
-    norm_num
-    exact Nat.one_le_iff_ne_zero.mpr hd
+    simpa [Nat.one_le_iff_ne_zero]
 
 /--
 Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that `d < r`.
@@ -257,7 +257,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
   have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
     L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
-  refine ((Metric.finite_isBounded_inter_isClosed
+  refine ((Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
     (Metric.isBounded_closedBall (x := (0 : E)) (r := 2 * ‖x‖)) H).preimage_embedding
     (.subtype _)).subset ?_
   intro t ht
