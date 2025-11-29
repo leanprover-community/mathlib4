@@ -232,13 +232,7 @@ lemma isPullback_iff :
     let φ : X₁ ⟶ PullbackObj r b := fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_fun w x₁⟩
     have hφ : IsIso φ := by
       rw [isIso_iff_bijective]
-      constructor
-      · intro x₁ y₁ h
-        rw [Subtype.ext_iff, Prod.ext_iff] at h
-        exact h₁ _ _ h
-      · rintro ⟨⟨x₂, x₃⟩, h⟩
-        obtain ⟨x₁, rfl, rfl⟩ := h₂ x₂ x₃ h
-        exact ⟨x₁, rfl⟩
+      grind [Function.Bijective, Function.Injective, Function.Surjective]
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩
 end
