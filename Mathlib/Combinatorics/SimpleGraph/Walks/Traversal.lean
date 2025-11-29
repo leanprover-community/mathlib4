@@ -193,21 +193,16 @@ theorem lastDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.lengt
   simp (disch := grind) [Dart.ext_iff, lastDart_toProd, darts_getElem_eq_getVert,
     p.getVert_of_length_le]
 
-theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil = p.darts.head
-    (p.darts.ne_nil_of_length_pos <|
-      p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm) :=
-  have darts_pos := p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm
-  p.firstDart_eq hnil darts_pos |>.trans <| List.getElem_zero_eq_head darts_pos
+theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
+    p.firstDart hnil = p.darts.head (by grind [length_darts, not_nil_iff_lt_length]) := by
+  grind [firstDart_eq]
 
 theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
   p.firstDart_eq_head_darts _ ▸ List.head_mem _
 
 theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
-    p.lastDart hnil = p.darts.getLast (p.darts.ne_nil_of_length_pos <|
-      p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm) :=
-  have darts_pos := p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_darts.symm
-  p.lastDart_eq hnil darts_pos |>.trans <|
-    List.getElem_length_sub_one_eq_getLast <| Nat.sub_one_lt_of_lt darts_pos
+    p.lastDart hnil = p.darts.getLast (by grind [length_darts, not_nil_iff_lt_length]) := by
+  grind [lastDart_eq, length_darts, not_nil_iff_lt_length]
 
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=
   p.lastDart_eq_getLast_darts _ ▸ List.getLast_mem _
