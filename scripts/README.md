@@ -145,6 +145,9 @@ to learn about it as well!
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
+**Version tag verification**
+- `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git, GitHub, elan toolchains, and build cache.
+
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`
   Prints information on certain kind of technical debt in Mathlib.
