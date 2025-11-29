@@ -50,8 +50,9 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
-  h
+instance (α : Type*) [h : Inhabited α] : Inhabited αᵒᵈ := h
+instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ := h
+instance (α : Type*) [h : Unique α] : Unique αᵒᵈ := h
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=
@@ -172,14 +173,12 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b := by simp
 instance (α : Type*) [BEq α] : BEq (Lex α) where
   beq a b := ofLex a == ofLex b
 
-instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Lex α) :=
-  inferInstanceAs (LawfulBEq α)
+instance (α : Type*) [BEq α] [h : LawfulBEq α] : LawfulBEq (Lex α) := h
+instance (α : Type*) [h : DecidableEq α] : DecidableEq (Lex α) := h
 
-instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
-  inferInstanceAs (DecidableEq α)
-
-instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
-  inferInstanceAs (Inhabited α)
+instance (α : Type*) [h : Inhabited α] : Inhabited (Lex α) := h
+instance (α : Type*) [h : Nonempty α] : Nonempty (Lex α) := h
+instance (α : Type*) [h : Unique α] : Unique (Lex α) := h
 
 instance {α γ} [H : CoeFun α γ] : CoeFun (Lex α) γ where
   coe f := H.coe (ofLex f)
@@ -231,14 +230,12 @@ theorem ofColex_inj {a b : Colex α} : ofColex a = ofColex b ↔ a = b := by sim
 instance (α : Type*) [BEq α] : BEq (Colex α) where
   beq a b := ofColex a == ofColex b
 
-instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Colex α) :=
-  inferInstanceAs (LawfulBEq α)
+instance (α : Type*) [BEq α] [h : LawfulBEq α] : LawfulBEq (Colex α) := h
+instance (α : Type*) [h : DecidableEq α] : DecidableEq (Colex α) := h
 
-instance (α : Type*) [DecidableEq α] : DecidableEq (Colex α) :=
-  inferInstanceAs (DecidableEq α)
-
-instance (α : Type*) [Inhabited α] : Inhabited (Colex α) :=
-  inferInstanceAs (Inhabited α)
+instance (α : Type*) [h : Inhabited α] : Inhabited (Colex α) := h
+instance (α : Type*) [h : Nonempty α] : Nonempty (Colex α) := h
+instance (α : Type*) [h : Unique α] : Unique (Colex α) := h
 
 instance {α γ} [H : CoeFun α γ] : CoeFun (Colex α) γ where
   coe f := H.coe (ofColex f)
