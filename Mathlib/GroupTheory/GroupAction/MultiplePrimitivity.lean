@@ -49,6 +49,7 @@ section Preprimitive
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 -- Rewriting lemmas for transitivity or primitivity
+
 @[to_additive]
 theorem isPreprimitive_of_fixingSubgroup_empty_iff :
     IsPreprimitive ↥(fixingSubgroup G (∅ : Set α))
@@ -91,9 +92,13 @@ class _root_.AddAction.IsMultiplyPreprimitive
 
 /-- A group action is `n`-multiply preprimitive if it is `n`-multiply
 transitive and if, when `n ≥ 1`, for every set `s` of cardinality
-n - 1, the action of `fixingSubgroup M s` on the complement of `s`
+`n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
-@[mk_iff, to_additive existing]
+@[mk_iff, to_additive existing
+/-- A group action is `n`-multiply preprimitive  if it is `n`-multiply
+transitive and if, when `n ≥ 1`, for every set `s` of cardinality
+`n - 1`, the action of `fixingSubgroup M s` on the complement of `s`
+is preprimitive. -/]
 class IsMultiplyPreprimitive (M α : Type*) [Group M] [MulAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive -/
   isMultiplyPretransitive (M α n) : IsMultiplyPretransitive M α n
@@ -110,13 +115,14 @@ instance (n : ℕ) [IsMultiplyPreprimitive M α n] :
   IsMultiplyPreprimitive.isMultiplyPretransitive M α n
 
 /-- Any action is `0`-preprimitive -/
-@[to_additive]
+@[to_additive /-- Any action is `0`-preprimitive -/]
 theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isMultiplyPretransitive := MulAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
 /-- An action is preprimitive iff it is `1`-preprimitive -/
-@[to_additive]
+@[to_additive
+/-- An action is preprimitive iff it is `1`-preprimitive -/]
 theorem is_one_preprimitive_iff :
     IsMultiplyPreprimitive M α 1 ↔ IsPreprimitive M α := by
   constructor
@@ -137,7 +143,7 @@ theorem is_one_preprimitive_iff :
         simp [← hm, hs]
       exact fun h ↦ by simp [h] at hs
 
-/-- The action of `stabilizer M a` is one-less preprimitive -/
+/-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
@@ -158,9 +164,10 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-/-- A pretransitive action is `n.succ`-preprimitive iff
-  the action of stabilizers is `n`-preprimitive. -/
-@[to_additive]
+/-- A pretransitive action is `n.succ-`preprimitive
+iff the action of stabilizers is `n`-preprimitive. -/
+@[to_additive /-- A pretransitive action is `n.succ-`preprimitive
+iff the action of stabilizers is `n`-preprimitive. -/]
 theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     [IsPretransitive M α] {n : ℕ} (hn : 1 ≤ n) {a : α} :
     IsMultiplyPreprimitive M α n.succ ↔
@@ -208,7 +215,9 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
 
 /-- The fixator of a subset of cardinal `d` in an `n`-primitive action
 acts `n-d`-primitively on the remaining (`d ≤ n`) -/
-@[to_additive]
+@[to_additive
+/-- The fixator of a subset of cardinal `d` in an `n`-primitive action
+acts `n-d`-primitively on the remaining (`d ≤ n`) -/]
 theorem ofFixingSubgroup.isMultiplyPreprimitive
     {m n : ℕ} [IsMultiplyPreprimitive M α n] {s : Set α} [Finite s] (hs : s.ncard + m = n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m where
