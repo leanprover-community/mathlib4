@@ -484,10 +484,10 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
     have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
-    obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).mp hp_sp
+    obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
     have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
       rw [minpoly.monic (hn.isIntegral x), map_one]
-    rw [h_lc, map_one, one_mul] at hs
+    rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
     simp only [spectralNorm]
     rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
     apply ciSup_le
@@ -602,7 +602,7 @@ theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
   set g := IntermediateField.AdjoinSimple.gen K y
   have hy : -y = (algebraMap K⟮y⟯ L) (-g) := rfl
   rw [← spectralNorm.eq_of_normalClosure g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hy,
-    ← spectralNorm.eq_of_normalClosure (-g) hy, RingHom.map_neg,
+    ← spectralNorm.eq_of_normalClosure (-g) hy, map_neg,
     ← spectralAlgNorm_of_finiteDimensional_normal_def]
   exact map_neg_eq_map _ _
 
@@ -953,7 +953,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
 theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
-  have hspl : Splits ((mapAlg K E (minpoly K x)).map (RingHom.id E)) :=
+  have hspl : Splits (mapAlg K E (minpoly K x)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   have : Algebra.IsAlgebraic L E :=
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
