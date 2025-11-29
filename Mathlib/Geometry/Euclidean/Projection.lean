@@ -613,7 +613,7 @@ def orthogonalProjectionSpan {n : ℕ} (s : Simplex ℝ P n) :
   orthogonalProjection (affineSpan ℝ (Set.range s))
 
 lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex ℝ P m} {s₂ : Simplex ℝ P n}
-    {p₁ p₂ : P} (h : Set.range s₁.points = Set.range s₂.points) (hp : p₁ = p₂) :
+    {p₁ p₂ : P} (h : Set.range s₁ = Set.range s₂) (hp : p₁ = p₂) :
     (s₁.orthogonalProjectionSpan p₁ : P) = s₂.orthogonalProjectionSpan p₂ :=
   orthogonalProjection_congr (by rw [h]) hp
 
