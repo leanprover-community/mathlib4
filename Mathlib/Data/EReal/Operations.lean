@@ -751,7 +751,7 @@ lemma mul_ne_top (a b : EReal) :
   rw [ne_eq, mul_eq_top]
   -- push the negation while keeping the disjunctions, that is converting `¬(p ∧ q)` into `¬p ∨ ¬q`
   -- rather than `p → ¬q`, since we already have disjunctions in the rhs
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   rfl
 
 lemma mul_eq_bot (a b : EReal) :
@@ -763,7 +763,7 @@ lemma mul_eq_bot (a b : EReal) :
 lemma mul_ne_bot (a b : EReal) :
     a * b ≠ ⊥ ↔ (a ≠ ⊥ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊤) := by
   rw [ne_eq, mul_eq_bot]
-  set_option push_neg.use_distrib true in push_neg
+  push_neg +distrib
   rfl
 
 /-- `EReal.toENNReal` is multiplicative. For the version with the nonnegativity

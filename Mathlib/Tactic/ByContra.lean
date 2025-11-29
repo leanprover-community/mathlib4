@@ -16,7 +16,8 @@ The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of co
 
 public meta section
 
-open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
+namespace Mathlib.Tactic.ByContra
+open Lean Parser Tactic
 
 /--
 If the target of the main goal is a proposition `p`,
@@ -41,17 +42,28 @@ example : 1 < 2 := by
   -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
-syntax (name := byContra!) "by_contra!" (ppSpace colGt binderIdent)? Term.optType : tactic
+syntax (name := byContra!) "by_contra!" optConfig (ppSpace colGt binderIdent)? Term.optType : tactic
+
+local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
+  Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
+    (failIfUnchanged := false)
+
+local elab "try_push_neg" cfg:optConfig : tactic => do
+  Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
+    (failIfUnchanged := false)
 
 macro_rules
-  | `(tactic| by_contra! $[: $ty]?) =>
-    `(tactic| by_contra! $(mkIdent `this):ident $[: $ty]?)
-  | `(tactic| by_contra! _%$under $[: $ty]?) =>
-    `(tactic| by_contra! $(mkIdentFrom under `this):ident $[: $ty]?)
-  | `(tactic| by_contra! $e:ident) => `(tactic| (by_contra $e:ident; try push_neg at $e:ident))
-  | `(tactic| by_contra! $e:ident : $y) => `(tactic|
-       (by_contra! h
+  | `(tactic| by_contra! $cfg $[: $ty]?) =>
+    `(tactic| by_contra! $cfg $(mkIdent `this):ident $[: $ty]?)
+  | `(tactic| by_contra! $cfg _%$under $[: $ty]?) =>
+    `(tactic| by_contra! $cfg $(mkIdentFrom under `this):ident $[: $ty]?)
+  | `(tactic| by_contra! $cfg $e:ident) =>
+    `(tactic| (by_contra $e:ident; try_push_neg_at $cfg $e:ident))
+  | `(tactic| by_contra! $cfg $e:ident : $y) => `(tactic|
+       (by_contra! $cfg h
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { (try push_neg); exact h }
+        have $e:ident : $y := by { try_push_neg $cfg; exact h }
         clear h))
+
+end Mathlib.Tactic.ByContra

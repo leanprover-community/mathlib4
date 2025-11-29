@@ -98,7 +98,7 @@ theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : F
 @[csimp]
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
-  set_option push_neg.use_distrib true in by_cases! h : 1 < p ∧ 0 < n
+  by_cases! +distrib h : 1 < p ∧ 0 < n
   · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
   · rcases h with (h | h)
