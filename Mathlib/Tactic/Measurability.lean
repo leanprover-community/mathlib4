@@ -62,7 +62,7 @@ with `fun_prop` rather that `measurability`. The `measurability` attribute is eq
 `fun_prop` in these cases for backward compatibility with the earlier implementation.
 -/
 macro "measurability" : tactic =>
-  `(tactic| aesop (config := { terminal := true })
+  `(tactic| aesop (config := { terminal := true, enableSimp := false })
     (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 
 /--

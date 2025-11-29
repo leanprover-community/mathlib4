@@ -126,6 +126,7 @@ theorem monotone_spanningSets (μ : Measure α) [SigmaFinite μ] : Monotone (spa
 lemma spanningSets_mono [SigmaFinite μ] {m n : ℕ} (hmn : m ≤ n) :
     spanningSets μ m ⊆ spanningSets μ n := monotone_spanningSets _ hmn
 
+@[measurability]
 theorem measurableSet_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     MeasurableSet (spanningSets μ i) :=
   MeasurableSet.iUnion fun j => MeasurableSet.iUnion fun _ => μ.toFiniteSpanningSetsIn.set_mem j
