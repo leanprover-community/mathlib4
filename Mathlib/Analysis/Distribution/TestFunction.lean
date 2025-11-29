@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2025 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Luigi Massacci
+Authors: Luigi Massacci, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
@@ -28,6 +29,15 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 - `TestFunction Ω F n`: the type of bundled `n`-times continuously differentiable
   functions `E → F` with compact support contained in `Ω`.
+- `TestFunction.topologicalSpace`: the canonical LF topology on `𝓓^{n}(Ω, F)`. It is the
+  locally convex inductive limit of the topologies on each `𝓓_{K}^{n}(Ω, F)`.
+
+## Main statements
+
+- `TestFunction.continuous_iff_continuous_comp` a linear map from `𝓓^{n}(E, F)`
+  to a locally convex space is continuous iff its restriction to `𝓓^{n}_{K}(E, F)` is
+  continuous for each compact set `K`. We will later translate this concretely in terms
+  of seminorms.
 
 ## Notation
 
@@ -44,14 +54,15 @@ distributions, test function
 @[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
-open scoped BoundedContinuousFunction NNReal Topology
+open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  {n : ℕ∞}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {n k : ℕ∞}
 
-variable (𝕜 Ω F n) in
+variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
 structure TestFunction : Type _ where
   /-- The underlying function. Use coercion instead. -/
@@ -148,6 +159,12 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 
+@[simp]
+theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
+    {tsupport_subset : tsupport f ⊆ Ω} :
+    TestFunction.mk f contDiff hasCompactSupport tsupport_subset = f :=
+  rfl
+
 section AddCommGroup
 
 @[simps -fullyApplied]
@@ -194,6 +211,250 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
     Module R 𝓓^{n}(Ω, F) := fast_instance%
   DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
 
+instance {R S} [Semiring R] [Semiring S] [Module R F] [Module S F] [SMulCommClass ℝ R F]
+    [SMulCommClass ℝ S F] [ContinuousConstSMul R F] [ContinuousConstSMul S F] [SMul R S]
+    [IsScalarTower R S F] :
+    IsScalarTower R S 𝓓^{n}(Ω, F) where
+  smul_assoc _ _ _ := by ext; simp
+
 end Module
+
+open ContDiffMapSupportedIn
+
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` when `K ⊆ Ω`. -/
+@[simps -fullyApplied]
+def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    𝓓^{n}(Ω, F) :=
+  ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
+
+variable (𝕜) in
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
+def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
+  toFun f := ofSupportedIn K_sub_Ω f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
+  rfl
+
+
+variable (𝕜 n k) in
+/-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)` to
+its `i`-th iterated derivative as an element of `𝓓^{k}(Ω, E [×i]→L[ℝ] F)`.
+This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
+
+See `iteratedFDerivLM` for the very common case where everything is infinitely differentiable.
+
+This is subsumed by `iteratedFDerivWithOrderCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def iteratedFDerivWithOrderLM [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
+    𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω, E [×i]→L[ℝ] F) where
+  /-
+  Note: it is tempting to define this as some linear map if `k + i ≤ n`,
+  and the zero map otherwise. However, we would lose the definitional equality between
+  `iteratedFDerivWithOrderLM 𝕜 n k i f` and `iteratedFDerivWithOrderLM ℝ n k i f`.
+
+  This is caused by the fact that the equality `f (if p then x else y) = if p then f x else f y`
+  is not definitional.
+  -/
+  toFun f :=
+    if hi : k + i ≤ n then
+      ⟨iteratedFDeriv ℝ i f, f.contDiff.iteratedFDeriv_right (mod_cast hi),
+        f.hasCompactSupport.iteratedFDeriv _,
+        tsupport_iteratedFDeriv_subset _ |>.trans f.tsupport_subset⟩
+    else 0
+  map_add' f g := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+      ext
+      simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
+    · simp
+  map_smul' c f := by
+    split_ifs with hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+      ext
+      simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
+    · simp
+
+@[simp]
+lemma iteratedFDerivWithOrderLM_apply [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  rw [iteratedFDerivWithOrderLM]
+  split_ifs <;> rfl
+
+lemma iteratedFDerivWithOrderLM_apply_of_le [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F))
+    (hin : k + i ≤ n) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
+  simp [hin]
+
+lemma iteratedFDerivWithOrderLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F))
+    (hin : ¬ (k + i ≤ n)) :
+    iteratedFDerivWithOrderLM 𝕜 n k i f = 0 := by
+  ext : 1
+  simp [hin]
+
+lemma iteratedFDerivWithOrderLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] {i : ℕ} (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivWithOrderLM 𝕜 n k i : 𝓓^{n}(Ω, F) → _)
+      = iteratedFDerivWithOrderLM 𝕜' n k i :=
+  rfl
+
+variable (𝕜) in
+/-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓(Ω, F)` to
+its `i`-th iterated derivative as an element of `𝓓(Ω, E [×i]→L[ℝ] F)`.
+
+See also `iteratedFDerivWithOrderLM` if you need more control on the regularities.
+
+This is subsumed by `iteratedFDerivCLM` (not yet in Mathlib), which also bundles the
+continuity. -/
+noncomputable def iteratedFDerivLM [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
+    𝓓(Ω, F) →ₗ[𝕜] 𝓓(Ω, E [×i]→L[ℝ] F) where
+  toFun f := ⟨iteratedFDeriv ℝ i f, f.contDiff.iteratedFDeriv_right le_rfl,
+      f.hasCompactSupport.iteratedFDeriv _,
+      tsupport_iteratedFDeriv_subset _ |>.trans f.tsupport_subset⟩
+  map_add' f g := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
+    ext
+    simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
+  map_smul' c f := by
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
+    ext
+    simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
+
+@[simp]
+lemma iteratedFDerivLM_apply [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓(Ω, F)) :
+    iteratedFDerivLM 𝕜 i f = iteratedFDeriv ℝ i f :=
+  rfl
+
+/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
+on `ℕ∞`. This means we could have *defined* `iteratedFDerivLM` this way, but we avoid it
+to make sure that `if`s won't appear in the smooth case. -/
+lemma iteratedFDerivLM_eq_withOrder [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
+    (iteratedFDerivLM 𝕜 i : 𝓓(Ω, F) →ₗ[𝕜] _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
+  rfl
+
+lemma iteratedFDerivLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] {i : ℕ} (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivLM 𝕜 i : 𝓓(Ω, F) → _) = iteratedFDerivLM 𝕜' i :=
+  rfl
+
+section Topology
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
+  [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V]
+
+variable (Ω F n) in
+/-- The "original topology" on `𝓓^{n}(Ω, F)`, defined as the supremum over all compacts `K ⊆ Ω` of
+the topology on `𝓓^{n}_{K}(E, F)`. In other words, this topology makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s **in the category of topological spaces**.
+
+Note that this has no reason to be a locally convex (or even vector space) topology. For this
+reason, we actually endow `𝓓^{n}(Ω, F)` with another topology, namely the finest locally convex
+topology which is coarser than this original topology. See `TestFuntion.topologicalSpace`. -/
+noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
+  ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+    coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
+
+variable (Ω F n) in
+/-- The canonical LF topology on `𝓓^{n}(Ω, F)`. This makes `𝓓^{n}(Ω, F)` the inductive
+limit of the `𝓓^{n}_{K}(E, F)`s **in the category of locally convex topological vector spaces**
+(over ℝ). See `TestFunction.continuous_iff_continuous_comp` for the corresponding universal
+property.
+
+More concretely, this is defined as the infimum of *all* locally convex topologies which are
+coarser than the "original topology" `TestFunction.originalTop`, which corresponds to taking
+the inductive limit in the category of topological spaces. -/
+noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
+  sInf {t : TopologicalSpace 𝓓^{n}(Ω, F) | originalTop Ω F n ≤ t ∧
+    @IsTopologicalAddGroup 𝓓^{n}(Ω, F) t _ ∧
+    @ContinuousSMul ℝ 𝓓^{n}(Ω, F) _ _ t ∧
+    @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
+
+noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
+  topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
+
+--TODO: deduce for `RCLike` field `𝕂`
+noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
+  continuousSMul_sInf fun _ ⟨_, _, ht, _⟩ ↦ ht
+
+noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) :=
+  .sInf fun _ ⟨_, _, _, ht⟩ ↦ ht
+
+theorem originalTop_le : originalTop Ω F n ≤ topologicalSpace Ω F n :=
+  le_sInf fun _t ⟨ht, _⟩ ↦ ht
+
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
+  IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
+
+noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
+  isUniformAddGroup_of_addCommGroup
+
+/-- Fix a locally convex topology `t` on `𝓓^{n}(Ω, F)`. `t` is coarser than the canonical topology
+on `𝓓^{n}(Ω, F)` if and only if it is coarser than the "original topology" given by
+`TestFunction.originalTop`. -/
+theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
+    [@IsTopologicalAddGroup _ t _] [@ContinuousSMul ℝ _ _ _ t]
+    [@LocallyConvexSpace ℝ _ _ _ _ _ t] :
+    topologicalSpace Ω F n ≤ t ↔ originalTop Ω F n ≤ t :=
+  ⟨le_trans originalTop_le, fun H ↦ sInf_le ⟨H, inferInstance, inferInstance, inferInstance⟩⟩
+
+/-- For every compact `K ⊆ Ω`, the inclusion map `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
+continuous. It is in fact a topological embedding, though this fact is not in Mathlib yet. -/
+theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    Continuous (ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
+  rw [continuous_iff_coinduced_le]
+  exact le_trans (le_iSup₂_of_le K K_sub_Ω le_rfl) originalTop_le
+
+variable (𝕜) in
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a continuous
+linear map. -/
+def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}(Ω, F) where
+  toLinearMap := ofSupportedInLM 𝕜 K_sub_Ω
+  cont := continuous_ofSupportedIn K_sub_Ω
+
+@[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
+  rfl
+
+/-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
+`𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
+precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
+continuous for every compact `K ⊆ Ω`. -/
+protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+    [Module 𝕜 V] [IsScalarTower ℝ 𝕜 V] (f : 𝓓^{n}(Ω, F) →ₗ[𝕜] V) :
+    Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+      Continuous (f ∘ₗ ofSupportedInLM 𝕜 K_sub_Ω) := by
+  simp_rw [LinearMap.coe_comp, ← f.coe_restrictScalars ℝ, coe_ofSupportedInLM]
+  rw [continuous_iff_le_induced]
+  have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
+    topologicalAddGroup_induced _
+  have : @ContinuousSMul ℝ _ _ _ (induced (f.restrictScalars ℝ) t) := continuousSMul_induced _
+  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced (f.restrictScalars ℝ) t) := .induced _
+  simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
+    continuous_coinduced_dom]
+
+theorem isUniformEmbedding_ofSupportedInCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    IsUniformEmbedding (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
+  let φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] Π i, E →ᵇ E [×i]→L[ℝ] F :=
+  { toFun f i := iteratedFDerivWithOrderLM 𝕜 n 0 i f
+    map_add' _ _ := sorry
+    map_smul' _ _ := sorry }
+  have φ_comp (K' : Compacts E) (K'_sub_Ω : (K' : Set E) ⊆ Ω) :
+      φ ∘ₗ ofSupportedInLM 𝕜 K'_sub_Ω = LinearMap.pi fun i ↦ structureMapLM 𝕜 n i := by
+    ext
+    simp [φ, structureMapLM_apply_withOrder]
+  have φ_cont : Continuous φ := by
+    simp_rw [TestFunction.continuous_iff_continuous_comp, φ_comp]
+    intro K' K'_sub_Ω
+    exact (ContinuousLinearMap.pi fun i ↦ structureMapCLM 𝕜 n i).continuous
+  sorry
+
+end Topology
 
 end TestFunction
