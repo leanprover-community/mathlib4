@@ -535,6 +535,9 @@ theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.un
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
 
+instance diagSet_decidablePred (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagSet α) :=
+  diagSet_eq_setOf_isDiag ▸ IsDiag.decidablePred _
+
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
   have h' := Sym2.other_spec h
