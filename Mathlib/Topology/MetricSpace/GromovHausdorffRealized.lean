@@ -197,17 +197,17 @@ private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
 equicontinuous. Equicontinuity follows from the Lipschitz control, we check closedness. -/
 private theorem closed_candidatesB : IsClosed (candidatesB X Y) := by
   have I1 : ∀ x y, IsClosed { f : Cb X Y | f (inl x, inl y) = dist x y } := fun x y =>
-    isClosed_eq continuous_eval_const continuous_const
+    isClosed_eq (continuous_eval_const _) continuous_const
   have I2 : ∀ x y, IsClosed { f : Cb X Y | f (inr x, inr y) = dist x y } := fun x y =>
-    isClosed_eq continuous_eval_const continuous_const
+    isClosed_eq (continuous_eval_const _) continuous_const
   have I3 : ∀ x y, IsClosed { f : Cb X Y | f (x, y) = f (y, x) } := fun x y =>
-    isClosed_eq continuous_eval_const continuous_eval_const
+    isClosed_eq (continuous_eval_const _) (continuous_eval_const _)
   have I4 : ∀ x y z, IsClosed { f : Cb X Y | f (x, z) ≤ f (x, y) + f (y, z) } := fun x y z =>
-    isClosed_le continuous_eval_const (continuous_eval_const.add continuous_eval_const)
+    isClosed_le (continuous_eval_const _) ((continuous_eval_const _).add (continuous_eval_const _))
   have I5 : ∀ x, IsClosed { f : Cb X Y | f (x, x) = 0 } := fun x =>
-    isClosed_eq continuous_eval_const continuous_const
+    isClosed_eq (continuous_eval_const _) continuous_const
   have I6 : ∀ x y, IsClosed { f : Cb X Y | f (x, y) ≤ maxVar X Y } := fun x y =>
-    isClosed_le continuous_eval_const continuous_const
+    isClosed_le (continuous_eval_const _) continuous_const
   have : candidatesB X Y = (((((⋂ (x) (y), { f : Cb X Y | f (@inl X Y x, @inl X Y y) = dist x y }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (@inr X Y x, @inr X Y y) = dist x y }) ∩
       ⋂ (x) (y), { f : Cb X Y | f (x, y) = f (y, x) }) ∩
