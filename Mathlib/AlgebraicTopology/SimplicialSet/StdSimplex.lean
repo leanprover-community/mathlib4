@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Order.Fin.SuccAboveOrderIso
@@ -311,6 +312,16 @@ def nonDegenerateEquiv {n d : ℕ} :
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
+
+instance (n : ℕ) : (Δ[n] : SSet.{u}).HasDimensionLE n where
+  degenerate_eq_top i hi := by
+    ext x
+    simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
+    by_contra hx
+    have : Mono (objEquiv x) := by rwa [← mem_nonDegenerate_iff_mono]
+    have := SimplexCategory.len_le_of_mono (objEquiv x)
+    dsimp at this
+    cutsat
 
 end stdSimplex
 
