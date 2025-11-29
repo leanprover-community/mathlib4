@@ -50,13 +50,16 @@ instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
 instance [LT ι] [∀ i, LT (α i)] : LT (Colex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· > ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
-theorem lex_lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
+theorem Lex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-theorem colex_lt_iff [LT ι] [∀ i, LT (α i)] {a b : Colex (Π₀ i, α i)} :
+theorem Colex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Colex (Π₀ i, α i)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
+
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff := Lex.lt_iff
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
@@ -135,11 +138,11 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
     · exact h_gt ⟨wit, fun j hj ↦
         notMem_neLocus.mp (Finset.notMem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
-instance Lex.isTotalLE : IsTotal (Lex (Π₀ i, α i)) (· ≤ ·) where
+instance Lex.isTotal_le : IsTotal (Lex (Π₀ i, α i)) (· ≤ ·) where
   total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
 
-instance Colex.isTotalLE : IsTotal (Colex (Π₀ i, α i)) (· ≤ ·) :=
-  Lex.isTotalLE (ι := ιᵒᵈ)
+instance Colex.isTotal_le : IsTotal (Colex (Π₀ i, α i)) (· ≤ ·) :=
+  Lex.isTotal_le (ι := ιᵒᵈ)
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
 instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
