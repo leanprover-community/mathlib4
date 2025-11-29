@@ -27,6 +27,8 @@ Given two pseudofunctors `F` and `G`, we define:
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Pseudofunctor
 
 open Category Bicategory

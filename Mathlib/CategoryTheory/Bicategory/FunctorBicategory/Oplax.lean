@@ -68,16 +68,15 @@ def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
 variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
-@[simps!]
+@[simps! whiskerLeft_app whiskerRight_app associator_hom_app associator_inv_app
+rightUnitor_hom_app rightUnitor_inv_app leftUnitor_hom_app leftUnitor_inv_app]
 scoped instance OplaxFunctor.bicategory : Bicategory (B ⥤ᵒᵖᴸ C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ η := whiskerRight Γ η
   associator {_ _ _} _ := associator
   leftUnitor {_ _} := leftUnitor
   rightUnitor {_ _} := rightUnitor
-  whisker_exchange {a b c f g h i} η θ := by
-    ext
-    exact whisker_exchange _ _
+  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
 end OplaxTrans
 
