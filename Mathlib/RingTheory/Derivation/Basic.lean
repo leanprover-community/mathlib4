@@ -71,6 +71,9 @@ instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
   map_zero D := D.toLinearMap.map_zero
 
+instance : LinearMapClass (Derivation R A M) R A M where
+  map_smulₛₗ D := D.toLinearMap.map_smul
+
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
@@ -109,9 +112,8 @@ protected theorem map_add : D (a + b) = D a + D b :=
 protected theorem map_zero : D 0 = 0 :=
   map_zero D
 
-@[simp]
-theorem map_smul : D (r • a) = r • D a :=
-  D.toLinearMap.map_smul r a
+protected theorem map_smul : D (r • a) = r • D a :=
+  map_smul D r a
 
 @[simp]
 theorem leibniz : D (a * b) = a • D b + b • D a :=
