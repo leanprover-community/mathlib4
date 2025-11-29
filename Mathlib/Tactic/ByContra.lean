@@ -47,6 +47,8 @@ macro_rules
 | `(tactic| by_contra! $[$pat?]? $[: $ty?]?) => do
   let pat ← pat?.getDM `(rcasesPatMed| $(mkIdent `this):ident)
   let replaceTac ← match ty? with
-    | some ty => `(tactic| replace h : $ty := by (try push_neg); exact h)
+    | some ty => `(tactic| replace h : $ty := by (try push_neg); exact h) -- Let `h` have type `ty`.
     | none => `(tactic| skip)
+  -- We have to use `revert h; rintro $pat` instead of `obtain $pat := h`,
+  -- because if `$pat` is a variable, `obtain $pat := h` doesn't do anything.
   `(tactic| (by_contra h; (try push_neg at h); $replaceTac; revert h; rintro ($pat:rcasesPatMed)))
