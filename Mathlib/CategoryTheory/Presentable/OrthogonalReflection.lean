@@ -49,7 +49,7 @@ a regular cardinal) such that the domains and domains of the morphisms
 satisfying `W` are `κ`-presentable :
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
 of the inclusion `W.isLocal ⥤ C`;
-* `MorphismProperty.isLocallyPresentable_isLocal`: the fullsubcategory
+* `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
 `W.isLocal` is locally presentable.
 
 This is essentially the implication (i) → (ii) in Theorem 1.39 (and the corollary 1.40)
