@@ -127,7 +127,7 @@ initialize registerBuiltinAttribute {
   | `(attr| to_app $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "_app" ref stx? fun value levels => do
+    addRelatedDecl src "" "_app" ref stx? fun value levels => do
       let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ← toAppExpr (← toCatExpr value)
