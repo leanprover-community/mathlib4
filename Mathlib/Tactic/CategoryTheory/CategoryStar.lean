@@ -27,7 +27,7 @@ because it makes it easier to specify explicit universes when needed.
 The elaborator `Category*` provides analogous behavior to `Type*` for introducing category
 instances. The term elaborator `Category* C` creates a universe parameter `v`, and places it just
 *before* any universe parameters appearing in `C` and its type. If `C` and its type have no
-parameters, `v` is becomes the last level parameter. The elaborated term is then `Category.{v} C`.
+parameters, `v` becomes the last level parameter. The elaborated term is then `Category.{v} C`.
 
 Basic usage:
 ```lean
@@ -41,8 +41,8 @@ open Lean Meta Elab Term
 Insert `newLevel` immediately after the elements of `levelNames` which are in `us`, or at the
 front of the list (as the most recent level) if there are no such elements.
 -/
-private meta def insertAfterLevels (us : Array Name) (levelNames : List Name) (newLevel : Name) :=
-  match (us.filterMap fun nm => levelNames.findIdx? (· == nm)).max? with
+meta def insertAfterLevels (us : Array Name) (levelNames : List Name) (newLevel : Name) :=
+  match (us.filterMap fun nm => levelNames.idxOf? nm).max? with
   | some idx => levelNames.insertIdx (idx + 1) newLevel
   | none => newLevel :: levelNames
 

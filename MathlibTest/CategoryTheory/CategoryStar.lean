@@ -167,3 +167,21 @@ variable [inst2 : Category* (Type _)]
 #check inst2
 
 end
+
+section
+
+universe w
+
+abbrev TypeWithParam := {n : Nat // ∃ X : Type w, Nonempty (Fin n ≃ X)}
+
+variable [Category* TypeWithParam.{w}]
+
+def ff := TypeWithParam.{w} ⥤ TypeWithParam.{w}
+
+/--
+info: ff.{v_1, w} [Category.{v_1, 0} TypeWithParam] : Type v_1
+-/
+#guard_msgs (info) in
+#check ff
+
+end
