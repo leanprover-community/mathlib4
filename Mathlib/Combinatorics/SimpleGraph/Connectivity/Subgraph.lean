@@ -293,11 +293,30 @@ def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
     let h : cons .. |>.toSubgraph.coe.Adj ⟨_, h.fst_mem⟩ ⟨_, h.snd_mem⟩ := h
     cons h <| mapToSubgraph _ |>.map <| Subgraph.inclusion le_sup_right
 
+/-- Mapping a walk to its own subgraph and then to the original graph produces the same walk. -/
 theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.map w.toSubgraph.hom = w
   | nil => rfl
   | cons _ w => by
     rw [mapToSubgraph, Walk.map, map_map]
     exact congr_arg₂ _ rfl w.map_mapToSubgraph_hom
+
+/-- Mapping a walk to its own subgraph and then to `G[s]` where `s` contains the walk's support is
+the same as inducing the walk to `s`. -/
+theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
+    ∀ (w : G.Walk u v) (hs : ∀ x ∈ w.support, x ∈ s),
+      w.mapToSubgraph.map (⟨(⟨·, by grind [mem_verts_toSubgraph]⟩), w.toSubgraph.adj_sub⟩ :
+        w.toSubgraph.coe →g G.induce s) = w.induce s hs
+  | nil, hs => rfl
+  | cons hadj w, hs => by
+    rw [mapToSubgraph, map_cons, map_map]
+    exact congrArg _ <| w.map_mapToSubgraph_eq_induce s (hs · <| List.mem_of_mem_tail ·)
+
+/-- Mapping a walk to its own subgraph and then to `G[w.support]` is the same as inducing the walk
+to its support. -/
+theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
+    w.mapToSubgraph.map (⟨fun v ↦ ⟨v, w.mem_verts_toSubgraph.mp v.prop⟩, w.toSubgraph.adj_sub⟩ :
+      w.toSubgraph.coe →g G.induce _) = w.induce _ (fun _ ↦ id) :=
+  w.map_mapToSubgraph_eq_induce ..
 
 namespace IsPath
 
