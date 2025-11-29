@@ -53,6 +53,15 @@ protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
 lemma isSubwalk_cons {u v w} (p : G.Walk u v) (h : G.Adj w u) : p.IsSubwalk (p.cons h) :=
   (isSubwalk_rfl p).cons h
 
+protected lemma IsSubwalk.concat {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) (h : G.Adj v' w) : p.IsSubwalk (q.concat h) := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  exact ⟨r₁, r₂.concat h, by rw [append_concat]⟩
+
+@[simp]
+lemma isSubwalk_concat {u v w} (p : G.Walk u v) (h : G.Adj v w) : p.IsSubwalk (p.concat h) :=
+  (isSubwalk_rfl p).concat h
+
 lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : G.Walk u₁ v₁} {p₂ : G.Walk u₂ v₂}
     {p₃ : G.Walk u₃ v₃} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₃) :
     p₁.IsSubwalk p₃ := by
@@ -91,6 +100,12 @@ lemma isSubwalk_of_append_left {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w 
 lemma isSubwalk_of_append_right {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
     (h : p₃ = p₁.append p₂) : p₂.IsSubwalk p₃ :=
   ⟨p₁, nil, append_nil _ ▸ h⟩
+
+theorem isSubwalk_take {u v : V} (p : G.Walk u v) (n : ℕ) : (p.take n).IsSubwalk p :=
+  ⟨nil, p.drop n, by simp⟩
+
+theorem isSubwalk_drop {u v : V} (p : G.Walk u v) (n : ℕ) : (p.drop n).IsSubwalk p :=
+  ⟨p.take n, nil, by simp⟩
 
 theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'} :
     p₁.IsSubwalk p₂ ↔ p₁.support <:+: p₂.support := by
@@ -140,6 +155,21 @@ theorem IsSubwalk.darts_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Wal
 protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) (f : G →g G') : (p₂.map f).IsSubwalk (p₁.map f) := by
   simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h, List.IsInfix.map]
+
+protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) : p.dropLast.IsSubwalk q := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  cases h' : p
+  · grind [getVert_nil, append_nil, dropLast_nil, nil_isSubwalk_iff_exists]
+  · exact ⟨r₁, cons (Walk.adj_penultimate (by simp)) r₂, by
+      grind [=_ concat_append, concat_dropLast, _=_ append_assoc]⟩
+
+protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  cases h' : p
+  · grind [getVert_nil, append_nil, tail_nil, nil_isSubwalk_iff_exists]
+  · exact ⟨r₁.concat (Walk.adj_snd (by simp)), r₂, by simp [concat_append]⟩
 
 end Walk
 
