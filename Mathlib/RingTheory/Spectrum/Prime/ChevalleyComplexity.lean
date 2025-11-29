@@ -3,11 +3,13 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.SuccPred.WithBot
-import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
-import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+module
+
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Algebra.Polynomial.CoeffMem
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
+public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -57,6 +59,8 @@ The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, al
 not give an explicit bound on the complexity.
 
 -/
+
+@[expose] public section
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}
@@ -258,6 +262,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
+-- TODO: fix non-terminal simp (large simp set)
+set_option linter.flexible false in
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of

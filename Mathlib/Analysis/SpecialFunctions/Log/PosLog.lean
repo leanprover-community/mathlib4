@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The Positive Part of the Logarithm
@@ -19,6 +21,8 @@ estimates.
 See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for the presentation of
 `log⁺` as a Circle Average.
 -/
+
+@[expose] public section
 
 namespace Real
 
@@ -153,9 +157,10 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
-/--
-Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving just two summands.
--/
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
+/-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
+just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum

@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Aaron Anderson
 -/
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
@@ -97,11 +97,11 @@ theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) [Decidable (n ∈ 
     coeff n (indicatorSeries α s) = if n ∈ s then 1 else 0 := by
   convert coeff_mk _ _
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) [Decidable (n ∈ s)] :
-    coeff n (indicatorSeries α s) = 1 := by rw [coeff_indicator, if_pos h]
+theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
+    coeff n (indicatorSeries α s) = 1 := by classical rw [coeff_indicator, if_pos h]
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) [Decidable (n ∈ s)] :
-    coeff n (indicatorSeries α s) = 0 := by rw [coeff_indicator, if_neg h]
+theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
+    coeff n (indicatorSeries α s) = 0 := by classical rw [coeff_indicator, if_neg h]
 
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] [Decidable (0 ∈ s)] :
     constantCoeff (indicatorSeries α s) = if 0 ∈ s then 1 else 0 := by
@@ -124,7 +124,7 @@ theorem num_series' [Field α] (i : ℕ) :
     | zero => simp [mul_sub, zero_pow, constantCoeff_indicator]
     | succ n =>
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
-        LinearMap.map_sub, reduceCtorEq]
+        map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
       rw [sum_ite, sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
@@ -339,8 +339,8 @@ theorem same_gf [Field α] (m : ℕ) :
   set! π₃ : PowerSeries α := ∏ i ∈ range m, (1 + X ^ (i + 1)) with hπ₃
   rw [← hπ₃] at ih
   have h : constantCoeff (1 - X ^ (2 * m + 1) : α⟦X⟧) ≠ 0 := by
-    rw [RingHom.map_sub, RingHom.map_pow, constantCoeff_one, constantCoeff_X,
-      zero_pow (2 * m).succ_ne_zero, sub_zero]
+    rw [map_sub, map_pow, constantCoeff_one, constantCoeff_X, zero_pow (2 * m).succ_ne_zero,
+      sub_zero]
     exact one_ne_zero
   calc
     (∏ i ∈ range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *

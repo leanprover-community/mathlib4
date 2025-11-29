@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 
 /-!
 # Theory of conditionally complete lattices
@@ -24,6 +26,8 @@ For instance, `sInf_le` is a statement in complete lattices ensuring `sInf s ≤
 while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Multiset
@@ -101,6 +105,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
 @[simp]
 theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   WithTop.sInf_empty (α := αᵒᵈ)
+
+theorem WithBot.sInf_empty (α : Type*) [CompleteLattice α] : (sInf ∅ : WithBot α) = ⊤ := by
+  rw [WithBot.sInf_eq (by simp) (OrderBot.bddBelow _), Set.preimage_empty, _root_.sInf_empty,
+    WithBot.coe_top]
 
 @[norm_cast]
 theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : BddAbove s) :
@@ -940,6 +948,14 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     csSup_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csInf
     csInf_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csSup
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
+
+noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
+  le_sSup s a has := le_csSup (OrderTop.bddAbove _) has
+  sSup_le s a hsa := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sSup_empty]; exact bot_le)
+    (csSup_le · hsa)
+  sInf_le s a hsa := csInf_le (OrderBot.bddBelow _) hsa
+  le_sInf s a has := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sInf_empty]; exact le_top)
+    (le_csInf · has)
 
 open Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
