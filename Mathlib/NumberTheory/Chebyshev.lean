@@ -85,4 +85,22 @@ theorem theta_eq_theta_coe_floor (x : ℝ) : θ x = θ ⌊x⌋₊ := by
   unfold theta
   rw [floor_natCast]
 
+theorem psi_mono : Monotone ψ := by
+  intro x y hxy
+  apply sum_le_sum_of_subset_of_nonneg
+  · exact Ioc_subset_Ioc (by rfl) <| floor_le_floor hxy
+  · simp
+
+theorem theta_mono : Monotone θ := by
+  intro x y hxy
+  apply sum_le_sum_of_subset_of_nonneg
+  · intro p hp
+    simp_all only [mem_filter, mem_Ioc, true_and, and_true]
+    exact le_trans hp.1.2 <| floor_le_floor hxy
+  · intro p hp _
+    apply log_nonneg
+    norm_cast
+    simp only [mem_filter, mem_Ioc] at hp
+    exact hp.2.one_le
+
 end Chebyshev
