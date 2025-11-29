@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, David Ledvinka
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
-import Mathlib.Order.CompletePartialOrder
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Pair Reduction
@@ -98,6 +100,8 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 * [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Finset
 
@@ -357,16 +361,14 @@ lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   · simp [Finset.not_nonempty_iff_eq_empty.mp hJ]
   unfold pairSet
   grw [Finset.card_biUnion_le, Nat.cast_sum,
-    Finset.sum_le_sum
-      (fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha),
-    Finset.sum_le_sum
-      (fun _ _ ↦ mul_le_mul_left' (pow_le_pow_right₀ (le_of_lt ha) (le_tsub_add)) _)]
+    Finset.sum_le_sum fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha,
+    Finset.sum_le_sum fun _ _ ↦ mul_le_mul_right (pow_le_pow_right₀ ha.le le_tsub_add) _]
   conv_lhs => enter [2]; ext _; rw [pow_add, pow_one, ← mul_assoc, mul_comm]
-  grw [← Finset.mul_sum, mul_le_mul_left']
-  grw [(Finset.sum_le_sum (fun i _ ↦ logSizeRadius_le_card_smallBall hJ i ha)), ← Nat.cast_sum,
-    Nat.cast_le,
-    ← Finset.card_biUnion (fun _ _ _ _ hij ↦ disjoint_smallBall_logSizeBallSeq hJ hij),
-    Finset.card_le_card]
+  grw [← Finset.mul_sum]
+  gcongr
+  grw [Finset.sum_le_sum fun i _ ↦ logSizeRadius_le_card_smallBall hJ i ha, ← Nat.cast_sum,
+    ← Finset.card_biUnion fun _ _ _ _ ↦ disjoint_smallBall_logSizeBallSeq hJ]
+  gcongr
   unfold logSizeBallStruct.smallBall
   rw [Finset.biUnion_subset_iff_forall_subset]
   intro i _
@@ -379,16 +381,14 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   wlog hn : 1 ≤ n
   · convert zero_le (n * c)
     convert edist_self _
-    simp [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn)] at hJ_card
+    simp only [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn), pow_zero, Nat.cast_le_one] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
     exact Finset.card_le_one_iff.mp hJ_card ht hs
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
     Finset.singleton_product, Finset.mem_map, Finset.mem_filter, Function.Embedding.coeFn_mk,
     Prod.mk.injEq, exists_eq_right_right] at h'
   obtain ⟨⟨ht, hdist⟩, rfl⟩ := h'
-  refine le_trans hdist (mul_le_mul_right' ?_ c)
-  gcongr
-  exact radius_logSizeBallSeq_le hJ ha hn hJ_card i
+  grw [hdist, radius_logSizeBallSeq_le hJ ha hn hJ_card i]
 
 lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T → E) :
     ⨆ (s : J) (t : { t : J // edist s t ≤ c}), edist (f s) (f t)
@@ -400,8 +400,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   let l := Nat.findGreatest P (#J - 1)
   obtain ⟨hsV, htV⟩ : P l := by
     apply Nat.findGreatest_spec (zero_le _)
-    simp [P, finset_logSizeBallSeq_zero]
-    exact ⟨hs, ht⟩
+    simpa [P, finset_logSizeBallSeq_zero] using ⟨hs, ht⟩
   wlog h : s ∉ (logSizeBallSeq J hJ a c (l + 1)).finset generalizing s t
   · have h' : t ∉ (logSizeBallSeq J hJ a c (l + 1)).finset := by
       have hl : l < #J - 1 := by
@@ -409,28 +408,29 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
         simp only [not_lt, tsub_le_iff_right] at hl
         have hlJ : l + 1 = #J := by
           refine Nat.le_antisymm_iff.mpr ⟨?_, hl⟩
-          rw [← Nat.sub_add_cancel <| Order.one_le_iff_pos.mpr (Finset.card_pos.mpr hJ)]
-          apply add_le_add_right (Nat.findGreatest_le _)
+          dsimp [l]
+          grw [← Nat.sub_add_cancel <| Order.one_le_iff_pos.mpr (Finset.card_pos.mpr hJ),
+            Nat.findGreatest_le]
+          rfl
         apply h
         suffices h_emp : (logSizeBallSeq J hJ a c (l + 1)).finset = ∅ from by simp [h_emp]
         rw [← Finset.card_eq_zero, ← Nat.le_zero, ← Nat.sub_self #J, hlJ]
         apply card_finset_logSizeBallSeq_le
       simp only [Decidable.not_not] at h
       have hP := Nat.findGreatest_is_greatest (lt_add_one l) (Nat.add_one_le_of_lt hl)
-      simp [P, h] at hP; exact hP
+      simpa [P, h] using hP
     have hts : edist t s ≤ c := by rw [edist_comm]; exact hst
     rw [edist_comm]
     have hP : P = (fun l ↦
       t ∈ (logSizeBallSeq J hJ a c l).finset ∧ s ∈ (logSizeBallSeq J hJ a c l).finset) := by
         ext; simp [P, and_comm]
-    simp [l, hP] at htV hsV h'
+    simp only [hP, l] at htV hsV h'
     exact this t ht s hs hts htV hsV h'
   simp only [finset_logSizeBallSeq_add_one, logSizeBallStruct.smallBall, Finset.mem_sdiff, hsV,
     Finset.mem_filter, true_and, not_le, not_lt] at h
   have hsB : s ∈ (logSizeBallSeq J hJ a c l).ball c := by
     simp only [logSizeBallStruct.ball, Finset.mem_filter, hsV, true_and]
-    apply le_trans h
-    simp [mul_le_mul_right']
+    grw [h, tsub_le_self]
   have htB : t ∈ (logSizeBallSeq J hJ a c l).ball c := by
     simp only [logSizeBallStruct.ball, Finset.mem_filter, htV, true_and]
     apply le_trans (edist_triangle _ s _)

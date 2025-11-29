@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Minimal polynomials
@@ -13,6 +15,8 @@ under the assumption that x is integral over `A`, and derives some basic propert
 such as irreducibility under the assumption `B` is a domain.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Set Function
@@ -121,7 +125,7 @@ theorem mem_range_of_degree_eq_one (hx : (minpoly A x).degree = 1) :
     exact ne_of_lt (show ⊥ < ↑1 from WithBot.bot_lt_coe 1) hx
   have key := minpoly.aeval A x
   rw [eq_X_add_C_of_degree_eq_one hx, (minpoly.monic h).leadingCoeff, C_1, one_mul, aeval_add,
-    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← RingHom.map_neg] at key
+    aeval_C, aeval_X, ← eq_neg_iff_add_eq_zero, ← map_neg] at key
   exact ⟨-(minpoly A x).coeff 0, key.symm⟩
 
 /-- The defining property of the minimal polynomial of an element `x`:
@@ -158,7 +162,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
 
 open Polynomial in
 /-- If a monic polynomial `p : A[X]` of degree `n` annihilates an element `x` in an `A`-algebra `B`,
-such that `{xⁱ | 0 ≤ i < n} is linearly independent over `A`, then `p` is the minimal polynomial
+such that `{xⁱ | 0 ≤ i < n}` is linearly independent over `A`, then `p` is the minimal polynomial
 of `x` over `A`. -/
 theorem eq_of_linearIndependent {p : A[X]} (monic : p.Monic) (hp0 : p.aeval x = 0)
     (n : ℕ) (hpn : p.degree = n) (ind : LinearIndependent A fun i : Fin n ↦ x ^ i.val) :
