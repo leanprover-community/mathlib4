@@ -30,9 +30,13 @@ section UnitVectorAngles
 /-- Gets the orthogonal direction of one vector relative to another. -/
 noncomputable def ortho (y x : V) : V := x - (ℝ ∙ y).starProjection x
 
+lemma ortho_eq_sub_inner_of_norm_eq_one {x y : V} (hy : ‖y‖ = 1) :
+    ortho y x = x - inner ℝ y x • y := by
+  rw [ortho, Submodule.starProjection_unit_singleton _ hy]
+
 lemma inner_ortho_nonneg_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     0 ≤ ⟪x, ortho y x⟫ := by
-  rw [ortho, Submodule.starProjection_unit_singleton _ hy, inner_sub_right,
+  rw [ortho_eq_sub_inner_of_norm_eq_one hy, inner_sub_right,
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
@@ -45,8 +49,8 @@ lemma inner_normalize_ortho (x : V) {y : V} :
 lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
     (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
-  rw [NormedSpace.normalize, real_inner_smul_right, ortho, inner_sub_right,
-    Submodule.starProjection_unit_singleton _ hy, real_inner_smul_right]
+  rw [NormedSpace.normalize, real_inner_smul_right,
+    ortho_eq_sub_inner_of_norm_eq_one hy, inner_sub_right, real_inner_smul_right]
   by_cases h₁ : x = y
   · simp [*]
   by_cases h₂ : x = - y
@@ -81,7 +85,7 @@ lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ 
 lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
   rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle_of_norm_eq_one Hx Hy,
-    ortho, Submodule.starProjection_unit_singleton _ Hy]
+    ortho_eq_sub_inner_of_norm_eq_one Hy]
   by_cases hxy : x - ⟪x, y⟫ • y = 0
   · simp [hxy, real_inner_comm, ← sub_eq_zero]
   rw [NormedSpace.normalize, real_inner_smul_right, inner_sub_right, real_inner_smul_right,
@@ -133,6 +137,57 @@ lemma angle_le_angle_add_angle_of_norm_eq_one {x y z : V}
   grw [← H2]
   ring_nf; rfl
 
+lemma ortho_ne_zero_of_norm_eq_one_of_not_collinear {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
+    (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ Real.pi) :
+    ortho x y ≠ 0 := by
+  intro h; rw [ortho_eq_sub_inner_of_norm_eq_one hx, sub_eq_zero] at h
+  grind [abs, norm_smul, Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
+    inner_eq_neg_mul_norm_iff_angle_eq_pi]
+
+lemma eq_of_norm_eq_of_angle_eq_zero {x y : V}
+    (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hxy : angle x y = 0) : x = y := by
+  grind [angle_eq_zero_iff, abs, norm_zero, norm_smul, Real.norm_eq_abs, one_smul]
+
+lemma angle_expression_of_angle_eq_angle_sum
+    {x y z : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (Hz : ‖z‖ = 1) :
+    angle x z ≠ Real.pi → angle x z = angle x y + angle y z →
+    Real.sin (angle x z) • y = Real.sin (angle y z) • x + Real.sin (angle x y) • z := by
+  intros H H0
+  obtain H1 | H1 := eq_or_ne (angle x z) 0
+  · grind [angle_nonneg, Real.sin_zero, zero_smul]
+  have Hxz : Real.sin (angle x z) ≠ 0 := by
+    grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
+  obtain H2 | H2 := eq_or_ne (angle x y) 0
+  · grind [Real.sin_zero, zero_smul, eq_of_norm_eq_of_angle_eq_zero]
+  obtain H3 | H3 := eq_or_ne (angle y z) 0
+  · grind [Real.sin_zero, zero_smul, smul_right_inj, eq_of_norm_eq_of_angle_eq_zero]
+  obtain H4 | H4 := eq_or_ne (angle x y) Real.pi
+  · grind [angle_le_pi, angle_nonneg]
+  obtain H5 | H5 := eq_or_ne (angle y z) Real.pi
+  · grind [angle_le_pi, angle_nonneg]
+  have H6 : ⟪x, z⟫ = ⟪x, z⟫ := rfl
+  nth_rw 2 [angle_le_angle_add_angle_aux Hx Hy, angle_le_angle_add_angle_aux Hz Hy] at H6
+  simp only [inner_add_left, inner_add_right, real_inner_smul_left, real_inner_smul_right,
+             real_inner_comm y (normalize _), real_inner_self_eq_norm_sq, Hy, angle_comm z y,
+             inner_normalize_ortho] at H6
+  norm_num at H6
+  rw [inner_eq_cos_angle_of_norm_eq_one Hx Hz, H0, Real.cos_add] at H6
+  ring_nf at H6
+  have Hw : Real.sin (angle x y) * Real.sin (angle y z) ≠ 0 := by
+    grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
+  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = - 1 := by
+    grind
+  have H9 : ortho y x ≠ 0 := by
+    grind [ortho_ne_zero_of_norm_eq_one_of_not_collinear, angle_comm]
+  have H10 : ortho y z ≠ 0 := by
+    grind [ortho_ne_zero_of_norm_eq_one_of_not_collinear]
+  have H11 : ‖normalize (ortho y x)‖ = 1 := norm_normalize_eq_one_iff.mpr H9
+  have H12 : ‖normalize (ortho y z)‖ = 1 := norm_normalize_eq_one_iff.mpr H10
+  rw [inner_eq_neg_one_iff_of_norm_eq_one H11 H12] at H8
+  nth_rw 2 [angle_le_angle_add_angle_aux Hx Hy]
+  nth_rw 3 [angle_le_angle_add_angle_aux Hz Hy]
+  rw [H8]; match_scalars <;> grind [Real.sin_add, angle_comm]
+
 end UnitVectorAngles
 
 
@@ -167,10 +222,63 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
       simpa [hkx, hkz, NNReal.smul_def] using
         angle_eq_angle_add_add_angle_add (kz • z) (smul_ne_zero hkx.ne' hx)
 
+lemma mem_span_of_linear_combination {x y z : V} {kx ky kz : ℝ≥0} (hy : ky ≠ 0)
+    (hlincomb : ky • y = kx • x + kz • z) : y ∈ Submodule.span ℝ≥0 {x, z} := by
+  rw [← smul_right_inj (inv_ne_zero hy), smul_add, ← smul_assoc, smul_eq_mul, inv_mul_cancel₀ hy,
+    one_smul] at hlincomb
+  simp [hlincomb, Submodule.span]
+  grind [Set.pair_subset_iff, SetLike.mem_coe, Submodule.add_mem, Submodule.smul_mem]
+
 /-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
 `angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
-proof_wanted angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
-    angle x z = angle x y + angle y z ↔ angle x z = π ∨ y ∈ Submodule.span ℝ≥0 {x, z}
+public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
+    angle x z = angle x y + angle y z ↔ angle x z = π ∨ y ∈ Submodule.span ℝ≥0 {x, z} := by
+  constructor <;> rintro h
+  · by_cases hxz₁ : angle x z = π
+    · tauto
+    right
+    by_cases hxz₂ : angle x z = 0
+    · have hxy : angle x y = 0 := by grind [angle_nonneg]
+      rw [angle_eq_zero_iff] at hxy hxz₂
+      obtain ⟨_, ⟨r2, ⟨hr2, rfl⟩⟩⟩ := hxy
+      lift r2 to ℝ≥0 using hr2.le
+      exact Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (by simp))
+    have h_sin_xz : Real.sin (angle x z) ≠ 0 := by
+      grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
+    by_cases hx : x = 0
+    · subst x; simp only [angle_zero_left, left_eq_add] at h
+      rw [angle_eq_zero_iff] at h
+      obtain ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩ := h
+      lift r to ℝ≥0 using hr.le
+      rw [← NNReal.smul_def, Submodule.span_insert_zero, Submodule.span_singleton_smul_eq]
+      · simp
+      norm_cast at hr
+      grind [isUnit_iff_ne_zero]
+    by_cases hz : z = 0
+    · subst z; simp only [angle_zero_right, right_eq_add] at h
+      rw [angle_eq_zero_iff] at h
+      obtain ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩ := h
+      lift r to ℝ≥0 using hr.le
+      exact Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (by simp))
+    have hnneg₁ : 0 ≤ Real.sin (angle y z) / ‖x‖ := by
+      grind [sin_angle_nonneg, norm_nonneg, div_nonneg_iff, mul_nonneg_iff]
+    have hnneg₂ : 0 ≤ Real.sin (angle x y) / ‖z‖ := by
+      grind [sin_angle_nonneg, norm_nonneg, div_nonneg_iff, mul_nonneg_iff]
+    have hnneg₃ : 0 ≤ Real.sin (angle x z) / ‖y‖ := by
+      grind [sin_angle_nonneg, norm_nonneg, div_nonneg_iff, mul_nonneg_iff]
+    have hnonzero : (⟨Real.sin (angle x z) / ‖y‖, hnneg₃⟩ : ℝ≥0) ≠ 0 := by
+      simp; grind
+    have h₁ := angle_expression_of_angle_eq_angle_sum (norm_normalize_eq_one_iff.mpr hx)
+        (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
+    simp [angle_normalize_right, angle_normalize_right] at h₁
+    have h₂ := h₁ hxz₁ h
+    have h₃ : (⟨_, hnneg₃⟩ : ℝ≥0) • y = (⟨_, hnneg₁⟩ : ℝ≥0) • x + (⟨_, hnneg₂⟩ : ℝ≥0) • z := by
+      simp [NormedSpace.normalize, ← smul_assoc, smul_eq_mul] at h₂ ⊢
+      exact h₂
+    exact mem_span_of_linear_combination hnonzero h₃
+  · obtain h | h := h
+    · grind [angle_add_angle_eq_pi_of_angle_eq_pi, angle_comm]
+    · exact angle_eq_angle_add_add_angle_add_of_mem_span hy h
 
 end InnerProductGeometry
 
