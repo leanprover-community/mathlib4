@@ -1251,11 +1251,12 @@ theorem isStoppingTime_piecewise_const (hij : i ≤ j) (hs : MeasurableSet[𝒢 
   (isStoppingTime_const 𝒢 i).piecewise_of_le (isStoppingTime_const 𝒢 j) (fun _ => le_rfl)
     (fun _ => mod_cast hij) hs
 
-theorem stoppedValue_piecewise_const {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :
+theorem stoppedValue_piecewise_const {ι' α : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) = s.piecewise (f i) (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
 
-theorem stoppedValue_piecewise_const' {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :
+theorem stoppedValue_piecewise_const' {ι' α : Type*} [AddCommGroup α]
+    [Nonempty ι'] {i j : ι'} {f : ι' → Ω → α} :
     stoppedValue f (s.piecewise (fun _ => i) fun _ => j) =
     s.indicator (f i) + sᶜ.indicator (f j) := by
   ext ω; rw [stoppedValue]; by_cases hx : ω ∈ s <;> simp [hx]
