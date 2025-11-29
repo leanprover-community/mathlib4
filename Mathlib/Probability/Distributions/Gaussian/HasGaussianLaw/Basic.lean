@@ -97,7 +97,7 @@ lemma charFunDual_map_eq (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
   rw [hX.isGaussian_map.charFunDual_eq, integral_map hX.aemeasurable (by fun_prop),
     variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
   rfl
-lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq [CompleteSpace E]
+lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFunDual_map_eq
     [IsFiniteMeasure P] (hX : AEMeasurable X P) :
     HasGaussianLaw X P ↔ ∀ L,
     charFunDual (P.map X) L = exp ((P[L ∘ X] : ℝ) * I - Var[L ∘ X; P] / 2) where
