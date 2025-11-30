@@ -421,15 +421,15 @@ theorem IsBase.finite_of_finite {B' : Set α}
   (finite_iff_finite_of_encard_eq_encard (hB.encard_eq_encard_of_isBase hB')).mp h
 
 theorem IsBase.infinite_of_infinite (hB : M.IsBase B) (h : B.Infinite) (hB₁ : M.IsBase B₁) :
-    B₁.Infinite :=
-  by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
+    B₁.Infinite := by
+  contrapose! h; exact hB₁.finite_of_finite h hB
 
 theorem IsBase.finite [RankFinite M] (hB : M.IsBase B) : B.Finite :=
-  let ⟨_,hB₀⟩ := ‹RankFinite M›.exists_finite_isBase
+  let ⟨_, hB₀⟩ := ‹RankFinite M›.exists_finite_isBase
   hB₀.1.finite_of_finite hB₀.2 hB
 
 theorem IsBase.infinite [RankInfinite M] (hB : M.IsBase B) : B.Infinite :=
-  let ⟨_,hB₀⟩ := ‹RankInfinite M›.exists_infinite_isBase
+  let ⟨_, hB₀⟩ := ‹RankInfinite M›.exists_infinite_isBase
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
 theorem empty_not_isBase [h : RankPos M] : ¬M.IsBase ∅ :=

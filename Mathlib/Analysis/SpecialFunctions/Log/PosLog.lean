@@ -157,9 +157,10 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
-/--
-Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving just two summands.
--/
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
+/-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
+just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum

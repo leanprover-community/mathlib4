@@ -92,7 +92,7 @@ lemma eventually_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
   _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 - ε x) + x ^ p * (x⁻¹ / (log x ^ 2)) := by
     filter_upwards [eventually_gt_atTop 1, eventually_deriv_one_sub_smoothingFn]
       with x hx hderiv
-    rw [hderiv, Real.deriv_rpow_const (Or.inl <| by positivity)]
+    rw [hderiv, Real.deriv_rpow_const]
   _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 - ε x) + x ^ (p - 1) / (log x ^ 2) := by
     filter_upwards [eventually_gt_atTop 0] with x hx
     rw [mul_div, ← Real.rpow_neg_one, ← Real.rpow_add (by positivity), sub_eq_add_neg]
@@ -109,7 +109,7 @@ lemma eventually_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
     _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 + ε x) - x ^ p * (x⁻¹ / (log x ^ 2)) := by
       filter_upwards [eventually_gt_atTop 1, eventually_deriv_one_add_smoothingFn]
         with x hx hderiv
-      simp [hderiv, Real.deriv_rpow_const (Or.inl <| by positivity), neg_div, sub_eq_add_neg]
+      simp [hderiv, Real.deriv_rpow_const, neg_div, sub_eq_add_neg]
     _ =ᶠ[atTop] fun x => p * x ^ (p - 1) * (1 + ε x) - x ^ (p - 1) / (log x ^ 2) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
       simp [mul_div, ← Real.rpow_neg_one, ← Real.rpow_add (by positivity), sub_eq_add_neg]
