@@ -63,6 +63,8 @@ open scoped Finset RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable [NormedAddTorsor V₂ P₂]
 
 noncomputable section
 
@@ -79,6 +81,18 @@ and only if the sum of these weights is nonzero (so the normalized weights sum t
 def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ :=
   (if i ∈ signs then -1 else 1) * (s.height i)⁻¹
 
+@[simp] lemma excenterWeightsUnnorm_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).excenterWeightsUnnorm = s.excenterWeightsUnnorm := by
+  ext
+  simp [excenterWeightsUnnorm]
+
+@[simp] lemma excenterWeightsUnnorm_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).excenterWeightsUnnorm = s.excenterWeightsUnnorm := by
+  ext
+  simp [excenterWeightsUnnorm]
+
 @[simp] lemma excenterWeightsUnnorm_empty_apply (i : Fin (n + 1)) :
     s.excenterWeightsUnnorm ∅ i = (s.height i)⁻¹ :=
   one_mul _
@@ -94,11 +108,35 @@ lemma excenterWeightsUnnorm_ne_zero (signs : Finset (Fin (n + 1))) (i : Fin (n +
 def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
   ∑ i, s.excenterWeightsUnnorm signs i ≠ 0
 
+@[simp] lemma excenterExists_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).ExcenterExists = s.ExcenterExists := by
+  ext
+  simp [ExcenterExists]
+
+@[simp] lemma excenterExists_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).ExcenterExists = s.ExcenterExists := by
+  ext
+  simp [ExcenterExists]
+
 /-- The normalized weights of the vertices in an affine combination that gives an excenter with
 signs determined by the given set of indices.  An excenter with those signs exists if and only if
 the sum of these weights is 1. -/
 def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
   (∑ i, s.excenterWeightsUnnorm signs i)⁻¹ • s.excenterWeightsUnnorm signs
+
+@[simp] lemma excenterWeights_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).excenterWeights = s.excenterWeights := by
+  ext
+  simp [excenterWeights]
+
+@[simp] lemma excenterWeights_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).excenterWeights = s.excenterWeights := by
+  ext
+  simp [excenterWeights]
 
 variable {s} in
 lemma ExcenterExists.excenterWeights_ne_zero {signs : Finset (Fin (n + 1))}
@@ -301,18 +339,67 @@ meaningful if `s.ExcenterExists signs`; otherwise, it is some arbitrary point. -
 def excenter (signs : Finset (Fin (n + 1))) : P :=
   (s.exsphere signs).center
 
+variable {s} in
+@[simp] lemma ExcenterExists.excenter_map {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).excenter signs = f (s.excenter signs) := by
+  simp [excenter, exsphere, ← AffineIsometry.coe_toAffineMap, h.sum_excenterWeights_eq_one,
+    Finset.map_affineCombination]
+
+variable {s} in
+@[simp] lemma ExcenterExists.excenter_restrict {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).excenter signs = s.excenter signs := by
+  rw [← s.excenterExists_restrict S hS] at h
+  rw [eq_comm]
+  convert h.excenter_map S.subtypeₐᵢ
+
 /-- The incenter of a simplex. -/
 def incenter : P :=
   (s.exsphere ∅).center
+
+@[simp] lemma incenter_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).incenter = f s.incenter :=
+  s.excenterExists_empty.excenter_map f
+
+@[simp] lemma incenter_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).incenter = s.incenter :=
+  s.excenterExists_empty.excenter_restrict S hS
 
 /-- The distance between an excenter and a face of the simplex (zero if no such excenter
 exists). -/
 def exradius (signs : Finset (Fin (n + 1))) : ℝ :=
   (s.exsphere signs).radius
 
+@[simp] lemma exradius_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).exradius = s.exradius := by
+  ext
+  simp [exradius, exsphere]
+
+@[simp] lemma exradius_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).exradius = s.exradius := by
+  ext
+  simp [exradius, exsphere]
+
 /-- The distance between the incenter and a face of the simplex. -/
 def inradius : ℝ :=
   (s.exsphere ∅).radius
+
+@[simp] lemma inradius_map (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).inradius = s.inradius :=
+  congr_fun (s.exradius_map f) _
+
+@[simp] lemma inradius_restrict (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).inradius = s.inradius :=
+  congr_fun (s.exradius_restrict S hS) _
 
 @[simp] lemma exsphere_center (signs : Finset (Fin (n + 1))) :
     (s.exsphere signs).center = s.excenter signs :=
@@ -579,6 +666,22 @@ lemma excenter_singleton_injective [Nat.AtLeastTwo n] :
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
 def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpoint_map {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
+    (s.map f.toAffineMap f.injective).touchpoint signs i = f (s.touchpoint signs i) := by
+  simp [touchpoint, h.excenter_map, ← orthogonalProjectionSpan_map]
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpoint_restrict {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).touchpoint signs i = s.touchpoint signs i := by
+  rw [← s.excenterExists_restrict S hS] at h
+  rw [eq_comm]
+  convert h.touchpoint_map S.subtypeₐᵢ i
 
 lemma touchpoint_mem_affineSpan (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.touchpoint signs i ∈ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
@@ -877,6 +980,28 @@ variable {s} in
       s.independent _ _ hw (s.sum_touchpointWeights _ _) h
   · rintro rfl
     simp
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpointWeights_map {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).touchpointWeights signs = s.touchpointWeights signs := by
+  ext1 i
+  rw [← affineCombination_eq_touchpoint_iff
+    ((s.map f.toAffineMap f.injective).sum_touchpointWeights _ _)]
+  have hc := (s.map f.toAffineMap f.injective).affineCombination_touchpointWeights signs i
+  rwa [h.touchpoint_map, map_points, ← Finset.univ.map_affineCombination _ _
+    ((s.map f.toAffineMap f.injective).sum_touchpointWeights _ _), AffineIsometry.coe_toAffineMap,
+    AffineIsometry.map_eq_iff] at hc
+
+variable {s} in
+@[simp] lemma ExcenterExists.touchpointWeights_restrict {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).touchpointWeights signs = s.touchpointWeights signs := by
+  rw [← s.excenterExists_restrict S hS] at h
+  rw [eq_comm]
+  convert h.touchpointWeights_map S.subtypeₐᵢ
 
 variable {s} in
 lemma ExcenterExists.sign_touchpointWeights {signs : Finset (Fin (n + 1))}
