@@ -80,4 +80,15 @@ theorem coequalizerIso_quot_comp_inv :
     ↾Function.Coequalizer.mk f g ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
   rfl
 
+variable {f g} in
+def nonempty_isColimit_cofork_iff (c : Cofork f g) :
+    Nonempty (IsColimit c) ↔
+      Function.Bijective (Function.Coequalizer.desc f g _ c.condition) := by
+  rw [← isIso_iff_bijective]
+  let φ : Function.Coequalizer f g ⟶ c.pt := Function.Coequalizer.desc f g _ c.condition
+  change _ ↔ IsIso φ
+  exact ⟨fun ⟨h⟩ ↦ ((coequalizerColimit f g).isColimit.coconePointUniqueUpToIso h).isIso_hom,
+    fun h ↦ ⟨IsColimit.ofIsoColimit (coequalizerColimit f g).isColimit
+      (Cofork.ext (asIso φ))⟩⟩
+
 end CategoryTheory.Limits.Types

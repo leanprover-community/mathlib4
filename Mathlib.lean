@@ -2359,6 +2359,7 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
+public import Mathlib.CategoryTheory.EffectiveEpi.FunctorToTypes
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 public import Mathlib.CategoryTheory.Elements
@@ -2662,6 +2663,7 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.EffectiveEpi
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Images
