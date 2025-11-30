@@ -54,6 +54,6 @@ elab "Category*" ppSpace C:term:arg : term => commitIfNoEx <| withoutErrToSorry 
   let u ← mkFreshLevelMVar
   let cExpr ← instantiateMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
   let tpCExpr ← instantiateMVars <| ← Meta.inferType cExpr
-  let us := (collectLevelParams {} cExpr).params ++ (collectLevelParams {} tpCExpr).params
+  let us := (collectLevelParams (collectLevelParams {} cExpr) tpCExpr).params
   let v ← mkFreshLevelParam `v (insertAfterLevels us)
   return .app (.const `CategoryTheory.Category [v, u]) cExpr
