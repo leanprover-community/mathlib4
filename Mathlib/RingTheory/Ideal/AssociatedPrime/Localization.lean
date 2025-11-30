@@ -36,6 +36,7 @@ open IsLocalRing LinearMap
 namespace Module.associatedPrimes
 
 include S f in
+@[stacks 0310 "(1)"]
 lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
     (p : Ideal R') (ass : p.comap (algebraMap R R') ∈ associatedPrimes R M) :
     p ∈ associatedPrimes R' M' := by
@@ -87,6 +88,7 @@ alias mem_associatePrimes_localizedModule_atPrime_of_mem_associated_primes :=
   mem_associatedPrimes_atPrime_of_mem_associatedPrimes
 
 include S f in
+@[stacks 0310 "(2)"]
 lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of_fg (p : Ideal R')
     (ass : p ∈ associatedPrimes R' M') (fg : (p.comap (algebraMap R R')).FG) :
     p.comap (algebraMap R R') ∈ associatedPrimes R M := by
@@ -119,6 +121,7 @@ variable (R')
 
 include S f in
 open Set in
+@[stacks 0310 "(3)"]
 lemma preimage_comap_associatedPrimes_eq_associatedPrimes_of_isLocalizedModule
     [IsNoetherianRing R] :
     (Ideal.comap (algebraMap R R')) ⁻¹' (associatedPrimes R M) = associatedPrimes R' M' := by
