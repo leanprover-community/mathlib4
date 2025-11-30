@@ -1447,6 +1447,8 @@ theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     rw [sum_comm]
     exact sum_congr rfl fun _ _ ↦ (by simp_all)
 
+-- TODO: fix two non-terminal simp
+set_option linter.flexible false in
 theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
   rw [sum_Ioc_mul_eq_sum_prod_filter, sum_filter, sum_product]

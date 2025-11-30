@@ -6,7 +6,7 @@ Authors: Joël Riou, Jack McKoen
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 /-!
