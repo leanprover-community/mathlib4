@@ -417,7 +417,7 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
 to an infinite collection of circuits.
 
-It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
+It states that, given a circuit `C₀`, an arbitrary collection `C : ι → Set α` of circuits,
 an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
 the union of `C₀` and the `C i` contains a circuit containing `z` but none of the `x i`.
 

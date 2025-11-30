@@ -366,7 +366,7 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
 If there exists a multiplication-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`.
 -/
-@[to_additive /-- If there exists a addition-preserving equivalence between `G` and `H`,
+@[to_additive /-- If there exists an addition-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`. -/]
 theorem exponent_eq_of_mulEquiv (e : G ≃* H) : Monoid.exponent G = Monoid.exponent H :=
   Nat.dvd_antisymm

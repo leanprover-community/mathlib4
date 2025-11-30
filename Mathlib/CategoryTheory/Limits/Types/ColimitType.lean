@@ -133,7 +133,7 @@ def coconeTypes : F.CoconeTypes where
   pt := F.ColimitType
   ι j := F.ιColimitType j
 
-/-- An heterogeneous universe version of the universal property of the colimit is
+/-- A heterogeneous universe version of the universal property of the colimit is
 satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
 def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)

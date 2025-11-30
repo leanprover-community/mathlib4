@@ -17,17 +17,17 @@ as Eulerian circuits).
 
 ## Main definitions
 
-* `SimpleGraph.Walk.IsEulerian` is the predicate that a trail is an Eulerian trail.
+* `SimpleGraph.Walk.IsEulerian` is the predicate that a trail is a Eulerian trail.
 * `SimpleGraph.Walk.IsTrail.even_countP_edges_iff` gives a condition on the number of edges
   in a trail that can be incident to a given vertex.
 * `SimpleGraph.Walk.IsEulerian.even_degree_iff` gives a condition on the degrees of vertices
-  when there exists an Eulerian trail.
+  when there exists a Eulerian trail.
 * `SimpleGraph.Walk.IsEulerian.card_odd_degree` gives the possible numbers of odd-degree
-  vertices when there exists an Eulerian trail.
+  vertices when there exists a Eulerian trail.
 
 ## TODO
 
-* Prove that there exists an Eulerian trail when the conclusion to
+* Prove that there exists a Eulerian trail when the conclusion to
   `SimpleGraph.Walk.IsEulerian.card_odd_degree` holds.
 
 ## Tags
@@ -75,7 +75,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
 that these are trails.
 
-Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/
+Combine with `p.IsCircuit` to get a Eulerian circuit (also known as an "Eulerian cycle"). -/
 def IsEulerian {u v : V} (p : G.Walk u v) : Prop :=
   ∀ e, e ∈ G.edgeSet → p.edges.count e = 1
 
@@ -91,7 +91,7 @@ theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {
   ⟨fun h => p.edges_subset_edgeSet h,
    fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
-/-- The edge set of an Eulerian graph is finite. -/
+/-- The edge set of a Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
   Fintype.ofFinset h.isTrail.edgesFinset fun e => by
