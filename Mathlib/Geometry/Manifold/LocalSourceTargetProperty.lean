@@ -33,6 +33,8 @@ local property of this form.
   `f` has this property at `x` if there exist charts `φ` and `ψ` such that `P f φ ψ` holds.
 * `Manifold.LiftSourceTargetPropertyAt.congr_of_eventuallyEq`: if `f` has property `P` at `x`
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
+* `IsOpen.liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
+  holds is open
 
 -/
 
@@ -193,6 +195,19 @@ then `f` has property `P` at `x` if and only if `g` has property `P` at `x`. -/
 lemma congr_iff_of_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[nhds x] g) :
     LiftSourceTargetPropertyAt I I' n f x P ↔ LiftSourceTargetPropertyAt I I' n g x P :=
   ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
+
+/- The set of points where `LiftSourceTargetPropertyAt` holds is open. -/
+lemma _root_.IsOpen.liftSourceTargetPropertyAt :
+    IsOpen {x | LiftSourceTargetPropertyAt I I' n g x P} := by
+  rw [isOpen_iff_forall_mem_open]
+  intro x hx
+  -- Suppose the lifted property `P` holds at `x`:
+  -- choose slice charts `φ` near `x` and `ψ` near `f x` s.t. `P f φ ψ` holds.
+  -- Then the same charts witness that `P f φ ψ` holds at any `y ∈ φ.source`.
+  refine ⟨hx.domChart.source, fun y hy ↦ ?_, hx.domChart.open_source, hx.mem_domChart_source⟩
+  exact ⟨hx.domChart, hx.codChart, hy, hx.source_subset_preimage_source hy,
+    hx.domChart_mem_maximalAtlas, hx.codChart_mem_maximalAtlas, hx.source_subset_preimage_source,
+    hx.property⟩
 
 end LiftSourceTargetPropertyAt
 
