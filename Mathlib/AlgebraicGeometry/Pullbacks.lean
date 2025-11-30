@@ -33,7 +33,7 @@ universe u v w
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits AlgebraicGeometry
+open CategoryTheory Functor CartesianMonoidalCategory Limits AlgebraicGeometry
 
 namespace AlgebraicGeometry.Scheme
 
@@ -635,6 +635,14 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   rw [pullback_map_eq_pullbackFstFstIso_inv]
   infer_instance
 
+section CartesianMonoidalCategory
+variable {S : Scheme}
+
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+
+end CartesianMonoidalCategory
+
 section Spec
 
 variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
@@ -662,6 +670,11 @@ lemma pullbackSpecIso_inv_fst :
     (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
   limit.isoLimitCone_inv_π _ _
 
+@[reassoc]
+lemma pullbackSpecIso_inv_fst' :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) :=
+  pullbackSpecIso_inv_fst ..
+
 /--
 The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
@@ -685,6 +698,11 @@ lemma pullbackSpecIso_hom_fst :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeLeftRingHom) = pullback.fst _ _ := by
   rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
 
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_fst' :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap S _)) = pullback.fst _ _ :=
+  pullbackSpecIso_hom_fst ..
+
 /--
 The composition of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
@@ -695,6 +713,12 @@ is the second projection.
 lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_base :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap R _)) =
+      pullback.fst _ _ ≫ Spec.map (ofHom (algebraMap _ _)) := by
+  simp [Algebra.TensorProduct.algebraMap_def]
 
 lemma isPullback_SpecMap_of_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
     (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
@@ -726,12 +750,28 @@ lemma diagonal_SpecMap :
 
 end Spec
 
-section CartesianMonoidalCategory
-variable {S : Scheme}
+namespace Scheme
+variable {M S T : Scheme.{u}} [M.Over S] {f : T ⟶ S}
 
-instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
-instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+@[simps]
+instance canonicallyOverPullback : (pullback (M ↘ S) f).CanonicallyOver T where
+  hom := pullback.snd (M ↘ S) f
 
-end CartesianMonoidalCategory
+@[simps! -isSimp mul one]
+instance monObjAsOverPullback [MonObj (asOver M S)] : MonObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.monObjMkPullbackSnd
 
-end AlgebraicGeometry
+instance isCommMonObj_asOver_pullback [MonObj (asOver M S)] [IsCommMonObj (asOver M S)] :
+    IsCommMonObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.isCommMonObj_mk_pullbackSnd
+
+instance GrpObjAsOverPullback [GrpObj (asOver M S)] : GrpObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.grpObjMkPullbackSnd
+
+instance : (pullback.fst (M ↘ S) (𝟙 S)).IsOver S := ⟨pullback.condition.trans (by simp)⟩
+
+instance isMonHom_fst_id_right [MonObj (asOver M S)] :
+    IsMonHom ((pullback.fst (M ↘ S) (𝟙 S)).asOver S) := by
+  unfold asOver OverClass.asOver at *; exact Over.isMonHom_pullbackFst_id_right
+
+end AlgebraicGeometry.Scheme
