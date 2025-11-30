@@ -199,14 +199,14 @@ theorem support_mono {Q : RingPreordering R} [P.HasIdealSupport] [Q.HasIdealSupp
 /-! ## Order operations -/
 
 section Inf
-variable {P₁ P₂ : RingPreordering R}
+variable (P₁ P₂ : RingPreordering R)
 
 instance : Min (RingPreordering R) where
   min P₁ P₂ := { toSubsemiring := min P₁.toSubsemiring P₂.toSubsemiring }
 
 @[simp]
 theorem toSubsemiring_inf : (P₁ ⊓ P₂).toSubsemiring = P₁.toSubsemiring ⊓ P₂.toSubsemiring := rfl
-@[simp] theorem mem_inf {x : R} : x ∈ P₁ ⊓ P₂ ↔ x ∈ P₁ ∧ x ∈ P₂ := .rfl
+@[simp] theorem mem_inf (x : R) : x ∈ P₁ ⊓ P₂ ↔ x ∈ P₁ ∧ x ∈ P₂ := .rfl
 @[simp, norm_cast] theorem coe_inf : ↑(P₁ ⊓ P₂) = (P₁ ∩ P₂ : Set R) := rfl
 
 @[simp]
@@ -232,9 +232,9 @@ instance : SemilatticeInf (RingPreordering R) where
 end Inf
 
 section sInf
-variable {S : Set (RingPreordering R)} {hS : S.Nonempty}
+variable {S : Set (RingPreordering R)} (hS : S.Nonempty)
 
-variable (S hS) in
+variable (S) in
 /-- The intersection of a nonempty set of preorderings is a ring preordering. -/
 def sInf : RingPreordering R where
   __ := InfSet.sInf (RingPreordering.toSubsemiring '' S)
@@ -252,7 +252,7 @@ theorem coe_sInf : (sInf S hS : Set R) = ⋂ P ∈ S, P := by
   simp_all
 
 @[simp]
-theorem mem_sInf {x : R} : x ∈ sInf S hS ↔ ∀ p ∈ S, x ∈ p := by
+theorem mem_sInf (x : R) : x ∈ sInf S hS ↔ ∀ p ∈ S, x ∈ p := by
   rw [show x ∈ sInf S hS ↔ x ∈ (sInf S hS : Set R) by simp [-coe_sInf]]
   simp_all
 
@@ -267,17 +267,15 @@ protected theorem HasIdealSupport.sInf (h : ∀ P ∈ S, P.HasIdealSupport) :
 
 @[simp]
 theorem support_sInf (h : ∀ P ∈ S, P.HasIdealSupport) :
-    letI _ := HasIdealSupport.sInf h
+    letI _ := HasIdealSupport.sInf hS h
     (sInf S hS).support =
     InfSet.sInf {s | ∃ P, ∃ hP : P ∈ S, letI _ := h _ hP; s = P.support} := by
   aesop (add simp mem_support)
 
-variable (hS) in
 theorem sInf_le {P} (hP : P ∈ S) : sInf S hS ≤ P := by
   rw [← SetLike.coe_subset_coe]
   simpa using Set.biInter_subset_of_mem hP
 
-variable (hS) in
 theorem le_sInf {P} (hP : ∀ Q ∈ S, P ≤ Q) : P ≤ sInf S hS := by
   rw [← SetLike.coe_subset_coe]
   simpa using Set.subset_iInter₂ hP
@@ -293,7 +291,7 @@ instance : Bot (RingPreordering R) where
 
 @[simp] theorem bot_toSubsemiring : (⊥ : RingPreordering R).toSubsemiring = .sumSq R := rfl
 
-@[simp] theorem mem_bot {a} : a ∈ (⊥ : RingPreordering R) ↔ IsSumSq a :=
+@[simp] theorem mem_bot (a) : a ∈ (⊥ : RingPreordering R) ↔ IsSumSq a :=
   show a ∈ Subsemiring.sumSq R ↔ IsSumSq a by simp
 
 @[simp, norm_cast] theorem coe_bot : (⊥ : RingPreordering R) = {x : R | IsSumSq x} :=
@@ -305,9 +303,9 @@ instance : OrderBot (RingPreordering R) where
 end Bot
 
 section sSup
-variable {S : Set (RingPreordering R)} {hS : S.Nonempty} {hSd : DirectedOn (· ≤ ·) S}
+variable {S : Set (RingPreordering R)} (hS : S.Nonempty) (hSd : DirectedOn (· ≤ ·) S)
 
-variable (S hS hSd) in
+variable (S) in
 /-- The union of a directed set of preorderings is a preordering. -/
 def sSup : RingPreordering R where
   __ := SupSet.sSup (toSubsemiring '' S)
@@ -334,18 +332,15 @@ theorem mem_sSup {x : R} : x ∈ sSup S hS hSd ↔ ∃ p ∈ S, x ∈ p := by
   rw [show x ∈ sSup S hS hSd ↔ x ∈ (sSup S hS hSd : Set R) by simp [-coe_sSup]]
   simp_all
 
-variable (hS) (hSd) in
 theorem le_sSup {P} (hP : P ∈ S) : P ≤ sSup S hS hSd := by
   rw [← SetLike.coe_subset_coe]
   simpa using Set.subset_biUnion_of_mem hP
 
-variable (hS) (hSd) in
 theorem sSup_le {P} (hP : ∀ Q ∈ S, Q ≤ P) : sSup S hS hSd ≤ P := by
   rw [← SetLike.coe_subset_coe]
   simpa using Set.iUnion₂_subset hP
 
 include hSd in
-variable (hSd) in
 theorem directedOn_image_supportAddSubgroup :
     DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (supportAddSubgroup '' S) := by
   rw [directedOn_image]
@@ -374,7 +369,7 @@ protected theorem HasIdealSupport.sSup (h : ∀ P ∈ S, P.HasIdealSupport) :
 
 @[simp]
 theorem support_sSup (h : ∀ P ∈ S, P.HasIdealSupport) :
-    letI _ : (sSup S hS hSd).HasIdealSupport := HasIdealSupport.sSup h
+    letI _ := HasIdealSupport.sSup hS hSd h
     (sSup S hS hSd).support =
     SupSet.sSup {s | ∃ P, ∃ hP : P ∈ S, letI _ := h _ hP; s = P.support} := by
   generalize_proofs
@@ -404,55 +399,64 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-! ## comap -/
 
+section comap
+
+variable (f : A →+* B) (P : RingPreordering B)
+
 /-- The preimage of a preordering along a ring homomorphism is a preordering. -/
-def comap (f : A →+* B) (P : RingPreordering B) : RingPreordering A where
+def comap : RingPreordering A where
   __ := P.toSubsemiring.comap f
   mem_of_isSquare' := by aesop
 
 @[simp]
-theorem coe_comap (P : RingPreordering B) {f : A →+* B} : (P.comap f : Set A) = f ⁻¹' P := rfl
+theorem coe_comap : (P.comap f : Set A) = f ⁻¹' P := rfl
 
 @[simp]
-theorem mem_comap {P : RingPreordering B} {f : A →+* B} {x : A} : x ∈ P.comap f ↔ f x ∈ P :=
-  .rfl
+theorem mem_comap (x) : x ∈ P.comap f ↔ f x ∈ P := .rfl
 
-theorem comap_comap (P : RingPreordering C) (g : B →+* C) (f : A →+* B) :
-    (P.comap g).comap f = P.comap (g.comp f) := rfl
+theorem comap_comap (Q : RingPreordering C) (g : B →+* C) :
+    (Q.comap g).comap f = Q.comap (g.comp f) := rfl
 
-instance (P : RingPreordering B) [HasMemOrNegMem P] (f : A →+* B) : HasMemOrNegMem (comap f P) where
+instance [HasMemOrNegMem P] : HasMemOrNegMem (P.comap f) where
   mem_or_neg_mem x := by have := mem_or_neg_mem P (f x); aesop
 
-theorem mem_comap_supportAddSubgroup {P : RingPreordering B} {f : A →+* B} {x : A} :
-    x ∈ supportAddSubgroup (P.comap f) ↔ f x ∈ P.supportAddSubgroup := by
+theorem mem_comap_supportAddSubgroup (x) :
+    x ∈ (P.comap f).supportAddSubgroup ↔ f x ∈ P.supportAddSubgroup := by
   simp [mem_supportAddSubgroup]
 
 @[simp]
-theorem comap_supportAddSubgroup {P : RingPreordering B} {f : A →+* B} :
-    supportAddSubgroup (P.comap f) = (P.supportAddSubgroup).comap f := by
+theorem comap_supportAddSubgroup :
+    (P.comap f).supportAddSubgroup = (P.supportAddSubgroup).comap f := by
   ext; simp [mem_comap_supportAddSubgroup]
 
-instance (P : RingPreordering B) [P.HasIdealSupport] (f : A →+* B) :
-    HasIdealSupport (P.comap f) where
+instance [P.HasIdealSupport] : HasIdealSupport (P.comap f) where
   smul_mem_support x a ha := by have := smul_mem_support P (f x) (by simpa using ha); simp_all
 
-theorem mem_comap_support {P : RingPreordering B} [P.HasIdealSupport] {f : A →+* B} {x : A} :
+theorem mem_comap_support [P.HasIdealSupport] (x) :
     x ∈ (P.comap f).support ↔ f x ∈ P.support := by
-  simpa using mem_comap_supportAddSubgroup (P := P)
+  simpa using mem_comap_supportAddSubgroup _ P _
 
 @[simp]
-theorem comap_support {P : RingPreordering B} [P.HasIdealSupport] {f : A →+* B} :
+theorem comap_support [P.HasIdealSupport] :
     (P.comap f).support = (P.support).comap f := by ext; simp [mem_comap_support]
 
 /-- The preimage of an ordering along a ring homomorphism is an ordering. -/
-instance (P : RingPreordering B) [P.IsOrdering] (f : A →+* B) : IsOrdering (comap f P) where
+instance [P.IsOrdering] : IsOrdering (comap f P) where
   __ : (P.comap f).support.IsPrime := by rw [comap_support]; infer_instance
+
+end comap
 
 /-! ## map -/
 
+section map
+
+variable {f : A →+* B} {P : RingPreordering A} (hf : Function.Surjective f)
+    (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup)
+
+variable (f P) in
 /-- The image of a preordering `P` along a surjective ring homomorphism
 with kernel contained in the support of `P` is a preordering. -/
-def map {f : A →+* B} {P : RingPreordering A} (hf : Function.Surjective f)
-    (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup) : RingPreordering B where
+def map : RingPreordering B where
   __ := P.toSubsemiring.map f
   mem_of_isSquare' hx := by
     rcases isSquare_subset_image_isSquare hf hx with ⟨x, hx, hfx⟩
@@ -462,38 +466,29 @@ def map {f : A →+* B} {P : RingPreordering A} (hf : Function.Surjective f)
     aesop
 
 @[simp]
-theorem coe_map {f : A →+* B} {P : RingPreordering A} (hf : Function.Surjective f)
-    (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup) :
-    (map hf hsupp : Set B) = f '' P := rfl
+theorem coe_map : (map f P hf hsupp : Set B) = f '' P := rfl
 
 @[simp]
-theorem mem_map {f : A →+* B} {P : RingPreordering A} (hf : Function.Surjective f)
-    (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup) {y} :
-    y ∈ map hf hsupp ↔ ∃ x ∈ P, f x = y := .rfl
+theorem mem_map (y) : y ∈ map f P hf hsupp ↔ ∃ x ∈ P, f x = y := .rfl
 
-instance {f : A →+* B} {P : RingPreordering A} [HasMemOrNegMem P] (hf : Function.Surjective f)
-    (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup) : HasMemOrNegMem (map hf hsupp) where
+instance [HasMemOrNegMem P] : HasMemOrNegMem (map f P hf hsupp) where
   mem_or_neg_mem x := by
     obtain ⟨x', rfl⟩ := hf x
     have := mem_or_neg_mem P x'
     aesop
 
-theorem mem_map_supportAddSubgroup {f : A →+* B} {P : RingPreordering A}
-    {hf : Function.Surjective f} {hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup} {x : B} :
-    x ∈ supportAddSubgroup (map hf hsupp) ↔ ∃ y ∈ P.supportAddSubgroup, f y = x := by
+theorem mem_map_supportAddSubgroup (x) :
+    x ∈ (map f P hf hsupp).supportAddSubgroup ↔ ∃ y ∈ P.supportAddSubgroup, f y = x := by
   refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ => ?_, by aesop (add simp mem_supportAddSubgroup)⟩
   have : -(a + b) + b ∈ P := by exact add_mem (hsupp (show f (a + b) = 0 by simp_all)).2 hb₁
   aesop (add simp mem_supportAddSubgroup)
 
 @[simp]
-theorem map_supportAddSubgroup {f : A →+* B} {P : RingPreordering A} {hf : Function.Surjective f}
-    {hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup} :
-    supportAddSubgroup (map hf hsupp) = (P.supportAddSubgroup).map f := by
+theorem map_supportAddSubgroup :
+    (map f P hf hsupp).supportAddSubgroup = (P.supportAddSubgroup).map f := by
   ext; simp [mem_map_supportAddSubgroup]
 
-instance {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport] (hf : Function.Surjective f)
-    (hsupp : (RingHom.ker f : Set A) ⊆ P.supportAddSubgroup) :
-    HasIdealSupport <| map hf hsupp where
+instance [P.HasIdealSupport] : HasIdealSupport <| map f P hf hsupp where
   smul_mem_support x a ha := by
     rw [mem_map_supportAddSubgroup] at ha
     rcases ha with ⟨a', ha', rfl⟩
@@ -501,23 +496,21 @@ instance {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport] (hf : Funct
     have := smul_mem_support P x' ha'
     aesop
 
-theorem mem_map_support {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport]
-    {hf : Function.Surjective f}
-    {hsupp : RingHom.ker f ≤ P.support} {x : B} :
-    x ∈ (map hf hsupp).support ↔ ∃ y ∈ P.support, f y = x := by
-  simpa using mem_map_supportAddSubgroup
+theorem mem_map_support [P.HasIdealSupport] (x) :
+    x ∈ (map f P hf hsupp).support ↔ ∃ y ∈ P.support, f y = x := by
+  simpa using mem_map_supportAddSubgroup ..
 
 @[simp]
-theorem map_support {f : A →+* B} {P : RingPreordering A} [P.HasIdealSupport]
-    {hf : Function.Surjective f} {hsupp : RingHom.ker f ≤ P.support} :
-    (map hf hsupp).support = (P.support).map f := by
+theorem map_support [P.HasIdealSupport] :
+    (map f P hf hsupp).support = (P.support).map f := by
   ext; simp [mem_map_support, Ideal.mem_map_iff_of_surjective f hf]
 
 /-- The image of an ordering `P` along a surjective ring homomorphism
 with kernel contained in the support of `P` is an ordering. -/
-instance {f : A →+* B} {P : RingPreordering A} [P.IsOrdering] (hf : Function.Surjective f)
-    (hsupp : RingHom.ker f ≤ P.support) : IsOrdering <| map hf hsupp where
-  __ : (map hf hsupp).support.IsPrime := by
+instance [P.IsOrdering] : IsOrdering <| map f P hf hsupp where
+  __ : (map f P hf hsupp).support.IsPrime := by
     simpa using Ideal.map_isPrime_of_surjective hf hsupp
+
+end map
 
 end RingPreordering
