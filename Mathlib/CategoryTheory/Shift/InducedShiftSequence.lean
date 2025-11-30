@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Shift.ShiftSequence
 /-! # Induced shift sequences
 
 When `G : C ⥤ A` is a functor from a category equipped with a shift by a
-monoid `M`, we have defined in the file `CategoryTheory.Shift.ShiftSequence`
+monoid `M`, we have defined in the file `Mathlib/CategoryTheory/Shift/ShiftSequence.lean`
 a type class `G.ShiftSequence M` which provides functors `G.shift a : C ⥤ A` for all `a : M`,
 isomorphisms `shiftFunctor C n ⋙ G.shift a ≅ G.shift a'` when `n + a = a'`,
 and isomorphisms `G.isoShift a : shiftFunctor C a ⋙ G ≅ G.shift a` for all `a`, all of
@@ -21,7 +21,7 @@ The typical example shall be `[(homologyFunctor C (ComplexShape.up ℤ) 0).Shift
 for any abelian category `C` (TODO).
 
 Similarly as a shift on a category may induce a shift on a quotient or a localized
-category (see the file `CategoryTheory.Shift.Induced`), this file shows that
+category (see the file `Mathlib/CategoryTheory/Shift/Induced.lean`), this file shows that
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).

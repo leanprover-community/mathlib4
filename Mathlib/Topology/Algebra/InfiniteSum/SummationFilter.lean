@@ -18,7 +18,7 @@ We define a `SummationFilter` on `Î²` to be a filter on the finite subsets of `Î
 in defining summability: if `L` is a summation filter, we define the `L`-sum of `f` to be the
 limit along `L` of the sums over finsets (if this limit exists). This file only develops the basic
 machinery of summation filters - the key definitions `HasSum`, `tsum` and `summable` (and their
-product variants) are in the file `Mathlib.Topology.Algebra.InfiniteSum.Defs`.
+product variants) are in the file `Mathlib/Topology/Algebra/InfiniteSum/Defs.lean`.
 -/
 
 @[expose] public section
