@@ -110,13 +110,12 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p
 iff the leading coefficient of `p` is a unit. -/
 theorem IsIntegrallyClosed.isIntegral_iff_isUnit_leadingCoeff {x : S} {p : R[X]}
     (hirr : Irreducible p) (hp : p.aeval x = 0) :
-    IsIntegral R x ↔ IsUnit p.leadingCoeff := by
-  constructor
-  · intro int_x
+    IsIntegral R x ↔ IsUnit p.leadingCoeff where
+  mp int_x := by
     obtain ⟨p, rfl⟩ := isIntegrallyClosed_dvd int_x hp
     rw [leadingCoeff_mul, monic int_x, one_mul]
     exact ((of_irreducible_mul hirr).resolve_left (not_isUnit R x)).map leadingCoeffHom
-  · intro isUnit
+  mpr isUnit := by
     simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
