@@ -49,23 +49,34 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
 instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
-theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
+theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-theorem lex_lt_iff_of_unique [Preorder α] [LT N] [Unique α] {a b : Lex (α →₀ N)} :
-    a < b ↔ a default < b default := by
-  simp only [lex_lt_iff, Unique.exists_iff, and_iff_right_iff_imp]
-  refine fun _ j hj ↦ False.elim (lt_irrefl j ?_)
-  simpa only [Unique.uniq] using hj
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff := Lex.lt_iff
 
-theorem lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
+theorem Lex.lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
     ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   DFinsupp.lex_lt_of_lt_of_preorder r (id hlt : x.toDFinsupp < y.toDFinsupp)
+
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_of_lt_of_preorder := Lex.lt_of_lt_of_preorder
 
 theorem lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
     Pi.Lex r (· < ·) x y :=
   DFinsupp.lex_lt_of_lt r (id hlt : x.toDFinsupp < y.toDFinsupp)
+
+theorem lex_iff_of_unique [Unique α] [LT N] {r} [IsIrrefl α r] {x y : α →₀ N} :
+    Finsupp.Lex r (· < ·) x y ↔ x default < y default :=
+  Pi.lex_iff_of_unique
+
+theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →₀ N)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
 
 instance Lex.isStrictOrder [LinearOrder α] [PartialOrder N] :
     IsStrictOrder (Lex (α →₀ N)) (· < ·) where
@@ -86,6 +97,13 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) wh
 instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   __ := Lex.partialOrder
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
+
+theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
+    x ≤ y ↔ x default ≤ y default :=
+  Pi.lex_le_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
   intro a b h
@@ -111,17 +129,10 @@ variable [PartialOrder N]
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
   fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, (toDFinsupp a) i ≤ (toDFinsupp b) i)
 
-@[deprecated lex_lt_iff (since := "2025-10-12")]
+@[deprecated Lex.lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
-
-theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
-    a ≤ b ↔ a default ≤ b default := by
-  simp only [le_iff_eq_or_lt]
-  apply or_congr _ lex_lt_iff_of_unique
-  conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
-  simp only [Finsupp.ext_iff, Unique.forall_iff]
 
 end NHasZero
 

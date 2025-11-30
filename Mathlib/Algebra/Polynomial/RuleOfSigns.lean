@@ -75,7 +75,7 @@ theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.si
       coeffList_eraseLead hpz]
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
-the first two nonzero coeffients match. -/
+the first two nonzero coefficients match. -/
 theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     signVariations P = signVariations P.eraseLead + if SignType.sign P.leadingCoeff
       = -SignType.sign P.eraseLead.leadingCoeff then 1 else 0 := by
@@ -294,6 +294,8 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
 
+-- TODO: fix non-terminal simp below; simp followed by rfl
+set_option linter.flexible false in
 /-- Multiplying a polynomial by a linear term `X - η` adds at least one sign change. This is the
 basis for the induction in `roots_countP_pos_le_signVariations`. -/
 theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :

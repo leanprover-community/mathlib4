@@ -39,7 +39,7 @@ locally. Then, arguing "up to refinements" is very similar to
 arguing locally for a Grothendieck topology (TODO: indeed,
 show that it corresponds to the "refinements" topology on an
 abelian category `C` that is defined by saying that
-a sieve is covering if it contains an epimorphism).
+a sieve is covering if it contains an epimorphism)).
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
