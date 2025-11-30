@@ -4130,6 +4130,7 @@ public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Simplex
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
+public import Mathlib.Geometry.Euclidean.Sphere.PolePolar
 public import Mathlib.Geometry.Euclidean.Sphere.Power
 public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
