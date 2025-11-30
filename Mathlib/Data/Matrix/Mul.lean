@@ -575,6 +575,7 @@ end Matrix
 
 section IsStablyFiniteRing
 
+/-- A semiring is stably finite if every matrix ring over it is Dedekind-finite. -/
 abbrev IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop :=
   ∀ n, IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
 
