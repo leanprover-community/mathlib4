@@ -477,7 +477,7 @@ theorem centerEquivRootsOfUnity_apply
   simp only [centerEquivRootsOfUnity, Or.by_cases, MulEquiv.coe_mk, Equiv.coe_fn_mk,
     dite_smul, one_smul, Subgroup.mk_smul, Units.smul_isUnit, dite_eq_ite]
   split_ifs with hR hV
-  · have : Subsingleton V := Module.subsingleton_ofSubsingleton R V
+  · have : Subsingleton V := Module.subsingleton R V
     apply Subsingleton.eq_one
   · apply Subsingleton.eq_one
   · rw [not_subsingleton_iff_nontrivial] at hV
