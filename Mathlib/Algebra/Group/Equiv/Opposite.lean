@@ -153,7 +153,7 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
 
 /-- A monoid is isomorphic to the opposite of its opposite. -/
 @[to_additive (attr := simps!)
-      /-- A additive monoid is isomorphic to the opposite of its opposite. -/]
+      /-- An additive monoid is isomorphic to the opposite of its opposite. -/]
 def MulEquiv.opOp (M : Type*) [Mul M] : M ≃* Mᵐᵒᵖᵐᵒᵖ where
   __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
   map_mul' _ _ := rfl

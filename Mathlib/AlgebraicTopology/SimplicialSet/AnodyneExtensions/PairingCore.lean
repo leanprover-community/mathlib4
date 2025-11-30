@@ -29,7 +29,7 @@ namespace SSet.Subcomplex
 
 variable {X : SSet.{u}} (A : X.Subcomplex)
 
-/-- An helper structure in order to construct a pairing for a subcomplex of a
+/-- A helper structure in order to construct a pairing for a subcomplex of a
 simplicial set `X`. The main difference with `Pairing` is that we provide
 an index type `ι` and a function `dim : ι → ℕ` which allow to
 parametrize type (I) simplices as `simplex s : X _⦋dim s + 1⦌` for `s : ι`,

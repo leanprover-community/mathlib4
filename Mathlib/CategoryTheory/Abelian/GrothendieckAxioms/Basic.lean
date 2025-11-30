@@ -151,7 +151,7 @@ lemma HasExactColimitsOfShape.of_codomain_equivalence (J : Type*) [Category J] {
 /--
 Transport a `HasExactLimitsOfShape` along an equivalence of the shape.
 
-Note: When `C` has finite colimits, this lemma holds with the equivalence replaced by a initial
+Note: When `C` has finite colimits, this lemma holds with the equivalence replaced by an initial
 functor, see `hasExactLimitsOfShape_of_initial` below.
 -/
 lemma HasExactLimitsOfShape.of_domain_equivalence {J J' : Type*} [Category J] [Category J']

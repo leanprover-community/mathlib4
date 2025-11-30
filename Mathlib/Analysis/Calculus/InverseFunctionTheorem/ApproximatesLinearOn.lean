@@ -388,7 +388,7 @@ section
 variable (f s)
 
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
-returns a open partial homeomorphism with `toFun = f` and `source = s`. -/
+returns an open partial homeomorphism with `toFun = f` and `source = s`. -/
 def toOpenPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : OpenPartialHomeomorph E F where
   toPartialEquiv := hf.toPartialEquiv hc

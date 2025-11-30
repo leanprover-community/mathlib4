@@ -12,7 +12,7 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 /-!
 # Absolutely convex sets
 
-A set `s` in an commutative monoid `E` is called absolutely convex or disked if it is convex and
+A set `s` in a commutative monoid `E` is called absolutely convex or disked if it is convex and
 balanced. The importance of absolutely convex sets comes from the fact that every locally convex
 topological vector space has a basis consisting of absolutely convex sets.
 
