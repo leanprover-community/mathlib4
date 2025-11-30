@@ -222,6 +222,8 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
       rintro ⟨a, s⟩
       exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩ }
 
+-- For the instance on `Localization S`, we prefer `OreLocalization.instCommSemiring`.
+-- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
   fast_instance%
@@ -230,12 +232,16 @@ instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submo
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
       exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
 
+-- For the instance on `Localization S`, we prefer `OreLocalization.instRing`.
+-- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
   fast_instance%
   { __ := inferInstanceAs (AddCommGroup (LocalizedModule S A))
     __ := inferInstanceAs (Semiring (LocalizedModule S A)) }
 
+-- For the instance on `Localization S`, we prefer `OreLocalization.instCommRing`.
+-- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) :=
   fast_instance%
@@ -318,8 +324,8 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
     mk'_smul_mk, zero_smul, zero_mk]
 
-/-- If `IsLocalization S T`, then `M[S⁻¹]` is a `T`-module. This is a bad instance and should be
-eventually removed. -/
+/-- If `IsLocalization S T`, then `M[S⁻¹]` is a `T`-module.
+This should eventually be replaced with `IsLocalizedModule f N` and `Module T N`. -/
 noncomputable abbrev moduleOfIsLocalization : Module T (LocalizedModule S M) where
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
@@ -442,7 +448,7 @@ variable (S M)
 noncomputable def mkLinearMap : M →ₗ[R] LocalizedModule S M where
   toFun m := mk m 1
   map_add' x y := by simp
-  map_smul' r m := by simp [mk, OreLocalization.smul_oreDiv]
+  map_smul' _ _ := by simp [mk, OreLocalization.smul_oreDiv]
 
 end
 
