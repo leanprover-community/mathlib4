@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Matrix.toLin
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Finite-dimensional vector spaces

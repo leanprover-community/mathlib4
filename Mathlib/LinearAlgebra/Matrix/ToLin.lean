@@ -1210,3 +1210,4 @@ theorem Module.End.injective_of_surjective_fin [IsStablyFiniteRing A] {n}
   isStablyFiniteRing_iff_injective_of_surjective.mp ‹_› n f hf
 
 end
+#lint

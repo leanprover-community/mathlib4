@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Data.Fintype.Card
 
 /-!
-# Finitely monoids
+# Finite monoids are Dedekind-finite
 -/
 
 @[expose] public section
