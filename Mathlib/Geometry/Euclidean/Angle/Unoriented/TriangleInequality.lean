@@ -108,7 +108,7 @@ lemma angle_le_angle_add_angle_aux :
   rw [real_inner_comm x, H0]
   simp [H]
 
-include hx hy hz in
+include hz in
 lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle y z := by
   rcases lt_or_ge π (angle x y + angle y z) with H | H
   · linarith [angle_le_pi x z]
@@ -135,7 +135,6 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
   grw [← H2]
   ring_nf; rfl
 
-include hx hy
 lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ π) :
     ortho x y ≠ 0 := by
   intro h; rw [ortho_eq_sub_inner _ hx, sub_eq_zero] at h
@@ -145,7 +144,7 @@ lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y 
 lemma eq_of_angle_eq_zero (hxy : angle x y = 0) : x = y := by
   grind [angle_eq_zero_iff, abs, norm_zero, norm_smul, Real.norm_eq_abs, one_smul]
 
-include hx hy hz in
+include hz in
 lemma angle_expression_of_angle_eq_angle_sum :
     angle x z ≠ π → angle x z = angle x y + angle y z →
     Real.sin (angle x z) • y = Real.sin (angle y z) • x + Real.sin (angle x y) • z := by
