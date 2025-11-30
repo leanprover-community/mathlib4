@@ -79,14 +79,14 @@ example (x : α) (f : False) : x ≤ 1 := by
 end order
 
 example (n : ℕ) (h : n ≠ 0) : n ≠ 0 := by
-  by_contra rfl
+  by_contra! rfl
   simp only [Ne, not_true_eq_false] at h
 
-example (p q : Prop) (hnp : ¬ p) : ¬ (p ∧ q) := by
-  by_contra ⟨hp, _⟩
+example (p q : Prop) (hnp : ¬ p) : ¬ p ∨ ¬ q := by
+  by_contra! ⟨hp, _⟩
   exact hnp hp
 
 example (p q : Prop) (hnp : ¬ p) (hnq : ¬ q) : ¬ (p ∨ q) := by
-  by_contra hp | hq
+  by_contra! hp | hq
   · exact hnp hp
   · exact hnq hq
