@@ -46,7 +46,7 @@ the sheafification of `P ⋙ F`.
 
 Use the lemmas `whisker_right_to_sheafify_sheafify_comp_iso_hom`,
 `to_sheafify_comp_sheafify_comp_iso_inv` and `sheafify_comp_iso_inv_eq_sheafify_lift` to reduce
-the components of this isomorphisms to a state that can be handled using the universal property
+the components of this isomorphism to a state that can be handled using the universal property
 of sheafification. -/
 noncomputable def sheafifyCompIso : J.sheafify P ⋙ F ≅ J.sheafify (P ⋙ F) :=
   J.plusCompIso _ _ ≪≫ (J.plusFunctor _).mapIso (J.plusCompIso _ _)
