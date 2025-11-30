@@ -224,6 +224,7 @@ public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.Algebra.Category.Semigrp.Basic
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.End
 public import Mathlib.Algebra.Central.Matrix
 public import Mathlib.Algebra.Central.TensorProduct
 public import Mathlib.Algebra.CharP.Algebra
@@ -5705,6 +5706,7 @@ public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RepresentationTheory.Rep
 public import Mathlib.RepresentationTheory.Submodule
+public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Tannaka
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
