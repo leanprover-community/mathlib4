@@ -7,6 +7,9 @@ variable {R : Type*} [CommRing R] {S : Submonoid R}
 example : Localization S = LocalizedModule S R := by
   with_reducible rfl
 
+example : OreLocalization.instMonoid = LocalizedModule.instMonoid (A := R) (S := S) := by
+  with_reducible_and_instances rfl
+
 example : (LocalizedModule.instCommRing : CommRing R[S⁻¹]) = OreLocalization.instCommRing := by
   with_reducible_and_instances rfl
 

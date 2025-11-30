@@ -254,7 +254,9 @@ example {R : Type*} [CommRing R] {S : Submonoid R} :
     (LocalizedModule.instCommRing : CommRing R[S⁻¹]) = OreLocalization.instCommRing := by
   with_reducible_and_instances rfl
 
-noncomputable instance : SMul T (LocalizedModule S M) where
+/-- If `IsLocalization S T`, then `M[S⁻¹]` has a `T`-action.
+This should eventually be replaced with `IsLocalizedModule f N` and `SMul T N`. -/
+noncomputable abbrev smulOfIsLocalization : SMul T (LocalizedModule S M) where
   smul x p :=
     let a := IsLocalization.sec S x
     liftOn p (fun p ↦ mk (a.1 • p.1) (a.2 * p.2))
@@ -267,6 +269,8 @@ noncomputable instance : SMul T (LocalizedModule S M) where
           _ = a.2 • a.1 • s • p.2 • p'.1 := by rw [h]
           _ = s • (a.2 * p.2) • a.1 • p'.1 := by
             simp_rw [Submonoid.smul_def, ← mul_smul, Submonoid.coe_mul]; ring_nf )
+
+attribute [local instance] smulOfIsLocalization
 
 theorem smul_def (x : T) (m : M) (s : S) :
     x • mk m s = mk ((IsLocalization.sec S x).1 • m) ((IsLocalization.sec S x).2 * s) := rfl
@@ -391,8 +395,8 @@ theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : Lo
 variable (T)
 
 attribute [local instance] moduleOfIsLocalization in
-/-- If `IsLocalization S T`, then `A[S⁻¹]` is a `T`-algebra. This is a bad instance and should be
-eventually removed. -/
+/-- If `IsLocalization S T`, then `A[S⁻¹]` is a `T`-algebra.
+This should eventually be replaced with `IsLocalizedModule f N` and `Algebra T N`. -/
 noncomputable abbrev algebraOfIsLocalization {A : Type*} [Semiring A] [Algebra R A] :
     Algebra T (LocalizedModule S A) :=
   Algebra.ofModule smul'_mul mul_smul'
