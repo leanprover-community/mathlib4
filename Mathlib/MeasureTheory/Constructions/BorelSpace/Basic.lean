@@ -368,6 +368,21 @@ instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
   rw [eq_generateFrom_countableBasis (X a)]
   exact .basic _ (hi a ha)
 
+/-- This is not covered by `Pi.opensMeasurableSpace` as it does not require second countability. -/
+instance Pi.opensMeasurableSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, OpensMeasurableSpace (X i)] :
+    OpensMeasurableSpace (∀ i, X i) where
+  borel_le := by
+    obtain h | h := isEmpty_or_nonempty ι
+    · exact fun s _ ↦ Subsingleton.set_cases .empty .univ s
+    have := Classical.choice (nonempty_unique ι)
+    rw [borel, MeasurableSpace.pi, ciSup_unique]
+    refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
+    simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+      Set.mem_setOf_eq] at hs
+    obtain ⟨t, ht, rfl⟩ := hs
+    exact ⟨t, ht.measurableSet, rfl⟩
+
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
 the two spaces has second countable topology. This is the right assumption to ensure that continuous
 maps from `α` to `β` are strongly measurable. -/
@@ -624,6 +639,12 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
 
 instance Pi.borelSpace {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
     [∀ i, MeasurableSpace (X i)] [∀ i, SecondCountableTopology (X i)] [∀ i, BorelSpace (X i)] :
+    BorelSpace (∀ i, X i) :=
+  ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
+
+/-- This is not covered by `Pi.borelSpace` as it does not require second countability. -/
+instance Pi.borelSpace_of_subsingleton {ι : Type*} {X : ι → Type*} [Subsingleton ι]
+    [∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)] [∀ i, BorelSpace (X i)] :
     BorelSpace (∀ i, X i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 
