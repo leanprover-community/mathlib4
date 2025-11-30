@@ -287,7 +287,7 @@ theorem whisker_exchange {A B C : F ↓ X} {f g : A ⟶ B} {h i : B ⟶ C} (η :
 
 @[simp]
 theorem pentagon {A B C D E : F ↓ X} (f : A ⟶ B) (g : B ⟶ C) (h : C ⟶ D) (i : D ⟶ E) :
-    whiskerRight F X (associator F X f g h).hom i ≫ (associatorHom F X f (g ≫ h) i) ≫
+    whiskerRight F X (associatorHom F X f g h) i ≫ (associatorHom F X f (g ≫ h) i) ≫
     whiskerLeft F X f (associator F X g h i).hom =
     (associatorHom F X (f ≫ g) h i) ≫ (associatorHom F X f g (h ≫ i)) := by
   refine Hom₂.ext ?_
