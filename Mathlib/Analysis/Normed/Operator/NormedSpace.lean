@@ -382,15 +382,25 @@ section inl_inr
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E F : Type*)
 
-/-- The injection `x ↦ AddMonoidHom.inl E F x` as a linear isometry. -/
+/-- The injection `x ↦ LinearMap.inl E F x` as a linear isometry. -/
 protected def LinearIsometry.inl [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
   (LinearMap.inl 𝕜 E F).toLinearIsometry .inl
 
-/-- The injection `x ↦ AddMonoidHom.inr E F x` as a linear isometry. -/
+@[simp]
+lemma LinearIsometry.inl_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (x : E) :
+    LinearIsometry.inl 𝕜 E F x = (x, 0) := rfl
+
+/-- The injection `x ↦ LinearMap.inr E F x` as a linear isometry. -/
 protected def LinearIsometry.inr [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
   (LinearMap.inr 𝕜 E F).toLinearIsometry .inr
+
+@[simp]
+lemma LinearIsometry.inr_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (y : F) :
+    LinearIsometry.inr 𝕜 E F y = (0, y) := rfl
 
 lemma ContinuousLinearMap.norm_inl_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
