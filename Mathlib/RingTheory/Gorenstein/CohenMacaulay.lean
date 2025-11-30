@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.CohenMacaulay.Catenary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.KrullDimension.Basic
@@ -682,7 +682,8 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
         rfl }.toModuleIso
   simp [injectiveDimension_eq_of_iso e, add_one_eq_top_iff]
 
-/-
+section
+
 variable {R} in
 class Ideal.isIrreducible (I : Ideal R) : Prop where
   irr : ∀ {J₁ J₂ : Ideal R}, J₁ ⊓ J₂ = I → (J₁ = I ∨ J₂ = I)
@@ -690,31 +691,36 @@ class Ideal.isIrreducible (I : Ideal R) : Prop where
 local instance hasExt_self : CategoryTheory.HasExt.{u} (ModuleCat.{u} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{u} (ModuleCat.{u} R)
 
-variable [IsLocalRing R] [IsNoetherianRing R]
-
-lemma injectiveDimension_self_eq_ringKrullDim_of_ne_top
-    (h : injectiveDimension (ModuleCat.of R R) ≠ ⊤) :
-    injectiveDimension (ModuleCat.of R R) = ringKrullDim R := by
-  sorry
-
-lemma ext_subsingleton_or_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
-    (h : injectiveDimension (ModuleCat.of R R) = ringKrullDim R) (h : ringKrullDim R = n) :
-    (∀ i ≠ n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
+lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
+    (h : injectiveDimension (ModuleCat.of R R) = n) (h : ringKrullDim R = n) :
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       n)).IsPrincipal := by
   sorry
 
-lemma isGorensteinLocalRing_of_exist_ext_vanish (n : ℕ) (h : ringKrullDim R = n) (h : ∃ i > n,
-    Subsingleton (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) :
-    IsGorensteinLocalRing R := by
-  sorry
+lemma isGorensteinLocalRing_iff_exists :
+    IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
+    (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
+  have (a : WithBot ℕ∞) : a ≠ ⊤ ↔ ∃ (n : ℕ), a < n := by
+    induction a with
+    | bot => simp
+    | coe a =>
+      induction a with
+      | top => simp
+      | coe a => simpa using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
+  simp only [isGorensteinLocalRing_def, this, ge_iff_le]
+  apply exists_congr (fun n ↦ ?_)
+  rw [injectiveDimension_lt_iff_of_finite.{u, u, u} (ModuleCat.of R R) n]
+  congr! 2
+  exact (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
+    (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr
 
 theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
     [IsGorensteinLocalRing R, injectiveDimension (ModuleCat.of R R) = n,
      (∀ i ≠ n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       n)).IsPrincipal,
-     ∃ i > n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i),
+     ∃ n, ∀ i > n,
+      Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i),
      (∀ i < n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       n)).IsPrincipal,
@@ -726,31 +732,56 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
       J.spanFinrank = n ∧ J.isIrreducible
      ].TFAE := by
   tfae_have 1 → 2 := by
-
-    sorry
+    intro
+    rw [← h]
+    apply injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing
   tfae_have 2 → 3 := by
-
-    sorry
-  tfae_have 3 → 4 := by
-    --trivial
-    sorry
+    intro injdim
+    let _ : IsGorensteinLocalRing R := by
+      rw [isGorensteinLocalRing_def, injdim]
+      exact WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)
+    let _ : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
+    refine ⟨fun i hi ↦ ?_, ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim R n injdim h⟩
+    rcases hi.lt_or_gt with lt|gt
+    · have lt' : i < IsLocalRing.depth (ModuleCat.of R R) := by
+        apply lt_of_lt_of_eq (ENat.coe_lt_coe.mpr lt)  (WithBot.coe_inj.mp _)
+        exact h.symm.trans ((isCohenMacaulayLocalRing_def R).mp ‹_›)
+      apply (((extFunctor _).mapIso
+        (Shrink.linearEquiv R (R ⧸ maximalIdeal R)).toModuleIso.op).app
+        (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr.mp
+      exact ext_subsingleton_of_lt_moduleDepth lt'
+    · let _ : HasInjectiveDimensionLE (ModuleCat.of R R) n := by
+        simp [← injectiveDimension_le_iff, injdim]
+      exact HasInjectiveDimensionLT.subsingleton (ModuleCat.of R R) (n + 1) i gt _
+  tfae_have 3 → 4 := fun ⟨h, _⟩ ↦ ⟨n, fun i hi ↦ h i hi.ne.symm⟩
   tfae_have 4 → 1 := by
-
-    sorry
-  tfae_have 3 → 5 := by
-    --trivial
-    sorry
+    refine fun ⟨n, hn⟩ ↦ ?_
+    rw [isGorensteinLocalRing_iff_exists]
+    use n + 1
+    exact hn
+  tfae_have 3 → 5 := fun ⟨nesub, prin⟩ ↦ ⟨fun i hi ↦ nesub i hi.ne, prin⟩
   tfae_have 5 → 6 := by
-    --CM basic
-    sorry
+    refine fun ⟨ltsub, prin⟩ ↦ ⟨?_, prin⟩
+    apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth
+    rw [h]
+    apply WithBot.coe_le_coe.mpr (le_sSup ?_)
+    intro i hi
+    apply (((extFunctor _).mapIso (Shrink.linearEquiv R (R ⧸ maximalIdeal R)).toModuleIso.op).app
+      (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr.mpr
+    exact ltsub i (Nat.cast_lt.mp hi)
   tfae_have 6 → 7 := by
-
+    refine fun ⟨CM, prin⟩ ↦ ⟨CM, fun {J} maxmin spanrank ↦ ?_⟩
+    --first proof `J` is genrated by regular sequence
+    --then use `prin` to consider minimal ideal in `R⧸J`
     sorry
   tfae_have 7 → 8 := by
-    --trivial
+    refine fun ⟨CM, irr⟩ ↦ ⟨CM, ?_⟩
+    --existence of parameter ideal
     sorry
-  tfae_have 8 → 3 := by
+  tfae_have 8 → 1 := by
+    refine fun ⟨CM, ⟨J, maxmin, spanrank, irr⟩⟩ ↦ ?_
+    -- reduce to proving `IsGorensteinLocalRing (R ⧸ J)`
+    sorry
+  tfae_finish
 
-    sorry
-  sorry
--/
+end
