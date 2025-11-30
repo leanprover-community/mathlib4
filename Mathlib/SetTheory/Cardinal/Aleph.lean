@@ -218,7 +218,7 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
   omega.monotone.map_max
 
 theorem preOmega_le_omega (o : Ordinal) : preOmega o ≤ ω_ o :=
-  preOmega_le_preOmega.2 (Ordinal.le_add_left _ _)
+  preOmega_le_preOmega.2 le_add_self
 
 theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
   isInitial_preOmega _
@@ -232,7 +232,7 @@ theorem omega_zero : ω_ 0 = ω := by
 
 theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
-  exact Ordinal.zero_le o
+  exact zero_le o
 
 /-- For the theorem `0 < ω`, see `omega0_pos`. -/
 theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
@@ -389,7 +389,7 @@ theorem aleph_max (o₁ o₂ : Ordinal) : ℵ_ (max o₁ o₂) = max (ℵ_ o₁)
   aleph.monotone.map_max
 
 theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
-  preAleph_le_preAleph.2 (Ordinal.le_add_left _ _)
+  preAleph_le_preAleph.2 le_add_self
 
 @[simp]
 theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
@@ -416,7 +416,7 @@ theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o,
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_preAleph, aleph0_le_preAleph]
-  apply Ordinal.le_add_right
+  exact le_self_add
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
@@ -604,7 +604,7 @@ theorem beth_eq_preBeth (o : Ordinal) : beth o = preBeth (ω + o) :=
   rfl
 
 theorem preBeth_le_beth (o : Ordinal) : preBeth o ≤ ℶ_ o :=
-  preBeth_le_preBeth.2 (Ordinal.le_add_left _ _)
+  preBeth_le_preBeth.2 le_add_self
 
 theorem beth_strictMono : StrictMono beth :=
   preBeth_strictMono.comp fun _ _ h ↦ by gcongr
