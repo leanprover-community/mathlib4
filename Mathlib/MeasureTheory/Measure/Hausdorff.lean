@@ -985,8 +985,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
 
 variable (ι X)
 
-theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]
-    [SecondCountableTopology X] (d : ℝ) :
+theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.funUnique ι X) μH[d] μH[d] :=
   (IsometryEquiv.funUnique ι X).measurePreserving_hausdorffMeasure _
 
