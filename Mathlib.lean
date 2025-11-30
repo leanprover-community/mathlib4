@@ -1419,6 +1419,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
+public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
@@ -1430,6 +1431,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
+public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal

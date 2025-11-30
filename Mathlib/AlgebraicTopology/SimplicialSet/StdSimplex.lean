@@ -186,7 +186,7 @@ namespace Subcomplex
 variable {X : SSet.{u}}
 
 lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
-    Subpresheaf.range f = ofSimplex (yonedaEquiv f) :=
+    range f = ofSimplex (yonedaEquiv f) :=
   Subpresheaf.range_eq_ofSection' _
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
@@ -256,7 +256,7 @@ lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
 
 @[simp]
 lemma range_δ {n : ℕ} (i : Fin (n + 2)) :
-    Subpresheaf.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
+    Subcomplex.range (stdSimplex.δ i) = face.{u} {i}ᶜ := by
   rw [Subcomplex.range_eq_ofSimplex]
   exact ofSimplex_yonedaEquiv_δ i
 
