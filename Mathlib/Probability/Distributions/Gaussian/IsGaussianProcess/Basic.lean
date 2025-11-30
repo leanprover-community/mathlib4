@@ -54,24 +54,44 @@ lemma IsGaussianProcess.modification (hX : IsGaussianProcess X P) (hXY : ∀ t, 
 
 end Basic
 
+lemma borelSpace_of_isOpen {X : Type*} [TopologicalSpace X] [m : MeasurableSpace X]
+    (h : ∀ s : Set X, IsOpen s → MeasurableSet s) : borel X ≤ m :=
+  MeasurableSpace.generateFrom_le h
+
+lemma nonempty_of_nontrivial_pi {ι : Type*} (α : ι → Type*) [h : Nontrivial (Π i, α i)] :
+    Nonempty ι := by
+  contrapose! h
+  infer_instance
+
+instance {ι : Type*} (E : ι → Type*) [∀ i, TopologicalSpace (E i)] [∀ i, MeasurableSpace (E i)]
+    [∀ i, BorelSpace (E i)] [Subsingleton ι] :
+    BorelSpace (Π i, E i) := by
+  nontriviality (Π i, E i)
+  have := nonempty_of_nontrivial_pi E
+  have := Classical.choice (nonempty_unique ι)
+  refine ⟨le_antisymm pi_le_borel_pi (borelSpace_of_isOpen fun s hs ↦ ?_)⟩
+  simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
+    Set.mem_setOf_eq] at hs
+  rw [MeasurableSpace.pi, ciSup_unique, MeasurableSpace.measurableSet_comap]
+  exact ⟨(fun (b : Π i, E i) ↦ b default) ⁻¹' s, hs.measurableSet, rfl⟩
+
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
 
-instance {E ι : Type*} [TopologicalSpace E] [MeasurableSpace E] [BorelSpace E] [Subsingleton ι] :
-    BorelSpace (ι → E) := by
+instance {ι : Type*} (E : ι → Type*) [∀ i, TopologicalSpace (E i)] [∀ i, MeasurableSpace (E i)]
+    [∀ i, BorelSpace (E i)] [Subsingleton ι] :
+    BorelSpace (Π i, E i) := by
   refine ⟨le_antisymm pi_le_borel_pi ?_⟩
   obtain h | h := isEmpty_or_nonempty ι
   · exact fun s _ ↦ Subsingleton.set_cases .empty .univ s
-  have := @Unique.mk' ι ⟨Classical.choice h⟩ inferInstance
-  rw [borel]
-  refine MeasurableSpace.generateFrom_le fun s hs ↦ ?_
+  have := Classical.choice (nonempty_unique ι)
+  rw [borel, MeasurableSpace.pi, ciSup_unique]
+  refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
   simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
     Set.mem_setOf_eq] at hs
-  simp_rw [MeasurableSpace.measurableSet_iSup, MeasurableSpace.measurableSet_comap]
-  refine MeasurableSpace.GenerateMeasurable.basic _ ⟨Classical.choice h, ?_⟩
   obtain ⟨t, ht, rfl⟩ := hs
-  exact ⟨t, ht.measurableSet, by rw [Subsingleton.elim (Classical.choice h) default]⟩
+  exact ⟨t, ht.measurableSet, rfl⟩
 
-instance IsGaussianProcess.hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t : T) :
+lemma IsGaussianProcess.hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t : T) :
     HasGaussianLaw (X t) P := by
   have : X t = (ContinuousLinearMap.proj (R := ℝ) ⟨t, by simp⟩) ∘
     (fun ω ↦ ({t} : Finset T).restrict (X · ω)) := by ext; simp
@@ -80,7 +100,7 @@ instance IsGaussianProcess.hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t :
 
 variable [SecondCountableTopology E]
 
-instance IsGaussianProcess.hasGaussianLaw_sub (hX : IsGaussianProcess X P)
+lemma IsGaussianProcess.hasGaussianLaw_sub (hX : IsGaussianProcess X P)
     {s t : T} : HasGaussianLaw (X s - X t) P := by
   classical
   have : X s - X t =
@@ -92,11 +112,11 @@ instance IsGaussianProcess.hasGaussianLaw_sub (hX : IsGaussianProcess X P)
   rw [this]
   exact (hX.hasGaussianLaw _).map _
 
-instance IsGaussianProcess.hasGaussianLaw_fun_sub
+lemma IsGaussianProcess.hasGaussianLaw_fun_sub
     (hX : IsGaussianProcess X P) {s t : T} : HasGaussianLaw (fun ω ↦ X s ω - X t ω) P :=
   hX.hasGaussianLaw_sub
 
-instance IsGaussianProcess.hasGaussianLaw_increments
+lemma IsGaussianProcess.hasGaussianLaw_increments
     (hX : IsGaussianProcess X P) {n : ℕ} {t : Fin (n + 1) → T} :
     HasGaussianLaw (fun ω (i : Fin n) ↦ X (t i.succ) ω - X (t i.castSucc) ω) P := by
   classical
@@ -251,7 +271,7 @@ lemma IsGaussianProcess.comp_left {F : Type*}
       map_smul' := by simp },
     by simp⟩
 
-instance IsGaussianProcess.smul [SecondCountableTopology E] (c : T → ℝ)
+lemma IsGaussianProcess.smul (c : T → ℝ)
     (hX : IsGaussianProcess X P) :
     IsGaussianProcess (fun t ω ↦ c t • (X t ω)) P :=
   letI L t : E →L[ℝ] E :=
@@ -261,8 +281,7 @@ instance IsGaussianProcess.smul [SecondCountableTopology E] (c : T → ℝ)
       cont := by fun_prop }
   hX.comp_left L
 
-instance IsGaussianProcess.shift [SecondCountableTopology E]
-    [Add T] (h : IsGaussianProcess X P) (t₀ : T) :
+lemma IsGaussianProcess.shift [Add T] (h : IsGaussianProcess X P) (t₀ : T) :
     IsGaussianProcess (fun t ω ↦ X (t₀ + t) ω - X t₀ ω) P := by
   classical
   exact h.of_isGaussianProcess fun t ↦ ⟨{t₀, t₀ + t},
@@ -271,8 +290,7 @@ instance IsGaussianProcess.shift [SecondCountableTopology E]
       map_smul' c x := by simp; module },
     by simp⟩
 
-instance IsGaussianProcess.restrict [SecondCountableTopology E]
-    (h : IsGaussianProcess X P) (s : Set T) :
+lemma IsGaussianProcess.restrict (h : IsGaussianProcess X P) (s : Set T) :
     IsGaussianProcess (fun t : s ↦ X t) P :=
   h.of_isGaussianProcess fun t ↦ ⟨{t.1},
     { toFun x := x ⟨t.1, by simp⟩
