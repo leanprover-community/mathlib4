@@ -213,7 +213,7 @@ theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜
   rfl
 
 @[simp]
-theorem id_toContinuousAffineMap : id.toContinuousAffineMap = ContinuousAffineMap.id 𝕜 P :=
+theorem toContinuousAffineMap_id : id.toContinuousAffineMap = ContinuousAffineMap.id 𝕜 P :=
   rfl
 
 instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
@@ -281,7 +281,7 @@ theorem subtypeₐᵢ_toAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
   rfl
 
 @[simp]
-theorem subtypeₐᵢ_toContinuousAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
+theorem toContinuousAffineMap_subtypeₐᵢ (s : AffineSubspace 𝕜 P) [Nonempty s] :
     s.subtypeₐᵢ.toContinuousAffineMap = s.subtypeA :=
   rfl
 
