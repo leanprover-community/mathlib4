@@ -112,7 +112,7 @@ lemma angle_le_angle_add_angle_aux :
 
 include hx hy hz in
 lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle y z := by
-  rcases lt_or_ge Real.pi (angle x y + angle y z) with H | H
+  rcases lt_or_ge π (angle x y + angle y z) with H | H
   · linarith [angle_le_pi x z]
   suffices Real.cos (angle x y + angle y z) ≤ Real.cos (angle x z) by
     have H0 : 0 ≤ angle x y + angle y z :=
@@ -138,7 +138,7 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
   ring_nf; rfl
 
 include hx hy in
-lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ Real.pi) :
+lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ π) :
     ortho x y ≠ 0 := by
   intro h; rw [ortho_eq_sub_inner _ hx, sub_eq_zero] at h
   grind [abs, norm_smul, Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
@@ -150,20 +150,20 @@ lemma eq_of_angle_eq_zero (hxy : angle x y = 0) : x = y := by
 
 include hx hy hz in
 lemma angle_expression_of_angle_eq_angle_sum :
-    angle x z ≠ Real.pi → angle x z = angle x y + angle y z →
+    angle x z ≠ π → angle x z = angle x y + angle y z →
     Real.sin (angle x z) • y = Real.sin (angle y z) • x + Real.sin (angle x y) • z := by
   intros H H0
-  obtain H1 | H1 := eq_or_ne (angle x z) 0
+  by_cases H1 : angle x z = 0
   · grind [angle_nonneg, Real.sin_zero, zero_smul]
   have Hxz : Real.sin (angle x z) ≠ 0 := by
     grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
-  obtain H2 | H2 := eq_or_ne (angle x y) 0
+  by_cases H2 : angle x y = 0
   · grind [Real.sin_zero, zero_smul, eq_of_angle_eq_zero]
-  obtain H3 | H3 := eq_or_ne (angle y z) 0
+  by_cases H3 : angle y z = 0
   · grind [Real.sin_zero, zero_smul, smul_right_inj, eq_of_angle_eq_zero]
-  obtain H4 | H4 := eq_or_ne (angle x y) Real.pi
+  by_cases H4 : angle x y = π
   · grind [angle_le_pi, angle_nonneg]
-  obtain H5 | H5 := eq_or_ne (angle y z) Real.pi
+  by_cases H5 : angle y z = π
   · grind [angle_le_pi, angle_nonneg]
   have H6 : ⟪x, z⟫ = ⟪x, z⟫ := rfl
   nth_rw 2 [angle_le_angle_add_angle_aux hx hy, angle_le_angle_add_angle_aux hz hy] at H6
