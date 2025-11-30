@@ -479,10 +479,8 @@ instance instCoframe : Coframe (Filter α) where
       fun h s hsc t htb hst ↦ h ⟨htb, mem_of_superset hsc hst⟩⟩
   top_sdiff f := by
     ext s
-    simp only [mem_sdiff_iff_union, Filter.hnot_def, mem_principal,
-      compl_subset_iff_union, mem_top_iff_forall, eq_univ_iff_forall]
-    apply not_iff_not.1
-    simp only [ker, mem_union, not_forall, not_or, mem_sInter, Filter.mem_sets, not_forall]
+    simp only [mem_sdiff_iff_union, Filter.hnot_def, mem_principal, compl_subset_iff_union,
+      mem_top_iff_forall, eq_univ_iff_forall, ker, mem_union, mem_sInter, Filter.mem_sets]
     grind
 
 instance : DistribLattice (Filter α) where
