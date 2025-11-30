@@ -84,6 +84,9 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
 theorem extend_target' : (f.extend I).target = I '' f.target := by
   rw [extend, PartialEquiv.trans_target'', I.source_eq, univ_inter, I.toPartialEquiv_coe]
 
+theorem extend_target_eq_image_source : (f.extend I).target = (f.extend I) '' f.source := by
+  rw [f.extend_target', ← f.image_source_eq_target, ← image_comp, f.extend_coe]
+
 lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
   rw [extend_target, I.range_eq_univ, inter_univ]
   exact I.continuous_symm.isOpen_preimage _ f.open_target
@@ -318,6 +321,9 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by
   rw [← nhdsWithin_eq_iff_eventuallyEq, ← map_extend_nhdsWithin _ hx,
     map_extend_nhdsWithin_eq_image_of_subset _ hx hs]
+
+lemma extend_prod (f' : OpenPartialHomeomorph M' H') :
+    (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
 
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
