@@ -461,17 +461,6 @@ theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
 instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
   ⟨fun e => e.toContinuousAffineEquiv⟩
 
-instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
-  ⟨fun e => e.toContinuousAffineEquiv.toContinuousAffineMap⟩
-
-@[simp]
-theorem coe_coe : ⇑(e : P ≃ᴬ[𝕜] P₂) = e :=
-  rfl
-
-@[simp]
-theorem coe_coe' : ⇑(e : P →ᴬ[𝕜] P₂) = e :=
-  rfl
-
 variable (𝕜 P)
 
 /-- Identity map as an `AffineIsometryEquiv`. -/
