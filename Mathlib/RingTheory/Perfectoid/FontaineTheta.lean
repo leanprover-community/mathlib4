@@ -17,7 +17,7 @@ homomorphism from the Witt vector `𝕎 R♭` of the tilt of a perfectoid ring `
 to `R` itself. Our definition of `θ` does not require that `R` is perfectoid in the first place.
 We only need `R` to be `p`-adically complete.
 
-## Main definitions
+## Main Definitions
 * `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎 R♭` to `R`.
 
 ## Main Theorems
