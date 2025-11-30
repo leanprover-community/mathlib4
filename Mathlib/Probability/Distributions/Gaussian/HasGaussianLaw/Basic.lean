@@ -55,11 +55,8 @@ lemma IsGaussian.hasGaussianLaw_id {μ : Measure E} [IsGaussian μ] : HasGaussia
   isGaussian_map := by rwa [Measure.map_id]
 
 @[fun_prop, measurability]
-lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P := by
-  by_contra! h
-  have := hX.isGaussian_map
-  rw [Measure.map_of_not_aemeasurable h] at this
-  exact this.toIsProbabilityMeasure.ne_zero _ rfl
+lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :=
+  AEMeasurable.of_map_ne_zero hX.isGaussian_map.toIsProbabilityMeasure.ne_zero
 
 lemma HasGaussianLaw.isProbabilityMeasure (hX : HasGaussianLaw X P) : IsProbabilityMeasure P where
   measure_univ := by
@@ -226,18 +223,11 @@ variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
   [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 
 lemma eval (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i : ι) :
-    HasGaussianLaw (X i) P := by
-  have : X i = (ContinuousLinearMap.proj (R := ℝ) (φ := E) i) ∘ (fun ω ↦ (X · ω)) := by ext; simp
-  rw [this]
-  exact hX.map _
+    HasGaussianLaw (X i) P := hX.map (.proj i)
 
 lemma prodMk (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
-    HasGaussianLaw (fun ω ↦ (X i ω, X j ω)) P := by
-  have : (fun ω ↦ (X i ω, X j ω)) =
-      ((ContinuousLinearMap.proj (R := ℝ) (φ := E) i).prod
-      (ContinuousLinearMap.proj (R := ℝ) (φ := E) j)) ∘ (fun ω ↦ (X · ω)) := by ext <;> simp
-  rw [this]
-  exact hX.map _
+    HasGaussianLaw (fun ω ↦ (X i ω, X j ω)) P :=
+    hX.map (.prod (.proj i) (.proj j))
 
 lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P := by
