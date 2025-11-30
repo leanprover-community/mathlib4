@@ -19,6 +19,12 @@ We only need `R` to be `p`-adically complete.
 ## Main definitions
 * `fontaineTheta` : Fontaine's θ map, which is a ring homomorphism from `𝕎 R♭` to `R`.
 
+## TODO
+Establish that our definition (explicit construction of `θ mod p ^ n`) agrees with the
+deformation-theoretic approach via the cotangent complex, as in
+[Bhatt, *Lecture notes for a class on perfectoid spaces*. Remark 6.1.7]
+(https://www.math.ias.edu/~bhatt/teaching/mat679w17/lectures.pdf).
+
 ## Tags
 Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 
