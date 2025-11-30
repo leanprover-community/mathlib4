@@ -13289,6 +13289,8 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 public import Mathlib.RingTheory.OreLocalization.Ring
 public import Mathlib.RingTheory.OrzechProperty
 public import Mathlib.RingTheory.Perfection
+public import Mathlib.RingTheory.Perfectoid.BDeRham
+public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 public import Mathlib.RingTheory.Perfectoid.Untilt
 public import Mathlib.RingTheory.PiTensorProduct
 public import Mathlib.RingTheory.PicardGroup
