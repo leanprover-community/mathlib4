@@ -345,10 +345,9 @@ def rightUnitorHom {A B : F ↓ X} (f : A ⟶ B) : f ≫ (𝟙 B) ⟶ f where
   map := by simpa using (ρ_ f.dom_map).hom
   icc := by simp only [id_def, comp_def, comp₁_dom_map, id₁_dom_map, 
                        comp₁_cod_map, id₁_cod_map, Bicategory.whiskerLeft_comp,
-                       assoc, id_eq, ← Bicategory.comp_whiskerRight]
-            rw [←assoc (F.map f.dom_map ◁ F.mapId B.ob ▷ B.map), whisker_assoc_symm, assoc, assoc,
-                assoc, ←assoc (α_ (F.map f.dom_map) (F.map (𝟙 B.ob)) B.map).hom, Iso.hom_inv_id,
-                id_comp, ←Bicategory.comp_whiskerRight, ←LaxFunctor.map₂_rightUnitor_hom]
+                       assoc, id_eq, ← Bicategory.comp_whiskerRight, whisker_assoc_symm,
+                       ←assoc (α_ (F.map f.dom_map) (F.map (𝟙 B.ob)) B.map).hom, Iso.hom_inv_id,
+                       id_comp, ←Bicategory.comp_whiskerRight, ←LaxFunctor.map₂_rightUnitor_hom]
             simp
 
 /- Right unitor reverse direction -/
