@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Real
 /-! # Conditional expectation in L1
 
 This file contains two more steps of the construction of the conditional expectation, which is
-completed in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a
+completed in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
 description of the full process.
 
 The conditional expectation of an `L²` function is defined in

@@ -24,7 +24,7 @@ of two morphisms that are roughly described as follows:
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
 and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
 coproducts and a pushout in essentially the same way as it is done in
-the file `CategoryTheory.SmallObject.Construction` for the small object
+the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
 argument);
 * `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
 of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
