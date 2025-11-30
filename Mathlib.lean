@@ -224,6 +224,7 @@ public import Mathlib.Algebra.Category.Ring.Under.Limits
 public import Mathlib.Algebra.Category.Semigrp.Basic
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Central.End
 public import Mathlib.Algebra.Central.Matrix
 public import Mathlib.Algebra.Central.TensorProduct
 public import Mathlib.Algebra.CharP.Algebra
@@ -5523,6 +5524,7 @@ public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.RelSeries
 public import Mathlib.Order.Restriction
+public import Mathlib.Order.SaddlePoint
 public import Mathlib.Order.ScottContinuity
 public import Mathlib.Order.ScottContinuity.Complete
 public import Mathlib.Order.ScottContinuity.Prod
@@ -5705,6 +5707,7 @@ public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RepresentationTheory.Rep
 public import Mathlib.RepresentationTheory.Submodule
+public import Mathlib.RepresentationTheory.Subrepresentation
 public import Mathlib.RepresentationTheory.Tannaka
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
