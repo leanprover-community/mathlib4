@@ -287,14 +287,14 @@ lemma val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂
 end DivisionMonoid
 end Units
 
-/-- For `a, b` in a `CommMonoid` such that `a * b = 1`, makes a unit out of `a`. -/
+/-- For `a, b` in a Dedekind-finite monoid such that `a * b = 1`, makes a unit out of `a`. -/
 @[to_additive
   /-- For `a, b` in an `AddCommMonoid` such that `a + b = 0`, makes an addUnit out of `a`. -/]
-def Units.mkOfMulEqOne [CommMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
-  ⟨a, b, hab, (mul_comm b a).trans hab⟩
+def Units.mkOfMulEqOne [Monoid α] [IsDedekindFiniteMonoid α] (a b : α) (hab : a * b = 1) : αˣ :=
+  ⟨a, b, hab, mul_eq_one_symm hab⟩
 
 @[to_additive (attr := simp)]
-theorem Units.val_mkOfMulEqOne [CommMonoid α] {a b : α} (h : a * b = 1) :
+theorem Units.val_mkOfMulEqOne [Monoid α] [IsDedekindFiniteMonoid α] {a b : α} (h : a * b = 1) :
     (Units.mkOfMulEqOne a b h : α) = a :=
   rfl
 
@@ -394,14 +394,16 @@ theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
 @[to_additive]
-theorem IsUnit.of_mul_eq_one [CommMonoid M] {a : M} (b : M) (h : a * b = 1) : IsUnit a :=
+theorem IsUnit.of_mul_eq_one [Monoid M] [IsDedekindFiniteMonoid M] {a : M} (b : M) (h : a * b = 1) :
+    IsUnit a :=
   ⟨.mkOfMulEqOne a b h, rfl⟩
 
 @[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
 
 @[to_additive]
-theorem IsUnit.of_mul_eq_one_right [CommMonoid M] {b : M} (a : M) (h : a * b = 1) : IsUnit b :=
-  .of_mul_eq_one a <| mul_comm a b ▸ h
+theorem IsUnit.of_mul_eq_one_right [Monoid M] [IsDedekindFiniteMonoid M] {b : M} (a : M)
+    (h : a * b = 1) : IsUnit b :=
+  .of_mul_eq_one a <| mul_eq_one_symm h
 
 @[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 

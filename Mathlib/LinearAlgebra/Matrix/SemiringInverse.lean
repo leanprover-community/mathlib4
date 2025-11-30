@@ -204,9 +204,8 @@ theorem detp_smul_adjp (hAB : A * B = 1) :
   rwa [add_add_add_comm, ← add_smul, add_add_add_comm, ← add_smul, ← h0, add_smul, one_smul,
     add_comm A, add_assoc, ((isAddUnit_detp_mul_detp hAB).smul_right _).add_right_inj] at h
 
-theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
-  suffices h : ∀ A B : Matrix n n R, A * B = 1 → B * A = 1 from ⟨h A B, h B A⟩
-  intro A B hAB
+instance instIsStablyFiniteRingOfCommSemiring : IsStablyFiniteRing R := by
+  refine fun n ↦ ⟨fun {A B} hAB ↦ ?_⟩
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
   replace h := congr(B * $(detp_smul_adjp hAB))
@@ -222,26 +221,28 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul_right _)).add_left_inj] at h
 
+@[deprecated (since := "2025-11-29")] protected alias mul_eq_one_comm := mul_eq_one_comm
+
 variable (A B)
 
 /-- We can construct an instance of invertible A if A has a left inverse. -/
 def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
-  ⟨B, h, mul_eq_one_comm.mp h⟩
+  ⟨B, h, mul_eq_one_symm h⟩
 
 /-- We can construct an instance of invertible A if A has a right inverse. -/
 def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
-  ⟨B, mul_eq_one_comm.mp h, h⟩
+  ⟨B, mul_eq_one_symm h, h⟩
 
 variable {A B}
 
 theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
-  ⟨⟨A, B, mul_eq_one_comm.mp h, h⟩, rfl⟩
+  ⟨⟨A, B, mul_eq_one_symm h, h⟩, rfl⟩
 
 theorem exists_left_inverse_iff_isUnit : (∃ B, B * A = 1) ↔ IsUnit A :=
   ⟨fun ⟨_, h⟩ ↦ isUnit_of_left_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, invOf_mul_self' A⟩⟩
 
 theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
-  ⟨⟨A, B, h, mul_eq_one_comm.mp h⟩, rfl⟩
+  ⟨⟨A, B, h, mul_eq_one_symm h⟩, rfl⟩
 
 theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
   ⟨fun ⟨_, h⟩ ↦ isUnit_of_right_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, mul_invOf_self' A⟩⟩

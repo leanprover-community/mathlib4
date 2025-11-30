@@ -297,7 +297,10 @@ theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N
     {i k} : (M * N) i k = ∑ j, M i j * N j k :=
   rfl
 
-instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
+instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where
+  mul M N := M * N
+
+instance [Fintype n] [DecidableEq n] [MulOne α] [AddCommMonoid α] : MulOne (Matrix n n α) where
 
 theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N : Matrix m n α}
     {i k} : (M * N) i k = (M i) ⬝ᵥ fun j => N j k :=
@@ -430,6 +433,13 @@ instance Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
     [SMulCommClass R α α] : SMulCommClass R (Matrix n n α) (Matrix n n α) :=
   ⟨fun r m n => (Matrix.mul_smul m r n).symm⟩
 
+@[simp]
+protected theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α}
+    [NonUnitalNonAssocSemiring β] {F} [FunLike F α β] [NonUnitalRingHomClass F α β] {f : F} :
+    (L * M).map f = L.map f * M.map f := by
+  ext
+  simp [mul_apply, map_sum]
+
 end NonUnitalNonAssocSemiring
 
 section NonAssocSemiring
@@ -452,12 +462,6 @@ instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix
   { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
     one_mul := Matrix.one_mul
     mul_one := Matrix.mul_one }
-
-@[simp]
-protected theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSemiring β]
-    {f : α →+* β} : (L * M).map f = L.map f * M.map f := by
-  ext
-  simp [mul_apply, map_sum]
 
 theorem smul_one_eq_diagonal [DecidableEq m] (a : α) :
     a • (1 : Matrix m m α) = diagonal fun _ => a := by
@@ -567,6 +571,31 @@ theorem mul_mul_right [Fintype n] (M : Matrix m n α) (N : Matrix n o α) (a : �
 end CommSemiring
 
 end Matrix
+
+section
+
+abbrev IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop :=
+  ∀ n, IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
+
+instance (R) [NonAssocSemiring R] [IsStablyFiniteRing R] : IsDedekindFiniteMonoid R :=
+  let f : R →* Matrix (Fin 1) (Fin 1) R :=
+    ⟨⟨fun r ↦ diagonal fun _ ↦ r, rfl⟩, fun _ _ ↦ (diagonal_mul_diagonal ..).symm⟩
+  MonoidHom.isDedekindFiniteMonoid_of_injective f fun _ _ eq ↦ by simpa [f] using congr($eq 0 0)
+
+theorem RingHom.isStablyFiniteRing_of_injective {R S} [NonAssocSemiring R] [NonAssocSemiring S]
+    {F} [FunLike F R S] [RingHomClass F R S] (f : F) (hf : Function.Injective f)
+    [IsStablyFiniteRing S] : IsStablyFiniteRing R := fun n ↦
+  let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) R ↦ M.map f,
+    Matrix.map_one _ (map_zero f) (map_one f)⟩ fun _ _ ↦ Matrix.map_mul
+  MonoidHom.isDedekindFiniteMonoid_of_injective f <| Matrix.map_injective hf
+
+theorem RingEquiv.isStablyFiniteRing_iff {R S} [NonAssocSemiring R] [NonAssocSemiring S]
+    {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+    IsStablyFiniteRing R ↔ IsStablyFiniteRing S where
+  mp _ := RingHom.isStablyFiniteRing_of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
+  mpr _ := RingHom.isStablyFiniteRing_of_injective f (EquivLike.injective f)
+
+end
 
 open Matrix
 
@@ -1179,6 +1208,13 @@ theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [Decidabl
 theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid α] [Mul α]
     (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e * Mᵀ.submatrix e id = M * Mᵀ := by
   rw [submatrix_mul_equiv, submatrix_id_id]
+
+instance (n R) [MulOne R] [AddCommMonoid R] [Fintype n] [DecidableEq n] [IsStablyFiniteRing R] :
+    IsDedekindFiniteMonoid (Matrix n n R) :=
+  let e := Fintype.equivFin n
+  let f := MonoidHom.mk ⟨reindex (α := R) e e, submatrix_one_equiv _⟩
+    fun _ _ ↦ (submatrix_mul_equiv ..).symm
+  MonoidHom.isDedekindFiniteMonoid_of_injective f (reindex e e).injective
 
 end Matrix
 
