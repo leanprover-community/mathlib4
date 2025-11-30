@@ -776,12 +776,7 @@ theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.d
 theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α → β}
     (hf : Function.Injective f) (x y z : α) :
     f (Equiv.swap x y z) = Equiv.swap (f x) (f y) (f z) := by
-  conv_rhs => rw [Equiv.swap_apply_def]
-  split_ifs with h₁ h₂
-  · -- We can't yet use `grind` here because of https://github.com/leanprover/lean4/issues/11088
-    rw [hf h₁, Equiv.swap_apply_left]
-  · rw [hf h₂, Equiv.swap_apply_right]
-  · grind
+  grind
 
 namespace Equiv
 
