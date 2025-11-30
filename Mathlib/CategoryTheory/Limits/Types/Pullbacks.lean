@@ -201,4 +201,20 @@ lemma range_pullbackFst : Set.range (pullback.fst f g) = f ⁻¹' Set.range g :=
 lemma range_pullbackSnd : Set.range (pullback.snd f g) = g ⁻¹' Set.range f :=
   range_snd_of_isPullback (.of_hasPullback f g)
 
+section
+
+variable {X₁ X₂ X₃ X₄ : Type u} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X₄}
+  {l : X₁ ⟶ X₃} {b : X₃ ⟶ X₄}
+
+lemma exists_of_isPullback (h : IsPullback t l r b)
+    (x₂ : X₂) (x₃ : X₃) (hx : r x₂ = b x₃) :
+    ∃ x₁, t x₁ = x₂ ∧ l x₁ = x₃ := by
+  obtain ⟨x₁, hx₁⟩ :=
+    (PullbackCone.IsLimit.equivPullbackObj h.isLimit).surjective ⟨⟨x₂, x₃⟩, hx⟩
+  rw [Subtype.ext_iff] at hx₁
+  exact ⟨x₁, congr_arg _root_.Prod.fst hx₁,
+    congr_arg _root_.Prod.snd hx₁⟩
+
+end
+
 end CategoryTheory.Limits.Types
