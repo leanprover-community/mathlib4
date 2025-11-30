@@ -910,7 +910,7 @@ lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
         rw [add_comm, ← hf.natDegree_mul' hb0, mul_comm f] at H
         have := natDegree_add_eq_left_of_natDegree_lt H
         simp only [e, natDegree_one] at this
-        cutsat
+        lia
 
 lemma resultant_eq_zero_iff {K : Type*} [Field K] {f g : K[X]} :
     resultant f g = 0 ↔ (f ≠ 0 ∨ g ≠ 0) ∧ ¬ IsCoprime f g := by

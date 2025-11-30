@@ -615,7 +615,7 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
   | zero => rfl
   | succ i h =>
     rw [Function.iterate_succ', Function.comp_apply, h (by lia)]
-    rw [List.isChain_iff_get] at hl
+    rw [List.isChain_iff_getElem] at hl
     apply hl
 
 @[deprecated (since := "2025-09-24")]
