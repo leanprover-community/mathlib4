@@ -104,7 +104,7 @@ a context with the stronger assumption that `f'` is continuous, one can use
 `ContinuousOn.integrableOn_uIcc`.
 
 Versions of FTC-2 under the simpler assumption that the function is `C^1` are given in the
-file `Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff`.
+file `Mathlib/MeasureTheory/Integral/IntervalIntegral/ContDiff.lean`.
 
 Applications to integration by parts are in the file
 `Mathlib.MeasureTheory.Integral.IntegrationByParts`.
