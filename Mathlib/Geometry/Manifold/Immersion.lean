@@ -370,28 +370,21 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsImmersionAtOfComplement F I J n f x) (hg : IsImmersionAtOfComplement F' I' J' n g x') :
     IsImmersionAtOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
-  let P := ImmersionAtProp F I J M N
-  let Q := ImmersionAtProp F' I' J' M' N'
-  let R := ImmersionAtProp (F × F') (I.prod I') (J.prod J') (M × M') (N × N')
-  -- This is the key proof: immersions are stable under products.
-  have key : ∀ {f : M → N}, ∀ {φ₁ : OpenPartialHomeomorph M H}, ∀ {ψ₁ : OpenPartialHomeomorph N G},
-      ∀ {g : M' → N'}, ∀ {φ₂ : OpenPartialHomeomorph M' H'}, ∀ {ψ₂ : OpenPartialHomeomorph N' G'},
-      P f φ₁ ψ₁ → Q g φ₂ ψ₂ → R (Prod.map f g) (φ₁.prod φ₂) (ψ₁.prod ψ₂) := by
-    rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
-    use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
-    rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
-    set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
-      Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
-    have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
-        ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
-      ext x <;> simp [C]
-    set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
-      (equiv₁.prodCongr equiv₂)) ∘ (·, 0))
-    have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
-    rw [hC, hΦ]
-    exact hfprop.prodMap hgprop
   rw [IsImmersionAtOfComplement_def]
-  exact LiftSourceTargetPropertyAt.prodMap hf.property hg.property key
+  apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
+  rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
+  use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
+  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
+  set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
+    Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
+  have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
+      ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
+    ext x <;> simp [C]
+  set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
+    (equiv₁.prodCongr equiv₂)) ∘ (·, 0))
+  have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
+  rw [hC, hΦ]
+  exact hfprop.prodMap hgprop
 
 /-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
