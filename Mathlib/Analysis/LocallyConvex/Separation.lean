@@ -342,23 +342,13 @@ halfspaces. -/
 theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E] (hs₁ : Convex ℝ s)
     (hs₂ : IsClosed s) : ∃ L : ℕ → StrongDual 𝕜 E, ∃ c : ℕ → ℝ,
     ⋂ n, { x | re (L n x) ≤ c n } = s ∧ (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
-  obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_eq' (𝕜 := 𝕜) hs₁ hs₂
-  let t : (sᶜ : Set E) → Set E := fun y => { x | re (L y x) ≤ c y }
-  have htc y : IsClosed (t y) := isClosed_le (continuous_re.comp (L y).continuous) continuous_const
-  obtain ⟨u, hu, hu'⟩ := eq_closed_inter_nat t htc
-  refine ⟨u, fun y => L y, fun y => c y, hu, subset_antisymm (fun z hz => ?_) ?_, fun h y =>
-    hLc.2 h y.1⟩
-  · by_contra!
-    have : z ∈ (∅ : Set E) := by
-      simp only [← hu', biInter_eq_iInter]
-      exact ⟨this, fun i hi => hz i hi⟩
-    grind
-  · rw (config := {occs := .pos [1]}) [← hLc.1]
-    have : u ⊆ (univ : Set (sᶜ : Set E)) := by grind
-    have := biInter_subset_biInter_left (t := t) this
-    simp only [t, biInter_eq_iInter] at this
-    convert this
-    simp
+  by_cases hsc : Nonempty (sᶜ : Set E)
+  · obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_eq' (𝕜 := 𝕜) hs₁ hs₂
+    have ⟨k, hk⟩ := eq_closed_inter_nat (fun y => { x | re (L y x) ≤ c y })
+      (fun y => isClosed_le (continuous_re.comp (L y).continuous) continuous_const)
+    exact ⟨L ∘ k, c ∘ k, hk.trans hLc.1, fun hs n => hLc.2 hs (k n)⟩
+  · sorry
+
 
 end
 
