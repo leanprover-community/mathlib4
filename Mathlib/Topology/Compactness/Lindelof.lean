@@ -723,12 +723,33 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
-lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
+lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type*} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
-  rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
+  rcases IsLindelof.elim_countable_subcover this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
+
+lemma eq_open_union_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι] (U : ι → Set X)
+    (h : ∀ i, IsOpen (U i)) : ∃ k : ℕ → ι, ⋃ n, U (k n) = ⋃ i, U i := by
+  obtain ⟨t, htc, htu⟩ := eq_open_union_countable U h
+  rcases eq_empty_or_nonempty t with rfl | t_ne
+  · simp_rw [mem_empty_iff_false, iUnion_false, iUnion_empty, eq_comm (a := ∅), iUnion_eq_empty]
+      at htu
+    simp [htu]
+  · obtain ⟨k, rfl⟩ := htc.exists_eq_range t_ne
+    use k
+    rwa [biUnion_range] at htu
+
+lemma eq_closed_inter_countable [HereditarilyLindelofSpace X] {ι : Type*} (C : ι → Set X)
+    (h : ∀ i, IsClosed (C i)) : ∃ t : Set ι, t.Countable ∧ ⋂ i∈t, C i = ⋂ i, C i := by
+  conv in _ = _ => rw [← compl_inj_iff]; simp
+  exact eq_open_union_countable (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
+
+lemma eq_closed_inter_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι] (C : ι → Set X)
+    (h : ∀ i, IsClosed (C i)) : ∃ k : ℕ → ι, ⋂ n, C (k n) = ⋂ i, C i := by
+  conv in _ = _ => rw [← compl_inj_iff]; simp
+  exact eq_open_union_nat (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
 
 instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
     LindelofSpace {x // p x} := by

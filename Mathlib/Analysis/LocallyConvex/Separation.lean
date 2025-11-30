@@ -322,7 +322,7 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
 
 /-- A variant of `iInter_halfSpaces_eq`. If `s` is nonempty, then all the halfspaces are
 nontrivial. -/
-theorem iInter_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+theorem iInter_halfSpaces_eq' (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ∃ (L : (sᶜ : Set E) → StrongDual 𝕜 E) (c : (sᶜ : Set E) → ℝ),
     ⋂ y, { x | re (L y x) ≤ c y } = s ∧ (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
   have (y : (sᶜ : Set E)) := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ y.2
@@ -339,18 +339,13 @@ theorem iInter_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
 
 /-- A closed convex set with a Lindelöf complement is an intersection of countably many
 halfspaces. -/
-theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
-    (hs₃ : IsLindelof sᶜ) : ∃ (u : Set (sᶜ : Set E)) (L : u → StrongDual 𝕜 E) (c : u → ℝ),
-    u.Countable ∧ ⋂ y, { x | re (L y x) ≤ c y } = s ∧
-    (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
-  obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_const_eq (𝕜 := 𝕜) hs₁ hs₂
+theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E] (hs₁ : Convex ℝ s)
+    (hs₂ : IsClosed s) : ∃ L : ℕ → StrongDual 𝕜 E, ∃ c : ℕ → ℝ,
+    ⋂ n, { x | re (L n x) ≤ c n } = s ∧ (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
+  obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_eq' (𝕜 := 𝕜) hs₁ hs₂
   let t : (sᶜ : Set E) → Set E := fun y => { x | re (L y x) ≤ c y }
-  have htc y : IsClosed (t y) := by
-    suffices t y = re ∘ (L y) ⁻¹' Iic (c y) from by
-      simpa [this] using IsClosed.preimage (by fun_prop) isClosed_Iic
-    grind
-  have hst : sᶜ ∩ ⋂ y, t y = ∅ := by grind
-  obtain ⟨u, hu, hu'⟩ := hs₃.elim_countable_subfamily_closed t htc hst
+  have htc y : IsClosed (t y) := isClosed_le (continuous_re.comp (L y).continuous) continuous_const
+  obtain ⟨u, hu, hu'⟩ := eq_closed_inter_nat t htc
   refine ⟨u, fun y => L y, fun y => c y, hu, subset_antisymm (fun z hz => ?_) ?_, fun h y =>
     hLc.2 h y.1⟩
   · by_contra!
@@ -364,22 +359,6 @@ theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq (hs₁ : Convex �
     simp only [t, biInter_eq_iInter] at this
     convert this
     simp
-
-/-- `IsLindelof.iInter_countable_halfSpaces_const_eq` for product spaces. -/
-theorem _root_.IsLindelof.iInter_countable_halfSpaces_const_eq_prod {F : Type*} [AddCommGroup F]
-    [Module ℝ F] [TopologicalSpace F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F] [IsTopologicalAddGroup F]
-    [ContinuousSMul 𝕜 F] [LocallyConvexSpace ℝ F] {s : Set (E × F)} (hs₁ : Convex ℝ s)
-    (hs₂ : IsClosed s) (hs₃ : IsLindelof sᶜ) :
-    ∃ (u : Set (sᶜ : Set (E × F))) (L : u → StrongDual 𝕜 E) (T : u → StrongDual 𝕜 F) (c : u → ℝ),
-    u.Countable ∧ ⋂ y, { x | re (L y x.1) + re (T y x.2) ≤ c y } = s
-    ∧ (s.Nonempty → ∀ y, ∃ x z, re (L y x) + re (T y z) ≠ 0):= by
-  obtain ⟨u, LT, c, eq1, eq2⟩ := hs₃.iInter_countable_halfSpaces_const_eq (𝕜 := 𝕜) hs₁ hs₂
-  refine ⟨u, fun i ↦ (LT i).comp (.inl 𝕜 E F), fun i ↦ (LT i).comp (.inr 𝕜 E F), c, eq1, ?_,
-    fun h y => ?_⟩
-  · convert eq2.1
-    simp [← map_add]
-  · obtain ⟨w, hw⟩ := eq2.2 h y
-    simpa [← map_add] using ⟨w.1, w.2, hw⟩
 
 end
 
