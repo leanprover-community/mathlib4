@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 module
--- what to do?
+
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-! # Polynomial laws on modules
 
@@ -268,52 +266,6 @@ theorem id_comp : id.comp f = f := by ext; rfl
 
 end Composition
 
-end PolynomialLaw
-
-section Lemmas
-/- These are elementary `rfl`-type lemmas that are used to rewrite
-some formulas in the proof below, but they probably shouldn't all belong
-to mathlib. -/
-
-variable {R S T : Type*} [CommSemiring R]
-    [CommSemiring S] [Algebra R S] [Semiring T] [Algebra R T]
-    (φ : S →ₐ[R] T)
-
-theorem AlgHom.factor (φ : S →ₐ[R] T) :
-    φ = φ.range.val.comp
-      ((RingCon.quotientKerEquivRangeₐ φ).toAlgHom.comp
-        ((RingCon.ker φ.toRingHom).mkₐ R)) := by aesop
-
-theorem AlgHom.comp_rangeRestrict :
-    (Subalgebra.val _).comp φ.rangeRestrict = φ := by aesop
-
-theorem RingCon.quotientKerEquivRangeₐ_mk :
-    (RingCon.quotientKerEquivRangeₐ φ).toAlgHom.comp
-      (RingCon.mkₐ R (RingCon.ker φ.toRingHom)) = φ.rangeRestrict := by
-    aesop
-
-theorem RingCon.kerLiftₐ_eq_val_comp_Equiv :
-     RingCon.kerLiftₐ φ = (Subalgebra.val _).comp (RingCon.quotientKerEquivRangeₐ φ).toAlgHom :=
-  AlgHom.ext fun _ ↦ refl _
-
-theorem Subalgebra.val_comp_inclusion {R : Type*} [CommSemiring R] {S : Type*} [Semiring S]
-    [Algebra R S] {A B : Subalgebra R S} (h : A ≤ B) :
-    (Subalgebra.val B).comp (Subalgebra.inclusion h) = Subalgebra.val A :=
-  rfl
-
-theorem AlgEquiv.self_trans_symm_eq_refl
-  {R S S' : Type*} [CommSemiring R] [Semiring S] [Semiring S']
-  [Algebra R S] [Algebra R S'] (e : S ≃ₐ[R] S') :
-  e.trans e.symm = AlgEquiv.refl := by aesop
-
-theorem AlgEquiv.symm_trans_self_eq_refl
-  {R S S' : Type*} [CommSemiring R] [Semiring S] [Semiring S']
-  [Algebra R S] [Algebra R S'] (e : S ≃ₐ[R] S') :
-  e.symm.trans e = AlgEquiv.refl := by
-  aesop
-
-end Lemmas
-
 section Universe
 
 open scoped TensorProduct
@@ -324,15 +276,11 @@ variable (R : Type u) [CommSemiring R]
   (M : Type*) [AddCommMonoid M] [Module R M]
   (N : Type*) [AddCommMonoid N] [Module R N]
   (S : Type v) [CommSemiring S] [Algebra R S]
-
-namespace PolynomialLaw
-
-variable (f : M →ₚₗ[R] N)
+  (f : M →ₚₗ[R] N)
 
 section Lift
 
 open LinearMap
-
 
 -- The universe of `PolynomialLaw.lifts` is computed by the compiler
 /-- The type of lifts of  `S ⊗[R] M` to a polynomial ring. -/
@@ -405,7 +353,9 @@ theorem toFun'_eq_of_diagram
       ψ.range.val.comp ((RingCon.quotientKerEquivRangeₐ ψ).toAlgHom.comp  θ) := by
     simp only [θ, ← AlgHom.comp_assoc, ← hh']
     simp [AlgHom.comp_assoc]
-  rw [φ.factor, ψ.factor, ← AlgHom.comp_assoc, ← AlgHom.comp_assoc _, ht]
+  rw [← φ.comp_rangeRestrict, ← φ.quotientKerEquivRangeₐ_comp_mkₐ,
+    ← ψ.comp_rangeRestrict, ← ψ.quotientKerEquivRangeₐ_comp_mkₐ,
+    ← AlgHom.comp_assoc, ← AlgHom.comp_assoc _, ht]
   simp only [AlgHom.comp_toLinearMap, rTensor_comp_apply]
   apply congr_arg
   rw [← rTensor_comp_apply, ← AlgHom.comp_toLinearMap, isCompat_apply',
@@ -413,9 +363,9 @@ theorem toFun'_eq_of_diagram
     isCompat_apply']
   apply congr_arg
   simp only [θ, ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, AlgHom.comp_assoc]
-  rw [RingCon.quotientKerEquivRangeₐ_mk, comp_toLinearMap,
+  rw [φ.quotientKerEquivRangeₐ_comp_mkₐ, comp_toLinearMap,
     rTensor_comp_apply, hpq, ← rTensor_comp_apply, ← comp_toLinearMap,
-    ← RingCon.quotientKerEquivRangeₐ_mk ψ, ← AlgHom.comp_assoc]
+    ← ψ.quotientKerEquivRangeₐ_comp_mkₐ, ← AlgHom.comp_assoc]
   simp
 
 /-- Compare the values of `PolynomialLaw.toFun' in a square diagram,
@@ -674,6 +624,6 @@ theorem comp_apply (S : Type*) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
 
 end Comp
 
-end PolynomialLaw
-
 end Universe
+
+end PolynomialLaw
