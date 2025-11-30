@@ -496,44 +496,33 @@ theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeS
   simp only [Set.mem_toFinset]
   exact f.mapEdgeSet
 
-theorem degree_eq (f : G ≃g G') (x : V) [Fintype ↑(G.neighborSet x)]
-    [Fintype ↑(G'.neighborSet (f x))] : G.degree x = G'.degree (f x) := by
-  simp_rw [← card_neighborSet_eq_degree]
-  convert Fintype.ofEquiv_card (Iso.mapNeighborSet f x).symm
+@[simp] theorem degree_eq (f : G ≃g G') (x : V)
+    [Fintype ↑(G.neighborSet x)] [Fintype ↑(G'.neighborSet (f x))] :
+    G'.degree (f x) = G.degree x := by
+  rw [← card_neighborSet_eq_degree, ← card_neighborSet_eq_degree,
+    ← Fintype.card_congr (mapNeighborSet f x).symm]
 
 variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
 
 theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
   rcases isEmpty_or_nonempty V
-  · have : IsEmpty W := f.symm.isEmpty
-    simp [minDegree]
+  · simp [f.symm.isEmpty]
   · have : Nonempty W := f.symm.nonempty
-    rcases lt_trichotomy G.minDegree G'.minDegree with h | h | h
-    · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
-      rw [hx, Iso.degree_eq f x] at h
-      contrapose! h
-      exact minDegree_le_degree G' (f x)
-    · exact h
+    apply le_antisymm
     · obtain ⟨x', hx'⟩ := exists_minimal_degree_vertex G'
-      rw [hx', Iso.degree_eq f.symm x'] at h
-      contrapose! h
-      exact minDegree_le_degree G (f.symm x')
+      simpa only [hx', ← degree_eq f.symm x'] using minDegree_le_degree G (f.symm x')
+    · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
+      simpa only [hx, ← degree_eq f x] using minDegree_le_degree G' (f x)
 
 theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
   rcases isEmpty_or_nonempty V
-  · have : IsEmpty W := f.symm.isEmpty
-    simp [maxDegree]
+  · simp [f.symm.isEmpty]
   · have : Nonempty W := f.symm.nonempty
-    rcases lt_trichotomy G.maxDegree G'.maxDegree with h | h | h
-    · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
-      rw [hx', Iso.degree_eq f.symm x'] at h
-      contrapose! h
-      exact degree_le_maxDegree G (f.symm x')
-    · exact h
+    apply le_antisymm
     · obtain ⟨x, hx⟩ := exists_maximal_degree_vertex G
-      rw [hx, Iso.degree_eq f x] at h
-      contrapose! h
-      exact degree_le_maxDegree G' (f x)
+      simpa only [hx, ← degree_eq f x] using degree_le_maxDegree G' (f x)
+    · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
+      simpa only [hx', ← degree_eq f.symm x'] using degree_le_maxDegree G (f.symm x')
 
 end Iso
 
