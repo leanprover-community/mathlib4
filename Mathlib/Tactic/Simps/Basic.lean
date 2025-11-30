@@ -1002,10 +1002,10 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
+  addConstInfo ref declName
+  if cfg.isSimp then
+    addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
-    _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams declName
-    if cfg.isSimp then
-      addSimpTheorem simpExtension declName true false .global <| eval_prio default
     let attrs ← elabAttrs cfg.attrs
     Elab.Term.applyAttributes declName attrs
 
