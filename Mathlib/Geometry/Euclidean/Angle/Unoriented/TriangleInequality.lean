@@ -46,7 +46,7 @@ lemma inner_normalize_ortho (x y : V) : ⟪y, normalize (ortho y x)⟫ = 0 := by
 variable {x y z : V}
 variable (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) (hz : ‖z‖ = 1)
 
-include hx hy in
+include hx hy
 lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
     ⟪x, normalize (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
   rw [NormedSpace.normalize, real_inner_smul_right, ortho_eq_sub_inner _ hy, inner_sub_right,
@@ -70,7 +70,6 @@ lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
     ring
   field_simp; exact H2
 
-include hx hy in
 lemma inner_ortho_right_eq_sin_angle : ⟪x, normalize (ortho y x)⟫ = Real.sin (angle x y) := by
   have H : ⟪x, normalize (ortho y x)⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
     simp [Real.sin_sq, ← inner_eq_cos_angle_of_norm_eq_one hx hy,
@@ -82,7 +81,6 @@ lemma inner_ortho_right_eq_sin_angle : ⟪x, normalize (ortho y x)⟫ = Real.sin
       (inner_ortho_nonneg hx hy)
   simp_all [abs_of_nonneg H0]
 
-include hx hy in
 lemma angle_le_angle_add_angle_aux :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
   rw [← inner_ortho_right_eq_sin_angle hx hy, ← inner_eq_cos_angle_of_norm_eq_one hx hy,
@@ -137,14 +135,13 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
   grw [← H2]
   ring_nf; rfl
 
-include hx hy in
+include hx hy
 lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ π) :
     ortho x y ≠ 0 := by
   intro h; rw [ortho_eq_sub_inner _ hx, sub_eq_zero] at h
   grind [abs, norm_smul, Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
     inner_eq_neg_mul_norm_iff_angle_eq_pi]
 
-include hx hy in
 lemma eq_of_angle_eq_zero (hxy : angle x y = 0) : x = y := by
   grind [angle_eq_zero_iff, abs, norm_zero, norm_smul, Real.norm_eq_abs, one_smul]
 
