@@ -45,7 +45,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersionAtOfComplement.congr_F`, `IsImmersionOfComplement.congr_F`:
   being an immersion (at `x`) w.r.t. `F` is stable under
   replacing the complement `F` by an isomorphic copy
-* `isOpen_isImmersionAtOfComplement` and `isOpen_isImmersionAt`:
+* `IsOpen.isImmersionAtOfComplement` and `IsOpen.isImmersionAt`:
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
   is an immersion (at a point).
@@ -359,10 +359,10 @@ lemma congr_F (e : F ≃L[𝕜] F') :
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
 /- The set of points where `IsImmersionAtOfComplement` holds is open. -/
-lemma _root_.isOpen_isImmersionAtOfComplement :
+lemma _root_.IsOpen.isImmersionAtOfComplement :
     IsOpen {x | IsImmersionAtOfComplement F I J n f x} := by
   simp_rw [IsImmersionAtOfComplement_def]
-  exact isOpen_liftSourceTargetPropertyAt
+  exact .liftSourceTargetPropertyAt
 
 -- Can grind prove the next two lemmas, after sufficient future tagging?
 -- Which of these two proofs is better?
@@ -585,12 +585,12 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
 /- The set of points where `IsImmersionAt` holds is open. -/
-lemma _root_.isOpen_isImmersionAt :
+lemma _root_.IsOpen.isImmersionAt :
     IsOpen {x | IsImmersionAt I J n f x} := by
   rw [isOpen_iff_forall_mem_open]
   exact fun x hx ↦ ⟨{x | IsImmersionAtOfComplement hx.complement I J n f x },
-    fun y hy ↦ hy.isImmersionAt,
-    isOpen_isImmersionAtOfComplement, by simp [hx.isImmersionAtOfComplement_complement]⟩
+    fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
+    by simp [hx.isImmersionAtOfComplement_complement]⟩
 
 /-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
 then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/

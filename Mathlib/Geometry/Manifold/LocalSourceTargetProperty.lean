@@ -33,7 +33,7 @@ local property of this form.
   `f` has this property at `x` if there exist charts `φ` and `ψ` such that `P f φ ψ` holds.
 * `Manifold.LiftSourceTargetPropertyAt.congr_of_eventuallyEq`: if `f` has property `P` at `x`
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
-* `isOpen_liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
+* `IsOpen.liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
   holds is open
 
 -/
@@ -206,7 +206,7 @@ lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[n
   ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
 
 /- The set of points where `LiftSourceTargetPropertyAt` holds is open. -/
-lemma _root_.isOpen_liftSourceTargetPropertyAt :
+lemma _root_.IsOpen.liftSourceTargetPropertyAt :
     IsOpen {x | LiftSourceTargetPropertyAt I I' n g x P} := by
   rw [isOpen_iff_forall_mem_open]
   intro x hx
