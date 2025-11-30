@@ -60,7 +60,6 @@ lemma StrictConvex.centerMass_mem_interior {s : Set V} {t : Finset ι} {w : ι �
             simp only [lt_add_iff_pos_right, gt_iff_lt]
             exact (sum_nonneg hs₀).lt_of_ne' hsum_t
           simp only [hzi, ← add_smul, ← add_div, ne_eq, hwi, not_false_eq_true, div_self, one_smul]
-
           by_cases! hijt : ∃ i'' j'', i'' ∈ t ∧ j'' ∈ t ∧ z i'' ≠ z j'' ∧ w i'' ≠ 0 ∧ w j'' ≠ 0
           · grind
           · exfalso
