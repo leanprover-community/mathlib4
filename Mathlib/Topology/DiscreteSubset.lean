@@ -278,7 +278,7 @@ lemma codiscrete_le_cofinite : codiscrete X ≤ cofinite := by
 lemma Set.Finite.compl_mem_codiscrete {S : Set X} (hs : S.Finite) : Sᶜ ∈ codiscrete X :=
   codiscrete_le_cofinite (by simpa)
 
-lemma infinite_of_accPt {S : Set X} {x : X} (h : AccPt x (𝓟 S)) : S.Infinite := by
+lemma Set.Infinite.of_accPt {S : Set X} {x : X} (h : AccPt x (𝓟 S)) : S.Infinite := by
   intro hs
   have := hs.compl_mem_codiscrete
   rw [mem_codiscrete_accPt, compl_compl] at this
