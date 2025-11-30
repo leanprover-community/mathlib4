@@ -4101,6 +4101,7 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
+public import Mathlib.Geometry.Euclidean.Angle.Incenter
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Projection
