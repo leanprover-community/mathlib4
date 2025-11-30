@@ -63,7 +63,7 @@ structure Triplet (n : ℤ) where
 
 variable (F G)
 
-/-- A cochain of degree `n : ℤ` between to cochain complexes `F` and `G` consists
+/-- A cochain of degree `n : ℤ` between two cochain complexes `F` and `G` consists
 of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
@@ -195,7 +195,7 @@ lemma ofHom_sub (φ₁ φ₂ : F ⟶ G) :
 lemma ofHom_neg (φ : F ⟶ G) :
     Cochain.ofHom (-φ) = -Cochain.ofHom φ := by cat_disch
 
-/-- The cochain of degree `-1` given by an homotopy between two morphism of complexes. -/
+/-- The cochain of degree `-1` given by a homotopy between two morphisms of complexes. -/
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
   Cochain.mk (fun p q _ => ho.hom p q)
 
@@ -226,8 +226,8 @@ def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K
     Cochain F K n₁₂ :=
   Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by cutsat))
 
-/-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and that
-we have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
+/-! If `z₁` is a cochain of degree `n₁` and `z₂` is a cochain of degree `n₂`, and we
+have a relation `h : n₁ + n₂ = n₁₂`, then `z₁.comp z₂ h` is a cochain of degree `n₁₂`.
 The following lemma `comp_v` computes the value of this composition `z₁.comp z₂ h`
 on a triplet `⟨p₁, p₃, _⟩` (with `p₁ + n₁₂ = p₃`). In order to use this lemma,
 we need to provide an intermediate integer `p₂` such that `p₁ + n₁ = p₂`.
@@ -704,6 +704,28 @@ def diff : Cocycle K K 1 :=
     simp only [Cochain.zero_v, δ_v 1 2 rfl _ p q hpq _ _ rfl rfl, Cochain.diff_v,
       HomologicalComplex.d_comp_d, smul_zero, add_zero])
 
+variable (L n) in
+/-- The inclusion `Cocycle K L n →+ Cochain K L n`. -/
+@[simps]
+def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
+  toFun x := x
+  map_zero' := by simp
+  map_add' := by simp
+
+variable (L n) in
+/-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
+def isKernel (hm : n + 1 = m) :
+    IsLimit ((KernelFork.ofι (f := (HomComplex K L).d n m)
+      (AddCommGrpCat.ofHom (toCochainAddMonoidHom K L n))) (by cat_disch)) :=
+  Fork.IsLimit.mk _
+    (fun s ↦ AddCommGrpCat.ofHom
+      { toFun x := ⟨s.ι x, by
+          rw [mem_iff _ _ hm]
+          exact ConcreteCategory.congr_hom s.condition x⟩
+        map_zero' := by cat_disch
+        map_add' := by cat_disch })
+    (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
+
 end Cocycle
 
 variable {F G}
@@ -739,7 +761,7 @@ lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
 
 namespace Cochain
 
-/-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of an homotopy between `φ₁` and
+/-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of a homotopy between `φ₁` and
 `φ₂` is equivalent to the datum of a `1`-cochain `z` such that `δ (-1) 0 z` is the difference
 of the zero cochains associated to `φ₂` and `φ₁`. -/
 @[simps]
@@ -774,6 +796,31 @@ lemma equivHomotopy_apply_of_eq {φ₁ φ₂ : F ⟶ G} (h : φ₁ = φ₂) :
 
 lemma ofHom_injective {f₁ f₂ : F ⟶ G} (h : ofHom f₁ = ofHom f₂) : f₁ = f₂ :=
   (Cocycle.equivHom F G).injective (by ext1; exact h)
+
+/-- The cochain in `Cochain K L n` that is given by a single
+morphism `K.X p ⟶ L.X q` and is zero otherwise. (As we do not check
+that `p + n = q`, this will be the zero cochain when `p + n ≠ q`.) -/
+def single {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) :
+    Cochain K L n :=
+  Cochain.mk (fun p' q' _ =>
+    if h : p = p' ∧ q = q'
+      then (K.XIsoOfEq h.1).inv ≫ f ≫ (L.XIsoOfEq h.2).hom
+      else 0)
+
+@[simp]
+lemma single_v {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (hpq : p + n = q) :
+    (single f n).v p q hpq = f := by
+  dsimp [single]
+  rw [if_pos, id_comp, comp_id]
+  tauto
+
+lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hp' : p' ≠ p) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  rw [dif_neg]
+  intro h
+  exact hp' (by cutsat)
 
 end Cochain
 
