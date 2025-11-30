@@ -59,7 +59,7 @@ theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : 
     replace h : (aeval f b) * (aeval f P') = 1 := by
       simpa only [map_add, map_mul, map_one, minpoly.dvd_iff.mp nil, mul_zero, zero_add]
         using (aeval f).congr_arg h
-    have := instIsDedekindFiniteMonoid (adjoin K {f})
+    have := instIsDedekindFiniteMonoidOfCommutativeHMul (adjoin K {f})
     refine .of_mul_eq_one_right (aeval ff b) (Subtype.ext_iff.mpr ?_)
     simpa [ff, coe_aeval_mk_apply] using h
   obtain ⟨⟨s, mem⟩, ⟨⟨k, hk⟩, hss⟩, -⟩ := existsUnique_nilpotent_sub_and_aeval_eq_zero nil' sep'
