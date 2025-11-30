@@ -28,7 +28,7 @@ and permit to manipulate them in a relatively smooth way.
 
 * `SubMulAction.ofStabilizer a` : the action of `stabilizer G a` on `{a}ᶜ`
 
-* `SubMulAction.Enat_card_ofStabilizer_eq_add_one` and `SubMulAction.nat_card_ofStabilizer_eq`
+* `SubMulAction.ENat_card_ofStabilizer_add_one_eq` and `SubMulAction.nat_card_ofStabilizer_eq`
   compute the cardinality of the `carrier` of that action.
 
 Consider `a b : α` and `g : G` such that `hg : g • b = a`.
