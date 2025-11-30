@@ -198,13 +198,6 @@ lemma congr_iff_of_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =�
     LiftSourceTargetPropertyAt I J n f x P ↔ LiftSourceTargetPropertyAt I J n g x P :=
   ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
 
-/-- If `P` is monotone w.r.t. restricting `domChart` and closed under congruence,
-and `f` and `g` are eventually equal near `x`,
-then `f` has property `P` at `x` if and only if `g` has property `P` at `x`. -/
-lemma congr_iff_eventuallyEq (hP : IsLocalSourceTargetProperty P) (h' : f =ᶠ[nhds x] g) :
-    LiftSourceTargetPropertyAt I J n f x P ↔ LiftSourceTargetPropertyAt I J n g x P :=
-  ⟨fun hf ↦ hf.congr_of_eventuallyEq hP h', fun hg ↦ hg.congr_of_eventuallyEq hP h'.symm⟩
-
 /- The set of points where `LiftSourceTargetPropertyAt` holds is open. -/
 lemma _root_.IsOpen.liftSourceTargetPropertyAt :
     IsOpen {x | LiftSourceTargetPropertyAt I J n g x P} := by
