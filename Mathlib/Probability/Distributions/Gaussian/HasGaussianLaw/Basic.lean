@@ -31,6 +31,7 @@ Gaussian random variable
 public section
 
 open MeasureTheory ENNReal WithLp Complex
+open scoped RealInnerProductSpace
 
 namespace ProbabilityTheory
 
@@ -60,7 +61,7 @@ lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :
 
 lemma HasGaussianLaw.isProbabilityMeasure (hX : HasGaussianLaw X P) : IsProbabilityMeasure P :=
     haveI := hX.isGaussian_map
-    Measure.isProbabilityMeasure_of_map (f := X)
+    P.isProbabilityMeasure_of_map X
 
 variable {mE} in
 lemma HasLaw.hasGaussianLaw {μ : Measure E} (hX : HasLaw X μ P) [IsGaussian μ] :
@@ -73,14 +74,12 @@ namespace HasGaussianLaw
 
 variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
-open scoped RealInnerProductSpace in
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
     charFun (P.map X) t = exp ((P[fun ω ↦ ⟪t, X ω⟫] : ℝ) * I - Var[fun ω ↦ ⟪t, X ω⟫; P] / 2) := by
   rw [hX.isGaussian_map.charFun_eq, integral_map hX.aemeasurable (by fun_prop),
     variance_map (by fun_prop) hX.aemeasurable, integral_complex_ofReal]
   rfl
 
-open scoped RealInnerProductSpace in
 lemma _root_.ProbabilityTheory.hasGaussianLaw_iff_charFun_map_eq [CompleteSpace E]
     [InnerProductSpace ℝ E] [IsFiniteMeasure P] (hX : AEMeasurable X P) :
     HasGaussianLaw X P ↔ ∀ t,
@@ -138,7 +137,7 @@ lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ 
     have := hX.isGaussian_map
     rw [← AEMeasurable.map_map_of_aemeasurable]
     · infer_instance
-    all_goals fun_prop (disch := assumption)
+    all_goals fun_prop
 
 lemma map_fun (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (fun ω ↦ L (X ω)) P :=
   hX.map L
@@ -154,14 +153,10 @@ section SpecificMaps
 lemma smul (c : ℝ) (hX : HasGaussianLaw X P) : HasGaussianLaw (c • X) P :=
   hX.map (.lsmul ℝ ℝ c)
 
-lemma fun_smul (c : ℝ) (hX : HasGaussianLaw X P) :
-    HasGaussianLaw (fun ω ↦ c • (X ω)) P :=
+lemma fun_smul (c : ℝ) (hX : HasGaussianLaw X P) : HasGaussianLaw (fun ω ↦ c • (X ω)) P :=
   hX.smul c
 
-lemma neg (hX : HasGaussianLaw X P) : HasGaussianLaw (-X) P := by
-  have : -X = (-1 : ℝ) • X := by simp
-  rw [this]
-  exact hX.smul _
+lemma neg (hX : HasGaussianLaw X P) : HasGaussianLaw (-X) P := by simpa using hX.smul (-1)
 
 lemma fun_neg (hX : HasGaussianLaw X P) : HasGaussianLaw (fun ω ↦ -(X ω)) P :=
   hX.neg
@@ -170,43 +165,27 @@ section Prod
 
 variable [SecondCountableTopologyEither E F] {Y : Ω → F}
 
-lemma toLp_prodMk (p : ℝ≥0∞) [Fact (1 ≤ p)]
-    (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw (fun ω ↦ toLp p (X ω, Y ω)) P := by
-  simp_rw [← WithLp.prodContinuousLinearEquiv_symm_apply p ℝ]
-  exact hXY.map_equiv _
+lemma toLp_prodMk (p : ℝ≥0∞) [Fact (1 ≤ p)] (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
+    HasGaussianLaw (fun ω ↦ toLp p (X ω, Y ω)) P :=
+  hXY.map_equiv (WithLp.prodContinuousLinearEquiv p ℝ E F).symm
 
-lemma fst (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw X P := by
-  have : X = (ContinuousLinearMap.fst ℝ E F) ∘ (fun ω ↦ (X ω, Y ω)) := by ext; simp
-  rw [this]
-  exact hXY.map _
+lemma fst (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw X P :=
+  hXY.map (.fst ℝ E F)
 
-lemma snd (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw Y P := by
-  have : Y = (ContinuousLinearMap.snd ℝ E F) ∘ (fun ω ↦ (X ω, Y ω)) := by ext; simp
-  rw [this]
-  exact hXY.map _
+lemma snd (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw Y P :=
+  hXY.map (.snd ℝ E F)
 
 variable [SecondCountableTopology E] {Y : Ω → E}
 
-lemma add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw (X + Y) P := by
-  have : X + Y = (ContinuousLinearMap.fst ℝ E E + ContinuousLinearMap.snd ℝ E E) ∘
-      (fun ω ↦ (X ω, Y ω)) := by ext; simp
-  rw [this]
-  exact hXY.map _
+lemma add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw (X + Y) P :=
+  hXY.map (ContinuousLinearMap.fst ℝ E E + ContinuousLinearMap.snd ℝ E E)
 
 lemma fun_add (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
     HasGaussianLaw (fun ω ↦ X ω + Y ω) P :=
   hXY.add
 
-lemma sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
-    HasGaussianLaw (X - Y) P := by
-  have : X - Y = (ContinuousLinearMap.fst ℝ E E - ContinuousLinearMap.snd ℝ E E) ∘
-      (fun ω ↦ (X ω, Y ω)) := by ext; simp
-  rw [this]
-  exact hXY.map _
+lemma sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) : HasGaussianLaw (X - Y) P :=
+  hXY.map (ContinuousLinearMap.fst ℝ E E - ContinuousLinearMap.snd ℝ E E)
 
 lemma fun_sub (hXY : HasGaussianLaw (fun ω ↦ (X ω, Y ω)) P) :
     HasGaussianLaw (fun ω ↦ X ω - Y ω) P :=
@@ -228,18 +207,15 @@ lemma prodMk (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
     hX.map (.prod (.proj i) (.proj j))
 
 lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
-    HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P := by
-  simp_rw [← PiLp.continuousLinearEquiv_symm_apply p ℝ]
-  exact hX.map_equiv _
+    HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P :=
+  hX.map_equiv (PiLp.continuousLinearEquiv p ℝ E).symm
 
 lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
-  have : ∑ i, X i = ⇑(∑ i, ContinuousLinearMap.proj (R := ℝ) i) ∘ (fun ω ↦ (X · ω)) := by
-    ext; simp
-  rw [this]
-  exact hX.map _
+  convert hX.map (∑ i, .proj i)
+  ext; simp
 
 lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
