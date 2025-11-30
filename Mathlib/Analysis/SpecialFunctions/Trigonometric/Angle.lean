@@ -501,6 +501,11 @@ lemma toReal_neg_eq_neg_toReal_iff {θ : Angle} : (-θ).toReal = -(θ.toReal) �
     have h' : θ.toReal ≠ π := by simp [h]
     exact ⟨(toReal_le_pi θ).lt_of_ne h', by linarith [neg_pi_lt_toReal θ]⟩
 
+@[simp] lemma abs_toReal_neg (θ : Angle) : |(-θ).toReal| = |θ.toReal| := by
+  rcases eq_or_ne θ π with rfl | h
+  · simp
+  · simp [toReal_neg_eq_neg_toReal_iff.2 h]
+
 theorem pi_ne_zero : (π : Angle) ≠ 0 := by
   rw [← toReal_injective.ne_iff, toReal_pi, toReal_zero]
   exact Real.pi_ne_zero
@@ -891,6 +896,29 @@ theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
 
+lemma sign_two_nsmul_eq_neg_sign_iff {θ : Angle} :
+    ((2 : ℕ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
+  rcases eq_or_ne θ 0 with rfl | h
+  · simp
+  suffices ((2 : ℕ) • (θ + π)).sign = (θ + π).sign ↔ θ + π = π ∨ |(θ + π).toReal| < π / 2 by
+    simp only [smul_add, two_nsmul_coe_pi, add_zero, sign_add_pi, add_eq_right] at this
+    simp only [this, h, false_or]
+    obtain ⟨ha, hb⟩ := θ.toReal_mem_Ioc
+    rcases le_or_gt θ.toReal 0 with hθ | hθ
+    · nth_rw 1 [← coe_toReal θ]
+      rw [abs_of_nonpos hθ, ← coe_add, toReal_coe_eq_self_iff.2 ⟨by linarith, by linarith⟩,
+        abs_of_nonneg (by linarith)]
+      exact ⟨fun h ↦ by linarith, fun h ↦ by linarith⟩
+    · nth_rw 1 [← coe_toReal θ]
+      rw [abs_of_pos hθ, ← coe_add, toReal_coe_eq_self_sub_two_pi_iff.2 ⟨by linarith, by linarith⟩,
+        abs_of_nonpos (by linarith)]
+      exact ⟨fun h ↦ by linarith, fun h ↦ by linarith⟩
+  exact sign_two_nsmul_eq_sign_iff
+
+lemma sign_two_zsmul_eq_neg_sign_iff {θ : Angle} :
+    ((2 : ℤ) • θ).sign = -θ.sign ↔ θ = 0 ∨ π / 2 < |θ.toReal| := by
+  rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_neg_sign_iff]
+
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℕ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
     |θ.toReal| + |ψ.toReal| = π := by
@@ -928,6 +956,98 @@ lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ
     |θ.toReal| + |ψ.toReal| = π := by
   rw [two_zsmul, ← two_nsmul] at h
   exact abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq h hs h0
+
+lemma toReal_add_eq_toReal_add_toReal {θ ψ : Angle} (hθ : θ ≠ π) (hψ : ψ ≠ π)
+    (hs : θ.sign ≠ ψ.sign ∨ θ.sign = (θ + ψ).sign) : (θ + ψ).toReal = θ.toReal + ψ.toReal := by
+  suffices ((θ.toReal + ψ.toReal : ℝ) : Angle).toReal = θ.toReal + ψ.toReal by simpa using this
+  rw [toReal_coe_eq_self_iff]
+  rcases eq_or_ne θ 0 with rfl | hθ0
+  · simpa using toReal_mem_Ioc ψ
+  rcases eq_or_ne ψ 0 with rfl | hψ0
+  · simpa using toReal_mem_Ioc θ
+  obtain ⟨hθa, hθb⟩ := toReal_mem_Ioc θ
+  obtain ⟨hψa, hψb⟩ := toReal_mem_Ioc ψ
+  rw [← sign_toReal hθ, ← sign_toReal hψ] at hs
+  rcases lt_or_gt_of_ne (toReal_eq_zero_iff.not.2 hθ0) with hθs | hθs <;>
+    rcases lt_or_gt_of_ne (toReal_eq_zero_iff.not.2 hψ0) with hψs | hψs
+  · simp only [hθs, _root_.sign_neg, hψs, ne_eq, not_true_eq_false, false_or] at hs
+    refine ⟨?_, by linarith⟩
+    by_contra! hle
+    have h : ((θ.toReal + ψ.toReal : ℝ) : Angle).toReal = θ.toReal + ψ.toReal + 2 * π :=
+      toReal_coe_eq_self_add_two_pi_iff.2 ⟨by linarith, hle⟩
+    simp only [coe_add, coe_toReal] at h
+    apply_fun SignType.sign at h
+    rw [sign_toReal, ← hs, eq_comm, sign_eq_neg_one_iff] at h
+    · linarith
+    · intro hπ
+      simp [hπ] at hs
+  · exact ⟨by linarith, by linarith⟩
+  · exact ⟨by linarith, by linarith⟩
+  · simp only [hθs, _root_.sign_pos, hψs, ne_eq, not_true_eq_false, false_or] at hs
+    refine ⟨by linarith, ?_⟩
+    by_contra! hlt
+    have h : ((θ.toReal + ψ.toReal : ℝ) : Angle).toReal = θ.toReal + ψ.toReal - 2 * π :=
+      toReal_coe_eq_self_sub_two_pi_iff.2 ⟨hlt, by linarith⟩
+    simp only [coe_add, coe_toReal] at h
+    apply_fun SignType.sign at h
+    rw [sign_toReal, ← hs, eq_comm, sign_eq_one_iff] at h
+    · linarith
+    · intro hπ
+      simp [hπ] at hs
+
+private lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux {θ ψ : Angle}
+    (hθs : θ.sign = 1) (hψs : ψ.sign = 1)
+    (hsa : (θ + ψ).sign ≠ 1) : |(θ + ψ).toReal| = 2 * π - (|θ.toReal| + |ψ.toReal|) := by
+  have hθπ : θ ≠ π := by
+    rintro rfl
+    simp at hθs
+  have hψπ : ψ ≠ π := by
+    rintro rfl
+    simp at hψs
+  have hθ : 0 < θ.toReal := by rwa [← sign_eq_one_iff, sign_toReal hθπ]
+  have hψ : 0 < ψ.toReal := by rwa [← sign_eq_one_iff, sign_toReal hψπ]
+  rcases eq_or_ne (θ + ψ) π with heq | hne
+  · rw [heq, abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq (by simp [heq])
+      (hψs ▸ hθs) (by simp [hθs])]
+    simp [abs_of_pos Real.pi_pos, two_mul]
+  rw [abs_of_pos hθ, abs_of_pos hψ]
+  suffices (θ + ψ).toReal < 0 by
+    rw [abs_of_neg this, neg_eq_iff_eq_neg, neg_sub]
+    have h : ((θ.toReal + ψ.toReal : ℝ) : Angle).toReal = θ.toReal + ψ.toReal - 2 * π := by
+      have hθπ := toReal_le_pi θ
+      have hψπ := toReal_le_pi ψ
+      refine toReal_coe_eq_self_sub_two_pi_iff.2 ⟨?_, by linarith⟩
+      by_contra! hle
+      have h : ((θ.toReal + ψ.toReal : ℝ) : Angle).toReal = θ.toReal + ψ.toReal :=
+        toReal_coe_eq_self_iff.2 ⟨by linarith [Real.pi_pos], hle⟩
+      rw [coe_add, coe_toReal, coe_toReal] at h
+      linarith
+    simp [← h]
+  rw [← sign_eq_neg_one_iff, sign_toReal hne]
+  rcases (θ + ψ).sign.trichotomy with h | h | h
+  · exact h
+  · simp only [sign_eq_zero_iff, hne, or_false] at h
+    rw [add_eq_zero_iff_eq_neg] at h
+    simp [h, sign_neg, hψs] at hθs
+  · simp [h] at hsa
+
+lemma abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal {θ ψ : Angle} (hs : θ.sign = ψ.sign)
+    (hsa : θ.sign ≠ (θ + ψ).sign) : |(θ + ψ).toReal| = 2 * π - (|θ.toReal| + |ψ.toReal|) := by
+  rcases eq_or_ne θ.sign 0 with hθ0 | hθ0
+  · rw [hθ0, eq_comm] at hs
+    rcases sign_eq_zero_iff.1 hθ0 with rfl | rfl <;>
+      rcases sign_eq_zero_iff.1 hs with rfl | rfl <;>
+      simp at hsa
+  rcases θ.sign.trichotomy with h | h | h
+  · have hθ' : (-θ).sign = 1 := by rw [sign_neg, h, neg_neg]
+    have hψ' : (-ψ).sign = 1 := by rw [sign_neg, ← hs, h, neg_neg]
+    have hsa' : (-θ + -ψ).sign ≠ 1 := by
+      rwa [← hθ', ne_comm, ← neg_add, sign_neg, sign_neg, neg_injective.ne_iff]
+    convert abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux hθ' hψ' hsa' using 1
+    · rw [← neg_add, abs_toReal_neg]
+    · rw [abs_toReal_neg, abs_toReal_neg]
+  · simp [h] at hθ0
+  · exact abs_toReal_add_eq_two_pi_sub_abs_toReal_add_abs_toReal_aux h (hs ▸ h) (h ▸ hsa.symm)
 
 theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : ContinuousAt sign θ :=
   (continuousAt_sign_of_ne_zero (sin_ne_zero_iff.2 ⟨h0, hpi⟩)).comp continuous_sin.continuousAt

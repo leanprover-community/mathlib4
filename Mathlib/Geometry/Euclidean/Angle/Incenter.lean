@@ -284,6 +284,90 @@ section Unoriented
 
 variable (t : Triangle ℝ P)
 
+/-- The incenter of a triangle bisects the angle at a vertex. -/
+lemma angle_incenter_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+    (h₂₃ : i₂ ≠ i₃) :
+    ∠ (t.points i₂) (t.points i₁) t.incenter = ∠ (t.points i₂) (t.points i₁) (t.points i₃) / 2 := by
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
+  let t' : Triangle ℝ S := t.restrict S le_rfl
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    simp_rw [S]
+    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  have : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  suffices ∠ (t'.points i₂) (t'.points i₁) t'.incenter =
+      ∠ (t'.points i₂) (t'.points i₁) (t'.points i₃) / 2 by
+    simpa [t', ← S.angle_coe] using this
+  exact angle_eq_angle_div_two_of_oangle_eq_of_sSameSide (t'.independent.injective.ne h₁₂.symm)
+    (t'.oangle_incenter_eq h₁₂ h₁₃ h₂₃)
+    (t'.sSameSide_affineSpan_pair_incenter_point h₂₃.symm h₁₃.symm h₁₂.symm)
+
+/-- The excenter of a triangle opposite a vertex bisects the angle at that vertex. -/
+lemma angle_excenter_singleton_eq_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+    (h₂₃ : i₂ ≠ i₃) :
+    ∠ (t.points i₂) (t.points i₁) (t.excenter {i₁}) =
+      ∠ (t.points i₂) (t.points i₁) (t.points i₃) / 2 := by
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
+  let t' : Triangle ℝ S := t.restrict S le_rfl
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    simp_rw [S]
+    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  have : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  suffices ∠ (t'.points i₂) (t'.points i₁) (t'.excenter {i₁}) =
+      ∠ (t'.points i₂) (t'.points i₁) (t'.points i₃) / 2 by
+    simpa [t', ← S.angle_coe, t.excenterExists_singleton i₁] using this
+  refine angle_eq_angle_div_two_of_oangle_eq_of_sSameSide (t'.independent.injective.ne h₁₂.symm)
+    (t'.oangle_excenter_singleton_eq h₁₂ h₁₃ h₂₃) ?_
+  rw [Set.pair_comm]
+  exact t'.sSameSide_affineSpan_pair_excenter_singleton_point h₁₃.symm h₂₃.symm h₁₂
+
+/-- The excenter of a triangle opposite a vertex bisects the angle at another vertex. -/
+lemma angle_excenter_singleton_eq_angle_add_pi_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    ∠ (t.points i₁) (t.points i₂) (t.excenter {i₁}) =
+      (∠ (t.points i₁) (t.points i₂) (t.points i₃) + π) / 2 := by
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
+  let t' : Triangle ℝ S := t.restrict S le_rfl
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    simp_rw [S]
+    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  have : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  suffices ∠ (t'.points i₁) (t'.points i₂) (t'.excenter {i₁}) =
+      (∠ (t'.points i₁) (t'.points i₂) (t'.points i₃) + π) / 2 by
+    simpa [t', ← S.angle_coe, t.excenterExists_singleton i₁] using this
+  exact angle_eq_angle_add_pi_div_two_of_oangle_eq_add_pi_of_sSameSide
+    (t'.independent.injective.ne h₁₂) (t'.oangle_excenter_singleton_eq_add_pi h₁₂ h₁₃ h₂₃)
+    (t'.sSameSide_affineSpan_pair_excenter_singleton_point h₁₃.symm h₂₃.symm h₁₂)
+
+/-- The excenter of a triangle opposite a vertex bisects the angle at another vertex. -/
+lemma angle_excenter_singleton_eq_pi_sub_angle_div_two {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    ∠ (t.points i₃) (t.points i₂) (t.excenter {i₁}) =
+      (π - ∠ (t.points i₃) (t.points i₂) (t.points i₁)) / 2 := by
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
+  let t' : Triangle ℝ S := t.restrict S le_rfl
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    simp_rw [S]
+    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  have : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  suffices ∠ (t'.points i₃) (t'.points i₂) (t'.excenter {i₁}) =
+      (π - ∠ (t'.points i₃) (t'.points i₂) (t'.points i₁)) / 2 by
+    simpa [t', ← S.angle_coe, t.excenterExists_singleton i₁] using this
+  refine angle_eq_pi_sub_angle_div_two_of_oangle_eq_add_pi_of_sOppSide
+    (t'.independent.injective.ne h₂₃.symm) ?_
+    (t'.sOppSide_affineSpan_pair_excenter_singleton_point h₁₃ h₁₂ h₂₃.symm)
+  rw [← sub_eq_iff_eq_add, oangle_rev]
+  nth_rw 2 [oangle_rev]
+  rw [sub_eq_add_neg, ← neg_add, neg_inj, eq_comm]
+  exact t'.oangle_excenter_singleton_eq_add_pi h₁₂ h₁₃ h₂₃
+
 /-- Auxiliary lemma for dist_secondInter_point_eq_dist_secondInter_excenter in an oriented
 two-dimensional space. -/
 private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (finrank ℝ V = 2)]
