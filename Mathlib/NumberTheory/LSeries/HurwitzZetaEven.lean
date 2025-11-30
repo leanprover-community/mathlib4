@@ -248,7 +248,7 @@ end asymp
 
 section FEPair
 /-!
-## Construction of a FE-pair
+## Construction of an FE-pair
 -/
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/

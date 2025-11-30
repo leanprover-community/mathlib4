@@ -30,13 +30,13 @@ We also provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 abbrev Ideal.ResidueField : Type _ :=
   IsLocalRing.ResidueField (Localization.AtPrime I)
 
-/-- If `I = f⁻¹(J)`, then there is an canonical embedding `κ(I) ↪ κ(J)`. -/
+/-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 abbrev Ideal.ResidueField.map (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
     (f : R →+* A) (hf : I = J.comap f) : I.ResidueField →+* J.ResidueField :=
   IsLocalRing.ResidueField.map (Localization.localRingHom I J f hf)
 
-/-- If `I = f⁻¹(J)`, then there is an canonical embedding `κ(I) ↪ κ(J)`. -/
+/-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
     (hf : I = J.comap (algebraMap R A)) : I.ResidueField →ₐ[R] J.ResidueField where

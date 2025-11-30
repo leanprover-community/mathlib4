@@ -226,7 +226,7 @@ variable {K}
 theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
   refine le_trans ?_ (abs_discr_ge' K)
-  -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
+  -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction a uniform
   -- lower bound for this sequence from which we deduce the result.
   rw [mul_comm 2 _]
   let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
@@ -286,7 +286,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 `x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
 depending only on `N`.
 
-Since the primitive element `x` is constructed differently depending on whether `K` has a infinite
+Since the primitive element `x` is constructed differently depending on whether `K` has an infinite
 real place or not, the theorem is proved in two parts.
 -/
 

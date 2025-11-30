@@ -340,7 +340,7 @@ that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
 
 variable {ι}
 
-/-- If `M` is an `R`-module and `ι` is an nonempty type, then every additive endomorphism
+/-- If `M` is an `R`-module and `ι` is a nonempty type, then every additive endomorphism
 of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
 endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
 See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
