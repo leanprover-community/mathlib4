@@ -58,11 +58,9 @@ lemma IsGaussian.hasGaussianLaw_id {μ : Measure E} [IsGaussian μ] : HasGaussia
 lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :=
   AEMeasurable.of_map_ne_zero hX.isGaussian_map.toIsProbabilityMeasure.ne_zero
 
-lemma HasGaussianLaw.isProbabilityMeasure (hX : HasGaussianLaw X P) : IsProbabilityMeasure P where
-  measure_univ := by
-    have := hX.isGaussian_map
-    rw [← Set.preimage_univ (f := X), ← Measure.map_apply_of_aemeasurable hX.aemeasurable .univ,
-      measure_univ]
+lemma HasGaussianLaw.isProbabilityMeasure (hX : HasGaussianLaw X P) : IsProbabilityMeasure P :=
+    haveI := hX.isGaussian_map
+    Measure.isProbabilityMeasure_of_map (f := X)
 
 variable {mE} in
 lemma HasLaw.hasGaussianLaw {μ : Measure E} (hX : HasLaw X μ P) [IsGaussian μ] :
