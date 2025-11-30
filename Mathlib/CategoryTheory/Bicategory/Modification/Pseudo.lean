@@ -113,6 +113,9 @@ variable (η) in
 @[simps]
 def id : Modification η η where app a := 𝟙 (η.app a)
 
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
 /-- Vertical composition of modifications. -/
 @[simps]
 def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
@@ -120,21 +123,29 @@ def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : M
 
 end Modification
 
+variable (η θ) in
+/-- Type-alias for modifications between strong transformations of pseudofunctors. This is the type
+used for the 2-homomorphisms in the bicategory of pseudofunctors. -/
+@[ext]
+structure Hom where
+  of ::
+  as : Modification η θ
+
 /-- Category structure on the strong transformations between pseudofunctors.
 
 Note that this a scoped instance in the `Pseudofunctor.StrongTrans` namespace. -/
 @[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
-  Hom := Modification
-  id := Modification.id
-  comp := Modification.vcomp
+  Hom := Hom
+  id Γ := ⟨Modification.id Γ⟩
+  comp Γ Δ := ⟨Modification.vcomp Γ.as Δ.as⟩
 
-instance : Inhabited (Modification η η) :=
+instance : Inhabited (η ⟶ η) :=
   ⟨𝟙 η⟩
 
 @[ext]
-lemma homCategory.ext {m n : η ⟶ θ} (w : ∀ b, m.app b = n.app b) : m = n :=
-  Modification.ext (funext w)
+lemma homCategory.ext {m n : η ⟶ θ} (w : ∀ b, m.as.app b = n.as.app b) : m = n :=
+  Hom.ext <| Modification.ext <| funext w
 
 /-- Construct a modification isomorphism between strong transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.
