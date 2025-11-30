@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Data.Finite.Sum
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Basis.Basic
@@ -1186,9 +1187,26 @@ theorem isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd :
     (matrixRingEquivEndVecMulOpposite (ι := Fin _) (A := A)),
     MulOpposite.isDedekindFiniteMonoid_iff]
 
-instance [IsStablyFiniteRing A] [Fintype ι] : IsStablyFiniteRing (Module.End A (ι → A)) := by
-  rw [← MulOpposite.isStablyFiniteRing_iff,
+instance (ι) [Finite ι] [IsStablyFiniteRing A] : IsStablyFiniteRing (Module.End A (ι → A)) := by
+  have := Fintype.ofFinite ι
+  classical rw [← MulOpposite.isStablyFiniteRing_iff,
     ← RingEquiv.isStablyFiniteRing_iff (matrixRingEquivEndVecMulOpposite (ι := ι) (A := A))]
   infer_instance
+
+open Function
+
+theorem isStablyFiniteRing_iff_injective_of_surjective :
+    IsStablyFiniteRing A ↔ ∀ n (f : Module.End A (Fin n → A)), Surjective f → Injective f := by
+  simp_rw [isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd, isDedekindFiniteMonoid_iff]
+  refine ⟨fun h n f surj ↦ ?_, fun h n f g eq ↦ ?_⟩
+  · have ⟨g, eq⟩ := Module.projective_lifting_property _ .id surj
+    exact injective_of_comp_eq_id _ _ (h _ eq)
+  · have surj := surjective_of_comp_eq_id _ _ eq
+    have := (LinearEquiv.ofBijective f ⟨h _ _ surj, surj⟩).symm_comp
+    rwa [← left_inv_eq_right_inv this eq]
+
+theorem Module.End.injective_of_surjective_fin [IsStablyFiniteRing A] {n}
+    {f : Module.End A (Fin n → A)} (hf : Surjective f) : Injective f :=
+  isStablyFiniteRing_iff_injective_of_surjective.mp ‹_› n f hf
 
 end

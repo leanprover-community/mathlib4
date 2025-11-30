@@ -22,27 +22,13 @@ open Function Matrix LinearMap
 
 variable {R : Type*} [Semiring R]
 
-theorem isStablyFiniteRing_iff_injective_of_surjective :
-    IsStablyFiniteRing R ↔ ∀ n (f : Module.End R (Fin n → R)), Surjective f → Injective f := by
-  simp_rw [isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd, isDedekindFiniteMonoid_iff]
-  refine ⟨fun h n f surj ↦ ?_, fun h n f g eq ↦ ?_⟩
-  · have ⟨g, eq⟩ := Module.projective_lifting_property _ .id surj
-    exact injective_of_comp_eq_id _ _ (h _ eq)
-  · have surj := surjective_of_comp_eq_id _ _ eq
-    have := (LinearEquiv.ofBijective f ⟨h _ _ surj, surj⟩).symm_comp
-    rwa [← left_inv_eq_right_inv this eq]
-
-theorem Module.End.surjective_of_injective [IsStablyFiniteRing R] {n}
-    {f : Module.End R (Fin n → R)} (hf : Surjective f) : Injective f :=
-  isStablyFiniteRing_iff_injective_of_surjective.mp ‹_› n f hf
-
 instance [IsStablyFiniteRing R] [Nontrivial R] : RankCondition R where
   le_of_fin_surjective {n m} f hf := by
     by_contra! lt
     let p : (Fin m → R) →ₗ[R] Fin n → R := funLeft R R (Fin.castLE lt.le)
     have hp : Surjective p := funLeft_surjective_of_injective _ _ _ (Fin.castLE_injective lt.le)
     have : Injective p := .of_comp_right
-      (Module.End.surjective_of_injective (f := p ∘ₗ f) (hp.comp hf)) hf
+      (Module.End.injective_of_surjective_fin (f := p ∘ₗ f) (hp.comp hf)) hf
     have ⟨⟨i, lt⟩, eq⟩ := injective_comp_right_iff_surjective.mp this ⟨n, lt⟩
     exact lt.ne congr($eq)
 
@@ -64,7 +50,7 @@ theorem invariantBasisNumber_iff_matrix : InvariantBasisNumber R ↔ ∀ n m
     (toMatrixRight' e.symm) (by simp [← toMatrixRight'_comp]) (by simp [← toMatrixRight'_comp])
 
 /-- The rank condition is left-right symmetric. Note that the strong rank condition
-is not left-right symmetric, see Remark (1.32) in §1.1D of [lam_1999].-/
+is not left-right symmetric, see Remark (1.32) in §1.1D of [lam_1999]. -/
 protected theorem MulOpposite.rankCondition_iff : RankCondition Rᵐᵒᵖ ↔ RankCondition R := by
   simp_rw [rankCondition_iff_matrix, ← opEquiv.mapMatrix.forall_congr_right,
     ← opEquiv.mapMatrix.symm.injective.eq_iff]

@@ -748,6 +748,8 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
+@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
+
 section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.

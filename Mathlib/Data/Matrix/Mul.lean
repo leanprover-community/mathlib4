@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Matrix.Diagonal
 
@@ -572,7 +573,7 @@ end CommSemiring
 
 end Matrix
 
-section
+section IsStablyFiniteRing
 
 abbrev IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop :=
   ∀ n, IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
@@ -582,20 +583,24 @@ instance (R) [NonAssocSemiring R] [IsStablyFiniteRing R] : IsDedekindFiniteMonoi
     ⟨⟨fun r ↦ diagonal fun _ ↦ r, rfl⟩, fun _ _ ↦ (diagonal_mul_diagonal ..).symm⟩
   MonoidHom.isDedekindFiniteMonoid_of_injective f fun _ _ eq ↦ by simpa [f] using congr($eq 0 0)
 
-theorem RingHom.isStablyFiniteRing_of_injective {R S} [NonAssocSemiring R] [NonAssocSemiring S]
-    {F} [FunLike F R S] [RingHomClass F R S] (f : F) (hf : Function.Injective f)
-    [IsStablyFiniteRing S] : IsStablyFiniteRing R := fun n ↦
+variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+
+theorem RingHom.isStablyFiniteRing_of_injective [FunLike F R S] [RingHomClass F R S] (f : F)
+    (hf : Function.Injective f) [IsStablyFiniteRing S] : IsStablyFiniteRing R := fun n ↦
   let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) R ↦ M.map f,
     Matrix.map_one _ (map_zero f) (map_one f)⟩ fun _ _ ↦ Matrix.map_mul
   MonoidHom.isDedekindFiniteMonoid_of_injective f <| Matrix.map_injective hf
 
-theorem RingEquiv.isStablyFiniteRing_iff {R S} [NonAssocSemiring R] [NonAssocSemiring S]
-    {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
+theorem RingEquiv.isStablyFiniteRing_iff [EquivLike F R S] [RingEquivClass F R S] (f : F) :
     IsStablyFiniteRing R ↔ IsStablyFiniteRing S where
   mp _ := RingHom.isStablyFiniteRing_of_injective _ (RingEquivClass.toRingEquiv f).symm.injective
   mpr _ := RingHom.isStablyFiniteRing_of_injective f (EquivLike.injective f)
 
-end
+instance [SetLike F R] [SubsemiringClass F R] (S : F) [IsStablyFiniteRing R] :
+    IsStablyFiniteRing S :=
+  RingHom.isStablyFiniteRing_of_injective _ (Subsemiring.subtype_injective <| .ofClass S)
+
+end IsStablyFiniteRing
 
 open Matrix
 
