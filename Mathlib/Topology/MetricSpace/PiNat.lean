@@ -1087,136 +1087,59 @@ variable [MetricSpace X] [SeparableSpace X]
 
 variable (X) in
 /-- Embedding function into 1 direction of countable cube -/
-noncomputable abbrev T_func (n : ℕ) (x : X) : I :=
+noncomputable abbrev hCubeEmbedding (n : ℕ) (x : X) : I :=
   have : Nonempty X := ⟨x⟩
   projIcc _ _ zero_le_one <| dist x (denseSeq X n)
 
-lemma continuous_T (n : ℕ) : Continuous (T_func X n) := by
+lemma continuous_hCubeEmbedding (n : ℕ) : Continuous (hCubeEmbedding X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
   convert continuous_const (y := denseSeq X n)
 
-lemma separation (x : X) (C : Set X) (hC : IsClosed C) (hnC : Nonempty C) (hx : x ∉ C) :
-    ∃ (ε : ℝ) (n : ℕ), 0 < ε ∧ T_func X n x ≤ ε / 3 ∧ ∀ y ∈ C, (T_func X n y) ≥ 2 * ε / 3 := by
-  let ε' : ℝ := min (infDist x C) 1
-  have ε'_pos : ε' / 3 > 0 := by
-    simpa [ε'] using (hC.notMem_iff_infDist_pos .of_subtype).mp hx
+lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
+    ∃ (n : ℕ), C ∈ (𝓝 (hCubeEmbedding X n x)).comap (hCubeEmbedding X n) := by
+  let ε : ℝ := min (infDist x (closure Cᶜ)) 1
+  obtain hC | hC := (closure Cᶜ).eq_empty_or_nonempty
+  · simp_all
   have : Nonempty X := ⟨x⟩
-  obtain ⟨n, hn⟩ : ∃ n, dist x (denseSeq X n) < ε' / 3 :=
-    denseRange_iff.1 (denseRange_denseSeq X) x (ε' / 3) ε'_pos
-  refine ⟨ε', n, ?_, ?_, ?_⟩
-  · simpa [ε'] using (IsClosed.notMem_iff_infDist_pos hC Nonempty.of_subtype).mp hx
-  · simpa [T_func, coe_projIcc] using .inr hn.le
-  intro y hy
-  simp [T_func, coe_projIcc]
-  constructor
-  · ring_nf; exact mul_le_one₀ (by simp [ε']) (by positivity) (by linarith)
-  calc
-    dist y (denseSeq X n) ≥ dist x y - dist x (denseSeq X n) := by
-      simp; rw [add_comm]; exact dist_triangle_right x y (denseSeq X n)
-    _ ≥ infDist x C - ε' / 3 := by gcongr; exact infDist_le_dist_of_mem hy
-    _ ≥ 2 * ε' / 3 := by
-      have lbound_ε' : (infDist x C) ≥ ε' := by simp [ε']
-      rw [ge_iff_le, le_sub_iff_add_le']
-      apply le_trans _ lbound_ε'
-      ring_nf; rfl
+  obtain ⟨n, hn⟩ := denseRange_iff.mp (denseRange_denseSeq X) x (ε / 2)
+    (by simp_all [ε, ← IsClosed.notMem_iff_infDist_pos, mem_interior_iff_mem_nhds])
+  refine ⟨n, ball 0 (ε / 2), isOpen_ball.mem_nhds ?_, ?_⟩
+  · simp [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, hn]
+  · intro y hy
+    replace hy : dist y (denseSeq X n) < ε / 2 := by
+      simpa [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, not_lt_of_ge, ε, div_le_iff₀] using hy
+    have : dist x y < infDist x (closure Cᶜ) :=
+      ((dist_triangle_right x y (denseSeq X n)).trans_lt (add_lt_add hn hy)).trans_le (by simp [ε])
+    simpa using notMem_of_notMem_closure (mt infDist_le_dist_of_mem this.not_ge)
 
-
-lemma injective_T : Pairwise fun x y ↦ ∃ n, T_func X n x ≠ T_func X n y := by
-  intro x y hxy
-  obtain ⟨ε, n, hεpos, lbound, ubound⟩ := separation x {y} isClosed_singleton
-    (instNonemptyOfInhabited) (by simpa)
-  use n
-  exact Subtype.coe_ne_coe.mp <| ne_of_lt <| lbound.trans_lt <|
-    lt_of_le_of_lt' (ubound y rfl) (by linarith)
+lemma injective_hCubeEmbedding (x y : X) (hxy : x ≠ y) :
+    ∃ n, hCubeEmbedding X n x ≠ hCubeEmbedding X n y := by
+  obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
+  exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
 
 variable (A : Type*) [TopologicalSpace A]
 
+lemma continuous_hCubeEmbedding_inv :
+    Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (hCubeEmbedding X) → X) := by
+  refine continuous_iff_continuousAt.mpr fun x s hs ↦ ?_
+  obtain ⟨i, t, ht, hts⟩ := separation hs
+  rw [(isUniformEmbedding_embed injective_hCubeEmbedding).isEmbedding.nhds_eq_comap, nhds_pi]
+  exact ⟨_, Filter.mem_pi_of_mem _ ht, fun x hx ↦ hts hx⟩
+
 theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding F := by
-  let firststep : X ≃ₜ PiNatEmbed X (fun i => I) (T_func X) := {
-    toFun := toPiNatEquiv X (fun i => I) (T_func X)
+  let firststep : X ≃ₜ PiNatEmbed X (fun i => I) (hCubeEmbedding X) := {
+    toFun := toPiNat
     invFun := ofPiNat
     left_inv _ := rfl
     right_inv _ := rfl
-    continuous_toFun := by
-      rw [toPiNatEquiv]; exact continuous_toPiNat <| fun i ↦ continuous_T i
-    continuous_invFun := by
-      refine SeqContinuous.continuous ?_
-      intro txn tx h_conv_txn
-      by_contra! h_noconv
-      rw [Metric.tendsto_atTop'] at h_noconv
-      simp only [gt_iff_lt, comp_apply, not_forall, not_exists, not_lt, exists_prop] at h_noconv
-      obtain ⟨ε, εpos, h_noconv⟩ := h_noconv
-      obtain ⟨subseq,hmonosubseq,hsepsubseq⟩ := Nat.exists_strictMono_subsequence h_noconv
-      have hsep : tx.ofPiNat ∉ (closure <| Set.range (fun n => (txn <| subseq n).ofPiNat)) := by
-        refine (infDist_pos_iff_notMem_closure
-        (range_nonempty fun n ↦ (txn (subseq n)).ofPiNat)).mpr ?_
-        rw [infDist_eq_iInf]
-        apply lt_of_lt_of_le εpos
-        refine (le_ciInf_set_iff (range_nonempty fun n ↦ (txn (subseq n)).ofPiNat) ?_).mpr ?_
-        · use 0; simp [lowerBounds]
-        · simp; refine fun a ↦ by rw [dist_comm]; exact hsepsubseq a
-      have hnempty : Nonempty <| (closure <| Set.range (fun n => (txn <| subseq n).ofPiNat)) := by
-        rw [nonempty_coe_sort,closure_nonempty_iff]
-        exact range_nonempty fun n ↦ (txn (subseq n)).ofPiNat
-      obtain ⟨δ, i, δpos, hlineq, hgrineq⟩ :=
-          separation tx.ofPiNat (closure
-          <| Set.range (fun n => (txn <| subseq n).ofPiNat)) isClosed_closure
-          hnempty hsep
-      have hubound (n : ℕ) : 2 * δ / 3 ≤ (T_func X i (txn (subseq n)).ofPiNat) :=
-        hgrineq (txn (subseq n)).ofPiNat <| subset_closure <| mem_range_self n
-      have closurethang (n : ℕ):
-          (txn (subseq n)).ofPiNat ∈ closure (range fun m ↦ (txn (subseq m)).ofPiNat) := by
-        refine mem_closure_range_iff.mpr ?_
-        intro ε hε; use n; simpa using hε
-      by_cases δsize : 3 < δ
-      · linarith [hubound 0, unitInterval.le_one (T_func X i (txn (subseq 0)).ofPiNat)]
-      have total_dist (n : ℕ) :  (2 ^ i)⁻¹ * (δ / 3) ≤ dist (txn (subseq n)) tx  := by
-        simp [dist]
-        have summ : Summable fun i ↦ min ((2 ^ i) : ℝ)⁻¹
-            |↑(embed X (fun i ↦ ↑I) (T_func X) (txn (subseq n)) i) -
-            ↑(embed X (fun i ↦ ↑I) (T_func X) tx i)| := by
-          apply Summable.of_norm_bounded (g:= (fun (n_1 : ℕ) ↦ (2 ^ n_1)⁻¹))
-          · simp_rw [←one_div,←one_div_pow]; exact summable_geometric_two
-          · intro i
-            simp_rw [Real.norm_eq_abs]
-            rw [← Real.dist_eq, abs_of_nonneg (by positivity)]
-            exact min_le_left _
-                (dist ↑(embed X (fun i ↦ ↑I) (T_func X) (txn (subseq n)) i)
-                ↑(embed X (fun i ↦ ↑I) (T_func X) tx i))
-        calc
-          (2 ^ i)⁻¹ * (δ / 3) ≤ min (2 ^ i)⁻¹
-              |↑(embed X (fun i ↦ ↑I) (T_func X) (txn (subseq n)) i) -
-              ↑(embed X (fun i ↦ ↑I) (T_func X) tx i)| := by
-            simp only [le_inf_iff, inv_pos, Nat.ofNat_pos, pow_pos, mul_le_iff_le_one_right]
-            constructor; · linarith [δsize]
-            refine le_abs.mpr ?_
-            left
-            simp [embed]
-            specialize hgrineq (txn (subseq n)).ofPiNat (closurethang n)
-            refine le_tsub_of_add_le_left (le_trans (le_trans (add_le_add_right hlineq
-                ((2 ^ i)⁻¹ * (δ / 3))) (add_le_of_le_tsub_left_of_le (by linarith) ?_)) hgrineq)
-            rw [mul_div_assoc 2 δ 3,two_mul, add_sub_cancel_right,← one_mul (δ / 3)]
-            bound
-          _ ≤ ∑' (i : ℕ), min (2 ^ i)⁻¹ |↑(embed X (fun i ↦ ↑I) (T_func X) (txn (subseq n)) i) -
-                ↑(embed X (fun i ↦ ↑I) (T_func X) tx i)| := by
-            apply Summable.le_tsum (f := fun (i : ℕ) ↦
-                min ((2 ^ i) : ℝ)⁻¹ |↑(embed X (fun i ↦ ↑I) (T_func X) (txn (subseq n)) i) -
-                ↑(embed X (fun i ↦ ↑I) (T_func X) tx i)|) (i := i) ?_ (fun _ _ ↦ (by positivity))
-            · exact summ
-      rw [Metric.tendsto_atTop] at h_conv_txn
-      specialize h_conv_txn ((2 ^ i)⁻¹ * (δ / 3)) (by positivity)
-      rw [← eventually_atTop,eventually_iff_seq_eventually] at h_conv_txn
-      specialize h_conv_txn subseq <| StrictMono.tendsto_atTop hmonosubseq
-      simp [total_dist, -eventually_atTop, ← not_le, NeBot.ne] at h_conv_txn
-  }
-  let secondstep : PiNatEmbed X (fun i => I) (T_func X) → ℕ → I := embed _ _ _
+    continuous_toFun := continuous_toPiNat <| fun i ↦ continuous_hCubeEmbedding i
+    continuous_invFun := continuous_hCubeEmbedding_inv}
+  let secondstep : PiNatEmbed X (fun i => I) (hCubeEmbedding X) → ℕ → I := embed _ _ _
   let isEmbedding_secondstep : IsEmbedding secondstep :=
-      (isUniformEmbedding_embed injective_T).isEmbedding
-  use (fun x ↦ secondstep (firststep x))
-  exact Topology.IsEmbedding.comp (g:= secondstep) (isEmbedding_secondstep)
-      (Homeomorph.isEmbedding firststep)
+      (isUniformEmbedding_embed injective_hCubeEmbedding).isEmbedding
+  exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
 
 end MetricSpace
 end PiNatEmbed
