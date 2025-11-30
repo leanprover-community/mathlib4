@@ -23,7 +23,7 @@ open MeasureTheory InnerProductSpace
 
 open scoped ENNReal NNReal RealInnerProductSpace
 
-namespace ProbabilityTheory
+namespace ProbabilityTheory.IsGaussianProcess
 
 variable {S T Ω E F : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X Y : T → Ω → E}
 
@@ -31,11 +31,11 @@ section Basic
 
 variable [MeasurableSpace E] [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
 
-lemma IsGaussianProcess.isProbabilityMeasure (hX : IsGaussianProcess X P) :
+lemma isProbabilityMeasure (hX : IsGaussianProcess X P) :
     IsProbabilityMeasure P :=
   hX.hasGaussianLaw Classical.ofNonempty |>.isProbabilityMeasure
 
-lemma IsGaussianProcess.aemeasurable (hX : IsGaussianProcess X P) (t : T) :
+lemma aemeasurable (hX : IsGaussianProcess X P) (t : T) :
     AEMeasurable (X t) P := by
   by_contra h
   have := (hX.hasGaussianLaw {t}).isGaussian_map
@@ -45,7 +45,7 @@ lemma IsGaussianProcess.aemeasurable (hX : IsGaussianProcess X P) (t : T) :
     push_neg
     exact ⟨⟨t, by simp⟩, h⟩
 
-lemma IsGaussianProcess.modification (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
+lemma modification (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
     IsGaussianProcess Y P where
   hasGaussianLaw I := by
     constructor
@@ -54,44 +54,9 @@ lemma IsGaussianProcess.modification (hX : IsGaussianProcess X P) (hXY : ∀ t, 
 
 end Basic
 
-lemma borelSpace_of_isOpen {X : Type*} [TopologicalSpace X] [m : MeasurableSpace X]
-    (h : ∀ s : Set X, IsOpen s → MeasurableSet s) : borel X ≤ m :=
-  MeasurableSpace.generateFrom_le h
-
-lemma nonempty_of_nontrivial_pi {ι : Type*} (α : ι → Type*) [h : Nontrivial (Π i, α i)] :
-    Nonempty ι := by
-  contrapose! h
-  infer_instance
-
-instance {ι : Type*} (E : ι → Type*) [∀ i, TopologicalSpace (E i)] [∀ i, MeasurableSpace (E i)]
-    [∀ i, BorelSpace (E i)] [Subsingleton ι] :
-    BorelSpace (Π i, E i) := by
-  nontriviality (Π i, E i)
-  have := nonempty_of_nontrivial_pi E
-  have := Classical.choice (nonempty_unique ι)
-  refine ⟨le_antisymm pi_le_borel_pi (borelSpace_of_isOpen fun s hs ↦ ?_)⟩
-  simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
-    Set.mem_setOf_eq] at hs
-  rw [MeasurableSpace.pi, ciSup_unique, MeasurableSpace.measurableSet_comap]
-  exact ⟨(fun (b : Π i, E i) ↦ b default) ⁻¹' s, hs.measurableSet, rfl⟩
-
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
 
-instance {ι : Type*} (E : ι → Type*) [∀ i, TopologicalSpace (E i)] [∀ i, MeasurableSpace (E i)]
-    [∀ i, BorelSpace (E i)] [Subsingleton ι] :
-    BorelSpace (Π i, E i) := by
-  refine ⟨le_antisymm pi_le_borel_pi ?_⟩
-  obtain h | h := isEmpty_or_nonempty ι
-  · exact fun s _ ↦ Subsingleton.set_cases .empty .univ s
-  have := Classical.choice (nonempty_unique ι)
-  rw [borel, MeasurableSpace.pi, ciSup_unique]
-  refine MeasurableSpace.generateFrom_le fun s hs ↦ MeasurableSpace.measurableSet_comap.2 ?_
-  simp only [Pi.topologicalSpace, ciInf_unique, isOpen_induced_eq, Set.mem_image,
-    Set.mem_setOf_eq] at hs
-  obtain ⟨t, ht, rfl⟩ := hs
-  exact ⟨t, ht.measurableSet, rfl⟩
-
-lemma IsGaussianProcess.hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t : T) :
+lemma hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t : T) :
     HasGaussianLaw (X t) P := by
   have : X t = (ContinuousLinearMap.proj (R := ℝ) ⟨t, by simp⟩) ∘
     (fun ω ↦ ({t} : Finset T).restrict (X · ω)) := by ext; simp
@@ -100,23 +65,19 @@ lemma IsGaussianProcess.hasGaussianLaw_eval (hX : IsGaussianProcess X P) (t : T)
 
 variable [SecondCountableTopology E]
 
-lemma IsGaussianProcess.hasGaussianLaw_sub (hX : IsGaussianProcess X P)
-    {s t : T} : HasGaussianLaw (X s - X t) P := by
+lemma hasGaussianLaw_prodMk (hX : IsGaussianProcess X P)
+    {s t : T} : HasGaussianLaw (fun ω ↦ (X s ω, X t ω)) P := by
   classical
-  have : X s - X t =
-      (ContinuousLinearMap.proj (R := ℝ) (ι := ({s, t} : Finset T))
-        (φ := fun _ ↦ E) ⟨s, by simp⟩ -
-      ContinuousLinearMap.proj (R := ℝ) (ι := ({s, t} : Finset T))
-        (φ := fun _ ↦ E) ⟨t, by simp⟩) ∘
-    (fun ω ↦ Finset.restrict {s, t} (X · ω)) := by ext; simp
-  rw [this]
-  exact (hX.hasGaussianLaw _).map _
+  exact (hX.hasGaussianLaw {s, t}).prodMk ⟨s, by simp⟩ ⟨t, by simp⟩
 
-lemma IsGaussianProcess.hasGaussianLaw_fun_sub
+lemma hasGaussianLaw_sub (hX : IsGaussianProcess X P)
+    {s t : T} : HasGaussianLaw (X s - X t) P := hX.hasGaussianLaw_prodMk.sub
+
+lemma hasGaussianLaw_fun_sub
     (hX : IsGaussianProcess X P) {s t : T} : HasGaussianLaw (fun ω ↦ X s ω - X t ω) P :=
   hX.hasGaussianLaw_sub
 
-lemma IsGaussianProcess.hasGaussianLaw_increments
+lemma hasGaussianLaw_increments
     (hX : IsGaussianProcess X P) {n : ℕ} {t : Fin (n + 1) → T} :
     HasGaussianLaw (fun ω (i : Fin n) ↦ X (t i.succ) ω - X (t i.castSucc) ω) P := by
   classical
@@ -130,7 +91,7 @@ lemma IsGaussianProcess.hasGaussianLaw_increments
   rw [this]
   exact (hX.hasGaussianLaw _).map _
 
-lemma IsGaussianProcess.indepFun [CompleteSpace E] {X : S → Ω → E} {Y : T → Ω → E}
+lemma indepFun [CompleteSpace E] {X : S → Ω → E} {Y : T → Ω → E}
     (h : IsGaussianProcess (Sum.elim X Y) P) (hX : ∀ s, Measurable (X s))
     (hY : ∀ t, Measurable (Y t))
     (h' : ∀ s t (L₁ L₂ : StrongDual ℝ E), cov[L₁ ∘ X s, L₂ ∘ Y t; P] = 0) :
@@ -160,7 +121,7 @@ lemma IsGaussianProcess.indepFun [CompleteSpace E] {X : S → Ω → E} {Y : T �
   · exact fun s ↦ ((h.hasGaussianLaw_eval (.inl s)).map _).memLp_two
   · exact fun t ↦ ((h.hasGaussianLaw_eval (.inr t)).map _).memLp_two
 
-lemma IsGaussianProcess.iIndepFun [CompleteSpace E] {S : T → Type*}
+lemma iIndepFun [CompleteSpace E] {S : T → Type*}
     {X : (t : T) → (s : S t) → Ω → E}
     (h : IsGaussianProcess (fun (p : (t : T) × S t) ω ↦ X p.1 p.2 ω) P)
     (hX : ∀ t s, Measurable (X t s))
@@ -194,7 +155,7 @@ lemma IsGaussianProcess.iIndepFun [CompleteSpace E] {S : T → Type*}
   · exact fun k ↦ ((h.hasGaussianLaw_eval ⟨i, k⟩).map _).memLp_two
   · exact fun k ↦ ((h.hasGaussianLaw_eval ⟨j, k⟩).map _).memLp_two
 
-lemma IsGaussianProcess.indepFun'
+lemma indepFun'
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
     [SecondCountableTopology E] [CompleteSpace E]
     {X : S → Ω → E} {Y : T → Ω → E}
@@ -205,7 +166,7 @@ lemma IsGaussianProcess.indepFun'
   h.indepFun hX hY fun s t L₁ L₂ ↦ by
     simpa using h' s t ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
-lemma IsGaussianProcess.iIndepFun'
+lemma iIndepFun'
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
     [SecondCountableTopology E] [CompleteSpace E] {S : T → Type*}
     {X : (t : T) → (s : S t) → Ω → E}
@@ -217,14 +178,14 @@ lemma IsGaussianProcess.iIndepFun'
   h.iIndepFun hX fun t₁ t₂ ht s₁ s₂ L₁ L₂ ↦ by
     simpa using h' t₁ t₂ ht s₁ s₂ ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
-lemma IsGaussianProcess.indepFun'' {X : S → Ω → ℝ} {Y : T → Ω → ℝ}
+lemma indepFun'' {X : S → Ω → ℝ} {Y : T → Ω → ℝ}
     (h : IsGaussianProcess (Sum.elim X Y) P) (hX : ∀ s, Measurable (X s))
     (hY : ∀ t, Measurable (Y t)) (h' : ∀ s t, cov[X s, Y t; P] = 0) :
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P :=
   h.indepFun' hX hY fun _ _ _ _ ↦ by
     simp [mul_comm, covariance_const_mul_left, covariance_const_mul_right, h']
 
-lemma IsGaussianProcess.iIndepFun'' {S : T → Type*}
+lemma iIndepFun'' {S : T → Type*}
     {X : (t : T) → (s : S t) → Ω → ℝ}
     (h : IsGaussianProcess (fun (p : (t : T) × S t) ω ↦ X p.1 p.2 ω) P)
     (hX : ∀ t s, Measurable (X t s))
@@ -235,7 +196,7 @@ lemma IsGaussianProcess.iIndepFun'' {S : T → Type*}
 
 /-- If a stochastic process `Y` is such that for `s`, `Y s` can be written as a linear
 combination of finitely many values of a Gaussian process, then `Y` is a Gaussian process. -/
-lemma IsGaussianProcess.of_isGaussianProcess (hX : IsGaussianProcess X P)
+lemma of_isGaussianProcess (hX : IsGaussianProcess X P)
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
     [BorelSpace F] [SecondCountableTopology F] {Y : S → Ω → F}
     (h : ∀ s, ∃ I : Finset T, ∃ L : (I → E) →L[ℝ] F, ∀ ω, Y s ω = L (I.restrict (X · ω))) :
@@ -253,7 +214,7 @@ lemma IsGaussianProcess.of_isGaussianProcess (hX : IsGaussianProcess X P)
     rw [this]
     exact (hX.hasGaussianLaw _).map _
 
-lemma IsGaussianProcess.comp_right (h : IsGaussianProcess X P)
+lemma comp_right (h : IsGaussianProcess X P)
     (f : S → T) : IsGaussianProcess (X ∘ f) P :=
   h.of_isGaussianProcess fun s ↦ ⟨{f s},
     { toFun x := x ⟨f s, by simp⟩
@@ -261,7 +222,7 @@ lemma IsGaussianProcess.comp_right (h : IsGaussianProcess X P)
       map_smul' := by simp },
     by simp⟩
 
-lemma IsGaussianProcess.comp_left {F : Type*}
+lemma comp_left {F : Type*}
     [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
     [SecondCountableTopology F] (L : T → E →L[ℝ] F) (h : IsGaussianProcess X P) :
     IsGaussianProcess (fun t ω ↦ L t (X t ω)) P :=
@@ -271,7 +232,7 @@ lemma IsGaussianProcess.comp_left {F : Type*}
       map_smul' := by simp },
     by simp⟩
 
-lemma IsGaussianProcess.smul (c : T → ℝ)
+lemma smul (c : T → ℝ)
     (hX : IsGaussianProcess X P) :
     IsGaussianProcess (fun t ω ↦ c t • (X t ω)) P :=
   letI L t : E →L[ℝ] E :=
@@ -281,7 +242,7 @@ lemma IsGaussianProcess.smul (c : T → ℝ)
       cont := by fun_prop }
   hX.comp_left L
 
-lemma IsGaussianProcess.shift [Add T] (h : IsGaussianProcess X P) (t₀ : T) :
+lemma shift [Add T] (h : IsGaussianProcess X P) (t₀ : T) :
     IsGaussianProcess (fun t ω ↦ X (t₀ + t) ω - X t₀ ω) P := by
   classical
   exact h.of_isGaussianProcess fun t ↦ ⟨{t₀, t₀ + t},
@@ -290,7 +251,7 @@ lemma IsGaussianProcess.shift [Add T] (h : IsGaussianProcess X P) (t₀ : T) :
       map_smul' c x := by simp; module },
     by simp⟩
 
-lemma IsGaussianProcess.restrict (h : IsGaussianProcess X P) (s : Set T) :
+lemma restrict (h : IsGaussianProcess X P) (s : Set T) :
     IsGaussianProcess (fun t : s ↦ X t) P :=
   h.of_isGaussianProcess fun t ↦ ⟨{t.1},
     { toFun x := x ⟨t.1, by simp⟩
@@ -298,4 +259,4 @@ lemma IsGaussianProcess.restrict (h : IsGaussianProcess X P) (s : Set T) :
       map_smul' := by simp },
     by simp⟩
 
-end ProbabilityTheory
+end ProbabilityTheory.IsGaussianProcess
