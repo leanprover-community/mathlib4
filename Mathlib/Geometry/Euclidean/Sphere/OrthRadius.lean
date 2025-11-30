@@ -5,7 +5,6 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.TwoDim
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
