@@ -81,7 +81,7 @@ theorem coequalizerIso_quot_comp_inv :
   rfl
 
 variable {f g} in
-def nonempty_isColimit_cofork_iff (c : Cofork f g) :
+lemma nonempty_isColimit_cofork_iff (c : Cofork f g) :
     Nonempty (IsColimit c) ↔
       Function.Bijective (Function.Coequalizer.desc f g _ c.condition) := by
   rw [← isIso_iff_bijective]
