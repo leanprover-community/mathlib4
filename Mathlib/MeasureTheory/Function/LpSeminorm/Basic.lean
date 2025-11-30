@@ -398,7 +398,7 @@ theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ESeminormedAddM
   · simp
   by_cases hp : p = 0
   · simp [hp]
-  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := hfC.mono fun x hx ↦ hx.trans (Preorder.le_refl C)
+  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := hfC.mono fun x hx ↦ hx.trans (le_refl C)
   refine (eLpNorm_mono_enorm_ae this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, enorm_eq_self, smul_eq_mul]
 
@@ -1110,7 +1110,8 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
   by_cases hc : c = ⊤
   · by_cases hg' : eLpNorm' g p μ = 0
     · have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by
-        simp [eLpNorm'_eq_lintegral_enorm, hp', hp] at hg'
+        simp only [eLpNorm'_eq_lintegral_enorm, one_div, ENNReal.rpow_eq_zero_iff, inv_pos, hp,
+          and_true, inv_neg'', hp', and_false, or_false] at hg'
         rw [MeasureTheory.lintegral_eq_zero_iff' (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
       have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦ by simp_all

@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # The Orthogonal-reflection construction
@@ -54,7 +55,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Limits Localization
+open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
@@ -78,6 +79,15 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
       obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
       exact ⟨g ≫ p.ι.app j, by simp⟩
 
+lemma MorphismProperty.isCardinalAccessible_ι_isLocal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [HasCardinalFilteredColimits C κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.ι.IsCardinalAccessible κ where
+  preservesColimitOfShape J _ _ := by
+    have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
+    infer_instance
+
 namespace OrthogonalReflection
 
 variable (Z : C)
@@ -86,6 +96,17 @@ variable (Z : C)
 parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
 def D₁ : Type _ := Σ (f : W.toSet), f.1.left ⟶ Z
+
+instance [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C] :
+    Small.{w} (D₁ (W := W) (Z := Z)) := by
+  dsimp [D₁]
+  infer_instance
+
+lemma D₁.hasCoproductsOfShape [MorphismProperty.IsSmall.{w} W]
+    [LocallySmall.{w} C] [HasCoproducts.{w} C] :
+    HasCoproductsOfShape (D₁ (W := W) (Z := Z)) C :=
+  hasColimitsOfShape_of_equivalence
+    (Discrete.equivalence (equivShrink.{w} _).symm)
 
 variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
@@ -96,6 +117,8 @@ variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
 of a morphism `X ⟶ Z`, this is the object `Y`. -/
 def D₁.obj₂ (d : D₁ W Z) : C := d.1.1.right
+
+section
 
 variable [HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
 
@@ -116,8 +139,6 @@ variable {W Z} in
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
   Sigma.ι_desc _ _
-
-section
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
@@ -176,6 +197,23 @@ def D₂.multispanShape : MultispanShape where
   R := Unit
   fst _ := .unit
   snd _ := .unit
+
+section
+
+variable [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C]
+
+instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
+  dsimp [D₂]
+  infer_instance
+
+instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
+
+attribute [local instance] essentiallySmall_of_small_of_locallySmall in
+lemma D₂.hasColimitsOfShape [HasColimitsOfSize.{w, w} C] :
+    HasColimitsOfShape (WalkingMultispan (multispanShape W Z)) C :=
+  hasColimitsOfShape_of_equivalence (equivSmallModel.{w} _).symm
+
+end
 
 /-- The diagram of the multicoequalizer of all pair of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
