@@ -6,6 +6,7 @@ Authors: Vlad Tsyrklevich
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
@@ -69,7 +70,7 @@ theorem isIndepSet_compl_iff_isVertexCover {c : Set V} : G.IsIndepSet cᶜ ↔ I
 theorem isVertexCover_compl {c : Set V} : G.IsVertexCover cᶜ ↔ G.IsIndepSet c := by
   simp [← isIndepSet_compl_iff_isVertexCover]
 
-theorem IsVertexCover.preimage {F : Type*} [FunLike F V W] [RelHomClass F G.Adj H.Adj]
+theorem IsVertexCover.preimage {F : Type*} [FunLike F V W] [HomClass F G H]
     (f : F) {c : Set W} (hc : IsVertexCover H c) :
     IsVertexCover G (f ⁻¹' c) :=
   fun _ _ hadj ↦ hc (map_rel f hadj)
