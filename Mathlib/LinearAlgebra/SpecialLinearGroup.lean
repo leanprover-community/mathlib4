@@ -380,7 +380,8 @@ noncomputable def centerEquivRootsOfUnity_invFun
     Subgroup.center (SpecialLinearGroup R V) :=
   ⟨⟨LinearMap.equivOfIsUnitDet (M := V) (R := R) (f := ((r : Rˣ) : R) • LinearMap.id) (by
     simp [LinearMap.det_smul, IsUnit.pow]), by
-    simp [← Units.val_inj, LinearEquiv.coe_det]
+    simp only [← Units.val_inj, LinearEquiv.coe_det, LinearMap.coe_equivOfIsUnitDet,
+      LinearMap.det_smul, LinearMap.det_id, mul_one, Units.val_one]
     have := (mem_rootsOfUnity' _ _).mp r.prop
     rcases max_cases (Module.finrank R V) 1 with ⟨h, h'⟩ |  ⟨h, h'⟩
     · simp_rw [h] at this
