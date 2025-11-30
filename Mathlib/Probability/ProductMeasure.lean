@@ -409,13 +409,6 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
--- -- Move to proper location!
-open Classical in
-lemma restrict_preimage' {I : Set ι} (s : Finset I) (t : (i : I) → Set (X i))
-  : I.restrict ⁻¹' Set.pi s t =
-      Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then t ⟨i, h⟩ else .univ) := by
-  grind
-
 theorem infinitePi_map_restrict' {I : Set ι} :
     (infinitePi μ).map I.restrict = infinitePi fun i : I ↦ μ i := by
   apply eq_infinitePi
@@ -424,21 +417,6 @@ theorem infinitePi_map_restrict' {I : Set ι} :
   rw [map_apply (by fun_prop), restrict_preimage', infinitePi_pi _ (by measurability)]
   · simp
   · exact MeasurableSet.pi s.countable_toSet (by measurability)
-
--- Move to proper location!
-theorem pi_iUnion_eq_iInter_pi {ι ι' : Type*} {α : ι → Type*} (s : ι' → Set ι)
-    (t : (i : ι) → Set (α i)) : (⋃ i, s i).pi t = ⋂ i, (s i).pi t := by
-  ext f
-  simp
-  grind
-
--- Move to proper location!
-theorem union_all_finset_eq_set {ι : Type*} (s : Set ι) :
-    ⋃ s' : Finset s, Subtype.val '' (s' : Set s) = s := by
-  ext x
-  simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, Subtype.exists,
-    exists_and_right, exists_eq_right]
-  exact ⟨fun ⟨_, hx, _⟩ ↦ hx, fun hx ↦ ⟨{⟨x, hx⟩}, hx, by simp⟩⟩
 
 open Classical in
 lemma infinitePi_pi' {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
@@ -455,7 +433,7 @@ lemma infinitePi_pi' {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)
     have : s.pi t
       = ⋂ s' : Finset s,
         (Subtype.val '' (s': Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
-      rw [← pi_iUnion_eq_iInter_pi, union_all_finset_eq_set]
+      rw [← Set.pi_iUnion_eq_iInter_pi, Set.iUnion_finset_eq_set]
       grind
     rw [this]
     apply tendsto_measure_iInter_atTop

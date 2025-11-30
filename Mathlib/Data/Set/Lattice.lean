@@ -1143,8 +1143,13 @@ theorem biUnion_univ_pi {ι : α → Type*} (s : (a : α) → Set (ι a)) (t : (
   ext
   simp [Classical.skolem, forall_and]
 
-end Pi
+theorem pi_iUnion_eq_iInter_pi {α' : Type*} (s : α' → Set α) (t : (a : α) → Set (π a)) :
+    (⋃ i, s i).pi t = ⋂ i, (s i).pi t := by
+  ext f
+  simp
+  grind
 
+end Pi
 section Directed
 
 theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
