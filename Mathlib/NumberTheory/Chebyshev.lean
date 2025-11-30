@@ -5,6 +5,7 @@ Authors: Alastair Irving, Ruben Van de Velde
 -/
 module
 
+public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.VonMangoldt
 
 /-!
@@ -18,6 +19,11 @@ These give logarithmically weighted sums of primes and prime powers.
 - `Chebyshev.psi` gives the sum of `ArithmeticFunction.vonMangoldt`
 - `Chebyshev.theta` gives the sum of `log p` over primes
 
+## Main results
+
+- `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
+- `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
+
 ## Notation
 
 We introduce the scoped notations `θ` and `ψ` for the Chebyshev functions.
@@ -29,7 +35,7 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 ## TODOS
 
 - Upstream the results relating `theta` and `psi` to each other and to the prime counting function.
-- Prove Chebyshev's estimates.
+- Prove Chebyshev's lower bound.
 -/
 @[expose] public section
 
@@ -102,5 +108,30 @@ theorem theta_mono : Monotone θ := by
     norm_cast
     simp only [mem_filter, mem_Ioc] at hp
     exact hp.2.one_le
+
+/-- `θ x` is the log of the product of the primes up to `x`. -/
+theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := by
+  unfold theta primorial
+  push_cast
+  rw [log_prod]
+  · apply sum_congr
+    · ext p
+      simp_all [Nat.Prime.pos, Nat.lt_add_one_iff]
+    · intros; rfl
+  · intro p
+    simp_all only [mem_filter, mem_range, ne_eq, cast_eq_zero, and_imp]
+    intro hp1 hp2
+    push_neg
+    exact hp2.pos.ne.symm
+
+/-- Chebyshev's upper bound: `θ x ≤ c x` with the constant `c = log 4`. -/
+theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
+  rw [theta_eq_log_primorial]
+  trans log (4 ^ ⌊x⌋₊)
+  · apply log_le_log <;> norm_cast
+    exacts [primorial_pos _, primorial_le_4_pow _]
+  rw [Real.log_pow, mul_comm]
+  gcongr
+  exact floor_le hx
 
 end Chebyshev
