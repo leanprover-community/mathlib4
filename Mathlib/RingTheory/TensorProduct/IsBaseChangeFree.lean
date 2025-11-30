@@ -24,7 +24,7 @@ variable {R : Type*} [CommSemiring R]
     {S : Type*} [CommSemiring S] [Algebra R S]
     {V : Type*} [AddCommMonoid V] [Module R V]
     {W : Type*} [AddCommMonoid W] [Module R W] [Module S W] [IsScalarTower R S W]
-    {ι : Type*} [DecidableEq ι]
+    {ι : Type*}
     {ε : V →ₗ[R] W}
 
 variable (b : Module.Basis ι R V) (ibc : IsBaseChange S ε)
@@ -36,8 +36,8 @@ noncomputable def basis :
       (finsuppPow ι (linearMap R S)).equiv
 
 theorem basis_apply (i) : ibc.basis b i = ε (b i) := by
-  simp [basis]
-  simp [LinearEquiv.baseChange]
+  simp only [basis, LinearEquiv.baseChange, Module.Basis.coe_ofRepr, LinearEquiv.trans_symm,
+    LinearEquiv.symm_symm, LinearEquiv.trans_apply]
   generalize_proofs _ _ _ _ ibcRA
   have : ibcRA.equiv.symm (Finsupp.single i 1) = 1 ⊗ₜ (Finsupp.single i 1) := by
     simp [LinearEquiv.symm_apply_eq, IsBaseChange.equiv_tmul]
