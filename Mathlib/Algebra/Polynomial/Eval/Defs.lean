@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Evaluating a polynomial
@@ -542,6 +543,9 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 --TODO rename to `map_dvd_map`
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
   _root_.map_dvd (mapRingHom f)
+
+lemma associated_map_map (f : R →+* S) {x y : R[X]} :
+    Associated x y → Associated (x.map f) (y.map f) := .map (mapRingHom f)
 
 lemma mapRingHom_comp_C {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) :
     (mapRingHom f).comp C = C.comp f := by ext; simp
