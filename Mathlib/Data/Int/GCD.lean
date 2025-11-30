@@ -41,21 +41,21 @@ Bézout's lemma, Bezout's lemma
 namespace Nat
 
 /-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
-def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
-  | 0, _, _, r', s', t' => (r', s', t')
-  | succ k, s, t, r', s', t' =>
+def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ :=
+  Nat.strongRec' fun n ih s t r' s' t' ↦ match n with
+  | 0 => (r', s', t')
+  | succ k =>
     let q := r' / succ k
-    xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
-termination_by k => k
-decreasing_by exact mod_lt _ <| (succ_pos _).gt
+    ih (r' % succ k) (mod_lt _ <| (succ_pos _).gt) (s' - q * s) (t' - q * t) (succ k) s t
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
+theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
 theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
-  simp [xgcdAux]
+  rw [xgcdAux, Nat.strongRec'_spec]
+  rfl
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/
@@ -71,28 +71,20 @@ def gcdB (x y : ℕ) : ℤ :=
   (xgcd x y).2
 
 @[simp]
-theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := by
-  unfold gcdA
-  rw [xgcd, xgcd_zero_left]
+theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := rfl
 
 @[simp]
-theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
-  unfold gcdB
-  rw [xgcd, xgcd_zero_left]
+theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := rfl
 
 @[simp]
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
-  unfold gcdA xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rw [xgcdAux]
-  simp
+  rfl
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
-  unfold gcdB xgcd
   obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rw [xgcdAux]
-  simp
+  rfl
 
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=

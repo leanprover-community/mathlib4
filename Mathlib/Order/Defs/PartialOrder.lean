@@ -43,13 +43,10 @@ section Preorder
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type*) extends LE α, LT α where
-  le_refl : ∀ a : α, a ≤ a
-  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  protected le_refl : ∀ a : α, a ≤ a
+  protected le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
-  lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
-
-attribute [to_dual self (reorder := a c, 6 7)] Preorder.le_trans
-attribute [to_dual self] Preorder.lt_iff_le_not_ge
+  protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
 instance [Preorder α] : Std.LawfulOrderLT α where
   lt_iff := Preorder.lt_iff_le_not_ge
@@ -69,7 +66,10 @@ variable [Preorder α] {a b c : α}
 lemma le_rfl : a ≤ a := le_refl a
 
 /-- The relation `≤` on a preorder is transitive. -/
-@[to_dual ge_trans] lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
+lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
+
+@[to_dual existing le_trans]
+lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := flip le_trans
 
 @[to_dual self]
 lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_ge _ _
@@ -176,17 +176,17 @@ section PartialOrder
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
 class PartialOrder (α : Type*) extends Preorder α where
-  le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
-
-attribute [to_dual self (reorder := 5 6)] PartialOrder.le_antisymm
+  protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
 instance [PartialOrder α] : Std.IsPartialOrder α where
   le_antisymm := PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 
-@[to_dual ge_antisymm]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
+
+@[to_dual existing le_antisymm]
+lemma ge_antisymm : b ≤ a → a ≤ b → a = b := flip le_antisymm
 
 @[to_dual eq_of_ge_of_le]
 alias eq_of_le_of_ge := le_antisymm

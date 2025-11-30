@@ -17,7 +17,7 @@ This file defines infinite products and sums for (possibly infinite) indexed fam
 in a commutative topological monoid (resp. add monoid).
 
 To handle convergence questions we use the formalism of *summation filters* (defined in the
-file `Mathlib.Topology.Algebra.InfiniteSum.SummationFilter`). These are filters on the finite
+file `Mathlib/Topology/Algebra/InfiniteSum/SummationFilter.lean`). These are filters on the finite
 subsets of a given type, and we define a function to be *summable* for a summation filter `L` if
 its partial sums over finite subsets tend to a limit along `L` (and similarly for products).
 
@@ -120,7 +120,7 @@ lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : SummationFilter β}
   match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
 open scoped Classical in
-/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise. ]
+/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∏'[L] i, f i` is the product of `f` with respect to
 `L` if it exists, and `1` otherwise.
@@ -255,7 +255,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
   filter_upwards [h1, h2] with s hs hs'
   congr 1
   simp only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_compl_iff] at hs hs'
-  grind [Set.mem_toFinset]
+  grind
 
 @[to_additive]
 theorem hasProd_fintype [Fintype β] (f : β → α) (L := unconditional β) [L.LeAtTop] :
