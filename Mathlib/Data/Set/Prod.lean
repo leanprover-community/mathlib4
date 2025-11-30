@@ -376,6 +376,10 @@ theorem _root_.AntitoneOn.set_prod (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
 
 end Mono
 
+lemma eqOn_iff_prod {a b : α → γ × δ} :
+    EqOn a b s ↔ EqOn (Prod.fst ∘ a) (Prod.fst ∘ b) s ∧ EqOn (Prod.snd ∘ a) (Prod.snd ∘ b) s :=
+  ⟨fun h ↦ ⟨by grind [EqOn], by grind [EqOn]⟩, fun ⟨h₁, h₂⟩ ↦ by grind [EqOn]⟩
+
 lemma EqOn.left_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
     (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : Set.Nonempty t) : EqOn f f' s := by
   obtain ⟨x, hxt⟩ := ht
