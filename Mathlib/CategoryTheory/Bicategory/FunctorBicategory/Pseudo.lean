@@ -35,7 +35,6 @@ variable {F G H I : Pseudofunctor B C}
 and a modification. -/
 @[simps!]
 def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι :=
-  -- TODO: should I have a bicategory of strong trans (of oplax functors), or not?
   Modification.mkOfOplax <|
     Oplax.StrongTrans.Modification.mkOfOplax <|
       Oplax.OplaxTrans.whiskerLeft η.toOplax.toOplax Γ.toOplax.toOplax

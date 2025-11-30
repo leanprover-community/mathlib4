@@ -58,9 +58,11 @@ structure Modification where
 
 attribute [reassoc (attr := simp)] Modification.naturality
 
+variable {η θ}
+
 namespace Modification
 
-variable {η θ} (Γ : Modification η θ)
+variable (Γ : Modification η θ)
 
 /-- The modification between the corresponding strong transformation of the underlying oplax
 functors. -/
