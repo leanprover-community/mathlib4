@@ -8,7 +8,6 @@ module
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
-import Mathlib.Geometry.Euclidean.Angle.Sphere
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -236,10 +235,14 @@ equals the power of the point with respect to the sphere. -/
 theorem IsTangentAt_of_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s)
     (h_dist_eq : dist p t ^ 2 = s.power p) :
     s.IsTangentAt t (line[ℝ, p, t]) := by
-  rw [Set.pair_comm, IsTangentAt_iff_angle_eq_pi_div_two ht,
-      ← dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two]
-  simp only [sq, power, mem_sphere.mp ht, dist_comm s.center t] at h_dist_eq ⊢
-  linarith
+  have h_orth : ⟪p -ᵥ t, t -ᵥ s.center⟫ = 0 := by
+    simp only [Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub V, sq,
+               ← vsub_add_vsub_cancel p t s.center] at h_dist_eq
+    exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero _ _).mp (by linarith)
+  refine ⟨ht, right_mem_affineSpan_pair ℝ p t, fun x hx ↦ ?_⟩
+  rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+  obtain ⟨r, hr⟩ := (vadd_right_mem_affineSpan_pair (k := ℝ)).mp (vsub_vadd x t ▸ hx)
+  rw [← hr, inner_smul_left, h_orth, mul_zero]
 
 end Sphere
 
