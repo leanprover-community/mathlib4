@@ -40,6 +40,7 @@ structure Obj where
   ob : B
   map : F.obj ob ⟶ X
 
+/-- Notation for objects of lax slice bicategory. -/
 scoped notation F " ↓ " X => Obj F X
 
 /-- 1-cells in `F ↓ X`
@@ -251,7 +252,7 @@ def associator {A B C D : F ↓ X} (f : A ⟶ B) (g : B ⟶ C) (h : C ⟶ D) : (
 
 @[simp]
 theorem comp_whiskerLeft {A B C D : F ↓ X} (f : A ⟶ B) (g : B ⟶ C) {h i : C ⟶ D} (η : h ⟶ i) :
-    whiskerLeft F X (f ≫ g) η =
+    whiskerLeft F X (comp₁ F X f g) η =
     (associator F X f g h).hom ≫ whiskerLeft F X f (whiskerLeft F X g η) ≫
     (associator F X f g i).inv := by
   refine Hom₂.ext ?_
@@ -260,7 +261,7 @@ theorem comp_whiskerLeft {A B C D : F ↓ X} (f : A ⟶ B) (g : B ⟶ C) {h i : 
 
 @[simp]
 theorem whiskerRight_comp {A B C D : F ↓ X} {f g : A ⟶ B} (η : f ⟶ g) (h : B ⟶ C) (i : C ⟶ D) :
-    whiskerRight F X η (h ≫ i) =
+    whiskerRight F X η (comp₁ F X h i) =
     (associator F X f h i).inv ≫ whiskerRight F X (whiskerRight F X η h) i ≫
     (associator F X g h i).hom := by
   refine Hom₂.ext ?_
@@ -286,9 +287,9 @@ theorem whisker_exchange {A B C : F ↓ X} {f g : A ⟶ B} {h i : B ⟶ C} (η :
 
 @[simp]
 theorem pentagon {A B C D E : F ↓ X} (f : A ⟶ B) (g : B ⟶ C) (h : C ⟶ D) (i : D ⟶ E) :
-    whiskerRight F X (associator F X f g h).hom i ≫ (associator F X f (g ≫ h) i).hom ≫
+    whiskerRight F X (associator F X f g h).hom i ≫ (associatorHom F X f (g ≫ h) i) ≫
     whiskerLeft F X f (associator F X g h i).hom =
-    (associator F X (f ≫ g) h i).hom ≫ (associator F X f g (h ≫ i)).hom := by
+    (associatorHom F X (f ≫ g) h i) ≫ (associatorHom F X f g (h ≫ i)) := by
   refine Hom₂.ext ?_
   change _ ≫ _ ≫ _ = _ ≫ _
   simp
@@ -334,7 +335,7 @@ def leftUnitor {A B : F ↓ X} (f : A ⟶ B) : (𝟙 A) ≫ f ≅ f where
 
 @[simp]
 theorem id_whiskerLeft {A B : F ↓ X} {f g : A ⟶ B} (η : f ⟶ g) :
-    whiskerLeft F X (𝟙 A) η = (leftUnitor F X f).hom ≫ η ≫ (leftUnitor F X g).inv := by
+    whiskerLeft F X (id₁ F X A) η = (leftUnitor F X f).hom ≫ η ≫ (leftUnitor F X g).inv := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _ ≫ _
   simp
@@ -384,14 +385,14 @@ def rightUnitor {A B : F ↓ X} (f : A ⟶ B) : f ≫ (𝟙 B) ≅ f where
 
 @[simp]
 theorem whiskerRight_id {A B : F ↓ X} {f g : A ⟶ B} (η : f ⟶ g) :
-    whiskerRight F X η (𝟙 B) = (rightUnitor F X f).hom ≫ η ≫ (rightUnitor F X g).inv := by
+    whiskerRight F X η (id₁ F X B) = (rightUnitor F X f).hom ≫ η ≫ (rightUnitor F X g).inv := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _ ≫ _
   simp
 
 @[simp]
 theorem triangle {A B C : F ↓ X} (f : A ⟶ B) (g : B ⟶ C) :
-    (associator F X f (𝟙 B) g).hom ≫ whiskerLeft F X f (leftUnitor F X g).hom =
+    (associatorHom F X f (id₁ F X B) g) ≫ whiskerLeft F X f (leftUnitorHom F X g) =
     whiskerRight F X (rightUnitor F X f).hom g := by
   refine Hom₂.ext ?_
   change _ ≫ _ = _
@@ -431,14 +432,14 @@ def map {A B : F ↓ X} : (A ⟶ B) → (obj F f A ⟶ obj F f B) :=
     fun g => Hom₁.mk g.dom_map (g.cod_map ▷ f ≫ (α_ _ _ _).hom)
 
 @[simp]
-theorem map_id (A : F ↓ X) : map F f (𝟙 A) = 𝟙 (obj F f A) := by
+theorem map_id (A : F ↓ X) : map F f (id₁ F X A) = 𝟙 (obj F f A) := by
   refine Hom₁.ext ?_ ?_
   · simp
   simp
 
 @[simp]
 theorem map_comp {A B C : F ↓ X} (g : A ⟶ B) (h : B ⟶ C) :
-    map F f (g ≫ h) = map F f g ≫ map F f h := by
+    map F f (comp₁ F X g h) = map F f g ≫ map F f h := by
   refine Hom₁.ext ?_ ?_
   · simp
   simp
@@ -457,7 +458,7 @@ theorem eqToHom_map {A B : F ↓ X} {g h : A ⟶ B} (e : g = h)
 
 @[simp]
 theorem map₂_whisker_left {A B C : F ↓ X} (g : A ⟶ B) {h i : B ⟶ C} (η : h ⟶ i) :
-    map₂ F f (g ◁ η) = eqToHom (map_comp F f g h) ≫ map F f g ◁ map₂ F f η
+    map₂ F f (whiskerLeft F X g η) = eqToHom (map_comp F f g h) ≫ map F f g ◁ map₂ F f η
     ≫ eqToHom (map_comp F f g i).symm := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _ ≫ _
@@ -466,7 +467,7 @@ theorem map₂_whisker_left {A B C : F ↓ X} (g : A ⟶ B) {h i : B ⟶ C} (η 
 
 @[simp]
 theorem map₂_whisker_right {A B C : F ↓ X} {g h : A ⟶ B} (η : g ⟶ h) (i : B ⟶ C) :
-    map₂ F f (η ▷ i) = eqToHom (map_comp F f g i) ≫ map₂ F f η ▷ map F f i
+    map₂ F f (whiskerRight F X η i) = eqToHom (map_comp F f g i) ≫ map₂ F f η ▷ map F f i
     ≫ eqToHom (map_comp F f h i).symm := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _ ≫ _
@@ -475,8 +476,8 @@ theorem map₂_whisker_right {A B C : F ↓ X} {g h : A ⟶ B} (η : g ⟶ h) (i
 
 @[simp]
 theorem map₂_left_unitor {A B : F ↓ X} (g : A ⟶ B) :
-    map₂ F f (λ_ g).hom =
-    eqToHom (by rw [map_comp F f (𝟙 A) g, map_id F f A]) ≫ (λ_ (map F f g)).hom := by
+    map₂ F f (leftUnitorHom F X g) =
+    eqToHom (by simp) ≫ (λ_ (map F f g)).hom := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _
   rw [eqToHom_map]
@@ -484,8 +485,8 @@ theorem map₂_left_unitor {A B : F ↓ X} (g : A ⟶ B) :
 
 @[simp]
 theorem map₂_right_unitor {A B : F ↓ X} (g : A ⟶ B) :
-    map₂ F f (ρ_ g).hom =
-    eqToHom (by rw [map_comp F f g (𝟙 B), map_id F f B]) ≫ (ρ_ (map F f g)).hom := by
+    map₂ F f (rightUnitorHom F X g) =
+    eqToHom (by simp) ≫ (ρ_ (map F f g)).hom := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _
   rw [eqToHom_map]
@@ -493,9 +494,9 @@ theorem map₂_right_unitor {A B : F ↓ X} (g : A ⟶ B) :
 
 @[simp]
 theorem map₂_associator {A B C D : F ↓ X} (g : A ⟶ B) (h : B ⟶ C) (i : C ⟶ D) :
-    map₂ F f (α_ g h i).hom =
-    eqToHom (by simp only [map_comp]) ≫ (α_ (map F f g) (map F f h) (map F f i)).hom
-    ≫ eqToHom (by simp only [map_comp]) := by
+    map₂ F f (associatorHom F X g h i) =
+    eqToHom (by simp) ≫ (α_ (map F f g) (map F f h) (map F f i)).hom
+    ≫ eqToHom (by simp) := by
   refine Hom₂.ext ?_
   change _ = _ ≫ _ ≫ _
   rw [eqToHom_map, eqToHom_map]
