@@ -578,7 +578,7 @@ section IsStablyFiniteRing
 abbrev IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop :=
   ∀ n, IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
 
-theorem IsStablyFiniteRing.isDedekindFiniteMonoid (R) [NonAssocSemiring R]
+instance (priority := low) (R) [NonAssocSemiring R]
     [IsStablyFiniteRing R] : IsDedekindFiniteMonoid R :=
   let f : R →* Matrix (Fin 1) (Fin 1) R :=
     ⟨⟨fun r ↦ diagonal fun _ ↦ r, rfl⟩, fun _ _ ↦ (diagonal_mul_diagonal ..).symm⟩
