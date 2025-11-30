@@ -692,10 +692,14 @@ local instance hasExt_self : CategoryTheory.HasExt.{u} (ModuleCat.{u} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{u} (ModuleCat.{u} R)
 
 lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
-    (h : injectiveDimension (ModuleCat.of R R) = n) (h : ringKrullDim R = n) :
+    (h1 : injectiveDimension (ModuleCat.of R R) = n) (h2 : ringKrullDim R = n) :
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       n)).IsPrincipal := by
-  sorry
+  induction n generalizing R
+  · sorry
+  · rename_i n ih _ _ _
+
+    sorry
 
 lemma isGorensteinLocalRing_iff_exists :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
@@ -777,7 +781,20 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
   tfae_have 7 → 8 := by
     refine fun ⟨CM, irr⟩ ↦ ⟨CM, ?_⟩
     --existence of parameter ideal
-    sorry
+    rcases Ideal.exists_finset_card_eq_height_of_isNoetherianRing (maximalIdeal R) with ⟨S, min, hS⟩
+    have : (Ideal.span (S : Set R)).spanFinrank = n := by
+      have hteq : (maximalIdeal R).height = n := by
+        rw [← WithBot.coe_inj, IsLocalRing.maximalIdeal_height_eq_ringKrullDim, h]
+        rfl
+      apply le_antisymm
+      · apply le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite S.finite_toSet)
+        simpa [← ENat.coe_inj, hS] using hteq
+      · rw [← ENat.coe_le_coe, ← hteq]
+        apply le_of_le_of_eq (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes _ _ min)
+        simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using
+          (isNoetherianRing_iff_ideal_fg R).mp ‹_› _
+    use Ideal.span (S : Set R)
+    exact ⟨min, this, irr min this⟩
   tfae_have 8 → 1 := by
     refine fun ⟨CM, ⟨J, maxmin, spanrank, irr⟩⟩ ↦ ?_
     -- reduce to proving `IsGorensteinLocalRing (R ⧸ J)`
