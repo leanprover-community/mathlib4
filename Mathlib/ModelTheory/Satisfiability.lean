@@ -49,7 +49,7 @@ This file deals with the satisfiability of first-order theories, as well as equi
 
 universe u v w w'
 
-open Cardinal CategoryTheory
+open Cardinal
 
 namespace FirstOrder
 
@@ -199,16 +199,16 @@ of the cardinal `κ`.
 theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [Nonempty M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} #M) :
-    ∃ N : Bundled L.Structure, Nonempty (N ↪ₑ[L] M) ∧ #N = κ := by
+    ∃ N : L.StrucType, Nonempty (N ↪ₑ[L] M) ∧ #N = κ := by
   obtain ⟨S, _, hS⟩ := exists_elementarySubstructure_card_eq L ∅ κ h1 (by simp) h2 h3
   have : Small.{w} S := by
     rw [← lift_inj.{_, w + 1}, lift_lift, lift_lift] at hS
     exact small_iff_lift_mk_lt_univ.2 (lt_of_eq_of_lt hS κ.lift_lt_univ')
   refine
-    ⟨(equivShrink S).bundledInduced L,
-      ⟨S.subtype.comp (Equiv.bundledInducedEquiv L _).symm.toElementaryEmbedding⟩,
+    ⟨(equivShrink S).inducedStrucType L,
+      ⟨S.subtype.comp (Equiv.inducedStrucTypeEquiv L _).symm.toElementaryEmbedding⟩,
       lift_inj.1 (_root_.trans ?_ hS)⟩
-  simp only [Equiv.bundledInduced_α, lift_mk_shrink']
+  simp only [Equiv.inducedStrucType_Carrier, lift_mk_shrink']
 
 section
 
@@ -217,7 +217,7 @@ section
 theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h2 : Cardinal.lift.{w} #M ≤ Cardinal.lift.{w'} κ) :
-    ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ #N = κ := by
+    ∃ N : L.StrucType, Nonempty (M ↪ₑ[L] N) ∧ #N = κ := by
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
   rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
@@ -232,7 +232,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
   letI := (lhomWithConstants L M).reduct N
   haveI h : N ⊨ L.elementaryDiagram M :=
     (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
-  refine ⟨Bundled.of N, ⟨?_⟩, hN⟩
+  refine ⟨StrucType.of L N, ⟨?_⟩, hN⟩
   apply ElementaryEmbedding.ofModelsElementaryDiagram L M N
 
 end
@@ -242,7 +242,7 @@ and an infinite `L`-structure `M`, then there is an elementary embedding in the 
 direction between then `M` and a structure of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
-    ∃ N : Bundled L.Structure, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ #N = κ := by
+    ∃ N : L.StrucType, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ #N = κ := by
   cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M) with
   | inl h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_le L M κ h1 h2 h
@@ -256,7 +256,7 @@ cardinalities of `L` and an infinite `L`-structure `M`, then there is a structur
 elementarily equivalent to `M`. -/
 theorem exists_elementarilyEquivalent_card_eq (M : Type w') [L.Structure M] [Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
-    ∃ N : CategoryTheory.Bundled L.Structure, (M ≅[L] N) ∧ #N = κ := by
+    ∃ N : L.StrucType, (M ≅[L] N) ∧ #N = κ := by
   obtain ⟨N, NM | MN, hNκ⟩ := exists_elementaryEmbedding_card_eq L M κ h1 h2
   · exact ⟨N, NM.some.elementarilyEquivalent.symm, hNκ⟩
   · exact ⟨N, MN.some.elementarilyEquivalent, hNκ⟩

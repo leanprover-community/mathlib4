@@ -75,7 +75,7 @@ universe u v w w'
 
 open scoped FirstOrder
 
-open Set CategoryTheory
+open Set
 
 namespace FirstOrder
 
@@ -89,35 +89,35 @@ variable (L : Language.{u, v})
 
 
 /-- The age of a structure `M` is the class of finitely-generated structures that embed into it. -/
-def age (M : Type w) [L.Structure M] : Set (Bundled.{w} L.Structure) :=
+def age (M : Type w) [L.Structure M] : Set (StrucType.{u, v, w} L) :=
   {N | Structure.FG L N ∧ Nonempty (N ↪[L] M)}
 
 variable {L}
-variable (K : Set (Bundled.{w} L.Structure))
+variable (K : Set (StrucType.{u, v, w} L))
 
 /-- A class `K` has the hereditary property when all finitely-generated structures that embed into
   structures in `K` are also in `K`. -/
 def Hereditary : Prop :=
-  ∀ M : Bundled.{w} L.Structure, M ∈ K → L.age M ⊆ K
+  ∀ M : StrucType.{u, v, w} L, M ∈ K → L.age M ⊆ K
 
 /-- A class `K` has the joint embedding property when for every `M`, `N` in `K`, there is another
   structure in `K` into which both `M` and `N` embed. -/
 def JointEmbedding : Prop :=
-  DirectedOn (fun M N : Bundled.{w} L.Structure => Nonempty (M ↪[L] N)) K
+  DirectedOn (fun M N : StrucType.{u, v, w} L => Nonempty (M ↪[L] N)) K
 
 /-- A class `K` has the amalgamation property when for any pair of embeddings of a structure `M` in
   `K` into other structures in `K`, those two structures can be embedded into a fourth structure in
   `K` such that the resulting square of embeddings commutes. -/
 def Amalgamation : Prop :=
-  ∀ (M N P : Bundled.{w} L.Structure) (MN : M ↪[L] N) (MP : M ↪[L] P),
-    M ∈ K → N ∈ K → P ∈ K → ∃ (Q : Bundled.{w} L.Structure) (NQ : N ↪[L] Q) (PQ : P ↪[L] Q),
+  ∀ (M N P : StrucType.{u, v, w} L) (MN : M ↪[L] N) (MP : M ↪[L] P),
+    M ∈ K → N ∈ K → P ∈ K → ∃ (Q : StrucType.{u, v, w} L) (NQ : N ↪[L] Q) (PQ : P ↪[L] Q),
       Q ∈ K ∧ NQ.comp MN = PQ.comp MP
 
 /-- A Fraïssé class is a nonempty, essentially countable class of structures satisfying the
 hereditary, joint embedding, and amalgamation properties. -/
 class IsFraisse : Prop where
   is_nonempty : K.Nonempty
-  FG : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M
+  FG : ∀ M : StrucType.{u, v, w} L, M ∈ K → Structure.FG L M
   is_essentially_countable : (Quotient.mk' '' K).Countable
   hereditary : Hereditary K
   jointEmbedding : JointEmbedding K
@@ -125,7 +125,7 @@ class IsFraisse : Prop where
 
 variable {K} (L) (M : Type w) [Structure L M]
 
-theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N ≃[L] P)) :
+theorem age.is_equiv_invariant (N P : StrucType.{u, v, w} L) (h : Nonempty (N ≃[L] P)) :
     N ∈ L.age M ↔ P ∈ L.age M :=
   and_congr h.some.fg_iff
     ⟨Nonempty.map fun x => Embedding.comp x h.some.symm.toEmbedding,
@@ -139,44 +139,44 @@ theorem Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun 
 theorem Equiv.age_eq_age (MN : M ≃[L] N) : L.age M = L.age N :=
   le_antisymm MN.toEmbedding.age_subset_age MN.symm.toEmbedding.age_subset_age
 
-theorem Structure.FG.mem_age_of_equiv {M N : Bundled L.Structure} (h : Structure.FG L M)
+theorem Structure.FG.mem_age_of_equiv {M N : L.StrucType} (h : Structure.FG L M)
     (MN : Nonempty (M ≃[L] N)) : N ∈ L.age M :=
   ⟨MN.some.fg_iff.1 h, ⟨MN.some.symm.toEmbedding⟩⟩
 
 theorem Hereditary.is_equiv_invariant_of_fg (h : Hereditary K)
-    (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (M N : Bundled.{w} L.Structure)
+    (fg : ∀ M : StrucType.{u, v, w} L, M ∈ K → Structure.FG L M) (M N : StrucType.{u, v, w} L)
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
   ⟨fun MK => h M MK ((fg M MK).mem_age_of_equiv hn),
    fun NK => h N NK ((fg N NK).mem_age_of_equiv ⟨hn.some.symm⟩)⟩
 
-theorem IsFraisse.is_equiv_invariant [h : IsFraisse K] {M N : Bundled.{w} L.Structure}
+theorem IsFraisse.is_equiv_invariant [h : IsFraisse K] {M N : StrucType.{u, v, w} L}
     (hn : Nonempty (M ≃[L] N)) : M ∈ K ↔ N ∈ K :=
   h.hereditary.is_equiv_invariant_of_fg h.FG M N hn
 
 variable (M)
 
 theorem age.nonempty : (L.age M).Nonempty :=
-  ⟨Bundled.of (Substructure.closure L (∅ : Set M)),
+  ⟨(Substructure.closure L (∅ : Set M)).strucType,
     (fg_iff_structure_fg _).1 (fg_closure Set.finite_empty), ⟨Substructure.subtype _⟩⟩
 
 theorem age.hereditary : Hereditary (L.age M) := fun _ hN _ hP => hN.2.some.age_subset_age hP
 
 theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
-  ⟨Bundled.of (↥(hN.2.some.toHom.range ⊔ hP.2.some.toHom.range)),
+  ⟨(hN.2.some.toHom.range ⊔ hP.2.some.toHom.range).strucType,
     ⟨(fg_iff_structure_fg _).1 ((hN.1.range hN.2.some.toHom).sup (hP.1.range hP.2.some.toHom)),
       ⟨Substructure.subtype _⟩⟩,
     ⟨Embedding.comp (inclusion le_sup_left) hN.2.some.equivRange.toEmbedding⟩,
     ⟨Embedding.comp (inclusion le_sup_right) hP.2.some.equivRange.toEmbedding⟩⟩
 
 variable {M} in
-theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
+theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : S.strucType ∈ L.age M := by
   exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
 
 /-- Any class in the age of a structure has a representative which is a finitely generated
 substructure. -/
 theorem age.has_representative_as_substructure :
     ∀ C ∈ Quotient.mk' '' L.age M, ∃ V : {V : L.Substructure M // FG V},
-      ⟦Bundled.mk V⟧ = C := by
+      ⟦V.1.strucType⟧ = C := by
   rintro _ ⟨N, ⟨N_fg, ⟨N_incl⟩⟩, N_eq⟩
   refine N_eq.symm ▸ ⟨⟨N_incl.toHom.range, ?_⟩, Quotient.sound ⟨N_incl.equivRange.symm⟩⟩
   exact FG.range N_fg (Embedding.toHom N_incl)
@@ -186,10 +186,10 @@ classes). -/
 theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Countable := by
   classical
   refine (congr_arg _ (Set.ext <| Quotient.forall.2 fun N => ?_)).mp
-    (countable_range fun s : Finset M => ⟦⟨closure L (s : Set M), inferInstance⟩⟧)
+    (countable_range fun s : Finset M => ⟦(closure L (s : Set M)).strucType⟧)
   constructor
   · rintro ⟨s, hs⟩
-    use Bundled.of (closure L (s : Set M))
+    use (closure L (s : Set M)).strucType
     exact ⟨⟨(fg_iff_structure_fg _).1 (fg_closure s.finite_toSet), ⟨Substructure.subtype _⟩⟩, hs⟩
   · simp only [mem_range, Quotient.eq]
     rintro ⟨P, ⟨⟨s, hs⟩, ⟨PM⟩⟩, hP2⟩
@@ -224,8 +224,8 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
 /-- Sufficient conditions for a class to be the age of a countably-generated structure. -/
 theorem exists_cg_is_age_of (hn : K.Nonempty)
     (hc : (Quotient.mk' '' K).Countable)
-    (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (hp : Hereditary K)
-    (jep : JointEmbedding K) : ∃ M : Bundled.{w} L.Structure, Structure.CG L M ∧ L.age M = K := by
+    (fg : ∀ M : StrucType.{u, v, w} L, M ∈ K → Structure.FG L M) (hp : Hereditary K)
+    (jep : JointEmbedding K) : ∃ M : StrucType.{u, v, w} L, Structure.CG L M ∧ L.age M = K := by
   obtain ⟨F, hF⟩ := hc.exists_eq_range (hn.image _)
   simp only [Set.ext_iff, Quotient.forall, mem_image, mem_range] at hF
   simp_rw [Quotient.eq_mk_iff_out] at hF
@@ -246,7 +246,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     exact fun n => (hP _ n).some
   have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by
     dsimp [f, G]; infer_instance
-  refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
+  refine ⟨StrucType.of L (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
   · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
   · refine (age_directLimit (fun n ↦ (G n).val) f).trans
       (subset_antisymm (iUnion_subset fun n N hN => hp (G n).val (G n).2 hN) fun N KN => ?_)
@@ -258,9 +258,9 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     · dsimp [G]; exact (hFP _ n).some
 
 theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
-    (∃ M : Bundled.{w} L.Structure, Countable M ∧ L.age M = K) ↔
-      K.Nonempty ∧ (∀ M N : Bundled.{w} L.Structure, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K)) ∧
-      (Quotient.mk' '' K).Countable ∧ (∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) ∧
+    (∃ M : StrucType.{u, v, w} L, Countable M ∧ L.age M = K) ↔
+      K.Nonempty ∧ (∀ M N : StrucType.{u, v, w} L, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K)) ∧
+      (Quotient.mk' '' K).Countable ∧ (∀ M : StrucType.{u, v, w} L, M ∈ K → Structure.FG L M) ∧
       Hereditary K ∧ JointEmbedding K := by
   constructor
   · rintro ⟨M, h1, h2, rfl⟩
@@ -338,7 +338,7 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
   obtain ⟨g, hg⟩ := h (PM.comp NP).toHom.range (Nfg.range _)
     ((QM.comp NQ).comp (PM.comp NP).equivRange.symm.toEmbedding)
   let s := (g.toHom.comp PM.toHom).range ⊔ QM.toHom.range
-  refine ⟨Bundled.of s,
+  refine ⟨s.strucType,
     Embedding.comp (Substructure.inclusion le_sup_left)
       (g.toEmbedding.comp PM).equivRange.toEmbedding,
     Embedding.comp (Substructure.inclusion le_sup_right) QM.equivRange.toEmbedding,
@@ -378,7 +378,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
   intro ⟨f, f_FG⟩ m
   let S := f.dom ⊔ closure L {m}
   have S_FG : S.FG := f_FG.sup (Substructure.fg_closure_singleton _)
-  have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
+  have S_in_age_N : S.strucType ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨(fg_iff_structure_fg S).1 S_FG, ⟨subtype _⟩⟩
   haveI nonempty_S_N : Nonempty (S ↪[L] N) := S_in_age_N.2
@@ -393,7 +393,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
   let S : L.Substructure M := ⊥
   have S_fg : FG L S := (fg_iff_structure_fg _).1 Substructure.fg_bot
-  obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
+  obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : S.strucType ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨S_fg, ⟨subtype _⟩⟩
   let v : M ≃ₚ[L] N := {
@@ -413,7 +413,7 @@ namespace empty
 structures. -/
 theorem isFraisseLimit_of_countable_infinite
     (M : Type*) [Countable M] [Infinite M] [Language.empty.Structure M] :
-    IsFraisseLimit { S : Bundled Language.empty.Structure | Finite S } M where
+    IsFraisseLimit { S : Language.empty.StrucType | Finite S } M where
   age := by
     ext S
     simp only [age, Structure.fg_iff_finite, mem_setOf_eq, and_iff_left_iff_imp]
@@ -430,7 +430,7 @@ theorem isFraisseLimit_of_countable_infinite
     simp [Equiv.subtypeCongr]
 
 /-- The class of finite structures in the empty language is Fraïssé. -/
-theorem isFraisse_finite : IsFraisse { S : Bundled.{w} Language.empty.Structure | Finite S } := by
+theorem isFraisse_finite : IsFraisse { S : StrucType.{0, 0, w} Language.empty | Finite S } := by
   have : Language.empty.Structure (ULift ℕ : Type w) := emptyStructure
   exact (isFraisseLimit_of_countable_infinite (ULift ℕ)).isFraisse
 

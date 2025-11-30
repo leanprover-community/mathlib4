@@ -6,7 +6,6 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.ElementarySubstructures
-public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # Bundled First-Order Structures
@@ -15,6 +14,7 @@ This file bundles types together with their first-order structure.
 
 ## Main Definitions
 
+- `FirstOrder.Language.StrucType` is the type of structures in a particular language.
 - `FirstOrder.Language.Theory.ModelType` is the type of nonempty models of a particular theory.
 - `FirstOrder.Language.equivSetoid` is the isomorphism equivalence relation on bundled structures.
 
@@ -28,38 +28,78 @@ This file bundles types together with their first-order structure.
 
 universe u v w w' x
 
-variable {L : FirstOrder.Language.{u, v}}
+variable (L : FirstOrder.Language.{u, v})
 
-protected instance CategoryTheory.Bundled.structure {L : FirstOrder.Language.{u, v}}
-    (M : CategoryTheory.Bundled.{w} L.Structure) : L.Structure M :=
-  M.str
+namespace FirstOrder.Language
+
+/-- The type of structures in a particular language. -/
+structure StrucType where
+  /-- The underlying type for the structures -/
+  Carrier : Type w
+  [struc : L.Structure Carrier]
+
+attribute [instance 2000] StrucType.struc
+
+attribute [coe] StrucType.Carrier
+
+namespace StrucType
+
+instance instCoeSort : CoeSort L.StrucType (Type w) :=
+  ⟨StrucType.Carrier⟩
+
+/-- The bundled `StrucType` corresponding to a first-order structure. -/
+def of (M : Type w) [L.Structure M] : L.StrucType := ⟨M⟩
+
+@[simp]
+theorem coe_of (M : Type w) [L.Structure M] : (of L M : Type w) = M :=
+  rfl
+
+section Inhabited
+
+attribute [local instance] Inhabited.trivialStructure
+
+instance instInhabited : Inhabited (StrucType.{u, v, w} L) :=
+  ⟨StrucType.of _ PUnit⟩
+
+end Inhabited
+
+end StrucType
+
+variable {L} {M : Type w} [L.Structure M]
+
+abbrev Substructure.strucType (S : L.Substructure M) : L.StrucType :=
+  StrucType.of L S
+
+end FirstOrder.Language
 
 open FirstOrder Cardinal
 
 namespace Equiv
 
-variable (L) {M : Type w}
-variable [L.Structure M] {N : Type w'} (g : M ≃ N)
+variable {M : Type w} [L.Structure M] {N : Type w'} (g : M ≃ N)
 
 /-- A type bundled with the structure induced by an equivalence. -/
 @[simps]
-def bundledInduced : CategoryTheory.Bundled.{w'} L.Structure :=
-  ⟨N, g.inducedStructure⟩
+def inducedStrucType : Language.StrucType.{u, v, w'} L where
+  Carrier := N
+  struc := g.inducedStructure
 
 /-- An equivalence of types as a first-order equivalence to the bundled structure on the codomain.
 -/
 @[simp]
-def bundledInducedEquiv : M ≃[L] g.bundledInduced L :=
+def inducedStrucTypeEquiv : M ≃[L] (g.inducedStrucType L) :=
   g.inducedStructureEquiv
 
 end Equiv
+
+variable {L}
 
 namespace FirstOrder
 
 namespace Language
 
 /-- The equivalence relation on bundled `L.Structure`s indicating that they are isomorphic. -/
-instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
+instance equivSetoid : Setoid L.StrucType where
   r M N := Nonempty (M ≃[L] N)
   iseqv :=
     ⟨fun M => ⟨Equiv.refl L M⟩, fun {_ _} => Nonempty.map Equiv.symm, fun {_ _} _ =>
@@ -88,8 +128,7 @@ attribute [coe] ModelType.Carrier
 instance instCoeSort : CoeSort T.ModelType (Type w) :=
   ⟨ModelType.Carrier⟩
 
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. -/
+/-- The bundled `ModelType` corresponding to a model of a given theory. -/
 def of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : T.ModelType :=
   ⟨M⟩
 
