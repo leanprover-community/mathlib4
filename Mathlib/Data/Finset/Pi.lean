@@ -198,6 +198,12 @@ lemma restrict_preimage [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) 
   convert h i hi
   rw [dif_pos hi]
 
+lemma restrict_preimage' [DecidableEq ι] {I : Set ι}
+    [DecidablePred (· ∈ I)] (s : Finset I) (u : (i : I) → Set (π i)) :
+    I.restrict ⁻¹' Set.pi s u =
+      Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
+  grind
+
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
       (@Set.univ t).pi (fun j ↦ if h : j.1 ∈ s then u ⟨j.1, h⟩ else Set.univ) := by

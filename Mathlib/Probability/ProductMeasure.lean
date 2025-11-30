@@ -426,11 +426,6 @@ theorem infinitePi_map_restrict' {I : Set ι} :
   · exact MeasurableSet.pi s.countable_toSet (by measurability)
 
 -- Move to proper location!
-@[simp] theorem apply_le_one {Ω : Type*} {mΩ : MeasurableSpace Ω}
-    {μ : Measure Ω} [IsProbabilityMeasure μ] (s : Set Ω) : μ s ≤ 1 := by
-  grw [measure_mono (Set.subset_univ _), measure_univ]
-
--- Move to proper location!
 theorem pi_iUnion_eq_iInter_pi {ι ι' : Type*} {α : ι → Type*} (s : ι' → Set ι)
     (t : (i : ι) → Set (α i)) : (⋃ i, s i).pi t = ⋂ i, (s i).pi t := by
   ext f
@@ -469,8 +464,8 @@ lemma infinitePi_pi' {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)
     · intro _ _ h
       simpa using Set.pi_mono' (by simp) (Set.image_mono h)
     · exact ⟨{Nonempty.some s_ne}, by simp⟩
-  · rw [ENNReal.tprod_eq_iInf_prod (by simp)]
-    exact tendsto_atTop_iInf (prod_anti_set_of_le_one' (by simp))
+  · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
+    exact tendsto_atTop_iInf (prod_anti_set_of_le_one' (by simp [prob_le_one]))
 
 @[simp]
 lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
