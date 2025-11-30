@@ -105,3 +105,17 @@ theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : Po
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
 
 end PointedCone
+
+section Generating
+variable (C : ConvexCone R G)
+/- generating -/
+/-- A convex cone is generating if the linear span of `C` is the whole space. -/
+def ConvexCone.Generating : Prop :=
+  Submodule.span R (C : Set G) = ⊤
+
+omit [IsStrictOrderedRing R]
+/-- A convex cone is generating iff the linear span of `C` is the whole space. -/
+lemma ConvexCone.generating_iff_span_eq_top :
+    C.Generating ↔ Submodule.span R (C : Set G) = ⊤ :=
+  Iff.rfl
+end Generating

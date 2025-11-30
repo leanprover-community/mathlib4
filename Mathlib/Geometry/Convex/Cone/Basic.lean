@@ -382,6 +382,24 @@ instance instAddCommSemigroup : AddCommSemigroup (ConvexCone R M) where
   add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 
+section Generating
+
+/-- A convex cone `C` is generating if its linear span is the entire `R`-module `M`. -/
+def Generating (C : ConvexCone R M) : Prop :=
+  Submodule.span R (C : Set M) = ⊤
+
+/-- The whole `R`-module `M` (viewed as the top convex cone) is generating. -/
+@[simp]
+theorem generating_top : (⊤ : ConvexCone R M).Generating := by
+  simp [Generating]
+
+/-- A convex cone containing a generating cone is also a generating cone. -/
+theorem Generating.mono (h : C₁ ≤ C₂) (hgen : C₁.Generating) : C₂.Generating := by
+  rw [Generating, ← top_le_iff] at hgen ⊢
+  exact hgen.trans (Submodule.span_mono h)
+
+end Generating
+
 end Module
 
 end OrderedSemiring
