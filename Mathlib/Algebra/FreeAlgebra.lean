@@ -478,6 +478,10 @@ section
 def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
 
+@[simp]
+lemma algebraMapInv_ι_apply (x : X) : algebraMapInv (ι R x) = 0 := by
+  simp [algebraMapInv]
+
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
   simp [algebraMapInv]
