@@ -151,9 +151,9 @@ theorem isSplittingField_iSup {p : ι → K[X]}
     (∏ i ∈ s, p i).IsSplittingField K (⨆ i ∈ s, t i : IntermediateField K L) := by
   let F : IntermediateField K L := ⨆ i ∈ s, t i
   have hF : ∀ i ∈ s, t i ≤ F := fun i hi ↦ le_iSup_of_le i (le_iSup (fun _ ↦ t i) hi)
-  simp only [isSplittingField_iff] at h ⊢
+  simp only [isSplittingField_iff, Polynomial.map_prod] at h ⊢
   refine
-    ⟨splits_prod (algebraMap K F) fun i hi ↦
+    ⟨Splits.prod fun i hi ↦
         splits_comp_of_splits (algebraMap K (t i)) (inclusion (hF i hi)).toRingHom
           (h i hi).1,
       ?_⟩
@@ -175,7 +175,7 @@ theorem adjoin_rank_le_of_isAlgebraic (L : IntermediateField F K)
     Module.rank E (adjoin E (L : Set K)) ≤ Module.rank F L := by
   have h : (adjoin E (L.toSubalgebra : Set K)).toSubalgebra =
       Algebra.adjoin E (L.toSubalgebra : Set K) :=
-    L.adjoin_toSubalgebra_of_isAlgebraic E halg
+    L.adjoin_intermediateField_toSubalgebra_of_isAlgebraic E halg
   have := L.toSubalgebra.adjoin_rank_le E
   rwa [(Subalgebra.equivOfEq _ _ h).symm.toLinearEquiv.rank_eq] at this
 
@@ -668,9 +668,8 @@ theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
 noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
     (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
   have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩
-  exact AlgEquiv.trans (adjoinRootEquivAdjoin K hx.isIntegral).symm
-    (AlgEquiv.trans (AdjoinRoot.algEquivOfEq _ _ h_mp)
-      (adjoinRootEquivAdjoin K hy.isIntegral))
+  exact (adjoinRootEquivAdjoin K hx.isIntegral).symm.trans <|
+    (AdjoinRoot.algEquivOfEq _ _ _ h_mp).trans (adjoinRootEquivAdjoin K hy.isIntegral)
 
 /-- `minpoly.algEquiv` sends the generator of `K⟮x⟯` to the generator of `K⟮y⟯`. -/
 theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = minpoly K y) :

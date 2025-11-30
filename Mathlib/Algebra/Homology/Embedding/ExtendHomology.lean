@@ -429,4 +429,8 @@ lemma quasiIso_extendMap_iff [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] :
       all_goals
         exact extend_exactAt _ _ _ (by simpa using hj')
 
+instance [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] [QuasiIso φ] :
+    QuasiIso (extendMap φ e) := by
+  rwa [quasiIso_extendMap_iff]
+
 end HomologicalComplex
