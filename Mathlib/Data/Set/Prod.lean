@@ -382,10 +382,12 @@ lemma eqOn_iff_prod {a b : α → γ × δ} :
 
 lemma EqOn.left_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
     (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : Set.Nonempty t) : EqOn f f' s := by
+  have aux := (eqOn_iff_prod.mp h).1
+  rw [Prod.map_fst', Prod.map_fst'] at aux
   obtain ⟨x, hxt⟩ := ht
   intro x hxs
-  have h' := h <| mk_mem_prod hxs hxt
-  grind
+  have := mk_mem_prod hxs hxt
+  grind [EqOn]
 
 lemma EqOn.right_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
     (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) : EqOn g g' t := by
@@ -401,8 +403,11 @@ lemma EqOn.prodMap {f f' : α → γ} {g g' : β → δ}
 
 lemma eqOn_prodMap_iff {α β γ δ : Type*} {f f' : α → γ} {g g' : β → δ}
     {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
-    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
-  ⟨fun h ↦ ⟨h.left_of_eqOn_prodMap ht, h.right_of_eqOn_prodMap hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
+    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t := by
+  rw [eqOn_iff_prod]
+  simp_rw [Prod.map_fst', Prod.map_snd']
+  sorry
+  --⟨fun h ↦ ⟨h.left_of_eqOn_prodMap ht, h.right_of_eqOn_prodMap hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
 
 end Prod
 
