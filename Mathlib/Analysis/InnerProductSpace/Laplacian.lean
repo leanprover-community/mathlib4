@@ -3,9 +3,12 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
 # The Laplacian
@@ -18,6 +21,8 @@ canonical covariant tensor of `E`, as defined and discussed in
 We show that the Laplacian is `ℝ`-linear on continuously differentiable functions, and establish the
 standard formula for computing the Laplacian in terms of orthonormal bases of `E`.
 -/
+
+@[expose] public section
 
 open Filter TensorProduct Topology
 
@@ -41,7 +46,7 @@ variable
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
-`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ`.
 -/
 noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
   fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₁₂
@@ -49,7 +54,7 @@ noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E 
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
-`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ`.
 -/
 noncomputable def bilinearIteratedFDerivTwo (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
   fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₁₂
@@ -143,7 +148,7 @@ The Laplacian equals the Laplacian with respect to `Set.univ`.
 -/
 @[simp]
 theorem laplacianWithin_univ :
-    Δ[(Set.univ: Set E)] f = Δ f := by
+    Δ[(Set.univ : Set E)] f = Δ f := by
   ext x
   simp [laplacian, tensorIteratedFDerivTwo, bilinearIteratedFDerivTwo,
     laplacianWithin, tensorIteratedFDerivWithinTwo, bilinearIteratedFDerivWithinTwo]
@@ -193,6 +198,24 @@ theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
     Δ f = fun x ↦
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
+
+/-- For a function on `ℝ`, the Laplacian is the second derivative: version within a set. -/
+theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f : ℝ → F)
+    (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
+    (Δ[s] f) e = iteratedDerivWithin 2 f s e := by
+  simp only [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
+        (OrthonormalBasis.singleton (Fin 1) ℝ),
+    Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, OrthonormalBasis.singleton_apply,
+    Finset.sum_const, Finset.card_singleton, one_smul, iteratedDerivWithin_eq_iteratedFDerivWithin]
+  congr with i
+  fin_cases i <;> simp
+
+/-- For a function on `ℝ`, the Laplacian is the second derivative. -/
+@[simp]
+theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
+    Δ f e = iteratedDeriv 2 f e := by
+  rw [← laplacianWithin_univ, ← iteratedDerivWithin_univ,
+    laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp)]
 
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
@@ -255,7 +278,7 @@ theorem _root_.ContDiffAt.laplacian_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ :
 /-- The Laplacian commutes with addition. -/
 theorem _root_.ContDiffAt.laplacianWithin_add_nhdsWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
     (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
-    Δ[s] (f₁ + f₂) =ᶠ[𝓝[s] x] (Δ[s] f₁) + Δ[s] f₂:= by
+    Δ[s] (f₁ + f₂) =ᶠ[𝓝[s] x] (Δ[s] f₁) + Δ[s] f₂ := by
   nth_rw 1 [← s.insert_eq_of_mem hx]
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp),
     eventually_mem_nhdsWithin] with y h₁y h₂y h₃y

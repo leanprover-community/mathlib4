@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.Algebra.Group.Units.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Submonoids: `CompleteLattice` structure
@@ -47,6 +49,8 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 ## Tags
 submonoid, submonoids
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -219,6 +223,9 @@ example {p : M → Prop} (s : Set M) (closure : closure s = ⊤) (mem : ∀ x �
   | one => exact one
   | mul _ _ h₁ h₂ => exact mul _ _ h₁ h₂
 
+-- TODO: find a nice way to fix the linter
+-- simp_all is called on four goals, with only one remaining goal
+set_option linter.flexible false in
 /-- The `Submonoid.closure` of a set is the union of `{1}` and its `Subsemigroup.closure`. -/
 lemma closure_eq_one_union (s : Set M) :
     closure s = {(1 : M)} ∪ (Subsemigroup.closure s : Set M) := by

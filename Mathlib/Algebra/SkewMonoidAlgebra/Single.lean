@@ -3,13 +3,17 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
 # Modifying skew monoid algebra at exactly one point
 
-This file contains basic results on updating/erasing an element of a skew monoid algebras using
+This file contains basic results on updating/erasing an element of a skew monoid algebra using
 one point of the domain.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -79,7 +83,7 @@ section update
 
 variable {M α : Type*} [AddCommMonoid M] (f : SkewMonoidAlgebra M α) (a a' : α) (b : M)
 
-/-- Replace the coefficent of an element `f` of a skew monoid algebra at a given point `a : α` by
+/-- Replace the coefficient of an element `f` of a skew monoid algebra at a given point `a : α` by
 a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the support of `f`.
 Otherwise, if `a` was not in the `support` of `f`, it is added to it. -/
@@ -109,20 +113,22 @@ theorem coeff_update_apply [DecidableEq α] :
   rw [coeff_update, Function.update_apply]
 
 @[simp]
-theorem coeff_update_same [DecidableEq α] : (f.update a b).coeff a = b := by
+theorem coeff_update_same : (f.update a b).coeff a = b := by
+  classical
   rw [f.coeff_update_apply, if_pos rfl]
 
 variable {a a'} in
 @[simp]
-theorem coeff_update_ne [DecidableEq α] (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
+theorem coeff_update_ne (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
+  classical
   rw [f.coeff_update_apply, if_neg h]
 
-theorem update_eq_erase_add_single [DecidableEq α] : f.update a b = f.erase a + single a b := by
-  ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)
+theorem update_eq_erase_add_single : f.update a b = f.erase a + single a b := by
+  classical ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)
 
 @[simp]
-theorem update_zero_eq_erase [DecidableEq α] : f.update a 0 = f.erase a := by
-  ext; simp [coeff_update_apply, coeff_erase_apply]
+theorem update_zero_eq_erase : f.update a 0 = f.erase a := by
+  classical ext; simp [coeff_update_apply, coeff_erase_apply]
 
 end update
 

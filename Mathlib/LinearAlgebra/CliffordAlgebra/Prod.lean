@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Clifford algebras of a direct sum of two vector spaces
@@ -23,6 +25,8 @@ Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAl
 to a graded algebra equivalence.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -50,8 +54,7 @@ then the product of the embedding in `CliffordAlgebra Q` commutes up to a sign f
 nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
     {i₁ i₂ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ i₁) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
     map f₁ m₁ * map f₂ m₂ = (-1 : ℤˣ) ^ (i₂ * i₁) • (map f₂ m₂ * map f₁ m₁) := by
-  -- the strategy; for each variable, induct on powers of `ι`, then on the exponent of each
-  -- power.
+  -- for each variable, induct on powers of `ι`, then on the exponent of each power
   induction hm₁ using Submodule.iSup_induction' with
   | zero => rw [map_zero, zero_mul, mul_zero, smul_zero]
   | add _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
@@ -65,7 +68,7 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
       rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
     | mem_mul m₁ hm₁ i x₁ _hx₁ ih₁ =>
       obtain ⟨v₁, rfl⟩ := hm₁
-      -- this is the first interesting goal
+      -- This is the first interesting goal.
       rw [map_mul, mul_assoc, ih₁, mul_smul_comm, map_apply_ι, Nat.cast_succ, mul_add_one,
         uzpow_add, mul_smul, ← mul_assoc, ← mul_assoc, ← smul_mul_assoc ((-1) ^ i₂)]
       clear ih₁
@@ -84,7 +87,7 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
           rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
         | mem_mul m₂ hm₂ i x₂ _hx₂ ih₂ =>
           obtain ⟨v₂, rfl⟩ := hm₂
-          -- this is the second interesting goal
+          -- This is the second interesting goal.
           rw [map_mul, map_apply_ι, Nat.cast_succ, ← mul_assoc,
             ι_mul_ι_comm_of_isOrtho (hf _ _), neg_mul, mul_assoc, ih₂, mul_smul_comm,
             ← mul_assoc, ← Units.neg_smul, uzpow_add, uzpow_one, mul_neg_one]
@@ -101,7 +104,7 @@ theorem commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_right
 
 theorem map_mul_map_eq_neg_of_isOrtho_of_mem_evenOdd_one
     (hm₁ : m₁ ∈ evenOdd Q₁ 1) (hm₂ : m₂ ∈ evenOdd Q₂ 1) :
-    map f₁ m₁ * map f₂ m₂ = - map f₂ m₂ * map f₁ m₁ := by
+    map f₁ m₁ * map f₂ m₂ = -map f₂ m₂ * map f₁ m₁ := by
   simp [map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂]
 
 end map_mul_map
@@ -152,9 +155,9 @@ lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂
 lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext m <;> dsimp
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
-      LinearMap.map_zero, add_zero]
+      map_zero, add_zero]
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
-      LinearMap.map_zero, zero_add]
+      map_zero, zero_add]
 
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext <;> simp

@@ -3,16 +3,20 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Data.DFinsupp.Order
-import Mathlib.Data.DFinsupp.NeLocus
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Data.DFinsupp.Order
+public import Mathlib.Data.DFinsupp.NeLocus
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Lexicographic order on finitely supported dependent functions
 
 This file defines the lexicographic order on `DFinsupp`.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} {α : ι → Type*}
@@ -36,10 +40,17 @@ theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i 
 
 theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
     DFinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
-  Iff.rfl
+  .rfl
 
 instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
+
+theorem Lex.lt_iff [LT ι] [∀ i, LT (α i)] {a b : Lex (Π₀ i, α i)} :
+    a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
+  .rfl
+
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff := Lex.lt_iff
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i := by
@@ -55,6 +66,17 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [IsIrrefl ι r] {x y : Π₀ i, α i} :
+    DFinsupp.Lex r (fun _ ↦ (· < ·)) x y ↔ x default < y default :=
+  Pi.lex_iff_of_unique
+
+theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y : Lex (Π₀ i, α i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
+
 variable [LinearOrder ι]
 
 instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
@@ -69,6 +91,13 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
+
+theorem Lex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
+    x ≤ y ↔ x default ≤ y default :=
+  Pi.lex_le_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 section LinearOrder
 
@@ -89,13 +118,13 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
         notMem_neLocus.mp (Finset.notMem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
 /-- The less-or-equal relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
+instance Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue <| Or.inr h)
     (fun h ↦ isTrue <| Or.inl <| congr_arg _ h)
     fun h ↦ isFalse fun h' ↦ lt_irrefl _ (h.trans_le h')
 
 /-- The less-than relation for the lexicographic ordering is decidable. -/
-irreducible_def Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
+instance Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
@@ -104,7 +133,6 @@ instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
   toDecidableLT := decidableLT
   toDecidableLE := decidableLE
-  toDecidableEq := inferInstance
 
 end LinearOrder
 
@@ -118,6 +146,7 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
     fun j hj ↦ notMem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_gt hj,
     (h _).lt_of_ne (mem_neLocus.1 <| Finset.min'_mem _ _)⟩
 
+@[deprecated Lex.lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
@@ -139,7 +168,7 @@ section Left
 variable [∀ i, AddLeftStrictMono (α i)]
 
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
-  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
+  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), by dsimp; gcongr⟩⟩
 
 instance Lex.addLeftMono : AddLeftMono (Lex (Π₀ i, α i)) :=
   addLeftMono_of_addLeftStrictMono _
@@ -152,7 +181,7 @@ variable [∀ i, AddRightStrictMono (α i)]
 
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
-    ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
+    ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), by dsimp; gcongr⟩⟩
 
 instance Lex.addRightMono : AddRightMono (Lex (Π₀ i, α i)) :=
   addRightMono_of_addRightStrictMono _

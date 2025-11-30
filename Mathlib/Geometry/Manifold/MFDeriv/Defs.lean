@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
-import Mathlib.Geometry.Manifold.LocalInvariantProperties
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
 # The derivative of functions between manifolds
@@ -96,6 +98,8 @@ the space of equivalence classes of smooth curves in the manifold.
 ## Tags
 derivative, manifold
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -275,8 +279,8 @@ def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 
 variable (I I') in
-/-- Prop registering if a partial homeomorphism is a local diffeomorphism on its source -/
-def PartialHomeomorph.MDifferentiable (f : PartialHomeomorph M M') :=
+/-- Prop registering if an open partial homeomorphism is a local diffeomorphism on its source -/
+def OpenPartialHomeomorph.MDifferentiable (f : OpenPartialHomeomorph M M') :=
   MDifferentiableOn I I' f f.source ∧ MDifferentiableOn I' I f.symm f.target
 
 variable (I I') in

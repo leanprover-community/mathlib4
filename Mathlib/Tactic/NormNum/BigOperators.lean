@@ -3,9 +3,11 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.List.FinRange
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.List.FinRange
+public meta import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `norm_num` plugin for big operators
@@ -35,6 +37,8 @@ In particular, we can't use the plugin on sums containing variables.
   the sum/prod, without computing its numeric value (using the `ring` tactic to do some
   normalization?)
 -/
+
+public meta section
 
 namespace Mathlib.Meta
 
@@ -133,7 +137,7 @@ partial def List.proveNilOrCons {u : Level} {α : Q(Type u)} (s : Q(List $α)) :
     haveI' : $s =Q .finRange $n := ⟨⟩
     return match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
     | .zero _pf => .nil q(List.finRange_zero)
-    | .succ n' _pf => .cons _ _ q(List.finRange_succ_eq_map $n')
+    | .succ n' _pf => .cons _ _ q(List.finRange_succ)
   | (.const ``List.map [v, _], _, #[(β : Q(Type v)), _, (f : Q($β → $α)), (xxs : Q(List $β))]) => do
     haveI' : $s =Q ($xxs).map $f := ⟨⟩
     return match ← List.proveNilOrCons xxs with

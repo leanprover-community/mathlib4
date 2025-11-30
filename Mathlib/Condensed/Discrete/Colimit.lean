@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.LocallyConstant
-import Mathlib.Condensed.Equivalence
-import Mathlib.Topology.Category.LightProfinite.Extend
+module
+
+public import Mathlib.Condensed.Discrete.LocallyConstant
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Topology.Category.LightProfinite.Extend
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
@@ -14,6 +16,8 @@ This file provides the necessary API to prove that a condensed set `X` is discre
 for every profinite set `S = limᵢSᵢ`, `X(S) ≅ colimᵢX(Sᵢ)`, and the analogous result for light
 condensed sets.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -224,7 +228,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y
     ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
-The restriction of a finite product preserving presheaf `F` on `Profinite` to the category of
+The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
 @[simps!]
@@ -490,7 +494,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Fin
     ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
-The restriction of a finite product preserving presheaf `F` on `Profinite` to the category of
+The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
 @[simps!]

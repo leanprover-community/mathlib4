@@ -3,9 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Piecewise
 
 /-!
 # Pi instances for multiplicative actions
@@ -19,6 +21,8 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -92,7 +96,6 @@ instance faithfulSMul [Nonempty ι] [∀ i, SMul M (α i)] [∀ i, Nonempty (α 
 
 @[to_additive]
 instance mulAction (M) {m : Monoid M} [∀ i, MulAction M (α i)] : @MulAction M (∀ i, α i) m where
-  smul := (· • ·)
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
 
@@ -100,7 +103,6 @@ instance mulAction (M) {m : Monoid M} [∀ i, MulAction M (α i)] : @MulAction M
 instance mulAction' {m : ∀ i, Monoid (α i)} [∀ i, MulAction (α i) (β i)] :
     @MulAction (∀ i, α i) (∀ i, β i)
       (@Pi.monoid ι α m) where
-  smul := (· • ·)
   mul_smul _ _ _ := funext fun _ ↦ mul_smul _ _ _
   one_smul _ := funext fun _ ↦ one_smul _ _
 

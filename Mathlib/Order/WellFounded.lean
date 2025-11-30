@@ -3,8 +3,10 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Well-founded relations
@@ -17,6 +19,8 @@ The predicate `WellFounded` is defined in the core library. In this file we prov
 and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
 and an induction principle `WellFounded.induction_bot`.
 -/
+
+@[expose] public section
 
 theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b a → Acc r b where
   mp h := h.rec fun _ h _ ↦ h
@@ -37,7 +41,8 @@ theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : �
 
 theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} :
     Acc r x ↔ IsEmpty { f : ℕ → α // f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) } := by
-  rw [← not_iff_not, not_isEmpty_iff, nonempty_subtype]
+  contrapose!
+  rw [nonempty_subtype]
   exact not_acc_iff_exists_descending_chain
 
 /-- A relation is well-founded iff it doesn't have any infinite descending chain.

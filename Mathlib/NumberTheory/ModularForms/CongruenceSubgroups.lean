@@ -3,8 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.Integer
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Integer
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
 # Congruence subgroups
@@ -15,6 +17,8 @@ natural number.
 It also contains basic results about congruence subgroups.
 
 -/
+
+@[expose] public section
 
 open Matrix.SpecialLinearGroup Matrix
 
@@ -340,10 +344,13 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
     exact (finiteIndex_conjGL g).index_ne_zero
 
 /-- Conjugation by `GL(2, ℚ)` preserves arithmetic subgroups. -/
-lemma IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] (g : GL (Fin 2) ℚ) :
+lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
+    (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
-  ⟨((Commensurable.commensurable_conj _).mp Subgroup.IsArithmetic.is_commensurable).trans
+  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
+
+@[deprecated (since := "2025-09-17")] alias IsArithmetic.conj := _root_.Subgroup.IsArithmetic.conj
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/
 lemma IsCongruenceSubgroup.conjGL {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruenceSubgroup Γ)

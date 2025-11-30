@@ -3,14 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
 
 /-!
 # Edge density
@@ -25,6 +27,8 @@ Between two finsets of vertices,
 * `SimpleGraph.interedges`: Finset of edges of a graph.
 * `SimpleGraph.edgeDensity`: Edge density of a graph.
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -128,7 +132,7 @@ theorem edgeDensity_le_one (s : Finset α) (t : Finset β) : edgeDensity r s t �
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) :
     edgeDensity r s t + edgeDensity (fun x y ↦ ¬r x y) s t = 1 := by
-  rw [edgeDensity, edgeDensity, div_add_div_same, div_eq_one_iff_eq]
+  rw [edgeDensity, edgeDensity, ← add_div, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl r s t
   · exact mod_cast (mul_pos hs.card_pos ht.card_pos).ne'
 
@@ -338,7 +342,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
 
 theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h : Disjoint s t) :
     G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 := by
-  rw [edgeDensity_def, edgeDensity_def, div_add_div_same, div_eq_one_iff_eq]
+  rw [edgeDensity_def, edgeDensity_def, ← add_div, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl _ h
   · positivity
 
