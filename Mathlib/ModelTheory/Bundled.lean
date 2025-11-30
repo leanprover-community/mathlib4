@@ -67,6 +67,7 @@ end StrucType
 
 variable {L} {M : Type w} [L.Structure M]
 
+/-- Any `L`-substructure can be bundled as an `L`-structure. -/
 abbrev Substructure.strucType (S : L.Substructure M) : L.StrucType :=
   StrucType.of L S
 
