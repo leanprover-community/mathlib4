@@ -15,9 +15,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 Given `W : MorphismProperty C`, we define `W.isLocal : ObjectProperty C`
 which is the property of objects `Z` such that for any `f : X ⟶ Y` satisfying `W`,
 the precomposition with `f` gives a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`.
-(In the file `CategoryTheory.Localization.Bousfield`, it is shown that this is
+(In the file `Mathlib/CategoryTheory/Localization/Bousfield.lean`, it is shown that this is
 part of a Galois connection, with "dual" construction
-`Localization.LeftBousfield.W : ObjectProperty C → MorphismProperty C`.)
+`ObjectProperty.isLocal : ObjectProperty C → MorphismProperty C`.)
 
 -/
 
@@ -38,8 +38,8 @@ variable (W : MorphismProperty C)
 /-- Given `W : MorphismProperty C`, this is the property of `W`-local objects, i.e.
 the objects `Z` such that for any `f : X ⟶ Y` such that `W f` holds, the precomposition
 with `f` gives a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`.
-(See the file `CategoryTheory.Localization.Bousfield` for the "dual" construction
-`Localization.LeftBousfield.W : ObjectProperty C → MorphismProperty C`.) -/
+(See the file `Mathlib/CategoryTheory/Localization/Bousfield.lean` for the "dual" construction
+`ObjectProperty.isLocal : ObjectProperty C → MorphismProperty C`.) -/
 def isLocal : ObjectProperty C :=
   fun Z ↦ ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     W f → Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g)
