@@ -304,6 +304,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
