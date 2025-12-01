@@ -496,9 +496,8 @@ theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
   simp [prod_attach]
 
-@[to_additive (attr := simp)]
-theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
-  rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
+@[to_additive]
+theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
