@@ -28,7 +28,6 @@ These definitions and properties can be summarised by saysing that the bifunctor
 `F.map₂CochainComplex : CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ`
 commutes with shifts by `ℤ`.
 
-
 -/
 
 @[expose] public section
