@@ -827,9 +827,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   classical
   let u : Finset α := s.image Subtype.val
   have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
-  rw [← this]
-  apply H
-  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  grind
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=

@@ -188,24 +188,6 @@ theorem mem_iInf_finite' {f : ι → Filter α} (s) :
     s ∈ iInf f ↔ ∃ t : Finset (PLift ι), s ∈ ⨅ i ∈ t, f (PLift.down i) :=
   (Set.ext_iff.1 (iInf_sets_eq_finite' f) s).trans mem_iUnion
 
-/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
--- See note [reducible non-instances]
-abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
-  { Filter.instCompleteLatticeFilter with
-    iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
-      classical
-      rw [iInf_subtype']
-      rw [sInf_eq_iInf', ← Filter.mem_sets, iInf_sets_eq_finite, mem_iUnion] at h₂
-      obtain ⟨u, hu⟩ := h₂
-      rw [← Finset.inf_eq_iInf] at hu
-      suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
-      refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
-      rintro ⟨i⟩ u _ ih
-      rw [Finset.inf_insert, sup_inf_left]
-      exact le_inf (iInf_le _ _) ih }
-
-instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxioms
-
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
   classical
