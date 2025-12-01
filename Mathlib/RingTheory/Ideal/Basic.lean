@@ -277,7 +277,7 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
-  set_option push_neg.use_distrib true in contrapose!
+  contrapose! +distrib
   simp_rw [not_lt_top_iff, not_bot_lt_iff]
   exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
 
