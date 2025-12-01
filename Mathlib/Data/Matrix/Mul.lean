@@ -581,8 +581,7 @@ section IsStablyFiniteRing
 
 attribute [instance] IsStablyFiniteRing.isDedekindFiniteMonoid
 
-instance (priority := low) (R) [NonAssocSemiring R]
-    [IsStablyFiniteRing R] : IsDedekindFiniteMonoid R :=
+instance (R) [NonAssocSemiring R] [IsStablyFiniteRing R] : IsDedekindFiniteMonoid R :=
   let f : R →* Matrix (Fin 1) (Fin 1) R :=
     ⟨⟨fun r ↦ diagonal fun _ ↦ r, rfl⟩, fun _ _ ↦ (diagonal_mul_diagonal ..).symm⟩
   MonoidHom.isDedekindFiniteMonoid_of_injective f fun _ _ eq ↦ by simpa [f] using congr($eq 0 0)
