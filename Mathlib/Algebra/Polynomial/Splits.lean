@@ -345,17 +345,6 @@ theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]
     (h : Splits (f.map (algebraMap R K))) : Splits (f.map (algebraMap R L)) :=
   splits_of_algHom h (IsScalarTower.toAlgHom R K L)
 
-/-- A polynomial splits if and only if it has as many roots as its degree. -/
-theorem splits_iff_card_roots {p : K[X]} :
-    Splits p ↔ Multiset.card p.roots = p.natDegree := by
-  constructor
-  · intro H
-    rw [H.natDegree_eq_card_roots]
-  · intro hroots
-    rw [splits_iff_exists_multiset]
-    use p.roots
-    exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
-
 theorem eval₂_derivative_of_splits [DecidableEq L] {P : K[X]} {f : K →+* L} (hP : (P.map f).Splits)
     (x : L) :
     eval₂ f x P.derivative = f (P.leadingCoeff) *
