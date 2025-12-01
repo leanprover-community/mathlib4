@@ -16,9 +16,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 A regular monomorphism is a morphism that is the equalizer of some parallel pair.
 
 In this file, we give the following definitions.
-* `RegularMono f`, which is a class carrying the data that exhibits `f` as a regular monomorphism.
-  That is, it carries a fork and data specifying `f` a the equalizer of that fork.
-* `IsRegularMono f`, which is a proposition stating that `f` is a regular monomorphism. In
+* `RegularMono f`, which is a structure carrying the data that exhibits `f` as a regular
+  monomorphism. That is, it carries a fork and data specifying `f` a the equalizer of that fork.
+* `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
 and constructions
 * `IsSplitMono f → RegularMono f` and
@@ -115,12 +115,13 @@ instance MorphismProperty.regularMono.respectsIso :
 lemma isRegularMono_of_regularMono {f : X ⟶ Y} (h : RegularMono f) : IsRegularMono f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
-noncomputable def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
+def IsRegularMono.getStruct (f : X ⟶ Y) [IsRegularMono f] : RegularMono f :=
   IsRegularMono.regularMono.some
 
-@[deprecated (since := "2025-12-01")] alias regularMonoOfIsRegularMono := IsRegularMono.getStruct
+@[deprecated (since := "2025-12-01")] noncomputable alias regularMonoOfIsRegularMono :=
+  IsRegularMono.getStruct
 
-noncomputable section IsRegularMono
+section IsRegularMono
 
 /-!
 
@@ -358,12 +359,13 @@ instance MorphismProperty.regularEpi.respectsIso :
 lemma isRegularEpi_of_regularEpi {f : X ⟶ Y} (h : RegularEpi f) : IsRegularEpi f := ⟨⟨h⟩⟩
 
 /-- Given `IsRegularEpi f`, a choice of data for `RegularEpi f`. -/
-noncomputable def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
+def IsRegularEpi.getStruct (f : X ⟶ Y) [h : IsRegularEpi f] : RegularEpi f :=
   h.regularEpi.some
 
-@[deprecated (since := "2025-12-01")] alias regularEpiOfIsRegularEpi := IsRegularEpi.getStruct
+@[deprecated (since := "2025-12-01")] noncomputable alias regularEpiOfIsRegularEpi :=
+  IsRegularEpi.getStruct
 
-noncomputable section IsRegularEpi
+section IsRegularEpi
 
 /-!
 
@@ -429,7 +431,7 @@ def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
       simp [← w]
 
 /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
-noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
+def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -480,7 +482,7 @@ def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
   uniq _ _ h := EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one)
 
 /-- An effective epi which has a kernel pair is a regular epi. -/
-noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
@@ -488,7 +490,7 @@ noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback 
   w := pullback.condition
   isColimit := isColimitCoforkOfEffectiveEpi f _ (pullback.isLimit _ _)
 
-noncomputable instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : IsRegularEpi f :=
   isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
 

@@ -164,7 +164,7 @@ If `(a,b)` is the kernel pair of `f`, and `f` is a regular epimorphism, then
 -/
 noncomputable def toCoequalizer' (k : IsKernelPair f a b) [IsRegularEpi f] :
     IsColimit (Cofork.ofπ f k.w) :=
-  toCoequalizer k <| regularEpiOfIsRegularEpi f
+  toCoequalizer k <| IsRegularEpi.getStruct f
 
 /-- If `a₁ a₂ : A ⟶ Y` is a kernel pair for `g : Y ⟶ Z`, then `a₁ ×[Z] X` and `a₂ ×[Z] X`
 (`A ×[Z] X ⟶ Y ×[Z] X`) is a kernel pair for `Y ×[Z] X ⟶ X`. -/
