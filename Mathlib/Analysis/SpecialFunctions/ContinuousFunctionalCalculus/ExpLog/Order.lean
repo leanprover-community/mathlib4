@@ -5,11 +5,12 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-public import
-  Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
 
 /-!
 # Order properties of the operator logarithm
@@ -38,7 +39,10 @@ lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a := by 
     Tendsto (fun p : ℝ => cfc (fun x => p⁻¹ * (x ^ p - 1)) a) (𝓝[>] 0) (𝓝 (CFC.log a)) := by
   refine tendsto_cfc_fun ?tendsto ?cont
   case cont =>
-    exact .of_forall fun p ↦ by fun_prop (disch := grind -abstractProof)
+    exact .of_forall fun p ↦ by
+      refine ContinuousOn.mul (by fun_prop) ?_
+      exact ContinuousOn.sub (ContinuousOn.rpow (by fun_prop) (by fun_prop) (by grind))
+        (by fun_prop)
   case tendsto =>
     let s := {a : A | IsStrictlyPositive a}
     let f (p : ℝ) (x : ℝ) := if p > 0 then p⁻¹ * (x ^ p - 1) else Real.log x
