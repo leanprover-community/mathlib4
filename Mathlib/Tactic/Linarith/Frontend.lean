@@ -75,7 +75,7 @@ There are two oracles that can be used in `linarith` so far.
   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
-  This oracle reduces the search for a unsatisfiability certificate to some Linear Programming
+  This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
   problem. The problem is then solved by a standard Simplex Algorithm. We use
   [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
   terminates.

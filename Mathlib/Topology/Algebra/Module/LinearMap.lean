@@ -1218,7 +1218,7 @@ lemma IsIdempotentElem.commute_iff {f T : M →L[R] M}
 
 variable [IsTopologicalAddGroup M]
 
-/-- An idempotent operator `f` commutes with an unit operator `T` if and only if
+/-- An idempotent operator `f` commutes with a unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/
 theorem IsIdempotentElem.commute_iff_of_isUnit {f T : M →L[R] M} (hT : IsUnit T)
     (hf : IsIdempotentElem f) :

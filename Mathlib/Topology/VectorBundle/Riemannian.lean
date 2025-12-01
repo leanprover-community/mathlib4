@@ -69,7 +69,7 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
-/-- A trivial vector bundle, in which the model fiber has a inner product,
+/-- A trivial vector bundle, in which the model fiber has an inner product,
 is a Riemannian bundle. -/
 instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, ?_, fun x v w ↦ rfl⟩

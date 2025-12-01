@@ -106,7 +106,7 @@ instance instT1Space [hN : IsClosed (N : Set G)] :
     T1Space (G ⧸ N) :=
   t1Space_iff.mpr hN
 
--- TODO: `IsOpen` should be an class and this should be an instance
+-- TODO: `IsOpen` should be a class and this should be an instance
 @[to_additive]
 theorem discreteTopology (hN : IsOpen (N : Set G)) :
     DiscreteTopology (G ⧸ N) :=

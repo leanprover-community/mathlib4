@@ -16,7 +16,7 @@ import all Lean.Meta.Tactic.Apply
 # The `gcongr` ("generalized congruence") tactic
 
 The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between a LHS and RHS matching the same pattern to relational subgoals between the differing
+between an LHS and RHS matching the same pattern to relational subgoals between the differing
 inputs to the pattern.  For example,
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
@@ -25,7 +25,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
   · linarith
   · linarith
 ```
-This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
 ```
 x ^ 2 * ?_ + ?_
 ```
@@ -608,7 +608,7 @@ partial def _root_.Lean.MVarId.gcongr
       \n  attempted lemmas: {lemmas.map (·.declName)}"
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
-between a LHS and RHS.  For example,
+between an LHS and RHS.  For example,
 ```
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
     x ^ 2 * a + c ≤ x ^ 2 * b + d := by
@@ -616,7 +616,7 @@ example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
   · linarith
   · linarith
 ```
-This example has the goal of proving the relation `≤` between a LHS and RHS both of the pattern
+This example has the goal of proving the relation `≤` between an LHS and RHS both of the pattern
 ```
 x ^ 2 * ?_ + ?_
 ```
