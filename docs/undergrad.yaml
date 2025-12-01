@@ -102,7 +102,7 @@ Group Theory:
     signature: 'Equiv.Perm.sign'
     alternating group: 'alternatingGroup'
   Classical automorphism groups:
-    general linear group: 'LinearMap.GeneralLinearGroup'
+    general linear group: 'Matrix.GeneralLinearGroup'
     special linear group: 'Matrix.SpecialLinearGroup'
     orthogonal group: 'Matrix.orthogonalGroup'
     special orthogonal group: 'https://en.wikipedia.org/wiki/Orthogonal_group#SO(n)'
