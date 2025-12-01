@@ -19,7 +19,8 @@ the integrand `rpowIntegrand₀₁ p t x := t ^ p * (t⁻¹ - (t + x)⁻¹)`.
 This representation is useful for showing that `rpow` is operator monotone and operator concave
 in this range; that is, `cfc rpow` is monotone/concave. The integrand can be shown to be
 operator monotone and concave through direct means, and this integral lifts these properties
-to `rpow`.
+to `rpow`. These results can be found in
+`Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order`.
 
 ## Notes
 
@@ -34,12 +35,9 @@ relevant in applications, and would needlessly complicate the proof.
   `x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ`
 + `CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁`: the corresponding statement where
   `x ^ p` is defined via the CFC.
-+ `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
-+ `CFC.monotone_sqrt`: `CFC.sqrt` is operator monotone
 
 ## TODO
 
-+ Show operator concavity of `rpow` over `Icc 0 1`
 + Give analogous representations for the ranges `Ioo (-1) 0` and `Ioo 1 2`.
 
 ## References
