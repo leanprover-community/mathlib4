@@ -327,7 +327,8 @@ theorem sum_range_pow (n p : ℕ) :
   simp [field, factorial]
 
 /-- Alternate form of **Faulhaber's theorem**, relating the sum of p-th powers to the Bernoulli
-numbers: $$\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
+numbers:
+$$\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
 Deduced from `sum_range_pow`. -/
 theorem sum_Ico_pow (n p : ℕ) :
     (∑ k ∈ Ico 1 (n + 1), (k : ℚ) ^ p) =
