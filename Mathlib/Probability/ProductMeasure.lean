@@ -419,7 +419,7 @@ theorem infinitePi_map_restrict' {I : Set ι} :
   · exact MeasurableSet.pi s.countable_toSet (by measurability)
 
 open Classical in
-lemma infinitePi_pi' {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
+lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
     infinitePi μ (Set.pi s t) = ∏' i : s, (μ i) (t i) := by
   wlog s_ne : Nonempty s
