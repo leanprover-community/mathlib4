@@ -109,8 +109,7 @@ theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
 theorem dvd_monomial_one_iff_exists {n : σ →₀ ℕ} :
     p ∣ monomial n 1 ↔ ∃ m u, m ≤ n ∧ IsUnit u ∧ p = monomial m u := by
   rcases subsingleton_or_nontrivial R with hR | hR
-  · simp only [Subsingleton.allEq _ p, dvd_refl, isUnit_iff_eq_one, and_true, exists_eq_right,
-      true_iff]
+  · suffices ∃ m, m ≤ n by simpa [Subsingleton.elim _ p]
     use n
   rw [dvd_monomial_iff_exists (one_ne_zero' R)]
   apply exists_congr
@@ -123,28 +122,27 @@ theorem dvd_X_iff_exists {i : σ} :
   apply exists_congr
   intro b
   constructor
-  · rintro ⟨m, hmn, hb, hp⟩
+  · rintro ⟨m, hmn, hb, rfl⟩
     simp only [hb, true_and]
     suffices m = 0 ∨ m = Finsupp.single i 1 by
-      rcases this with hm | hm
-      · left; simp [hp, hm]
-      · right; rw [hp, hm, smul_monomial, smul_eq_mul, mul_one]
+      apply this.imp <;> simp +contextual [smul_monomial, smul_eq_mul, mul_one]
     by_cases hm : m i = 0
     · left
       ext j
       simp only [Finsupp.coe_zero, Pi.zero_apply, ← Nat.le_zero]
       by_cases hj : j = i
       · rw [← hm, hj]
-      · rw [← ne_eq] at hj; convert hmn j; rw [Finsupp.single_eq_of_ne hj]
+      · exact (hmn j).trans (Finsupp.single_eq_of_ne hj).le
     · right
       ext j
       apply le_antisymm (hmn j)
       by_cases hj : j = i
       · simpa [hj, Nat.one_le_iff_ne_zero]
-      · rw [← ne_eq] at hj; simp [Finsupp.single_eq_of_ne hj]
+      · simp [Finsupp.single_eq_of_ne hj]
   · rintro ⟨hb, hp | hp⟩
     · use 0; simp [hb, hp]
-    · use Finsupp.single i 1, le_refl _, hb, by simp [hp, smul_monomial]
+    · use Finsupp.single i 1, le_rfl, hb
+      simp [hp, smul_monomial]
 
 end CommRing
 
