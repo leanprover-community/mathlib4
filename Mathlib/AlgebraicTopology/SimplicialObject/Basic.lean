@@ -258,7 +258,7 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
-scoped syntax:max (name := mkNotation)
+scoped syntax:arg (name := mkNotation)
   term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 
 open scoped SimplexCategory.Truncated in
@@ -721,7 +721,7 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
-scoped syntax:max (name := mkNotation)
+scoped syntax:arg (name := mkNotation)
   term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 
 open scoped SimplexCategory.Truncated in

@@ -60,7 +60,7 @@ def Submodule.traceDual (I : Submodule B L) : Submodule B L where
 
 variable {A K}
 
-local notation:max I:max "ᵛ" => Submodule.traceDual A K I
+local notation:arg I:arg "ᵛ" => Submodule.traceDual A K I
 
 namespace Submodule
 
@@ -257,7 +257,7 @@ variable [IsFractionRing B L] [IsIntegrallyClosed A]
 
 open Submodule
 
-local notation:max I:max "ᵛ" => Submodule.traceDual A K I
+local notation:arg I:arg "ᵛ" => Submodule.traceDual A K I
 
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L}
 

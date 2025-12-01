@@ -49,7 +49,7 @@ variable {𝕜 A : Type*} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
 variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 variable [StarModule 𝕜 A] {p : A → Prop} {p₁ : Unitization 𝕜 A → Prop}
 
-local postfix:max "⁺¹" => Unitization 𝕜
+local postfix:arg "⁺¹" => Unitization 𝕜
 
 variable (hp₁ : ∀ {x : A}, p₁ x ↔ p x) (a : A) (ha : p a)
 variable [ContinuousFunctionalCalculus 𝕜 (Unitization 𝕜 A) p₁]

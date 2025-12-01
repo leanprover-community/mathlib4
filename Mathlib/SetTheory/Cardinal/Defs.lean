@@ -87,7 +87,7 @@ def mk : Type u → Cardinal :=
   Quotient.mk'
 
 @[inherit_doc]
-scoped prefix:max "#" => Cardinal.mk
+scoped prefix:arg "#" => Cardinal.mk
 
 instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩

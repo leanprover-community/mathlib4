@@ -472,7 +472,7 @@ inductive Point
 
 /-- For an algebraic extension `S` of a ring `R`, the type of nonsingular `S`-points on a
 Weierstrass curve `W` over `R` in affine coordinates. -/
-scoped notation3:max W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
+scoped notation3:arg W' "⟮" S "⟯" => Affine.Point <| baseChange W' S
 
 namespace Point
 

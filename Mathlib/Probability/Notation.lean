@@ -49,7 +49,7 @@ namespace ProbabilityTheory
 Note that this notation can conflict with the `GetElem` notation for lists. Usually if you see an
 error about ambiguous notation when trying to write `l[i]` for a list, it means that Lean could
 not find `i < l.length`, and so fell back to trying this notation as well. -/
-scoped macro:max P:term noWs "[" X:term "]" : term => `(∫ x, ↑($X x) ∂$P)
+scoped macro:arg P:term noWs "[" X:term "]" : term => `(∫ x, ↑($X x) ∂$P)
 end ProbabilityTheory
 
 /-- `𝔼[X]` is the expectation of `X`, defined as its Lebesgue integral. -/

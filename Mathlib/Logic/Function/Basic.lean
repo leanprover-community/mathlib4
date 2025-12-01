@@ -860,7 +860,7 @@ class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   for bundled maps. -/
   uncurry : α → β → γ
 
-@[inherit_doc] prefix:max "↿" => HasUncurry.uncurry
+@[inherit_doc] prefix:arg "↿" => HasUncurry.uncurry
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩

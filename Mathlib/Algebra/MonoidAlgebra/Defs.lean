@@ -68,7 +68,7 @@ def MonoidAlgebra (R M : Type*) [Semiring R] : Type _ := M →₀ R
 namespace AddMonoidAlgebra
 
 @[inherit_doc AddMonoidAlgebra]
-scoped syntax:max (priority := high) term noWs "[" term "]" : term
+scoped syntax:arg (priority := high) term noWs "[" term "]" : term
 
 macro_rules | `($R[$M]) => `(AddMonoidAlgebra $R $M)
 

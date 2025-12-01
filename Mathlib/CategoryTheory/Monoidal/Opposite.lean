@@ -34,7 +34,7 @@ structure MonoidalOpposite (C : Type u₁) where
 namespace MonoidalOpposite
 
 @[inherit_doc]
-notation:max C "ᴹᵒᵖ" => MonoidalOpposite C
+notation:arg C "ᴹᵒᵖ" => MonoidalOpposite C
 
 theorem mop_injective : Function.Injective (mop : C → Cᴹᵒᵖ) := @mop.inj C
 

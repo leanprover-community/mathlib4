@@ -26,8 +26,8 @@ space viewed as a model space.
 open scoped Manifold ContDiff
 open Metric (sphere)
 
-local macro:max "ℝ" noWs n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
-local macro:max "𝕊"n:superscript(term) : term =>
+local macro:arg "ℝ" noWs n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
+local macro:arg "𝕊"n:superscript(term) : term =>
   `(sphere (0 : EuclideanSpace ℝ (Fin ($(⟨n.raw[0]⟩) + 1))) 1)
 
 variable (M : Type*) [TopologicalSpace M]

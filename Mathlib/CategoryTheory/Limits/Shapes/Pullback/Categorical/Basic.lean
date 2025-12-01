@@ -87,7 +87,7 @@ structure CategoricalPullback where
 namespace CategoricalPullback
 
 /-- A notation for the categorical pullback. -/
-scoped notation:max L:max " ⊡ " R:max => CategoricalPullback L R
+scoped notation:arg L:max " ⊡ " R:max => CategoricalPullback L R
 
 variable {F G}
 

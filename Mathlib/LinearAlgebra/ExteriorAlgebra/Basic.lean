@@ -79,7 +79,7 @@ abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
 
 @[inherit_doc exteriorPower]
-notation:max "⋀[" R "]^" n:arg => exteriorPower R n
+notation:arg "⋀[" R "]^" n:arg => exteriorPower R n
 
 end exteriorPower
 

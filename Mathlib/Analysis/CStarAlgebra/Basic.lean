@@ -40,7 +40,7 @@ assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Topology
 
-local postfix:max "⋆" => star
+local postfix:arg "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where

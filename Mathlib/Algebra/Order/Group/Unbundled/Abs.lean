@@ -38,10 +38,10 @@ variable [Group α] {a b : α}
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
-macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
+macro:arg atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
 
 @[inherit_doc abs]
-macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+macro:arg atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/

@@ -101,7 +101,7 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
   else 0
 
 @[inherit_doc MeasureTheory.condExp]
-scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
+scoped macro:arg μ:term noWs "[" f:term "|" m:term "]" : term =>
   `(MeasureTheory.condExp $m $μ $f)
 
 /-- Unexpander for `μ[f|m]` notation. -/

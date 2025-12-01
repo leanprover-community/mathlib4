@@ -530,7 +530,7 @@ def OrderDual (α : Type*) : Type _ :=
   α
 
 @[inherit_doc]
-notation:max α "ᵒᵈ" => OrderDual α
+notation:arg α "ᵒᵈ" => OrderDual α
 
 namespace OrderDual
 

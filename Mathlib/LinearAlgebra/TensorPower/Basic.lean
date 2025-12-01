@@ -41,7 +41,7 @@ abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMo
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-@[inherit_doc] scoped[TensorProduct] notation:max "⨂[" R "]^" n:arg => TensorPower R n
+@[inherit_doc] scoped[TensorProduct] notation:arg "⨂[" R "]^" n:arg => TensorPower R n
 
 namespace PiTensorProduct
 

@@ -323,7 +323,7 @@ end
 
 variable [LinearOrder ι] {f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i}
 
-local postfix:max "⁺" => succ -- Note: conflicts with `PosPart` notation
+local postfix:arg "⁺" => succ -- Note: conflicts with `PosPart` notation
 
 section Succ
 

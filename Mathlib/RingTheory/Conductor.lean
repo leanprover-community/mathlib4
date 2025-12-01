@@ -22,7 +22,7 @@ variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 
-local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
+local notation:arg R:max "<" x:max ">" => adjoin R ({x} : Set S)
 
 /-- Let `S / R` be a ring extension and `x : S`, then the conductor of `R<x>` is the
 biggest ideal of `S` contained in `R<x>`. -/

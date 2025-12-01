@@ -588,7 +588,7 @@ variable [BooleanAlgebra α] (s s₁ s₂ t : Finset α)
 def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
 
 @[inherit_doc]
-scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
+scoped[FinsetFamily] postfix:arg "ᶜˢ" => Finset.compls
 
 variable {s t} {a : α}
 

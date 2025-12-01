@@ -75,10 +75,10 @@ def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 
 @[inherit_doc ProbabilityTheory.cond]
-scoped macro:max μ:term noWs "[|" s:term "]" : term =>
+scoped macro:arg μ:term noWs "[|" s:term "]" : term =>
   `(ProbabilityTheory.cond $μ $s)
 @[inherit_doc cond]
-scoped macro:max μ:term noWs "[" t:term " | " s:term "]" : term =>
+scoped macro:arg μ:term noWs "[" t:term " | " s:term "]" : term =>
   `(ProbabilityTheory.cond $μ $s $t)
 
 /-!
@@ -125,26 +125,26 @@ end delaborators
 
 It is `μ` restricted to `{ω | X ω ∈ s}` and scaled by the inverse of `μ {ω | X ω ∈ s}`
 (to make it a probability measure): `(μ {ω | X ω ∈ s})⁻¹ • μ.restrict {ω | X ω ∈ s}`. -/
-scoped macro:max μ:term noWs "[|" X:term " in " s:term "]" : term => `($μ[|$X ⁻¹' $s])
+scoped macro:arg μ:term noWs "[|" X:term " in " s:term "]" : term => `($μ[|$X ⁻¹' $s])
 
 /-- The conditional probability measure of measure `μ` on set `{ω | X ω = x}`.
 
 It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
 (to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
-scoped macro:max μ:term noWs "[" s:term " | " X:term " in " t:term "]" : term =>
+scoped macro:arg μ:term noWs "[" s:term " | " X:term " in " t:term "]" : term =>
   `($μ[$s | $X ⁻¹' $t])
 
 /-- The conditional probability measure of measure `μ` on `{ω | X ω = x}`.
 
 It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
 (to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
-scoped macro:max μ:term noWs "[|" X:term " ← " x:term "]" : term => `($μ[|$X in {$x:term}])
+scoped macro:arg μ:term noWs "[|" X:term " ← " x:term "]" : term => `($μ[|$X in {$x:term}])
 
 /-- The conditional probability measure of measure `μ` on set `{ω | X ω = x}`.
 
 It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
 (to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
-scoped macro:max μ:term noWs "[" s:term " | " X:term " ← " x:term "]" : term =>
+scoped macro:arg μ:term noWs "[" s:term " | " X:term " ← " x:term "]" : term =>
   `($μ[$s | $X in {$x:term}])
 
 /-- The conditional probability measure of any measure on any set of finite positive measure

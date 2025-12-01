@@ -42,28 +42,28 @@ The notation `δ[A, B]` is available in scope `Combinatorics.Additive`. -/]
 def divConst (A B : Finset G) : ℚ≥0 := #(A / B) / #A
 
 /-- The doubling constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A * B| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "σₘ[" A ", " B "]" => Finset.mulConst A B
+scoped[Combinatorics.Additive] notation3:arg "σₘ[" A ", " B "]" => Finset.mulConst A B
 
 /-- The doubling constant `σₘ[A]` of a finset `A` in a group is `|A * A| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "σₘ[" A "]" => Finset.mulConst A A
+scoped[Combinatorics.Additive] notation3:arg "σₘ[" A "]" => Finset.mulConst A A
 
 /-- The doubling constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A + B| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "σ[" A ", " B "]" => Finset.addConst A B
+scoped[Combinatorics.Additive] notation3:arg "σ[" A ", " B "]" => Finset.addConst A B
 
 /-- The doubling constant `σ[A]` of a finset `A` in a group is `|A + A| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "σ[" A "]" => Finset.addConst A A
+scoped[Combinatorics.Additive] notation3:arg "σ[" A "]" => Finset.addConst A A
 
 /-- The difference constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A / B| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "δₘ[" A ", " B "]" => Finset.divConst A B
+scoped[Combinatorics.Additive] notation3:arg "δₘ[" A ", " B "]" => Finset.divConst A B
 
 /-- The difference constant `σₘ[A]` of a finset `A` in a group is `|A / A| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "δₘ[" A "]" => Finset.divConst A A
+scoped[Combinatorics.Additive] notation3:arg "δₘ[" A "]" => Finset.divConst A A
 
 /-- The difference constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A - B| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "δ[" A ", " B "]" => Finset.subConst A B
+scoped[Combinatorics.Additive] notation3:arg "δ[" A ", " B "]" => Finset.subConst A B
 
 /-- The difference constant `σ[A]` of a finset `A` in a group is `|A - A| / |A|`. -/
-scoped[Combinatorics.Additive] notation3:max "δ[" A "]" => Finset.subConst A A
+scoped[Combinatorics.Additive] notation3:arg "δ[" A "]" => Finset.subConst A A
 
 open scoped Combinatorics.Additive
 

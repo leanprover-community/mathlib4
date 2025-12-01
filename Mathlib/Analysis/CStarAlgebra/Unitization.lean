@@ -22,7 +22,7 @@ involution is isometric, that multiplication on the right is also an isometry (i
 
 open ContinuousLinearMap
 
-local postfix:max "⋆" => star
+local postfix:arg "⋆" => star
 
 variable (𝕜 : Type*) {E : Type*}
 
@@ -176,7 +176,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 
 /-- The minimal unitization (over `ℂ`) of a C⋆-algebra, equipped with the C⋆-norm. When `A` is
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
-scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
+scoped[CStarAlgebra] postfix:arg "⁺¹" => Unitization ℂ
 
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where

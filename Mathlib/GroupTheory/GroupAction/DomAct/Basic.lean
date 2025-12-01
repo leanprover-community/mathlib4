@@ -95,8 +95,8 @@ well as some bundled maps from `α`. This is a type synonym for `AddOpposite M`,
 to a right action of `M`. -/]
 def DomMulAct (M : Type*) := MulOpposite M
 
-@[inherit_doc] postfix:max "ᵈᵐᵃ" => DomMulAct
-@[inherit_doc] postfix:max "ᵈᵃᵃ" => DomAddAct
+@[inherit_doc] postfix:arg "ᵈᵐᵃ" => DomMulAct
+@[inherit_doc] postfix:arg "ᵈᵃᵃ" => DomAddAct
 
 namespace DomMulAct
 

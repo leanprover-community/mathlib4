@@ -23,7 +23,7 @@ class Differential (R : Type*) [CommRing R] where
   deriv : Derivation ℤ R R
 
 @[inherit_doc]
-scoped[Differential] postfix:max "′" => Differential.deriv
+scoped[Differential] postfix:arg "′" => Differential.deriv
 
 open scoped Differential
 

@@ -31,9 +31,9 @@ semiring, ring, extensionality
 
 @[expose] public section
 
-local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
+local macro:arg "local_hAdd[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HAdd.hAdd : $type → $type → $type))
-local macro:max "local_hMul[" type:term ", " inst:term "]" : term =>
+local macro:arg "local_hMul[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HMul.hMul : $type → $type → $type))
 
 universe u

@@ -43,7 +43,7 @@ has the same underlying space as the original algebra `α`. -/
 def SymAlg (α : Type*) : Type _ :=
   α
 
-@[inherit_doc] postfix:max "ˢʸᵐ" => SymAlg
+@[inherit_doc] postfix:arg "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 

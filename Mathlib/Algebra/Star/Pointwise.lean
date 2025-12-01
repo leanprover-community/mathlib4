@@ -29,7 +29,7 @@ namespace Set
 
 open Pointwise
 
-local postfix:max "⋆" => star
+local postfix:arg "⋆" => star
 
 variable {α : Type*} {s t : Set α} {a : α}
 

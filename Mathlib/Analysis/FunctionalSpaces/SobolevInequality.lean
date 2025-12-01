@@ -60,7 +60,7 @@ noncomputable section
 
 variable {ι : Type*}
 
-local prefix:max "#" => Fintype.card
+local prefix:arg "#" => Fintype.card
 
 /-! ## The grid-lines lemma -/
 

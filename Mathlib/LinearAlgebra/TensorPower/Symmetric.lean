@@ -52,10 +52,10 @@ def SymmetricPower : Type max u v :=
   (addConGen (SymmetricPower.Rel R ι M)).Quotient
 
 @[inherit_doc]
-scoped[TensorProduct] notation:max "Sym[" R "] " ι:arg M:arg => SymmetricPower R ι M
+scoped[TensorProduct] notation:arg "Sym[" R "] " ι:arg M:arg => SymmetricPower R ι M
 
 /-- The `n`th symmetric tensor power of a semimodule `M` over a commutative semiring `R` -/
-scoped[TensorProduct] notation:max "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
+scoped[TensorProduct] notation:arg "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
 
 namespace SymmetricPower
 

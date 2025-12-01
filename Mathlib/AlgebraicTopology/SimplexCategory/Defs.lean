@@ -198,7 +198,7 @@ scoped macro "trunc" : tactic =>
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
 proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
-scoped syntax:max (name := mkNotation)
+scoped syntax:arg (name := mkNotation)
   "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
   | `(⦋$m:term⦌$n:subscript) =>

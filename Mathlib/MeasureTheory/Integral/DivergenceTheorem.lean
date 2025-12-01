@@ -246,8 +246,8 @@ private theorem integral_divergence_of_hasFDerivAt_off_countable_aux₂ (I : Box
 variable (a b : Fin (n + 1) → ℝ)
 
 local notation "face " i => Set.Icc (a ∘ Fin.succAbove i) (b ∘ Fin.succAbove i)
-local notation:max "frontFace " i:arg => Fin.insertNth i (b i)
-local notation:max "backFace " i:arg => Fin.insertNth i (a i)
+local notation:arg "frontFace " i:arg => Fin.insertNth i (b i)
+local notation:arg "backFace " i:arg => Fin.insertNth i (a i)
 
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative

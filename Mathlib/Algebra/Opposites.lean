@@ -65,10 +65,10 @@ reverses left and right in multiplication. -/
 def MulOpposite (α : Type*) : Type _ := PreOpposite α
 
 /-- Multiplicative opposite of a type. -/
-postfix:max "ᵐᵒᵖ" => MulOpposite
+postfix:arg "ᵐᵒᵖ" => MulOpposite
 
 /-- Additive opposite of a type. -/
-postfix:max "ᵃᵒᵖ" => AddOpposite
+postfix:arg "ᵃᵒᵖ" => AddOpposite
 
 namespace MulOpposite
 

@@ -257,7 +257,7 @@ scoped[LSeries.notation] notation "L" => LSeries
 Let `R` be a ring with a coercion to `ℂ`. Then we can write `↗χ` when `χ : DirichletCharacter R`
 or `↗f` when `f : ArithmeticFunction R` or simply `f : N → R` with a coercion from `ℕ` to `N`
 as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc. -/
-scoped[LSeries.notation] notation:max "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
+scoped[LSeries.notation] notation:arg "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
 
 @[inherit_doc]
 scoped[LSeries.notation] notation "δ" => delta

@@ -111,7 +111,7 @@ This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
 
 -- TODO: replace this with a typeclass
 @[inherit_doc]
-prefix:max "√" => Real.sqrt
+prefix:arg "√" => Real.sqrt
 
 variable {x y : ℝ}
 

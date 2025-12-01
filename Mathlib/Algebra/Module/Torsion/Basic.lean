@@ -919,7 +919,7 @@ def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup
 
 @[inherit_doc torsionBy]
-scoped syntax:max (name := torsionByStx) (priority := high) term noWs "[" term "]" : term
+scoped syntax:arg (name := torsionByStx) (priority := high) term noWs "[" term "]" : term
 
 macro_rules | `($A[$n]) => `(torsionBy $A $n)
 

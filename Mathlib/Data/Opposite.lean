@@ -45,7 +45,7 @@ protected meta def Opposite.unexpander_op : Lean.PrettyPrinter.Unexpander
   | s => pure s
 
 @[inherit_doc]
-notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
+notation:arg -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,
 -- `Presheaf Cᵒᵖ` parses as `Presheaf (Cᵒᵖ)` and not `(Presheaf C)ᵒᵖ`.
 α "ᵒᵖ" => Opposite α
 
