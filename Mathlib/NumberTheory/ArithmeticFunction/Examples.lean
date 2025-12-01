@@ -8,20 +8,13 @@ module
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.Data.Nat.Factorization.PrimePow
 /-!
-# Arithmetic Functions and Dirichlet Convolution
+# Examples of Arithmetic Functions
 
-This file defines arithmetic functions, which are functions from `ℕ` to a specified type that map 0
-to 0. In the literature, they are often instead defined as functions from `ℕ+`. These arithmetic
-functions are endowed with a multiplication, given by Dirichlet convolution, and pointwise addition,
-to form the Dirichlet ring.
+This file defines some standard examples of arithmetic functions (functions `ℕ → R` vanishing at
+`0`, considered as a ring under Dirichlet convolution).
 
 ## Main Definitions
 
-* `ArithmeticFunction R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
-* An arithmetic function `f` `IsMultiplicative` when `x.Coprime y → f (x * y) = f x * f y`.
-* The pointwise operations `pmul` and `ppow` differ from the multiplication
-  and power instances on `ArithmeticFunction R`, which use Dirichlet multiplication.
-* `ζ` is the arithmetic function such that `ζ x = 1` for `0 < x`.
 * `σ k` is the arithmetic function such that `σ k x = ∑ y ∈ divisors x, y ^ k` for `0 < x`.
 * `pow k` is the arithmetic function such that `pow k x = x ^ k` for `0 < x`.
 * `id` is the identity arithmetic function on `ℕ`.
@@ -45,14 +38,10 @@ to form the Dirichlet ring.
 
 ## Notation
 
-The arithmetic functions `ζ`, `σ`, `ω`, `Ω` and `μ` have Greek letter names.
-This notation is scpoed to the separate locales `ArithmeticFunction.zeta` for `ζ`,
-`ArithmeticFunction.sigma` for `σ`, `ArithmeticFunction.omega` for `ω`,
-`ArithmeticFunction.Omega` for `Ω`, and `ArithmeticFunction.Moebius` for `μ`,
-to allow for selective access.
-
-The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
-`∏ᵖ p ∣ n, f p` when applied to `n`.
+The arithmetic functions `σ`, `ω`, `Ω` and `μ` have Greek letter names.
+This notation is scoped to the separate locales `ArithmeticFunction.sigma` for `σ`,
+`ArithmeticFunction.omega` for `ω`, `ArithmeticFunction.Omega` for `Ω`, and
+`ArithmeticFunction.Moebius` for `μ`, to allow for selective access.
 
 ## Tags
 
@@ -112,10 +101,8 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
 theorem sigma_eq_zero {k n : ℕ} : σ k n = 0 ↔ n = 0 := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  · refine iff_of_false ?_ hn
-    simp_rw [ArithmeticFunction.sigma_apply, sum_eq_zero_iff, not_forall]
-    use 1
-    simp [hn]
+  · simp only [ArithmeticFunction.sigma_apply]
+    aesop
 
 @[simp]
 theorem sigma_pos_iff {k n} : 0 < σ k n ↔ 0 < n := by
@@ -155,21 +142,13 @@ theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   ext
   rw [sigma, zeta_mul_apply]
   apply sum_congr rfl
-  intro x hx
-  rw [pow_apply, if_neg (not_and_of_not_right _ _)]
-  contrapose! hx
-  simp [hx]
+  aesop
 
 @[arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
-  IsMultiplicative.iff_ne_zero.2
-    ⟨by simp, by
-      intro m n hm _hn hmn
-      rcases eq_or_ne m 1 with (rfl | hm')
-      · simp
-      rw [one_apply_ne, one_apply_ne hm', zero_mul]
-      rw [Ne, mul_eq_one, not_and_or]
-      exact Or.inl hm'⟩
+  IsMultiplicative.iff_ne_zero.2 ⟨by simp, by
+    intro m n hm hn hmn
+    by_cases h : m = 1 <;> aesop⟩
 
 @[arith_mult]
 theorem isMultiplicative_zeta : IsMultiplicative ζ :=
@@ -177,7 +156,7 @@ theorem isMultiplicative_zeta : IsMultiplicative ζ :=
 
 @[arith_mult]
 theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
-  ⟨rfl, fun {_ _} _ => rfl⟩
+  ⟨rfl, fun _ => rfl⟩
 
 @[arith_mult]
 theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
@@ -215,16 +194,14 @@ private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
 @[simp]
 theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
   by_cases hn0 : n = 0
-  · subst hn0
-    simp
+  · aesop
   constructor
   · intro h
     rw [← sigma_zero_eq_one_iff]
     have zero_lt_sigma := sigma_pos 0 n hn0
     have sigma_zero_le_sigma := sigma_mono 0 k n k.zero_le
     cutsat
-  · rintro rfl
-    simp
+  · simp +contextual
 
 theorem sigma_eq_prod_primeFactors_sum_range_factorization_pow_mul {k n : ℕ} (hn : n ≠ 0) :
     σ k n = ∏ p ∈ n.primeFactors, ∑ i ∈ .range (n.factorization p + 1), p ^ (i * k) := by
@@ -288,8 +265,7 @@ theorem cardFactors_apply_prime {p : ℕ} (hp : p.Prime) : Ω p = 1 :=
 
 lemma cardFactors_pow {m k : ℕ} : Ω (m ^ k) = k * Ω m := by
   by_cases hm : m = 0
-  · subst hm
-    cases k <;> simp
+  · cases k <;> aesop
   induction k with
   | zero => simp
   | succ n ih =>
@@ -360,7 +336,7 @@ theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
   | empty => simp
   | cons a s ha ih =>
     rw [prod_cons, sum_cons, cardDistinctFactors_mul, ih]
-    · exact fun {x} hx {y} hy hxy => h (by simp [hx]) (by simp [hy]) hxy
+    · exact fun x hx y hy hxy => h (by simp [hx]) (by simp [hy]) hxy
     · exact Coprime.prod_right fun i hi =>
         h (by simp) (by simp [hi]) (ne_of_mem_of_not_mem hi ha).symm
 
@@ -705,8 +681,6 @@ theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     rw [sum_comm]
     exact sum_congr rfl fun _ _ ↦ (by simp_all)
 
--- TODO: fix two non-terminal simp
-set_option linter.flexible false in
 theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
   rw [sum_Ioc_mul_eq_sum_prod_filter, sum_filter, sum_product]
@@ -714,11 +688,8 @@ theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
   simp only [sum_ite, not_le, sum_const_zero, add_zero, mul_sum]
   congr
   ext
-  simp only [mem_filter, mem_Ioc, and_assoc, and_congr_right_iff]
+  simp only [mem_filter, mem_Ioc, and_assoc, and_congr_right_iff] at hn ⊢
   intro _
-  have hn0 : n ≠ 0 := by
-    simp [mem_Ioc] at hn
-    exact ne_zero_of_lt hn.1
   constructor
   · intro ⟨_, h⟩
     grw [← h, Nat.mul_div_cancel_left _ (by omega)]
@@ -739,10 +710,7 @@ theorem sum_Ioc_sigma0_eq_sum_div (N : ℕ) :
     ∑ n ∈ Ioc 0 N, sigma 0 n = ∑ n ∈ Ioc 0 N, (N / n) := by
   rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
   convert sum_Ioc_mul_zeta_eq_sum zeta N using 1
-  simp only [zeta_apply, cast_id, ite_mul, zero_mul, one_mul]
-  refine sum_congr rfl fun n hn ↦ ?_
-  simp
-  tauto
+  simpa using sum_congr rfl (by grind)
 
 end Sum
 end ArithmeticFunction
