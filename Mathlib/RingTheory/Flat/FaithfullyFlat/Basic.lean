@@ -394,6 +394,11 @@ lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
   conv_rhs => rw [← lTensor_exact_iff_exact R M]
   simp
 
+@[simp]
+lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
+    Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
+  simp [Function.Bijective]
+
 end
 
 end arbitrary_universe
