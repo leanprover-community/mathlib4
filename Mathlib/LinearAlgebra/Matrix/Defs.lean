@@ -91,10 +91,6 @@ theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
 
-@[simp]
-theorem of_eq_self (f : Matrix m n α) : of (fun i j => f i j) = f :=
-  rfl
-
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
 This is available in bundled forms as:
