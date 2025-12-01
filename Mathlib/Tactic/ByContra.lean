@@ -17,14 +17,17 @@ The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of co
 public meta section
 
 namespace Mathlib.Tactic.ByContra
-open Lean Parser Tactic
+open Lean Parser.Tactic
 
 /--
 If the target of the main goal is a proposition `p`,
 `by_contra!` reduces the goal to proving `False` using the additional hypothesis `this : ¬ p`.
 `by_contra! h` can be used to name the hypothesis `h : ¬ p`.
-The hypothesis `¬ p` will be negation normalized using `push_neg`.
+The hypothesis `¬ p` will be normalized using `push_neg`.
 For instance, `¬ a < b` will be changed to `b ≤ a`.
+`by_contra!` can be used with `rcases` patterns.
+For instance, `by_contra! rfl` on `⊢ s.Nonempty` will substitute the equality `s = ∅`,
+and `by_contra! ⟨hp, hq⟩` on `⊢ ¬ p ∨ ¬ q` will introduce `hp : p` and `hq : q`.
 `by_contra! h : q` will normalize negations in `¬ p`, normalize negations in `q`,
 and then check that the two normalized forms are equal.
 The resulting hypothesis is the pre-normalized form, `q`.
@@ -42,7 +45,8 @@ example : 1 < 2 := by
   -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
-syntax (name := byContra!) "by_contra!" optConfig (ppSpace colGt binderIdent)? Term.optType : tactic
+syntax (name := byContra!)
+  "by_contra!" optConfig (ppSpace colGt rcasesPatMed)? (" : " term)? : tactic
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
@@ -53,17 +57,17 @@ local elab "try_push_neg" cfg:optConfig : tactic => do
     (failIfUnchanged := false)
 
 macro_rules
-  | `(tactic| by_contra! $cfg $[: $ty]?) =>
-    `(tactic| by_contra! $cfg $(mkIdent `this):ident $[: $ty]?)
-  | `(tactic| by_contra! $cfg _%$under $[: $ty]?) =>
-    `(tactic| by_contra! $cfg $(mkIdentFrom under `this):ident $[: $ty]?)
-  | `(tactic| by_contra! $cfg $e:ident) =>
-    `(tactic| (by_contra $e:ident; try_push_neg_at $cfg $e:ident))
-  | `(tactic| by_contra! $cfg $e:ident : $y) => `(tactic|
-       (by_contra! $cfg h
-        -- if the below `exact` call fails then this tactic should fail with the message
-        -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { try_push_neg $cfg; exact h }
-        clear h))
+| `(tactic| by_contra! $cfg $[$pat?]? $[: $ty?]?) => do
+  let pat ← pat?.getDM `(rcasesPatMed| $(mkIdent `this):ident)
+  let replaceTac ← match ty? with
+    | some ty => `(tactic|
+      replace h : $ty := by try_push_neg $cfg; exact h) -- Let `h` have type `ty`.
+    | none => `(tactic| skip)
+  -- We have to use `revert h; rintro $pat` instead of `obtain $pat := h`,
+  -- because if `$pat` is a variable, `obtain $pat := h` doesn't do anything.
+  `(tactic| (
+    by_contra h;
+    try_push_neg_at $cfg h; $replaceTac;
+    revert h; rintro ($pat:rcasesPatMed)))
 
 end Mathlib.Tactic.ByContra
