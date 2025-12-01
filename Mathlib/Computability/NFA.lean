@@ -92,13 +92,6 @@ theorem stepSet_union {S T : Set σ} {a : α} :
   simp [mem_stepSet, or_and_right, exists_or]
 
 variable (M) in
-@[simp]
-theorem stepSet_union {S T : Set σ} {a : α} :
-    M.stepSet (S ∪ T) a = M.stepSet S a ∪ M.stepSet T a := by
-  ext s
-  simp [mem_stepSet, or_and_right, exists_or]
-
-variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
 def evalFrom (S : Set σ) : List α → Set σ :=
