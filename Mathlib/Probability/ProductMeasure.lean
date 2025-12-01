@@ -418,13 +418,13 @@ theorem infinitePi_map_restrict' {I : Set ι} :
   · simp
   · exact MeasurableSet.pi s.countable_toSet (by measurability)
 
-open Classical in
 lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
     infinitePi μ (Set.pi s t) = ∏' i : s, (μ i) (t i) := by
   wlog s_ne : Nonempty s
   · simp [Set.not_nonempty_iff_eq_empty'.mp s_ne]
   apply tendsto_nhds_unique (f := fun s' : Finset s ↦ ∏ i ∈ s', (μ i) (t i)) (l := atTop)
+  classical
   · conv in ∏ _ ∈ _, _ =>
       rw [← infinitePi_pi _ (by measurability), ← infinitePi_map_restrict', map_apply
         (by fun_prop) (by apply MeasurableSet.pi (countable_toSet _) (by measurability)),
@@ -446,17 +446,16 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
     exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
 
 @[simp]
-lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
-    infinitePi μ {f} = ∏ i, μ i {f i} := by
-  simpa [Set.univ_pi_singleton] using
-    infinitePi_pi μ (s := .univ) (t := fun i ↦ {f i}) fun _ _ ↦ .singleton _
-
-@[simp]
-lemma infinitePi_singleton' [hι : Countable ι] [∀ i, MeasurableSingletonClass (X i)]
+lemma infinitePi_singleton [hι : Countable ι] [∀ i, MeasurableSingletonClass (X i)]
     (f : ∀ i, X i) : infinitePi μ {f} = ∏' i, μ i {f i} := by
-  rw [← Set.univ_pi_singleton, infinitePi_pi', tprod_univ (f := fun i ↦ μ i {f i})]
+  rw [← Set.univ_pi_singleton, infinitePi_pi_of_countable, tprod_univ (f := fun i ↦ μ i {f i})]
   · simp [Set.countable_univ_iff, hι]
   · measurability
+
+@[simp]
+lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
+      (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by
+  rw [infinitePi_singleton, tprod_fintype]
 
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
   .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
