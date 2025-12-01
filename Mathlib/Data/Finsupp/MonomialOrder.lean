@@ -61,7 +61,7 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
-  /-- `syn` is a additive commutative monoid -/
+  /-- `syn` is an additive commutative monoid -/
   acm : AddCommMonoid syn := by infer_instance
   /-- `syn` is linearly ordered -/
   lo : LinearOrder syn := by infer_instance

@@ -388,7 +388,7 @@ namespace Terminal
 
 variable {A : Coalgebra F} (h : Limits.IsTerminal A)
 
-/-- The inverse of the structure map of an terminal coalgebra -/
+/-- The inverse of the structure map of a terminal coalgebra -/
 @[simp]
 def strInv : F.obj A.1 ⟶ A.1 :=
   (h.from ⟨F.obj A.V, F.map A.str⟩).f

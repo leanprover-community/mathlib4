@@ -669,7 +669,7 @@ theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
 
 -- See note [lower instance priority]
 variable (K) in
-/-- A integral field extension in characteristic 0 is separable. -/
+/-- An integral field extension in characteristic 0 is separable. -/
 protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
   ⟨_root_.IsSeparable.of_integral _⟩
 

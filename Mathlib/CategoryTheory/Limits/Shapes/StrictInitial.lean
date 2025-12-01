@@ -184,7 +184,7 @@ theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : 
   haveI := hI.isIso_from g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
-/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also an terminal object. -/
+/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also a terminal object. -/
 noncomputable
 def IsTerminal.ofStrict {X Y : C} (f : X ⟶ Y)
     (hY : IsTerminal X) : IsTerminal Y :=

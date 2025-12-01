@@ -884,11 +884,11 @@ variable {n : ℕ}
 def IndepSetFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNIndepSet n t
 
-/-- An graph is `n`-independent set free iff its complement is `n`-clique free. -/
+/-- A graph is `n`-independent set free iff its complement is `n`-clique free. -/
 @[simp] theorem cliqueFree_compl : Gᶜ.CliqueFree n ↔ G.IndepSetFree n := by
   simp [IndepSetFree, CliqueFree]
 
-/-- An graph's complement is `n`-independent set free iff it is `n`-clique free. -/
+/-- A graph's complement is `n`-independent set free iff it is `n`-clique free. -/
 @[simp] theorem indepSetFree_compl : Gᶜ.IndepSetFree n ↔ G.CliqueFree n := by
   simp [IndepSetFree, CliqueFree]
 

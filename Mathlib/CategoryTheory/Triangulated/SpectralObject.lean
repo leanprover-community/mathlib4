@@ -19,7 +19,7 @@ objects in a pretriangulated category `C` indexed by the category `ι`.
 * construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
 of all truncations of an object of a triangulated category equipped with a t-structure
 * define a similar notion of spectral objects in abelian categories, show that
-by applying an homological functor `C ⥤ A` to a spectral object in the
+by applying a homological functor `C ⥤ A` to a spectral object in the
 triangulated category `C`, we obtain a spectral object in the abelian category `A`
 * construct the spectral sequence attached to a spectral object in an abelian category
 
