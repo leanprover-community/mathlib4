@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # Adding complements to a generalized Boolean algebra
@@ -27,6 +29,8 @@ complements.
 If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algebras, then one could
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
 -/
+
+@[expose] public section
 
 open Function
 

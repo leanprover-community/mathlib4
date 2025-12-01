@@ -3,7 +3,9 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.DedekindDomain.Dvr
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Primes in an extension of localization at prime
@@ -25,6 +27,8 @@ bijection.
   over `p` in `S` and the primes over the maximal ideal of `Rₚ` in `Sₚ`.
 
 -/
+
+@[expose] public section
 
 open Algebra IsLocalRing Ideal Localization.AtPrime
 

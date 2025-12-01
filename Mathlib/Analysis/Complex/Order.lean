@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.Complex.Norm
+module
+
+public import Mathlib.Analysis.Complex.Norm
 
 /-!
 # The partial order on the complex numbers
@@ -25,6 +27,8 @@ provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 These are all only available with `open scoped ComplexOrder`.
 -/
+
+@[expose] public section
 
 namespace Complex
 
@@ -66,6 +70,16 @@ theorem nonpos_iff {z : ℂ} : z ≤ 0 ↔ z.re ≤ 0 ∧ z.im = 0 :=
 
 theorem neg_iff {z : ℂ} : z < 0 ↔ z.re < 0 ∧ z.im = 0 :=
   lt_def
+
+theorem sq_nonneg_iff {z : ℂ} : 0 ≤ z ^ 2 ↔ z.im = 0 := by
+  rw [nonneg_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, eq_comm,
+    mul_eq_zero_iff_right two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]
+  exact ⟨by aesop, fun h ↦ by simpa [h] using sq_nonneg z.re⟩
+
+theorem sq_nonpos_iff {z : ℂ} : z ^ 2 ≤ 0 ↔ z.re = 0 := by
+  rw [nonpos_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, mul_eq_zero_iff_right
+    two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]
+  exact ⟨by aesop, fun h ↦ by simpa [h] using sq_nonneg z.im⟩
 
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal]
@@ -127,7 +141,7 @@ private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
-def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
+meta def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
   -- TODO: Can we avoid duplicating the code?
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>

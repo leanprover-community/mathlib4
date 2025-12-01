@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Semicontinuous maps
@@ -64,6 +66,8 @@ ones for lower semicontinuous functions using `OrderDual`.
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 
 -/
+
+@[expose] public section
 
 
 open Topology ENNReal
@@ -356,12 +360,12 @@ variable {γ : Type*} [CompleteLinearOrder γ]
 theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
     LowerSemicontinuousWithinAt f s x ↔ f x ≤ liminf f (𝓝[s] x) := by
   constructor
-  · intro hf; unfold LowerSemicontinuousWithinAt at hf
-    contrapose! hf
-    obtain ⟨z, ltz, y, ylt, h₁⟩ := hf.exists_disjoint_Iio_Ioi; use y
-    exact ⟨ylt, fun h => ltz.not_ge
-      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ h₂ =>
-        le_of_not_gt fun h₃ => (h₁ _ h₃ _ h₂).false))⟩
+  · intro h; unfold LowerSemicontinuousWithinAt at h
+    by_contra! hf
+    obtain ⟨z, ltz, y, ylt, h₁⟩ := hf.exists_disjoint_Iio_Ioi
+    exact ltz.not_ge
+      (le_liminf_of_le (by isBoundedDefault) ((h y ylt).mono fun _ h₂ =>
+        le_of_not_gt fun h₃ => (h₁ _ h₃ _ h₂).false))
   exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
 
 alias ⟨LowerSemicontinuousWithinAt.le_liminf, _⟩ := lowerSemicontinuousWithinAt_iff_le_liminf

@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.Order.Antidiag.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Algebra.Order.Antidiag.Prod
 
 /-!
 # Internally graded rings and algebras
@@ -49,6 +51,8 @@ This file also provides some extra structure on `A 0`, namely:
 internally graded ring
 -/
 
+@[expose] public section
+
 
 open DirectSum
 
@@ -72,7 +76,7 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   cases z
-  · rw [Int.ofNat_eq_coe, Int.cast_natCast]
+  · rw [Int.ofNat_eq_natCast, Int.cast_natCast]
     exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
     exact neg_mem (SetLike.natCast_mem_graded _ _)
@@ -448,8 +452,7 @@ theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
   rw [Subtype.ext_iff, ZeroMemClass.coe_zero, coe_mul_apply]
   apply Finset.sum_eq_zero fun x hx ↦ ?_
   obtain (hx | hx) : x.1 < m ∨ x.2 < n := by
-    by_contra! h
-    obtain ⟨hm, hn⟩ := h
+    by_contra! ⟨hm, hn⟩
     obtain rfl : x.1 + x.2 = k := by simp_all
     apply lt_irrefl (m + n) <| lt_of_le_of_lt (by gcongr) hk
   all_goals simp [hr, hr', hx]

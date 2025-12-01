@@ -130,3 +130,16 @@ jobs:
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
+
+      - name: Send Zulip message (failure)
+        if: ${{ failure() }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ["Update dependencies" workflow run failed!](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

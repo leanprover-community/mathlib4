@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Natural isomorphisms
@@ -29,6 +31,8 @@ Note that `NatIso` is a namespace without a corresponding definition;
 we put some declarations that are specifically about natural isomorphisms in the `Iso`
 namespace so that they are available using dot notation.
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 

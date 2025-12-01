@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Thickening
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces
@@ -22,6 +24,8 @@ import Mathlib.Topology.MetricSpace.Thickening
   of some second countable separable metrizable topology.
 
 -/
+
+@[expose] public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 

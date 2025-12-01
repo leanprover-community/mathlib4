@@ -3,13 +3,15 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
-import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-import Mathlib.Algebra.Homology.HomologySequenceLemmas
-import Mathlib.Algebra.Homology.Refinements
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.Algebra.Homology.Refinements
 
 /-!
-# The mapping cone of a monomorphism, up to a quasi-isomophism
+# The mapping cone of a monomorphism, up to a quasi-isomorphism
 
 If `S` is a short exact short complex of cochain complexes in an abelian category,
 we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ⟶ S.X₃`.
@@ -19,6 +21,8 @@ sequence of the homology functor on the homotopy category, applied to the
 distinguished triangle attached to the mapping cone of `S.f`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

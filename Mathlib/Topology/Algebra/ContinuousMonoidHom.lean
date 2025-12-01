@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Topology.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 
@@ -17,6 +19,8 @@ This file defines the space of continuous homomorphisms between two topological 
 * `ContinuousMonoidHom A B`: The continuous homomorphisms `A →* B`.
 * `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
+
+@[expose] public section
 
 assert_not_exists ContinuousLinearMap
 assert_not_exists ContinuousLinearEquiv
@@ -100,10 +104,10 @@ section
 variable {F : Type*} [FunLike F A B]
 
 /-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
-into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
+into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` to
 `(A →ₜ* B)`. -/
 @[to_additive (attr := coe) /-- Turn an element of a type `F` satisfying
-`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousAddMonoidHom`.
+`AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
   { MonoidHomClass.toMonoidHom f with }

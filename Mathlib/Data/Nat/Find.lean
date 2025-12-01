@@ -3,14 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Push
-import Batteries.WF
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Push
+public import Batteries.WF
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
+
+@[expose] public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 
@@ -164,10 +167,10 @@ def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
 
 variable {P Q : ℕ → Prop} [DecidablePred P] {n : ℕ}
 
-@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := rfl
+@[simp] lemma findGreatest_zero : Nat.findGreatest P 0 = 0 := (rfl)
 
 lemma findGreatest_succ (n : ℕ) :
-    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := rfl
+    Nat.findGreatest P (n + 1) = if P (n + 1) then n + 1 else Nat.findGreatest P n := (rfl)
 
 @[simp] lemma findGreatest_eq : ∀ {n}, P n → Nat.findGreatest P n = n
   | 0, _ => rfl

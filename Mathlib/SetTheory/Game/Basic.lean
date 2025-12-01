@@ -3,10 +3,12 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.SetTheory.PGame.Algebra
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.SetTheory.PGame.Algebra
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -24,6 +26,8 @@ about them. Multiplication is not well-behaved under equivalence of pre-games i.
 imply `x * z ≈ y * z`. Hence, multiplication is not a well-defined operation on games. Nevertheless,
 the abelian group structure on games allows us to simplify many proofs for pre-games.
 -/
+
+@[expose] public section
 
 -- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
 noncomputable section
@@ -166,25 +170,17 @@ namespace Game
 local infixl:50 " ⧏ " => LF
 local infixl:50 " ‖ " => Fuzzy
 
-instance addLeftMono : AddLeftMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_le_add_left _ _ _ _ b c h a⟩
+instance addLeftMono : AddLeftMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_le_add_right (α := PGame) h a
 
-instance addRightMono : AddRightMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_le_add_right _ _ _ _ b c h a⟩
+instance addRightMono : AddRightMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_le_add_left (α := PGame) h a
 
-instance addLeftStrictMono : AddLeftStrictMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_lt_add_left _ _ _ _ b c h a⟩
+instance addLeftStrictMono : AddLeftStrictMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_lt_add_right (α := PGame) h a
 
-instance addRightStrictMono : AddRightStrictMono Game :=
-  ⟨by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    exact @add_lt_add_right _ _ _ _ b c h a⟩
+instance addRightStrictMono : AddRightStrictMono Game where
+  elim := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h; exact add_lt_add_left (α := PGame) h a
 
 theorem add_lf_add_right : ∀ {b c : Game} (_ : b ⧏ c) (a), (b + a : Game) ⧏ c + a := by
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
@@ -194,8 +190,8 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply PGame.add_lf_add_left h
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid Game :=
-  { add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
+instance isOrderedAddMonoid : IsOrderedAddMonoid Game where
+  add_le_add_left := @add_le_add_left _ _ _ Game.addRightMono
 
 /-- A small family of games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :

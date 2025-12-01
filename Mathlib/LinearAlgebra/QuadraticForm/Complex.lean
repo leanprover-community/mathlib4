@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
 # Quadratic forms over the complex numbers
@@ -13,6 +15,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 a sum of squares.
 
 -/
+
+@[expose] public section
 
 
 namespace QuadraticForm

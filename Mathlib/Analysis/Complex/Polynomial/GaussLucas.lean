@@ -3,7 +3,9 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Aristotle AI
 -/
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Gauss-Lucas Theorem
@@ -12,6 +14,8 @@ In this file we prove Gauss-Lucas Theorem:
 the roots of the derivative of a nonconstant complex polynomial
 are included in the convex hull of the roots of the polynomial.
 -/
+
+@[expose] public section
 open scoped BigOperators Polynomial ComplexConjugate
 
 namespace Polynomial

@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function
@@ -98,6 +100,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 In this file, we denote `⊤ : ℕ∞` with `∞`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -821,11 +825,11 @@ theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
-      subset_closure) isClosed_closure
+    exact closure_minimal ((support_comp_subset (map_zero _) _).trans subset_closure)
+      isClosed_closure
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
-    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+    exact closure_minimal ((support_comp_subset (map_zero _) _).trans
       ((support_fderiv_subset 𝕜).trans IH)) isClosed_closure
 
 theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n f) ⊆ tsupport f :=

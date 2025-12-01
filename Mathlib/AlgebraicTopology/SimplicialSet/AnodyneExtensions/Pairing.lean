@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
 
 /-!
 # Pairings
@@ -37,6 +39,8 @@ a strong anodyne extension (TODO @joelriou), and the converse is also true
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -84,6 +88,12 @@ class IsInner [P.IsProper] : Prop where
 /-- The ancestrality relation on type (II) simplices. -/
 def AncestralRel (x y : P.II) : Prop :=
   x ≠ y ∧ x.1 < (P.p y).1
+
+variable {P} in
+lemma AncestralRel.dim_le [P.IsProper] {x y : P.II} (hxy : P.AncestralRel x y) :
+    x.1.dim ≤ y.1.dim := by
+  simpa only [(P.isUniquelyCodimOneFace y).dim_eq, Nat.lt_succ_iff] using
+    SSet.N.dim_lt_of_lt hxy.2
 
 /-- A proper pairing is regular when the ancestrality relation
 is well founded. -/

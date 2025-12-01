@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.Interval.Finset.Basic
-import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Order.Interval.Finset.Basic
+public import Mathlib.Combinatorics.Additive.FreimanHom
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
@@ -43,6 +45,8 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
+
+@[expose] public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 
@@ -451,7 +455,7 @@ lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     exact (AddMonoidHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
   refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; cutsat), ?_⟩
   · simpa using fun x ↦ natCast_strictMono hkn
-  simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_iff_val_lt_val,
+  simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_def,
     val_cast_of_lt, Nat.lt_succ_iff.2 hkn, coe_range]
   exact fun x hx ↦ ⟨x, hx, by simp⟩
 

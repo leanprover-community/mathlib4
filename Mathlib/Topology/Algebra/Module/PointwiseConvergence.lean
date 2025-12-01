@@ -3,8 +3,10 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Topology of pointwise convergence on continous linear maps
@@ -34,6 +36,8 @@ continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 -/
 
+@[expose] public section
+
 /-! ### Topology of pointwise convergence -/
 
 variable {α ι : Type*} [TopologicalSpace α]
@@ -62,9 +66,11 @@ notation:25 E " →Lₚₜ[" R "] " F => PointwiseConvergenceCLM (RingHom.id R) 
 
 namespace PointwiseConvergenceCLM
 
+instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
+  UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
+
 instance continuousEvalConst : ContinuousEvalConst (E →SLₚₜ[σ] F) E F :=
-  UniformConvergenceCLM.continuousEvalConst _ _ _
-    (sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩)
+  UniformConvergenceCLM.continuousEvalConst _ _ _ Set.sUnion_finite_eq_univ
 
 protected theorem hasBasis_nhds_zero_of_basis
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
@@ -126,15 +132,15 @@ variable (𝕜₂ σ E F) in
 @[simps!]
 def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
     [ContinuousConstSMul 𝕜₂ F] : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
-  toLinearMap := LinearMap.id
-  cont := continuous_id_of_le
-    (UniformConvergenceCLM.topologicalSpace_mono _ _ fun _ ↦ Set.Finite.isVonNBounded)
+  __ := LinearMap.id
+  cont := _root_.ContinuousLinearMap.toUniformConvergenceCLM_continuous σ F _
+    (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
 @[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
-  toLinearEquiv := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
+  __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
   continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)

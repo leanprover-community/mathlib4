@@ -3,7 +3,9 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 # Equivalence between `Group` and `AddGroup`
@@ -14,6 +16,8 @@ This file contains two equivalences:
 * `commGroupAddCommGroupEquivalence` : the equivalence between `CommGrpCat` and `AddCommGrpCat`
   by sending `X : CommGrpCat` to `Additive X` and `Y : AddCommGrpCat` to `Multiplicative Y`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

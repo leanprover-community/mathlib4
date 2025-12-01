@@ -3,12 +3,14 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.LinearAlgebra.Complex.Orientation
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.Orientation
+public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.LinearAlgebra.Complex.Orientation
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -67,16 +69,14 @@ local notation "J" => o.rightAngleRotation
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open scoped RealInnerProductSpace ComplexConjugate
 
 open Module
-
-lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
-    [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  .of_fact_finrank_eq_succ 1
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
@@ -398,8 +398,8 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     exact (SameRay.sameRay_nonneg_smul_right x ha').add_right <| by simp [hb']
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
-    simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
-      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, and_true]
+    simp only [inner_smul_right, real_inner_self_eq_norm_sq, map_smulₛₗ, areaForm_apply_self,
+      Algebra.id.smul_eq_mul, mul_zero, and_true]
     positivity
 
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its

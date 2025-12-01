@@ -3,13 +3,15 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Order.CollectFacts
-import Mathlib.Tactic.Order.Preprocessing
-import Mathlib.Tactic.Order.ToInt
-import Mathlib.Tactic.Order.Graph.Basic
-import Mathlib.Tactic.Order.Graph.Tarjan
-import Mathlib.Util.ElabWithoutMVars
+module
+
+public meta import Mathlib.Tactic.ByContra
+public meta import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Tactic.Order.Preprocessing
+public meta import Mathlib.Tactic.Order.ToInt
+public meta import Mathlib.Tactic.Order.Graph.Basic
+public meta import Mathlib.Tactic.Order.Graph.Tarjan
+public meta import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `order` tactic
@@ -141,6 +143,8 @@ One can show that this algorithm also serves as a decision procedure for the the
 For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices `x`, using `le_top`
 and `bot_le`, respectively.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 

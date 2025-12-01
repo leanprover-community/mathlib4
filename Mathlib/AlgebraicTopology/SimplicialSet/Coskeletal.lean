@@ -3,10 +3,12 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
-import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
+public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial sets
@@ -21,6 +23,8 @@ extension. In fact, we show that when `X` is `StrictSegal` then
 As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of categories are
 2-coskeletal.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -69,14 +73,14 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     arrow_src := fun i ↦ by
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
         strArrowMk₂ (⦋0⦌.const _ i.castSucc) :=
-          StructuredArrow.homMk (δ 1).op
+          StructuredArrow.homMk (SimplexCategory.δ 1).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact congr_fun (s.w φ) x
     arrow_tgt := fun i ↦ by
       dsimp
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
           strArrowMk₂ (⦋0⦌.const _ i.succ) :=
-        StructuredArrow.homMk (δ 0).op
+        StructuredArrow.homMk (SimplexCategory.δ 0).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact congr_fun (s.w φ) x }
 
@@ -127,7 +131,7 @@ lemma fac_aux₂ {n : ℕ}
       let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by cutsat⟩ ⟨i + k, by cutsat⟩ (by simp))
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
-      let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((δ 1).op) (Quiver.Hom.unop_inj
+      let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((SimplexCategory.δ 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       let β₂ : α ⟶ α₂ := StructuredArrow.homMk ((mkOfSucc 0).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
