@@ -1150,6 +1150,7 @@ theorem pi_iUnion_eq_iInter_pi {α' : Type*} (s : α' → Set α) (t : (a : α) 
   grind
 
 end Pi
+
 section Directed
 
 theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
