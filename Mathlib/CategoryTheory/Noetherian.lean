@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.ArtinianObject
-import Mathlib.CategoryTheory.Subobject.NoetherianObject
+module
+
+public import Mathlib.CategoryTheory.Subobject.ArtinianObject
+public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
 /-!
 # Artinian and Noetherian categories
@@ -15,12 +17,14 @@ have infinite decreasing sequences of subobjects.
 A Noetherian category is a category in which objects do not
 have infinite increasing sequences of subobjects.
 
-Note: In the file, `CategoryTheory.Subobject.ArtinianObject`,
+Note: In the file, `Mathlib/CategoryTheory/Subobject/ArtinianObject.lean`,
 it is shown that any nonzero Artinian object has a simple subobject.
 
 ## Future work
 The Jordan-Hölder theorem, following https://stacks.math.columbia.edu/tag/0FCK.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

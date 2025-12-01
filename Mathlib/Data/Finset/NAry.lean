@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets
@@ -15,12 +17,14 @@ This file defines `Finset.image₂`, the binary image of finsets. This is the fi
 
 ## Notes
 
-This file is very similar to `Data.Set.NAry`, `Order.Filter.NAry` and `Data.Option.NAry`. Please
-keep them in sync.
+This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Order/Filter/NAry.lean` and
+`Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 
 We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
 and `Set.image2` already fulfills this task.
 -/
+
+@[expose] public section
 
 open Function Set
 

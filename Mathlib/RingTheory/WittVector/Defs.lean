@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.StructurePolynomial
+module
+
+public import Mathlib.RingTheory.WittVector.StructurePolynomial
 
 /-!
 # Witt vectors
@@ -34,6 +36,8 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -213,8 +217,7 @@ theorem wittOne_zero_eq_one : wittOne p 0 = 1 := by
 @[simp]
 theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
-  simp only [wittOne, wittStructureRat, RingHom.map_zero, map_one,
-    map_wittStructureInt]
+  simp only [wittOne, wittStructureRat, map_zero, map_one, map_wittStructureInt]
   induction n using Nat.strong_induction_on with | h n IH => ?_
   rw [xInTermsOfW_eq]
   simp only [map_mul, map_sub, map_sum, map_pow, bind₁_X_right,
@@ -255,22 +258,22 @@ theorem wittNeg_zero : wittNeg p 0 = -X (0, 0) := by
 @[simp]
 theorem constantCoeff_wittAdd (n : ℕ) : constantCoeff (wittAdd p n) = 0 := by
   apply constantCoeff_wittStructureInt p _ _ n
-  simp only [add_zero, RingHom.map_add, constantCoeff_X]
+  simp only [add_zero, map_add, constantCoeff_X]
 
 @[simp]
 theorem constantCoeff_wittSub (n : ℕ) : constantCoeff (wittSub p n) = 0 := by
   apply constantCoeff_wittStructureInt p _ _ n
-  simp only [sub_zero, RingHom.map_sub, constantCoeff_X]
+  simp only [sub_zero, map_sub, constantCoeff_X]
 
 @[simp]
 theorem constantCoeff_wittMul (n : ℕ) : constantCoeff (wittMul p n) = 0 := by
   apply constantCoeff_wittStructureInt p _ _ n
-  simp only [mul_zero, RingHom.map_mul, constantCoeff_X]
+  simp only [mul_zero, map_mul, constantCoeff_X]
 
 @[simp]
 theorem constantCoeff_wittNeg (n : ℕ) : constantCoeff (wittNeg p n) = 0 := by
   apply constantCoeff_wittStructureInt p _ _ n
-  simp only [neg_zero, RingHom.map_neg, constantCoeff_X]
+  simp only [neg_zero, map_neg, constantCoeff_X]
 
 @[simp]
 theorem constantCoeff_wittNSMul (m : ℕ) (n : ℕ) : constantCoeff (wittNSMul p m n) = 0 := by

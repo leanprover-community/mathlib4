@@ -3,11 +3,13 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings
@@ -27,7 +29,9 @@ to `Mathlib/Algebra/Group/Even.lean`.
 `Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
-assert_not_exists DenselyOrdered OrderedRing
+@[expose] public section
+
+assert_not_exists DenselyOrdered IsOrderedRing
 
 open MulOpposite
 
@@ -43,16 +47,6 @@ variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
 lemma Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
 
 end Monoid
-
-section DivisionMonoid
-variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
-
-lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
-  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
-
-lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
-
-end DivisionMonoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
@@ -311,18 +305,15 @@ namespace Involutive
 
 variable {α : Type*} {f : α → α} {n : ℕ}
 
-section
-
-lemma iterate_bit0 (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
-  rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
-
-lemma iterate_bit1 (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
-  rw [← succ_eq_add_one, iterate_succ, hf.iterate_bit0, id_comp]
-
-end
-
 lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
+
+@[deprecated (since := "2025-10-28")] alias iterate_bit0 := iterate_two_mul
+
+lemma iterate_two_mul_add_one (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
+  rw [iterate_succ, hf.iterate_two_mul, id_comp]
+
+@[deprecated (since := "2025-10-28")] alias iterate_bit1 := iterate_two_mul_add_one
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
   obtain ⟨m, rfl⟩ := hn
@@ -361,6 +352,20 @@ lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
     (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
 
 end DistribNeg
+
+section DivisionMonoid
+variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
+
+lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
+
+lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
+
+lemma neg_one_zpow_eq_ite : (-1 : α) ^ n = if Even n then 1 else -1 := by
+  obtain ⟨n, _⟩ := n.eq_nat_or_neg
+  aesop (add safe (by rw [neg_one_pow_eq_ite]))
+
+end DivisionMonoid
 
 section CharTwo
 

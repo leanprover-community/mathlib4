@@ -3,7 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Set.Prod
+module
+
+public import Mathlib.Data.Set.Prod
 
 /-!
 # N-ary images of sets
@@ -13,9 +15,11 @@ This is mostly useful to define pointwise operations and `Set.seq`.
 
 ## Notes
 
-This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry`, and to
-`Data.Option.NAry`. Please keep them in sync.
+This file is very similar to `Mathlib/Data/Finset/NAry.lean`, `Mathlib/Order/Filter/NAry.lean`, and
+`Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
+
+@[expose] public section
 
 open Function
 

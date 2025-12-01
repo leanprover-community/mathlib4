@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
-import Mathlib.Combinatorics.SimpleGraph.Hasse
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
 # Complete Multipartite Graphs
@@ -48,6 +50,8 @@ See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGr
 for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
 `completeMultipartiteGraph`, `turanGraph`.
 -/
+
+@[expose] public section
 
 open Finset Fintype
 
@@ -251,8 +255,9 @@ def completeEquipartiteGraph.turanGraph :
 /-- `completeEquipartiteGraph r t` contains no edges when `r ≤ 1` or `t = 0`. -/
 lemma completeEquipartiteGraph_eq_bot_iff :
     completeEquipartiteGraph r t = ⊥ ↔ r ≤ 1 ∨ t = 0 := by
-  rw [← not_iff_not, not_or, ← ne_eq, ← edgeSet_nonempty, not_le, ← Nat.succ_le_iff,
-    ← Fin.nontrivial_iff_two_le, ← ne_eq, ← Nat.pos_iff_ne_zero, Fin.pos_iff_nonempty]
+  contrapose!
+  rw [← edgeSet_nonempty, ← Nat.succ_le_iff, ← Fin.nontrivial_iff_two_le, ← Nat.pos_iff_ne_zero,
+    Fin.pos_iff_nonempty]
   refine ⟨fun ⟨e, he⟩ ↦ ?_, fun ⟨⟨i₁, i₂, hv⟩, ⟨x⟩⟩ ↦ ?_⟩
   · induction e with | _ v₁ v₂
     rw [mem_edgeSet, completeEquipartiteGraph_adj] at he

@@ -3,13 +3,15 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Use
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.Tactic.NormNum.DivMod
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Use
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -83,6 +85,8 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 coxeter system, coxeter group
 
 -/
+
+@[expose] public section
 
 open Function Set List
 
@@ -448,7 +452,7 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
         rw [getElem_alternatingWord i j (2*p) k (by cutsat)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
-        simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
+        simp only [(by rwa [Nat.even_add_one] : Even (k + 1)), ↓reduceIte]
         rw [← List.take_concat_get (by simp; cutsat), alternatingWord_succ, hk]
         apply congr_arg
         rw [getElem_alternatingWord i j (2*p) k (by cutsat)]
