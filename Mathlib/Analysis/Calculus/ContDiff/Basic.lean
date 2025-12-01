@@ -1395,15 +1395,14 @@ paragraph, we reformulate some higher smoothness results in terms of `deriv`.
 
 variable {f₂ : 𝕜 → F} {s₂ : Set 𝕜}
 
-open ContinuousLinearMap (toSpanSingletonCLE)
-
 /-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
 differentiable there, and its derivative (formulated with `derivWithin`) is `C^n`. -/
 theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 (n + 1) f₂ s₂ ↔
       DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ s₂) ∧
         ContDiffOn 𝕜 n (derivWithin f₂ s₂) s₂ := by
-  have : derivWithin f₂ s₂ = toSpanSingletonCLE.symm ∘ fderivWithin 𝕜 f₂ s₂ := by
+  have : derivWithin f₂ s₂ =
+      ContinuousLinearMap.toSpanSingletonCLE.symm ∘ fderivWithin 𝕜 f₂ s₂ := by
     ext; simp [← fderivWithin_derivWithin]
   simp [contDiffOn_succ_iff_fderivWithin hs, this, ContinuousLinearEquiv.comp_contDiffOn_iff]
 
