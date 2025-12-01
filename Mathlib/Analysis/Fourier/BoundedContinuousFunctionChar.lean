@@ -92,8 +92,8 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
   _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
     congr
-    · rw [neg_smul, ← LinearMap.map_smul (L v')]
-    · rw [← LinearMap.map_smul (L v)]
+    · rw [neg_smul, ← map_smul (L v')]
+    · rw [← map_smul (L v)]
   _ = e ((a / (L (v - v') w)) • (L (v - v') w)) := by
     simp only [map_sub, LinearMap.sub_apply]
     congr

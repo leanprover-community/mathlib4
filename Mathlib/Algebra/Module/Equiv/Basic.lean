@@ -125,8 +125,8 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
   smul := (· <| ·)
-  smul_zero := LinearEquiv.map_zero
-  smul_add := LinearEquiv.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -541,7 +541,7 @@ See `LinearEquiv.conj` for the linear version of this isomorphism. -/
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
 
-/-- A linear isomorphism between the domains an codomains of two spaces of linear maps gives a
+/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism with respect to an action on the domains. -/
 @[simps] def domMulActCongrRight [Semiring S] [Module S M₁]
     [SMulCommClass R₁ S M₁] [RingHomCompTriple σ₁₂' σ₂'₁' σ₁₁']
