@@ -6,12 +6,12 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Noetherian.Basic
+
 
 /-!
 
@@ -31,10 +31,7 @@ universe w
 
 variable [UnivLE.{v, w}]
 
-private instance [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
-
-instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
+instance ModuleCat.finite_ext [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{w} N M i) := by
   induction i generalizing N
   · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
@@ -56,9 +53,9 @@ instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     { exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
       mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
       epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-    let _ : Module.Finite R S.X₂ := by
+    let _ : Module.Finite R S.X₂ := by --
       simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm --
     let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
     have : Subsingleton (Ext S.X₂ M (n + 1)) :=
       subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
@@ -68,5 +65,5 @@ instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
       (AddCommGrpCat.epi_iff_surjective _).mp epi
     let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) :=
     { __ := S_exact.extClass.precomp M (add_comm 1 n)
-      map_smul' r x := by simp }
+      map_smul' r x := by simp } -- check if we can use the linear version at the beginning
     exact Module.Finite.of_surjective f surj
