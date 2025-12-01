@@ -21,7 +21,7 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 * `SymmetricAlgebra.ι R`: the canonical R-linear map `M →ₗ[R] SymmetricAlgebra R M`.
 * Given a morphism `ι : M →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the algebra
   homomorphism from `SymmetricAlgebra R M` to `A` lifted from `ι` is bijective.
-* Given a linear map `f : M →ₗ[R] A'` to an commutative R-algebra `A'`, and a morphism
+* Given a linear map `f : M →ₗ[R] A'` to a commutative R-algebra `A'`, and a morphism
   `ι : M →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
   is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
 

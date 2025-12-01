@@ -220,7 +220,7 @@ private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
   exact .biUnion hS fun s hs => isSemilinearSet_preimage_of_isLinearSet (hS' s hs) f
 
-/-- The preimage of a semilinear set under an homomorphism in a finitely generated monoid is
+/-- The preimage of a semilinear set under a homomorphism in a finitely generated monoid is
 semilinear. -/
 public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] {s : Set N} (hs : IsSemilinearSet s) (f : F) :

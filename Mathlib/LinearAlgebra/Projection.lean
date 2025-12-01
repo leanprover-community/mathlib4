@@ -707,7 +707,7 @@ lemma commute_iff (hf : IsIdempotentElem f) :
   simp_rw [hf.range_mem_invtSubmodule_iff, hf.ker_mem_invtSubmodule_iff, ← Module.End.mul_eq_comp]
   exact ⟨fun h => (by simp [← h.eq, ← mul_assoc, hf.eq]), fun ⟨h1, h2⟩ => h2.symm.trans h1⟩
 
-/-- An idempotent operator `f` commutes with an unit operator `T` if and only if
+/-- An idempotent operator `f` commutes with a unit operator `T` if and only if
 `T (range f) = range f` and `T (ker f) = ker f`. -/
 theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
     Commute f T ↔ (range f).map T = range f ∧ (ker f).map T = ker f := by

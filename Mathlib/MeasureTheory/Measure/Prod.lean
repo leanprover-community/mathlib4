@@ -12,8 +12,8 @@ public import Mathlib.MeasureTheory.Measure.OpenPos
 # The product measure
 
 In this file we define and prove properties about the binary product measure. If `α` and `β` have
-s-finite measures `μ` resp. `ν` then `α × β` can be equipped with a s-finite measure `μ.prod ν` that
-satisfies `(μ.prod ν) s = ∫⁻ x, ν {y | (x, y) ∈ s} ∂μ`.
+s-finite measures `μ` resp. `ν` then `α × β` can be equipped with an s-finite measure `μ.prod ν`
+that satisfies `(μ.prod ν) s = ∫⁻ x, ν {y | (x, y) ∈ s} ∂μ`.
 We also have `(μ.prod ν) (s ×ˢ t) = μ s * ν t`, i.e. the measure of a rectangle is the product of
 the measures of the sides.
 

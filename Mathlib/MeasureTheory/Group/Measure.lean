@@ -513,7 +513,7 @@ instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerReg
 
 /-- The image of an inner regular measure under map of a left action is again inner regular. -/
 @[to_additive
-/-- The image of a inner regular measure under map of a left additive action is again
+/-- The image of an inner regular measure under map of a left additive action is again
 inner regular -/]
 instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousConstSMul α G]
     [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
