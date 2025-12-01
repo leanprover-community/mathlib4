@@ -889,6 +889,42 @@ lemma exists_mul_add_mul_eq_C_resultant
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
+lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
+    IsUnit (resultant f g) ↔ IsCoprime f g := by
+  by_cases hf0 : f.natDegree = 0
+  · obtain rfl := eq_one_of_monic_natDegree_zero hf hf0; simp [isCoprime_one_left]
+  refine ⟨fun H ↦ ?_, ?_⟩
+  · obtain ⟨p, q, hp, hq, e⟩ := exists_mul_add_mul_eq_C_resultant f g le_rfl le_rfl (by simp [hf0])
+    exact ⟨C (H.unit⁻¹).1 * p, C (H.unit⁻¹).1 * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
+      mul_comm q, e, ← map_mul, IsUnit.val_inv_mul, map_one]⟩
+  · intro ⟨a, b, e⟩
+    suffices 1 = f.resultant b * f.resultant g from isUnit_iff_exists_inv'.mpr ⟨_, this.symm⟩
+    have := resultant_mul_right f b g _ le_rfl
+    obtain rfl | hb0 := eq_or_ne a 0
+    · rw [show b * g = 1 by simpa using e, resultant_one_right] at this
+      simpa [hf.leadingCoeff] using this
+    · rw [← resultant_add_mul_right _ _ a _ _ _ le_rfl, add_comm, mul_comm, e, ← C.map_one] at this
+      · simpa [hf.leadingCoeff] using this
+      · by_contra! H
+        replace H := natDegree_mul_le.trans_lt H
+        rw [add_comm, ← hf.natDegree_mul' hb0, mul_comm f] at H
+        have := natDegree_add_eq_left_of_natDegree_lt H
+        simp only [e, natDegree_one] at this
+        cutsat
+
+lemma resultant_eq_zero_iff {K : Type*} [Field K] {f g : K[X]} :
+    resultant f g = 0 ↔ (f ≠ 0 ∨ g ≠ 0) ∧ ¬ IsCoprime f g := by
+  obtain rfl | hf := eq_or_ne f 0
+  · obtain rfl | hg := eq_or_ne g 0; · simp
+    simpa [isCoprime_zero_left, isUnit_iff, hg, natDegree_eq_zero] using
+      show (∀ x, C x ≠ g) ↔ ∀ x ≠ 0, C x ≠ g by aesop
+  have H : (C f.leadingCoeff⁻¹ * f).Monic := by
+    rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simpa), coeff_C_mul]; simp [hf]
+  have := isUnit_resultant_iff_isCoprime (f := C f.leadingCoeff⁻¹ * f) (g := g) H
+  rw [resultant_C_mul_left, IsUnit.mul_iff, natDegree_C_mul (by simp [hf]),
+    isCoprime_mul_unit_left_left (isUnit_C.mpr (by simp [hf]))] at this
+  simp [← this, hf]
+
 end sylvesterMap
 
 section disc
