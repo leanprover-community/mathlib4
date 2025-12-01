@@ -120,11 +120,9 @@ lemma indepFun {X : S → Ω → E} {Y : T → Ω → E} (hXY : IsGaussianProces
     exact (hXY.hasGaussianLaw _).map L
   classical
   have h1 : L₁ ∘ (fun ω i ↦ X i ω) = ∑ i : I, (L₁ ∘L .single ℝ _ i) ∘ X i := by
-    ext ω
-    simp only [Function.comp_apply, ← L₁.sum_comp_single, univ_eq_attach, sum_apply]
+    ext; simp [-ContinuousLinearMap.coe_comp', ← L₁.sum_comp_single]
   have h2 : L₂ ∘ (fun ω j ↦ Y j ω) = ∑ j : J, (L₂ ∘L .single ℝ _ j) ∘ Y j := by
-    ext ω
-    simp only [Function.comp_apply, ← L₂.sum_comp_single, univ_eq_attach, sum_apply]
+    ext; simp [-ContinuousLinearMap.coe_comp', ← L₂.sum_comp_single]
   rw [h1, h2, covariance_sum_sum]
   · exact sum_eq_zero fun i _ ↦ sum_eq_zero fun j _ ↦ h ..
   · exact fun s ↦ ((hXY.hasGaussianLaw_eval (.inl s)).map _).memLp_two
@@ -148,11 +146,9 @@ lemma iIndepFun {S : T → Type*} {X : (t : T) → (s : S t) → Ω → E}
     exact (hX.hasGaussianLaw _).map L
   classical
   have h1 : L₁ ∘ (fun ω k ↦ X i k ω) = ∑ k : J i, (L₁ ∘L .single ℝ _ k) ∘ X i k := by
-    ext ω
-    simp only [Function.comp_apply, ← L₁.sum_comp_single, univ_eq_attach, sum_apply]
+    ext; simp [-ContinuousLinearMap.coe_comp', ← L₁.sum_comp_single]
   have h2 : L₂ ∘ (fun ω k ↦ X j k ω) = ∑ k : J j, (L₂ ∘L .single ℝ _ k) ∘ X j k := by
-    ext ω
-    simp only [Function.comp_apply, ← L₂.sum_comp_single, univ_eq_attach, sum_apply]
+    ext; simp [-ContinuousLinearMap.coe_comp', ← L₂.sum_comp_single]
   rw [h1, h2, covariance_sum_sum]
   · exact sum_eq_zero fun _ _ ↦ sum_eq_zero fun _ _ ↦ h i j (by simpa) ..
   · exact fun k ↦ ((hX.hasGaussianLaw_eval ⟨i, k⟩).map _).memLp_two
@@ -198,6 +194,8 @@ lemma iIndepFun'' {S : T → Type*}
     simp [mul_comm, covariance_const_mul_left, covariance_const_mul_right, h' _ _ h'']
 
 end Independence
+
+variable [SecondCountableTopology E]
 
 /-- If a stochastic process `Y` is such that for `s`, `Y s` can be written as a linear
 combination of finitely many values of a Gaussian process, then `Y` is a Gaussian process. -/
