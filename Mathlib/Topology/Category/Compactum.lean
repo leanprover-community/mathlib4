@@ -22,7 +22,8 @@ Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the 
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
 
-See the file `CategoryTheory.Monad.Algebra` for a general version, as well as the following link.
+See the file `Mathlib/CategoryTheory/Monad/Algebra.lean` for a general version, as well as the
+following link.
 https://ncatlab.org/nlab/show/monad
 
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
