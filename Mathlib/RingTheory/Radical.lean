@@ -39,7 +39,7 @@ This is different from the radical of an ideal.
 
 ### For Euclidean domains
 
-- `EuclideanDomain.divRadical`: For an element `a` in an Euclidean domain, `a / radical a`.
+- `EuclideanDomain.divRadical`: For an element `a` in a Euclidean domain, `a / radical a`.
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
@@ -405,7 +405,7 @@ namespace EuclideanDomain
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]
   {a b u x : E}
 
-/-- Division of an element by its radical in an Euclidean domain. -/
+/-- Division of an element by its radical in a Euclidean domain. -/
 def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical : radical a * divRadical a = a := by

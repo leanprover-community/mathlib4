@@ -392,7 +392,7 @@ variable (A) {P} in
 theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
   fun h ↦ hP <| eq_bot_of_comap_eq_bot h
 
-/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
+/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is an integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
