@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
-import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 
 /-!
 # The bicategory of pseudofunctors between two bicategories
@@ -16,6 +17,7 @@ Given bicategories `B` and `C`, we give a bicategory structure on `Pseudofunctor
 * 2-morphisms are modifications.
 -/
 
+@[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
 
