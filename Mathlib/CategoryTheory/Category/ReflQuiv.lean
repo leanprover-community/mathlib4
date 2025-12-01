@@ -399,10 +399,10 @@ def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       homEquiv_naturality_right _ _ := adj.homEquiv_naturality_right _ _ }
 
 @[simp]
-lemma adj_counit_app (V) [ReflQuiver V] :
+lemma adj_unit_app (V) [ReflQuiver V] :
     adj.unit.app (ReflQuiv.of V) = Cat.toFreeRefl V := rfl
 
-lemma adj_unit_app (D : Type*) [Category D] :
+lemma adj_counit_app (D : Type*) [Category D] :
     adj.counit.app (Cat.of D) = Cat.FreeRefl.lift (𝟭rq D) := rfl
 
 variable {V : Type*} [ReflQuiver V]
@@ -412,6 +412,18 @@ lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v + 1} V] (C : Type u) [Categ
     (adj).homEquiv (.of V) (.of C) = adj.homEquiv := by
   ext F
   apply Adjunction.homEquiv_unit
+
+lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v + 1} V] :
+    (adj.unit.app (.of V)).toPrefunctor = Quiv.adj.unit.app (.of V) ⋙q
+      (Cat.FreeRefl.quotientFunctor V).toPrefunctor := rfl
+
+lemma adj.counit.comp_app_eq (C : Type u) [Category C] :
+    Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app (.of C) =
+      pathComposition _ :=
+  Paths.ext_functor rfl (fun _ _ f ↦ by
+    dsimp
+    simp only [adj_counit_app, composePath_toPath, comp_id, id_comp]
+    apply Cat.FreeRefl.lift_map)
 
 end ReflQuiv
 
