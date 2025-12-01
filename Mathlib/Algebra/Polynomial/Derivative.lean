@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Domain
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # The derivative map on polynomials
@@ -16,6 +18,8 @@ import Mathlib.GroupTheory.GroupAction.Ring
 * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,11 +47,10 @@ def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
-      simp only [add_mul, forall_const, RingHom.map_add, zero_mul, RingHom.map_zero]
+      simp only [add_mul, forall_const, map_add, zero_mul, map_zero]
   map_smul' a p := by
     dsimp; rw [sum_smul_index] <;>
-      simp only [mul_sum, ← C_mul', mul_assoc, RingHom.map_mul, forall_const, zero_mul,
-        RingHom.map_zero, sum]
+      simp only [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
 
 theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
   rfl
@@ -518,7 +521,7 @@ theorem derivative_comp (p q : R[X]) :
   induction p using Polynomial.induction_on'
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
-      zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]
+      zero_mul, C_eq_natCast, zero_add, map_mul]
     ring
 
 /-- Chain rule for formal derivative of polynomials. -/
@@ -555,14 +558,14 @@ variable [Ring R]
 
 @[simp]
 theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
-  LinearMap.map_neg derivative f
+  map_neg derivative f
 
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
   iterate_map_neg derivative k f
 
 @[simp]
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
-  LinearMap.map_sub derivative f g
+  map_sub derivative f g
 
 theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]

@@ -3,15 +3,19 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
-import Qq
+module
+
+public meta import Mathlib.Order.BoundedOrder.Basic
+public meta import Mathlib.Order.Lattice
+public meta import Qq
 
 /-!
 # Facts collection for the `order` Tactic
 
 This file implements the collection of facts for the `order` tactic.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 

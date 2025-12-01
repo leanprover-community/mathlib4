@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 
@@ -35,6 +37,8 @@ In this file we provide various results regarding idempotent elements in rings.
   If `R` is commutative, then a family `{ eᵢ }` of complete orthogonal idempotent elements induces
   a ring isomorphism `R ≃ ∏ R ⧸ ⟨1 - eᵢ⟩`.
 -/
+
+@[expose] public section
 
 section Semiring
 
@@ -424,7 +428,8 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   refine ⟨?_, he.1.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  simp [funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
+  simp only [funext_iff, Pi.ringHom_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
+    Ideal.mem_span_singleton] at hx
   suffices ∀ s : Finset I, (∏ i ∈ s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_

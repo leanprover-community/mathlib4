@@ -3,8 +3,10 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Topology of pointwise convergence on continous linear maps
@@ -33,6 +35,8 @@ continuous if for every `x : E` the evaluation `g · x` is continuous.
 * `E →SLₚₜ[σ] F` is space of continuous linear maps equipped with pointwise convergence topology.
 
 -/
+
+@[expose] public section
 
 /-! ### Topology of pointwise convergence -/
 

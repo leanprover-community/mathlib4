@@ -3,9 +3,11 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.PointwiseConvergence
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.LocallyConvex.StrongTopology
+module
+
+public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # The topology of pointwise convergence is locally convex
@@ -20,8 +22,10 @@ that it is locally convex in the topological sense
 
 -/
 
+@[expose] public section
+
 variable {α R 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
-  {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₃ →+* 𝕜₂} {D E F F' : Type*}
+  {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₃ →+* 𝕜₂} {D E F G : Type*}
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
 
 namespace PointwiseConvergenceCLM
@@ -83,17 +87,17 @@ end Tendsto
 section ContinuousLinearMap
 
 variable [AddCommGroup D] [TopologicalSpace D] [Module 𝕜₃ D]
-  [NormedAddCommGroup F] [NormedSpace 𝕜₂ F] [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F']
+  [NormedAddCommGroup F] [NormedSpace 𝕜₂ F] [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
 
 open NNReal ContinuousLinearMap
 
-variable (F F') in
-/-- Define a continuous linear map between `E →SLₚₜ[σ] F` and `D →SLₚₜ[τ] F'`.
+variable (F G) in
+/-- Define a continuous linear map between `E →SLₚₜ[σ] F` and `D →SLₚₜ[τ] G`.
 Use `ContinuousLinearMap.postcomp_uniformConvergenceCLM` for the special case of the adjoint
 operator. -/
-def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] F') (hbound : ∀ (f : D), ∃ (s : Finset E) (C : ℝ≥0),
+def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f : D), ∃ (s : Finset E) (C : ℝ≥0),
   ∀ (B : E →SL[σ] F), ∃ (g : E) (_hb : g ∈ s), ‖(A B) f‖ ≤ C • ‖B g‖) :
-    (E →SLₚₜ[σ] F) →L[𝕜₂] D →SLₚₜ[τ] F' where
+    (E →SLₚₜ[σ] F) →L[𝕜₂] D →SLₚₜ[τ] G where
   __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
     (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
   cont := by

@@ -3,14 +3,16 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Tactic.ArithMult
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Tactic.ArithMult
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -64,6 +66,8 @@ The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom nota
 arithmetic functions, dirichlet convolution, divisors
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -1210,7 +1214,7 @@ open UniqueFactorizationMonoid
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   ext n
   induction n using recOnPosPrimePosCoprime with
-  | zero => rw [ZeroHom.map_zero, ZeroHom.map_zero]
+  | zero => rw [map_zero, map_zero]
   | one => simp
   | prime_pow p n hp hn =>
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
@@ -1422,6 +1426,67 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
 
 end SpecialFunctions
 
+section Sum
+
+theorem sum_Ioc_zeta (N : ℕ) : ∑ n ∈ Ioc 0 N, zeta n = N := by
+  simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
+  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
+  simp
+
+variable {R : Type*} [Semiring R]
+
+theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * g) n = ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
+  simp only [mul_apply]
+  trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
+  · refine sum_congr rfl fun n hn ↦ ?_
+    simp only [mem_Ioc] at hn
+    have hn0 : n ≠ 0 := by exact ne_zero_of_lt hn.1
+    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 hn.2]
+  · simp_rw [sum_filter]
+    rw [sum_comm]
+    exact sum_congr rfl fun _ _ ↦ (by simp_all)
+
+-- TODO: fix two non-terminal simp
+set_option linter.flexible false in
+theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
+  rw [sum_Ioc_mul_eq_sum_prod_filter, sum_filter, sum_product]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp only [sum_ite, not_le, sum_const_zero, add_zero, mul_sum]
+  congr
+  ext
+  simp only [mem_filter, mem_Ioc, and_assoc, and_congr_right_iff]
+  intro _
+  have hn0 : n ≠ 0 := by
+    simp [mem_Ioc] at hn
+    exact ne_zero_of_lt hn.1
+  constructor
+  · intro ⟨_, h⟩
+    grw [← h, Nat.mul_div_cancel_left _ (by omega)]
+  · intro hm
+    grw [hm]
+    simp [mul_div_le, div_le_self]
+
+theorem sum_Ioc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * zeta) n = ∑ n ∈ Ioc 0 N, f n * ↑(N / n) := by
+  rw [sum_Ioc_mul_eq_sum_sum]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp_rw [natCoe_apply]
+  rw_mod_cast [sum_Ioc_zeta]
+
+--TODO: Dirichlet hyperbola method to get sums of length `sqrt N`
+/-- An `O(N)` formula for the sum of the number of divisors function. -/
+theorem sum_Ioc_sigma0_eq_sum_div (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, sigma 0 n = ∑ n ∈ Ioc 0 N, (N / n) := by
+  rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
+  convert sum_Ioc_mul_zeta_eq_sum zeta N using 1
+  simp only [zeta_apply, cast_id, ite_mul, zero_mul, one_mul]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp
+  tauto
+
+end Sum
 end ArithmeticFunction
 
 namespace Nat.Coprime
@@ -1443,7 +1508,7 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n
@@ -1455,7 +1520,7 @@ def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
     let rn ← core z p n
@@ -1466,3 +1531,4 @@ def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   | _, _, _ => throwError "not ArithmeticFunction.zeta"
 
 end Mathlib.Meta.Positivity
+set_option linter.style.longFile 1700

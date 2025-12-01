@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The canonical topology on a category
@@ -31,6 +33,8 @@ equivalently it is subcanonical iff every representable presheaf is a sheaf.
 * https://stacks.math.columbia.edu/tag/00Z9
 * https://math.stackexchange.com/a/358709/
 -/
+
+@[expose] public section
 
 
 universe w v u

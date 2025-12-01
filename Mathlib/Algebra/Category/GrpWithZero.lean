@@ -3,15 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.CategoryTheory.Category.Bipointed
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.CategoryTheory.Category.Bipointed
 
 /-!
 # The category of groups with zero
 
 This file defines `GrpWithZero`, the category of groups with zero.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

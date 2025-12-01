@@ -3,8 +3,10 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.Layercake
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # The integral of the real power of a nonnegative function
@@ -28,6 +30,8 @@ A variant of the formula with measures of sets of the form `{ω | f(ω) > t}` in
 
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
+
+@[expose] public section
 
 open Set
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Binomial coefficients
@@ -36,6 +38,8 @@ see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 binomial coefficient, combination, multicombination, stars and bars
 -/
+
+@[expose] public section
 
 namespace Nat
 

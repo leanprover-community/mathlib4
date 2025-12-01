@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Complex.Asymptotics
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.Complex.Asymptotics
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
 # Complex and real exponential
@@ -18,6 +20,8 @@ limits of `Real.exp` at infinity.
 
 exp
 -/
+
+@[expose] public section
 
 noncomputable section
 

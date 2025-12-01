@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.Topology.Algebra.Module.WeakBilin
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Polar set
@@ -33,6 +35,8 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 polar
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*}
 

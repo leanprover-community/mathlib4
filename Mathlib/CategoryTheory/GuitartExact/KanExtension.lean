@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
 /-!
 # Guitart exact squares and Kan extensions
@@ -33,6 +35,8 @@ induced by a Guitart exact square `w` is an isomorphism.
 * https://ncatlab.org/nlab/show/exact+square
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 

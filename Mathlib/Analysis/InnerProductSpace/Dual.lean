@@ -3,9 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Analysis.Normed.Group.NullSubmodule
-import Mathlib.Topology.Algebra.Module.PerfectPairing
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Analysis.Normed.Group.NullSubmodule
+public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -33,6 +35,8 @@ given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 
 dual, Fréchet-Riesz
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -151,8 +155,8 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
-          rw [LinearMap.mem_ker, map_sub, ContinuousLinearMap.map_smul,
-            ContinuousLinearMap.map_smul, Algebra.id.smul_eq_mul, Algebra.id.smul_eq_mul, mul_comm]
+          rw [LinearMap.mem_ker, map_sub, map_smul, map_smul, Algebra.id.smul_eq_mul,
+            Algebra.id.smul_eq_mul, mul_comm]
           exact sub_self (ℓ x * ℓ z)
         have h₂ : ℓ z * ⟪z, x⟫ = ℓ x * ⟪z, z⟫ :=
           haveI h₃ :=

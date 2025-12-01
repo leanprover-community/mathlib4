@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.CategoryTheory.LiftingProperties.Over
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.LiftingProperties.Over
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 
 /-!
 # The model category structure on Over categories
@@ -24,6 +26,8 @@ of the axioms is straightforward.)
 * Proceed to the dual construction for `Under S`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

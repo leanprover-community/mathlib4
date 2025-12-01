@@ -3,9 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Meromorphic.Order
-import Mathlib.Topology.LocallyFinsupp
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Meromorphic.Order
+public import Mathlib.Topology.LocallyFinsupp
 
 /-!
 # The Divisor of a meromorphic function
@@ -14,6 +16,8 @@ This file defines the divisor of a meromorphic function and proves the most basi
 divisors. The lemma `MeromorphicOn.divisor_restrict` guarantees compatibility between restrictions
 of divisors and of meromorphic functions to subsets of their domain of definition.
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -88,7 +92,7 @@ theorem divisor_congr_codiscreteWithin_of_eqOn_compl {f₁ f₂ : 𝕜 → E} (h
 
 /--
 If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
-then `f₁` and `f₂` induce the same divisors on`U`.
+then `f₁` and `f₂` induce the same divisors on `U`.
 -/
 theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :

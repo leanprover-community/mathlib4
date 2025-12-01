@@ -3,13 +3,17 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Init
-import Lean.Elab.DeclarationRange
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.DeclarationRange
 
 /-!
 # `addRelatedDecl`
 
 -/
+
+public meta section
 
 open Lean Meta Elab
 
@@ -48,7 +52,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
-  let info ← getConstInfo src
+  let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)
   let (newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue

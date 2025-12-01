@@ -3,7 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Meromorphic functions
@@ -15,6 +17,8 @@ Main statements:
   `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
   and `g` analytic at `z₀`.
 -/
+
+@[expose] public section
 
 open Filter
 

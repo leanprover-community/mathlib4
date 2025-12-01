@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Abelian categories with enough projectives have projective resolutions
@@ -26,6 +28,8 @@ When the underlying category is abelian:
 * `CategoryTheory.ProjectiveResolution.of`: Hence, starting from an epimorphism `P ⟶ X`, where `P`
   is projective, we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

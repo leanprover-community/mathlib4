@@ -3,9 +3,11 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.RingTheory.Bialgebra.Equiv
-import Mathlib.RingTheory.Coalgebra.TensorProduct
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.Equiv
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Tensor products of bialgebras
@@ -15,6 +17,8 @@ instance on a tensor product of bialgebras, and the tensor product of two `Bialg
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 

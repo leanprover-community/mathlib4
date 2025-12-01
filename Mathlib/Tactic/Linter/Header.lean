@@ -3,9 +3,11 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
-import Lean.Elab.Command
-import Lean.Elab.ParseImportsFast
-import Mathlib.Tactic.Linter.DirectoryDependency
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
+public meta import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -47,6 +49,8 @@ This makes it possible for the linter to check the entire header of the file, em
 could arise from this part and also flag that the file should contain a module doc-string after
 the `import` statements.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 

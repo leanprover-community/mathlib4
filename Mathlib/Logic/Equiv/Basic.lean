@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Logic.Equiv.Sum
-import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Lift
+module
+
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Logic.Equiv.Sum
+public import Mathlib.Logic.Function.Conjugate
+public import Mathlib.Tactic.Lift
 
 /-!
 # Equivalence between types
@@ -22,6 +24,8 @@ E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic t
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 universe u v w z
 
@@ -706,6 +710,18 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   grind
 
+lemma image_swap_of_mem_of_notMem {α : Type*} [DecidableEq α] {s : Set α} {i j : α}
+    (hi : i ∈ s) (hj : j ∉ s) : s.image (swap i j) = insert j s \ {i} :=
+  Set.ext fun a ↦ by
+    constructor
+    · rintro ⟨a, ha, rfl⟩
+      obtain rfl | ne := eq_or_ne a i
+      · rw [swap_apply_left]; exact ⟨.inl rfl, (ne_of_mem_of_not_mem hi hj).symm⟩
+      · rw [swap_apply_of_ne_of_ne ne (ne_of_mem_of_not_mem ha hj)]; exact ⟨.inr ha, ne⟩
+    · rintro ⟨rfl | has, hai⟩
+      · exact ⟨i, hi, swap_apply_left ..⟩
+      · exact ⟨a, has, swap_apply_of_ne_of_ne hai (ne_of_mem_of_not_mem has hj)⟩
+
 namespace Perm
 
 @[simp]
@@ -760,12 +776,7 @@ theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.d
 theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α → β}
     (hf : Function.Injective f) (x y z : α) :
     f (Equiv.swap x y z) = Equiv.swap (f x) (f y) (f z) := by
-  conv_rhs => rw [Equiv.swap_apply_def]
-  split_ifs with h₁ h₂
-  · -- We can't yet use `grind` here because of https://github.com/leanprover/lean4/issues/11088
-    rw [hf h₁, Equiv.swap_apply_left]
-  · rw [hf h₂, Equiv.swap_apply_right]
-  · grind
+  grind
 
 namespace Equiv
 
@@ -911,6 +922,45 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
   simp [piCongr', piCongr_apply_apply]
 
 end
+
+variable {α : Type*} {β : Type*} {f : α → β}
+
+/-- A family of equivalences `∀ a, γ₁ a ≃ γ₂ a` generates an equivalence between the product
+over the fibers of a function `f : α → β` on index types. -/
+def piCongrSigmaFiber {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a) :
+    ((σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) ≃ ((a : α) → γ₂ a) :=
+  piCongrLeft γ₁ (sigmaFiberEquiv f) |>.trans (piCongrRight e)
+
+@[simp]
+theorem piCongrSigmaFiber_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
+    (g : (σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) (a : α) :
+    piCongrSigmaFiber e g a = e a (g ⟨f a, ⟨a, rfl⟩⟩) := rfl
+
+@[simp]
+theorem piCongrSigmaFiber_symm_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
+    (g : (a : α) → γ₂ a) (σ : (y : β) × { x : α // f x = y }) :
+    (piCongrSigmaFiber e).symm g σ = (e σ.2.1).symm (g σ.2.1) := rfl
+
+/-- Let `f : α → β` be a function on index types. A family of equivalences, indexed by `b : β`,
+between the product over the fiber of `b` under `f` given as
+`∀ (σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b` lifts to an equivalence over the products
+`∀ a, γ₁ a ≃ ∀ b, γ₂ b`. -/
+def piCongrFiberwise {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) :
+    ((a : α) → γ₁ a) ≃ ((b : β) → γ₂ b) :=
+  ((piCongrSigmaFiber (fun _ => Equiv.refl _)).symm.trans
+    (piCurry fun b (x : { x : α // f x = b }) => γ₁ x.1)).trans
+      (piCongrRight e)
+
+@[simp]
+theorem piCongrFiberwise_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (a : α) → γ₁ a) (b : β) :
+    piCongrFiberwise e g b = e b fun σ => g σ.1 := rfl
+
+@[simp]
+theorem piCongrFiberwise_symm_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (b : β) → γ₂ b) (a : α) :
+    (piCongrFiberwise e).symm g a = (e (f a)).symm (g (f a)) ⟨a, rfl⟩ := rfl
 
 /-- Transport dependent functions through an equality of sets. -/
 @[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :

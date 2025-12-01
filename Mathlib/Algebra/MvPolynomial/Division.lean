@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Division
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Division of `MvPolynomial` by monomials
@@ -26,6 +28,8 @@ Where possible, the results in this file should be first proved in the generalit
 `AddMonoidAlgebra`, and then the versions specialized to `MvPolynomial` proved in terms of these.
 
 -/
+
+@[expose] public section
 
 
 variable {σ R : Type*} [CommSemiring R]

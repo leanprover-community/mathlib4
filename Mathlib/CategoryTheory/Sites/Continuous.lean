@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 
 /-!
 # Continuous functors between sites.
@@ -37,6 +39,8 @@ category).
 * https://stacks.math.columbia.edu/tag/00WU
 
 -/
+
+@[expose] public section
 
 universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
 
@@ -152,6 +156,14 @@ lemma isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
     Functor.IsContinuous.{t} F₁₂ J L := by
   have := Functor.isContinuous_comp F₁ F₂ J K L
   apply Functor.isContinuous_of_iso e
+
+instance [Functor.IsContinuous.{t} F J K] :
+    Functor.IsContinuous.{t} (F ⋙ 𝟭 D) J K := by
+  assumption
+
+instance [Functor.IsContinuous.{t} F J K] :
+    Functor.IsContinuous.{t} (𝟭 C ⋙ F) J K := by
+  assumption
 
 section
 

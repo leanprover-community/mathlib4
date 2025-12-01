@@ -3,15 +3,16 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
+module
 
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.ChineseRemainder
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Nat.Pairing
-import Mathlib.Order.Fin.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.ChineseRemainder
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Nat.Pairing
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Gödel's Beta Function Lemma
@@ -43,6 +44,8 @@ and other key results from the repository https://github.com/iehality/lean4-logi
 
 Gödel, beta function
 -/
+
+@[expose] public section
 
 namespace Nat
 

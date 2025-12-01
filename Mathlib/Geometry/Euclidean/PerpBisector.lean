@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Joseph Myers
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Perpendicular bisector of a segment
@@ -18,6 +20,8 @@ define this subspace.
 
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
+
+@[expose] public section
 
 open Set
 open scoped RealInnerProductSpace

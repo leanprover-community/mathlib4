@@ -3,15 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Homology.Linear
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Tactic.Abel
 
 /-!
 # Chain homotopies
 
 We define chain homotopies, and prove that homotopic chain maps induce the same map on homology.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -156,8 +160,7 @@ def symm {f g : C ⟶ D} (h : Homotopy f g) : Homotopy g f where
   hom := -h.hom
   zero i j w := by rw [Pi.neg_apply, Pi.neg_apply, h.zero i j w, neg_zero]
   comm i := by
-    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel,
-      zero_add]
+    rw [map_neg, map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel, zero_add]
 
 /-- homotopy is a transitive relation. -/
 @[simps!, trans]
@@ -801,9 +804,10 @@ noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
       rw [congr_arg (fun j => ho.hom (c.next i) j ≫ L.d j (c.next i)) (c.prev_eq' h)]
     · abel
 
+omit [DecidableRel c.Rel]
 lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.HasHomology i] :
     homologyMap f i = homologyMap g i :=
-  ShortComplex.Homotopy.homologyMap_congr (ho.toShortComplex i)
+  open scoped Classical in ShortComplex.Homotopy.homologyMap_congr (ho.toShortComplex i)
 
 /-- The isomorphism in homology induced by an homotopy equivalence. -/
 noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)

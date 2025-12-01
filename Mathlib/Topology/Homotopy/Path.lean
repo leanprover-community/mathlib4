@@ -3,9 +3,11 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Analysis.Convex.Basic
+module
+
+public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Analysis.Convex.Basic
 
 /-!
 # Homotopy between paths
@@ -28,6 +30,8 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 * `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -283,14 +287,12 @@ instance : Inhabited (Homotopic.Quotient () ()) :=
 
 namespace Quotient
 
-/--
-The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`.
-
-We prefer this as the normal form, rather than generic `_root_.Quotient.mk'`,
-to have better control of simp lemmas.
--/
+/-- The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`. -/
 def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
-  _root_.Quotient.mk' p
+  Quotient.mk' p
+
+theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
+  Quotient.mk'_surjective
 
 /-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
 @[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
@@ -370,7 +372,7 @@ def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quot
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
 @[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp := Quotient.trans
+noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
 
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
@@ -388,7 +390,7 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
 @[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.mapFn := Quotient.map
+noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
 
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl

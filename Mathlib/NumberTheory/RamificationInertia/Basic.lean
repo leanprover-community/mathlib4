@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Finiteness.Quotient
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ramification index and inertia degree
@@ -39,6 +41,8 @@ In this file, `e` stands for the ramification index and `f` for the inertia degr
 leaving `p` and `P` implicit.
 
 -/
+
+@[expose] public section
 
 
 namespace Ideal
@@ -443,7 +447,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   · rw [eq_comm, Submodule.restrictScalars_eq_top_iff, Ideal.span_singleton_eq_top]
     refine IsUnit.mk0 _ ((map_ne_zero_iff (algebraMap R L) hRL).mpr ?_)
     refine ne_zero_of_map (f := Ideal.Quotient.mk p) ?_
-    haveI := Ideal.Quotient.nontrivial hp
+    haveI := Ideal.Quotient.nontrivial_iff.mpr hp
     calc
       Ideal.Quotient.mk p A.det = Matrix.det ((Ideal.Quotient.mk p).mapMatrix A) := by
         rw [RingHom.map_det]
@@ -501,10 +505,10 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
     refine Finset.sum_congr rfl ?_
     intro i hi
-    rw [LinearMap.map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
+    rw [map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
       smul_eq_mul, Function.comp_apply]
   simp only [IsScalarTower.algebraMap_smul, ← map_smul, ← map_sum,
-    (f.map_eq_zero_iff hf).mp eq, LinearMap.map_zero, (· ∘ ·)]
+    (f.map_eq_zero_iff hf).mp eq, map_zero, (· ∘ ·)]
 
 variable (L)
 

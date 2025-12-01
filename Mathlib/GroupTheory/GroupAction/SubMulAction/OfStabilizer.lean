@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.Embedding
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Fin.Tuple.Embedding
+public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.GroupAction.Embedding
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Fin.Tuple.Embedding
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
 
@@ -44,6 +45,8 @@ Consider `a b : α` and `g : G` such that `hg : g • b = a`.
   the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -196,7 +199,7 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
 def ofStabilizer.snoc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α :=
   Fin.Embedding.snoc (x.trans (subtype _)) (a := a) (by
-    simp [Set.mem_range, trans_apply, not_exists]
+    simp only [Set.mem_range, trans_apply, Function.Embedding.subtype_apply, not_exists]
     exact fun i ↦ (x i).prop)
 
 @[to_additive]

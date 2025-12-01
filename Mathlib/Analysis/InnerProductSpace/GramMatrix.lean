@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Pfaffelhuber
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! # Gram Matrices
 
@@ -22,6 +24,8 @@ Results require `RCLike 𝕜`.
 * `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
 -/
+
+@[expose] public section
 
 open RCLike Real Matrix
 

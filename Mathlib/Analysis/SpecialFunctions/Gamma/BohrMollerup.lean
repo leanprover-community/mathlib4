@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-! # Convexity properties of the Gamma function
 
@@ -35,6 +37,8 @@ TODO: This argument can be extended to prove the general `k`-multiplication form
 to a constant, and it should be possible to deduce the value of this constant using Stirling's
 formula).
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Constructions
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Data.Set.Constructions
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -51,6 +53,8 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -450,7 +454,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_nonempty_interior [SeparableSpa
 /-- A set `s` in a topological space is separable if it is contained in the closure of a countable
 set `c`. Beware that this definition does not require that `c` is contained in `s` (to express the
 latter, use `TopologicalSpace.SeparableSpace s` or
-`TopologicalSpace.IsSeparable (univ : Set s))`. In metric spaces, the two definitions are
+`TopologicalSpace.IsSeparable (univ : Set s)`). In metric spaces, the two definitions are
 equivalent, see `TopologicalSpace.IsSeparable.separableSpace`. -/
 def IsSeparable (s : Set α) :=
   ∃ c : Set α, c.Countable ∧ s ⊆ closure c

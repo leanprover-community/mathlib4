@@ -3,8 +3,10 @@ Copyright (c) 2021 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.Homotopy.Path
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.Homotopy.Path
 
 /-!
 # Product of homotopies
@@ -43,6 +45,8 @@ of products.
 
 - `Path.Homotopic.prod` The product of two path classes.
 -/
+
+@[expose] public section
 
 
 noncomputable section

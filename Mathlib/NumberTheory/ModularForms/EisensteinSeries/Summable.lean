@@ -3,11 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Analysis.PSeries
-import Mathlib.Order.Interval.Finset.Box
-import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Order.Interval.Finset.Box
+public import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
 # Summability of Eisenstein series
@@ -16,6 +17,8 @@ We gather results about the summability of Eisenstein series, particularly
 the summability of the Eisenstein series summands, which are used in the proof of the
 boundedness of Eisenstein series at infinity.
 -/
+
+@[expose] public section
 noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
@@ -39,14 +42,14 @@ theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
   left
   rw [Int.abs_eq_natAbs]
-  exact Preorder.le_refl _
+  exact le_refl _
 
 theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
   right
   rw [Int.abs_eq_natAbs]
-  exact Preorder.le_refl _
+  exact le_refl _
 
 lemma abs_norm_eq_max_natAbs (n : ℕ) : ‖![1, (n + 1 : ℤ)]‖ = n + 1 := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,

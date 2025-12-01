@@ -3,18 +3,23 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Tactic.Order
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Tactic.Order
 
 /-!
 # More operations on modules and ideals
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
@@ -117,6 +122,13 @@ theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : 
   rw [Submodule.mem_comap] at hx ⊢
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
+
+lemma comap_smul'' {f : M →ₗ[R] M'} (hf : Function.Injective f) {p : Submodule R M'}
+    (hp : p ≤ LinearMap.range f) {I : Ideal R} :
+    Submodule.comap f (I • p) = I • Submodule.comap f p := by
+  refine le_antisymm ?_ (by simp)
+  conv_lhs => rw [← Submodule.map_comap_eq_self hp, ← Submodule.map_smul'']
+  rw [Submodule.comap_map_eq_of_injective hf]
 
 variable {I}
 

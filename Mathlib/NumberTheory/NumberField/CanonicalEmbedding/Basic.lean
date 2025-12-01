@@ -3,11 +3,13 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.NumberTheory.NumberField.FractionalIdeal
-import Mathlib.NumberTheory.NumberField.Units.Basic
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Canonical embedding of a number field
@@ -36,6 +38,8 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 
 number field, infinite places
 -/
+
+@[expose] public section
 
 open Module
 

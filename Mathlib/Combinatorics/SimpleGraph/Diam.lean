@@ -3,7 +3,9 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Diameter of a simple graph
@@ -25,6 +27,8 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.center`: the set of vertices with eccentricity equal to the graph's radius.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

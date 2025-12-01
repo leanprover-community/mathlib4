@@ -3,14 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.RowCol
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.RowCol
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-!
 # Determinant of a matrix
@@ -35,6 +37,8 @@ It is possible to configure `simp` to compute determinants. See the file
 `MathlibTest/matrix.lean` for some examples.
 
 -/
+
+@[expose] public section
 
 
 universe u v w z
@@ -247,6 +251,13 @@ For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one i
 -/
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
+
+lemma det_reindex (e e' : m ≃ n) (M : Matrix m m R) :
+    (M.reindex e e').det = sign (e'.trans e.symm) * M.det := by
+  trans ((M.reindex (e.trans e'.symm) (.refl _)).reindex e' e').det
+  · congr 1; ext; simp
+  · simp_rw [det_reindex_self, reindex_apply, Equiv.refl_symm, Equiv.coe_refl, det_permute]
+    rfl
 
 /-- Reindexing both indices along equivalences preserves the absolute of the determinant.
 

@@ -3,14 +3,16 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.Fourier.Notation
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+module
+
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Fourier.Notation
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The Fourier transform
@@ -52,6 +54,8 @@ in particular sense for `V = W = ℝ`.
 At present the only nontrivial lemma we prove is `fourierIntegral_continuous`, stating that the
 Fourier transform of an integrable function is continuous (under mild assumptions).
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -103,7 +107,7 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊)
   rw [integral_add_right_eq_self fun v : V ↦ (e (-L (v - v₀) w) : ℂ) • f v, ← integral_smul]
   congr 1 with v
   rw [← smul_assoc, smul_eq_mul, ← Circle.coe_mul, ← e.map_add_eq_mul, ← LinearMap.neg_apply,
-    ← sub_eq_add_neg, ← LinearMap.sub_apply, LinearMap.map_sub, neg_sub]
+    ← sub_eq_add_neg, ← LinearMap.sub_apply, map_sub, neg_sub]
 
 end Defs
 
@@ -134,7 +138,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   -- then use it for both directions
   refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
   have := aux hf (-w)
-  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_eq_mul, LinearMap.map_neg, neg_add_cancel,
+  simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_eq_mul, map_neg, neg_add_cancel,
     e.map_zero_eq_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
   exact this
 

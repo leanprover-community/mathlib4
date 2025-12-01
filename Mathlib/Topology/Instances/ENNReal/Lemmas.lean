@@ -3,19 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.BigOperators
-import Mathlib.Tactic.Bound
-import Mathlib.Topology.Order.LiminfLimsup
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Data.ENNReal.BigOperators
+public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Topology on extended non-negative reals
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -282,8 +286,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
-      rw [ENNReal.mul_lt_mul_left hε.ne' hε_top]
-      simp
+      gcongr <;> simp [*]
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -502,16 +505,14 @@ section Liminf
 
 theorem exists_frequently_lt_of_liminf_ne_top {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, x n < R := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h r] with i hi using hi.trans (le_abs_self (x i))
 
 theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, R < x n := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h (-r)] with i hi using (le_neg.1 hi).trans (neg_le_abs _)

@@ -3,10 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.Reduced
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.Algebra.Ring.Torsion
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
+public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+public import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -26,6 +28,8 @@ root pairings.
   a root.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

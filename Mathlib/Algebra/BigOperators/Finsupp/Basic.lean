@@ -3,18 +3,22 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finsupp.Ext
-import Mathlib.Data.Finsupp.Indicator
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Data.Finsupp.Ext
+public import Mathlib.Data.Finsupp.Indicator
 
 /-!
 # Big operators for finsupps
 
 This file contains theorems relevant to big operators in finitely supported functions.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -167,7 +171,8 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
-@[to_additive]
+-- Note: Using `gcongr` since `congr` doesn't accept this lemma.
+@[to_additive (attr := gcongr)]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
   Finset.prod_congr rfl h

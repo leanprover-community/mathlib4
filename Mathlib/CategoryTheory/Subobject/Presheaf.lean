@@ -3,8 +3,10 @@ Copyright (c) 2025 Pablo Donato. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pablo Donato
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Subobjects presheaf
@@ -29,6 +31,8 @@ Let `C` refer to a category with pullbacks.
 
 subobject, representable functor, presheaf, topos theory
 -/
+
+@[expose] public section
 
 open CategoryTheory Subobject
 

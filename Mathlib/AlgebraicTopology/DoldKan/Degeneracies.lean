@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -24,6 +26,8 @@ statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits

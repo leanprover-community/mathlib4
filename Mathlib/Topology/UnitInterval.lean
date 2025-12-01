@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Order.Interval.Set.Instances
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Algebra.Order.Interval.Set.Instances
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The unit interval, as a topological space
@@ -16,6 +18,8 @@ We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -62,6 +66,9 @@ theorem mul_le_left {x y : I} : x * y ≤ x :=
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
+
+theorem eq_closedBall : I = Metric.closedBall 2⁻¹ 2⁻¹ := by
+  norm_num [unitInterval, Real.Icc_eq_closedBall]
 
 /-- Unit interval central symmetry. -/
 def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩

@@ -3,8 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
-import Mathlib.Analysis.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+public import Mathlib.Analysis.Matrix.PosDef
 
 /-! # LDL decomposition
 
@@ -26,6 +28,8 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 * Prove that `LDL.lower` is lower triangular from `LDL.lowerInv_triangular`.
 
 -/
+
+@[expose] public section
 
 open Module
 
