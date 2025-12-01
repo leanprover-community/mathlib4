@@ -204,11 +204,13 @@ instance instSetoidEdge (x y : A _⦋0⦌₂) : Setoid (Edge x y) where
   r := HomotopicL
   iseqv := ⟨fun _ ↦ HomotopicL.refl, HomotopicL.symm, HomotopicL.trans⟩
 
+namespace HomotopyCategory₂
+
 /--
 The morphisms between two vertices `x`, `y` in `HomotopyCategory₂ A` are homotopy classes
 of edges between `x` and `y`.
 -/
-def HomotopyCategory₂.Hom (x y : HomotopyCategory₂ A) := Quotient (instSetoidEdge x.pt y.pt)
+def Hom (x y : HomotopyCategory₂ A) := Quotient (instSetoidEdge x.pt y.pt)
 
 /--
 Composition of morphisms in `HomotopyCategory₂ A` is given by lifting the edge
@@ -216,13 +218,11 @@ chosen by `composeEdges`.
 -/
 noncomputable
 instance : CategoryStruct (HomotopyCategory₂ A) where
-  Hom x y := HomotopyCategory₂.Hom x y
+  Hom x y := Hom x y
   id x := Quotient.mk' (Edge.id x.pt)
   comp := Quotient.lift₂ (fun f g ↦ ⟦comp f g⟧)
     (fun _ _ _ _ hf hg ↦ Quotient.sound
       (Edge.CompStruct.comp_unique (compStruct _ _) (compStruct _ _) hf hg))
-
-namespace HomotopyCategory₂
 
 omit [A.Quasicategory₂] in
 /--
@@ -236,10 +236,13 @@ lemma mk_surjective : Function.Surjective (mk : A _⦋0⦌₂ → _) :=
 Any edge in the 2-truncated simplicial set `A` defines a morphism in the homotopy category
 by taking its equivalence class.
 -/
-def homMk (f : Edge x y) : HomotopyCategory₂.mk x ⟶ .mk y := ⟦f⟧
+def homMk (f : Edge x y) : mk x ⟶ mk y := ⟦f⟧
 
-lemma homMk_surjective : Function.Surjective (homMk : Edge x y → _) :=
-  Quotient.mk_surjective
+/--
+Every morphism in the homotopy category `HomotopyCategory₂ A` is the equivalence class of
+an edge of `A`.
+-/
+lemma homMk_surjective : Function.Surjective (homMk : Edge x y → _) := Quotient.mk_surjective
 
 /--
 The trivial (degenerate) edge at a vertex `x` is a representative for the
