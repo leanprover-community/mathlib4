@@ -60,7 +60,6 @@ variable {α : Type u} {β : Type v}
 ### Join-semilattices
 -/
 
--- TODO: automatic construction of dual definitions / theorems
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
   `⊔` which is the least element larger than both factors. -/
@@ -74,8 +73,26 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
   /-- The supremum is the *least* upper bound -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
 
+/-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
+  with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
+  `⊓` which is the greatest element smaller than both factors. -/
+@[to_dual]
+class SemilatticeInf (α : Type u) extends PartialOrder α where
+  /-- The binary infimum, used to derive `Min α` -/
+  inf : α → α → α
+  /-- The infimum is a lower bound on the first argument -/
+  protected inf_le_left : ∀ a b : α, inf a b ≤ a
+  /-- The infimum is a lower bound on the second argument -/
+  protected inf_le_right : ∀ a b : α, inf a b ≤ b
+  /-- The infimum is the *greatest* lower bound -/
+  protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
+
+attribute [to_dual (reorder := a b c)] SemilatticeSup.sup_le
+
+@[to_dual]
 instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
 
+-- `to_dual` cannot yet reorder arguments of arguments
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
 join-semilattice.
@@ -94,54 +111,78 @@ def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b =
   le_sup_right a b := by rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by rwa [sup_assoc, hbc]
 
+/--
+A type with a commutative, associative and idempotent binary `inf` operation has the structure of a
+meet-semilattice.
+
+The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `inf_eq_right`.
+-/
+def SemilatticeInf.mk' {α : Type*} [Min α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
+    (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
+    SemilatticeInf α where
+  inf := (· ⊓ ·)
+  le b a := a ⊓ b = b
+  le_refl := inf_idem
+  le_trans c b a hbc hab := by rw [← hbc, ← inf_assoc, hab]
+  le_antisymm a b hba hab := by rwa [← hba, inf_comm]
+  inf_le_left a b := by rw [← inf_assoc, inf_idem]
+  inf_le_right a b := by rw [inf_comm, inf_assoc, inf_idem]
+  le_inf a b c hac hbc := by rwa [inf_assoc, hbc]
+
 section SemilatticeSup
 
 variable [SemilatticeSup α] {a b c d : α}
 
-@[simp]
+@[to_dual (attr := simp) inf_le_left]
 theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 
-@[simp]
+@[to_dual (attr := simp) inf_le_right]
 theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
 
-theorem le_sup_of_le_left (h : c ≤ a) : c ≤ a ⊔ b :=
-  le_trans h le_sup_left
-
-theorem le_sup_of_le_right (h : c ≤ b) : c ≤ a ⊔ b :=
-  le_trans h le_sup_right
-
-theorem lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
-  h.trans_le le_sup_left
-
-theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
-  h.trans_le le_sup_right
-
+@[to_dual le_inf]
 theorem sup_le : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
   SemilatticeSup.sup_le a b c
 
-@[simp]
+@[to_dual inf_le_of_left_le]
+theorem le_sup_of_le_left (h : c ≤ a) : c ≤ a ⊔ b :=
+  le_trans h le_sup_left
+
+@[to_dual inf_le_of_right_le]
+theorem le_sup_of_le_right (h : c ≤ b) : c ≤ a ⊔ b :=
+  le_trans h le_sup_right
+
+@[to_dual inf_lt_of_left_lt]
+theorem lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
+  h.trans_le le_sup_left
+
+@[to_dual inf_lt_of_right_lt]
+theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
+  h.trans_le le_sup_right
+
+@[to_dual (attr := simp) le_inf_iff]
 theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   ⟨fun h : a ⊔ b ≤ c => ⟨le_trans le_sup_left h, le_trans le_sup_right h⟩,
    fun ⟨h₁, h₂⟩ => sup_le h₁ h₂⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
   le_antisymm_iff.trans <| by simp
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
   le_antisymm_iff.trans <| by simp
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem left_eq_sup : a = a ⊔ b ↔ b ≤ a :=
   eq_comm.trans sup_eq_left
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
   eq_comm.trans sup_eq_right
 
+@[to_dual inf_of_left_le]
 alias ⟨_, sup_of_le_left⟩ := sup_eq_left
 
 alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
@@ -258,22 +299,6 @@ end SemilatticeSup
 ### Meet-semilattices
 -/
 
-
-/-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
-  with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
-  `⊓` which is the greatest element smaller than both factors. -/
-class SemilatticeInf (α : Type u) extends PartialOrder α where
-  /-- The binary infimum, used to derive `Min α` -/
-  inf : α → α → α
-  /-- The infimum is a lower bound on the first argument -/
-  protected inf_le_left : ∀ a b : α, inf a b ≤ a
-  /-- The infimum is a lower bound on the second argument -/
-  protected inf_le_right : ∀ a b : α, inf a b ≤ b
-  /-- The infimum is the *greatest* lower bound -/
-  protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
-
-instance SemilatticeInf.toMin [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
-
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
   sup := @SemilatticeInf.inf α _
   le_sup_left := @SemilatticeInf.inf_le_left α _
@@ -294,48 +319,6 @@ section SemilatticeInf
 
 variable [SemilatticeInf α] {a b c d : α}
 
-@[simp]
-theorem inf_le_left : a ⊓ b ≤ a :=
-  SemilatticeInf.inf_le_left a b
-
-@[simp]
-theorem inf_le_right : a ⊓ b ≤ b :=
-  SemilatticeInf.inf_le_right a b
-
-theorem le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
-  SemilatticeInf.le_inf a b c
-
-theorem inf_le_of_left_le (h : a ≤ c) : a ⊓ b ≤ c :=
-  le_trans inf_le_left h
-
-theorem inf_le_of_right_le (h : b ≤ c) : a ⊓ b ≤ c :=
-  le_trans inf_le_right h
-
-theorem inf_lt_of_left_lt (h : a < c) : a ⊓ b < c :=
-  lt_of_le_of_lt inf_le_left h
-
-theorem inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
-  lt_of_le_of_lt inf_le_right h
-
-@[simp]
-theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
-  @sup_le_iff αᵒᵈ _ _ _ _
-
-@[simp]
-theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
-  le_antisymm_iff.trans <| by simp
-
-@[simp]
-theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
-  le_antisymm_iff.trans <| by simp
-
-@[simp]
-theorem left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
-  eq_comm.trans inf_eq_left
-
-@[simp]
-theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
-  eq_comm.trans inf_eq_right
 
 alias ⟨le_of_inf_eq, inf_of_le_left⟩ := inf_eq_left
 
@@ -436,19 +419,6 @@ theorem inf_le_ite (s s' : α) (P : Prop) [Decidable P] : s ⊓ s' ≤ ite P s s
   @ite_le_sup αᵒᵈ _ _ _ _ _
 
 end SemilatticeInf
-
-/--
-A type with a commutative, associative and idempotent binary `inf` operation has the structure of a
-meet-semilattice.
-
-The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `inf_eq_right`.
--/
-def SemilatticeInf.mk' {α : Type*} [Min α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
-    (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
-    SemilatticeInf α := by
-  haveI : SemilatticeSup αᵒᵈ := SemilatticeSup.mk' inf_comm inf_assoc inf_idem
-  haveI i := OrderDual.instSemilatticeInf αᵒᵈ
-  exact i
 
 /-!
 ### Lattices
