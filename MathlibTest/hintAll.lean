@@ -89,9 +89,6 @@ info: Try these:
   [apply] ring_nf
   Remaining subgoals:
   ⊢ Nat.Prime 37
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ Nat.Prime 37
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint
@@ -114,6 +111,17 @@ info: Try these:
 -/
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
+
+def f (p : Nat × Nat) := (p.fst, p.snd)
+/--
+info: Try these:
+  [apply] 🎉 trivial
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ f = id
+-/
+#guard_msgs in
+example : f = id := by hint
 
 section multiline_hint
 
@@ -204,10 +212,10 @@ info: Try these:
   [apply] ring_nf
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] abel_nf
+  [apply] norm_num
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] norm_num
+  [apply] abel_nf
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
   [apply] group
