@@ -178,7 +178,8 @@ protected theorem infinite_prod :
     · exact h.1.prod_right h.2
 
 theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
-  simp only [← not_infinite, Set.infinite_prod, not_or, not_and_or, not_nonempty_iff_eq_empty]
+  set_option push_neg.use_distrib true in
+  contrapose!; exact Set.infinite_prod
 
 protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite :=
   (hs.prod hs).subset s.offDiag_subset_prod
@@ -235,9 +236,9 @@ theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀
 
 lemma finite_image2 (hfs : ∀ b ∈ t, InjOn (f · b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ := by
-  rw [← not_infinite, infinite_image2 hfs hft]
-  simp [not_or, -not_and, not_and_or, not_nonempty_iff_eq_empty]
-  aesop
+  set_option push_neg.use_distrib true in contrapose!
+  rw [Set.infinite_image2 hfs hft]
+  grind only [Set.Infinite.nonempty]
 
 end Image2
 
