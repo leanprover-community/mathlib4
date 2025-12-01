@@ -130,7 +130,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   classical
   have h1 : Fintype.card (p.rootSet ℂ) = p.natDegree := by
     simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
-    rw [Multiset.toFinset_card_of_nodup, ← natDegree_eq_card_roots]
+    rw [Multiset.toFinset_card_of_nodup, ← Splits.natDegree_eq_card_roots, natDegree_map]
     · exact IsAlgClosed.splits_codomain p
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)

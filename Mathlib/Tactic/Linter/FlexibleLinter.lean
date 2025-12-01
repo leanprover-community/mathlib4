@@ -287,7 +287,7 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
   `omega` and `lia`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,

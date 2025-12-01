@@ -84,8 +84,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
-  by_contra! h
-  obtain ⟨f, ha⟩ := h
+  by_contra! ⟨f, ha⟩
   simp_rw [turanGraph_adj] at ha
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
@@ -106,19 +105,7 @@ theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ card V) (hG : G.IsTuranMaxi
 
 lemma exists_isTuranMaximal (hr : 0 < r) :
     ∃ H : SimpleGraph V, ∃ _ : DecidableRel H.Adj, H.IsTuranMaximal r := by
-  classical
-  let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
-  have cn : c.toFinset.Nonempty := ⟨⊥, by
-    rw [Set.toFinset_setOf, mem_filter_univ]
-    exact cliqueFree_bot (by lia)⟩
-  obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
-  use S, inferInstance
-  rw [Set.mem_toFinset] at Sm
-  refine ⟨Sm, fun I _ cf ↦ ?_⟩
-  by_cases Im : I ∈ c.toFinset
-  · convert Sl I Im
-  · rw [Set.mem_toFinset] at Im
-    contradiction
+  simpa [IsTuranMaximal, exists_isExtremal_iff_exists] using ⟨⊥, cliqueFree_bot (by lia)⟩
 
 end Defs
 
@@ -224,7 +211,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
     rw [hn] at ineq; omega
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
     degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
-  have : #large ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
+  have : #large ≤ card V := by simpa using card_le_card large.subset_univ
   lia
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
@@ -235,13 +222,8 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
     contrapose! hn
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
-  exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
-
-/-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
-`min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
 for having insufficiently many vertices. -/
 theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := by
-  set fp := h.finpartition
   apply le_antisymm (le_min fp.card_parts_le_card h.card_parts_le)
   by_contra! l
   rw [lt_min_iff] at l
