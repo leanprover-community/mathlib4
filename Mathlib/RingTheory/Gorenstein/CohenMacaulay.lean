@@ -682,6 +682,12 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
         rfl }.toModuleIso
   simp [injectiveDimension_eq_of_iso e, add_one_eq_top_iff]
 
+lemma quotient_regular_isGorenstein_iff_isGorenstein
+    (rs : List R) (reg : IsRegular R rs) (mem : ∀ x ∈ rs, x ∈ maximalIdeal R) :
+    IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.ofList rs) := by
+
+  sorry
+
 section
 
 variable {R} in
@@ -698,7 +704,8 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
   induction n generalizing R
   · sorry
   · rename_i n ih _ _ _
-
+    --consider `B = A⧸(x)`
+    --use `extClass_comp_mapExt_bijective` to construct linear equivalence between ih and target
     sorry
 
 lemma isGorensteinLocalRing_iff_exists :
@@ -775,8 +782,9 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
     exact ltsub i (Nat.cast_lt.mp hi)
   tfae_have 6 → 7 := by
     refine fun ⟨CM, prin⟩ ↦ ⟨CM, fun {J} maxmin spanrank ↦ ?_⟩
-    --first proof `J` is genrated by regular sequence
-    --then use `prin` to consider minimal ideal in `R⧸J`
+    -- first proof `J` is genrated by regular sequence
+    -- then use `prin` to obtain `Hom(k, R⧸J) = k`
+    -- consider minimal non-zero ideal in `R⧸J`
     sorry
   tfae_have 7 → 8 := by
     refine fun ⟨CM, irr⟩ ↦ ⟨CM, ?_⟩
@@ -798,6 +806,13 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
   tfae_have 8 → 1 := by
     refine fun ⟨CM, ⟨J, maxmin, spanrank, irr⟩⟩ ↦ ?_
     -- reduce to proving `IsGorensteinLocalRing (R ⧸ J)`
+    -- it is artinian with `Hom(k, R⧸J) = k`
+    -- proof `l(Hom(M, R⧸J)) ≤ l(M)` for all fg module `M`
+    -- by induction using `IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime`
+    -- apply to `maximalIdeal (R⧸J)`, consider `0 → maximalIdeal (R⧸J) → R⧸J → k → 0`
+    -- `0 → Hom(k, R⧸J) → Hom(R⧸J, R⧸J) → Hom(maximalIdeal (R⧸J), R ⧸ J) →(δ) Ext¹(k, R⧸J)`
+    -- obtaining `δ = 0` implying `Ext¹(k, R⧸J) → Ext¹(R⧸J, R⧸J) = 0` is injective
+    -- since `k` is the only quotient by prime, `R⧸J` is injective.
     sorry
   tfae_finish
 
