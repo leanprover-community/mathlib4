@@ -133,7 +133,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
   intro I hI π hπ
   have Hle : ∀ J ∈ π, ↑J ≤ I₀ := fun J hJ => (WithTop.coe_le_coe.2 <| π.le_of_mem hJ).trans hI
   rcases hπ.exists_splitMany_le with ⟨s, hs⟩
-  rw [← hf _ hI, ← inf_of_le_right hs, inf_splitMany, biUnion_boxes, sum_biUnion_boxes]
+  rw [← hf _ hI, ← inf_of_right_le hs, inf_splitMany, biUnion_boxes, sum_biUnion_boxes]
   exact Finset.sum_congr rfl fun J hJ => (hf _ (Hle _ hJ) _).symm
 
 /-- If `g : M → N` is an additive map and `f` is a box additive map, then `g ∘ f` is a box additive

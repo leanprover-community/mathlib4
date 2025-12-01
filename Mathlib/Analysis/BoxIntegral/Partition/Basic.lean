@@ -459,7 +459,7 @@ theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict 
   refine Finset.image_biUnion.trans ?_
   refine (Finset.biUnion_congr rfl ?_).trans Finset.biUnion_singleton_eq_self
   intro J' hJ'
-  rw [inf_of_le_right, ← WithBot.some_eq_coe, Option.toFinset_some]
+  rw [inf_of_right_le, ← WithBot.some_eq_coe, Option.toFinset_some]
   exact WithBot.coe_le_coe.2 ((π.le_of_mem hJ').trans h)
 
 @[simp]
@@ -474,7 +474,7 @@ theorem iUnion_restrict : (π.restrict J).iUnion = (J : Set (ι → ℝ)) ∩ (�
 theorem restrict_biUnion (πi : ∀ J, Prepartition J) (hJ : J ∈ π) :
     (π.biUnion πi).restrict J = πi J := by
   refine (eq_of_boxes_subset_iUnion_superset (fun J₁ h₁ => ?_) ?_).symm
-  · refine (mem_restrict _).2 ⟨J₁, π.mem_biUnion.2 ⟨J, hJ, h₁⟩, (inf_of_le_right ?_).symm⟩
+  · refine (mem_restrict _).2 ⟨J₁, π.mem_biUnion.2 ⟨J, hJ, h₁⟩, (inf_of_right_le ?_).symm⟩
     exact WithBot.coe_le_coe.2 (le_of_mem _ h₁)
   · simp only [iUnion_restrict, iUnion_biUnion, Set.subset_def, Set.mem_inter_iff, Set.mem_iUnion]
     rintro x ⟨hxJ, J₁, h₁, hx⟩
@@ -500,7 +500,7 @@ theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
   · rintro ⟨H, Hi⟩ J' hJ'
     rcases H hJ' with ⟨J, hJ, hle⟩
     have : J' ∈ π'.restrict J :=
-      π'.mem_restrict.2 ⟨J', hJ', (inf_of_le_right <| WithBot.coe_le_coe.2 hle).symm⟩
+      π'.mem_restrict.2 ⟨J', hJ', (inf_of_right_le <| WithBot.coe_le_coe.2 hle).symm⟩
     rcases Hi J hJ this with ⟨Ji, hJi, hlei⟩
     exact ⟨Ji, π.mem_biUnion.2 ⟨J, hJ, hJi⟩, hlei⟩
 

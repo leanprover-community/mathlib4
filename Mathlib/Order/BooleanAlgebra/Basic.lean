@@ -103,7 +103,7 @@ theorem sdiff_inf_sdiff : x \ y ⊓ y \ x = ⊥ :=
       _ = x ⊓ y \ x ⊓ x \ y := by
           rw [inf_idem, inf_sup_right, ← inf_comm x y, inf_inf_sdiff, bot_sup_eq]
       _ = x ⊓ x \ y ⊓ y \ x := by ac_rfl
-      _ = x \ y ⊓ y \ x := by rw [inf_of_le_right sdiff_le']
+      _ = x \ y ⊓ y \ x := by rw [inf_of_right_le sdiff_le']
 
 theorem disjoint_sdiff_sdiff : Disjoint (x \ y) (y \ x) :=
   disjoint_iff_inf_le.mpr sdiff_inf_sdiff.le
@@ -127,7 +127,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
     ⟨fun h =>
       le_of_inf_le_sup_le
         (le_of_eq
-          (by grind [sdiff_le', inf_of_le_right, inf_eq_right, inf_sdiff_self_right, bot_sup_eq,
+          (by grind [sdiff_le', inf_of_right_le, inf_eq_right, inf_sdiff_self_right, bot_sup_eq,
             inf_sup_right]))
         (calc
           y ⊔ y \ x ≤ y \ x ⊔ x ⊔ z := by
@@ -284,7 +284,7 @@ theorem sdiff_sdiff_right_self : x \ (x \ y) = x ⊓ y := by
   rw [sdiff_sdiff_right, inf_idem, sdiff_self, bot_sup_eq]
 
 theorem sdiff_sdiff_eq_self (h : y ≤ x) : x \ (x \ y) = y := by
-  rw [sdiff_sdiff_right_self, inf_of_le_right h]
+  rw [sdiff_sdiff_right_self, inf_of_right_le h]
 
 theorem sdiff_eq_symm (hy : y ≤ x) (h : x \ y = z) : x \ z = y := by
   rw [← h, sdiff_sdiff_eq_self hy]

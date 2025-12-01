@@ -141,13 +141,13 @@ theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWi
     · rw [← Set.Icc_union_Icc_eq_Icc xy yz]
       exact hfs.union hft (isGreatest_Icc xy) (isLeast_Icc yz)
     · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
-      rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
+      rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_right_le vz, ←
         hfs ⟨xu, uz.trans zy⟩ ⟨xv, vz.trans zy⟩, Icc_inter_Icc, sup_of_le_right xu,
-        inf_of_le_right (vz.trans zy)]
+        inf_of_right_le (vz.trans zy)]
   · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
-    rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
+    rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_right_le vz, ←
       hft ⟨yx.trans xu, uz⟩ ⟨yx.trans xv, vz⟩, Icc_inter_Icc, sup_of_le_right (yx.trans xu),
-      inf_of_le_right vz]
+      inf_of_right_le vz]
 
 theorem hasConstantSpeedOnWith_zero_iff :
     HasConstantSpeedOnWith f s 0 ↔ ∀ᵉ (x ∈ s) (y ∈ s), edist (f x) (f y) = 0 := by

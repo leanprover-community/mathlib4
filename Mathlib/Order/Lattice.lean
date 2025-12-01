@@ -339,9 +339,9 @@ theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
 
 alias ⟨le_of_inf_eq, inf_of_le_left⟩ := inf_eq_left
 
-alias ⟨_, inf_of_le_right⟩ := inf_eq_right
+alias ⟨_, inf_of_right_le⟩ := inf_eq_right
 
-attribute [simp] inf_of_le_left inf_of_le_right
+attribute [simp] inf_of_le_left inf_of_right_le
 
 @[simp]
 theorem inf_lt_left : a ⊓ b < a ↔ ¬a ≤ b :=
@@ -703,7 +703,7 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotal α (· �
   ext x y
   unfold minDefault
   split_ifs with h'
-  exacts [inf_of_le_left h', inf_of_le_right <| (total_of (· ≤ ·) x y).resolve_left h']
+  exacts [inf_of_le_left h', inf_of_right_le <| (total_of (· ≤ ·) x y).resolve_left h']
 
 /-- A lattice with total order is a linear order.
 
@@ -1037,7 +1037,7 @@ theorem map_sup [SemilatticeInf β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y
   cases le_total x y <;> have := hf ?_ ?_ ‹_› <;>
     first
     | assumption
-    | simp only [*, sup_of_le_left, sup_of_le_right, inf_of_le_left, inf_of_le_right]
+    | simp only [*, sup_of_le_left, sup_of_le_right, inf_of_le_left, inf_of_right_le]
 
 theorem map_inf [SemilatticeSup β] (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
     f (x ⊓ y) = f x ⊔ f y :=

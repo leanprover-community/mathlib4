@@ -423,7 +423,7 @@ theorem inf_sdiff_left : a \ b ⊓ a = a \ b :=
   inf_of_le_left sdiff_le
 
 theorem inf_sdiff_right : a ⊓ a \ b = a \ b :=
-  inf_of_le_right sdiff_le
+  inf_of_right_le sdiff_le
 
 @[simp]
 theorem sup_sdiff_self (a b : α) : a ⊔ b \ a = a ⊔ b :=

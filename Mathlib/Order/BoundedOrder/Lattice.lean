@@ -65,7 +65,7 @@ section SemilatticeInfTop
 
 variable [SemilatticeInf α] [OrderTop α] {a b : α}
 
-lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_le_right le_top
+lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_right_le le_top
 
 lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 
@@ -81,7 +81,7 @@ variable [SemilatticeInf α] [OrderBot α]
 
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
 
-lemma inf_bot_eq (a : α) : a ⊓ ⊥ = ⊥ := inf_of_le_right bot_le
+lemma inf_bot_eq (a : α) : a ⊓ ⊥ = ⊥ := inf_of_right_le bot_le
 
 end SemilatticeInfBot
 

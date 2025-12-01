@@ -67,7 +67,7 @@ theorem isFiniteLength_of_exists_compositionSeries
       have := (covBy_iff_quot_is_simple cov.le).mp cov
       have := ((s i.castSucc).comap (s i.succ).subtype).equivMapOfInjective
         _ (Submodule.injective_subtype _)
-      rw [Submodule.map_comap_subtype, inf_of_le_right cov.le] at this
+      rw [Submodule.map_comap_subtype, inf_of_right_le cov.le] at this
       exact .of_simple_quotient (this.symm.isFiniteLength ih)
 
 theorem isFiniteLength_iff_isNoetherian_isArtinian :

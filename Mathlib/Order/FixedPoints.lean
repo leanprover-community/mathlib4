@@ -168,7 +168,7 @@ def prevFixed (x : α) (hx : f x ≤ x) : fixedPoints f :=
   ⟨(const α x ⊓ f).gfp,
     calc
       f (const α x ⊓ f).gfp = x ⊓ f (const α x ⊓ f).gfp :=
-        Eq.symm <| inf_of_le_right <| (f.mono <| f.gfp_const_inf_le x).trans hx
+        Eq.symm <| inf_of_right_le <| (f.mono <| f.gfp_const_inf_le x).trans hx
       _ = (const α x ⊓ f).gfp := (const α x ⊓ f).map_gfp
       ⟩
 

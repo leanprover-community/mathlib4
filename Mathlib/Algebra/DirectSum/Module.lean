@@ -528,7 +528,7 @@ lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Se
     exact .of_coe_Iic_comp h
   ext i m
   change m ∈ ((A i).comap p.subtype).map p.subtype ↔ _
-  rw [Submodule.map_comap_subtype, inf_of_le_right (hp i i.property)]
+  rw [Submodule.map_comap_subtype, inf_of_right_le (hp i i.property)]
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
 

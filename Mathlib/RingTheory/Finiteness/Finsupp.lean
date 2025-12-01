@@ -110,7 +110,7 @@ theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
-  · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
+  · rwa [inf_of_right_le (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
 theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.Finite R N]
