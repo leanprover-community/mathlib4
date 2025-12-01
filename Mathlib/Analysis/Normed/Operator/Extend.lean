@@ -25,6 +25,9 @@ Moreover, we can extend a linear equivalence:
 * `LinearEquiv.extend`: Extend a linear equivalence between normed spaces to a continuous linear
 equivalence between Banach spaces with two dense maps `e₁` and `e₂` and the corresponding norm
 estimates.
+* `LinearEquiv.extendOfIsometry`: Extend `f : E ≃ₗ[𝕜] F` to a linear isometry equivalence
+`Eₗ →ₗᵢ[𝕜] Fₗ`, where `e₁ : E →ₗ[𝕜] Eₗ` and `e₂ : F →ₗ[𝕜] Fₗ` are dense maps into Banach spaces
+and `f` preserves the norm.
 
 -/
 
@@ -234,12 +237,14 @@ end LinearMap
 
 namespace LinearEquiv
 
-variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜}
-  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+section extend
+
+variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
   [AddCommGroup E] [NormedAddCommGroup Eₗ] [AddCommGroup F] [NormedAddCommGroup Fₗ]
   [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
   [CompleteSpace Eₗ] [CompleteSpace Fₗ]
 
+variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
 
 /-- Extension of a linear equivalence `f : E ≃ₛₗ[σ₁₂] F` to a continuous linear equivalence
@@ -252,23 +257,15 @@ def extend (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f 
   __ := (e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁
   invFun := (e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂
   left_inv := by
-    apply h_dense₁.induction (P := fun x => ((e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂)
-      ((((e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁)) x) = x)
-    · intro x ⟨y, hxy⟩
-      rw [← hxy, LinearMap.extendOfNorm_eq h_dense₁ h_norm₁, LinearMap.coe_comp, coe_coe,
-        Function.comp_apply, LinearMap.extendOfNorm_eq h_dense₂ h_norm₂, LinearMap.coe_comp,
-        coe_coe, Function.comp_apply, symm_apply_apply]
-    · refine isClosed_eq ?_ continuous_id
-      exact (ContinuousLinearMap.cont _).comp (ContinuousLinearMap.cont _)
+    refine h_dense₁.induction ?_ ?_
+    · rintro _ ⟨_, rfl⟩
+      simp [LinearMap.extendOfNorm_eq, h_dense₁, h_norm₁, h_dense₂, h_norm₂]
+    · exact isClosed_eq (by simp; fun_prop) continuous_id
   right_inv := by
-    apply h_dense₂.induction (P := fun x => ((e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁)
-      ((((e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂)) x) = x)
-    · intro x ⟨y, hxy⟩
-      rw [← hxy, LinearMap.extendOfNorm_eq h_dense₂ h_norm₂, LinearMap.coe_comp, coe_coe,
-        Function.comp_apply, LinearMap.extendOfNorm_eq h_dense₁ h_norm₁, LinearMap.coe_comp,
-        coe_coe, Function.comp_apply, apply_symm_apply]
-    · refine isClosed_eq ?_ continuous_id
-      exact (ContinuousLinearMap.cont _).comp (ContinuousLinearMap.cont _)
+    refine h_dense₂.induction ?_ ?_
+    · rintro _ ⟨_, rfl⟩
+      simp [LinearMap.extendOfNorm_eq, h_dense₁, h_norm₁, h_dense₂, h_norm₂]
+    · exact isClosed_eq (by simp; fun_prop) continuous_id
   continuous_invFun := ContinuousLinearMap.continuous _
 
 theorem extend_eq (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
@@ -291,5 +288,44 @@ theorem norm_extend_symm_le (C : ℝ) (h_dense₁ : DenseRange e₁)
     (h_norm₂ : ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Fₗ) :
     ‖(f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ ⟨C, h_norm₂⟩).symm x‖ ≤ C * ‖x‖ :=
   LinearMap.norm_extendOfNorm_apply_le h_dense₂ _ h_norm₂ _
+
+end extend
+
+section extendOfIsometry
+
+variable [NormedField 𝕜] [NormedField 𝕜₂]
+  [AddCommGroup E] [Module 𝕜 E]
+  [AddCommGroup F] [Module 𝕜₂ F]
+  [NormedAddCommGroup Eₗ] [NormedSpace 𝕜 Eₗ] [CompleteSpace Eₗ]
+  [NormedAddCommGroup Fₗ] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace Fₗ]
+
+variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
+
+/-- Extend a densely defined operator that preserves the norm to a linear isometry equivalence. -/
+def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
+    (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) :
+    Eₗ ≃ₛₗᵢ[σ₁₂] Fₗ :=
+  have h_norm₂ : ∀ x, ‖e₁ (f.symm x)‖ = ‖e₂ x‖ := fun x ↦ by simpa using (h_norm (f.symm x)).symm
+  { __ := f.extend e₁ e₂ h_dense₁ ⟨1, by simp [h_norm]⟩ h_dense₂ ⟨1, by simp [h_norm₂]⟩
+    norm_map' := by
+      refine h_dense₁.induction ?_ (isClosed_eq (by simp; fun_prop) continuous_norm)
+      rintro x ⟨y, rfl⟩
+      convert h_norm y
+      apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
+
+theorem extendOfIsometry_eq (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
+    (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) (x : E) :
+    f.extendOfIsometry e₁ e₂ h_dense₁ h_dense₂ h_norm (e₁ x) = e₂ (f x) :=
+  LinearMap.extendOfNorm_eq h_dense₁ ⟨1, fun x ↦ by simp [h_norm x]⟩ x
+
+theorem extendOfIsometry_symm_eq (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
+    (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) (x : F) :
+    (f.extendOfIsometry e₁ e₂ h_dense₁ h_dense₂ h_norm).symm (e₂ x) = e₁ (f.symm x) :=
+  have h_norm₂ : ∀ x, ‖e₁ (f.symm x)‖ = ‖e₂ x‖ :=
+    fun x ↦ by simpa using (h_norm (f.symm x)).symm
+  LinearMap.extendOfNorm_eq h_dense₂ ⟨1, fun x ↦ by simp [h_norm₂ x]⟩ x
+
+end extendOfIsometry
 
 end LinearEquiv
