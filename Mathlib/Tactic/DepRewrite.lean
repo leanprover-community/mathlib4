@@ -430,6 +430,9 @@ def _root_.Lean.MVarId.depRewrite (mvarId : MVarId) (e : Expr) (heq : Expr)
           let .lam _ _ (.lam _ _ eBody _) _ := eAbst |
             throwTacticEx `depRewrite mvarId
               m!"internal error: output{indentExpr eAbst}\nof dabstract is not a lambda"
+          -- there is the possibility that `depRewrite` rewrites the expression
+          -- but `cleanupCasts` rewrites it back
+          -- in this case the goal will remain unchanged after a single `rw!`
           if !eBody.hasLooseBVars then
             throwTacticEx `depRewrite mvarId
               m!"did not find instance of the pattern in the target expression{indentExpr lhs}"
