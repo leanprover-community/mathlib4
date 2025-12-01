@@ -30,7 +30,7 @@ variable (M : Type v) [AddCommGroup M] [Module R M]
 variable (N : Type v) [AddCommGroup N] [Module R N]
 
 open CategoryTheory Abelian
---  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+
 instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
