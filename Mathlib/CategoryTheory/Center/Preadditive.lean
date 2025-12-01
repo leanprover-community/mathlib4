@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Center.Basic
-public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # The center of an additive category
