@@ -23,7 +23,6 @@ variable {α β : Type*}
 
 /-! ### `OrderDual` -/
 
-instance [h : Unique α] : Unique αᵒᵈ := h
 
 @[to_additive]
 instance [h : One α] : One αᵒᵈ := h

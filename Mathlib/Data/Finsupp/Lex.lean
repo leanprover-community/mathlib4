@@ -52,11 +52,14 @@ instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
 instance [LT α] [LT N] : LT (Colex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· > ·) (· < ·) (ofColex f) (ofColex g)⟩
 
-theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
+theorem Lex.lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
   .rfl
 
-theorem colex_lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff := Lex.lt_iff
+
+theorem Colex.lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
 
@@ -72,23 +75,24 @@ theorem lex_iff_of_unique [Unique α] [LT N] {r} [IsIrrefl α r] {x y : α →�
     Finsupp.Lex r (· < ·) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
-theorem lex_lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →₀ N)} :
+theorem Lex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →₀ N)} :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
-theorem colex_lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
+
+theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
   lex_lt_iff_of_unique (α := αᵒᵈ)
 
 variable [LinearOrder α]
 
-instance Lex.isStrictOrder [PartialOrder N] :
-    IsStrictOrder (Lex (α →₀ N)) (· < ·) where
+instance Lex.isStrictOrder [PartialOrder N] : IsStrictOrder (Lex (α →₀ N)) (· < ·) where
   irrefl _ := lt_irrefl (α := Lex (α → N)) _
   trans _ _ _ := lt_trans (α := Lex (α → N))
 
-instance Colex.isStrictOrder [PartialOrder N] :
-    IsStrictOrder (Colex (α →₀ N)) (· < ·) :=
+instance Colex.isStrictOrder [PartialOrder N] : IsStrictOrder (Colex (α →₀ N)) (· < ·) :=
   Lex.isStrictOrder (α := αᵒᵈ)
 
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
@@ -118,15 +122,17 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
 
-theorem lex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
+theorem Lex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default :=
   Pi.lex_le_iff_of_unique
 
-theorem colex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
-    x ≤ y ↔ x default ≤ y default :=
-  lex_le_iff_of_unique (α := αᵒᵈ)
+@[deprecated (since := "2025-11-29")]
+alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
--- TODO: generalize to pi types
+theorem Colex.le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
+    x ≤ y ↔ x default ≤ y default :=
+  Lex.le_iff_of_unique (α := αᵒᵈ)
+
 theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
   intro a b h
   simp only [LT.lt, Finsupp.lex_def]
@@ -164,7 +170,7 @@ theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
 theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
   toLex_monotone (α := αᵒᵈ)
 
-@[deprecated lex_lt_iff (since := "2025-10-12")]
+@[deprecated Lex.lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
