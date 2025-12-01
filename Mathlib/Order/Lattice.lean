@@ -341,6 +341,9 @@ alias ⟨le_of_inf_eq, inf_of_left_le⟩ := inf_eq_left
 
 alias ⟨_, inf_of_right_le⟩ := inf_eq_right
 
+@[deprecated (since := "2025-12-01")] alias inf_of_le_right := inf_of_right_le
+@[deprecated (since := "2025-12-01")] alias inf_of_le_left := inf_of_left_le
+
 attribute [simp] inf_of_left_le inf_of_right_le
 
 @[simp]
