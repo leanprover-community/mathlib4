@@ -80,7 +80,6 @@ theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * 
 @[simp]
 theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
   rw [X_pow_eq_monomial]
-  convert eval₂_monomial f x (n := n) (r := 1)
   simp
 
 @[simp]

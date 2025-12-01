@@ -167,20 +167,12 @@ theorem compExactValue_correctness_of_stream_eq_some :
       let ppB := ppconts.b
       let pA := pconts.a
       let pB := pconts.b
-      have : compExactValue ppconts pconts ifp_n.fr =
-          (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
-        -- unfold compExactValue and the convergent computation once
-        simp only [compExactValue, ifp_n_fract_ne_zero, ↓reduceIte, nextConts, nextNum, one_mul,
-          nextDen, ppA, ppB]
-        ac_rfl
-      rw [this]
       -- two calculations needed to show the claim
       have tmp_calc :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pA ppA ifp_succ_n_fr_ne_zero
       have tmp_calc' :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
       let f := Int.fract (1 / ifp_n.fr)
-      have f_ne_zero : f ≠ 0 := by simpa [f] using ifp_succ_n_fr_ne_zero
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
       dsimp only [conts, pconts, ppconts]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl

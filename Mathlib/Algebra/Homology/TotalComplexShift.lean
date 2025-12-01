@@ -279,7 +279,6 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
     rw [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul, smul_smul,
       ← Int.negOnePow_add, ← Int.negOnePow_add, ← Int.negOnePow_add,
       ← Int.negOnePow_add]
-    congr 2
     lia
   · rw [D₂_shape _ _ _ _ h, zero_comp, D₂_shape, comp_zero, smul_zero]
     simp_all only [up_Rel]

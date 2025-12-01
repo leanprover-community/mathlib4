@@ -294,13 +294,11 @@ lemma polyCharpolyAux_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
 lemma polyCharpolyAux_map_eq_charpoly [Module.Finite R M] [Module.Free R M]
     (x : L) :
     (polyCharpolyAux φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
-  nontriviality R
   rw [polyCharpolyAux_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
 
 @[simp]
 lemma polyCharpolyAux_coeff_eval [Module.Finite R M] [Module.Free R M] (x : L) (i : ℕ) :
     MvPolynomial.eval (b.repr x) ((polyCharpolyAux φ b bₘ).coeff i) = (φ x).charpoly.coeff i := by
-  nontriviality R
   rw [← polyCharpolyAux_map_eq_charpoly φ b bₘ x, Polynomial.coeff_map]
 
 lemma polyCharpolyAux_map_eval [Module.Finite R M] [Module.Free R M]

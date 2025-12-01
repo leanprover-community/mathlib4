@@ -884,7 +884,6 @@ theorem lt_extend [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.v
   · change f.val ≤ (f.extend hx).val
     simpa [extend, extendFun] using LinearPMap.left_le_sup _ _ _
   by_contra!
-  have : f.val.domain = (f.extend hx).val.domain := by congr
   rw [this] at hx
   contrapose! hx with h
   simpa using Submodule.mem_sup_right (by simp)

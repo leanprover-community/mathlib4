@@ -130,7 +130,6 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
       (chainTopCoeff α β + 1) • α + β := by
     simp only [Weight.coe_neg, ← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_add, Nat.cast_one, coe_chainTop,
       smul_neg, ← neg_smul, hW, ← add_assoc, ← add_smul, ← sub_eq_add_neg]
-    congr 2
     ring
   have := rootSpace_neg_nsmul_add_chainTop_of_le (-α) W H₁
   rw [Weight.coe_neg, ← smul_neg, neg_neg, ← Weight.coe_neg, H₂] at this

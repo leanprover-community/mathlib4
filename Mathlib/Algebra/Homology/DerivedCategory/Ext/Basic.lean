@@ -193,7 +193,6 @@ lemma mk₀_bijective : Function.Bijective (mk₀ (X := X) (Y := Y)) := by
     (h.homEquiv.trans (ShiftedHom.homEquiv _ (by simp))).trans homEquiv.symm
   have he : e.toFun = mk₀ := by
     ext f : 1
-    dsimp [e]
     apply homEquiv.injective
     apply (Equiv.apply_symm_apply _ _).trans
     symm

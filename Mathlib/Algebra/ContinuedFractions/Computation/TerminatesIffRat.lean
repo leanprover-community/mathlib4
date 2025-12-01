@@ -104,12 +104,10 @@ theorem exists_gcf_pair_rat_eq_nth_conts :
 
 theorem exists_rat_eq_nth_num : ∃ q : ℚ, (of v).nums n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨a, _⟩, nth_cont_eq⟩
-  use a
   simp [num_eq_conts_a, nth_cont_eq]
 
 theorem exists_rat_eq_nth_den : ∃ q : ℚ, (of v).dens n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨_, b⟩, nth_cont_eq⟩
-  use b
   simp [den_eq_conts_b, nth_cont_eq]
 
 /-- Every finite convergent corresponds to a rational number. -/

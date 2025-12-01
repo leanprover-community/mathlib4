@@ -125,7 +125,6 @@ variable {M : Type*} [AddCommMonoid M] [Module R M]
 theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
     lift (lsmul R M ∘ₗ mul R R r) = lsmul R M r ∘ₗ lift (lsmul R M) := by
   apply TensorProduct.ext'
-  intro x a
   simp [← mul_smul, mul_comm]
 
 end NonUnitalNonAssoc

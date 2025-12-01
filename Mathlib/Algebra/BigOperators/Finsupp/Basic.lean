@@ -408,9 +408,7 @@ theorem univ_sum_single_apply [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 @[simp]
 theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     ∑ j : α, single j m i = m := by
-  simp_rw [single, coe_mk]
-  classical rw [Finset.sum_pi_single]
-  simp
+  simp [single]
 
 lemma sum_single_add_single (f₁ f₂ : ι) (g₁ g₂ : A) (F : ι → A → B) (H : f₁ ≠ f₂)
     (HF : ∀ f, F f 0 = 0) :
