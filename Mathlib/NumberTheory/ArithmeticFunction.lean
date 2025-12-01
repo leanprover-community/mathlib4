@@ -56,7 +56,7 @@ This notation is scpoed to the separate locales `ArithmeticFunction.zeta` for `�
 `ArithmeticFunction.Omega` for `Ω`, and `ArithmeticFunction.Moebius` for `μ`,
 to allow for selective access.
 
-The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
+The arithmetic function $n \mapsto \prod_{p \mid n} f(p)$ is given custom notation
 `∏ᵖ p ∣ n, f p` when applied to `n`.
 
 ## Tags

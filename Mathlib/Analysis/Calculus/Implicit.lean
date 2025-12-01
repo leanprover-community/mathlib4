@@ -74,9 +74,7 @@ Consider two functions `f : E → F` and `g : E → G` and a point `a` such that
 Note that the map `x ↦ (f x, g x)` has a bijective derivative, hence it is an open partial
 homeomorphism between `E` and `F × G`. We use this fact to define a function `φ : F → G → E`
 (see `ImplicitFunctionData.implicitFunction`) such that for `(y, z)` close enough to `(f a, g a)`
-we have `f (φ y z) = y` and `g (φ y z) = z`.
-
-We also prove a formula for $$\frac{\partial\varphi}{\partial z}.$$
+we have `f (φ y z) = y` and `g (φ y z) = z`. We also prove a formula for `∂φ / ∂z`.
 
 Though this statement is almost symmetric with respect to `F`, `G`, we interpret it in the following
 way. Consider a family of surfaces `{x | f x = y}`, `y ∈ 𝓝 (f a)`. Each of these surfaces is

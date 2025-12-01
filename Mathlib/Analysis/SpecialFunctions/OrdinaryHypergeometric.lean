@@ -12,7 +12,8 @@ public import Mathlib.Analysis.RCLike.Basic
 # Ordinary hypergeometric function in a Banach algebra
 
 In this file, we define `ordinaryHypergeometric`, the _ordinary_ or _Gaussian_ hypergeometric
-function in a topological algebra `𝔸` over a field `𝕂` given by: $$
+function in a topological algebra `𝔸` over a field `𝕂` given by:
+$$
 _2\mathrm{F}_1(a\ b\ c : \mathbb{K}, x : \mathbb{A}) = \sum_{n=0}^{\infty}\frac{(a)_n(b)_n}{(c)_n}
 \frac{x^n}{n!}   \,,
 $$

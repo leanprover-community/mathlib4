@@ -195,9 +195,9 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
 @[to_additive (attr := deprecated cauchy_davenport_of_isMulTorsionFree (since := "2025-04-23"))]
 alias cauchy_davenport_mul_of_isTorsionFree := cauchy_davenport_of_isMulTorsionFree
 
-/-! ### $$ℤ/nℤ$$ -/
+/-! ### $ℤ/nℤ$ -/
 
-/-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in $$ℤ/pℤ$$, then the size of
+/-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in `ℤ/pℤ`, then the size of
 `s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/
 lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs : s.Nonempty)
     (ht : t.Nonempty) : min p (#s + #t - 1) ≤ #(s + t) := by
