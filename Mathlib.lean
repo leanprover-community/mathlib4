@@ -4580,6 +4580,7 @@ public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -6027,6 +6028,7 @@ public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.MatrixAlgebra
 public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 public import Mathlib.RingTheory.Morita.Basic
+public import Mathlib.RingTheory.Morita.Matrix
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.RingTheory.MvPolynomial
 public import Mathlib.RingTheory.MvPolynomial.Basic
@@ -6411,6 +6413,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
 public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
@@ -6670,6 +6673,7 @@ public import Mathlib.Tactic.TermCongr
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.ToExpr
+public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.ToLevel
 public import Mathlib.Tactic.Trace
 public import Mathlib.Tactic.Translate.Core
