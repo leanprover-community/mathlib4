@@ -21,10 +21,10 @@ only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
 ```
-P ⊗ R[S'] ⟶ A
-  |          |
-  v          v
-P ⊗ R[S]  ⟶ B
+P ⊗ R[S'] --> A
+  |           |
+  v           v
+P ⊗ R[S]  --> B
 ```
 commute.
 
@@ -93,10 +93,10 @@ only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
 ```
-P ⊗ R[S'] ⟶ A
-  |          |
-  v          v
-P ⊗ R[S]  ⟶ B
+P ⊗ R[S'] --> A
+  |           |
+  v           v
+P ⊗ R[S]  --> B
 ```
 commute.
 -/
@@ -132,10 +132,10 @@ only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for
 `S : LightProfinite` and all morphisms `g : R[S] ⊗ P ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S'] ⊗ P ⟶ A`, making the diagram
 ```
-R[S'] ⊗ P ⟶ A
-  |          |
-  v          v
-R[S] ⊗ P  ⟶ B
+R[S'] ⊗ P --> A
+  |           |
+  v           v
+R[S] ⊗ P  --> B
 ```
 commute.
 -/
@@ -161,10 +161,10 @@ and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`,
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
 ```
-R[P × S'] ⟶ A
-  |          |
-  v          v
-R[P × S]  ⟶ B
+R[P × S'] --> A
+  |           |
+  v           v
+R[P × S]  --> B
 ```
 commute.
 -/
@@ -198,10 +198,10 @@ and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`,
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
 ```
-R[S' × P] ⟶ A
-  |          |
-  v          v
-R[S × P]  ⟶ B
+R[S' × P] --> A
+  |           |
+  v           v
+R[S × P]  --> B
 ```
 commute.
 -/
@@ -234,10 +234,10 @@ if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ 
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
 ```
-R[P × S'] ⟶ A
-  |          |
-  v          v
-R[P × S]  ⟶ B
+R[P × S'] --> A
+  |           |
+  v           v
+R[P × S]  --> B
 ```
 commute.
 -/
@@ -268,10 +268,10 @@ if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ 
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
 ```
-R[S' × P] ⟶ A
-  |          |
-  v          v
-R[S × P]  ⟶ B
+R[S' × P] --> A
+  |           |
+  v           v
+R[S × P]  --> B
 ```
 commute.
 -/
