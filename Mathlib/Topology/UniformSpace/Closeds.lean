@@ -22,7 +22,7 @@ induced by the Hausdorff metric to hyperspaces of uniform spaces.
 @[expose] public section
 
 open Topology
-open scoped Uniformity
+open scoped Uniformity Filter
 
 variable {α β : Type*}
 
@@ -497,6 +497,53 @@ instance [DiscreteUniformity α] : DiscreteUniformity (Compacts α) :=
 theorem discreteUniformity_iff : DiscreteUniformity (Compacts α) ↔ DiscreteUniformity α :=
   ⟨fun _ => isUniformEmbedding_singleton.discreteUniformity, fun _ => inferInstance⟩
 
+instance [CompleteSpace α] : CompleteSpace (Compacts α) := by
+  refine ⟨fun {f} ⟨_, hf⟩ => ?_⟩
+  grw [← Filter.curry_le_prod, (𝓤 α).basis_sets.uniformity_compacts.ge_iff] at hf
+  change ∀ {U} (hU : U ∈ 𝓤 α), ∀ᶠ K in f, ∀ᶠ K' in f, (↑K, ↑K') ∈ hausdorffEntourage U at hf
+  let l : Filter α := f.lift' fun s => ⋃ K ∈ s, K
+  have hl : l.TotallyBounded := by
+    intro U hU
+    obtain ⟨V : SetRel α α, hV, hVU⟩ := comp_mem_uniformity_sets hU
+    obtain ⟨K, hK⟩ := hf (symm_le_uniformity hV) |>.exists
+    obtain ⟨t, ht₁, ht₂⟩ := K.isCompact.totallyBounded V hV
+    rw [← SetRel.preimage_eq_biUnion] at ht₂
+    refine ⟨t, ht₁, Filter.mem_of_superset (Filter.mem_lift' hK) ?_⟩
+    rw [Set.iUnion₂_subset_iff]
+    intro K' ⟨_, (hK' : ↑K' ⊆ V.preimage K)⟩
+    grw [← hVU, SetRel.preimage_comp, ← ht₂, hK']
+  let L : Compacts α := ⟨{x | ClusterPt x l}, hl.isCompact_setOf_clusterPt⟩
+  exists L
+  simp_rw [nhds_eq_comap_uniformity']
+  rw [uniformity_hasBasis_closed.uniformity_compacts.comap _ |>.ge_iff]
+  intro U ⟨hU₁, hU₂⟩
+  filter_upwards [hf hU₁] with K hK
+  simp_rw [Set.mem_preimage, Prod.map, id, mem_hausdorffEntourage]
+  constructor
+  · intro x hx
+    let lx := l ⊓ 𝓟 (UniformSpace.ball x U)
+    have hlx : lx.TotallyBounded := hl.mono inf_le_left
+    have : lx.NeBot := by
+      unfold lx l
+      rw [Filter.lift'_inf_principal_eq, Filter.lift'_neBot_iff fun _ _ h =>
+        Set.inter_subset_inter_left _ <| Set.biUnion_subset_biUnion_left h]
+      intro s hs
+      obtain ⟨K', ⟨h₁, -⟩, h₂⟩ := Filter.nonempty_of_mem <| Filter.inter_mem hK hs
+      obtain ⟨y, hy, hxy⟩ := h₁ hx
+      exact ⟨y, Set.mem_iUnion₂_of_mem h₂ hy, hxy⟩
+    obtain ⟨y, hy⟩ := hlx.exists_clusterPt
+    have hy₁ : ClusterPt y l := .of_inf_left hy
+    have hy₂ : ClusterPt y (𝓟 (UniformSpace.ball x U)) := .of_inf_right hy
+    rw [← mem_closure_iff_clusterPt, (UniformSpace.isClosed_ball x hU₂).closure_eq] at hy₂
+    exact ⟨y, hy₁, hy₂⟩
+  · intro x (hx : ClusterPt x l)
+    rw [← (hU₂.relImage_of_isCompact K.isCompact).closure_eq, mem_closure_iff_clusterPt]
+    refine hx.mono ?_
+    rw [Filter.le_principal_iff]
+    refine Filter.mem_of_superset (Filter.mem_lift' hK) ?_
+    rw [Set.iUnion₂_subset_iff]
+    exact fun _ ⟨_, h⟩ => h
+
 end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.NonemptyCompacts
@@ -585,5 +632,28 @@ instance [DiscreteUniformity α] : DiscreteUniformity (NonemptyCompacts α) :=
 @[simp]
 theorem discreteUniformity_iff : DiscreteUniformity (NonemptyCompacts α) ↔ DiscreteUniformity α :=
   ⟨fun _ => isUniformEmbedding_singleton.discreteUniformity, fun _ => inferInstance⟩
+
+instance [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
+  isUniformEmbedding_toCompacts.completeSpace isClosedEmbedding_toCompacts.isClosed_range.isComplete
+
+@[simp]
+theorem completeSpace_iff : CompleteSpace (NonemptyCompacts α) ↔ CompleteSpace α := by
+  refine ⟨fun _ => ⟨fun {f} hf => ?_⟩, fun _ => inferInstance⟩
+  obtain ⟨K, hK⟩ := CompleteSpace.complete <| hf.map uniformContinuous_singleton
+  obtain ⟨x, hx⟩ := K.nonempty
+  exists x
+  rw [(nhds_basis_opens x).ge_iff]
+  intro U ⟨hxU, hU⟩
+  filter_upwards [hK <| (isOpen_inter_nonempty_of_isOpen hU).mem_nhds ⟨x, hx, hxU⟩]
+  simp
+
+@[simp]
+theorem _root_.TopologicalSpace.Compacts.completeSpace_iff :
+    CompleteSpace (Compacts α) ↔ CompleteSpace α where
+  mp _ :=
+    NonemptyCompacts.completeSpace_iff.mp <|
+      NonemptyCompacts.isUniformEmbedding_toCompacts.completeSpace
+        isClosedEmbedding_toCompacts.isClosed_range.isComplete
+  mpr _ := inferInstance
 
 end TopologicalSpace.NonemptyCompacts
