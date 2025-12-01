@@ -160,7 +160,7 @@ lemma naturalityProperty_eq_top :
       · ext; apply hδ'₀ f₀ f₁ hδ₁ hδ₀ hY
       · ext; apply hδ'₁ f₀ f₁ hδ₁ hδ₀ H hY
       · ext; apply hδ'₂ f₀ f₁ hδ₁ hδ₀ hY
-    · omega
+    · cutsat
   · obtain _ | _ | n := n
     · fin_cases i
       ext; apply hσ
