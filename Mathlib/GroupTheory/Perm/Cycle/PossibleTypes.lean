@@ -111,8 +111,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       · -- length >= 1
         grind
     · -- cycles
-      simp only [List.mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-      exact fun a b ↦ List.isCycle_formPerm (hp_nodup a b) (hp2 a b)
+      simpa using fun a b ↦ List.isCycle_formPerm (hp_nodup a b) (hp2 a b)
     · -- disjoint
       rw [List.pairwise_map]
       apply List.Pairwise.imp_of_mem _ hp_disj
