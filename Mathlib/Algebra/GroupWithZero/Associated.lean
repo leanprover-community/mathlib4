@@ -38,6 +38,7 @@ namespace Associated
 protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
   ⟨1, by simp⟩
 
+@[simp]
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
