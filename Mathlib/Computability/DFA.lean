@@ -269,14 +269,25 @@ section compl
 
 /-- DFAs are closed under complement:
 Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
+@[simps]
+def compl : DFA α σ where
+  step := M.step
+  start := M.start
+  accept := M.acceptᶜ
+
 instance : HasCompl (DFA α σ) where
-  compl M := DFA.mk M.step M.start M.acceptᶜ
+  compl M := M.compl
+
+theorem compl_def : Mᶜ = M.compl :=
+  rfl
 
 theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ := by
-  ext x; simp [compl, acceptsFrom, evalFrom]
+  simp [compl_def, acceptsFrom, evalFrom, DFA.compl,
+    Set.compl_setOf (p:=(fun y ↦ List.foldl M.step s y ∈ M.accept))]
 
 theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ := by
-  simp only [accepts, acceptsFrom_compl]; simp [compl]
+  simp only [accepts, acceptsFrom_compl]
+  simp [compl_def]
 
 end compl
 
