@@ -40,35 +40,6 @@ associated with a finite basis of `V`.
 
 -/
 
--- Four lemmas on rank, finrank
--- TODO : move elsewhere
-theorem Module.rank_pos_iff_of_free {R M : Type*} [Ring R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] :
-    0 < Module.rank R M ↔ Nontrivial M := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
-  rw [← not_subsingleton_iff_nontrivial]
-  intro h'
-  simp only [rank_subsingleton', lt_self_iff_false] at h
-
-theorem Module.rank_zero_iff_of_free {R M : Type*} [Ring R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] :
-    Module.rank R M = 0 ↔ Subsingleton M := by
-  rw [← not_nontrivial_iff_subsingleton, iff_not_comm,
-    ← Module.rank_pos_iff_of_free (R := R), pos_iff_ne_zero]
-
-theorem Module.finrank_eq_zero_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
-    Module.finrank R M = 0 ↔ Subsingleton M := by
-  have := Module.rank_lt_aleph0 R M
-  rw [← not_le] at this
-  simp [Module.finrank, this, Module.rank_zero_iff_of_free]
-
-theorem Module.finrank_pos_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
-    0 < Module.finrank R M ↔ Nontrivial M := by
-  rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
-  simp [Module.finrank_eq_zero_iff_of_free]
-
 @[expose] public section
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]

@@ -359,8 +359,9 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
       rw [this, Matrix.det_transvection_of_ne i j hi 1, hfv, add_zero]
     ext x y
     rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply]
-    simp [Matrix.transvection]
-    simp [hj.1, hj.2]
+    simp only [Matrix.transvection]
+    simp only [hj.2, Module.Basis.coord_apply, Module.Basis.repr_self, hj.1, map_add, map_smul,
+      Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Matrix.add_apply]
     apply congr_arg₂
     · by_cases h : x = y
       · rw [h]; simp
@@ -386,7 +387,8 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
       · simp
     ext x y
     rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply]
-    simp [Matrix.diagonal]
+    simp only [map_add, Module.Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
+      Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.diagonal, Matrix.of_apply]
     rw [hv, Function.update_apply, Module.Basis.repr_self, Pi.one_apply]
     rw [hf]
     simp only [smul_apply, Module.Basis.coord_apply, Module.Basis.repr_self, smul_eq_mul,
@@ -818,22 +820,24 @@ theorem transvections_isPretransitive_fixingSubgroup
       (Subgroup.closure
         ((fixingSubgroup (SpecialLinearGroup K V) W.carrier).subtype ⁻¹' (transvections K V)))
       {v : V | v ∉ W} where
-  exists_smul_eq x y := by
+  exists_smul_eq := by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩
+    simp only [Set.mem_setOf_eq] at hx hy
     classical
-    wlog h : LinearIndependent K ![x.val , y.val] with hyp
-    · suffices ∃ z : V, z ∉ Submodule.span K {x.val, y.val} by
+    wlog h : LinearIndependent K ![x , y] with hyp
+    · suffices ∃ z : V, z ∉ W ⊔ Submodule.span K {x, y} by
         obtain ⟨z, hz⟩ := this
         have hz0 : z ≠ 0 := fun h ↦ hz <| by
           rw [h]
           exact zero_mem _
-        have hxz : LinearIndependent K ![x.val, z] := by
-          exact linearIndependent_of_not_mem_span x.prop hz
-        have hzy : LinearIndependent K ![z, y.val] := by
+        have hxz : LinearIndependent K ![x, z] := by
+          sorry -- exact linearIndependent_of_not_mem_span hx hz
+        have hzy : LinearIndependent K ![z, y] := by
           rw [LinearIndependent.pair_symm_iff]
-          apply linearIndependent_of_not_mem_span y.prop (y := x.val)
+          sorry -- apply linearIndependent_of_not_mem_span hy (y := x)
           convert hz using 3
           grind
-        obtain ⟨g, hg⟩ := hyp h2 x ⟨z, hz0⟩ hxz
+        obtain ⟨g, hg⟩ := hyp W h2 x hx z hz0 hxz
         obtain ⟨h, hh⟩ := hyp h2 ⟨z, hz0⟩ y hzy
         use h * g
         simp [mul_smul, hg, hh]

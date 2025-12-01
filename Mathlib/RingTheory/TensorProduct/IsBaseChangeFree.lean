@@ -85,9 +85,10 @@ variable {R : Type*} [CommSemiring R]
 
 open TensorProduct
 
-variable {ι : Type*} [DecidableEq ι] (b : Module.Basis ι R V)
+variable {ι : Type*} (b : Module.Basis ι R V)
 
 theorem of_basis : IsBaseChange R (Finsupp.linearCombination A b) := by
+  classical
   let j := TensorProduct.finsuppScalarRight' A R ι R
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Finsupp.linearCombination R b ∘ₗ j)
@@ -112,6 +113,7 @@ include A in
 of a finite free module from any under-ring. -/
 theorem of_fintype_basis [Fintype ι] :
     IsBaseChange R (Fintype.linearCombination A b) := by
+  classical
   let j : R ⊗[A] (ι → A) ≃ₗ[R] ι → R := piScalarRight A R R ι
   refine of_equiv ?_ ?_
   · apply LinearEquiv.ofBijective (Fintype.linearCombination R b ∘ₗ j)
@@ -129,7 +131,6 @@ theorem of_fintype_basis [Fintype ι] :
     rw [TensorProduct.piScalarRight_apply, TensorProduct.piScalarRightHom_tmul]
     simp
 
-omit [DecidableEq ι] in
 variable {A b} in
 theorem of_fintype_basis_eq [Fintype ι] {a : ι → A} {v : V} :
     (Fintype.linearCombination A b) a = v ↔
