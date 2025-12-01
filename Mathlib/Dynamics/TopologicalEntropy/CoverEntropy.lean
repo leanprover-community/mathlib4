@@ -526,7 +526,7 @@ lemma coverEntropyInf_empty {T : X → X} : coverEntropyInf T ∅ = ⊥ := by
 lemma coverEntropyInf_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropyInf T F :=
   (coverEntropyInfEntourage_le_coverEntropyInf T F univ_mem).trans_eq'
-    (coverEntropyInfEntourage_univ T h).symm
+    (coverEntropyInfEntourage_univ T h)
 
 lemma coverEntropy_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropy T F :=
