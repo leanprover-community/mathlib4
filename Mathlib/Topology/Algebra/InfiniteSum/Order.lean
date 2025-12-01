@@ -292,7 +292,7 @@ theorem hasProd_of_isGLB_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMo
     [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h₀ : ∀ i, f i ≤ 1)
     (hf : IsGLB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
-  tendsto_atTop_isGLB (Finset.prod_anti_set_of_le_one' h₀) hf
+  tendsto_atTop_isGLB (Finset.prod_anti_set_of_le_one h₀) hf
 
 @[to_additive]
 theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α]
