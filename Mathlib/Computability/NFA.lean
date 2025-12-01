@@ -533,7 +533,7 @@ theorem mem_kstarStates_not_none {S : Set σ} : none ∉ M.kstarStates S := by
 /-- State `none` is only reachable from itself in `M.kstar`. -/
 theorem mem_stepSet_kstar_not_none {S : Set (Option σ)} {a : α} :
     none ∉ M.kstar.stepSet S a := by
-  simp [stepSet]
+  simp only [stepSet, kstar_step, kstarStep, mem_iUnion, exists_prop, not_exists, not_and]
   intro so
   cases so with
   | none =>
