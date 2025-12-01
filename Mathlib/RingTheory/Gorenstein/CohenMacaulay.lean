@@ -659,6 +659,22 @@ lemma add_one_eq_top_iff (a : WithBot ℕ∞) : a + 1 = ⊤ ↔ a = ⊤ := by
     | top => rfl
     | coe n => simpa using WithBot.coe_inj.not.mpr (ENat.coe_ne_top (n + 1))
 
+lemma injectiveDimension_quotient_span_regular
+    (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+    injectiveDimension (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) + 1 =
+    injectiveDimension (ModuleCat.of R R) := by
+  let e : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x R)) ≅
+    (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) :=
+    { __ := Submodule.quotEquivOfEq _ (Ideal.span {x}) (by
+        simp [← Submodule.ideal_span_singleton_smul])
+      map_smul' r y := by
+        rcases Ideal.Quotient.mk_surjective r with ⟨s, hs⟩
+        simp only [← hs, IsTorsionBySet.mk_smul, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+          map_smul, LinearEquiv.coe_coe, RingHomCompTriple.comp_apply, smul_eq_mul]
+        rfl }.toModuleIso
+  rw [← injectiveDimension_quotSMulTop_succ_eq_injectiveDimension reg reg mem,
+    injectiveDimension_eq_of_iso e]
+
 open Pointwise in
 lemma quotient_span_regular_isGorenstein_iff_isGorenstein
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
@@ -670,14 +686,48 @@ lemma quotient_span_regular_isGorenstein_iff_isGorenstein
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
   rw [isGorensteinLocalRing_def, isGorensteinLocalRing_def,
-    ← injectiveDimension_quotSMulTop_succ_eq_injectiveDimension reg reg mem]
-  let e : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x R)) ≅
-    (ModuleCat.of (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x})) :=
-    { __ := Submodule.quotEquivOfEq _ (Ideal.span {x}) (by
-        simp [← Submodule.ideal_span_singleton_smul])
-      map_smul' r y := by
-        rcases Ideal.Quotient.mk_surjective r with ⟨s, hs⟩
-        simp only [← hs, IsTorsionBySet.mk_smul, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-          map_smul, LinearEquiv.coe_coe, RingHomCompTriple.comp_apply, smul_eq_mul]
-        rfl }.toModuleIso
-  simp [injectiveDimension_eq_of_iso e, add_one_eq_top_iff]
+    ← injectiveDimension_quotient_span_regular R x reg mem]
+  exact (add_one_eq_top_iff _).not
+
+open Ideal in
+lemma quotient_regular_isGorenstein_iff_isGorenstein
+    (rs : List R) (reg : IsRegular R rs) :
+    IsGorensteinLocalRing R ↔ IsGorensteinLocalRing (R ⧸ Ideal.ofList rs) := by
+  generalize h : rs.length = n
+  induction n generalizing R rs with
+  | zero =>
+    rw [List.length_eq_zero_iff.mp h, Ideal.ofList_nil]
+    exact ⟨fun h ↦ IsGorensteinLocalRing.of_ringEquiv (RingEquiv.quotientBot R).symm,
+      fun h ↦ IsGorensteinLocalRing.of_ringEquiv (RingEquiv.quotientBot R)⟩
+  | succ n ih =>
+    match rs with
+    | [] => simp at h
+    | a :: rs' =>
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at h
+      have mem : a ∈ maximalIdeal R := by
+        simp only [mem_maximalIdeal, mem_nonunits_iff]
+        by_contra uni
+        have : Ideal.span {a} = ⊤ :=
+          Ideal.eq_top_of_isUnit_mem  _ (Ideal.mem_span_singleton_self a) uni
+        absurd reg.2.symm
+        simp [this]
+      let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} := {
+        __ := Submodule.quotEquivOfEq _ (Ideal.span {a})
+          (by simp [← Submodule.ideal_span_singleton_smul])
+        map_smul' r x := by
+          rcases Ideal.Quotient.mk_surjective r with ⟨r', hr'⟩
+          rw [← hr']
+          exact map_smul (Submodule.quotEquivOfEq _ (Ideal.span {a}) _) r' _}
+      simp only [isRegular_cons_iff', e.isRegular_congr] at reg
+      let _ : Nontrivial (R ⧸ Ideal.span {a}) :=
+        Ideal.Quotient.nontrivial_iff.mpr (by simpa using mem)
+      let _ : IsLocalHom (Ideal.Quotient.mk (Ideal.span {a})) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      let _ : IsLocalRing (R ⧸ Ideal.span {a}) :=
+        IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {a})) Ideal.Quotient.mk_surjective
+      rw [quotient_span_regular_isGorenstein_iff_isGorenstein R a reg.1 mem,
+        ih (R ⧸ Ideal.span {a}) _ reg.2 (by simp [h])]
+      rw [← Ideal.map_ofList, Ideal.ofList_cons]
+      let e' := DoubleQuot.quotQuotEquivQuotSup (Ideal.span {a}) (Ideal.ofList rs')
+      exact ⟨fun h ↦ IsGorensteinLocalRing.of_ringEquiv e',
+        fun h ↦ IsGorensteinLocalRing.of_ringEquiv e'.symm⟩
