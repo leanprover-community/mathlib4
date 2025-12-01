@@ -336,9 +336,7 @@ theorem Nontrivial.le_infsep_iff {d} (hs : s.Nontrivial) :
 
 theorem Nontrivial.infsep_lt_iff {d} (hs : s.Nontrivial) :
     s.infsep < d ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ dist x y < d := by
-  rw [← not_iff_not]
-  push_neg
-  exact hs.le_infsep_iff
+  contrapose!; exact hs.le_infsep_iff
 
 theorem Nontrivial.le_infsep {d} (hs : s.Nontrivial)
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ dist x y) : d ≤ s.infsep :=
