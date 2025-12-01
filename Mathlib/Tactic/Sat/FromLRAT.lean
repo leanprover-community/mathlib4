@@ -626,8 +626,7 @@ elab "lrat_proof " n:(ident <|> "example")
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      withSaveInfoContext do
-        Term.addTermInfo' n (mkConst name) (isBinder := true)
+      addConstInfo n name
     if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

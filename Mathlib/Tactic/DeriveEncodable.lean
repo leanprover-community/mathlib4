@@ -36,7 +36,7 @@ inductive S : Type where
   | nat (n : ℕ)
   | cons (a b : S)
 ```
-We start by constructing a equivalence `S ≃ ℕ` using the `Nat.pair` function.
+We start by constructing an equivalence `S ≃ ℕ` using the `Nat.pair` function.
 
 Here is an example of how this module constructs an encoding.
 

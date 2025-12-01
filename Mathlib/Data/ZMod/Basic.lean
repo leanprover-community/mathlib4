@@ -908,8 +908,8 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
   { toFun := to_fun,
     invFun := inv_fun,
-    map_mul' := RingHom.map_mul _
-    map_add' := RingHom.map_add _
+    map_mul' := map_mul _
+    map_add' := map_add _
     left_inv := inv.1
     right_inv := inv.2 }
 
@@ -926,8 +926,7 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
-  ⟨by decide⟩
+instance instSubsingletonUnits : Subsingleton (ZMod 2)ˣ := ⟨by decide⟩
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :

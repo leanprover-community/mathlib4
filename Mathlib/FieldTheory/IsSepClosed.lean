@@ -63,18 +63,13 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  -- todo: rename to `splits_of_separable`
-  factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
+  splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ ↦ IsAlgClosed.factors p⟩
+  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
 
 variable {k} {K}
-
-theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
-    p.Splits :=
-  factors_of_separable p hp
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
@@ -200,7 +195,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separabl
 
 theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
-  degree_eq_one_of_irreducible_of_splits hp (IsSepClosed.splits_codomain p hsep)
+  (IsSepClosed.splits_of_separable p hsep).degree_eq_one_of_irreducible hp
 
 variable (K)
 
@@ -215,7 +210,7 @@ theorem algebraMap_surjective
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
-  exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
+  exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
 end IsSepClosed
 
