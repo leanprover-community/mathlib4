@@ -94,7 +94,16 @@ lemma abs_sub_lt_of_lt_lt {m a b : ℕ} (ha : a < m) (hb : b < m) : |(b : ℤ) -
 theorem ediv_eq_zero_of_lt_abs {a b : ℤ} (H1 : 0 ≤ a) (H2 : a < |b|) : a / b = 0 :=
   match b, |b|, abs_eq_natAbs b, H2 with
   | (n : ℕ), _, rfl, H2 => ediv_eq_zero_of_lt H1 H2
+  | -[n+1], _, rfl, H2 => neg_injective <| by rw [← Int.ediv_neg]; exact ediv_eq_zero_of_lt H1 H2
+
+/-! #### mod -/
+
+@[simp]
+theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
+  abs_by_cases (fun i => a % i = a % b) rfl (emod_neg _ _)
+
 theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
+  rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 
 /-! ### properties of `/` and `%` -/
 
