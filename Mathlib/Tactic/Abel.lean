@@ -548,4 +548,4 @@ end Mathlib.Tactic.Abel
 We register `abel` with the `hint` tactic.
 -/
 
-register_hint 1000 abel
+register_hint 950 abel
