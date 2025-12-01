@@ -3,12 +3,14 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Jack McKoen, Christian Merten, Joël Riou, Adam Topaz
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Monad.Comonadicity
-import Mathlib.RingTheory.RingHom.FaithfullyFlat
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.CategoryTheory.Monad.Comonadicity
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
 /-!
 # Faithfully flat descent for modules
@@ -22,6 +24,8 @@ of scalars has effective descent relative to faithfully flat maps (TODO).
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
 -/
+
+@[expose] public section
 
 universe u
 
