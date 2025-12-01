@@ -220,8 +220,24 @@ noncomputable instance (K₁ : CochainComplex C₁ ℤ) :
     (F.map₂CochainComplex.obj K₁).CommShift ℤ where
   commShiftIso n :=
     NatIso.ofComponents (fun K₂ ↦ CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F n)
-  commShiftIso_zero := sorry
-  commShiftIso_add := sorry
+  commShiftIso_zero := by
+    ext K₂ n
+    dsimp
+    ext p q h
+    simp [CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ F 0 p q n h q n (by cutsat) (by cutsat),
+      CochainComplex.shiftFunctorZero_eq]
+  commShiftIso_add a b := by
+    ext K₂ n
+    dsimp
+    ext p q h
+    dsimp at h
+    simp [CochainComplex.ι_mapBifunctorShift₂Iso_hom_f _ _ F (a + b) p q n h
+        (q + a + b) (n + a + b) (by cutsat) (by cutsat),
+      CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ F b p q n h _ _ rfl rfl,
+      CochainComplex.ι_mapBifunctorShift₂Iso_hom_f_assoc _ _ F a p (q + b) (n + b)
+        (by cutsat) (q + a + b) (n + a + b) (by cutsat) (by cutsat), smul_smul,
+        ← Int.negOnePow_add, CochainComplex.shiftFunctorAdd_eq,
+        add_comm (p * b), mul_add, XIsoOfEq]
 
 lemma commShiftIso_map₂CochainComplex_hom_app (K₁ : CochainComplex C₁ ℤ)
     (K₂ : CochainComplex C₂ ℤ) (n : ℤ) :
@@ -247,8 +263,23 @@ noncomputable instance (K₂ : CochainComplex C₂ ℤ) :
     (F.map₂CochainComplex.flip.obj K₂).CommShift ℤ where
   commShiftIso n :=
     NatIso.ofComponents (fun K₁ ↦ CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F n)
-  commShiftIso_zero := sorry
-  commShiftIso_add := sorry
+  commShiftIso_zero := by
+    ext K₂ n
+    dsimp
+    ext p q h
+    simp [CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ F 0 p q n h p n
+      (by cutsat) (by cutsat), CochainComplex.shiftFunctorZero_eq]
+  commShiftIso_add a b := by
+    ext K₂ n
+    dsimp
+    ext p q h
+    dsimp at h
+    simp [CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ F (a + b) p q n h
+        (p + a + b) (n + a + b) (by cutsat) (by cutsat),
+      CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ F b p q n h _ _ rfl rfl,
+      CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ F a (p + b) q (n + b)
+        (by cutsat) (p + a + b) (n + a + b) (by cutsat) (by cutsat),
+      CochainComplex.shiftFunctorAdd_eq, XIsoOfEq, eqToHom_map]
 
 lemma commShiftIso_map₂CochainComplex_flip_hom_app (K₁ : CochainComplex C₁ ℤ)
     (K₂ : CochainComplex C₂ ℤ) (n : ℤ) :
