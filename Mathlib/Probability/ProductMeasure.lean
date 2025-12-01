@@ -443,7 +443,7 @@ lemma infinitePi_pi' {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)
       simpa using Set.pi_mono' (by simp) (Set.image_mono h)
     · exact ⟨{Nonempty.some s_ne}, by simp⟩
   · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
-    exact tendsto_atTop_iInf (prod_anti_set_of_le_one' (by simp [prob_le_one]))
+    exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
 
 @[simp]
 lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
