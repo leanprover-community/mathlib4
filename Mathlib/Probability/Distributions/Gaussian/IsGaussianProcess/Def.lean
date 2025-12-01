@@ -10,6 +10,16 @@ public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
 /-!
 # Gaussian processes
 
+In this file we define a **Gaussian process** as a stochastic process whose finite dimensional
+ditributions are Gaussian.
+
+## Main definition
+
+* `IsGaussianProcess X P`: The stochastic process `X` is Gaussian under the measure `P`.
+
+## Tags
+
+Gaussian process
 -/
 
 open MeasureTheory
