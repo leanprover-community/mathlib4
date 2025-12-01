@@ -56,7 +56,7 @@ section
 /-- The unit linear map (algebra linear map) without requiring `Algebra R A`.
 This is equal to `Algebra.linearMap`, but not defeq. -/
 @[simps]
-def _root_.Algebra.linearMap' (R A : Type*) [Semiring R] [NonAssocSemiring A] [Module R A] :
+def _root_.Algebra.linearMap' (R A : Type*) [Semiring R] [AddCommMonoidWithOne A] [Module R A] :
     R →ₗ[R] A where
   toFun x := x • 1
   map_add' _ _ := add_smul _ _ _
