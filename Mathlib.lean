@@ -5082,6 +5082,7 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.ArithmeticFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.ArithmeticFunction.Examples
 public import Mathlib.NumberTheory.Basic
