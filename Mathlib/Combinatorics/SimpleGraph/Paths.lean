@@ -520,6 +520,18 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
+theorem IsCycle.count_support {c : G.Walk v v} (hc : c.IsCycle) : c.support.count v = 2 := by
+  have := List.count_eq_one_of_mem hc.support_nodup <| c.end_mem_tail_support hc.not_nil
+  have := c.head_support ▸ List.head?_eq_some_head c.support_ne_nil
+  grind
+
+theorem IsCycle.count_support_of_mem {c : G.Walk v v} (hc : c.IsCycle) (hu : u ∈ c.support)
+    (hv : u ≠ v) : c.support.count u = 1 := by
+  have := List.eq_or_mem_of_mem_cons <| List.cons_head_tail c.support_ne_nil ▸ hu
+  have := List.count_eq_one_of_mem hc.support_nodup <| this.resolve_left <| head_support _ ▸ hv
+  have := c.head_support ▸ List.head?_eq_some_head c.support_ne_nil
+  grind
+
 /-- Taking a strict initial segment of a path removes the end vertex from the support. -/
 lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
     (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
