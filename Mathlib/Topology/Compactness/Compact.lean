@@ -535,6 +535,19 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
     simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_notMem] using hQF
   exact this (F.mem_of_superset hsF hsQ)
 
+omit [TopologicalSpace X] in
+theorem isCompact_generateFrom' [T : TopologicalSpace X]
+    {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
+    (h : ∀ (ι : Type u) (U : ι → S), s ⊆ ⋃ i, U i → ∃ J : Set ι, J.Finite ∧ s ⊆ ⋃ i ∈ J, U i) :
+    IsCompact s := by
+  apply isCompact_generateFrom hTS
+  intro P hP hs
+  rw [Set.sUnion_eq_iUnion] at hs
+  obtain ⟨J, hJ, cover⟩ := h P (fun a ↦ ⟨a.1, hP a.2⟩) hs
+  refine ⟨(fun x ↦ x.1) '' J, ⟨by simp, Set.Finite.image _ hJ, ?_⟩⟩
+  simpa only [Set.sUnion_eq_iUnion, Set.iUnion_coe_set, Set.mem_image, Subtype.exists,
+    exists_and_right, exists_eq_right, Set.iUnion_exists] using cover
+
 namespace Filter
 
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
@@ -779,6 +792,15 @@ theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
     CompactSpace X := by
   rw [← isCompact_univ_iff]
   exact isCompact_generateFrom hTS <| by simpa
+
+omit [TopologicalSpace X] in
+theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
+    (hTS : T = generateFrom S)
+    (h : ∀ (ι : Type u) (U : ι → S),
+      ⋃ i, U i = (univ (α := X)) → ∃ J : Set ι, J.Finite ∧ ⋃ i ∈ J, U i = (univ (α := X))) :
+    CompactSpace X := by
+  rw [←isCompact_univ_iff]
+  exact isCompact_generateFrom' hTS <| by simpa
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
