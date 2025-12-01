@@ -241,6 +241,20 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
+/-- The pushforward of `partialTraj κ a (b + 1)` along the point at time `b + 1`
+is the composition of `partialTraj κ a b` with `κ b`. -/
+lemma partialTraj_map_eq_kernel (hab : a ≤ b) :
+    (partialTraj κ a (b + 1)).map (fun x ↦ x ⟨b + 1, mem_Iic.2 le_rfl⟩) =
+      κ b ∘ₖ partialTraj κ a b := by
+  have hp : (fun (x : Π n : Iic (b + 1), X n) ↦ x ⟨b + 1, mem_Iic.2 le_rfl⟩) ∘
+      _root_.IicProdIoc b (b + 1) = (piSingleton b).symm ∘ Prod.snd := by
+    ext; simp [_root_.IicProdIoc, piSingleton]
+  rw [partialTraj_succ_eq_comp hab, map_comp, partialTraj_succ_self,
+    ← map_comp_right _ (by fun_prop) (by fun_prop), hp,
+    map_comp_right _ (by fun_prop) (by fun_prop), ← snd_eq, snd_prod,
+    ← map_comp_right _ (by fun_prop) (by fun_prop)]
+  simp
+
 lemma partialTraj_succ_map_frestrictLe₂ (a b : ℕ) :
     (partialTraj κ a (b + 1)).map (frestrictLe₂ b.le_succ) = partialTraj κ a b := by
   obtain hab | hba := le_or_gt a b

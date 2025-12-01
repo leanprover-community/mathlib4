@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 public import Mathlib.MeasureTheory.Function.FactorsThrough
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
-public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 public import Mathlib.Probability.Kernel.SetIntegral
@@ -544,16 +543,10 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
 /-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
 lemma traj_map_eq_kernel {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
   set f : (Π n, X n) → X (a + 1) := fun x ↦ x (a + 1)
-  set g : (Π n : Iic (a + 1), X n) → X (a + 1) := fun x ↦ x ⟨a + 1, by simp⟩
+  set g : (Π n : Iic (a + 1), X n) → X (a + 1) := fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩
   have hf : f = g ∘ (frestrictLe (a + 1)) := by rfl
-  have hp : g ∘ IicProdIoc a (a + 1) = (piSingleton a).symm ∘ Prod.snd := by
-    ext
-    simp [g, _root_.IicProdIoc, piSingleton]
-  rw [hf, map_comp_right _ (by fun_prop) (by fun_prop), traj_map_frestrictLe, partialTraj_succ_self,
-    ← map_comp_right _ (by fun_prop) (by fun_prop), hp,
-    map_comp_right _ (by fun_prop) (by fun_prop), ← snd_eq, snd_prod,
-    ← map_comp_right _ (by fun_prop) (by fun_prop)]
-  simp
+  rw [hf, map_comp_right _ (by fun_prop) (by fun_prop), traj_map_frestrictLe,
+    partialTraj_map_eq_kernel (_root_.le_refl a), partialTraj_self, comp_id]
 
 variable (κ)
 
@@ -673,12 +666,12 @@ lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
   any_goals exact ms.preimage (by fun_prop)
   fun_prop
 
-lemma partialTraj_compProd_kernel_eq_traj_map {a : ℕ} {x₀ : Π n : Iic 0, X n} :
-    (partialTraj κ 0 a x₀) ⊗ₘ (κ a) = (traj κ 0 x₀).map (fun x ↦ (frestrictLe a x, x (a + 1))) := by
-  set f := fun x ↦ (frestrictLe a x, x (a + 1))
-  set g := fun x ↦ (frestrictLe a x, x)
-  have hf : f = (Prod.map id (fun x ↦ x (a + 1))) ∘ g := rfl
-  rw [hf, ← Measure.map_map (by fun_prop) (by fun_prop), ← partialTraj_compProd_traj zero_le',
+lemma partialTraj_compProd_kernel_eq_traj_map {a b : ℕ} (hab : a ≤ b) {x₀ : Π n : Iic a, X n} :
+    (partialTraj κ a b x₀) ⊗ₘ (κ b) = (traj κ a x₀).map (fun x ↦ (frestrictLe b x, x (b + 1))) := by
+  set f := fun x ↦ (frestrictLe b x, x (b + 1))
+  set g := fun x ↦ (frestrictLe b x, x)
+  have hf : f = (Prod.map id (fun x ↦ x (b + 1))) ∘ g := rfl
+  rw [hf, ← Measure.map_map (by fun_prop) (by fun_prop), ← partialTraj_compProd_traj hab,
     ← MeasureTheory.Measure.compProd_map (by fun_prop), traj_map_eq_kernel]
 
 theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
@@ -765,17 +758,6 @@ end integral
 
 section trajMeasure
 
-instance : Unique (Iic 0) := by simp only [mem_Iic, nonpos_iff_eq_zero]; exact Unique.subtypeEq 0
-
-lemma coe_default_Iic_zero : ((default : Iic 0) : ℕ) = 0 := by
-  calc _ = ((⟨0, by simp⟩ : Iic 0) : ℕ) := by congr; exact (Unique.eq_default _).symm
-    _ = _ := by simp
-
-/-- Measurable equivalence between `(i : Iic 0) → X i` and `X 0`. -/
-def MeasurableEquiv.piIicZero (X : ℕ → Type*) [∀ n, MeasurableSpace (X n)] :
-    ((i : Iic 0) → X i) ≃ᵐ X 0 :=
-  (MeasurableEquiv.piUnique _).trans (coe_default_Iic_zero.symm ▸ MeasurableEquiv.refl _)
-
 /-- Distribution of the trajectory obtained by starting with `μ₀` and iterating the kernels `κ`. -/
 noncomputable
 def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1)))
@@ -798,7 +780,7 @@ lemma trajMeasure_map_frestrictLe_compProd_kernel_eq_trajMeasure_map {a : ℕ} :
     traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
   congr with x₀
   rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
-    partialTraj_compProd_kernel_eq_traj_map]
+    partialTraj_compProd_kernel_eq_traj_map zero_le']
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
 trajectory up to time `a` corresponds to the kernel `κ a`. -/
@@ -806,7 +788,7 @@ lemma condDistrib_trajMeasure_ae_eq_kernel {a : ℕ}
     [StandardBorelSpace (X (a + 1))] [Nonempty (X (a + 1))] :
     condDistrib (fun x ↦ x (a + 1)) (frestrictLe a) (trajMeasure μ₀ κ)
       =ᵐ[(trajMeasure μ₀ κ).map (frestrictLe a)] κ a := by
-  apply condDistrib_ae_eq_of_measure_eq_compProd_of_measurable (by measurability) (by measurability)
+  apply condDistrib_ae_eq_of_measure_eq_compProd_of_measurable (by fun_prop) (by fun_prop)
   exact trajMeasure_map_frestrictLe_compProd_kernel_eq_trajMeasure_map.symm
 
 end trajMeasure
