@@ -66,23 +66,10 @@ theorem coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
 def toCat (C : Grpd) : Cat.{v, u} :=
   Cat.of C
 
+/-- Bicategory structure on `Grpd` -/
 @[simps!]
 instance bicategory : Bicategory.{max v u, max v u} Grpd.{v, u} :=
   Bicategory.InducedBicategory.bicategory toCat
-
--- /-- Bicategory structure on `Grpd` -/
--- instance bicategory : Bicategory.{max v u, max v u} Grpd.{v, u} where
---   Hom C D := C ⥤ D
---   id C := 𝟭 C
---   comp F G := F ⋙ G
---   homCategory := fun _ _ => Functor.category
---   whiskerLeft {_} {_} {_} F _ _ η := Functor.whiskerLeft F η
---   whiskerRight {_} {_} {_} _ _ η H := Functor.whiskerRight η H
---   associator {_} {_} {_} _ := Functor.associator
---   leftUnitor {_} _ := Functor.leftUnitor
---   rightUnitor {_} _ := Functor.rightUnitor
---   pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
---   triangle {_} {_} {_} := Functor.triangle
 
 instance bicategory.strict : Bicategory.Strict Grpd.{v, u} :=
   inferInstanceAs (Bicategory.Strict (InducedBicategory _ toCat))
