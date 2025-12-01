@@ -576,8 +576,10 @@ end Matrix
 section IsStablyFiniteRing
 
 /-- A semiring is stably finite if every matrix ring over it is Dedekind-finite. -/
-abbrev IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop :=
-  ∀ n, IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
+@[mk_iff] class IsStablyFiniteRing (R) [MulOne R] [AddCommMonoid R] : Prop where
+  isDedekindFiniteMonoid (n : ℕ) : IsDedekindFiniteMonoid (Matrix (Fin n) (Fin n) R)
+
+attribute [instance] IsStablyFiniteRing.isDedekindFiniteMonoid
 
 instance (priority := low) (R) [NonAssocSemiring R]
     [IsStablyFiniteRing R] : IsDedekindFiniteMonoid R :=
@@ -588,7 +590,8 @@ instance (priority := low) (R) [NonAssocSemiring R]
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 theorem RingHom.isStablyFiniteRing_of_injective [FunLike F R S] [RingHomClass F R S] (f : F)
-    (hf : Function.Injective f) [IsStablyFiniteRing S] : IsStablyFiniteRing R := fun n ↦
+    (hf : Function.Injective f) [IsStablyFiniteRing S] : IsStablyFiniteRing R where
+  isDedekindFiniteMonoid n :=
   let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) R ↦ M.map f,
     Matrix.map_one _ (map_zero f) (map_one f)⟩ fun _ _ ↦ Matrix.map_mul
   MonoidHom.isDedekindFiniteMonoid_of_injective f <| Matrix.map_injective hf

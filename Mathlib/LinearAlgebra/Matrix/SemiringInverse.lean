@@ -205,7 +205,7 @@ theorem detp_smul_adjp (hAB : A * B = 1) :
     add_comm A, add_assoc, ((isAddUnit_detp_mul_detp hAB).smul_right _).add_right_inj] at h
 
 instance instIsStablyFiniteRingOfCommSemiring : IsStablyFiniteRing R := by
-  refine fun n ↦ ⟨fun {A B} hAB ↦ ?_⟩
+  refine ⟨fun n ↦ ⟨fun {A B} hAB ↦ ?_⟩⟩
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
   replace h := congr(B * $(detp_smul_adjp hAB))

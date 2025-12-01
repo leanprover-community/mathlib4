@@ -1183,7 +1183,7 @@ def matrixRingEquivEndVecMulOpposite : Matrix ι ι A ≃+* (Module.End A (ι �
 
 theorem isStablyFiniteRing_iff_isDedekindFiniteMonoid_moduleEnd :
     IsStablyFiniteRing A ↔ ∀ n, IsDedekindFiniteMonoid (Module.End A (Fin n → A)) := by
-  simp_rw [IsStablyFiniteRing, MulEquiv.isDedekindFiniteMonoid_iff
+  simp_rw [isStablyFiniteRing_iff, MulEquiv.isDedekindFiniteMonoid_iff
     (matrixRingEquivEndVecMulOpposite (ι := Fin _) (A := A)),
     MulOpposite.isDedekindFiniteMonoid_iff]
 

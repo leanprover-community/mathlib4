@@ -51,7 +51,7 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fin
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
 
-instance [Semiring α] [Finite α] : IsStablyFiniteRing α := inferInstance
+instance [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
 
 section
 variable (R)
@@ -659,16 +659,17 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
 
 end RingEquiv
 
-instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ :=
-  fun n ↦ let f := MonoidHom.mk ⟨RingEquiv.mopMatrix, by simp⟩ (map_mul _)
-  MonoidHom.isDedekindFiniteMonoid_of_injective f RingEquiv.mopMatrix.injective
+instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
+  isDedekindFiniteMonoid n := let f := MonoidHom.mk ⟨RingEquiv.mopMatrix, by simp⟩ (map_mul _)
+    MonoidHom.isDedekindFiniteMonoid_of_injective f RingEquiv.mopMatrix.injective
 
 open MulOpposite in
 theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
     IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
-  mp _ n := let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
-              fun _ _ ↦ by ext; simp [mul_apply]
-    MonoidHom.isDedekindFiniteMonoid_of_injective f (map_injective (op_injective.comp op_injective))
+  mp _ :=
+  ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
+               fun _ _ ↦ by ext; simp [mul_apply]
+  MonoidHom.isDedekindFiniteMonoid_of_injective f (map_injective (op_injective.comp op_injective))⟩
   mpr _ := inferInstance
 
 namespace AlgHom
