@@ -6,12 +6,13 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Noetherian.Basic
-
 
 /-!
 
@@ -60,15 +61,54 @@ theorem LinearMap.shortExact_shortComplexG {f : M →ₗ[R] N} (h : Function.Sur
   mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
   epi_g := (ModuleCat.epi_iff_surjective _).mpr h
 
-instance [UnivLE.{v, w}] [Small.{v} R] (M N : ModuleCat.{v} R) [Projective M] (n : ℕ) :
-    Subsingleton (Ext.{w} M N (n + 1)) :=
-  subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
+/-- The standard short complex `N → P → M` with `P` projective. -/
+noncomputable abbrev ModuleCat.projective_shortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
+    ShortComplex (ModuleCat.{v} R) :=
+  let e : Module.Basis M R (M →₀ Shrink.{v} R) :=
+    ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
+  (e.constr ℕ id).shortComplexG
+
+theorem ModuleCat.projective_shortComplex_shortEaxct [Small.{v} R] (M : ModuleCat.{v} R) :
+    M.projective_shortComplex.ShortExact := by
+  apply LinearMap.shortExact_shortComplexG
+  refine fun m ↦ ⟨Finsupp.single m 1, ?_⟩
+  simp [Module.Basis.constr_apply]
+
+instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projective_shortComplex.X₂ :=
+  Module.Free.finsupp R _ _
+
+/-- The standard short complex `N → P → M` with `P` projective. -/
+noncomputable abbrev ModuleCat.injective_shortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
+    ShortComplex (ModuleCat.{v} R) :=
+  let IP := Classical.choice (EnoughInjectives.presentation M)
+  ShortComplex.mk IP.3 (Limits.cokernel.π IP.3) (Limits.cokernel.condition IP.3)
+
+theorem ModuleCat.injective_shortComplex_shortEaxct [Small.{v} R] (M : ModuleCat.{v} R) :
+    M.injective_shortComplex.ShortExact :=
+  let IP := Classical.choice (EnoughInjectives.presentation M)
+  { exact := ShortComplex.exact_cokernel IP.3
+    mono_f := IP.4
+    epi_g := Limits.coequalizer.π_epi }
+
+instance [Small.{v} R] (M : ModuleCat.{v} R) : Injective M.injective_shortComplex.X₂ :=
+  (Classical.choice (EnoughInjectives.presentation M)).2
 
 /-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is projective. -/
 theorem extClass_precomp_surjective_of_projective_X₂ [UnivLE.{v, w}] [Small.{v} R]
     (M : ModuleCat.{v} R) {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (n : ℕ)
     [Projective S.X₂] : Function.Surjective (h.extClass.precomp M (add_comm 1 n)) := by
+  let _ := Ext.subsingleton_of_projective S.X₂ M
   have epi := (Ext.contravariant_sequence_exact₃' h M n (n + 1) (add_comm 1 n)).epi_f
     ((AddCommGrpCat.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton.eq_zero_of_tgt _)
+  exact (AddCommGrpCat.epi_iff_surjective _).mp epi
+
+/-- The connection maps in the covariant long exact sequence of `Ext` are surjective if
+the middle term of the short exact sequence is injective. -/
+theorem extClass_postcomp_surjective_of_projective_X₂ [UnivLE.{v, w}] [Small.{v} R]
+    {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (M : ModuleCat.{v} R) (n : ℕ)
+    [Injective S.X₂] : Function.Surjective (h.extClass.postcomp M (rfl : n + 1 = n + 1)) := by
+  let _ := Ext.subsingleton_of_injective M S.X₂
+  have epi := (Ext.covariant_sequence_exact₁' M h n (n + 1) rfl).epi_f
+    ((AddCommGrpCat.of (Ext M S.X₂ (n + 1))).isZero_of_subsingleton.eq_zero_of_tgt _)
   exact (AddCommGrpCat.epi_iff_surjective _).mp epi

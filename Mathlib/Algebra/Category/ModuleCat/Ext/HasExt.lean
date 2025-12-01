@@ -10,21 +10,18 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 /-!
 
-# Module Category has Ext
+# HasExt instance for Module Category
+
+For `ModuleCat.{v} R`, if assuming `Small.{v} R`, it has enough projectives, thus for any universe
+level `w` with `UnivLE.{v, w}`, `HasExt.{w} (ModuleCat.{v} R)`.
 
 -/
 
 @[expose] public section
 
-universe v u
+universe w v u
 
-variable (R : Type u) [CommRing R]
-
-open CategoryTheory Abelian
-
-universe w
-
-variable [UnivLE.{v, w}]
+variable (R : Type u) [CommRing R] [UnivLE.{v, w}]
 
 instance [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
