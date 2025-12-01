@@ -56,6 +56,19 @@ theorem sum_nonpos (h : ∀ i ∈ f.support, h₁ i (f i) ≤ 0) : f.sum h₁ �
 
 end OrderedAddCommMonoid
 
+section IsOrderedCancelAddMonoid
+
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
+variable {f : ι →₀ α} {h₁ : ι → α → β}
+
+theorem sum_pos (h : ∀ i ∈ f.support, 0 < h₁ i (f i)) (hs : f.support.Nonempty) :
+    0 < f.sum h₁ := Finset.sum_pos h hs
+
+theorem sum_pos' (h : ∀ i ∈ f.support, 0 ≤ h₁ i (f i))
+    (hs : ∃ i ∈ f.support, 0 < h₁ i (f i)) : 0 < f.sum h₁ := Finset.sum_pos' h hs
+
+end IsOrderedCancelAddMonoid
+
 section Preorder
 variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
 

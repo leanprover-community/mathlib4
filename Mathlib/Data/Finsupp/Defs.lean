@@ -312,6 +312,11 @@ theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →�
   ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
 
 @[simp]
+theorem mapRange_eq_zero {a : α →₀ M} {f : M → N} (hf : Function.Injective f)
+    (h : f 0 = 0) : mapRange f h a = 0 ↔ a = 0 := by
+  simp [Finsupp.ext_iff, ← h, hf.eq_iff]
+
+@[simp]
 theorem mapRange_id (g : α →₀ M) : mapRange id rfl g = g :=
   ext fun _ => rfl
 
