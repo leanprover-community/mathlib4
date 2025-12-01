@@ -21,13 +21,11 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 @[expose] public section
 
-universe v u w v'
+universe w v u
 
 variable (R : Type u) [CommRing R]
 
-variable (M : Type v) [AddCommGroup M] [Module R M]
-
-variable (N : Type v) [AddCommGroup N] [Module R N]
+variable (M : Type v) [AddCommGroup M] [Module R M] (N : Type v) [AddCommGroup N] [Module R N]
 
 open CategoryTheory Abelian
 
@@ -47,7 +45,9 @@ theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGro
   use (Fin m →₀ Shrink.{v, u} R), inferInstance, inferInstance, inferInstance, inferInstance, f
   simpa [f] using hf'
 
-def LinearMap.shortComplexG (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
+variable {R M N}
+
+abbrev LinearMap.shortComplexG (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
   g := ModuleCat.ofHom.{v} f
   zero := by ext; simp
@@ -62,9 +62,12 @@ theorem LinearMap.shortExact_shortComplexG {f : M →ₗ[R] N} (h : Function.Sur
 instance [UnivLE.{v, w}] [Small.{v} R] (M N : ModuleCat.{v} R) [Projective M] (n : ℕ) :
     Subsingleton (Ext.{w} M N (n + 1)) :=
   subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
--- can be strengthen to `ProjDimensionLE`
 
-/-- ... -/
-theorem foo [UnivLE.{v, w}] [Small.{v} R] (M : ModuleCat.{v} R) {S : ShortComplex (ModuleCat.{v} R)}
-    (h : S.ShortExact) (n : ℕ) : Function.Surjective (h.extClass.precomp M (add_comm 1 n)) := by
-  sorry
+/-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
+the middle term of the short exact sequence is projective. -/
+theorem extClass_precomp_surjective_of_projective_X₂ [UnivLE.{v, w}] [Small.{v} R]
+    (M : ModuleCat.{v} R) {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (n : ℕ)
+    [Projective S.X₂] : Function.Surjective (h.extClass.precomp M (add_comm 1 n)) := by
+  have epi := (Ext.contravariant_sequence_exact₃' h M n (n + 1) (add_comm 1 n)).epi_f
+    ((AddCommGrpCat.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton.eq_zero_of_tgt _)
+  exact (AddCommGrpCat.epi_iff_surjective _).mp epi
