@@ -73,7 +73,7 @@ namespace IsApproximateSubgroup
 lemma one_le (hA : IsApproximateSubgroup K A) : 1 ≤ K := by
   obtain ⟨F, hF, hSF⟩ := hA.sq_covBySMul
   grw [← hF]
-  have : F.Nonempty := by by_contra! h; rcases h with rfl; simp [hA.nonempty.ne_empty] at hSF
+  have : F.Nonempty := by by_contra! rfl; simp [hA.nonempty.ne_empty] at hSF
   simpa
 
 @[to_additive]

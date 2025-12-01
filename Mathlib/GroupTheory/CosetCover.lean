@@ -197,7 +197,7 @@ Then at least one subgroup `H i` has finite index in `G`. -/
 theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex := by
   classical
   have ⟨j, hj⟩ : s.Nonempty := by
-    by_contra! hempty; rcases hempty with rfl
+    by_contra! rfl
     rw [← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
     exact Set.empty_ne_univ hcovers
   by_cases hcovers' : ⋃ i ∈ s.filter (H · = H j), g i • (H i : Set G) = Set.univ
