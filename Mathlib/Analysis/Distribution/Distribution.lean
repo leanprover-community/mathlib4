@@ -20,6 +20,7 @@ open scoped BoundedContinuousFunction NNReal Topology ContDiff Distributions
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [NormedSpace 𝕂 F']
   {n k : ℕ∞}
 
 -- TODO: def or abbrev?
@@ -41,6 +42,29 @@ example : ContinuousSMul ℝ 𝓓'(Ω, F) := inferInstance
 example : LocallyConvexSpace ℝ 𝓓'(Ω, F) := inferInstance
 
 namespace Distribution
+
+section mapCLM
+
+def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
+  .postcomp (𝓓^{n}(Ω, ℝ)) A
+
+@[simp]
+lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+    mapCLM A T f = A (T f) := rfl
+
+-- TODO: naming...
+noncomputable def mapCLE (A : F ≃L[ℝ] F') : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F') :=
+  (ContinuousLinearEquiv.refl ℝ 𝓓^{n}(Ω, ℝ)).arrowCongr A
+
+@[simp]
+lemma mapCLE_apply {A : F ≃L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+    mapCLE A T f = A (T f) := rfl
+
+@[simp]
+lemma mapCLE_symm {A : F ≃L[ℝ] F'} :
+    (mapCLE A : 𝓓'^{n}(Ω, F) ≃L[ℝ] 𝓓'^{n}(Ω, F')).symm = mapCLE A.symm := rfl
+
+end mapCLM
 
 section ofFun
 
@@ -95,5 +119,50 @@ lemma lineDerivCLM_apply {v : E} {T : 𝓓'(Ω, F)} {φ : 𝓓(Ω, ℝ)} :
   rfl
 
 end lineDeriv
+
+-- Everything below is quite experimental, although mathematically correct
+
+section fderiv
+
+variable [FiniteDimensional ℝ E]
+
+-- NOTE: these definitions will change (but not their type).
+-- Essentially, using the fact that `E` is finite dimensional, you can put the `v : E`
+-- argument wherever you want and keep continuity
+
+-- TODO: where to put the minus ? Doesn't matter mathematically of course
+noncomputable def fderivCLM :
+    𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E →L[ℝ] F) where
+  toFun T :=
+  { toFun f :=
+    { toFun v := lineDerivCLM v T f
+      map_add' := sorry
+      map_smul' := sorry
+      cont := have : FiniteDimensional ℝ E := inferInstance; sorry }
+    map_add' := sorry
+    map_smul' := sorry
+    cont := sorry }
+  map_add' := sorry
+  map_smul' := sorry
+  cont := sorry
+
+end fderiv
+
+section iteratedFDeriv
+
+variable [FiniteDimensional ℝ E]
+
+noncomputable def iteratedFDerivCLM (i : ℕ) :
+    𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E [×i]→L[ℝ] F) :=
+  Nat.recOn i
+    (mapCLM (continuousMultilinearCurryFin0 ℝ E F).symm)
+    fun j rec ↦
+      letI C : (E →L[ℝ] E [×j]→L[ℝ] F) →L[ℝ] (E [×(j+1)]→L[ℝ] F) :=
+        (continuousMultilinearCurryLeftEquiv ℝ (fun (_ : Fin j.succ) ↦ E) F).symm
+      (mapCLM C) ∘L fderivCLM ∘L rec
+
+-- TODO: write lemmas for this...
+
+end iteratedFDeriv
 
 end Distribution
