@@ -288,7 +288,7 @@ theorem hasProd_of_isLUB_of_one_le [CommMonoid α] [LinearOrder α] [IsOrderedMo
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
-theorem hasProd_of_isLUB_of_nonneg_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
+theorem hasProd_of_isGLB_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
     [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h₀ : ∀ i, f i ≤ 1)
     (hf : IsGLB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
