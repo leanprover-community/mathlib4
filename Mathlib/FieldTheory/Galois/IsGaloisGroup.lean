@@ -121,8 +121,7 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
 attribute [local instance] FractionRing.liftAlgebra in
 /--
 Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulSemiringAction`
-on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A` and furthermore
-`FractionRing B` may already have a `SMul` action.
+on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
 -/
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
     [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
@@ -146,7 +145,6 @@ theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [NoZeroSMulDiviso
     congr
     exact IsFractionRing.fieldEquivOfAlgEquiv_algebraMap (FractionRing A) _ _ _ b⟩
   apply IsGaloisGroup.to_isFractionRing G A B _ _
-
 
 open NumberField
 

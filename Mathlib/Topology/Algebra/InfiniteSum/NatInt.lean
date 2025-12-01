@@ -426,8 +426,7 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
-        simp only [mem_sdiff, mem_union, mem_image, Nat.cast_eq_zero, exists_eq_right, neg_eq_zero,
-          or_self, mem_inter, and_self, and_not_self, u1, u2] at hx
+        simp [u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
         suffices x = 0 by simp only [this, if_true]
