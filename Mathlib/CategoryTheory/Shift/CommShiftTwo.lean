@@ -104,6 +104,8 @@ namespace CommShift₂
 
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
+attribute [reassoc] comm
+
 end CommShift₂
 
 end Functor
