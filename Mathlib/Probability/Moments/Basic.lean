@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Probability.IdentDistrib
 
-import Mathlib.Probability.Independence.Integration
-
 /-!
 # Moments and moment-generating function
 
