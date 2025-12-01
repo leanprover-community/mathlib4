@@ -73,10 +73,26 @@ end ofFun
 
 section lineDeriv
 
-variable (n) in
-def lineDerivWithOrderCLM (v : E) :
-    𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F) := sorry
-  -- ContinuousLinearMap.precomp F
+-- TODO: where to put the minus ? Doesn't matter mathematically of course
+variable (n k) in
+noncomputable def lineDerivWithOrderCLM (v : E) :
+    𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{k}(Ω, F) :=
+  .precomp F (- TestFunction.lineDerivWithOrderCLM k n v)
+
+@[simp]
+lemma lineDerivWithOrderCLM_apply {v : E} {T : 𝓓'^{n}(Ω, F)} {φ : 𝓓^{k}(Ω, ℝ)} :
+    lineDerivWithOrderCLM n k v T φ = T (- TestFunction.lineDerivWithOrderCLM k n v φ) :=
+  rfl
+
+-- TODO: where to put the minus ? Doesn't matter mathematically of course
+noncomputable def lineDerivCLM (v : E) :
+    𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, F) :=
+  .precomp F (- TestFunction.lineDerivCLM v)
+
+@[simp]
+lemma lineDerivCLM_apply {v : E} {T : 𝓓'(Ω, F)} {φ : 𝓓(Ω, ℝ)} :
+    lineDerivCLM v T φ = T (- TestFunction.lineDerivCLM v φ) :=
+  rfl
 
 end lineDeriv
 
