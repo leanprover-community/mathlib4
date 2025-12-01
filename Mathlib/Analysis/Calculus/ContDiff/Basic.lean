@@ -1374,24 +1374,9 @@ theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 (n + 1) f₂ s₂ ↔
       DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ s₂) ∧
         ContDiffOn 𝕜 n (derivWithin f₂ s₂) s₂ := by
-  rw [contDiffOn_succ_iff_fderivWithin hs, and_congr_right_iff]
-  intro _
-  constructor
-  · rintro ⟨h', h⟩
-    refine ⟨h', ?_⟩
-    have : derivWithin f₂ s₂ = (fun u : 𝕜 →L[𝕜] F => u 1) ∘ fderivWithin 𝕜 f₂ s₂ := by
-      ext x; rfl
-    simp_rw [this]
-    apply ContDiff.comp_contDiffOn _ h
-    exact (isBoundedBilinearMap_apply.isBoundedLinearMap_left _).contDiff
-  · rintro ⟨h', h⟩
-    refine ⟨h', ?_⟩
-    have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂ := by
-      ext x; simp [derivWithin]
-    simp only [this]
-    apply ContDiff.comp_contDiffOn _ h
-    have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight
-    exact (this.isBoundedLinearMap_right _).contDiff
+  have : derivWithin f₂ s₂ = toSpanSingletonCLE.symm ∘ fderivWithin 𝕜 f₂ s₂ := by
+    ext; simp [← fderivWithin_derivWithin]
+  simp [contDiffOn_succ_iff_fderivWithin hs, this, ContinuousLinearEquiv.comp_contDiffOn_iff]
 
 theorem contDiffOn_infty_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ := by
