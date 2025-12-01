@@ -100,6 +100,7 @@ def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) :
   hom := ⟨φ.hom⟩
   inv := ⟨φ.inv⟩
 
+variable (F) in
 @[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
   whiskerLeft {_ _ _} h {_ _} η := mkHom₂ <| h.hom ◁ Hom₂.hom η
@@ -143,6 +144,10 @@ attribute [local simp] Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso
   Strict.associator_eqToIso
 
 instance : Strict (InducedBicategory C F) where
+
+instance forget_full : (forget (F := F)).toFunctor.Full where map_surjective f := ⟨mkHom f, rfl⟩
+
+instance forget_faithful : (forget (F := F)).toFunctor.Faithful where
 
 end
 
