@@ -226,6 +226,10 @@ theorem openSegment_eq_image_lineMap (x y : E) :
   convert openSegment_eq_image 𝕜 x y using 2
   exact AffineMap.lineMap_apply_module _ _ _
 
+theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
+    AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
+  openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
+
 @[simp]
 theorem image_segment (f : E →ᵃ[𝕜] F) (a b : E) : f '' [a -[𝕜] b] = [f a -[𝕜] f b] :=
   Set.ext fun x => by

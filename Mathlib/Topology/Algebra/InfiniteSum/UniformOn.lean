@@ -119,6 +119,11 @@ theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn 
     tendsto_nhds_unique_inseparable (hp.hasProd hx) (hp.hasProd hx).multipliable.hasProd
 
 @[to_additive]
+theorem multipliableUniformlyOn_iff_hasProdUniformlyOn :
+    MultipliableUniformlyOn f s ↔ HasProdUniformlyOn f (∏' i, f i ·) s :=
+  ⟨MultipliableUniformlyOn.hasProdUniformlyOn, HasProdUniformlyOn.multipliableUniformlyOn⟩
+
+@[to_additive]
 lemma HasProdUniformlyOn.mono {t : Set β}
     (h : HasProdUniformlyOn f g t) (hst : s ⊆ t) : HasProdUniformlyOn f g s :=
   hasProdUniformlyOn_iff_tendstoUniformlyOn.mpr <| h.tendstoUniformlyOn.mono hst
@@ -190,8 +195,8 @@ lemma HasProdLocallyUniformlyOn.exists_hasProdUniformlyOn [LocallyCompactSpace �
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g s) :
     HasProdLocallyUniformlyOn f g s := by
-  simp [HasProdLocallyUniformlyOn, hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
-  exact TendstoUniformlyOn.tendstoLocallyUniformlyOn h
+  simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn, HasProdLocallyUniformlyOn] at *
+  exact h.tendstoLocallyUniformlyOn
 
 @[to_additive]
 lemma hasProdLocallyUniformlyOn_of_forall_compact (hs : IsOpen s) [LocallyCompactSpace β]
@@ -442,7 +447,7 @@ lemma hasProdLocallyUniformly_of_of_forall_exists_nhds
 @[to_additive]
 lemma HasProdUniformly.hasProdLocallyUniformly (h : HasProdUniformly f g) :
     HasProdLocallyUniformly f g := by
-  simp [HasProdLocallyUniformly, hasProdUniformly_iff_tendstoUniformly] at *
+  simp only [hasProdUniformly_iff_tendstoUniformly, HasProdLocallyUniformly] at *
   exact TendstoUniformly.tendstoLocallyUniformly h
 
 @[to_additive]

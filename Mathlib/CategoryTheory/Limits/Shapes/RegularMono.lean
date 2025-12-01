@@ -245,6 +245,8 @@ instance (priority := 100) (f : X ⟶ Y) [IsRegularMono f] : StrongMono f :=
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) (h : RegularMono f) [Epi f] : IsIso f :=
   have := RegularMono.strongMono h
+theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) (h : RegularMono f) [Epi f] : IsIso f :=
+  have := RegularMono.strongMono h
   isIso_of_epi_of_strongMono _
 
 section
@@ -382,29 +384,40 @@ theorem effectiveEpi_of_kernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
 
 @[deprecated (since := "2025-11-20")] alias effectiveEpiOfKernelPair := effectiveEpi_of_kernelPair
 
+/--
+Given a kernel pair of an effective epimorphism `f : X ⟶ B`, the induced cofork is a coequalizer.
+-/
+def isColimitCoforkOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f]
+    (c : PullbackCone f f) (hc : IsLimit c) :
+    IsColimit (Cofork.ofπ f c.condition) where
+  desc s := EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+      simp only [Cofork.app_one_eq_π]
+      rw [← PullbackCone.IsLimit.lift_snd hc g₁ g₂ hg, Category.assoc,
+        ← Cofork.app_zero_eq_comp_π_right]
+      simp)
+  fac s := by
+    have := EffectiveEpi.fac f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+      simp only [Cofork.app_one_eq_π]
+      rw [← PullbackCone.IsLimit.lift_snd hc g₁ g₂ hg,
+        Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
+      simp)
+    rintro (_ | _)
+    all_goals simp_all
+  uniq _ _ h := EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one)
+
 /-- An effective epi which has a kernel pair is a regular epi. -/
+noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
 noncomputable def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
   left := pullback.fst f f
   right := pullback.snd f f
   w := pullback.condition
-  isColimit := {
-    desc := fun s ↦ EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
-      simp only [Cofork.app_one_eq_π]
-      rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
-      simp)
-    fac := by
-      intro s j
-      have := EffectiveEpi.fac f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
-          simp only [Cofork.app_one_eq_π]
-          rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
-          simp)
-      simp only [Functor.const_obj_obj, Cofork.app_one_eq_π] at this
-      cases j with
-      | zero => simp [this]
-      | one => simp [this]
-    uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
+  isColimit := isColimitCoforkOfEffectiveEpi f _ (pullback.isLimit _ _)
+
+noncomputable instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+    [EffectiveEpi f] : IsRegularEpi f :=
+  isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
 
 noncomputable instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : IsRegularEpi f :=
@@ -424,7 +437,10 @@ instance (priority := 100) (f : X ⟶ Y) [IsSplitEpi f] : IsRegularEpi f :=
 `RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def RegularEpi.desc' {W : C} (f : X ⟶ Y) (hf : RegularEpi f) (k : X ⟶ W)
     (h : hf.left ≫ k = hf.right ≫ k) :
+def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
+    (h : hf.left ≫ k = hf.right ≫ k) :
     { l : Y ⟶ W // f ≫ l = k } :=
+  Cofork.IsColimit.desc' hf.isColimit _ h
   Cofork.IsColimit.desc' hf.isColimit _ h
 
 /-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
@@ -433,6 +449,7 @@ See also `Pushout.sndOfEpi` for the basic epimorphism version, and
 `regularOfIsPushoutFstOfRegular` for the flipped version.
 -/
 def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
+    (gr : RegularEpi g) (comm : f ≫ h = g ≫ k) (t : IsColimit (PushoutCocone.mk _ _ comm)) :
     (gr : RegularEpi g) (comm : f ≫ h = g ≫ k) (t : IsColimit (PushoutCocone.mk _ _ comm)) :
     RegularEpi h where
   W := gr.W
@@ -473,6 +490,8 @@ lemma strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
   inferInstance
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
+theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) (h : RegularEpi f) [Mono f] : IsIso f :=
+  have := isRegularEpi_of_regularEpi h
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) (h : RegularEpi f) [Mono f] : IsIso f :=
   have := isRegularEpi_of_regularEpi h
   isIso_of_mono_of_strongEpi _

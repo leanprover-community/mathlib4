@@ -452,7 +452,8 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
     (hsplit : Splits (p.map (algebraMap F K))) : Fintype.card (p.rootSet K) = p.natDegree := by
   classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
-  rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
+  rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← hsplit.natDegree_eq_card_roots,
+    natDegree_map]
 
 /-- If a non-zero polynomial splits, then it has no repeated roots on that field
 if and only if it is separable. -/
@@ -461,8 +462,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf (h.map <| .id F) (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.splits_of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -477,7 +477,8 @@ theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f
     (h : (f.map (algebraMap F K)).Splits) :
     Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
   classical
-  simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
+  simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe,
+    ← natDegree_map (algebraMap F K), h.natDegree_eq_card_roots,
     Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
 
 variable {i : F →+* K}
@@ -770,7 +771,8 @@ theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable 
     Nat.card (S →ₐ[K] L) = pb.dim := by
   classical
   rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
-    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
+    ← pb.natDegree_minpoly, ← natDegree_map (algebraMap K L), h_splits.natDegree_eq_card_roots,
+    Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
