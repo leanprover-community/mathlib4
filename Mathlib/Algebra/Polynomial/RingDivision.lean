@@ -223,10 +223,10 @@ theorem Monic.irreducible_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) :
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
-  by_contra! hpq
+  by_contra! ⟨hp, hq⟩
   rcases h with ⟨_, _, h⟩
   apply_fun aeval s at h
-  simp only [map_add, map_mul, map_one, hpq.left, hpq.right, mul_zero, add_zero, zero_ne_one] at h
+  simp only [map_add, map_mul, map_one, hp, hq, mul_zero, add_zero, zero_ne_one] at h
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=

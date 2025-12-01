@@ -257,8 +257,7 @@ theorem arctan_inv_of_neg (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := 
 section ArctanAdd
 
 lemma arctan_ne_mul_pi_div_two : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
-  by_contra!
-  obtain ⟨k, h⟩ := this
+  by_contra! ⟨k, h⟩
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
   rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at lb
   rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at ub

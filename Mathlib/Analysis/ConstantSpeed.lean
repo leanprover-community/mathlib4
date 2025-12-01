@@ -154,8 +154,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
   dsimp [HasConstantSpeedOnWith]
   simp only [zero_mul, ENNReal.ofReal_zero, ← eVariationOn.eq_zero_iff]
   constructor
-  · by_contra!
-    obtain ⟨h, hfs⟩ := this
+  · by_contra! ⟨h, hfs⟩
     simp_rw [ne_eq, eVariationOn.eq_zero_iff] at hfs h
     push_neg at hfs
     obtain ⟨x, xs, y, ys, hxy⟩ := hfs

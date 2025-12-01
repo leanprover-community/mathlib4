@@ -154,8 +154,7 @@ theorem count_le_one_of_centralizer_le_alternating
   rw [← Multiset.nodup_iff_count_le_one, Equiv.Perm.cycleType_def]
   rw [Multiset.nodup_map_iff_inj_on g.cycleFactorsFinset.nodup]
   simp only [Function.comp_apply, ← Finset.mem_def]
-  by_contra! hm
-  obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
+  by_contra! ⟨c, hc, d, hd, hm, hm'⟩
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   have hτ : τ ∈ range_toPermHom' g := fun x ↦ by

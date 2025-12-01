@@ -246,8 +246,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   · rw [supDegree_zero, Finsupp.bot_eq_zero]
     exact Pi.zero_mono
   rw [Antitone]
-  by_contra! h
-  obtain ⟨i, j, hle, hlt⟩ := h
+  by_contra! ⟨i, j, hle, hlt⟩
   apply (le_sup (s := p.support) (f := toLex) _).not_gt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain _ (Equiv.injective _)]
