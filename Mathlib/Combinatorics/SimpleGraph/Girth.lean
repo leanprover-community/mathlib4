@@ -61,7 +61,7 @@ lemma exists_egirth_eq_length :
     exact ciInf_mem _
 
 lemma three_le_egirth : 3 ≤ G.egirth := by
-  simpa using (fun _ _ a ↦ Walk.IsCycle.three_le_length a)
+  simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
