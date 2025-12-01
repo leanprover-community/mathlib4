@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.RingTheory.Polynomial.DegreeLT
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.SplittingField.Construction
@@ -799,6 +802,130 @@ nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
       ← natDegree_eq_natDegree eg, ← IH f' g' r, natDegree_taylor, natDegree_taylor]
 
 end resultant
+
+section sylvesterMap
+
+variable {m n} {R : Type*} [CommRing R]
+
+attribute [local simp] Polynomial.mem_degreeLT
+
+/-- The map `(p, q) ↦ f * q + g * p` whose associated matrix is `Syl(f, g)`. -/
+@[simps]
+noncomputable
+def sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    R[X]_m × R[X]_n →ₗ[R] R[X]_(m + n) where
+  toFun pq := ⟨f * pq.2 + g * pq.1, by
+    obtain ⟨⟨p, hp⟩, ⟨q, hq⟩⟩ := pq
+    rw [Polynomial.mem_degreeLT]
+    refine (degree_add_le _ _).trans_lt (max_lt ?_ ?_)
+    · by_cases hf' : f = 0; · simp_all
+      exact (degree_mul_le _ _).trans_lt (WithBot.add_lt_add_of_le_of_lt (by simpa)
+        (degree_le_of_natDegree_le hf) (by simpa using hq))
+    · by_cases hg' : g = 0; · simp_all
+      exact (degree_mul_le _ _).trans_lt ((WithBot.add_lt_add_of_le_of_lt (by simpa)
+        (degree_le_of_natDegree_le hg) (by simpa using hp)).trans_eq (add_comm _ _))⟩
+  map_add' _ _ := by ext1; dsimp; ring
+  map_smul' _ _ := by ext1; simp
+
+lemma toMatrix_sylvesterMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    (sylvesterMap f g hf hg).toMatrix
+      ((degreeLT.basis _ _).prod (degreeLT.basis _ _)) (degreeLT.basis _ _) =
+    (sylvester f g m n).reindex (.refl _) finSumFinEquiv.symm := by
+  ext i (j | j)
+  · suffices (if j.1 ≤ i then g.coeff (i - j) else 0) =
+      if j ≤ i.1 ∧ ↑i ≤ j + n then g.coeff (i - j) else 0 by
+        simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
+    rw [ite_and]
+    split_ifs with h₁ h₂ <;> try rfl
+    exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+  · suffices (if j.1 ≤ i then f.coeff (i - j) else 0) =
+      if j ≤ i.1 ∧ ↑i ≤ j + m then f.coeff (i - j) else 0 by
+        simpa [LinearMap.toMatrix_apply, sylvester, coeff_mul_X_pow']
+    rw [ite_and]
+    split_ifs with h₁ h₂ <;> try rfl
+    exact coeff_eq_zero_of_natDegree_lt (by cutsat)
+
+lemma toMatrix_sylvesterMap' (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    (sylvesterMap f g hf hg).toMatrix
+      (((degreeLT.basis _ _).prod (degreeLT.basis _ _)).reindex finSumFinEquiv)
+      (degreeLT.basis _ _) = sylvester f g m n := by
+  ext i j
+  obtain ⟨j, rfl⟩ := finSumFinEquiv.surjective j
+  simpa [LinearMap.toMatrix_apply] using congr($(toMatrix_sylvesterMap f g hf hg) i j)
+
+/-- The adjugate map of the sylvester map. It takes `P` to `(p, q)` such that
+`f * q + g * p = Res(f, g) * P`. -/
+noncomputable
+def adjSylvester (f g : R[X]) :
+    R[X]_(m + n) →ₗ[R] R[X]_m × R[X]_n :=
+  (f.sylvester g m n).adjugate.toLin (degreeLT.basis R (m + n))
+    (((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv)
+
+lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    sylvesterMap f g hf hg ∘ₗ adjSylvester f g = f.resultant g m n • LinearMap.id := by
+  let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
+  let b₂ := degreeLT.basis R (m + n)
+  have := congr(Matrix.toLin b₂ b₂ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).mul_adjugate))
+  rwa [Matrix.toLin_mul b₂ b₁ b₂, Matrix.toLin_toMatrix, map_smul,
+    toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
+
+lemma adjSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    adjSylvester f g ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
+  let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
+  let b₂ := degreeLT.basis R (m + n)
+  have := congr(Matrix.toLin b₁ b₁ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).adjugate_mul))
+  rwa [Matrix.toLin_mul b₁ b₂ b₁, Matrix.toLin_toMatrix, map_smul,
+    toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
+
+/-- Note that if `n = m = 0` then `resultant = 1` but `f` and `g` aren't necessarily coprime. -/
+lemma exists_mul_add_mul_eq_C_resultant
+    (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) (H : m ≠ 0 ∨ n ≠ 0) :
+    ∃ p q, p.degree < ↑n ∧ q.degree < ↑m ∧ f * p + g * q = C (f.resultant g m n) := by
+  nontriviality R
+  let X := adjSylvester f g ⟨1, by simpa [Polynomial.mem_degreeLT,
+    ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
+  have : ((sylvesterMap f g hf hg X)).1 = _ :=
+    congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
+  refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
+    by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
+
+lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
+    IsUnit (resultant f g) ↔ IsCoprime f g := by
+  by_cases hf0 : f.natDegree = 0
+  · obtain rfl := eq_one_of_monic_natDegree_zero hf hf0; simp [isCoprime_one_left]
+  refine ⟨fun H ↦ ?_, ?_⟩
+  · obtain ⟨p, q, hp, hq, e⟩ := exists_mul_add_mul_eq_C_resultant f g le_rfl le_rfl (by simp [hf0])
+    exact ⟨C (H.unit⁻¹).1 * p, C (H.unit⁻¹).1 * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
+      mul_comm q, e, ← map_mul, IsUnit.val_inv_mul, map_one]⟩
+  · intro ⟨a, b, e⟩
+    suffices 1 = f.resultant b * f.resultant g from isUnit_iff_exists_inv'.mpr ⟨_, this.symm⟩
+    have := resultant_mul_right f b g _ le_rfl
+    obtain rfl | hb0 := eq_or_ne a 0
+    · rw [show b * g = 1 by simpa using e, resultant_one_right] at this
+      simpa [hf.leadingCoeff] using this
+    · rw [← resultant_add_mul_right _ _ a _ _ _ le_rfl, add_comm, mul_comm, e, ← C.map_one] at this
+      · simpa [hf.leadingCoeff] using this
+      · by_contra! H
+        replace H := natDegree_mul_le.trans_lt H
+        rw [add_comm, ← hf.natDegree_mul' hb0, mul_comm f] at H
+        have := natDegree_add_eq_left_of_natDegree_lt H
+        simp only [e, natDegree_one] at this
+        cutsat
+
+lemma resultant_eq_zero_iff {K : Type*} [Field K] {f g : K[X]} :
+    resultant f g = 0 ↔ (f ≠ 0 ∨ g ≠ 0) ∧ ¬ IsCoprime f g := by
+  obtain rfl | hf := eq_or_ne f 0
+  · obtain rfl | hg := eq_or_ne g 0; · simp
+    simpa [isCoprime_zero_left, isUnit_iff, hg, natDegree_eq_zero] using
+      show (∀ x, C x ≠ g) ↔ ∀ x ≠ 0, C x ≠ g by aesop
+  have H : (C f.leadingCoeff⁻¹ * f).Monic := by
+    rw [Monic, ← coeff_natDegree, natDegree_C_mul (by simpa), coeff_C_mul]; simp [hf]
+  have := isUnit_resultant_iff_isCoprime (f := C f.leadingCoeff⁻¹ * f) (g := g) H
+  rw [resultant_C_mul_left, IsUnit.mul_iff, natDegree_C_mul (by simp [hf]),
+    isCoprime_mul_unit_left_left (isUnit_C.mpr (by simp [hf]))] at this
+  simp [← this, hf]
+
+end sylvesterMap
 
 section disc
 

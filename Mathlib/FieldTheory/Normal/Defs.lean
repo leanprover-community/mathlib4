@@ -57,7 +57,7 @@ variable (F K)
 
 instance normal_self : Normal F F where
   isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
-  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _
+  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ by simp
 
 section NormalTower
 
@@ -67,13 +67,9 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
     obtain ⟨hx, hhx⟩ := h.out x
-    rw [algebraMap_eq F K E] at hhx
-    exact
-      ⟨hx.tower_top,
-        Polynomial.splits_of_splits_of_dvd (algebraMap K E)
-          (Polynomial.map_ne_zero (minpoly.ne_zero hx))
-          ((Polynomial.splits_map_iff (algebraMap F K) (algebraMap K E)).mpr hhx)
-          (minpoly.dvd_map_of_isScalarTower F K x)⟩
+    rw [algebraMap_eq F K E, ← map_map] at hhx
+    exact ⟨hx.tower_top, hhx.splits_of_dvd (map_ne_zero (map_ne_zero (minpoly.ne_zero hx)))
+      ((map_dvd_map' _).mpr (minpoly.dvd_map_of_isScalarTower F K x))⟩
 
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
@@ -98,7 +94,7 @@ theorem Normal.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
   intro x
   rw [← g.apply_symm_apply x]
   refine ⟨(h (g.symm x)).1.map_of_comp_eq _ _ hcomp, ?_⟩
-  rw [← minpoly.map_eq_of_equiv_equiv hcomp, Polynomial.splits_map_iff, hcomp]
+  rw [← minpoly.map_eq_of_equiv_equiv hcomp, map_map, hcomp]
   exact Polynomial.splits_comp_of_splits _ _ (h (g.symm x)).2
 
 end NormalTower
@@ -135,7 +131,8 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
       refine
-        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible ?_)
+        Or.resolve_left (splits_iff_splits.mp (h.splits z))
+          (map_ne_zero (minpoly.ne_zero (h.isIntegral z))) (minpoly.irreducible ?_)
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top
