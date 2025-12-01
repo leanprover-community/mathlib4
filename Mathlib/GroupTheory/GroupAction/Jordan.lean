@@ -252,9 +252,8 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
   have hα : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
     simp [Nat.card_eq_zero_of_infinite] at hsn')
   induction n generalizing α hα G with
-  | zero => -- case n = 0
-    simp only [zero_add]
-    exact is_two_preprimitive hG hsn hsn' hprim
+  -- case n = 0
+  | zero => simpa using is_two_preprimitive hG hsn hsn' hprim
   -- Induction step
   | succ n hrec =>
     suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
