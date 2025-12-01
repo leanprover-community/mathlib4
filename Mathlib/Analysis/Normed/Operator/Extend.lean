@@ -268,6 +268,18 @@ def extend (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f 
     · exact isClosed_eq (by simp; fun_prop) continuous_id
   continuous_invFun := ContinuousLinearMap.continuous _
 
+theorem extend_apply (h_dense₁ : DenseRange e₁)
+    (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_dense₂ : DenseRange e₂)
+    (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Eₗ) :
+    (f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ h_norm₂) x =
+    (e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁ x := rfl
+
+theorem extend_symm_apply (h_dense₁ : DenseRange e₁)
+    (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_dense₂ : DenseRange e₂)
+    (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Fₗ) :
+    (f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ h_norm₂).symm x =
+    (e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂ x := rfl
+
 theorem extend_eq (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖)
     (h_dense₂ : DenseRange e₂) (h_norm₂ : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : E) :
     f.extend e₁ e₂ h_dense₁ h_norm₁ h_dense₂ h_norm₂ (e₁ x) = e₂ (f x) :=
@@ -313,6 +325,16 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
       rintro x ⟨y, rfl⟩
       convert h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
+
+theorem extendOfIsometry_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
+    (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) (x : Eₗ) :
+    (f.extendOfIsometry e₁ e₂ h_dense₁ h_dense₂ h_norm) x =
+    (e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁ x := rfl
+
+theorem extendOfIsometry_symm_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
+    (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) (x : Fₗ) :
+    (f.extendOfIsometry e₁ e₂ h_dense₁ h_dense₂ h_norm).symm x =
+    (e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂ x := rfl
 
 theorem extendOfIsometry_eq (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
     (h_norm : ∀ x, ‖e₂ (f x)‖ = ‖e₁ x‖) (x : E) :
