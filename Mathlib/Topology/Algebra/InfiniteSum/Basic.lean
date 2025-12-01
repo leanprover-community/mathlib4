@@ -494,7 +494,7 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
-  erw [Finset.tprod_subtype]
+  simp [prod_attach]
 
 @[to_additive (attr := simp)]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
