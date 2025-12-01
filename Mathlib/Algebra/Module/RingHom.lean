@@ -84,7 +84,7 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
 
-/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+/-- A homomorphism between semirings R and S can be equivalently specified by an R-module
 structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
     (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where

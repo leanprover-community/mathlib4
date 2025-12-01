@@ -146,7 +146,7 @@ theorem continuous_of_bound (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m,
   f.toMultilinearMap.continuous_of_bound C H
 
 /-- Construct a continuous alternating map
-from a alternating map satisfying a boundedness condition. -/
+from an alternating map satisfying a boundedness condition. -/
 def mkContinuous (f : E [⋀^ι]→ₗ[𝕜] F) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : E [⋀^ι]→L[𝕜] F :=
   { f with cont := f.continuous_of_bound C H }
 
@@ -390,14 +390,14 @@ end ContinuousAlternatingMap
 
 variable [Fintype ι]
 
-/-- If a continuous alternating map is constructed from a alternating map via the constructor
+/-- If a continuous alternating map is constructed from an alternating map via the constructor
 `mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ C :=
   f.toMultilinearMap.mkContinuous_norm_le hC H
 
-/-- If a continuous alternating map is constructed from a alternating map via the constructor
+/-- If a continuous alternating map is constructed from an alternating map via the constructor
 `mk_continuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le' (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ}

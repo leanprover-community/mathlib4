@@ -61,7 +61,7 @@ variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι')
 namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
-`c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
+`c' : ComplexShape ι'` consists of an injective map `f : ι → ι'` which satisfies
 a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
 structure Embedding where
   /-- the map between the underlying types of indices -/

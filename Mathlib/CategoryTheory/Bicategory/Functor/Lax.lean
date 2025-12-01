@@ -22,10 +22,10 @@ A lax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`, which we
+* `CategoryTheory.LaxFunctor B C` : a lax functor between bicategories `B` and `C`, which we
   denote by `B ⥤ᴸ C`.
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
-* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
+* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on a Lax functor that promotes a
   Lax functor to a pseudofunctor
 
 ## Future work
@@ -192,7 +192,7 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]
 
-/-- A structure on an Lax functor that promotes an Lax functor to a pseudofunctor.
+/-- A structure on a Lax functor that promotes a Lax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfLax`. -/
 structure PseudoCore (F : B ⥤ᴸ C) where

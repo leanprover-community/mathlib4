@@ -81,7 +81,7 @@ used implications are:
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an linear ordered semifield, `β` is an `α`-module:
+* When `α` is a linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
 * When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
