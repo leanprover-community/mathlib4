@@ -29,91 +29,25 @@ variable {α : Type*}
 
 open Perm (swap)
 
-lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup := by
-  simp only [List.splits, splitAt_eq]
-  apply List.Nodup.map_on
-  · simp only [mem_range, Prod.mk.injEq, take_eq_take_iff, and_imp]
-    omega
-  · apply List.nodup_range
+lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup :=
+  nodup_range.map_on <| by grind [length_take_of_le]
 
 lemma Disjoint_self (l : List α) :
     (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
 
-lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup := by
-  simp only [splits₃_left, Function.comp_apply, nodup_flatMap, Prod.forall]
-  constructor
-  · intros t d htd_splits
-    apply List.Nodup.map_on
-    · rintro ⟨ta1, ta2⟩ hta_splits ⟨tb1, tb2⟩ htb_splits; simp
-    · apply Nodup.splits_nodup
-  · induction l with
-    | nil => simp
-    | cons a l ihl =>
-      simp only [splits_cons, pairwise_cons, mem_map, Prod.exists, forall_exists_index, and_imp,
-        Prod.forall, Prod.mk.injEq]
-      constructor
-      · rintro b c x1 x2 hx1x2_l_splits rfl rfl
-        simp [Function.onFun]
-      · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
-        rintro ⟨x1, x2⟩ ⟨y1, y2⟩
-        simp only [Function.onFun, splits_cons, map_cons, map_map, disjoint_cons_right, mem_cons,
-          Prod.mk.injEq, cons.injEq, true_and, mem_map, Function.comp_apply, reduceCtorEq,
-          false_and, and_false, exists_const, or_false, not_and, disjoint_cons_left,
-          not_false_eq_true]
-        intro hdisj_map
-        constructor
-        · rintro rfl rfl
-          apply List.Disjoint.of_map at hdisj_map
-          have hnil : ∃ l, l ∈ y1.splits := by
-            exists ([], y1)
-            apply List.nil_self_mem_splits
-          apply List.Disjoint_self _ hnil at hdisj_map
-          assumption
-        · unfold Function.comp
-          simp only [Disjoint, mem_map, Prod.exists, imp_false, not_exists, not_and,
-            forall_exists_index, and_imp, Prod.forall, Prod.mk.injEq] at *
-          rintro z1 z2 z3 z4 z5 hx1_splits rfl rfl rfl z6 z7 hy1_splits ⟨_,rfl⟩ rfl rfl
-          specialize hdisj_map _ _ _ _ _ hx1_splits rfl rfl rfl _ _ hy1_splits rfl rfl rfl
-          assumption
+lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃_left.Nodup :=
+  nodup_flatMap.mpr ⟨fun _ _ ↦ (Nodup.splits_nodup _).map_on <| by grind,
+    pairwise_of_forall_ne (Nodup.splits_nodup _) <| by
+      simpa [mem_splits_iff, Function.onFun, Disjoint] using by grind⟩
 
-lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃_right.Nodup := by
-  simp only [splits₃_right, Function.comp_apply, nodup_flatMap, Prod.forall]
-  constructor
-  · intros t d htd_l_splits
-    apply List.Nodup.map_on
-    · rintro ⟨d1, d2⟩ hd_splits ⟨d1', d2'⟩ hd'_splits ⟨_, rfl, rfl⟩
-      rfl
-    · apply Nodup.splits_nodup
-  · induction l with
-    | nil => simp
-    | cons a l ihl =>
-      simp only [splits_cons, pairwise_cons, mem_map, Prod.exists, forall_exists_index, and_imp,
-        Prod.forall, Prod.mk.injEq]
-      constructor
-      · clear ihl
-        rintro b c l1 l2 hl_splits rfl rfl
-        simp only [Function.onFun, Disjoint, splits_cons, map_cons, map_map, mem_cons, mem_map,
-          Function.comp, Prod.exists, imp_false, not_exists, not_and, forall_eq_or_imp,
-          Prod.mk.injEq, reduceCtorEq, false_and, not_false_eq_true, implies_true,
-          forall_exists_index, and_imp, Prod.forall, nil_eq, true_and]
-        rintro y1 y2 b y1' y2' hy' rfl rfl rfl z1 z2 hz ⟨⟩
-      · refine (List.Pairwise.map ?_ ?_ ihl); clear ihl
-        rintro ⟨x1, x2⟩ ⟨y1, y2⟩
-        simp only [Function.onFun]
-        rintro hdisj_map ⟨t, d1, d2⟩ hx2_splits hy2_splits
-        simp only [mem_map, Prod.mk.injEq, Prod.exists, ↓existsAndEq, and_true,
-          exists_eq_right_right] at hx2_splits hy2_splits
-        rcases hx2_splits with ⟨hx2_splits, rfl⟩
-        rcases hy2_splits with ⟨hy2_splits, ⟨_, rfl⟩⟩
-        apply List.Disjoint.of_map at hdisj_map
-        specialize hdisj_map hx2_splits hy2_splits
-        contradiction
+lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃_right.Nodup :=
+  nodup_flatMap.mpr ⟨fun _ _ ↦ (Nodup.splits_nodup _).map_on <| by grind,
+    pairwise_of_forall_ne (Nodup.splits_nodup _) <| by
+      simpa [mem_splits_iff, Function.onFun, Disjoint] using by grind⟩
 
 lemma Perm.splits₃_left_right_perm (l : List α) : l.splits₃_left ~ l.splits₃_right := by
-  rw [List.perm_ext_iff_of_nodup]
-  · rintro ⟨x, y, z⟩; simp [List.mem_splits₃_left_iff, List.mem_splits₃_right_iff]
-  · apply Nodup.splits₃_left_nodup
-  · apply Nodup.splits₃_right_nodup
+  rw [List.perm_ext_iff_of_nodup (.splits₃_left_nodup _) (.splits₃_right_nodup _)]
+  grind [List.mem_splits₃_left_iff, List.mem_splits₃_right_iff]
 
 variable [DecidableEq α]
 
