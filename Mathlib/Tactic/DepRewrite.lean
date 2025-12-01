@@ -177,21 +177,9 @@ def zetaDelta (e : Expr) (fvars : Std.HashSet FVarId) : MetaM Expr :=
     return .visit val
   transform e (pre := pre)
 
-/-- Create a piece of metadata annotated with the current syntax. -/
-def mkCastMData : MetaM MData := do
-  let stx ← getRef
-  return .mk [(`depRewrite, .ofBool true), (`stx, .ofSyntax stx)]
-
-/-- Match on a piece of metadata made by `mkCastMData` and output the syntax,
-or `none` if the metadata was not recognized. -/
-def matchCastMData (mdata : MData) : Option Syntax :=
-  if h : mdata.entries.length = 2 then
-    if mdata.entries[0].1 == `depRewrite && mdata.entries[0].2 == .ofBool true &&
-        mdata.entries[1].1 == `stx then
-      if let .ofSyntax stx := mdata.entries[1].2 then
-        some stx else none
-    else none
-  else none
+/-- A piece of metadata associated with `depRewrite`. -/
+def castMData : MData :=
+  .mk [(`depRewrite, .ofBool true)]
 
 /-- If `e : te` is a term whose type mentions `x`, `h` (the generalization variables)
 or entries in `Δ`/`δ`,
@@ -202,7 +190,7 @@ def castBack? (e te x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
   if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId! ||
       Δ.any (·.1 == f) || δ.contains f) then
     return none
-  let e' := .mdata (← mkCastMData) (← mkEqRec (← motive) e (← mkEqSymm h))
+  let e' := .mdata castMData (← mkEqRec (← motive) e (← mkEqSymm h))
   trace[Tactic.depRewrite.cast] "casting (x ↦ p):{indentExpr e'}"
   return some e'
 where
@@ -247,7 +235,7 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
         es := es.push (← mkEqRec M (.fvar f) (← mkEqTrans (← mkEqSymm h) h'))
       let te := te.replaceFVars fs es
       mkLambdaFVars #[x', h'] te
-  let e' := .mdata (← mkCastMData) (← mkEqRec motive e h)
+  let e' := .mdata castMData (← mkEqRec motive e h)
   trace[Tactic.depRewrite.cast] "casting (p ↦ x):{indentExpr e'}"
   return e'
 
@@ -513,8 +501,8 @@ def cleanupCasts (e : Expr) : MetaM Expr :=
       | .ok (.done e') => pure m!"{e} => done {e'}"
       | .error _ => pure m!"{e} => 💥️") <| do
     let .mdata mdata e := e | return .continue
-    let some stx := matchCastMData mdata | return .continue
-    trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}\nfrom source {stx}"
+    if mdata != castMData then return .continue
+    trace[Tactic.depRewrite.cleanupCasts] "found potential cast{indentExpr e}"
     unless e.isAppOfArity ``Eq.rec 6 do
       trace[Tactic.depRewrite.cleanupCasts]
         "cast candidate{indentExpr e}\nis not {.ofConstName ``Eq.rec} application"
