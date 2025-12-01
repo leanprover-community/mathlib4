@@ -15,14 +15,14 @@ import Mathlib.Algebra.Ring.Int.Parity
 
 -/
 
-@[simps]
-def AddMonoidHom.sum (M : Type*) [AddCommMonoid M] : M × M →+ M where
-  toFun m := m.1 + m.2
-  map_zero' := by simp
-  map_add' := by
+@[to_additive (attr := simps) AddMonoidHom.add₂]
+def MonoidHom.mul₂ (M : Type*) [CommMonoid M] : M × M →* M where
+  toFun m := m.1 * m.2
+  map_one' := by simp
+  map_mul' := by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
     dsimp
-    rw [add_assoc, ← add_assoc y₁, add_comm y₁, add_assoc, add_assoc]
+    rw [mul_assoc, ← mul_assoc y₁, mul_comm y₁, mul_assoc, mul_assoc]
 
 namespace CategoryTheory
 
@@ -34,7 +34,7 @@ section
 variable (D) (M : Type*)
   [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂ M] [HasShift D M]
 
-structure CommShift₂Setup extends TwistShiftData (PullbackShift D (.sum M)) (M × M) where
+structure CommShift₂Setup extends TwistShiftData (PullbackShift D (.add₂ M)) (M × M) where
   z_zero₁ (m₁ m₂ : M) : z (0, m₁) (0, m₂) = 1 := by aesop
   z_zero₂ (m₁ m₂ : M) : z (m₁, 0) (m₂, 0) = 1 := by aesop
   ε (m n : M) : (CatCenter D)ˣ
