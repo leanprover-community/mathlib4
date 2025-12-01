@@ -70,7 +70,8 @@ def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k}
 
 lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f ∈ s) :
     (f.1.map (algebraMap k (SplittingField (∏ f ∈ s, f.1)))).Splits :=
-  (splits_prod_iff _ fun j _ ↦ j.2.ne_zero).1 (SplittingField.splits _) _ hf
+  (splits_prod_iff fun j _ ↦ map_ne_zero j.2.ne_zero).mp
+    (by simpa [Polynomial.map_prod] using SplittingField.splits (∏ f ∈ s, f.1)) f hf
 
 open Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
