@@ -129,6 +129,7 @@ used for the 2-homomorphisms in the bicategory of pseudofunctors. -/
 @[ext]
 structure Hom where
   of ::
+  /-- The underlying modification of strong transformations. -/
   as : Modification η θ
 
 /-- Category structure on the strong transformations between pseudofunctors.
