@@ -114,7 +114,7 @@ variable [Fact ¬IsUnit (p : R)] [IsAdicComplete (span {(p : R)}) R]
 
 @[simp]
 theorem ghostComponentModPPow_teichmuller_coeff (n : ℕ) (x : R♭) :
-    ghostComponentModPPow n (teichmuller p (Perfection.coeff (ModP R p) _ n x)) =
+    ghostComponentModPPow n (teichmuller p (PreTilt.coeff n x)) =
     Ideal.Quotient.mk (𝔭 ^ (n + 1)) x.untilt := by
   simpa using ghostComponentModPPow_map_mk n
     (teichmuller p ((((_root_.frobeniusEquiv _ p).symm ^ n) x).untilt))
@@ -126,13 +126,13 @@ It is the composition of the following ring homomorphisms.
 `𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/p) --gh_n-> R/p^(n+1)`
 -/
 def fontaineThetaModPPow (n : ℕ) : 𝕎 R♭ →+* R ⧸ 𝔭 ^ (n + 1) :=
-  (ghostComponentModPPow n).comp (((WittVector.map (Perfection.coeff _ p 0))).comp
+  (ghostComponentModPPow n).comp (((WittVector.map (PreTilt.coeff 0))).comp
     (WittVector.map ((_root_.frobeniusEquiv (R♭) p).symm ^ n : R♭ →+* R♭)))
 
 @[simp]
 theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : R♭) :
     fontaineThetaModPPow R p n (teichmuller p x) = Ideal.Quotient.mk _ x.untilt := by
-  simp [fontaineThetaModPPow, PreTilt]
+  simp [fontaineThetaModPPow]
 
 theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
     (factorPowSucc _ _).comp (fontaineThetaModPPow R p (n + 1)) = fontaineThetaModPPow R p n := by
@@ -143,7 +143,7 @@ theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
       simp [map_natCast]
     rw [this, ← map_pow, Ideal.Quotient.eq_zero_iff_mem]
     exact Ideal.pow_mem_pow (mem_span_singleton_self _) _
-  simp [PreTilt, fontaineThetaModPPow]
+  simp [fontaineThetaModPPow]
 
 theorem factorPowSucc_fontaineThetaModPPow_eq (n : ℕ) (x : 𝕎 R♭) :
     factorPowSucc _ _ ((fontaineThetaModPPow R p (n + 1)) x) = fontaineThetaModPPow R p n x := by
@@ -164,13 +164,13 @@ theorem mk_pow_fontaineTheta (n : ℕ) (x : 𝕎 R♭) :
   Order.succ_strictMono.mk_liftRingHom 𝔭 _ (factorPowSucc_comp_fontaineThetaModPPow _) x
 
 theorem mk_fontaineTheta (x : 𝕎 R♭) :
-    Ideal.Quotient.mk 𝔭 (fontaineTheta R p x) = Perfection.coeff (ModP R p) _ 0 (x.coeff 0) := by
+    Ideal.Quotient.mk 𝔭 (fontaineTheta R p x) = PreTilt.coeff 0 (x.coeff 0) := by
   have := mk_pow_fontaineTheta 0 x
   simp only [Nat.reduceAdd] at this
   apply_fun Ideal.quotEquivOfEq (pow_one (p : R) ▸ Ideal.span_singleton_pow (p : R) 1) at this
   simp only [quotEquivOfEq_mk] at this
   rw [this]
-  simp [fontaineThetaModPPow, ghostComponent_apply, RingHom.one_def, PreTilt]
+  simp [fontaineThetaModPPow, ghostComponent_apply, RingHom.one_def]
 
 @[simp]
 theorem fontaineTheta_teichmuller (x : R♭) : fontaineTheta R p (teichmuller p x) = x.untilt := by
