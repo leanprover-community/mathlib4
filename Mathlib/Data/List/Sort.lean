@@ -50,8 +50,8 @@ def orderedInsert (a : α) : List α → List α
 @[simp, grind =] theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] := .refl _
 
 @[simp, grind =] theorem orderedInsert_cons (a b : α) (l : List α) :
-    (b :: l).orderedInsert r a = if r a b then a :: b :: l else
-    b :: l.orderedInsert r a := .refl _
+    (b :: l).orderedInsert r a = if r a b then a :: b :: l else b :: l.orderedInsert r a :=
+  .refl _
 
 theorem orderedInsert_cons_of_le {a b : α} (l : List α) (h : a ≼ b) :
     orderedInsert r a (b :: l) = a :: b :: l :=
@@ -82,8 +82,8 @@ theorem orderedInsert_length (L : List α) (a : α) :
 
 /-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
 theorem orderedInsert_eq_take_drop (a : α) (l : List α) :
-      l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b := by
-    induction l <;> grind [takeWhile, dropWhile]
+    l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b := by
+  induction l <;> grind [takeWhile, dropWhile]
 
 theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
@@ -471,11 +471,11 @@ section IsChain
 theorem sortedLE_iff_isChain : l.SortedLE ↔ IsChain (· ≤ ·) l :=
   sortedLE_iff_pairwise.trans isChain_iff_pairwise.symm
 theorem sortedGE_iff_isChain : l.SortedGE ↔ IsChain (· ≥ ·) l :=
-    sortedGE_iff_pairwise.trans isChain_iff_pairwise.symm
+  sortedGE_iff_pairwise.trans isChain_iff_pairwise.symm
 theorem sortedLT_iff_isChain : l.SortedLT ↔ IsChain (· < ·) l :=
-    sortedLT_iff_pairwise.trans isChain_iff_pairwise.symm
+  sortedLT_iff_pairwise.trans isChain_iff_pairwise.symm
 theorem sortedGT_iff_isChain : l.SortedGT ↔ IsChain (· > ·) l :=
-    sortedGT_iff_pairwise.trans isChain_iff_pairwise.symm
+  sortedGT_iff_pairwise.trans isChain_iff_pairwise.symm
 
 protected alias ⟨SortedLE.isChain, IsChain.sortedLE⟩ := sortedLE_iff_isChain
 protected alias ⟨SortedGE.isChain, IsChain.sortedGE⟩ := sortedGE_iff_isChain
@@ -513,13 +513,13 @@ theorem sortedGT_iff_getElem_gt_getElem_of_lt :
   ⟨fun h _ _ _ _ hij => h.strictAnti_get hij, fun h => StrictAnti.sortedGT <| fun _ _ => (h ·)⟩
 
 alias ⟨SortedLE.getElem_le_getElem_of_le, sortedLE_of_getElem_le_getElem_of_le⟩ :=
-    sortedLE_iff_getElem_le_getElem_of_le
+  sortedLE_iff_getElem_le_getElem_of_le
 alias ⟨SortedGE.getElem_ge_getElem_of_le, sortedGE_of_getElem_ge_getElem_of_le⟩ :=
-    sortedGE_iff_getElem_ge_getElem_of_le
+  sortedGE_iff_getElem_ge_getElem_of_le
 alias ⟨SortedLT.getElem_lt_getElem_of_lt, sortedLT_of_getElem_lt_getElem_of_lt⟩ :=
-    sortedLT_iff_getElem_lt_getElem_of_lt
+  sortedLT_iff_getElem_lt_getElem_of_lt
 alias ⟨SortedGT.getElem_gt_getElem_of_lt, sortedGT_of_getElem_gt_getElem_of_lt⟩ :=
-    sortedGT_iff_getElem_gt_getElem_of_lt
+  sortedGT_iff_getElem_gt_getElem_of_lt
 
 end GetElem
 
@@ -542,7 +542,7 @@ theorem sortedLE_replicate {a : α} (n : ℕ) : (replicate n a).SortedLE :=
 @[deprecated (since := "2025-11-27")] alias sorted_le_replicate := sortedLE_replicate
 
 theorem sortedLT_finRange (n : ℕ) : (finRange n).SortedLT :=
-    sortedLT_of_getElem_lt_getElem_of_lt <| by simp
+  sortedLT_of_getElem_lt_getElem_of_lt <| by simp
 
 theorem sortedLT_range (n : ℕ) : (range n).SortedLT := pairwise_lt_range.sortedLT
 

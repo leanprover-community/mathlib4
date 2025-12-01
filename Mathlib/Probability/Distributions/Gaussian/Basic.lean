@@ -77,7 +77,7 @@ lemma isGaussian_of_isGaussian_map {E : Type*} [TopologicalSpace E] [AddCommMono
     (h : ∀ L : E →L[ℝ] ℝ, IsGaussian (μ.map L)) : IsGaussian μ := by
   refine ⟨fun L ↦ ?_⟩
   rw [(h L).eq_gaussianReal, integral_map, variance_map]
-  · rfl
+  · simp
   all_goals fun_prop
 
 lemma isGaussian_of_map_eq_gaussianReal {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
@@ -183,7 +183,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Measurabl
 lemma IsGaussian.charFun_eq [IsGaussian μ] (t : E) :
     charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
   rw [charFun_eq_charFunDual_toDualMap, IsGaussian.charFunDual_eq]
-  rfl
+  simp [toDualMap]
 
 -- TODO: This should not require completeness as `toDualMap` has dense range, but this is not
 -- in mathlib.
@@ -192,7 +192,7 @@ lemma isGaussian_iff_charFun_eq [CompleteSpace E] [IsFiniteMeasure μ] :
     ∀ t, charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
   simp_rw [isGaussian_iff_charFunDual_eq, (toDual ℝ E).surjective.forall,
     charFun_eq_charFunDual_toDualMap]
-  rfl
+  simp [toDualMap, toDual]
 
 end charFun
 

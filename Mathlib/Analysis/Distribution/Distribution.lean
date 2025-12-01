@@ -92,7 +92,7 @@ distribution is nothing more than a distribution taking values in the real vecto
 
 ### Order of distributions
 
-Based on established practice in the litterature, a natural way to express the order of a
+Based on established practice in the literature, a natural way to express the order of a
 distribution would be to introduce a predicate `Distribution.HasOrderAtMost` on the space of all
 distributions. Here though, we define a separate space `𝓓'^{n}(Ω, F)` whose elements are precisely
 distributions of order at most `n`.
