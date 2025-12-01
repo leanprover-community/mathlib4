@@ -268,7 +268,7 @@ lemma injectiveDimension_le_iff (X : C) (n : ℕ) :
 
 lemma injectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ injectiveDimension X ↔ ¬ HasInjectiveDimensionLT X n := by
-  rw [← not_iff_not, not_le, not_not, injectiveDimension_lt_iff]
+  contrapose!; exact injectiveDimension_lt_iff
 
 lemma injectiveDimension_eq_bot_iff (X : C) :
     injectiveDimension X = ⊥ ↔ Limits.IsZero X := by
