@@ -129,7 +129,7 @@ theorem toDualBaseChange_tmul (a : A) (f : Dual R V) (v : V) :
     (ibc.toDualBaseChange (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) :=
   toDualBaseChangeAux_tmul ibc a f v
 
-theorem isBaseChange_dual : IsBaseChange A (ibc.toDual) := by
+theorem dual : IsBaseChange A (ibc.toDual) := by
   apply of_equiv (toDualBaseChange ibc)
   intro f
   simp [toDualBaseChange, toDualBaseChangeAux]
