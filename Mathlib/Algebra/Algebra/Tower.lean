@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Towers of algebras
@@ -18,6 +20,8 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -104,7 +108,7 @@ variable {R S A}
 
 theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
-  ⟨fun x y z => by simp_rw [Algebra.smul_def, RingHom.map_mul, mul_assoc, h]⟩
+  ⟨fun x y z => by simp_rw [Algebra.smul_def, map_mul, mul_assoc, h]⟩
 
 /-- See note [partially-applied ext lemmas]. -/
 theorem of_algebraMap_eq' [Algebra R A]
@@ -202,6 +206,25 @@ theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
   AlgHom.ext (AlgHom.congr_fun h :)
 
+section
+
+variable {R}
+
+/-- Any `f : A →ₐ[R] B` is also an `R ⧸ I`-algebra homomorphism if the `R`-algebra structure on
+`A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A →ₐ[R] B) : A →ₐ[S] B where
+  toRingHom := f
+  commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
+
+@[simp]
+lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A →ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+end
+
 end AlgHom
 
 namespace AlgEquiv
@@ -224,6 +247,41 @@ theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
   AlgEquiv.ext (AlgEquiv.congr_fun h :)
+
+lemma restrictScalars_symm_apply (f : A ≃ₐ[S] B) (x : B) :
+    (f.restrictScalars R).symm x = f.symm x := rfl
+
+@[simp]
+lemma coe_restrictScalars_symm (f : A ≃ₐ[S] B) :
+    ((f.restrictScalars R).symm : B ≃+* A) = f.symm := rfl
+
+@[simp]
+lemma coe_restrictScalars_symm' (f : A ≃ₐ[S] B) :
+    ((restrictScalars R f).symm : B → A) = f.symm := rfl
+
+section
+
+variable {R}
+
+/-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
+`A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
+def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
+  toRingEquiv := f
+  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+
+@[simp]
+lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).restrictScalars R = f := rfl
+
+@[simp]
+lemma extendScalarsOfSurjective_symm (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) :
+    (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
+
+end
 
 end AlgEquiv
 

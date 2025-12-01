@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
 
@@ -25,13 +26,16 @@ In this file we define strong transformations, which require the 2-morphism to b
 * `Pseudofunctor.StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η`
   and `θ`.
 
-Using this we obtain a `CategoryStruct` on pseudofunctors, where the arrows are given by
-strong transformations. See `Pseudofunctor.categoryStruct`.
+Using this we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
+strong transformations. To access this instance, run `open scoped Pseudofunctor.StrongTrans`.
+See `Pseudofunctor.StrongTrans.categoryStruct`.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
 
@@ -76,9 +80,10 @@ attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
 
 namespace StrongTrans
 
-variable {F G : Pseudofunctor B C}
+variable {F G : B ⥤ᵖ C}
 
-/-- The underlying oplax transformation of a strong transformation. -/
+/-- The strong transformation of oplax functors induced by a strong transformation of
+pseudofunctors. -/
 @[simps]
 def toOplax (η : StrongTrans F G) : Oplax.StrongTrans F.toOplax G.toOplax where
   app := η.app
@@ -107,17 +112,17 @@ def id : StrongTrans F F where
 instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
-variable {H : Pseudofunctor B C}
+variable {H : B ⥤ᵖ C}
 
 /-- Vertical composition of strong transformations. -/
 def vcomp (η : StrongTrans F G) (θ : StrongTrans G H) : StrongTrans F H :=
   mkOfOplax (Oplax.StrongTrans.vcomp η.toOplax θ.toOplax)
 
-/-- `CategoryStruct` on `Pseudofunctor B C` where the (1-)morphisms are given by strong
+/-- `CategoryStruct` on `B ⥤ᵖ C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality_hom id_naturality_inv comp_naturality_hom
 comp_naturality_inv]
-scoped instance categoryStruct : CategoryStruct (Pseudofunctor B C) where
+scoped instance categoryStruct : CategoryStruct (B ⥤ᵖ C) where
   Hom F G := StrongTrans F G
   id F := StrongTrans.id F
   comp := StrongTrans.vcomp
@@ -133,7 +138,6 @@ variable (F) in
 @[simp]
 lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
   rfl
-
 
 section
 
@@ -237,6 +241,7 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
   ext
   simp [naturality_comp_hom α f g]
 
+@[reassoc, to_app]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
       α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫

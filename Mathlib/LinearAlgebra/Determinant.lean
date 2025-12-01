@@ -3,13 +3,18 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.Tactic.FieldSimp
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.Basis
+module
 
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+public import Mathlib.RingTheory.Finiteness.Cardinality
 /-!
 # Determinant of families of vectors
 
@@ -36,6 +41,8 @@ types used for indexing.
 
 basis, det, determinant
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -236,8 +243,7 @@ theorem det_smul [Module.Free A M] (c : A) (f : M →ₗ[A] M) :
   · have : Module.Finite A M := by
       rcases H with ⟨s, ⟨hs⟩⟩
       exact Module.Finite.of_basis hs
-    simp only [← det_toMatrix (Module.finBasis A M), LinearEquiv.map_smul,
-      Fintype.card_fin, Matrix.det_smul]
+    simp only [← det_toMatrix (Module.finBasis A M), map_smul, Fintype.card_fin, Matrix.det_smul]
   · classical
       have : Module.finrank A M = 0 := finrank_eq_zero_of_not_exists_basis H
       simp [coe_det, H, this]
@@ -246,7 +252,7 @@ theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
     LinearMap.det (0 : M →ₗ[A] M) = 0 := by
   haveI := Classical.decEq ι
   cases nonempty_fintype ι
-  rwa [← det_toMatrix b, LinearEquiv.map_zero, det_zero]
+  rwa [← det_toMatrix b, map_zero, det_zero]
 
 /-- In a finite-dimensional vector space, the zero map has determinant `1` in dimension `0`,
 and `0` otherwise. We give a formula that also works in infinite dimension, where we define
@@ -254,7 +260,7 @@ the determinant to be `1`. -/
 @[simp]
 theorem det_zero [Module.Free A M] :
     LinearMap.det (0 : M →ₗ[A] M) = (0 : A) ^ Module.finrank A M := by
-  simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, MonoidHom.map_one]
+  simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, map_one]
 
 theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
   rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
@@ -307,28 +313,49 @@ lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[
   rw [← isUnit_toMatrix_iff b, ← det_toMatrix b, Matrix.isUnit_iff_isUnit_det (toMatrix b b f)]
 
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
-theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
-    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M := by
-  by_cases H : ∃ s : Finset M, Nonempty (Basis s 𝕜 M)
+theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Finite R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
   · rcases H with ⟨s, ⟨hs⟩⟩
-    exact FiniteDimensional.of_fintype_basis hs
+    exact Module.Finite.of_basis hs
   · classical simp [LinearMap.coe_det, H] at hf
 
-/-- If the determinant of a map vanishes, then the map is not onto. -/
-theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
-    (hf : LinearMap.det f = 0) : LinearMap.range f < ⊤ := by
-  have : FiniteDimensional 𝕜 M := by simp [f.finiteDimensional_of_det_ne_one, hf]
-  contrapose hf
-  simp only [lt_top_iff_ne_top, Classical.not_not, ← isUnit_iff_range_eq_top] at hf
-  exact isUnit_iff_ne_zero.1 (f.isUnit_det hf)
+@[deprecated "use `finite_of_det_ne_one` instead" (since := "2025-09-15")]
+theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
+    (hf : LinearMap.det f ≠ 1) : FiniteDimensional 𝕜 M :=
+  finite_of_det_ne_one hf
 
 /-- If the determinant of a map vanishes, then the map is not injective. -/
-theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
-    (hf : LinearMap.det f = 0) : ⊥ < LinearMap.ker f := by
-  have : FiniteDimensional 𝕜 M := by simp [f.finiteDimensional_of_det_ne_one, hf]
-  contrapose hf
-  simp only [bot_lt_iff_ne_bot, Classical.not_not, ← isUnit_iff_ker_eq_bot] at hf
-  exact isUnit_iff_ne_zero.1 (f.isUnit_det hf)
+theorem bot_lt_ker_of_det_eq_zero [IsDomain R] [Free R M] {f : M →ₗ[R] M} (hf : f.det = 0) :
+    ⊥ < ker f := by
+  have : Module.Finite R M := by simp [finite_of_det_ne_one (f := f), hf]
+  let b := Module.finBasis R M
+  suffices ∃ x, f x = 0 ∧ x ≠ 0 by simpa [bot_lt_iff_ne_bot, ker_eq_bot']
+  obtain ⟨v, hv_ne_zero, hv_zero⟩ := Matrix.exists_mulVec_eq_zero_iff.mpr (det_toMatrix b f ▸ hf)
+  refine ⟨b.equivFun.symm v, ?_, b.equivFun.symm.map_ne_zero_iff.mpr hv_ne_zero⟩
+  rw [← b.equivFun.injective.eq_iff]
+  simp_all [funext_iff, Matrix.mulVec, dotProduct, toMatrix_apply, mul_comm]
+
+/-- The determinant of a map vanishes iff the map is not injective. -/
+theorem det_eq_zero_iff_ker_ne_bot [IsDomain R] [Free R M] [Module.Finite R M] {f : M →ₗ[R] M} :
+    f.det = 0 ↔ ker f ≠ ⊥ := by
+  constructor <;> intro h
+  · exact bot_lt_iff_ne_bot.mp (bot_lt_ker_of_det_eq_zero h)
+  · let b := Module.finBasis R M
+    obtain ⟨v, ⟨_, hv_ne_zero⟩⟩ := (ker f).ne_bot_iff.mp h
+    rw [← det_toMatrix b, ← Matrix.exists_mulVec_eq_zero_iff]
+    refine ⟨fun i => b.repr v i, by simpa, by simpa [toMatrix_mulVec_repr]⟩
+
+/--
+If the determinant of a map vanishes, then the map is not onto.
+TODO: This should only require `[IsDomain R] [Free R M]`, which we get if we generalize
+`Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`, which includes
+`LinearMap.ker_eq_bot_iff_range_eq_top`.
+-/
+theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
+    (hf : f.det = 0) : range f < ⊤ := by
+  have : Module.Finite 𝕜 M := by simp [finite_of_det_ne_one (f := f), hf]
+  rw [lt_top_iff_ne_top, ne_eq, ← ker_eq_bot_iff_range_eq_top, ← ne_eq, ← bot_lt_iff_ne_bot]
+  exact bot_lt_ker_of_det_eq_zero hf
 
 /-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
 @[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by
@@ -429,7 +456,7 @@ theorem LinearEquiv.isUnit_det (f : M ≃ₗ[R] M') (v : Basis ι R M) (v' : Bas
 /-- Specialization of `LinearEquiv.isUnit_det` -/
 theorem LinearEquiv.isUnit_det' {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
     IsUnit (LinearMap.det (f : M →ₗ[A] M)) :=
-  isUnit_of_mul_eq_one _ _ f.det_mul_det_symm
+  .of_mul_eq_one _ f.det_mul_det_symm
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
@@ -463,6 +490,35 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
     (LinearEquiv.ofIsUnitDet h : M →ₗ[R] M') = f := by
   ext x
   rfl
+
+/-- Builds a linear equivalence from an endomorphism whose determinant is a unit. -/
+noncomputable def LinearMap.equivOfIsUnitDet
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) :
+    M ≃ₗ[R] M := by
+  by_cases hR : Nontrivial R
+  · let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
+    have : Finite ι := Module.Finite.finite_basis b
+    have : Fintype ι := Fintype.ofFinite ι
+    have : DecidableEq ι := Classical.typeDecidableEq ι
+    exact LinearEquiv.ofIsUnitDet (by rwa [det_toMatrix b])
+  · exact 1
+
+@[simp]
+theorem LinearMap.equivOfIsUnitDet_apply
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) (x : M) :
+    (LinearMap.equivOfIsUnitDet h) x = f x := by
+  nontriviality M
+  simp [equivOfIsUnitDet, dif_pos (Module.nontrivial R M)]
+
+@[simp]
+theorem LinearMap.coe_equivOfIsUnitDet
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) :
+    (LinearMap.equivOfIsUnitDet h : M →ₗ[R] M) = f := by
+  ext
+  apply LinearMap.equivOfIsUnitDet_apply
 
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
@@ -501,7 +557,7 @@ nonrec def det : M [⋀^ι]→ₗ[R] R where
       (fun v i x y ↦ by
         simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
       (fun u i c x ↦ by
-        simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
+        simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, map_smul]
         apply det_updateCol_smul)
   map_eq_zero_of_eq' := by
     intro v i j h hij
@@ -683,3 +739,17 @@ theorem det_isUnitSMul {w : ι → R} (hw : ∀ i, IsUnit (w i)) :
   e.det_unitsSMul_self _
 
 end Module.Basis
+
+section Dual
+
+/-- The determinant of the transpose of an endomorphism coincides with its determinant. -/
+theorem _root_.LinearMap.det_dualMap
+    [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M) :
+    f.dualMap.det = f.det := by
+  set b := Module.Free.chooseBasis R M
+  have : Fintype (Module.Free.ChooseBasisIndex R M) :=
+    Module.Free.ChooseBasisIndex.fintype R M
+  rw [← LinearMap.det_toMatrix b, ← LinearMap.det_toMatrix b.dualBasis]
+  simp [LinearMap.dualMap_def, LinearMap.toMatrix_transpose]
+
+end Dual

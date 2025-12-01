@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # The preordered type of simplices of a simplicial set
@@ -24,6 +26,8 @@ simplices of a simplicial set `X`, and also the type of nondegenerate
 simplices of a simplicial set `X` which do not belong to a given subcomplex.
 
 -/
+
+@[expose] public section
 
 universe u
 

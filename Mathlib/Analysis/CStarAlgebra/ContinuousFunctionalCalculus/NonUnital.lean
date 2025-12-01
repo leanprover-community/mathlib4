@@ -3,10 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # The continuous functional calculus for non-unital algebras
@@ -44,6 +46,8 @@ encoded in the `ContinuousMapZero.UniqueHom` class.
 + `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
 
 -/
+
+@[expose] public section
 local notation "σₙ" => quasispectrum
 
 open Topology ContinuousMapZero
@@ -439,6 +443,15 @@ lemma cfcₙ_const_mul_id (r : R) (a : A) (ha : p a := by cfc_tac) : cfcₙ (r *
 include ha in
 lemma cfcₙ_star_id : cfcₙ (star · : R → R) a = star a := by
   rw [cfcₙ_star _ a, cfcₙ_id' R a]
+
+variable (R) in
+theorem range_cfcₙ_eq_range_cfcₙHom {a : A} (ha : p a) :
+    Set.range (cfcₙ (R := R) · a) = NonUnitalStarAlgHom.range (cfcₙHom ha (R := R)) := by
+  ext
+  constructor
+  all_goals rintro ⟨f, rfl⟩
+  · exact cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦ ⟨_, rfl⟩
+  · exact ⟨Subtype.val.extend f 0, cfcₙHom_eq_cfcₙ_extend _ ha _ |>.symm⟩
 
 section Comp
 

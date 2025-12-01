@@ -3,7 +3,9 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Semiconj.Defs
+module
+
+public import Mathlib.Algebra.Group.Semiconj.Defs
 
 /-!
 # Commuting pairs of elements in monoids
@@ -23,6 +25,8 @@ This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other o
 
 Most of the proofs come from the properties of `SemiconjBy`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -174,7 +178,7 @@ protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 
 @[to_additive AddCommute.zsmul_add]
 protected lemma mul_zpow (h : Commute a b) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
-  | (n : ℕ)    => by simp [zpow_natCast, h.mul_pow n]
+  | (n : ℕ) => by simp [zpow_natCast, h.mul_pow n]
   | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 
 end DivisionMonoid
