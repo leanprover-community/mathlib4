@@ -118,8 +118,8 @@ lemma Connected.degree_pos_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts] (
     (v : H.verts) [Fintype (H.neighborSet v)] : 0 < H.degree v := by
   simpa using h.coe.preconnected.degree_pos_of_nontrivial v
 
-lemma Connected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts] [Fintype H.verts]
-    (h : H.Connected) (v : H.verts) [Fintype (H.neighborSet v)] : ∃ u, H.Adj v u := by
+lemma Connected.exists_adj_of_nontrivial {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected)
+    (v : H.verts) [Fintype (H.neighborSet v)] : ∃ u, H.Adj v u := by
   have := h.coe.preconnected.exists_adj_of_nontrivial v
   tauto
 
