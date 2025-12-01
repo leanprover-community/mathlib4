@@ -42,7 +42,7 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 The conditional kernel of a measure is unique almost everywhere. -/
 
-/-- An s-finite kernel which satisfy the disintegration property of the given measure `ρ` is almost
+/-- An s-finite kernel which satisfies the disintegration property of the given measure `ρ` is almost
 everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
 
 This theorem in the case of finite kernels is weaker than `eq_condKernel_of_measure_eq_compProd`
