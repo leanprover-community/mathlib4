@@ -124,7 +124,7 @@ alias lex_le_iff_of_unique := Lex.le_iff_of_unique
 
 theorem Colex.le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :
     x ≤ y ↔ x default ≤ y default :=
-  lex_le_iff_of_unique (ι := ιᵒᵈ)
+  Lex.le_iff_of_unique (ι := ιᵒᵈ)
 
 section LinearOrder
 
