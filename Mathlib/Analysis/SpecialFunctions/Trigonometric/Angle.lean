@@ -900,8 +900,7 @@ theorem eq_add_pi_of_two_zsmul_eq_of_sign_eq_neg (a b : Real.Angle) (h : 2 • a
     contradiction
   · rw [h3]
 
-theorem two_zsmul_eq_iff_eq {a b : Real.Angle}
-    {ha : a.sign ≠ 0} {h : a.sign = b.sign} :
+theorem two_zsmul_eq_iff_eq {a b : Real.Angle} (ha : a.sign ≠ 0) (h : a.sign = b.sign) :
     (2:ℤ) • a = (2:ℤ) • b ↔ a = b:= by
   rw[Real.Angle.two_zsmul_eq_iff]
   constructor
