@@ -242,7 +242,7 @@ theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologic
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
+continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
 def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
