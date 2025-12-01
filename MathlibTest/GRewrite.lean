@@ -348,3 +348,8 @@ example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
 
 example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
   grw [h 0]
+
+-- Test the `erw` version of `grw`.
+example (h : 2 + 1 ≤ (3 : Int)) : 1 + 2 ≤ (4 : Int) := by
+  grw (transparency := default) [h]
+  simp
