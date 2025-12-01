@@ -108,7 +108,7 @@ jobs:
         echo "from_date=$from_date" >> "$GITHUB_OUTPUT"
         echo "to_date=$to_date" >> "$GITHUB_OUTPUT"
 
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
 
     - name: Configure Lean
       uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
@@ -207,7 +207,7 @@ jobs:
     - name: Create Pull Request
       id: pr
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
-      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+      uses: peter-evans/create-pull-request@84ae59a2cdc2258d6fa0732dd66352dddae2a412 # v7.0.9
       with:
         token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
         author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"

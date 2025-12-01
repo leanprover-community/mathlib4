@@ -88,7 +88,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -98,7 +98,7 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: "${{ github.sha }}"
           path: pr-branch
@@ -562,7 +562,7 @@ jobs:
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: "${{ github.sha }}"
 
@@ -723,7 +723,7 @@ jobs:
         # unfortunately we cannot query only for 'auto-merge-after-CI' events
         # so we have to process this with jq in the next step
         id: get-timeline
-        uses: octokit/graphql-action@8ad880e4d437783ea2ab17010324de1075228110 # v2.3.2
+        uses: octokit/graphql-action@abaeca7ba4f0325d63b8de7ef943c2418d161b93 # v3.0.0
         with:
           query: |
             query($owner: String!, $name: String!, $number: Int!) {
