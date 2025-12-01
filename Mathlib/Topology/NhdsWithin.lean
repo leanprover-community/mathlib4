@@ -429,10 +429,7 @@ theorem eventuallyEq_nhds_of_eventuallyEq_nhdsNE {f g : α → β} {a : α} (h�
     (h₂ : f a = g a) :
     f =ᶠ[𝓝 a] g := by
   filter_upwards [eventually_nhdsWithin_iff.1 h₁]
-  intro x hx
-  by_cases h₂x : x = a
-  · simp [h₂x, h₂]
-  · tauto
+  grind
 
 theorem eventuallyEq_nhdsWithin_of_eqOn {f g : α → β} {s : Set α} {a : α} (h : EqOn f g s) :
     f =ᶠ[𝓝[s] a] g :=
