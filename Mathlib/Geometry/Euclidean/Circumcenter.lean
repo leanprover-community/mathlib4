@@ -299,6 +299,11 @@ theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter
   congr
   simp only [eq_iff_true_of_subsingleton]
 
+lemma circumcenter_ne_point {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    s.circumcenter ≠ s.points i := by
+  rw [← dist_ne_zero, dist_circumcenter_eq_circumradius']
+  exact s.circumradius_pos.ne'
+
 /-- The circumcenter of a 1-simplex equals its centroid. -/
 theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
     s.circumcenter = Finset.univ.centroid ℝ s.points := by
