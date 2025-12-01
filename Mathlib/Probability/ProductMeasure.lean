@@ -452,10 +452,9 @@ lemma infinitePi_singleton [hι : Countable ι] [∀ i, MeasurableSingletonClass
   · simp [Set.countable_univ_iff, hι]
   · measurability
 
-@[simp]
 lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
-      (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by
-  rw [infinitePi_singleton, tprod_fintype]
+    (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by
+  simp [tprod_fintype]
 
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
   .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
