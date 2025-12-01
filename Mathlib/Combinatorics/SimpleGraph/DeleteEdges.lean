@@ -83,14 +83,21 @@ theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
   rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
 
+@[simp]
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   simp [deleteEdges]
 
-theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
+@[simp] theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (Sym2 V))
     [Fintype (G.deleteEdges s).edgeSet] :
     (G.deleteEdges s).edgeFinset = G.edgeFinset \ s := by
   ext e
   simp [edgeSet_deleteEdges]
+
+@[simp] lemma deleteEdges_sup (G H : SimpleGraph V) (s : Set (Sym2 V)) :
+    (G ⊔ H).deleteEdges s = G.deleteEdges s ⊔ H.deleteEdges s := sup_sdiff
+
+@[simp] lemma deleteEdges_fromEdgeSet (s t : Set (Sym2 V)) :
+    (fromEdgeSet s).deleteEdges t = fromEdgeSet (s \ t) := by ext; simp +contextual
 
 end DeleteEdges
 
