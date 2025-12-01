@@ -222,8 +222,8 @@ the other is. -/
 theorem affineIndependent_iff_of_oangle_eq {p₁ p₂ p₃ p₁' p₂' p₃' : P}
   (h_eq : ∡ p₁ p₂ p₃ = ∡ p₁' p₂' p₃') :
   AffineIndependent ℝ ![p₁, p₂, p₃] ↔ AffineIndependent ℝ ![p₁', p₂', p₃'] := by
-  rw [←oangle_ne_zero_and_ne_pi_iff_affineIndependent,
-  ←oangle_ne_zero_and_ne_pi_iff_affineIndependent, h_eq]
+  rw [← oangle_ne_zero_and_ne_pi_iff_affineIndependent,
+    ← oangle_ne_zero_and_ne_pi_iff_affineIndependent, h_eq]
 
 /-- If twice the oriented angles between two triples of points are equal, one triple is affinely
 independent if and only if the other is. -/
