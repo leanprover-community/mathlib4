@@ -515,7 +515,7 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
   Infinite.of_surjective Prod.fst Prod.fst_surjective
 
 instance [Infinite α] : Infinite (Equiv.Perm α) := by
-  have : DecidableEq α := Classical.typeDecidableEq α
+  classical
   obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
   exact Infinite.of_injective _ (Equiv.swap_injective_of_left a)
 

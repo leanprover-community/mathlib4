@@ -8,7 +8,6 @@ module
 public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
-public import Mathlib.Logic.Nontrivial.Basic
 public import Mathlib.Tactic.Lift
 
 /-!
@@ -722,7 +721,7 @@ theorem swap_injective_of_right (a : α) :
   exact swap_injective_of_left a
 
 instance (α : Type*) [Nontrivial α] : Nontrivial (Equiv.Perm α) := by
-  have : DecidableEq α := Classical.typeDecidableEq α
+  classical
   obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
   exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
 
