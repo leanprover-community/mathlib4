@@ -153,7 +153,7 @@ alias PreInnerProductSpace.Core.inner_nonneg := PreInnerProductSpace.Core.re_inn
 attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
-require this assumptions are put under section `InnerProductSpace.Core`. -/
+require these assumptions are put under section `InnerProductSpace.Core`. -/
 structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/
