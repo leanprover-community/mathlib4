@@ -13,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-public import Mathlib.Tactic.MoveAdd
 public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
