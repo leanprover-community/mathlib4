@@ -34,7 +34,7 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 ## Main statements
 
-- `TestFunction.continuous_iff_continuous_comp` a linear map from `𝓓^{n}(E, F)`
+- `TestFunction.continuous_iff_continuous_comp`: a linear map from `𝓓^{n}(E, F)`
   to a locally convex space is continuous iff its restriction to `𝓓^{n}_{K}(E, F)` is
   continuous for each compact set `K`. We will later translate this concretely in terms
   of seminorms.
@@ -58,8 +58,7 @@ open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {n k : ℕ∞}
 
 variable (Ω F n) in
@@ -235,7 +234,6 @@ def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-variable (𝕜) in
 @[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
@@ -380,7 +378,13 @@ noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
 noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
   topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
---TODO: deduce for `RCLike` field `𝕂`
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
+  IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
+
+noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
+  isUniformAddGroup_of_addCommGroup
+
+-- TODO: deduce for `RCLike` field `𝕂`
 noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
   continuousSMul_sInf fun _ ⟨_, _, ht, _⟩ ↦ ht
 

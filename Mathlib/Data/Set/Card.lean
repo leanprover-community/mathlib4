@@ -40,11 +40,11 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 
 ## Implementation Notes
 
-The theorems in this file are very similar to those in `Data.Finset.Card`, but with `Set` operations
-instead of `Finset`. We first prove all the theorems for `Set.encard`, and then derive most of the
-`Set.ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API
-for theorems about infinite sets, and to allow for a refactor that removes or modifies `Set.ncard`
-in the future.
+The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with
+`Set` operations instead of `Finset`. We first prove all the theorems for `Set.encard`, and then
+derive most of the `Set.ncard` results as a consequence. Things are done this way to avoid reliance
+on the `Finset` API for theorems about infinite sets, and to allow for a refactor that removes or
+modifies `Set.ncard` in the future.
 
 Nearly all the theorems for `Set.ncard` require finiteness of one or more of their arguments. We
 provide this assumption with a default argument of the form `(hs : s.Finite := by toFinite_tac)`,
@@ -353,10 +353,10 @@ theorem encard_le_one_iff_subsingleton : s.encard ≤ 1 ↔ s.Subsingleton := by
   tauto
 
 theorem one_lt_encard_iff_nontrivial : 1 < s.encard ↔ s.Nontrivial := by
-  rw [← not_iff_not, not_lt, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton]
+  contrapose!; exact encard_le_one_iff_subsingleton
 
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
-  rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
+  contrapose!; exact encard_le_one_iff
 
 theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b ≠ a := by
   by_contra! h'
