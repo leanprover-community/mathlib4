@@ -12,7 +12,8 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
-of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
+of subgroups $C₁$, $C₂$, ..., $Cₙ$:
+$$ G = ⋃_{i = 1}^n C_i g_i. $$
 
 * `Subgroup.exists_finiteIndex_of_leftCoset_cover`
   at least one subgroup $C_i$ has finite index in $G$.

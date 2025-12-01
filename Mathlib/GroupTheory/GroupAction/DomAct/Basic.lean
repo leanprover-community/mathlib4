@@ -19,7 +19,7 @@ By default, `M` acts on `α → β` if it acts on `β`, and the action is given 
 
 In some cases, it is useful to consider another action: if `M` acts on `α` on the left, then it acts
 on `α → β` on the right so that `(c • f) a = f (c • a)`. E.g., this action is used to reformulate
-the Mean Ergodic Theorem in terms of an operator on \(L^2\).
+the Mean Ergodic Theorem in terms of an operator on `L²`.
 
 ## Main definitions
 

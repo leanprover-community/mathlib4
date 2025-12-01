@@ -40,7 +40,7 @@ variable (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 variable {R} in
 /-- The finite module represented by an object of the type `FGModuleRepr R`, which is the quotient
-of `Fin n → R` (i.e. $$R^n$$) by the submodule `S` provided. -/
+of `Fin n → R` (i.e. `Rⁿ`) by the submodule `S` provided. -/
 def repr (x : FGModuleRepr R) : Type u :=
   _ ⧸ x.S
 
@@ -56,7 +56,7 @@ instance (x : FGModuleRepr R) : Module R x := by
 instance (x : FGModuleRepr R) : Module.Finite R x := by
   unfold repr; infer_instance
 
-/-- A non-canonical representation of a finite module (as a quotient of $$R^n$$). -/
+/-- A non-canonical representation of a finite module (as a quotient of `Rⁿ`). -/
 noncomputable def ofFinite : FGModuleRepr R where
   n := (Module.Finite.exists_fin_quot_equiv R M).choose
   S := (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose
