@@ -113,7 +113,8 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   have hn''' : (X ^ n - 1 : F[X]) ≠ 0 := X_pow_sub_C_ne_zero hn' 1
   have mem_range : ∀ {c : (X ^ n - C a).SplittingField},
       (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc =>
-    RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c (h.def.resolve_left hn'''
+    RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c
+      ((splits_iff_splits.mp h).resolve_left (map_ne_zero hn''')
       (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))
       (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))
   apply isSolvable_of_comm
@@ -153,7 +154,8 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   let s := ((X ^ n - C a).map i).roots
   have hs : _ = _ * (s.map _).prod := h.eq_prod_roots
   rw [leadingCoeff_map, leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
-  have hs' : Multiset.card s = n := (natDegree_eq_card_roots h).symm.trans natDegree_X_pow_sub_C
+  have hs' : Multiset.card s = n := by
+    rw [← h.natDegree_eq_card_roots, natDegree_map, natDegree_X_pow_sub_C]
   apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
   rw [leadingCoeff_X_pow_sub_one hn', map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
