@@ -191,12 +191,8 @@ lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :
 lemma restrict_preimage [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
       Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict, forall_const, Subtype.forall,
-    mem_coe]
-  refine ⟨fun h i hi ↦ by simpa [hi] using h i hi, fun h i hi ↦ ?_⟩
-  convert h i hi
-  rw [dif_pos hi]
+  ext
+  simp_all
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
