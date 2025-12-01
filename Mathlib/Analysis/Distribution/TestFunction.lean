@@ -249,7 +249,7 @@ See `iteratedFDerivLM` for the very common case where everything is infinitely d
 
 This is subsumed by `iteratedFDerivWithOrderCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
-noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
+noncomputable def iteratedFDerivWithOrderLM [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
     𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω, E [×i]→L[ℝ] F) where
   /-
   Note: it is tempting to define this as some linear map if `k + i ≤ n`,
@@ -279,22 +279,24 @@ noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
     · simp
 
 @[simp]
-lemma iteratedFDerivWithOrderLM_apply {i : ℕ} (f : 𝓓^{n}(Ω, F)) :
+lemma iteratedFDerivWithOrderLM_apply [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F)) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = if k + i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   rw [iteratedFDerivWithOrderLM]
   split_ifs <;> rfl
 
-lemma iteratedFDerivWithOrderLM_apply_of_le {i : ℕ} (f : 𝓓^{n}(Ω, F)) (hin : k + i ≤ n) :
+lemma iteratedFDerivWithOrderLM_apply_of_le [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F))
+    (hin : k + i ≤ n) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}(Ω, F)) (hin : ¬ (k + i ≤ n)) :
+lemma iteratedFDerivWithOrderLM_apply_of_gt [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓^{n}(Ω, F))
+    (hin : ¬ (k + i ≤ n)) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = 0 := by
   ext : 1
   simp [hin]
 
-lemma iteratedFDerivWithOrderLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
-    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+lemma iteratedFDerivWithOrderLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] {i : ℕ} (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (iteratedFDerivWithOrderLM 𝕜 n k i : 𝓓^{n}(Ω, F) → _)
       = iteratedFDerivWithOrderLM 𝕜' n k i :=
   rfl
@@ -307,7 +309,7 @@ See also `iteratedFDerivWithOrderLM` if you need more control on the regularitie
 
 This is subsumed by `iteratedFDerivCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
-noncomputable def iteratedFDerivLM (i : ℕ) :
+noncomputable def iteratedFDerivLM [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
     𝓓(Ω, F) →ₗ[𝕜] 𝓓(Ω, E [×i]→L[ℝ] F) where
   toFun f := ⟨iteratedFDeriv ℝ i f, f.contDiff.iteratedFDeriv_right le_rfl,
       f.hasCompactSupport.iteratedFDeriv _,
@@ -322,19 +324,19 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
 
 @[simp]
-lemma iteratedFDerivLM_apply {i : ℕ} (f : 𝓓(Ω, F)) :
+lemma iteratedFDerivLM_apply [SMulCommClass ℝ 𝕜 F] {i : ℕ} (f : 𝓓(Ω, F)) :
     iteratedFDerivLM 𝕜 i f = iteratedFDeriv ℝ i f :=
   rfl
 
 /-- Note: this turns out to be a definitional equality thanks to decidablity of the order
 on `ℕ∞`. This means we could have *defined* `iteratedFDerivLM` this way, but we avoid it
 to make sure that `if`s won't appear in the smooth case. -/
-lemma iteratedFDerivLM_eq_withOrder (i : ℕ) :
+lemma iteratedFDerivLM_eq_withOrder [SMulCommClass ℝ 𝕜 F] (i : ℕ) :
     (iteratedFDerivLM 𝕜 i : 𝓓(Ω, F) →ₗ[𝕜] _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
   rfl
 
-lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
-    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+lemma iteratedFDerivLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] {i : ℕ} (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (iteratedFDerivLM 𝕜 i : 𝓓(Ω, F) → _) = iteratedFDerivLM 𝕜' i :=
   rfl
 
