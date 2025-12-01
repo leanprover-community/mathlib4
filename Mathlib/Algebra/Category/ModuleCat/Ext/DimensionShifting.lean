@@ -47,6 +47,7 @@ theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGro
 
 variable {R M N}
 
+/-- Given a linear map `f : M → N`, we can obtain a short complex `ker(f) → M → N`. -/
 abbrev LinearMap.shortComplexG (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
   g := ModuleCat.ofHom.{v} f
