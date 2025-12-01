@@ -5,6 +5,7 @@ Authors: Luigi Massacci, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
@@ -130,6 +131,12 @@ protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := t
 @[fun_prop]
 protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
   f.contDiff.continuous
+
+theorem differentiable_withOrder (f : 𝓓^{n}(Ω, F)) (hn : 1 ≤ n) : Differentiable ℝ f :=
+  f.contDiff.differentiable (mod_cast hn)
+
+theorem differentiable (f : 𝓓(Ω, F)) : Differentiable ℝ f :=
+  f.contDiff.differentiable (by decide)
 
 @[simp]
 theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
@@ -569,6 +576,56 @@ lemma fderivCLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] (𝕜' : Type*) [Nontri
     (fderivCLM 𝕜 : 𝓓(Ω, F) → _) = fderivCLM 𝕜' :=
   rfl
 
+-- TODO: stuck with `𝕜` due to too strict fields in `ContinuousLinearMap.apply`
+variable (n k) in
+/-- `fderivWithOrderCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+See `fderivCLM` for the very common case where everything is infinitely differentiable. -/
+noncomputable def lineDerivWithOrderCLM (v : E) :
+    𝓓^{n}(Ω, F) →L[ℝ] 𝓓^{k}(Ω, F) :=
+  postcompCLM (.apply ℝ F v) ∘L (fderivWithOrderCLM ℝ n k)
+
+@[simp]
+lemma lineDerivWithOrderCLM_apply {f : 𝓓^{n}(Ω, F)} {x v : E} :
+    lineDerivWithOrderCLM n k v f x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
+  by_cases hk : k + 1 ≤ n
+  · have : 1 ≤ n := le_of_add_le_right hk
+    simp [lineDerivWithOrderCLM, hk,
+          (f.differentiable_withOrder this).differentiableAt.lineDeriv_eq_fderiv]
+  · simp [lineDerivWithOrderCLM, hk]
+
+lemma lineDerivWithOrderCLM_apply_of_le {f : 𝓓^{n}(Ω, F)} {x v : E} (hk : k + 1 ≤ n) :
+    lineDerivWithOrderCLM n k v f x = lineDeriv ℝ f x v := by
+  simp [hk]
+
+lemma lineDerivWithOrderCLM_apply_of_gt {v : E} (hk : ¬ (k + 1 ≤ n)) :
+    (lineDerivWithOrderCLM n k v : 𝓓^{n}(Ω, F) →L[ℝ] 𝓓^{k}(Ω, F)) = 0 := by
+  ext
+  simp [hk]
+
+-- TODO: stuck with `𝕜` due to too strict fields in `ContinuousLinearMap.apply`
+/-- `fderivCLM 𝕜` is the continuous `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
+its derivative as an element of `𝓓_{K}(E, E →L[ℝ] F)`.
+
+See also `fderivWithOrderCLM` if you need more control on the regularities. -/
+noncomputable def lineDerivCLM (v : E) :
+    𝓓(Ω, F) →L[ℝ] 𝓓(Ω, F) :=
+  postcompCLM (.apply ℝ F v) ∘L (fderivCLM ℝ)
+
+@[simp]
+lemma lineDerivCLM_apply {f : 𝓓(Ω, F)} {x v : E} :
+    lineDerivCLM v f x = lineDeriv ℝ f x v := by
+  simp [lineDerivCLM, f.differentiable.differentiableAt.lineDeriv_eq_fderiv]
+
+/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
+on `ℕ∞`. This means we could have *defined* `lineDerivCLM` this way, but we avoid it
+to make sure that `if`s won't appear in the smooth case. -/
+lemma lineDerivCLM_eq_withOrder {v : E} :
+    (lineDerivCLM v : 𝓓(Ω, F) →L[ℝ] _) = lineDerivWithOrderCLM ⊤ ⊤ v :=
+  rfl
+
 end FDerivCLM
 
 section Integral
@@ -678,3 +735,5 @@ lemma integralAgainstBilinCLM_eq_zero {B : F₁ →L[ℝ] F₂ →L[ℝ] F₃} {
 end Integral
 
 end TestFunction
+
+end
