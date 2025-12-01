@@ -59,6 +59,7 @@ open scoped BoundedContinuousFunction NNReal Topology ContDiff
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [NormedSpace 𝕂 F']
   {n k : ℕ∞}
 
 variable (Ω F n) in
@@ -446,6 +447,57 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
 
 end Topology
 
+section postcomp
+
+variable [SMulCommClass ℝ 𝕜 F] [SMulCommClass ℝ 𝕜 F']
+
+-- Note: generalizing this to a semilinear setting would require a semilinear version of
+-- `CompatibleSMul`.
+/-- Given `T : F →L[𝕜] F'`, `postcompLM T` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)`
+to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`.
+
+This is subsumed by `postcompCLM T`, which also bundles the continuity. -/
+noncomputable def postcompLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
+    𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{n}(Ω, F') where
+  toFun f := ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
+    f.hasCompactSupport.comp_left (map_zero _), sorry⟩ -- missing API
+  map_add' f g := by ext x; exact map_add T (f x) (g x)
+  map_smul' c f := by ext x; exact map_smul T c (f x)
+
+@[simp]
+lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+    (f : 𝓓^{n}(Ω, F)) :
+    postcompLM T f = T ∘ f :=
+  rfl
+
+@[simp]
+lemma postcompLM_ofSupportedIn [LinearMap.CompatibleSMul F F' ℝ 𝕜] {T : F →L[𝕜] F'}
+    {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) {f : 𝓓^{n}_{K}(E, F)} :
+    postcompLM T (ofSupportedIn K_sub_Ω f) = ofSupportedIn K_sub_Ω
+      (ContDiffMapSupportedIn.postcompLM T f) :=
+  rfl
+
+/-- Given `T : F →L[𝕜] F'`, `postcompCLM T` is the continuous `𝕜`-linear-map sending
+`f : 𝓓^{n}(Ω, F)` to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`.
+
+This is subsumed by `postcompCLM T`, which also bundles the continuity. -/
+noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F') where
+  toLinearMap := postcompLM T
+  cont := show Continuous (postcompLM (T.restrictScalars ℝ)) by
+    rw [TestFunction.continuous_iff_continuous_comp]
+    intro K K_sub_Ω
+    refine .congr ?_ fun f ↦ (postcompLM_ofSupportedIn K_sub_Ω).symm
+    exact (ofSupportedInCLM ℝ K_sub_Ω).comp
+      (ContDiffMapSupportedIn.postcompCLM (T.restrictScalars ℝ)) |>.continuous
+
+@[simp]
+lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+    (f : 𝓓^{n}(Ω, F)) :
+    postcompCLM T f = T ∘ f :=
+  rfl
+
+end postcomp
 
 section FDerivCLM
 
