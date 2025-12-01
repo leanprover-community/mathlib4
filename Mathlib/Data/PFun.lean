@@ -42,8 +42,8 @@ Partial functions can be considered as relations, so we specialize some `Rel` de
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
 * `PFun.core`: Core of a set under a partial function.
-* `PFun.graph`: Graph of a partial function `a →. β`as a `Set (α × β)`.
-* `PFun.graph'`: Graph of a partial function `a →. β`as a `Rel α β`.
+* `PFun.graph`: Graph of a partial function `a →. β` as a `Set (α × β)`.
+* `PFun.graph'`: Graph of a partial function `a →. β` as a `Rel α β`.
 
 ### `PFun α` as a monad
 
@@ -257,14 +257,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · obtain ⟨h₁, h₂⟩ := h
-        rw [WellFounded.fixF_eq]
-        -- Porting note: used to be simp [h₁, h₂, h₄]
-        apply Part.mem_assert h₁
-        split
-        next e =>
-          injection h₂.symm.trans e
-        next e =>
-          injection h₂.symm.trans e; subst a'; exact h₄⟩
+        grind [WellFounded.fixF_eq]⟩
 
 /-- If advancing one step from `a` leads to `b : β`, then `f.fix a = b` -/
 theorem fix_stop {f : α →. β ⊕ α} {b : β} {a : α} (hb : Sum.inl b ∈ f a) : b ∈ f.fix a := by
@@ -370,7 +363,7 @@ def preimage (s : Set β) : Set α := f.graph'.preimage s
 theorem Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x } :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_preimage (s : Set β) (x : α) : x ∈ f.preimage s ↔ ∃ y ∈ s, y ∈ f x :=
   Iff.rfl
 
@@ -483,7 +476,7 @@ theorem id_apply (a : α) : PFun.id α a = Part.some a :=
 /-- Composition of partial functions as a partial function. -/
 def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a => (g a).bind f
 
-@[simp]
+@[simp, grind =]
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
   rfl
 
@@ -498,25 +491,20 @@ theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
-  simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, ← exists_and_right]
-  rw [exists_comm]
-  simp_rw [and_comm]
+  simp
+  grind
 
 @[simp]
 theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
   ext
-  simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
-  rw [exists_comm]
-  simp_rw [and_assoc, and_comm]
+  grind
 
 @[simp]
 theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
     a.bind (f.comp g) = (a.bind g).bind f := by
-  ext c
-  simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
-  rw [exists_comm]
-  simp_rw [and_assoc]
+  ext
+  grind
 
 @[simp]
 theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=

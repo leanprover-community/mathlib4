@@ -25,7 +25,7 @@ and `λ = η - 1`.
   `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
-Theorem 5.36
+Theorem 5.36).
 -/
 
 @[expose] public section
