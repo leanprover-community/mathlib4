@@ -322,8 +322,7 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
     λ ^ 2 ∣ S'.a + S'.b ∨ λ ^ 2 ∣ S'.a + η * S'.b ∨ λ ^ 2 ∣ S'.a + η ^ 2 * S'.b := by
-  by_contra! h
-  rcases h with ⟨h1, h2, h3⟩
+  by_contra! ⟨h1, h2, h3⟩
   rw [← emultiplicity_lt_iff_not_dvd] at h1 h2 h3
   have h1' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + S'.b) :=
     finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)

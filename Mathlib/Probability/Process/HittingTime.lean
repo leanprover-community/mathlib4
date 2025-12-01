@@ -376,8 +376,7 @@ theorem hittingBtwn_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
     split_ifs with h'
     · obtain ⟨j, hj₁, hj₂⟩ := h'
       refine le_csInf ⟨j, hj₁, hj₂⟩ ?_
-      by_contra! hneg
-      obtain ⟨i, hi₁, hi₂⟩ := hneg
+      by_contra! ⟨i, hi₁, hi₂⟩
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩
     · exact hm
 

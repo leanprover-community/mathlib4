@@ -1003,8 +1003,7 @@ lemma left_or_right_bias {n : ℕ} (a b : ℕ)
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(a, i, n) ≤ j) ∨
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(i, b, n) ≤ j) := by
   -- Suppose otherwise, and take `c` and `d` counterexamples to both alternatives
-  by_contra! h
-  obtain ⟨⟨c, hc⟩, d, hd⟩ := h
+  by_contra! ⟨⟨c, hc⟩, d, hd⟩
   -- Observe the set of points in `C ∩ level n` below `(d, c, n)` is finite, and aim to show that
   -- `C ∩ level n` is contained in this set, for a contradiction
   refine hCn (((Set.finite_Iic (d, c)).image (embed n)).subset ?_)
