@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public import Batteries.Tactic.Lint.Misc
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Bundled types
@@ -39,6 +40,8 @@ structure Bundled (c : Type u → Type v) : Type max (u + 1) v where
   α : Type u
   /-- The corresponding instance of the bundled type class -/
   str : c α := by infer_instance
+
+initialize_simps_projections Bundled (-str)
 
 namespace Bundled
 
