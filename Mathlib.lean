@@ -11693,6 +11693,7 @@ public import Mathlib.LinearAlgebra.DirectSum.Basis
 public import Mathlib.LinearAlgebra.DirectSum.Finite
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
