@@ -379,7 +379,8 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
         have := RingHom.congr_fun h' x
-        simp at this
+        simp only [ComplexEmbedding.conjugate_coe_eq, AlgHom.toRingHom_eq_coe,
+          RingHom.coe_coe] at this
         rw [this]
         exact hψ.symm
       rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,

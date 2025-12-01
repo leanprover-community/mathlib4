@@ -373,6 +373,9 @@ theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
   rw [← hasDerivWithinAt_univ] at *
   exact hd.const_mul c
 
+theorem hasDerivAt_const_mul (c : 𝕜) : HasDerivAt (fun y => c * y) c x := by
+  simpa only [mul_one] using (hasDerivAt_id' x).const_mul c
+
 theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c * d y) (c * d') x := by
   convert (hasStrictDerivAt_const _ _).mul hd using 1

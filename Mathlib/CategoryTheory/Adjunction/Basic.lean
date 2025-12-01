@@ -69,9 +69,9 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 ## Other files related to adjunctions
 
-* The file `CategoryTheory.Monad.Adjunction` develops the basic relationship between adjunctions
-  and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
-  `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
+* The file `Mathlib/CategoryTheory/Monad/Adjunction.lean` develops the basic relationship between
+  adjunctions and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an
+  isomorphism `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
 @[expose] public section
@@ -655,7 +655,7 @@ namespace Equivalence
 variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
-simply use `e.symm.toAdjunction`. -/
+simply use `e.symm.toAdjunction`.) -/
 @[simps]
 def toAdjunction : e.functor ⊣ e.inverse where
   unit := e.unit

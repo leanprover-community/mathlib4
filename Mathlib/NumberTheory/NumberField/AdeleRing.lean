@@ -106,16 +106,7 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 `(r₁, r₂)` is the signature of `K` and `φᵢ` are the complex embeddings of `K`. -/
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
-  ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    extensionEmbedding,
-    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp,
-    RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
-  · rw [UniformSpace.Completion.extension_coe
-      (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_isReal _ _ _
-  · rw [UniformSpace.Completion.extension_coe
-      (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_eq).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_isComplex _ _ _
+  ext v <;> simp
 
 end InfiniteAdeleRing
 

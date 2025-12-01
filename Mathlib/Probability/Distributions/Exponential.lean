@@ -136,6 +136,8 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
 lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     ∫⁻ y in Iic x, exponentialPDF r y
     = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by
