@@ -156,11 +156,11 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
         (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by cat_disch) :
     η ≅ θ where
-  hom := { app a := (app a).hom }
-  inv :=
-    { app a := (app a).inv
+  hom := ⟨{ app a := (app a).hom }⟩
+  inv := ⟨{
+      app a := (app a).inv
       naturality {a b} f := by
-        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
+        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }⟩
 
 end StrongTrans
 
