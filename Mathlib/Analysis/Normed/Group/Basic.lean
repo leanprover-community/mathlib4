@@ -509,6 +509,7 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
   exact dist_nonneg
 
 attribute [bound] norm_nonneg
+attribute [grind .] norm_nonneg
 
 @[to_additive (attr := simp) abs_norm]
 theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
