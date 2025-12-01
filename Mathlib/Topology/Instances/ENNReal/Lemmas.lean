@@ -1077,7 +1077,7 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
 
 section tprod
 
-theorem ENNReal.hasProd_of_isLUB_of_nonneg_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
+theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     Multipliable f :=
   ⟨_, _root_.hasProd_of_isLUB_of_nonneg_of_le_one _ h₀ (isGLB_sInf _)⟩
 
