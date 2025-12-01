@@ -50,11 +50,27 @@ section coalgebraOfAlgebra
 variable {A : Type*} [NormedRing A] [InnerProductSpace 𝕜 A] [FiniteDimensional 𝕜 A]
   [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
-/-- This is needed since having `Algebra 𝕜 A` and `InnerProductSpace 𝕜 A` would create a diamond. -/
-private local instance : Algebra 𝕜 A := .ofModule smul_mul_assoc mul_smul_comm
+section
+-- move to Mathlib.Algebra.Algebra.Defs
 
-/- TODO: Change `NormedRing` to `Ring` and `NormedAddCommGroup`.
-Currently, this cannot be done since having `Ring A` and `NormedAddCommGroup A` creates a diamond.
+/-- The unit linear map (algebra linear map) without requiring `Algebra R A`.
+This is equal to `Algebra.linearMap`, but not defeq. -/
+@[simps]
+def _root_.Algebra.linearMap' (R A : Type*) [Semiring R] [NonAssocSemiring A] [Module R A] :
+    R →ₗ[R] A where
+  toFun x := x • 1
+  map_add' _ _ := add_smul _ _ _
+  map_smul' _ _ := smul_smul _ _ _ |>.symm
+
+theorem _root_.Algebra.linearMap'_eq_linearMap {R A : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] : Algebra.linearMap' R A = Algebra.linearMap R A := by
+  ext; simp
+
+end
+
+/- TODO: This does not require submultiplicativity of the norm. When we unbundle the algebra
+and analysis hierachies, we should generalise this from `NormedRing` to `Ring`
+and `NormedAddCommGroup`.
 PR#24040 addresses this. -/
 -- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with an algebra structure induces
@@ -63,7 +79,7 @@ and the counit is given by the adjoint of the algebra map. -/
 noncomputable abbrev coalgebraOfAlgebra :
     Coalgebra 𝕜 A where
   comul := adjoint (mul' 𝕜 A)
-  counit := adjoint (Algebra.linearMap 𝕜 A)
+  counit := adjoint (Algebra.linearMap' 𝕜 A)
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
       ← (assocIsometry 𝕜 A A A).symm_symm, ← adjoint_toLinearMap_eq_symm]
@@ -85,7 +101,7 @@ scoped[InnerProductSpace.CoalgebraOfAlgebra] attribute [instance]
 namespace CoalgebraOfAlgebra
 
 theorem comul_def : comul (R := 𝕜) (A := A) = adjoint (mul' 𝕜 A) := rfl
-theorem counit_def : counit (R := 𝕜) (A := A) = adjoint (Algebra.linearMap 𝕜 A) := rfl
+theorem counit_def : counit (R := 𝕜) (A := A) = adjoint (Algebra.linearMap' 𝕜 A) := rfl
 
 end CoalgebraOfAlgebra
 end coalgebraOfAlgebra
