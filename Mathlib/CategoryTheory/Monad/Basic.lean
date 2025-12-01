@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 We construct the categories of monads and comonads, and their forgetful functors to endofunctors.
 
 (Note that these are the category theorist's monads, not the programmers monads.
-For the translation, see the file `CategoryTheory.Monad.Types`.)
+For the translation, see the file `Mathlib/CategoryTheory/Monad/Types.lean`.)
 
 For the fact that monads are "just" monoids in the category of endofunctors, see the file
 `CategoryTheory.Monad.EquivMon`.

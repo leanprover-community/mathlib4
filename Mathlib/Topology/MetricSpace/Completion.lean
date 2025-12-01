@@ -5,12 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The completion of a metric space
@@ -22,7 +20,6 @@ it defines the same uniformity as the already defined uniform structure on the c
 -/
 
 @[expose] public section
-
 
 open Set Filter UniformSpace Metric
 
@@ -198,8 +195,8 @@ theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K :
     (h : LipschitzWith K f) : LipschitzWith K (Completion.map f) :=
   one_mul K ▸ (coe_isometry.lipschitz.comp h).completion_extension
 
-theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
-    (h : Isometry f) : Isometry (Completion.extension f) :=
+theorem Isometry.completion_extension [PseudoMetricSpace β] [CompleteSpace β] [T0Space β]
+    {f : α → β} (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
     (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
@@ -207,3 +204,16 @@ theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : �
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension
+
+/-- The extension of an isometry to the completion of the domain. -/
+def Isometry.extensionHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
+    [T0Space β] {f : α →+* β} (h : Isometry f) : Completion α →+* β :=
+  Completion.extensionHom f h.continuous
+
+@[simp]
+theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
+    [T0Space β] {f : α →+* β} (h : Isometry f) (x : α) :
+    h.extensionHom x = f x :=
+  UniformSpace.Completion.extensionHom_coe f h.continuous _
