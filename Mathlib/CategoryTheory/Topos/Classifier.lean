@@ -203,8 +203,10 @@ instance truthIsSplitMono : IsSplitMono (truth C) :=
   Classifier.isTerminalΩ₀.isSplitMono_from _
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
-noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
+noncomputable def truthIsRegularMono : RegularMono (truth C) :=
   RegularMono.ofIsSplitMono (truth C)
+
+instance : IsRegularMono (truth C) := ⟨truthIsRegularMono⟩
 
 /-- The following diagram
 ```
@@ -223,7 +225,8 @@ It also follows that `C` is a balanced category.
 -/
 instance isRegularMonoCategory : IsRegularMonoCategory C where
   regularMonoOfMono :=
-    fun m => ⟨regularOfIsPullbackFstOfRegular (isPullback_χ m).w (isPullback_χ m).isLimit⟩
+    fun m => ⟨regularOfIsPullbackFstOfRegular truthIsRegularMono
+      (isPullback_χ m).w (isPullback_χ m).isLimit⟩
 
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.

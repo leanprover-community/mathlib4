@@ -146,7 +146,7 @@ theorem comp_of_mono {f₁ : X ⟶ Y} {f₂ : Y ⟶ Z} [Mono f₂] (small_k : Is
 If `(a,b)` is the kernel pair of `f`, and `f` is a coequalizer morphism for some parallel pair, then
 `f` is a coequalizer morphism of `a` and `b`.
 -/
-def toCoequalizer (k : IsKernelPair f a b) [r : RegularEpi f] : IsColimit (Cofork.ofπ f k.w) := by
+def toCoequalizer (k : IsKernelPair f a b) (r : RegularEpi f) : IsColimit (Cofork.ofπ f k.w) := by
   let t := k.isLimit.lift (PullbackCone.mk _ _ r.w)
   have ht : t ≫ a = r.left := k.isLimit.fac _ WalkingCospan.left
   have kt : t ≫ b = r.right := k.isLimit.fac _ WalkingCospan.right
@@ -157,6 +157,14 @@ def toCoequalizer (k : IsKernelPair f a b) [r : RegularEpi f] : IsColimit (Cofor
   · apply Cofork.IsColimit.π_desc' r.isColimit
   · apply Cofork.IsColimit.hom_ext r.isColimit
     exact w.trans (Cofork.IsColimit.π_desc' r.isColimit _ _).symm
+
+/--
+If `(a,b)` is the kernel pair of `f`, and `f` is a regular epimorphism, then
+`f` is a coequalizer morphism of `a` and `b`.
+-/
+noncomputable def toCoequalizer' (k : IsKernelPair f a b) [IsRegularEpi f] :
+    IsColimit (Cofork.ofπ f k.w) :=
+  toCoequalizer k <| regularEpiOfIsRegularEpi f
 
 /-- If `a₁ a₂ : A ⟶ Y` is a kernel pair for `g : Y ⟶ Z`, then `a₁ ×[Z] X` and `a₂ ×[Z] X`
 (`A ×[Z] X ⟶ Y ×[Z] X`) is a kernel pair for `Y ×[Z] X ⟶ X`. -/
