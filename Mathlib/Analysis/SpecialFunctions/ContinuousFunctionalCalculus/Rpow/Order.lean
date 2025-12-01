@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 
 /-!
-# Operator monotonicity/concavity/convexity of `rpow`
+# Order properties of `CFC.rpow`
 
 This file shows that `a ↦ a ^ p` is monotone for `p ∈ [0, 1]`, where `a` is an element of a
 C⋆-algebra. The proof makes use of the integral representation of `rpow` in
@@ -30,6 +30,8 @@ relevant in applications, and would needlessly complicate the proof.
 ## TODO
 
 + Show operator concavity of `rpow` over `Icc 0 1`
++ Show that `rpow` over `Icc (-1) 0` is operator antitone and operator convex
++ Show operator convexity of `rpow` over `Icc 1 2`
 
 ## References
 
