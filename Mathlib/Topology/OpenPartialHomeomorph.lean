@@ -616,7 +616,7 @@ theorem coe_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e
   rfl
 
 @[simp]
-theorem coe_symm_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
+theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
     ⇑(ofContinuousOpenRestrict e hc ho hs).symm = e.symm :=
   rfl
@@ -635,7 +635,7 @@ theorem coe_ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.sourc
   rfl
 
 @[simp]
-theorem coe_symm_ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
+theorem coe_ofContinuousOpen_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap e) (hs : IsOpen e.source) :
     ⇑(ofContinuousOpen e hc ho hs).symm = e.symm :=
   rfl
@@ -659,7 +659,7 @@ theorem restrOpen_source (s : Set X) (hs : IsOpen s) : (e.restrOpen s hs).source
 @[simp] theorem coe_restrOpen {s : Set X} (hs : IsOpen s) : ⇑(e.restrOpen s hs) = e := rfl
 
 @[simp]
-theorem coe_symm_restrOpen {s : Set X} (hs : IsOpen s) : ⇑(e.restrOpen s hs).symm = e.symm := rfl
+theorem coe_restrOpen_symm {s : Set X} (hs : IsOpen s) : ⇑(e.restrOpen s hs).symm = e.symm := rfl
 
 /-- Restricting an open partial homeomorphism `e` to `e.source ∩ interior s`. We use the interior to
 make sure that the restriction is well defined whatever the set s, since open partial homeomorphisms
