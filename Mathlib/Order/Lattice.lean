@@ -161,7 +161,7 @@ theorem lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
 theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
   h.trans_le le_sup_right
 
-@[to_dual (attr := simp) le_inf_iff]
+@[to_dual (attr := simp) (reorder := a b c) le_inf_iff]
 theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   ⟨fun h : a ⊔ b ≤ c => ⟨le_trans le_sup_left h, le_trans le_sup_right h⟩,
    fun ⟨h₁, h₂⟩ => sup_le h₁ h₂⟩
