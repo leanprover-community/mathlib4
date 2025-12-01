@@ -461,8 +461,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf (h.map <| .id F) (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.splits_of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -496,7 +495,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     · apply Finset.mem_mk.mpr
       · rw [mem_roots (show h.map i ≠ 0 from map_ne_zero h_ne_zero)]
         rw [IsRoot.def, ← eval₂_eq_eval_map, eval₂_hom, h_root]
-        exact RingHom.map_zero i
+        exact map_zero i
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
 
