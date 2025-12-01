@@ -99,7 +99,7 @@ coequalizer of something (i.e. a regular epi).
 -/
 noncomputable def counitCoequalises' [h : ∀ X : B, IsRegularEpi (adj₁.counit.app X)] (X : B) :
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
-  counitCoequalises adj₁ (fun _ ↦ regularEpiOfIsRegularEpi _) X
+  counitCoequalises adj₁ (fun _ ↦ IsRegularEpi.getStruct _) X
 
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
