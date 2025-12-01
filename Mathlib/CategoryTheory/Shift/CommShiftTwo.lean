@@ -57,6 +57,7 @@ structure CommShift₂Setup (M : Type*) [AddCommMonoid M] [HasShift D M] extends
   hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
 
 /-- The standard setup for the commutation of bifunctors with shifts by `ℤ`. -/
+@[simps]
 noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] :
     CommShift₂Setup D ℤ where
