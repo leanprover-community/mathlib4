@@ -78,10 +78,6 @@ open scoped RealInnerProductSpace ComplexConjugate
 
 open Module
 
-lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
-    [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
-  .of_fact_finrank_eq_succ 1
-
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
