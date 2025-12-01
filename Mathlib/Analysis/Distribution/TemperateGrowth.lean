@@ -150,7 +150,7 @@ Version where the outer function `g` is only of temperate growth on the image of
 `f`. -/
 theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     {t : Set E} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn ℝ t) (hg₁ : ContDiffOn ℝ ∞ g t)
-    (hg₂ : ∀ N, ∃ k C, ∀ n ≤ N, ∀ (x : E), ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
+    (hg₂ : ∀ N, ∃ k C, ∀ n ≤ N, ∀ x ∈ t, ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
     (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   refine ⟨hg₁.comp_contDiff hf.1 (ht ⟨·, rfl⟩), fun n ↦ ?_⟩
   obtain ⟨k₁, C₁, h₁⟩ := hf.bound_uniform n
@@ -158,14 +158,18 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
   have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0 (zero_le _)
   have hC₁ : 0 ≤ C₁ := by simpa using (norm_nonneg _).trans (h₁' 0)
   have hC₂ : 0 ≤ C₂ := by
-    specialize h₂ 0 (zero_le _) 0
-    simpa using (norm_nonneg _).trans h₂
+    obtain ⟨y, hy⟩ := Set.range_nonempty f
+    have := (norm_nonneg _).trans (h₂ 0 (zero_le _) y (ht hy))
+    rw [mul_nonneg_iff] at this
+    rcases this with ⟨h₁, h₂⟩ | ⟨h₁, h₂⟩
+    · exact h₁
+    · simpa only using not_le.mpr (by positivity) h₂
   set C₃ := ∑ k ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose k : ℝ) * (C₁ ^ k)
   use k₁ * k₂ + k₁ * n, n ! * C₃ * (1 + C₁) ^ n
   intro x
   have hg' : ∀ i, i ≤ n → ‖iteratedFDerivWithin ℝ i g t (f x)‖ ≤ C₃ * (1 + ‖x‖) ^ (k₁ * k₂):= by
     intro i hi
-    calc _ ≤ C₂ * (1 + ‖f x‖) ^ k₂ := h₂ i hi (f x)
+    calc _ ≤ C₂ * (1 + ‖f x‖) ^ k₂ := h₂ i hi (f x) (ht ⟨x, rfl⟩)
       _ = ∑ i ∈ Finset.range (k₂ + 1), C₂ * (‖f x‖ ^ i * (k₂.choose i)) := by
         rw [add_comm, add_pow, Finset.mul_sum]
         simp
@@ -200,8 +204,7 @@ theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : 
   · simp
   · rw [contDiffOn_univ]
     exact hg.1
-  · simp_rw [iteratedFDerivWithin_univ]
-    exact hg.bound_uniform
+  · simpa [iteratedFDerivWithin_univ] using hg.bound_uniform
 
 section Addition
 
