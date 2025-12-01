@@ -195,7 +195,7 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separabl
 
 theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
-  degree_eq_one_of_irreducible_of_splits hp (IsSepClosed.splits_codomain p hsep)
+  (IsSepClosed.splits_of_separable p hsep).degree_eq_one_of_irreducible hp
 
 variable (K)
 

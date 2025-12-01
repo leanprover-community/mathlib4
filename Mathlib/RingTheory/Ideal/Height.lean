@@ -188,8 +188,8 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
   constructor
   · intro h
-    by_contra! h'
-    obtain ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩ := h' (inferInstance)
+    refine ⟨inferInstance, ?_⟩
+    by_contra! ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩
     exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
