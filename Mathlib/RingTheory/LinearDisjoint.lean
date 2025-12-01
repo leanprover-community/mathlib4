@@ -517,7 +517,7 @@ end
 theorem rank_eq_one_of_commute_of_flat_of_self_of_inj (H : A.LinearDisjoint A) [Module.Flat R A]
     (hc : ∀ (a b : A), Commute a.1 b.1)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R A = 1 := by
-  rw [← inf_of_le_left (le_refl A)] at hc ⊢
+  rw [← inf_of_left_le (le_refl A)] at hc ⊢
   exact H.rank_inf_eq_one_of_commute_of_flat_left_of_inj hc hinj
 
 end LinearDisjoint
@@ -839,7 +839,7 @@ theorem inf_eq_bot_of_commute (H : A.LinearDisjoint B)
 
 theorem eq_bot_of_commute_of_self (H : A.LinearDisjoint A)
     (hc : ∀ (a b : A), Commute a.1 b.1) : A = ⊥ := by
-  rw [← inf_of_le_left (le_refl A)] at hc ⊢
+  rw [← inf_of_left_le (le_refl A)] at hc ⊢
   exact H.inf_eq_bot_of_commute hc
 
 end LinearDisjoint

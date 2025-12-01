@@ -133,7 +133,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
   have heq : ∀ n, stoppedAbove f i n ω = f n ω := by
     intro n
     rw [stoppedAbove, stoppedProcess, leastGE, hittingAfter_eq_top_iff.mpr]
-    · simp only [le_top, inf_of_le_left]
+    · simp only [le_top, inf_of_left_le]
       congr
     · simp [hib]
   simp only [← heq, hω i]

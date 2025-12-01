@@ -1086,7 +1086,7 @@ theorem map_comap_eq (f : R →+* S) (t : Subring S) : (t.comap f).map f = t ⊓
 
 theorem map_comap_eq_self
     {f : R →+* S} {t : Subring S} (h : t ≤ f.range) : (t.comap f).map f = t := by
-  simpa only [inf_of_le_left h] using Subring.map_comap_eq f t
+  simpa only [inf_of_left_le h] using Subring.map_comap_eq f t
 
 theorem map_comap_eq_self_of_surjective
     {f : R →+* S} (hf : Function.Surjective f) (t : Subring S) : (t.comap f).map f = t :=

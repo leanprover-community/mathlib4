@@ -749,6 +749,6 @@ theorem map_comap_eq (f : M →ₙ* N) (S : Subsemigroup N) : (S.comap f).map f 
 @[to_additive]
 theorem map_comap_eq_self {f : M →ₙ* N} {S : Subsemigroup N} (h : S ≤ f.srange) :
     (S.comap f).map f = S := by
-  simpa only [inf_of_le_left h] using map_comap_eq f S
+  simpa only [inf_of_left_le h] using map_comap_eq f S
 
 end Subsemigroup

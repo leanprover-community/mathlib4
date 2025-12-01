@@ -420,7 +420,7 @@ theorem sup_sdiff_right : a \ b ⊔ a = a :=
   sup_of_le_right sdiff_le
 
 theorem inf_sdiff_left : a \ b ⊓ a = a \ b :=
-  inf_of_le_left sdiff_le
+  inf_of_left_le sdiff_le
 
 theorem inf_sdiff_right : a ⊓ a \ b = a \ b :=
   inf_of_right_le sdiff_le
@@ -578,11 +578,11 @@ theorem sdiff_le_sdiff_of_sup_le_sup_right (h : a ⊔ c ≤ b ⊔ c) : a \ c ≤
 
 @[simp]
 theorem inf_sdiff_sup_left : a \ c ⊓ (a ⊔ b) = a \ c :=
-  inf_of_le_left <| sdiff_le.trans le_sup_left
+  inf_of_left_le <| sdiff_le.trans le_sup_left
 
 @[simp]
 theorem inf_sdiff_sup_right : a \ c ⊓ (b ⊔ a) = a \ c :=
-  inf_of_le_left <| sdiff_le.trans le_sup_right
+  inf_of_left_le <| sdiff_le.trans le_sup_right
 
 theorem gc_sdiff_sup : GaloisConnection (· \ a) (a ⊔ ·) :=
   fun _ _ ↦ sdiff_le_iff

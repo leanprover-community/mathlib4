@@ -483,7 +483,7 @@ theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Norma
 theorem normalizer_sup_eq_top' {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
     [Finite (Sylow p N)] (P : Sylow p G) (hP : P ≤ N) : P.normalizer ⊔ N = ⊤ := by
   rw [← normalizer_sup_eq_top (P.subtype hP), P.coe_subtype, subgroupOf_map_subtype,
-    inf_of_le_left hP]
+    inf_of_left_le hP]
 
 end Sylow
 

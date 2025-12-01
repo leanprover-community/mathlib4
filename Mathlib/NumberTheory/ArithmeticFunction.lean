@@ -776,7 +776,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · simp [factorization_lcm hx hy]
 
 theorem map_gcd [CommGroupWithZero R] {f : ArithmeticFunction R}
-    (hf : f.IsMultiplicainf_of_right_le (hf_lcm : f (x.lcm y) ≠ 0) :
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_lcm : f (x.lcm y) ≠ 0) :
     f (x.gcd y) = f x * f y / f (x.lcm y) := by
   rw [← hf.lcm_apply_mul_gcd_apply, mul_div_cancel_left₀ _ hf_lcm]
 

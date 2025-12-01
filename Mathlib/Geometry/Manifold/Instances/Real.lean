@@ -280,7 +280,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
-    simp only [Fin.isValue, sub_add_cancel, hz, inf_of_le_left]
+    simp only [Fin.isValue, sub_add_cancel, hz, inf_of_left_le]
   right_inv' := by
     rintro ⟨z, hz⟩ h'z
     rw [Subtype.mk_eq_mk]
@@ -288,7 +288,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left]
+    simp only [Fin.isValue, add_comm, A, inf_of_left_le, add_sub_cancel_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val

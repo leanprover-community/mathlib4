@@ -590,7 +590,7 @@ theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s �
 
 theorem map_comap_eq_self
     {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
-  simpa only [inf_of_le_left h] using map_comap_eq f s
+  simpa only [inf_of_left_le h] using map_comap_eq f s
 
 theorem map_comap_eq_self_of_surjective
     {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=

@@ -195,7 +195,7 @@ theorem isSubDPIdeal_iInf {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDP
     simp only [Ideal.mem_inf, mem_iInf] at hx ⊢
     exact ⟨hI.dpow_mem hn hx.1, fun i ↦  IsSubDPIdeal.dpow_mem (hJ i) n hn (hx.2 i)⟩
   | inl _ =>
-    simp only [iInf_of_empty, le_top, inf_of_le_left]
+    simp only [iInf_of_empty, le_top, inf_of_left_le]
     exact IsSubDPIdeal.self hI
 
 theorem isSubDPIdeal_map_of_isSubDPIdeal {f : A →+* B} (hf : IsDPMorphism hI hJ f) {K : Ideal A}
@@ -364,7 +364,7 @@ instance : CompleteLattice (SubDPIdeal hI) := by
     apply iInf_congr (fun J ↦ ?_)
     by_cases hJ : J ∈ S
     · rw [ciInf_pos hJ, ciInf_pos hJ]; rfl
-    · simp [hJ, iInf_neg, le_top, inf_of_le_left, Set.Iic.coe_top, le_refl]; rfl
+    · simp [hJ, iInf_neg, le_top, inf_of_left_le, Set.Iic.coe_top, le_refl]; rfl
 
 end CompleteLattice
 

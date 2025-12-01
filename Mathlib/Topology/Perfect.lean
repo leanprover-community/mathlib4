@@ -67,7 +67,7 @@ theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : 
   have : 𝓝[≠] x ≤ 𝓟 U := by
     rw [le_principal_iff]
     exact mem_nhdsWithin_of_mem_nhds hU
-  rw [AccPt, ← inf_principal, ← inf_assoc, inf_of_le_left this]
+  rw [AccPt, ← inf_principal, ← inf_assoc, inf_of_left_le this]
   exact h_acc
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.

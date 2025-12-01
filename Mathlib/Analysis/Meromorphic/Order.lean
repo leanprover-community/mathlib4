@@ -523,7 +523,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂f₁]
     simp
   by_cases h₂f₂ : meromorphicOrderAt f₂ x = ⊤
-  · simp only [h₂f₂, le_top, inf_of_le_left]
+  · simp only [h₂f₂, le_top, inf_of_left_le]
     rw [meromorphicOrderAt_congr]
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₂f₂]
     simp

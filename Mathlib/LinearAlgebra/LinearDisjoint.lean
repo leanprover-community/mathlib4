@@ -568,7 +568,7 @@ end
 if any two elements of `M` are commutative, then the rank of `M` is at most one. -/
 theorem rank_le_one_of_commute_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M]
     (hc : ∀ (m n : M), Commute m.1 n.1) : Module.rank R M ≤ 1 := by
-  rw [← inf_of_le_left (le_refl M)] at hc ⊢
+  rw [← inf_of_left_le (le_refl M)] at hc ⊢
   exact H.rank_inf_le_one_of_commute_of_flat_left hc
 
 end not_linearIndependent_pair

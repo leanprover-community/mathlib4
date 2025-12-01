@@ -94,7 +94,7 @@ theorem isNoetherian_submodule_left {N : Submodule R M} :
 
 theorem isNoetherian_submodule_right {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, (s ⊓ N).FG :=
-  isNoetherian_submodule.trans ⟨fun H _ => H _ inf_le_right, fun H _ hs => inf_of_le_left hs ▸ H _⟩
+  isNoetherian_submodule.trans ⟨fun H _ => H _ inf_le_right, fun H _ hs => inf_of_left_le hs ▸ H _⟩
 
 instance isNoetherian_submodule' [IsNoetherian R M] (N : Submodule R M) : IsNoetherian R N :=
   isNoetherian_submodule.2 fun _ _ => IsNoetherian.noetherian _

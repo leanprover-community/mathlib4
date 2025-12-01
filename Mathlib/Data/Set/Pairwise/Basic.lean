@@ -330,7 +330,7 @@ theorem PairwiseDisjoint.elim' (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i �
 
 theorem PairwiseDisjoint.eq_of_le (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
     (hf : f i ≠ ⊥) (hij : f i ≤ f j) : i = j :=
-  (hs.elim' hi hj) fun h => hf <| (inf_of_le_left hij).symm.trans h
+  (hs.elim' hi hj) fun h => hf <| (inf_of_left_le hij).symm.trans h
 
 end SemilatticeInfBot
 

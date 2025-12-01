@@ -186,7 +186,7 @@ variable {H K}
 
 @[to_additive]
 theorem relIndex_dvd_of_le_left (hHK : H ≤ K) : K.relIndex L ∣ H.relIndex L :=
-  inf_of_le_left hHK ▸ dvd_of_mul_left_eq _ (relIndex_inf_mul_relIndex _ _ _)
+  inf_of_left_le hHK ▸ dvd_of_mul_left_eq _ (relIndex_inf_mul_relIndex _ _ _)
 
 @[deprecated (since := "2025-08-12")] alias relindex_dvd_of_le_left := relIndex_dvd_of_le_left
 

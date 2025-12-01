@@ -401,7 +401,7 @@ theorem map_comap_eq (f : A →ₐ[R] B) (S : Subalgebra R B) : (S.comap f).map 
 
 theorem map_comap_eq_self
     {f : A →ₐ[R] B} {S : Subalgebra R B} (h : S ≤ f.range) : (S.comap f).map f = S := by
-  simpa only [inf_of_le_left h] using map_comap_eq f S
+  simpa only [inf_of_left_le h] using map_comap_eq f S
 
 theorem map_comap_eq_self_of_surjective
     {f : A →ₐ[R] B} (hf : Function.Surjective f) (S : Subalgebra R B) : (S.comap f).map f = S :=

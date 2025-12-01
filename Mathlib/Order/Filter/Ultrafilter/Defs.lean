@@ -96,7 +96,7 @@ theorem le_of_inf_neBot' (f : Ultrafilter α) {g : Filter α} (hg : NeBot (g ⊓
   f.le_of_inf_neBot <| by rwa [inf_comm]
 
 theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) ↔ ↑f ≤ g :=
-  ⟨le_of_inf_neBot f, fun h => (inf_of_le_left h).symm ▸ f.neBot⟩
+  ⟨le_of_inf_neBot f, fun h => (inf_of_left_le h).symm ▸ f.neBot⟩
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
   rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
@@ -392,7 +392,7 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ ≤ (Filter.map m <| Filter.comap m g) ⊓ Filter.map m (𝓟 s) := map_inf_le
     _ = (Filter.map m <| Filter.comap m g) ⊓ (𝓟 <| m '' s) := by rw [map_principal]
     _ ≤ ↑g ⊓ (𝓟 <| m '' s) := inf_le_inf_right _ map_comap_le
-    _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
+    _ = ↑g := inf_of_left_le (le_principal_iff.mpr h)
 
 theorem eq_of_le_pure {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
     (hx : α ≤ pure x) (hy : α ≤ pure y) : x = y :=

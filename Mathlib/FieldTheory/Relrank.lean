@@ -62,7 +62,7 @@ theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfi
 /-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
-  have := inf_of_le_left h
+  have := inf_of_left_le h
   congr!
 
 /-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]`. -/
@@ -170,7 +170,7 @@ theorem lift_relrank_comap_comap_eq_lift_relrank_inf (f : L →+* E) :
   conv_lhs => rw [← lift_relrank_map_map _ _ f, map_comap_eq, map_comap_eq]
   congr 1
   apply relrank_eq_of_inf_eq
-  rw [inf_assoc, inf_left_comm _ B, inf_of_le_left (le_refl _)]
+  rw [inf_assoc, inf_left_comm _ B, inf_of_left_le (le_refl _)]
 
 theorem relrank_comap_comap_eq_relrank_inf
     {L : Type v} [Field L] (f : L →+* E) :
@@ -184,7 +184,7 @@ theorem relfinrank_comap_comap_eq_relfinrank_inf (f : L →+* E) :
 theorem lift_relrank_comap_comap_eq_lift_relrank_of_le (f : L →+* E) (h : B ≤ f.fieldRange) :
     lift.{v} (relrank (A.comap f) (B.comap f)) =
     lift.{w} (relrank A B) := by
-  simpa only [inf_of_le_left h] using lift_relrank_comap_comap_eq_lift_relrank_inf A B f
+  simpa only [inf_of_left_le h] using lift_relrank_comap_comap_eq_lift_relrank_inf A B f
 
 theorem relrank_comap_comap_eq_relrank_of_le
     {L : Type v} [Field L] (f : L →+* E) (h : B ≤ f.fieldRange) :
@@ -246,7 +246,7 @@ theorem relfinrank_inf_mul_relfinrank :
 variable {B C} in
 theorem relrank_mul_relrank_eq_inf_relrank (h : B ≤ C) :
     relrank A B * relrank B C = (A ⊓ B).relrank C := by
-  simpa only [inf_of_le_left h] using relrank_inf_mul_relrank A B C
+  simpa only [inf_of_left_le h] using relrank_inf_mul_relrank A B C
 
 variable {B C} in
 theorem relfinrank_mul_relfinrank_eq_inf_relfinrank (h : B ≤ C) :
@@ -256,7 +256,7 @@ theorem relfinrank_mul_relfinrank_eq_inf_relfinrank (h : B ≤ C) :
 variable {A B} in
 theorem relrank_inf_mul_relrank_of_le (h : A ≤ B) :
     A.relrank (B ⊓ C) * B.relrank C = A.relrank C := by
-  simpa only [inf_of_le_left h] using relrank_inf_mul_relrank A B C
+  simpa only [inf_of_left_le h] using relrank_inf_mul_relrank A B C
 
 variable {A B} in
 theorem relfinrank_inf_mul_relfinrank_of_le (h : A ≤ B) :
@@ -387,7 +387,7 @@ theorem relfinrank_comap_comap_eq_relfinrank_inf (f : L →ₐ[F] E) :
 
 theorem lift_relrank_comap_comap_eq_lift_relrank_of_le (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
     Cardinal.lift.{v} (relrank (A.comap f) (B.comap f)) = Cardinal.lift.{w} (relrank A B) := by
-  simpa only [inf_of_le_left h] using lift_relrank_comap_comap_eq_lift_relrank_inf A B f
+  simpa only [inf_of_left_le h] using lift_relrank_comap_comap_eq_lift_relrank_inf A B f
 
 theorem relrank_comap_comap_eq_relrank_of_le
     {L : Type v} [Field L] [Algebra F L] (f : L →ₐ[F] E) (h : B ≤ f.fieldRange) :
@@ -466,7 +466,7 @@ theorem relfinrank_inf_mul_relfinrank :
 variable {B C} in
 theorem relrank_mul_relrank_eq_inf_relrank (h : B ≤ C) :
     relrank A B * relrank B C = (A ⊓ B).relrank C := by
-  simpa only [inf_of_le_left h] using relrank_inf_mul_relrank A B C
+  simpa only [inf_of_left_le h] using relrank_inf_mul_relrank A B C
 
 variable {B C} in
 theorem relfinrank_mul_relfinrank_eq_inf_relfinrank (h : B ≤ C) :
@@ -476,7 +476,7 @@ theorem relfinrank_mul_relfinrank_eq_inf_relfinrank (h : B ≤ C) :
 variable {A B} in
 theorem relrank_inf_mul_relrank_of_le (h : A ≤ B) :
     A.relrank (B ⊓ C) * B.relrank C = A.relrank C := by
-  simpa only [inf_of_le_left h] using relrank_inf_mul_relrank A B C
+  simpa only [inf_of_left_le h] using relrank_inf_mul_relrank A B C
 
 variable {A B} in
 theorem relfinrank_inf_mul_relfinrank_of_le (h : A ≤ B) :

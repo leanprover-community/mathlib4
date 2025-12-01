@@ -100,7 +100,7 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   rcases isEmpty_or_nonempty Ω with h | h
   · simp [Measure.eq_zero_of_isEmpty μ]
   rw [condExpKernel_eq]
-  have : m ⊓ mΩ = m := inf_of_le_left hm
+  have : m ⊓ mΩ = m := inf_of_left_le hm
   have h := compProd_map_condDistrib (mβ := m) (μ := μ) (X := id) measurable_id.aemeasurable
   rw [← h, trim_eq_map hm]
   congr 1
@@ -224,7 +224,7 @@ lemma condExpKernel_ae_eq_condExp' {s : Set Ω} (hs : MeasurableSet s) :
 lemma condExpKernel_ae_eq_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condExpKernel μ m ω).real s) =ᵐ[μ] μ⟦s|m⟧ :=
-  (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_le_left hm])
+  (condExpKernel_ae_eq_condExp' hs).trans (by rw [inf_of_left_le hm])
 
 lemma condExpKernel_ae_eq_trim_condExp
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
@@ -260,7 +260,7 @@ the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
 theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
     μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
-  ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
+  ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_left_le hm])).symm
 
 /-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/
 theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable

@@ -669,7 +669,7 @@ theorem map_comap_eq (f : L →ₐ[K] L') (S : IntermediateField K L') :
 
 theorem map_comap_eq_self {f : L →ₐ[K] L'} {S : IntermediateField K L'} (h : S ≤ f.fieldRange) :
     (S.comap f).map f = S := by
-  simpa only [inf_of_le_left h] using map_comap_eq f S
+  simpa only [inf_of_left_le h] using map_comap_eq f S
 
 theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surjective f)
     (S : IntermediateField K L') : (S.comap f).map f = S :=
