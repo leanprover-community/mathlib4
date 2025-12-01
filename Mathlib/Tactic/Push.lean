@@ -59,10 +59,10 @@ theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 
-/-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
+/-- Set `distrib` to true in `push_neg` and related tactics. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
-    descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
+    descr := "Set `distrib` to true in `push_neg` and related tactics." }
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
