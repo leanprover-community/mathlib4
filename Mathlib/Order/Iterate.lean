@@ -90,6 +90,8 @@ variable {β : Type*} {g : β → β} {h : β → α}
 
 open Function
 
+-- TODO: is there a nice way to avoid the non-terminal simp?
+set_option linter.flexible false in
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
   apply hf.seq_le_seq n <;> intros <;>

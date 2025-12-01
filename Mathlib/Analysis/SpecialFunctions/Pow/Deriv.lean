@@ -393,7 +393,7 @@ theorem not_differentiableAt_rpow_const_zero {r : ℝ} (hr : r < 1) (hr' : r ≠
   by_contra h
   set y := deriv (fun x ↦ x ^ r) (0 : ℝ)
   -- If `x ^ r` was differentiable at `0`, then `x ^ (r - 1)` would have a finite limit at `0`.
-  have h : Filter.Tendsto (fun t ↦ t ^ (r - 1)) (nhdsWithin 0 (Set.Ioi 0)) (nhds y) := by
+  have h : Filter.Tendsto (fun t ↦ t ^ (r - 1)) (𝓝[>] 0) (𝓝 y) := by
     apply tendsto_nhdsWithin_congr _ h.hasDerivAt.tendsto_slope_zero_right
     intro x (hx : 0 < x)
     simp only [zero_add, ne_eq, hr', not_false_eq_true, Real.zero_rpow, sub_zero, smul_eq_mul]
