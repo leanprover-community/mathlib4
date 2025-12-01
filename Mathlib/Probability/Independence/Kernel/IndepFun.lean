@@ -5,26 +5,128 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel.Basic
+public import Mathlib.Probability.Independence.Kernel.Indep
 
 /-!
 # Independence of random variables with respect to a kernel and a measure
 
-A family of random variables is independent if the corresponding `σ`-algebra are independent.
-This is defined along with other kinds of independence in the `Basic` file. Some basic facts can
-also be found there. This file contains more advanced results about random variables specifically.
+A family of random variables is independent if the corresponding `σ`-algebras are independent.
+Independence of families of sets and `σ`-algebras is covered in the `Indep` file.
+This file deals with independence of random variables specifically.
+
+Note that we define independence with respect to a kernel and a measure. This notion of independence
+is a generalization of both independence and conditional independence.
+For conditional independence, `κ` is the conditional kernel `ProbabilityTheory.condExpKernel` and
+`μ` is the ambient measure. For (non-conditional) independence, `κ = Kernel.const Unit μ` and the
+measure is the Dirac measure on `Unit`.
+
+## Main definition
+
+* `ProbabilityTheory.Kernel.iIndepFun`: independence of a family of functions (random variables).
+  Variant for two functions: `ProbabilityTheory.Kernel.IndepFun`.
 -/
 
 @[expose] public section
 
 open Set MeasureTheory MeasurableSpace
 
-open scoped MeasureTheory ENNReal
-
 namespace ProbabilityTheory.Kernel
 
 variable {α Ω ι β β' γ γ' : Type*} {mα : MeasurableSpace α} {mΩ : MeasurableSpace Ω}
-  {κ : Kernel α Ω} {μ : Measure α} {f : Ω → β} {g : Ω → β'}
+  {κ η : Kernel α Ω} {μ : Measure α} {f : Ω → β} {g : Ω → β'}
+
+section Definitions
+
+/-- A family of functions defined on the same space `Ω` and taking values in possibly different
+spaces, each with a measurable space structure, is independent if the family of measurable space
+structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
+space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
+def iIndepFun {β : ι → Type*} [m : ∀ x : ι, MeasurableSpace (β x)]
+    (f : ∀ x : ι, Ω → β x) (κ : Kernel α Ω)
+    (μ : Measure α := by volume_tac) : Prop :=
+  iIndep (m := fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
+
+/-- Two functions are independent if the two measurable space structures they generate are
+independent. For a function `f` with codomain having measurable space structure `m`, the generated
+measurable space structure is `MeasurableSpace.comap f m`. -/
+def IndepFun [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
+    (f : Ω → β) (g : Ω → γ) (κ : Kernel α Ω)
+    (μ : Measure α := by volume_tac) : Prop :=
+  Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) κ μ
+
+end Definitions
+
+section ByDefinition
+
+variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+  {_mα : MeasurableSpace α} {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
+  {κ η : Kernel α Ω} {μ : Measure α}
+  {π : ι → Set (Set Ω)} {s : ι → Set Ω} {S : Finset ι} {f : ∀ x : ι, Ω → β x}
+  {s1 s2 : Set (Set Ω)} {ι' : Type*} {g : ι' → ι}
+
+@[simp] lemma iIndepFun_zero_right {β : ι → Type*} {m : ∀ x : ι, MeasurableSpace (β x)}
+    {f : ∀ x : ι, Ω → β x} : iIndepFun f κ 0 := by simp [iIndepFun]
+
+@[simp] lemma indepFun_zero_right {β} [MeasurableSpace β] [MeasurableSpace γ]
+    {f : Ω → β} {g : Ω → γ} : IndepFun f g κ 0 := by simp [IndepFun]
+
+@[simp] lemma indepFun_zero_left {β} [MeasurableSpace β] [MeasurableSpace γ]
+    {f : Ω → β} {g : Ω → γ} : IndepFun f g (0 : Kernel α Ω) μ := by simp [IndepFun]
+
+lemma iIndepFun_congr {β : ι → Type*} {m : ∀ x : ι, MeasurableSpace (β x)}
+    {f : ∀ x : ι, Ω → β x} (h : κ =ᵐ[μ] η) : iIndepFun f κ μ ↔ iIndepFun f η μ :=
+  iIndep_congr h
+
+alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr
+
+lemma indepFun_congr {β} [MeasurableSpace β] [MeasurableSpace γ]
+    {f : Ω → β} {g : Ω → γ} (h : κ =ᵐ[μ] η) : IndepFun f g κ μ ↔ IndepFun f g η μ :=
+  indep_congr h
+
+alias ⟨IndepFun.congr, _⟩ := indepFun_congr
+
+@[nontriviality, simp]
+lemma iIndepFun.of_subsingleton [Subsingleton ι] {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)}
+    {f : ∀ i, Ω → β i} [IsMarkovKernel κ] : iIndepFun f κ μ := by
+  simp [iIndepFun]
+
+protected lemma iIndepFun.iIndep (hf : iIndepFun f κ μ) :
+    iIndep (fun x ↦ (mβ x).comap (f x)) κ μ := hf
+
+lemma iIndepFun.ae_isProbabilityMeasure (h : iIndepFun f κ μ) :
+    ∀ᵐ a ∂μ, IsProbabilityMeasure (κ a) :=
+  h.iIndep.ae_isProbabilityMeasure
+
+lemma iIndepFun.meas_biInter (hf : iIndepFun f κ μ)
+    (hs : ∀ i, i ∈ S → MeasurableSet[(mβ i).comap (f i)] (s i)) :
+    ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, s i) = ∏ i ∈ S, κ a (s i) := hf.iIndep.meas_biInter hs
+
+lemma iIndepFun.meas_iInter [Fintype ι] (hf : iIndepFun f κ μ)
+    (hs : ∀ i, MeasurableSet[(mβ i).comap (f i)] (s i)) :
+    ∀ᵐ a ∂μ, κ a (⋂ i, s i) = ∏ i, κ a (s i) := hf.iIndep.meas_iInter hs
+
+lemma IndepFun.meas_inter {β} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
+    {f : Ω → β} {g : Ω → γ} (hfg : IndepFun f g κ μ)
+    {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s) (ht : MeasurableSet[mγ.comap g] t) :
+    ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t := hfg _ _ hs ht
+
+lemma iIndepFun.precomp (hg : Function.Injective g) (h : iIndepFun f κ μ) :
+    iIndepFun (fun i ↦ f (g i)) κ μ :=
+  iIndep.precomp hg h
+
+lemma iIndepFun.of_precomp (hg : Function.Surjective g) (h : iIndepFun (fun i ↦ f (g i)) κ μ) :
+    iIndepFun f κ μ :=
+  iIndep.of_precomp hg h
+
+lemma iIndepFun_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepFun (fun i ↦ f (g i)) κ μ ↔ iIndepFun f κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+end ByDefinition
+
+theorem iIndepFun.indepFun {β : ι → Type*} {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i}
+    (hf_Indep : iIndepFun f κ μ) {i j : ι} (hij : i ≠ j) : IndepFun (f i) (f j) κ μ :=
+  hf_Indep.indep hij
 
 theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
     {mβ' : MeasurableSpace β'} :

@@ -5600,7 +5600,7 @@ public import Mathlib.Probability.Independence.InfinitePi
 public import Mathlib.Probability.Independence.Integrable
 public import Mathlib.Probability.Independence.Integration
 public import Mathlib.Probability.Independence.Kernel
-public import Mathlib.Probability.Independence.Kernel.Basic
+public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Independence.Process
 public import Mathlib.Probability.Independence.ZeroOne

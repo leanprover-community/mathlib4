@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Peel
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 /-!
-# Independence of sets with respect to a kernel and a measure
+# Independence of families of sets with respect to a kernel and a measure
 
 A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a kernel
 `κ : Kernel α Ω` and a measure `μ` on `α` if for any finite set of indices `s = {i_1, ..., i_n}`,
@@ -27,9 +27,8 @@ measure is the Dirac measure on `Unit`.
 The main purpose of this file is to prove only once the properties that hold for both conditional
 and non-conditional independence.
 
-This file contains the definitions and some basic results, as well as more advanced results about
-independence of sets and `σ`-algebras. See the `IndepFun` file for advanced results about
-independence of random variables.
+This file contains results about independence of families of sets and `σ`-algebras.
+See the `IndepFun` file for results about independence of random variables.
 
 ## Main definitions
 
@@ -39,8 +38,6 @@ independence of random variables.
   σ-algebras: `Indep`.
 * `ProbabilityTheory.Kernel.iIndepSet`: independence of a family of sets. Variant for two sets:
   `ProbabilityTheory.Kernel.IndepSet`.
-* `ProbabilityTheory.Kernel.iIndepFun`: independence of a family of functions (random variables).
-  Variant for two functions: `ProbabilityTheory.Kernel.IndepFun`.
 
 See the file `Mathlib/Probability/Kernel/Basic.lean` for a more detailed discussion of these
 definitions in the particular case of the usual independence notion.
@@ -106,23 +103,6 @@ def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (κ : Kernel α Ω)
     (μ : Measure α := by volume_tac) : Prop :=
   Indep (generateFrom {s}) (generateFrom {t}) κ μ
 
-/-- A family of functions defined on the same space `Ω` and taking values in possibly different
-spaces, each with a measurable space structure, is independent if the family of measurable space
-structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
-space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
-def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} [m : ∀ x : ι, MeasurableSpace (β x)]
-    (f : ∀ x : ι, Ω → β x) (κ : Kernel α Ω)
-    (μ : Measure α := by volume_tac) : Prop :=
-  iIndep (m := fun x ↦ MeasurableSpace.comap (f x) (m x)) κ μ
-
-/-- Two functions are independent if the two measurable space structures they generate are
-independent. For a function `f` with codomain having measurable space structure `m`, the generated
-measurable space structure is `MeasurableSpace.comap f m`. -/
-def IndepFun {β γ} {_mΩ : MeasurableSpace Ω} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
-    (f : Ω → β) (g : Ω → γ) (κ : Kernel α Ω)
-    (μ : Measure α := by volume_tac) : Prop :=
-  Indep (MeasurableSpace.comap f mβ) (MeasurableSpace.comap g mγ) κ μ
-
 end Definitions
 
 section ByDefinition
@@ -153,15 +133,6 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
 
 @[simp] lemma indepSet_zero_left {s t : Set Ω} : IndepSet s t (0 : Kernel α Ω) μ := by
   simp [IndepSet]
-
-@[simp] lemma iIndepFun_zero_right {β : ι → Type*} {m : ∀ x : ι, MeasurableSpace (β x)}
-    {f : ∀ x : ι, Ω → β x} : iIndepFun f κ 0 := by simp [iIndepFun]
-
-@[simp] lemma indepFun_zero_right {β γ} [MeasurableSpace β] [MeasurableSpace γ]
-    {f : Ω → β} {g : Ω → γ} : IndepFun f g κ 0 := by simp [IndepFun]
-
-@[simp] lemma indepFun_zero_left {β γ} [MeasurableSpace β] [MeasurableSpace γ]
-    {f : Ω → β} {g : Ω → γ} : IndepFun f g (0 : Kernel α Ω) μ := by simp [IndepFun]
 
 lemma iIndepSets_congr (h : κ =ᵐ[μ] η) : iIndepSets π κ μ ↔ iIndepSets π η μ := by
   peel 3
@@ -199,18 +170,6 @@ lemma indepSet_congr {s t : Set Ω} (h : κ =ᵐ[μ] η) : IndepSet s t κ μ �
   indep_congr h
 
 alias ⟨indepSet.congr, _⟩ := indepSet_congr
-
-lemma iIndepFun_congr {β : ι → Type*} {m : ∀ x : ι, MeasurableSpace (β x)}
-    {f : ∀ x : ι, Ω → β x} (h : κ =ᵐ[μ] η) : iIndepFun f κ μ ↔ iIndepFun f η μ :=
-  iIndep_congr h
-
-alias ⟨iIndepFun.congr, _⟩ := iIndepFun_congr
-
-lemma indepFun_congr {β γ} [MeasurableSpace β] [MeasurableSpace γ]
-    {f : Ω → β} {g : Ω → γ} (h : κ =ᵐ[μ] η) : IndepFun f g κ μ ↔ IndepFun f g η μ :=
-  indep_congr h
-
-alias ⟨IndepFun.congr, _⟩ := indepFun_congr
 
 lemma iIndepSets.meas_biInter (h : iIndepSets π κ μ) (s : Finset ι)
     {f : ι → Set Ω} (hf : ∀ i, i ∈ s → f i ∈ π i) :
@@ -251,31 +210,6 @@ lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} {κ
 @[nontriviality, simp]
 lemma iIndep.of_subsingleton [Subsingleton ι] {m : ι → MeasurableSpace Ω} {κ : Kernel α Ω}
     [IsMarkovKernel κ] : iIndep m κ μ := by simp [iIndep]
-
-@[nontriviality, simp]
-lemma iIndepFun.of_subsingleton [Subsingleton ι] {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)}
-    {f : ∀ i, Ω → β i} [IsMarkovKernel κ] : iIndepFun f κ μ := by
-  simp [iIndepFun]
-
-protected lemma iIndepFun.iIndep (hf : iIndepFun f κ μ) :
-    iIndep (fun x ↦ (mβ x).comap (f x)) κ μ := hf
-
-lemma iIndepFun.ae_isProbabilityMeasure (h : iIndepFun f κ μ) :
-    ∀ᵐ a ∂μ, IsProbabilityMeasure (κ a) :=
-  h.iIndep.ae_isProbabilityMeasure
-
-lemma iIndepFun.meas_biInter (hf : iIndepFun f κ μ)
-    (hs : ∀ i, i ∈ S → MeasurableSet[(mβ i).comap (f i)] (s i)) :
-    ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, s i) = ∏ i ∈ S, κ a (s i) := hf.iIndep.meas_biInter hs
-
-lemma iIndepFun.meas_iInter [Fintype ι] (hf : iIndepFun f κ μ)
-    (hs : ∀ i, MeasurableSet[(mβ i).comap (f i)] (s i)) :
-    ∀ᵐ a ∂μ, κ a (⋂ i, s i) = ∏ i, κ a (s i) := hf.iIndep.meas_iInter hs
-
-lemma IndepFun.meas_inter {β γ : Type*} [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
-    {f : Ω → β} {g : Ω → γ} (hfg : IndepFun f g κ μ)
-    {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s) (ht : MeasurableSet[mγ.comap g] t) :
-    ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t := hfg _ _ hs ht
 
 lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
     iIndepSets (π ∘ g) κ μ := by
@@ -321,18 +255,6 @@ lemma iIndepSet.of_precomp (hg : Function.Surjective g) (h : iIndepSet (s ∘ g)
 
 lemma iIndepSet_precomp_of_bijective (hg : Function.Bijective g) :
     iIndepSet (s ∘ g) κ μ ↔ iIndepSet s κ μ :=
-  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
-
-lemma iIndepFun.precomp (hg : Function.Injective g) (h : iIndepFun f κ μ) :
-    iIndepFun (fun i ↦ f (g i)) κ μ :=
-  iIndep.precomp hg h
-
-lemma iIndepFun.of_precomp (hg : Function.Surjective g) (h : iIndepFun (fun i ↦ f (g i)) κ μ) :
-    iIndepFun f κ μ :=
-  iIndep.of_precomp hg h
-
-lemma iIndepFun_precomp_of_bijective (hg : Function.Bijective g) :
-    iIndepFun (fun i ↦ f (g i)) κ μ ↔ iIndepFun f κ μ :=
   ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
 end ByDefinition
@@ -504,12 +426,6 @@ theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α}
     (h_indep : iIndep m κ μ) {i j : ι} (hij : i ≠ j) : Indep (m i) (m j) κ μ :=
   iIndepSets.indepSets h_indep hij
-
-theorem iIndepFun.indepFun {_mΩ : MeasurableSpace Ω}
-    {κ : Kernel α Ω} {μ : Measure α} {β : ι → Type*}
-    {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun f κ μ) {i j : ι}
-    (hij : i ≠ j) : IndepFun (f i) (f j) κ μ :=
-  hf_Indep.indep hij
 
 end FromiIndepToIndep
 
