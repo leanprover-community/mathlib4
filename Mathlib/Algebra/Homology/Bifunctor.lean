@@ -305,7 +305,7 @@ noncomputable def map₂HomologicalComplex
 
 /-- The bifunctor on cochain complexes that is induced by a bifunctor. -/
 noncomputable abbrev map₂CochainComplex
-    [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)]:
+    [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
     CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
   F.map₂HomologicalComplex _ _ _
 
