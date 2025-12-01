@@ -370,7 +370,7 @@ theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGr
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
-  rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
+  contrapose!; exact not_cliqueFree_iff n
 
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
@@ -668,7 +668,8 @@ variable {α : Type*} {G : SimpleGraph α}
 /-- The maximum number of vertices in a clique of a graph `G`. -/
 noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
 
-private lemma fintype_cliqueNum_bddAbove [Fintype α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+private lemma fintype_cliqueNum_bddAbove [Finite α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+  have := Fintype.ofFinite α
   use Fintype.card α
   rintro y ⟨s, syc⟩
   rw [isNClique_iff] at syc

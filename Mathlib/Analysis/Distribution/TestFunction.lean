@@ -34,7 +34,7 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 ## Main statements
 
-- `TestFunction.continuous_iff_continuous_comp` a linear map from `𝓓^{n}(E, F)`
+- `TestFunction.continuous_iff_continuous_comp`: a linear map from `𝓓^{n}(E, F)`
   to a locally convex space is continuous iff its restriction to `𝓓^{n}_{K}(E, F)` is
   continuous for each compact set `K`. We will later translate this concretely in terms
   of seminorms.
@@ -58,8 +58,7 @@ open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
   {n k : ℕ∞}
 
 variable (Ω F n) in
@@ -240,7 +239,6 @@ def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K :
     (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
 
-
 variable (𝕜 n k) in
 /-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}(Ω, E [×i]→L[ℝ] F)`.
@@ -376,7 +374,13 @@ noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
 noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) :=
   topologicalAddGroup_sInf fun _ ⟨_, ht, _, _⟩ ↦ ht
 
---TODO: deduce for `RCLike` field `𝕂`
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
+  IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
+
+noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
+  isUniformAddGroup_of_addCommGroup
+
+-- TODO: deduce for `RCLike` field `𝕂`
 noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) :=
   continuousSMul_sInf fun _ ⟨_, _, ht, _⟩ ↦ ht
 
@@ -385,12 +389,6 @@ noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) :=
 
 theorem originalTop_le : originalTop Ω F n ≤ topologicalSpace Ω F n :=
   le_sInf fun _t ⟨ht, _⟩ ↦ ht
-
-noncomputable instance uniformSpace : UniformSpace 𝓓^{n}(Ω, F) :=
-  IsTopologicalAddGroup.rightUniformSpace 𝓓^{n}(Ω, F)
-
-noncomputable instance : IsUniformAddGroup 𝓓^{n}(Ω, F) :=
-  isUniformAddGroup_of_addCommGroup
 
 /-- Fix a locally convex topology `t` on `𝓓^{n}(Ω, F)`. `t` is coarser than the canonical topology
 on `𝓓^{n}(Ω, F)` if and only if it is coarser than the "original topology" given by
