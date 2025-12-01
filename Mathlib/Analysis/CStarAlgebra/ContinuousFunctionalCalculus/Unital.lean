@@ -224,7 +224,7 @@ variable {a : A} (ha : p a)
 -- Note: since `spectrum R a` is closed, we may always extend `f : C(spectrum R a, R)` to a function
 -- of type `C(R, R)` by the Tietze extension theorem (assuming `R` is either `ℝ`, `ℂ` or `ℝ≥0`).
 
-/-- The star algebra homomorphism underlying a instance of the continuous functional calculus;
+/-- The star algebra homomorphism underlying an instance of the continuous functional calculus;
 a version for continuous functions on the spectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`, for otherwise it

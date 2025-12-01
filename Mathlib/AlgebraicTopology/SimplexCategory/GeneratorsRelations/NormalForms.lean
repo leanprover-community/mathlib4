@@ -131,7 +131,7 @@ lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
   (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
 
-/-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
+/-- An element of an `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
 def getElemAsFin {m L} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=

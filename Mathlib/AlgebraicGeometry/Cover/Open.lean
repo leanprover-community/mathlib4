@@ -196,7 +196,7 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
   convert pullbackSymmetry_inv_comp_fst ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
-/-- A family of elements spanning the unit ideal of `R` gives a affine open cover of `Spec R`. -/
+/-- A family of elements spanning the unit ideal of `R` gives an affine open cover of `Spec R`. -/
 @[simps]
 noncomputable
 def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
