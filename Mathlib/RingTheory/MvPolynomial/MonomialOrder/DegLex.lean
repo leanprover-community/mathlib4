@@ -92,8 +92,7 @@ variable [CommRing R] [IsCancelMulZero R] {p q r : MvPolynomial σ R}
 
 theorem dvd_monomial_iff_exists {n : σ →₀ ℕ} {a : R} (ha : a ≠ 0) :
     p ∣ monomial n a ↔ ∃ m b, m ≤ n ∧ b ∣ a ∧ p = monomial m b := by
-  rw [show monomial n a = monomial n 1 * C a from by
-    rw [mul_comm, C_mul_monomial, mul_one],
+  rw [show monomial n a = monomial n 1 * C a by rw [mul_comm, C_mul_monomial, mul_one],
     dvd_monomial_mul_iff_exists]
   apply exists_congr
   intro m
@@ -111,7 +110,7 @@ theorem dvd_monomial_one_iff_exists {n : σ →₀ ℕ} :
     p ∣ monomial n 1 ↔ ∃ m u, m ≤ n ∧ IsUnit u ∧ p = monomial m u := by
   rcases subsingleton_or_nontrivial R with hR | hR
   · simp only [Subsingleton.allEq _ p, dvd_refl, isUnit_iff_eq_one, and_true, exists_eq_right,
-    true_iff]
+      true_iff]
     use n
   rw [dvd_monomial_iff_exists (one_ne_zero' R)]
   apply exists_congr
@@ -120,9 +119,7 @@ theorem dvd_monomial_one_iff_exists {n : σ →₀ ℕ} :
 
 theorem dvd_X_iff_exists {i : σ} :
     p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • X i) := by
-  rw [show (X i : MvPolynomial σ R) = monomial (Finsupp.single i 1) 1 from
-    by rfl]
-  rw [dvd_monomial_one_iff_exists, exists_comm]
+  rw [X, dvd_monomial_one_iff_exists, exists_comm]
   apply exists_congr
   intro b
   constructor

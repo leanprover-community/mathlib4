@@ -233,10 +233,12 @@ theorem eq_divMonomial_single [IsLeftCancelAdd R]
   simpa using hr _ hn
 
 instance [IsLeftCancelAdd R] :
-    IsLeftCancelAdd (MvPolynomial σ R) where
-  add_left_cancel := fun f g h H ↦ by
-    ext d
-    simpa using congr_arg (coeff d) H
+    IsCancelAdd (MvPolynomial σ R) := by
+  suffices IsLeftCancelAdd (MvPolynomial σ R) from
+    AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
+  refine { add_left_cancel := fun f g h H ↦ ?_ }
+  ext d
+  simpa using congr_arg (coeff d) H
 
 theorem eq_modMonomial_single [IsLeftCancelAdd R]
     {σ : Type*} {i : σ} {p q r : MvPolynomial σ R}
@@ -249,6 +251,7 @@ theorem eq_modMonomial_single [IsLeftCancelAdd R]
 section CommRing
 
 variable {R : Type*} [CommRing R] {i : σ} {p q r : MvPolynomial σ R}
+
 theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
     r = p.modMonomial (Finsupp.single i 1) ↔
       ∀ n ∈ r.support, n i = 0 := by
@@ -300,6 +303,14 @@ theorem X_dvd_mul_iff [IsCancelMulZero R] :
     rcases h with h | h
     · exact dvd_mul_of_dvd_left h q
     · exact dvd_mul_of_dvd_right h p
+
+theorem X_prime [IsCancelMulZero R] [Nontrivial R] : Prime (X i : MvPolynomial σ R) := by
+  refine ⟨X_ne_zero i, ?_, fun p q ↦ X_dvd_mul_iff.mp⟩
+  intro h
+  rw [isUnit_iff_exists] at h
+  rcases h with ⟨u, hu, -⟩
+  apply_fun constantCoeff at hu
+  simp at hu
 
 theorem dvd_X_mul_iff [IsCancelMulZero R] :
     p ∣ X i * q ↔ p ∣ q ∨ (X i ∣ p ∧ p.divMonomial (Finsupp.single i 1) ∣ q) := by
