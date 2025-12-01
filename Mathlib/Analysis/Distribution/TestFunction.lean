@@ -611,6 +611,18 @@ noncomputable def integralAgainstBilinCLM (B : F₁ →L[ℝ] F₂ →L[ℝ] F�
       exact ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ |>.continuous
     · simpa [integralAgainstBilinLM_eq_zero hφ] using continuous_zero
 
+@[simp]
+lemma integralAgainstBilinCLM_apply {B : F₁ →L[ℝ] F₂ →L[ℝ] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {f : 𝓓^{n}(Ω, F₁)} :
+    integralAgainstBilinCLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ :=
+  integralAgainstBilinLM_apply hφ
+
+lemma integralAgainstBilinCLM_eq_zero {B : F₁ →L[ℝ] F₂ →L[ℝ] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : ¬ LocallyIntegrableOn φ Ω μ) :
+    (integralAgainstBilinCLM B μ φ : 𝓓^{n}(Ω, F₁) →L[ℝ] F₃) = 0 := by
+  ext
+  simp [integralAgainstBilinCLM, integralAgainstBilinLM_eq_zero hφ]
+
 end Integral
 
 end TestFunction
