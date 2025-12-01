@@ -127,6 +127,7 @@ variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
 
 instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
 
+set_option linter.flexible false in -- TODO: fix the non-terminal simp at the end
 instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ f) where
   trans {i j} hij := pullback.map f (𝒰.f i) f (𝒰.f j) (𝟙 _) (𝒰.trans hij) (𝟙 _)
     (by simp) (by simp)

@@ -287,12 +287,7 @@ instance : Inhabited (Homotopic.Quotient () ()) :=
 
 namespace Quotient
 
-/--
-The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`.
-
-We prefer this as the normal form, rather than generic `_root_.Quotient.mk'`,
-to have better control of simp lemmas.
--/
+/-- The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`. -/
 def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
   Quotient.mk' p
 
