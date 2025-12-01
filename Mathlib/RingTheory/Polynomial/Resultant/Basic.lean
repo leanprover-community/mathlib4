@@ -270,7 +270,7 @@ lemma resultant_C_mul_right (r : R) :
     .of fun j₁ j₂ ↦ if j₂.1 < i then M₁ j₁ j₂ else M₂ j₁ j₂
   have (i : ℕ) (hi : i ≤ m) : (M i).det = r ^ i * M₂.det := by
     induction i with
-    | zero => simp [M]
+    | zero => simp [M]; rfl
     | succ i IH =>
       suffices (M i).updateCol ⟨i, by lia⟩ (r • fun j ↦ M i j ⟨i, by lia⟩) = (M (i + 1)) by
         rw [pow_succ', mul_assoc, ← IH (by lia), ← this, Matrix.det_updateCol_smul,

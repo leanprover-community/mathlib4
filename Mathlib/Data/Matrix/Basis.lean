@@ -161,7 +161,7 @@ theorem sum_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : m → n �
     ∑ i : m, ∑ j : n, single i j (x i j) = of x := by
   ext i j
   rw [← Fintype.sum_prod_type']
-  simp [single, Matrix.sum_apply, ← Prod.mk_inj]
+  simp [single, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk_inj]
 
 theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, single i j (x i j) :=
