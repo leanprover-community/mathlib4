@@ -661,7 +661,7 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
       · rw [← hcd.1.1, ← hcd.2.1] at cop
         rw [← hcd.2.1, h.2, gcd_mul_right,
           cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one, one_mul]
-  · simp only [Set.SurjOn, Set.subset_def, mem_coe, mem_divisorsAntidiagonal, mem_product, 
+  · simp only [Set.SurjOn, Set.subset_def, mem_coe, mem_divisorsAntidiagonal, mem_product,
       Set.mem_image]
     rintro ⟨b1, b2⟩ h
     use ((b1.gcd m, b2.gcd m), (b1.gcd n, b2.gcd n))
