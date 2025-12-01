@@ -104,14 +104,14 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     · refine ⟨?_, ?_⟩
       · rw [mul_comm]
         apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
-      · simp only [RingHom.map_mul, mul_comm (algebraMap R S p) (l a)]
+      · simp only [map_mul, mul_comm (algebraMap R S p) (l a)]
         rfl
   refine Finset.sum_induction _ (fun u => u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
       (fun a b => ?_) ?_ ?_
   · rintro ⟨z, hz, rfl⟩ ⟨y, hy, rfl⟩
-    rw [← RingHom.map_add]
+    rw [← map_add]
     exact ⟨z + y, Ideal.add_mem _ (SetLike.mem_coe.mp hz) hy, rfl⟩
-  · exact ⟨0, SetLike.mem_coe.mpr <| Ideal.zero_mem _, RingHom.map_zero _⟩
+  · exact ⟨0, SetLike.mem_coe.mpr <| Ideal.zero_mem _, map_zero _⟩
   · intro y hy
     exact lem ((Finsupp.mem_supported _ l).mp H hy)
 
@@ -128,7 +128,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     obtain ⟨z, hz⟩ := y
     obtain ⟨p, hp, q, hq, hpq⟩ := Submodule.mem_sup.mp ((Ideal.eq_top_iff_one _).mp hx)
     have temp : algebraMap R S p * z + algebraMap R S q * z = z := by
-      simp only [← add_mul, ← RingHom.map_add (algebraMap R S), hpq, map_one, one_mul]
+      simp only [← add_mul, ← map_add (algebraMap R S), hpq, map_one, one_mul]
     suffices z ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>) ↔
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
@@ -177,7 +177,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
       suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp only [this, Submodule.mem_top]
       rw [Ideal.eq_top_iff_one] at hx ⊢
       replace hx := Ideal.mem_map_of_mem (algebraMap R S) hx
-      rw [Ideal.map_sup, RingHom.map_one] at hx
+      rw [Ideal.map_sup, map_one] at hx
       exact (sup_le_sup
         (show ((conductor R x).comap (algebraMap R S)).map (algebraMap R S) ≤ conductor R x
           from Ideal.map_comap_le)

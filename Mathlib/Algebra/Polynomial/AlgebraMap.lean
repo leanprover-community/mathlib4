@@ -19,6 +19,15 @@ public import Mathlib.Algebra.Polynomial.Monomial
 
 We show that `A[X]` is an R-algebra when `A` is an R-algebra.
 We promote `eval₂` to an algebra hom in `aeval`.
+
+## Main definitions
+
+- `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
+the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
+
+- `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
+coefficients of a polynomial in `S[X]`.
+
 -/
 
 @[expose] public section
@@ -180,6 +189,18 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
   rfl
+
+lemma coeff_mapAlgHom_apply (f : A →ₐ[R] B) (p : A[X]) (n : ℕ) :
+    coeff (mapAlgHom f p) n = f (coeff p n) := by
+  simp
+
+lemma lcoeff_comp_mapAlgHom_eq (f : A →ₐ[R] B) (n : ℕ) :
+    (lcoeff B n).restrictScalars R ∘ₗ (mapAlgHom f).toLinearMap =
+      f.toLinearMap ∘ₗ (lcoeff A n).restrictScalars R := by
+  ext f; simp
+
+lemma mapAlgHom_monomial (f : A →ₐ[R] B) (n : ℕ) (a : A) :
+    mapAlgHom f (monomial n a) = monomial n (f a) := by simp
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -538,6 +559,19 @@ theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
   simp only [aeval_X, aevalTower_X]
 
 end aevalTower
+
+open LinearMap TensorProduct in
+lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
+    [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
+      X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
+        (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
+    induction sn using TensorProduct.induction_on with
+    | zero => simp
+    | add x y hx hy => simp [hx, hy]
+    | tmul s n =>
+      simp only [rTensor_tmul, coe_restrictScalars, monomial_zero_left]
+      rw [smul_tmul', smul_eq_mul, mul_comm, C_mul_X_pow_eq_monomial]
+
 
 end CommSemiring
 
