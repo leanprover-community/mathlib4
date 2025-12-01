@@ -61,7 +61,7 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] :
     CommShift₂Setup D ℤ where
   z m n := (-1) ^ (m.1 * n.2)
-  assoc _ _ _:= by
+  assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
     congr 1
