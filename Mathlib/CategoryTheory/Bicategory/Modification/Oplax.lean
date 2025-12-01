@@ -114,6 +114,7 @@ transformations. -/
 @[ext]
 structure Hom where
   of ::
+  /-- The underlying modification of oplax transformations. -/
   as : Modification η θ
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors.
@@ -243,6 +244,7 @@ transformations. -/
 @[ext]
 structure Hom where
   of ::
+  /-- The underlying modification of strong transformations. -/
   as : Modification η θ
 
 /-- Category structure on the strong natural transformations between oplax functors.

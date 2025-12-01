@@ -994,8 +994,8 @@ lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
 positive definiteness. -/
 lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
     B.Nondegenerate ↔ ∀ x, x ≠ 0 → 0 < B x x := by
-  rw [B.nondegenerate_iff hs hB, ← not_iff_not]
-  push_neg
+  rw [B.nondegenerate_iff hs hB]
+  contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)
