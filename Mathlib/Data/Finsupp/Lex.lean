@@ -84,7 +84,7 @@ alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
 
 theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
     x < y ↔ x default < y default :=
-  lex_lt_iff_of_unique (α := αᵒᵈ)
+  Lex.lt_iff_of_unique (α := αᵒᵈ)
 
 variable [LinearOrder α]
 
