@@ -638,7 +638,7 @@ lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     exact getVert_mem_support ..
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
-  refine darts_injective <| Dart.toProd_injective.list_map <| List.unzip_injective ?_
+  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
   have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
   have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
   grind [map_fst_darts, map_snd_darts]

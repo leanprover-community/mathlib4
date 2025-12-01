@@ -34,8 +34,10 @@ namespace List
 
 variable {α : Type u} {β γ δ ε : Type*}
 
-theorem unzip_injective : (unzip : List (α × β) → _).Injective := by
-  grind [Function.Injective, zip_unzip]
+open Function in
+theorem rightInverse_unzip_zip :
+    RightInverse (unzip : List (α × β) → List α × List β) (uncurry zip) := by
+  grind [zip_unzip]
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁
