@@ -23,50 +23,26 @@ This is useful for when we have a finite-dimensional C⋆-algebra with a faithfu
 positive linear functional (so that it induces an inner product structure), and want the coalgebra
 structure to be the _adjoint_ of the algebra structure.
 This comes up in non-commutative graph theory for example.
-
-## Implementation notes
-
-The instance for the coalgebra structure given by the adjoint of the algebra structure in
-a finite-dimensional inner product space is scoped to `InnerProductSpace.CoalgebraOfAlgebra`.
 -/
 
 @[expose] public section
 
-variable {𝕜 A : Type*} [RCLike 𝕜] [NormedAddCommGroup A] [InnerProductSpace 𝕜 A]
-  [FiniteDimensional 𝕜 A]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+  [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
 theorem LinearIsometryEquiv.adjoint_toLinearMap_eq_symm {K : Type*}
-    [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [FiniteDimensional 𝕜 K] (e : A ≃ₗᵢ[𝕜] K) :
+    [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [FiniteDimensional 𝕜 K] (e : E ≃ₗᵢ[𝕜] K) :
     adjoint e.toLinearMap = e.symm.toLinearMap :=
-  have := FiniteDimensional.complete 𝕜 A
+  have := FiniteDimensional.complete 𝕜 E
   have := FiniteDimensional.complete 𝕜 K
   congr($e.adjoint_eq_symm)
 
 namespace InnerProductSpace
 
 section coalgebraOfAlgebra
-variable {A : Type*} [NormedRing A] [InnerProductSpace 𝕜 A] [FiniteDimensional 𝕜 A]
-  [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
-
-section
--- move to Mathlib.Algebra.Algebra.Defs
-
-/-- The unit linear map (algebra linear map) without requiring `Algebra R A`.
-This is equal to `Algebra.linearMap`, but not defeq. -/
-@[simps]
-def _root_.Algebra.linearMap' (R A : Type*) [Semiring R] [AddCommMonoidWithOne A] [Module R A] :
-    R →ₗ[R] A where
-  toFun x := x • 1
-  map_add' _ _ := add_smul _ _ _
-  map_smul' _ _ := smul_smul _ _ _ |>.symm
-
-theorem _root_.Algebra.linearMap'_eq_linearMap {R A : Type*} [CommSemiring R] [Semiring A]
-    [Algebra R A] : Algebra.linearMap' R A = Algebra.linearMap R A := by
-  ext; simp
-
-end
+variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /- TODO: This does not require submultiplicativity of the norm. When we unbundle the algebra
 and analysis hierachies, we should generalise this from `NormedRing` to `Ring`
@@ -76,13 +52,12 @@ PR#24040 addresses this. -/
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map. -/
-noncomputable abbrev coalgebraOfAlgebra :
-    Coalgebra 𝕜 A where
-  comul := adjoint (mul' 𝕜 A)
-  counit := adjoint (Algebra.linearMap' 𝕜 A)
+noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
+  comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
+  counit := adjoint (e.symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 A)
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
-      ← (assocIsometry 𝕜 A A A).symm_symm, ← adjoint_toLinearMap_eq_symm]
+      ← (assocIsometry 𝕜 _ _ _).symm_symm, ← adjoint_toLinearMap_eq_symm]
     simp_rw [← adjoint_comp]
     congr 1; ext; simp [mul_assoc]
   rTensor_counit_comp_comul := by
@@ -95,27 +70,18 @@ noncomputable abbrev coalgebraOfAlgebra :
       ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
     congr 1; ext; simp
 
-scoped[InnerProductSpace.CoalgebraOfAlgebra] attribute [instance]
-  InnerProductSpace.coalgebraOfAlgebra
-
-namespace CoalgebraOfAlgebra
-
-theorem comul_def : comul (R := 𝕜) (A := A) = adjoint (mul' 𝕜 A) := rfl
-theorem counit_def : counit (R := 𝕜) (A := A) = adjoint (Algebra.linearMap' 𝕜 A) := rfl
-
-end CoalgebraOfAlgebra
 end coalgebraOfAlgebra
 
 section algebraOfCoalgebra
-variable [Coalgebra 𝕜 A]
+variable [Coalgebra 𝕜 E]
 
 -- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
 where multiplication is given by `x * y = (adjoint comul) (x ⊗ₜ y)` and
 `1 = (adjoint counit) (1 : 𝕜)`. -/
 noncomputable abbrev ringOfCoalgebra :
-    Ring A where
-  mul x y := adjoint (comul (R := 𝕜) (A := A)) (x ⊗ₜ y)
+    Ring E where
+  mul x y := adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y)
   left_distrib x y z := by simp [HMul.hMul, tmul_add]
   right_distrib x y z := by simp [HMul.hMul, add_tmul]
   zero_mul x := by simp [HMul.hMul]
@@ -126,7 +92,7 @@ noncomputable abbrev ringOfCoalgebra :
       ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply, ← toLinearEquiv_assocIsometry,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
     rfl
-  one := adjoint (counit (R := 𝕜) (A := A)) (1 : 𝕜)
+  one := adjoint (counit (R := 𝕜) (A := E)) (1 : 𝕜)
   one_mul x := by
     dsimp [HMul.hMul, OfNat.ofNat]
     rw [← rTensor_tmul, ← comp_apply, ← adjoint_rTensor, ← adjoint_comp, rTensor_counit_comp_comul,
@@ -143,16 +109,16 @@ noncomputable abbrev ringOfCoalgebra :
 
 attribute [local instance] InnerProductSpace.ringOfCoalgebra
 
-lemma ringOfCoalgebra_mul_def (x y : A) :
-    x * y = adjoint (comul (R := 𝕜) (A := A)) (x ⊗ₜ y) := rfl
+lemma ringOfCoalgebra_mul_def (x y : E) :
+    x * y = adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y) := rfl
 
 -- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with a coalgebra structure induces an algebra
 structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`, `1 = (adjoint counit) 1` and
 `algebraMap = adjoint counit`. -/
-noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 A where
+noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
   algebraMap :=
-  { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := A))
+  { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))
     map_one' := rfl
     map_mul' x y := by
       simp_rw [ringOfCoalgebra_mul_def, ← map_tmul, ← adjoint_map, ← comp_apply, ← adjoint_comp,
