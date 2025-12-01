@@ -28,6 +28,9 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## Main definitions
 
+* `fintypeAffineCoords`: the `AffineSubspace` of `ι → k` (for `Fintype ι`) where coordinates sum
+  to `1`.
+* `finsuppAffineCoords`: the `AffineSubspace of `ι →₀ k` where coordinates sum to `1`.
 * `AffineBasis`: a structure representing an affine basis of an affine space.
 * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
 * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
@@ -38,7 +41,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## TODO
 
-* Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
+* Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
 
 -/
 
@@ -46,6 +49,36 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 open Affine Module Set
 open scoped Pointwise
+
+section Coordinates
+
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
+variable (ι k) in
+/-- The space of coordinates for affine combinations indexed by a `Fintype`. -/
+def fintypeAffineCoords [Fintype ι] : AffineSubspace k (ι → k) :=
+  (affineSpan k {(1 : k)}).comap (Fintype.linearCombination k (1 : ι → k)).toAffineMap
+
+lemma mem_fintypeAffineCoords_iff_sum [Fintype ι] {w : ι → k} :
+    w ∈ fintypeAffineCoords ι k ↔ ∑ i, w i = 1 := by
+  simp [fintypeAffineCoords, Fintype.linearCombination_apply]
+
+lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι] {p : ι → P}
+    (h : AffineIndependent k p) :
+    InjOn (Finset.univ.affineCombination k p) (fintypeAffineCoords ι k) :=
+  fun w₁ hw₁ w₂ hw₂ he ↦ (affineIndependent_iff_eq_of_fintype_affineCombination_eq k p).1
+    h w₁ w₂ (mem_fintypeAffineCoords_iff_sum.1 hw₁) (mem_fintypeAffineCoords_iff_sum.1 hw₂) he
+
+variable (ι k) in
+/-- The space of coordinates for affine combinations indexed by a general type. -/
+def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+  (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
+
+lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :
+    w ∈ finsuppAffineCoords ι k ↔ Finsupp.linearCombination k (1 : ι → k) w = 1 := by
+  simp [finsuppAffineCoords]
+
+end Coordinates
 
 universe u₁ u₂ u₃ u₄
 
