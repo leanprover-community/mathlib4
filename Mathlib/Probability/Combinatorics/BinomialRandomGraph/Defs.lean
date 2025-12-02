@@ -70,7 +70,7 @@ lemma measurable_edgeSet : Measurable (edgeSet : SimpleGraph V → Set (Sym2 V))
 
 @[simp, fun_prop]
 lemma measurable_fromEdgeSet : Measurable (fromEdgeSet : Set (Sym2 V) → SimpleGraph V) := by
-  simp [measurable_iff_adj]; fun_prop
+  simp only [measurable_iff_adj, fromEdgeSet_adj, ne_eq]; fun_prop
 
 lemma measurableEmbedding_edgeSet [Countable V] :
     MeasurableEmbedding (edgeSet : SimpleGraph V → Set (Sym2 V)) where
