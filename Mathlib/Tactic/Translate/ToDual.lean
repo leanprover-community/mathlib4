@@ -66,14 +66,14 @@ theorem max_comm' {α} [LinearOrder α] (x y : α) : max x y = max y x := max_co
 ```
 
 Use the `(reorder := ...)` syntax to reorder the arguments compared to the dual declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
-the fifth argument before the third argument. For example, this is used to tag `LE.le`
-with `(reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
+This is specified using cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments
+`α` and `β` with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+the fifth argument before the third argument. For example, this is used when tagging `LE.le`
+with `to_dual self (reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
 
-Use the `to_dual self` syntax to use the lemma as its own dual. This is often
-combined with the `(reorder := ...)` syntax, because a lemma is usually dual to itself only
-up to some reordering of its arguments.
+Use the `to_dual self` syntax to mark the lemma as its own dual. This is needed if the lemma is
+its own dual, up to a reordering of its arguments. `to_dual self` (and `to_dual existing`) tries to
+autogenerate the `(reorder := ...)` argument, so it is usually not necessary to give it explicitly.
 
 Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
@@ -165,7 +165,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"])]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
-def abbreviationDict : Std.HashMap String String := .ofList []
+def abbreviationDict : Std.HashMap String String := .ofList [
+  ("wellFoundedLT", "WellFoundedGT"),
+  ("wellFoundedGT", "WellFoundedLT")
+]
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
@@ -179,7 +182,7 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
 

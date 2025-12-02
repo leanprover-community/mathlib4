@@ -562,9 +562,8 @@ theorem IsClosedMap.frequently_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} 
   and then go back to `isClosedMap_iff_comap_nhdsSet_le`.
   Ultimately, this makes no difference.
   -/
-  revert H
-  contrapose
-  simpa only [not_frequently, not_exists, not_and] using hf.eventually_nhds_fiber y₀
+  contrapose! H
+  exact hf.eventually_nhds_fiber y₀ H
 
 theorem IsClosedMap.closure_image_eq_of_continuous
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set X) :

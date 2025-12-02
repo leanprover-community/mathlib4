@@ -20,7 +20,7 @@ The derived category is defined here as the localization of cochain complexes
 indexed by `ℤ` with respect to quasi-isomorphisms: it is a type synonym of
 `HomologicalComplexUpToQuasiIso C (ComplexShape.up ℤ)`. Then, we have a
 localization functor `DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`.
-It was already shown in the file `Algebra.Homology.Localization` that the induced
+It was already shown in the file `Mathlib/Algebra/Homology/Localization.lean` that the induced
 functor `DerivedCategory.Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C`
 is a localization functor with respect to the class of morphisms
 `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`. In the lemma
@@ -28,9 +28,9 @@ is a localization functor with respect to the class of morphisms
 consists of morphisms whose cone belongs to the triangulated subcategory
 `HomotopyCategory.subcategoryAcyclic C` of acyclic complexes. Then, the triangulated
 structure on `DerivedCategory C` is deduced from the triangulated structure
-on the homotopy category (see file `Algebra.Homology.HomotopyCategory.Triangulated`)
+on the homotopy category (see file `Mathlib/Algebra/Homology/HomotopyCategory/Triangulated.lean`)
 using the localization theorem for triangulated categories which was obtained
-in the file `CategoryTheory.Localization.Triangulated`.
+in the file `Mathlib/CategoryTheory/Localization/Triangulated.lean`.
 
 ## Implementation notes
 
@@ -38,7 +38,7 @@ If `C : Type u` and `Category.{v} C`, the constructed localized category of coch
 complexes with respect to quasi-isomorphisms has morphisms in `Type (max u v)`.
 However, in certain circumstances, it shall be possible to prove that they are `v`-small
 (when `C` is a Grothendieck abelian category (e.g. the category of modules over a ring),
-it should be so by a theorem of Hovey.).
+it should be so by a theorem of Hovey).
 
 Then, when working with derived categories in mathlib, the user should add the variable
 `[HasDerivedCategory.{w} C]` which is the assumption that there is a chosen derived
