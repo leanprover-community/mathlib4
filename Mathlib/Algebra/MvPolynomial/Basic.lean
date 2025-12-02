@@ -782,6 +782,36 @@ lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
 
+theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
+    (ha : IsRegular a) :
+    IsRegular (monomial m a) := by
+  rw [← isLeftRegular_iff_isRegular]
+  intro p q h
+  ext d
+  have h' := congr_arg  (coeff (m + d)) h
+  simp only [coeff_monomial_mul] at h'
+  rw [← ha.left.eq_iff, h']
+
+@[simp]
+theorem monomial_one_mul_cancel_left_iff {m : σ →₀ ℕ} :
+    monomial m 1 * p = monomial m 1 * q ↔ p = q :=
+  isRegular_one.monomial.left.eq_iff
+
+@[simp]
+theorem X_mul_cancel_left_iff {i : σ} :
+    X i * p = X i * q ↔ p = q :=
+  monomial_one_mul_cancel_left_iff
+
+@[simp]
+theorem monomial_one_mul_cancel_right_iff {m : σ →₀ ℕ} :
+    p * monomial m 1 = q * monomial m 1 ↔ p = q :=
+  isRegular_one.monomial.right.eq_iff
+
+@[simp]
+theorem X_mul_cancel_right_iff {i : σ} :
+    p * X i = q * X i ↔ p = q :=
+  monomial_one_mul_cancel_right_iff
+
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor
   · rintro ⟨φ, rfl⟩ c
