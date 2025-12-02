@@ -171,7 +171,8 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
-@[to_additive]
+-- Note: Using `gcongr` since `congr` doesn't accept this lemma.
+@[to_additive (attr := gcongr)]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
   Finset.prod_congr rfl h
@@ -627,3 +628,25 @@ theorem prod_pow_pos_of_zero_notMem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.
 alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_support
 
 end Nat
+
+namespace MulOpposite
+variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
+
+@[simp] lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
+    op (f.sum g) = f.sum fun i n ↦ op (g i n) := op_sum ..
+
+@[simp] lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+    unop (f.sum g) = f.sum fun i n ↦ unop (g i n) := unop_sum ..
+
+end MulOpposite
+
+namespace AddOpposite
+variable {ι M N : Type*} [CommMonoid M] [Zero N]
+
+@[simp] lemma op_finsuppProd (f : ι →₀ N) (g : ι → N → M) :
+    op (f.prod g) = f.prod fun i n ↦ op (g i n) := op_prod ..
+
+@[simp] lemma unop_finsuppProd (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+    unop (f.prod g) = f.prod fun i n ↦ unop (g i n) := unop_prod ..
+
+end AddOpposite
