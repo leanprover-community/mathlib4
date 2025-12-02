@@ -41,6 +41,8 @@ subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 * `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
 
+* `IsCyclotomicExtension.Rat.isCMField`: A nontrivial abelian extension of `ℚ` is CM.
+
 ## Implementation note
 
 Most results are proved for the case of a CM field, that is `K` is totally complex quadratic
@@ -116,7 +118,7 @@ theorem units_rank_eq_units_rank [NumberField K] :
 
 section complexConj
 
-theorem exists_isConj (φ : K →+* ℂ) :
+theorem exists_isConj [Algebra.IsAlgebraic ℚ K] (φ : K →+* ℂ) :
     ∃ σ : K ≃ₐ[K⁺] K, IsConj φ σ :=
   exists_isConj_of_isRamified <|
     isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
@@ -532,7 +534,7 @@ theorem of_forall_isConj [IsGalois ℚ K] {σ : Gal(K/ℚ)}
      (σ := IsGaloisGroup.mulEquivAlgEquiv (Subgroup.zpowers σ) L K ⟨σ, Subgroup.mem_zpowers σ⟩)
       (hσ W.embedding)⟩
   have : IsQuadraticExtension L K := ⟨by
-    rw [← IsGaloisGroup.card_subgroup_eq_finrank_fixedpoints, hσ']⟩
+    rw [IsGaloisGroup.finrank_fixedPoints_eq_card_subgroup, hσ']⟩
   exact IsCMField.ofCMExtension L K
 
 /--
@@ -560,6 +562,9 @@ namespace IsCyclotomicExtension.Rat
 variable (K : Type*) [Field K] [CharZero K]
 
 open IntermediateField in
+/--
+A nontrivial abelian extension of `ℚ` is CM.
+-/
 theorem isCMField {S : Set ℕ} (hS : ∃ n ∈ S, 2 < n) [IsCyclotomicExtension S ℚ K] :
     IsCMField K := by
   have : Algebra.IsIntegral ℚ K := integral S ℚ K
@@ -569,7 +574,7 @@ theorem isCMField {S : Set ℕ} (hS : ∃ n ∈ S, 2 < n) [IsCyclotomicExtension
   have : IsTotallyComplex K := by
     have : IsCyclotomicExtension {n} ℚ ℚ⟮ζ⟯ := hζ.intermediateField_adjoin_isCyclotomicExtension ℚ
     have : IsTotallyComplex ℚ⟮ζ⟯ := isTotallyComplex ℚ⟮ζ⟯ hn₂
-    exact isTotallyComplex_of_algebra ℚ⟮ζ⟯ _
+    exact isTotallyComplex_of_algebra ℚ⟮ζ⟯ K
   have := isAbelianGalois S ℚ K
   exact IsCMField.of_isAbelianGalois K
 

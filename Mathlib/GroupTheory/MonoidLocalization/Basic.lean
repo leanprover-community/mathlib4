@@ -540,7 +540,7 @@ lemma mk'_mul (x₁ x₂ : M) (y₁ y₂ : S) : f.mk' (x₁ * x₂) (y₁ * y₂
 
 @[to_additive]
 theorem mk'_one (x) : f.mk' x (1 : S) = f x := by
-  rw [mk', MonoidHom.map_one]
+  rw [mk', map_one]
   exact mul_one _
 
 /-- Given a localization map `f : M →* N` for a submonoid `S ⊆ M`, for all `z : N` we have that if
@@ -1044,7 +1044,7 @@ noncomputable def mulEquivOfLocalizations (k : LocalizationMap S P) : N ≃* P :
   invFun := k.lift f.map_units
   left_inv := f.lift_left_inverse
   right_inv := k.lift_left_inverse
-  map_mul' := MonoidHom.map_mul _ }
+  map_mul' := map_mul _ }
 
 @[to_additive (attr := simp)]
 theorem mulEquivOfLocalizations_apply {k : LocalizationMap S P} {x} :

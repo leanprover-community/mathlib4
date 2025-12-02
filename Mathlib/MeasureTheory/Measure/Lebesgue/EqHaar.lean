@@ -343,7 +343,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
-    simp only [f, mul_one, LinearMap.det_smul, Ne, MonoidHom.map_one]
+    simp only [f, mul_one, LinearMap.det_smul, Ne, map_one]
     exact pow_ne_zero _ hr
   simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 
@@ -382,6 +382,11 @@ theorem addHaar_smul (r : ℝ) (s : Set E) :
 theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
     μ (r • s) = ENNReal.ofReal (r ^ finrank ℝ E) * μ s := by
   rw [addHaar_smul, abs_pow, abs_of_nonneg hr]
+
+@[simp]
+theorem addHaar_nnreal_smul (r : ℝ≥0) (s : Set E) :
+    μ (r • s) = r ^ Module.finrank ℝ E * μ s := by
+  simp [NNReal.smul_def]
 
 variable {μ} {s : Set E}
 

@@ -118,6 +118,34 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
   ⟨fun h ↦ ⟨h.isInvariant.isIntegral, h.to_isFractionRing G A B K L⟩,
     fun ⟨_, h⟩ ↦ h.of_isFractionRing G A B K L⟩
 
+attribute [local instance] FractionRing.liftAlgebra in
+/--
+Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulSemiringAction`
+on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
+-/
+noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
+    [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
+    MulSemiringAction.compHom (FractionRing B)
+      ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
+        (MulSemiringAction.toAlgAut G A B))
+
+attribute [local instance] FractionRing.liftAlgebra in
+/--
+If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is also
+a Galois group for `FractionRing A / FractionRing B` for the action defined by
+`FractionRing.mulSemiringAction_of_isGaloisGroup`.
+-/
+theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [NoZeroSMulDivisors A B] [Finite G]
+    [IsGaloisGroup G A B] :
+    letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+    IsGaloisGroup G (FractionRing A) (FractionRing B) := by
+  letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+  have : SMulDistribClass G B (FractionRing B) := ⟨fun g b x ↦ by
+    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
+    congr
+    exact IsFractionRing.fieldEquivOfAlgEquiv_algebraMap (FractionRing A) _ _ _ b⟩
+  apply IsGaloisGroup.to_isFractionRing G A B _ _
+
 open NumberField
 
 instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
@@ -198,15 +226,16 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
-instance to_subgroup [hGKL : IsGaloisGroup G K L] :
+instance subgroup [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
   faithful := have := hGKL.faithful; inferInstance
   commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
-theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] :
-    Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
-  card_eq_finrank H (FixedPoints.intermediateField H) L
+@[simp]
+theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
+    Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L = Nat.card H :=
+  (card_eq_finrank H (FixedPoints.intermediateField H) L).symm
 
 variable {G K L} in
 theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x, e g x = g • x) :
@@ -216,11 +245,11 @@ theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x,
   isInvariant := ⟨fun y hy ↦ (InfiniteGalois.mem_bot_iff_fixed y).mpr <|
     e.surjective.forall.mpr <| by simpa [he]⟩
 
-instance of_fixed_field [Finite G] [FaithfulSMul G L] :
+instance fixedPoints [Finite G] [FaithfulSMul G L] :
     IsGaloisGroup G (FixedPoints.subfield G L) L :=
   of_mulEquiv_algEquiv (FixedPoints.toAlgAutMulEquiv _ _) fun _ _ ↦ rfl
 
-instance to_intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
+instance intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup (fixingSubgroup G (F : Set L)) F L :=
   let e := ((mulEquivAlgEquiv G K L).subgroupMap (fixingSubgroup G (F : Set L))).trans <|
     (MulEquiv.subgroupCongr (map_mulEquivAlgEquiv_fixingSubgroup ..)).trans <|
@@ -228,6 +257,7 @@ instance to_intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
   have := hGKL.isGalois
   .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
+@[simp]
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
   card_eq_finrank ..
@@ -242,9 +272,11 @@ section SMulCommClass
 
 variable [SMulCommClass G K L]
 
+@[simp]
 theorem fixingSubgroup_bot : fixingSubgroup G ((⊥ : IntermediateField K L) : Set L) = ⊤ := by
   simp [Subgroup.ext_iff, mem_fixingSubgroup_iff, IntermediateField.mem_bot]
 
+@[simp]
 theorem fixedPoints_bot :
     (FixedPoints.intermediateField (⊥ : Subgroup G) : IntermediateField K L) = ⊤ := by
   simp [IntermediateField.ext_iff]
@@ -263,10 +295,13 @@ section IsGaloisGroup
 
 variable [hGKL : IsGaloisGroup G K L]
 
+-- this can't be a simp-lemma since the left-hand side is not in simp normal form
+-- and if the theorem was `fixingSubgroup G Set.univ = ⊥` then `K` couldn't be inferred
 theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
   have := hGKL.faithful
   ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MulAction.fixedBy_eq_univ_iff_eq_one
 
+@[simp]
 theorem fixedPoints_top :
     (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
   convert IsGaloisGroup.fixedPoints_eq_bot G K L
@@ -279,28 +314,30 @@ noncomputable def intermediateFieldEquivSubgroup [Finite G] :
   have := finiteDimensional G K L
   IsGalois.intermediateFieldEquivSubgroup.trans <| (mulEquivAlgEquiv G K L).comapSubgroup.dual
 
-@[simp] lemma intermediateFieldEquivSubgroup_apply [Finite G] {F} :
+@[simp] theorem intermediateFieldEquivSubgroup_apply [Finite G] {F} :
     intermediateFieldEquivSubgroup G K L F = .toDual (fixingSubgroup G (F : Set L)) := rfl
 
-lemma ofDual_intermediateFieldEquivSubgroup_apply [Finite G] {F} :
+theorem ofDual_intermediateFieldEquivSubgroup_apply [Finite G] {F} :
     (intermediateFieldEquivSubgroup G K L F).ofDual = fixingSubgroup G (F : Set L) := rfl
 
-@[simp] lemma intermediateFieldEquivSubgroup_symm_apply [Finite G] {H} :
+@[simp] theorem intermediateFieldEquivSubgroup_symm_apply [Finite G] {H} :
     (intermediateFieldEquivSubgroup G K L).symm H = FixedPoints.intermediateField H.ofDual := by
   obtain ⟨H, rfl⟩ := OrderDual.toDual.surjective H
   simp [IntermediateField.ext_iff, intermediateFieldEquivSubgroup,
     (mulEquivAlgEquiv G K L).surjective.forall, -mulEquivAlgEquiv_symm_apply]
 
-lemma intermediateFieldEquivSubgroup_symm_apply_toDual [Finite G] {H} :
+theorem intermediateFieldEquivSubgroup_symm_apply_toDual [Finite G] {H} :
     (intermediateFieldEquivSubgroup G K L).symm (.toDual H) = FixedPoints.intermediateField H :=
   intermediateFieldEquivSubgroup_symm_apply ..
 
+@[simp]
 theorem fixingSubgroup_fixedPoints [Finite G] :
     fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
   rw [← intermediateFieldEquivSubgroup_symm_apply_toDual,
     ← ofDual_intermediateFieldEquivSubgroup_apply,
     OrderIso.apply_symm_apply, OrderDual.ofDual_toDual]
 
+@[simp]
 theorem fixedPoints_fixingSubgroup [Finite G] :
     FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
   rw [← ofDual_intermediateFieldEquivSubgroup_apply, ← intermediateFieldEquivSubgroup_symm_apply,

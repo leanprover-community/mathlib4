@@ -597,6 +597,9 @@ instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalS
     [ContinuousSMul M α] : MeasurableSMul₂ M α :=
   ⟨continuous_smul.measurable⟩
 
+instance [SecondCountableTopology α] [T2Space α] : MeasurableEq α :=
+  ⟨isClosed_diagonal.measurableSet⟩
+
 end
 
 section BorelSpace

@@ -130,11 +130,9 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true,
       Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
-  · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, Nat.add_sub_cancel k 1]
-    split_ifs with h
-    · exfalso; exact (ne_of_gt (Nat.lt_succ_iff.mpr hk)) h
-    · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
-      ring
+  · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, if_neg (by grind), Nat.add_sub_cancel k 1, h'k,
+      Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
+    ring
 
 end BernoulliFourierCoeffs
 

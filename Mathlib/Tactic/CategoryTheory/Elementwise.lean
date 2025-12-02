@@ -25,7 +25,7 @@ For more details, see the documentation attached to the `syntax` declaration.
 
 - The `@[elementwise]` attribute.
 
-- The ``elementwise_of% h` term elaborator.
+- The `elementwise_of% h` term elaborator.
 
 ## Implementation
 
@@ -216,7 +216,7 @@ initialize registerBuiltinAttribute {
   | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref stx? fun value levels => do
+    addRelatedDecl src "" "_apply" ref stx? fun value levels => do
       let (newValue, level?) ← elementwiseExpr src value (simpSides := nosimp?.isNone)
       let newLevels ← if let some (levelW, levelUF) := level? then do
         let w := mkUnusedName levels `w
