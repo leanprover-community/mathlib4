@@ -85,7 +85,7 @@ theorem iteratedLineDerivOp_const_eq_iter_lineDerivOp (n : ℕ) (y : V) (f : E) 
   induction n with
   | zero => rfl
   | succ n IH =>
-    rw [iteratedLineDerivOp_succ_left, Function.iterate_succ', Function.comp]
+    rw [iteratedLineDerivOp_succ_left, Function.iterate_succ_apply']
     congr
 
 end LineDeriv
