@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+module
+
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
 
@@ -24,6 +26,8 @@ of the underlying map of topological spaces, including
 - `DenseRange` (`IsDominant`)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Topology TopologicalSpace
 

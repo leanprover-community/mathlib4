@@ -3,7 +3,9 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Reduced root pairings
@@ -26,9 +28,11 @@ provide both `RootPairing.linearIndependent_iff_coxeterWeight_ne_four` and
 
 Several ways to avoid this duplication exist. We leave explorations of this for future work. One
 possible solution is to drop `RootPairing.pairing` and `RootPairing.coxeterWeight` entirely and rely
-solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.`
+solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
 
 -/
+
+@[expose] public section
 
 open Module Set Function
 
@@ -38,7 +42,11 @@ variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommG
 namespace RootPairing
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
-sign. -/
+sign.
+
+TODO Consider redefining this to make it perfectly symemtric between roots and coroots (i.e., so
+that the same demand is made of coroots) and turning `RootPairing.instFlipIsReduced` into a
+convenience constructor. -/
 @[mk_iff] class IsReduced : Prop where
   eq_or_eq_neg (i j : ι) (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.root i = P.root j ∨ P.root i = - P.root j
@@ -193,6 +201,15 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
 lemma coxeterWeight_eq_four_iff_not_linearIndependent :
     P.coxeterWeight i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeight_ne_four, not_not]
+
+instance instFlipIsReduced [P.IsReduced] [NoZeroSMulDivisors R N] : P.flip.IsReduced := by
+  refine ⟨fun i j h ↦ ?_⟩
+  rcases eq_or_ne i j with rfl | hij; · tauto
+  right
+  rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight_flip,
+    coxeterWeight_eq_four_iff_not_linearIndependent, IsReduced.linearIndependent_iff] at h
+  push_neg at h
+  simp [P.root_eq_neg_iff.mp (h hij)]
 
 variable (i j)
 

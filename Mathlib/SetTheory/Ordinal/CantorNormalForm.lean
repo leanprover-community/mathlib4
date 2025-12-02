@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Violeta Hernández Palacios
 -/
-import Mathlib.Data.Finsupp.AList
-import Mathlib.SetTheory.Ordinal.Exponential
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.Data.Finsupp.AList
+public import Mathlib.SetTheory.Ordinal.Exponential
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Cantor Normal Form
@@ -14,7 +16,7 @@ The Cantor normal form of an ordinal is generally defined as its base `ω` expan
 non-zero exponents in decreasing order. Here, we more generally define a base `b` expansion
 `Ordinal.CNF` in this manner, which is well-behaved for any `b ≥ 2`.
 
-# Implementation notes
+## Implementation notes
 
 We implement `Ordinal.CNF` as an association list, where keys are exponents and values are
 coefficients. This is because this structure intrinsically reflects two key properties of the Cantor
@@ -23,10 +25,12 @@ normal form:
 - It is ordered.
 - It has finitely many entries.
 
-# Todo
+## Todo
 
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
+
+@[expose] public section
 
 
 noncomputable section

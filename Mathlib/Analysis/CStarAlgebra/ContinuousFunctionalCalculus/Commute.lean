@@ -3,21 +3,23 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Commuting with applications of the continuous functional calculus
 
 This file shows that if an element `b` commutes with both `a` and `star a`, then it commutes
 with `cfc f a` (or `cfcₙ f a`). In the case where `a` is selfadjoint, we may reduce the hypotheses.
 
-# Main results
+## Main results
 
 * `Commute.cfc` and `Commute.cfcₙ`: an element commutes with `cfc f a` or `cfcₙ f a` if it
   commutes with both `a` and `star a`. Specialized versions for `ℝ` and `ℝ≥0` or for
   `IsSelfAdjoint a` which do not require the user to show the element commutes with `star a` are
   provided for convenience.
 
-# Implementation notes
+## Implementation notes
 
 The proof of `Commute.cfcHom` and `Commute.cfcₙHom` could be made simpler by appealing to basic
 facts about double commutants, but doing so would require extra type class assumptions so that we
@@ -25,6 +27,8 @@ can talk about topological star algebras. Instead, we avoid this to minimize the
 to call these lemmas, and give a straightforward proof by induction.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 

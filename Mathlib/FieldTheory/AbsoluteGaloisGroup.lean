@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
+module
+
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
 /-!
 # The topological abelianization of the absolute Galois group.
@@ -27,6 +29,8 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
 field, algebraic closure, galois group, abelianization
 
 -/
+
+@[expose] public section
 
 namespace Field
 

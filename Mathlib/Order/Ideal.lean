@@ -3,11 +3,13 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Cofinal
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -44,6 +46,8 @@ in line with most presentations of forcing.
 ideal, cofinal, dense, countable, generic
 
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -180,7 +184,7 @@ section Directed
 
 variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
 
-/-- In a directed and nonempty order, the top ideal of a is `univ`. -/
+/-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
   le_top _ _ _ := LowerSet.mem_top

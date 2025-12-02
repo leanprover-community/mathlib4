@@ -3,11 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Order.Hom.Basic
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.BaseChange
+public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Solvable Lie algebras
@@ -32,6 +34,8 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 lie algebra, derived series, derived length, solvable, radical
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂

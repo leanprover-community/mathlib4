@@ -3,11 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Invertibility of factorials
@@ -16,6 +17,8 @@ This file contains lemmas providing sufficient conditions for the cast of `n!` t
 to be a unit.
 
 -/
+
+@[expose] public section
 
 namespace IsUnit
 
@@ -76,7 +79,7 @@ lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
   obtain ⟨m, hm⟩ := hp
   suffices ∃ a b : A, p ^ m * a + n * b = 1 by
     obtain ⟨a, b, h⟩ := this
-    apply isUnit_of_mul_eq_one (n : A) b
+    refine .of_mul_eq_one b ?_
     simpa [hm] using h
   refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
   norm_cast

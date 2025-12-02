@@ -3,10 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.Reduced
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.Algebra.Ring.Torsion
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
+public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+public import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -26,6 +28,8 @@ root pairings.
   a root.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -318,8 +322,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h
     refine ⟨i, j, fun k ↦ ?_⟩
-    by_contra! hk
-    obtain ⟨hki_ne, hkj_ne⟩ := hk
+    by_contra! ⟨hki_ne, hkj_ne⟩
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
