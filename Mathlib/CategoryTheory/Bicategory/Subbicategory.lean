@@ -32,14 +32,14 @@ namespace Bicategory
 variable {B : Type u} [Bicategory.{w, v} B]
 
 /--
-A subtype-like structure for full subcategories. Morphisms just ignore the property. We don't use
-actual subtypes since the simp-normal form `↑X` of `X.val` does not work well for full
-subcategories. -/
+A subtype-like structure for full subbicategories. 1- and 2-morphisms ignore the property. We
+don't use actual subtypes since the simp-normal form `↑X` of `X.val` does not work well for full
+sub(bi)categories. -/
 @[ext]
 structure FullSubbicategory (P : ObjectProperty B) where
-  /-- The category of which this is a full subcategory -/
+  /-- The bicategory of which this is a full subbicategory -/
   obj : B
-  /-- The predicate satisfied by all objects in this subcategory -/
+  /-- The predicate satisfied by all objects in this subbicategory -/
   property : P obj
 
 namespace FullSubbicategory
@@ -49,24 +49,12 @@ section
 variable (P : ObjectProperty B)
 
 -- TODO: Should bicategory_Hom should be a simp projection?
-@[simps!?]
+@[simps!]
 instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
 
-example {B : Type u} [inst : Bicategory B]
-    (P : ObjectProperty B) {X Y Z : FullSubbicategory P} (u : X ⟶ Y)
-        (v : Y ⟶ Z) : (u ≫ v).hom = u.hom ≫ v.hom := by
-  simp only [bicategory_comp_hom]
-
-/-
-Q1: does the simps above having "wrong" type cause problems? Or is it fine?
-Q3: Automation w/ aesop & whisker_exchange?
-
--/
-
-/-- The forgetful functor from a full subcategory into the original category
-("forgetting" the condition).
--/
+/-- The forgetful strict pseudofunctor from a full subbicategory into the original bicategory
+("forgetting" the condition). -/
 @[simps!]
 def forget : StrictPseudofunctor (FullSubbicategory P) B :=
   InducedBicategory.forget FullSubbicategory.obj
@@ -74,34 +62,39 @@ def forget : StrictPseudofunctor (FullSubbicategory P) B :=
 variable {P}
 
 /-- Construct a morphism in `FullSubbicategory P` from a morhism in `B`. -/
-abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a ⟶ b} (η : f.hom ⟶ g.hom) : f ⟶ g :=
+abbrev mkHom {a b : FullSubbicategory P} (f : a.obj ⟶ b.obj) : a ⟶ b :=
+  InducedBicategory.mkHom f
+
+/-- Construct a 2-morphism in `FullSubbicategory P` from a 2-morhism in `B`, where the corresponding
+objects lie in the full subbicategory. -/
+abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a.obj ⟶ b.obj} (η : f ⟶ g) :
+    mkHom f ⟶ mkHom g :=
   InducedBicategory.mkHom₂ η
 
 @[ext]
-abbrev hom₂_ext {a b : FullSubbicategory P} {f g : a ⟶ b} {η θ : f ⟶ g}
-    (h : η.hom = θ.hom) : η = θ :=
+abbrev hom₂_ext {a b : FullSubbicategory P} {f g : a ⟶ b} {η θ : f ⟶ g} (h : η.hom = θ.hom) :
+    η = θ :=
   InducedBicategory.hom₂_ext h
 
-/-- Constructor for isomorphisms in `FullSubbicategory P` when
-`P : ObjectProperty C`. -/
+/-- Constructor for 2-isomorphisms in `FullSubbicategory P` when the underlying objects
+lie in `FullSubbicategory P`. -/
 @[simps]
-def isoMk {X Y : FullSubbicategory P} {f g : X ⟶ Y} (e : (forget P).map f ≅ (forget P).map g) :
-    f ≅ g where
+def isoMk {X Y : FullSubbicategory P} {f g : X.obj ⟶ Y.obj} (e : f ≅ g) :
+    mkHom f ≅ mkHom g where
   hom := mkHom₂ e.hom
   inv := mkHom₂ e.inv
   hom_inv_id := hom₂_ext <| e.hom_inv_id
   inv_hom_id := hom₂_ext <| e.inv_hom_id
 
-
 variable {P' : ObjectProperty B}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
-an induced functor `FullSubbicategory P ⥤ FullSubbicategory P'`. -/
+an induced strict pseudofunctor `FullSubbicategory P ⥤ᵖ FullSubbicategory P'`. -/
 @[simps!]
 def ιOfLE (h : P ≤ P') : StrictPseudofunctor (FullSubbicategory P) (FullSubbicategory P') :=
   StrictPseudofunctor.mk' {
     obj X := ⟨X.1, h _ X.2⟩
-    map f := ⟨f.hom⟩
+    map f := mkHom f.hom
     map₂ η := mkHom₂ η.hom }
 
 end
@@ -112,12 +105,12 @@ variable {C : Type u'} [Bicategory.{w', v'} C] (P Q : ObjectProperty C)
   (F : B ⥤ᵖ C) (hF : ∀ X, P (F.obj X))
 
 /-- A pseudofunctor which maps objects to objects satisfying a certain property induces a lift
-through the full subcategory of objects satisfying that property. -/
+through the full subbicategory of objects satisfying that property. -/
 @[simps]
 def lift : B ⥤ᵖ FullSubbicategory P where
   obj X := ⟨F.obj X, hF X⟩
-  map f := ⟨F.map f⟩
-  map₂ η :=mkHom₂ (F.map₂ η)
+  map f := mkHom (F.map f)
+  map₂ η := mkHom₂ (F.map₂ η)
   mapId X := isoMk (F.mapId X)
   mapComp f g := isoMk (F.mapComp f g)
 

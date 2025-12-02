@@ -100,6 +100,7 @@ def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) :
   hom := ⟨φ.hom⟩
   inv := ⟨φ.inv⟩
 
+variable (F) in
 @[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
   whiskerLeft {_ _ _} h {_ _} η := mkHom₂ <| h.hom ◁ Hom₂.hom η
@@ -113,6 +114,7 @@ attribute [-simp] bicategory_comp_hom bicategory_Hom
 
 section
 
+variable (F) in
 /-- The forgetful (strict) pseudofunctor from an induced bicategory to the original bicategory,
 forgetting the extra data.
 -/
