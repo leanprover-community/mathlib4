@@ -256,6 +256,15 @@ theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
   obtain ⟨m, rfl⟩ := Multiset.exists_cons_of_mem ha
   exact ⟨a, hm ▸ by simp⟩
 
+/-- Pick a root of a polynomial that splits. -/
+noncomputable def rootOfSplits (hf : f.Splits) (hfd : f.degree ≠ 0) : R :=
+  Classical.choose <| hf.exists_eval_eq_zero hfd
+
+@[simp]
+theorem eval_rootOfSplits (hf : f.Splits) (hfd : f.degree ≠ 0) :
+    f.eval (rootOfSplits hf hfd) = 0 :=
+  Classical.choose_spec <| hf.exists_eval_eq_zero hfd
+
 theorem Splits.comp_X_sub_C (hf : f.Splits) (a : R) : (f.comp (X - C a)).Splits :=
   hf.comp_of_natDegree_le_one_of_monic (natDegree_sub_C.trans_le natDegree_X_le) (monic_X_sub_C a)
 
