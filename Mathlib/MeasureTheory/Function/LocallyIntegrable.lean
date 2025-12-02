@@ -41,8 +41,12 @@ namespace MeasureTheory
 section LocallyIntegrableOn
 
 /-- A function `f : X → E` is *locally integrable on s*, for `s ⊆ X`, if for every `x ∈ s` there is
-a neighbourhood of `x` within `s` on which `f` is integrable. (Note this is, in general, strictly
-weaker than local integrability with respect to `μ.restrict s`.) -/
+a neighbourhood of `x` within `s` on which `f` is integrable.
+
+Note that this is, in general, strictly weaker than local integrability with respect to
+`μ.restrict s`. For example, `fun (x : ℝ) ↦ 1/x` is locally integrable on `Set.Ioo 0 1` with
+respect to the Lebesgue measure, but it is *not* locally integrable with respect to the
+Lebesgue measure restricted to `Set.Ioo 0 1`. -/
 def LocallyIntegrableOn (f : X → ε) (s : Set X) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, x ∈ s → IntegrableAtFilter f (𝓝[s] x) μ
 
@@ -163,7 +167,7 @@ protected theorem LocallyIntegrableOn.add [ContinuousAdd ε''] {f g : X → ε''
     (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f + g) s μ := fun x hx ↦ (hf x hx).add (hg x hx)
 
--- TODO: once mathlib has a ENormedAddCommSubMonoid, generalise this lemma also
+-- TODO: once mathlib has an ENormedAddCommSubMonoid, generalise this lemma also
 protected theorem LocallyIntegrableOn.sub
     {f g : X → E} (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
     LocallyIntegrableOn (f - g) s μ := fun x hx ↦ (hf x hx).sub (hg x hx)

@@ -537,7 +537,7 @@ theorem constr_apply (f : ι → M') (x : M) :
   simp only [constr_def, LinearMap.comp_apply, lmapDomain_apply, linearCombination_apply]
   rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
 
-theorem constr_symm_apply (f : M →ₗ[R] M') (i) :
+@[simp] theorem constr_symm_apply (f : M →ₗ[R] M') (i) :
     (b.constr S).symm f i = f (b i) := by
   rfl
 
