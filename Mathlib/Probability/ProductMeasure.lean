@@ -400,7 +400,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
 
 lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
-    infinitePi μ (Set.pi s t) = ∏ i ∈ s, (μ i) (t i) := by
+    infinitePi μ (Set.pi s t) = ∏ i ∈ s, μ i (t i) := by
   have : Set.pi s t = cylinder s ((@Set.univ s).pi (fun i : s ↦ t i)) := by
     ext x
     simp
@@ -423,7 +423,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
     infinitePi μ (Set.pi s t) = ∏' i : s, μ i (t i) := by
   wlog s_ne : Nonempty s
   · simp [Set.not_nonempty_iff_eq_empty'.mp s_ne]
-  apply tendsto_nhds_unique (f := fun s' : Finset s ↦ ∏ i ∈ s', (μ i) (t i)) (l := atTop)
+  apply tendsto_nhds_unique (f := fun s' : Finset s ↦ ∏ i ∈ s', μ i (t i)) (l := atTop)
   classical
   · conv in ∏ _ ∈ _, _ =>
       rw [← infinitePi_pi _ (by measurability), ← infinitePi_map_restrict', map_apply
@@ -445,12 +445,17 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
   · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
     exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
 
-@[simp]
-lemma infinitePi_singleton [hι : Countable ι] [∀ i, MeasurableSingletonClass (X i)]
-    (f : ∀ i, X i) : infinitePi μ {f} = ∏' i, μ i {f i} := by
-  rw [← Set.univ_pi_singleton, infinitePi_pi_of_countable, tprod_univ (f := fun i ↦ μ i {f i})]
-  · simp [Set.countable_univ_iff, hι]
+lemma infinitePi_pi_univ [Countable ι] {t : (i : ι) → Set (X i)}
+    (mt : ∀ i : ι, MeasurableSet (t i)) :
+    infinitePi μ (Set.univ.pi t) = ∏' i, μ i (t i) := by
+  rw [infinitePi_pi_of_countable, tprod_univ (f := fun i ↦ μ i (t i))]
+  · simpa [Set.countable_univ_iff]
   · measurability
+
+@[simp]
+lemma infinitePi_singleton [Countable ι] [∀ i, MeasurableSingletonClass (X i)]
+    (f : ∀ i, X i) : infinitePi μ {f} = ∏' i, μ i {f i} := by
+  rw [← Set.univ_pi_singleton, infinitePi_pi_univ _ (by measurability)]
 
 lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
     (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by simp
