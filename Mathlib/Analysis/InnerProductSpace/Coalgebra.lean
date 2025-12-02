@@ -51,7 +51,10 @@ PR#24040 addresses this. -/
 -- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
-and the counit is given by the adjoint of the algebra map. -/
+and the counit is given by the adjoint of the algebra map.
+
+This is implemented by providing an isometric linear equivalence between an inner product space
+and a normed algebra. -/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
   counit := adjoint (e.symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 A)
