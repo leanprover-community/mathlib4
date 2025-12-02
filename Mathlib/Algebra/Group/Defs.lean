@@ -194,7 +194,7 @@ end Semigroup
 /-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an commutative additive magma. -/
+  /-- Addition is commutative in a commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
@@ -222,10 +222,12 @@ variable [CommMagma G] {a : G}
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
-@[simp] lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+@[to_additive (attr := simp)]
+lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
   simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
-@[simp] lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+@[to_additive (attr := simp)]
+lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
   simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
@@ -1163,6 +1165,7 @@ end Group
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 /-- A commutative group is a group with commutative `(*)`. -/
+-- There is intentionally no `IsMulCommutative` for `CommGroup` instance for performance reasons.
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 

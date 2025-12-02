@@ -79,7 +79,7 @@ end PiProd
 
 section DiscreteUniformity
 
-/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+/-- The discrete uniformity makes a group a `IsUniformGroup`. -/
 @[to_additive /-- The discrete uniformity makes an additive group a `IsUniformAddGroup`. -/]
 instance [UniformSpace G] [DiscreteUniformity G] : IsUniformGroup G where
   uniformContinuous_div := DiscreteUniformity.uniformContinuous (G × G) fun p ↦ p.1 / p.2

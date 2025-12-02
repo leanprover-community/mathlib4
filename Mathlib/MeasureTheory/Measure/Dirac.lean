@@ -82,6 +82,7 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
 @[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
   fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
 
+@[simp]
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
