@@ -93,6 +93,7 @@ theorem toSplittingField_coeff {s : Finset (Monics k)} {f} (h : f ∈ s) (n) :
     |>.prod_eq_multiset_prod, ← Function.comp_def (X - C ·) Prod.fst, ← Multiset.map_map,
     Multiset.map_toEnumFinset_fst, map_map, AlgHom.comp_algebraMap]
   conv in map _ _ => rw [Splits.eq_prod_roots (Monics.splits_finsetProd h)]
+  simp only [ofMultiset_apply]
   rw [leadingCoeff_map, f.2, map_one, C_1, one_mul, sub_self, coeff_zero]
 
 variable (k)
