@@ -818,7 +818,7 @@ lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
   · simp [hf_zero]
   by_cases hg_zero: g = 0
   · simp [hg_zero]
-  simp [sPolynomial_def]
+  rw [sPolynomial_def]
   calc
     _ ≤ _ ⊔ _ := degree_sub_le
     _ ≤ m.toSyn (m.degree _ + m.degree _) ⊔ m.toSyn (m.degree _ + m.degree _) :=
