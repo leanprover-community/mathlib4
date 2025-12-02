@@ -457,7 +457,7 @@ variable (S Sₚ) in
 The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
 the complement of `p`
 -/
-noncomputable def quotMapEquivQuotMapMaximalIdeal [p.IsMaximal] :
+noncomputable def equivQuotMapMaximalIdeal [p.IsMaximal] :
     S ⧸ pS ≃+* Sₚ ⧸ pSₚ := by
   haveI h : pSₚ = Ideal.map (algebraMap S Sₚ) pS := by
     rw [← map_eq_maximalIdeal p, Ideal.map_map,
@@ -493,7 +493,7 @@ noncomputable def quotMapEquivQuotMapMaximalIdeal [p.IsMaximal] :
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
 @[deprecated (since := "2025-07-31")] alias
-    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := quotMapEquivQuotMapMaximalIdeal
+    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotMapMaximalIdeal
 
 end isomorphisms
 
