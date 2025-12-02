@@ -46,6 +46,8 @@ structure Encoding (α : Type u) where
   /-- Decoding and encoding are inverses of each other. -/
   decode_encode : ∀ x, decode (encode x) = some x
 
+attribute [simp] Encoding.decode_encode
+
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
   refine fun _ _ h => Option.some_injective _ ?_
   rw [← e.decode_encode, ← e.decode_encode, h]
@@ -234,8 +236,7 @@ def finEncodingPair {α β : Type*} (ea : FinEncoding α) (eb : FinEncoding β) 
   encode x := (ea.encode x.1).map .inl ++ (eb.encode x.2).map .inr
   decode x := Option.map₂ Prod.mk (ea.decode (x.filterMap Sum.getLeft?))
       (eb.decode (x.filterMap Sum.getRight?))
-  decode_encode x := by
-    simp [List.filterMap_append, ea.decode_encode, eb.decode_encode]
+  decode_encode x := by simp [List.filterMap_append]
   ΓFin := inferInstance
 
 end Computability
