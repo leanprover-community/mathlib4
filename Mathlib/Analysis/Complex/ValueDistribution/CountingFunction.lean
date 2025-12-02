@@ -61,7 +61,7 @@ noncomputable def toClosedBall (r : ℝ) :
 
 @[simp]
 lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ : Set E) ℤ)
-  (ha : z ∈ closedBall 0 |r|) :
+    (ha : z ∈ closedBall 0 |r|) :
     toClosedBall r f z = f z := by
   unfold toClosedBall
   simp_all [restrict_apply]
@@ -126,7 +126,7 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
     0 ≤ logCounting f r := by
   have h₃r : 0 < r := by linarith
-  suffices ∀ z, 0 ≤ (((toClosedBall r) f) z) * log (r * ‖z‖⁻¹) from
+  suffices ∀ z, 0 ≤ toClosedBall r f z * log (r * ‖z‖⁻¹) from
     add_nonneg (finsum_nonneg this) <| mul_nonneg (by simpa using h 0) (log_nonneg hr)
   intro a
   by_cases h₁a : a = 0
