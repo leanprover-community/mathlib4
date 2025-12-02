@@ -108,6 +108,7 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
     using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
 
 /-- The Yoneda lemma for sheaves. -/
+@[simps!?]
 def yonedaOpCompCoyoneda :
     J.yoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
@@ -118,9 +119,13 @@ def yonedaOpCompCoyoneda :
     (isoWhiskerRight CategoryTheory.largeCurriedYonedaLemma ((whiskeringLeft _ _ _).obj _))
 
 @[simp]
-lemma yonedaOpCompCoyoneda_app_app (X : C) (F : Sheaf J (Type v)) :
-    (J.yonedaOpCompCoyoneda.app (op X)).app F =
-      (J.yonedaEquiv.trans Equiv.ulift.symm).toIso :=
+lemma yonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type v))
+    (s : ULift.{u} (F.val.obj X)) :
+    (J.yonedaOpCompCoyoneda.inv.app X).app F s = J.yonedaEquiv.symm s.down :=
+  rfl
+
+lemma yonedaOpCompCoyoneda_app_app (X : Cᵒᵖ) (F : Sheaf J (Type v)) :
+    (J.yonedaOpCompCoyoneda.app X).app F = (J.yonedaEquiv.trans Equiv.ulift.symm).toIso :=
   rfl
 
 /-- A version of `yonedaEquiv` for `uliftYoneda`. -/
@@ -240,6 +245,7 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
 @[deprecated (since := "2025-11-10")] alias hom_ext_yonedaULift := hom_ext_uliftYoneda
 
 /-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
+@[simps!]
 def uliftYonedaOpCompCoyoneda :
     J.uliftYoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type max v v') ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
@@ -252,9 +258,13 @@ def uliftYonedaOpCompCoyoneda :
     ((whiskeringLeft _ _ _).obj _))
 
 @[simp]
-lemma uliftYonedaOpCompCoyoneda_app_app (X : C) (F : Sheaf J (Type (max v v'))) :
-    (J.uliftYonedaOpCompCoyoneda.app (op X)).app F =
-      (J.uliftYonedaEquiv.trans Equiv.ulift.symm).toIso :=
+lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type max v v'))
+    (s : ULift.{u} (F.val.obj X)) :
+    (J.uliftYonedaOpCompCoyoneda.inv.app X).app F s = J.uliftYonedaEquiv.symm s.down :=
+  rfl
+
+lemma uliftYonedaOpCompCoyoneda_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v v'))) :
+    (J.uliftYonedaOpCompCoyoneda.app X).app F = (J.uliftYonedaEquiv.trans Equiv.ulift.symm).toIso :=
   rfl
 
 end CategoryTheory.GrothendieckTopology
