@@ -297,8 +297,7 @@ lemma id_map_iff (hX : Measurable X) :
   · change HasSubgaussianMGF (id ∘ X) c κ ν
     exact .of_map hX h
   · rw [← Kernel.deterministic_comp_eq_map hX, ← Measure.comp_assoc,
-      Measure.deterministic_comp_eq_map]
-    rw [integrable_map_measure (by fun_prop) hX.aemeasurable]
+      Measure.deterministic_comp_eq_map, integrable_map_measure (by fun_prop) hX.aemeasurable]
     exact h.integrable_exp_mul t
   · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h.mgf_le
 
