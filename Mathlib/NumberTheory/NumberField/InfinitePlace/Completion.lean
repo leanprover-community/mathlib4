@@ -241,7 +241,7 @@ theorem isExtension_extensionEmbedding (h : IsExtension v.embedding w.embedding)
     IsExtension (extensionEmbedding v) (extensionEmbedding w) := by
   ext x
   induction x using induction_on
-  · simpa using isClosed_eq (.comp continuous_extension continuous_map) continuous_extension
+  · simpa using isClosed_eq (continuous_extension.comp continuous_map) continuous_extension
   · simp [WithAbs.equiv_algebraMap_apply, ← h]
 
 theorem isExtension_conjugate_extensionEmbedding
@@ -249,7 +249,7 @@ theorem isExtension_conjugate_extensionEmbedding
     IsExtension (extensionEmbedding v) (conjugate (extensionEmbedding w)) := by
   ext x
   induction x using induction_on
-  · simpa using isClosed_eq (.comp (by fun_prop) (.comp continuous_extension continuous_map))
+  · simpa using isClosed_eq (.comp (by fun_prop) (continuous_extension.comp continuous_map))
       continuous_extension
   · simp [WithAbs.equiv_algebraMap_apply, ← h]
 
