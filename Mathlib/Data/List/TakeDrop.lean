@@ -186,17 +186,11 @@ lemma self_nil_mem_splits (l : List α) : (l, []) ∈ l.splits := by
   simp
 
 private lemma splits_eq_cons_tail (l : List α) : l.splits = ([], l) :: l.splits.tail := by
-  cases l <;> simp [splits_cons]
+  simp [splits, range_succ_eq_map]
 
 private lemma splits_eq_append_singleton_dropLast (l : List α) :
     l.splits = l.splits.dropLast ++ [(l, [])] := by
-  induction l with
-  | nil =>
-    simp
-  | cons a l ih =>
-    rw [splits_cons, dropLast.eq_3 _ _ <| by grind [map_eq_nil_iff]]
-    rw (occs := .pos [1]) [ih]
-    simp
+  simp [splits, range_add]
 
 lemma splits_append_tail {x y : List α} :
     (x ++ y).splits =
