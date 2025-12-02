@@ -62,7 +62,7 @@ theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a
 theorem Rat.isCoprime_num_den (x : ℚ) : IsCoprime x.num x.den :=
   x.reduced.cast.of_isCoprime_of_dvd_left Int.dvd_natAbs_self
 
-theorem Int.isCoprime_gcdA (x y : ℤ) (h : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
+theorem Int.isCoprime_gcdA {x y : ℤ} (h : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
   use x, x.gcdB y
   rwa [mul_comm _ y, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
 
