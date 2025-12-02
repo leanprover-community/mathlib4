@@ -215,13 +215,13 @@ variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
-    ibc.endHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
+    ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, endHom_comp_apply, toDualHom_comp_apply]
+  | tmul x => simp [transvection.apply, endHom_comp_apply, toDual_comp_apply]
 
 end LinearMap.transvection
 
@@ -452,10 +452,10 @@ theorem det [Module.Free R V] [Module.Finite R V]
   let fM : Module.Dual S M :=
     Fintype.linearCombination S fun i ↦ MvPolynomial.X (Sum.inl i)
   let vM : M := fun i ↦ MvPolynomial.X (Sum.inr i)
-  have hf : ibc.toDualHom fM = f := by
+  have hf : ibc.toDual fM = f := by
     apply b.ext
     intro i
-    rw [← hε, toDualHom_comp_apply, Fintype.linearCombination_apply_single,
+    rw [← hε, toDual_comp_apply, Fintype.linearCombination_apply_single,
       one_smul, RingHom.algebraMap_toAlgebra, hε]
     apply MvPolynomial.aeval_X
   have hv : ε vM = v := by
@@ -465,7 +465,7 @@ theorem det [Module.Free R V] [Module.Finite R V]
     simp only [vM, γ, Function.comp_apply]
     apply MvPolynomial.aeval_X
   rw [← hf, ← hv, ← IsBaseChange.transvection, det_endHom, det_ofDomain]
-  rw [map_add, map_one, add_right_inj, toDualHom_comp_apply]
+  rw [map_add, map_one, add_right_inj, toDual_comp_apply]
 
 /-- Determinant of a transvection.
 
