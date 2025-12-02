@@ -558,6 +558,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
+set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -1043,8 +1044,8 @@ lemma mapValueGroupWithZero_strictMono : StrictMono (mapValueGroupWithZero A B) 
 
 variable (B) in
 lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : IsRankLeOne A := by
-    obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
-    exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
+  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
+  exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
 end ValuativeExtension
 

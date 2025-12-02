@@ -248,7 +248,7 @@ theorem setToSimpleFunc_eq_sum_filter [DecidablePred fun x ↦ x ≠ (0 : F)]
   symm
   refine sum_filter_of_ne fun x _ => mt fun hx0 => ?_
   rw [hx0]
-  exact ContinuousLinearMap.map_zero _
+  exact map_zero _
 
 theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
     (hf : Integrable f μ) {g : G → F} (hg : g 0 = 0) :
@@ -262,9 +262,9 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
   rcases mem_range.1 hb with ⟨a, rfl⟩
   by_cases h0 : g (f a) = 0
   · simp_rw [h0]
-    rw [ContinuousLinearMap.map_zero, Finset.sum_eq_zero fun x hx => ?_]
+    rw [map_zero, Finset.sum_eq_zero fun x hx => ?_]
     rw [mem_filter] at hx
-    rw [hx.2, ContinuousLinearMap.map_zero]
+    rw [hx.2, map_zero]
   have h_left_eq :
     T (map g f ⁻¹' {g (f a)}) (g (f a))
       = T (f ⁻¹' ({b ∈ f.range | g b = g (f a)} : Finset _)) (g (f a)) := by
@@ -389,7 +389,7 @@ theorem setToSimpleFunc_neg (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     setToSimpleFunc T (-f) = setToSimpleFunc T (f.map Neg.neg) := rfl
     _ = -setToSimpleFunc T f := by
       rw [map_setToSimpleFunc T h_add hf neg_zero, setToSimpleFunc, ← sum_neg_distrib]
-      exact Finset.sum_congr rfl fun x _ => ContinuousLinearMap.map_neg _ _
+      exact Finset.sum_congr rfl fun x _ => map_neg _ _
 
 theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
     (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -409,7 +409,7 @@ theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMea
     setToSimpleFunc T (c • f) = ∑ x ∈ f.range, T (f ⁻¹' {x}) (c • x) := by
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; dsimp only; rw [smul_zero]
     _ = ∑ x ∈ f.range, c • T (f ⁻¹' {x}) x :=
-      (Finset.sum_congr rfl fun b _ => by rw [ContinuousLinearMap.map_smul (T (f ⁻¹' {b})) c b])
+      (Finset.sum_congr rfl fun b _ => by rw [map_smul (T (f ⁻¹' {b})) c b])
     _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum]
 
 theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]

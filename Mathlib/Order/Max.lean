@@ -158,7 +158,7 @@ protected theorem IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b
 @[to_dual]
 theorem IsBot.isMin_iff {α} [PartialOrder α] {i j : α} (h : IsBot i) : IsMin j ↔ j = i := by
   simp_rw [le_antisymm_iff, h j, and_true]
-  exact ⟨fun a ↦ a (h j), fun a h' ↦ fun _ ↦ Preorder.le_trans j i h' a (h h')⟩
+  exact ⟨fun a ↦ a (h j), fun a h' ↦ fun _ ↦ le_trans a (h h')⟩
 
 @[to_dual (attr := simp)]
 theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=

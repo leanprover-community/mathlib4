@@ -5,9 +5,10 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Instances.Shrink
 
 /-!
 # Transfer topological algebraic structures across `Equiv`s
@@ -15,6 +16,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 In this file, we construct a continuous linear equivalence `α ≃L[R] β` from an equivalence `α ≃ β`,
 where the continuous `R`-module structure on `α` is the one obtained by transporting an
 `R`-module structure on `β` back along `e`.
+We also specialize this construction to `Shrink α`.
 
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
@@ -57,3 +59,13 @@ lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
     (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := rfl
 
 end Equiv
+
+universe v
+
+variable (R α) in
+/-- Shrinking `α` to a smaller universe preserves the continuous module structure. -/
+@[simps!]
+noncomputable def Shrink.continuousLinearEquiv
+    [Small.{v} α] [AddCommMonoid α] [TopologicalSpace α] [Semiring R] [Module R α] :
+    Shrink.{v} α ≃L[R] α :=
+  (equivShrink α).symm.continuousLinearEquiv R
