@@ -205,7 +205,7 @@ A field `K` is totally complex if all of its infinite places are complex.
 @[mk_iff] class IsTotallyComplex (K : Type*) [Field K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
-variable {F : Type*} [Field F] {K : Type*} [Field K] [Algebra F K]
+variable (F : Type*) [Field F] {K : Type*} [Field K] [Algebra F K]
 
 theorem nrRealPlaces_eq_zero_iff [NumberField K] :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
