@@ -110,7 +110,7 @@ lemma contract_eq_contract_iff : M ／ C₁ = M ／ C₂ ↔ C₁ ∩ M.E = C₂
 @[simp] lemma contract_inter_ground_eq (M : Matroid α) (C : Set α) : M ／ (C ∩ M.E) = M ／ C := by
   rw [← dual_delete_dual, ← dual_ground, delete_inter_ground_eq, dual_delete_dual]
 
-@[aesop unsafe 10% (rule_sets := [Matroid])]
+@[grind .]
 lemma contract_ground_subset_ground (M : Matroid α) (C : Set α) : (M ／ C).E ⊆ M.E :=
   (M.contract_ground C).trans_subset diff_subset
 
@@ -308,7 +308,7 @@ lemma IsBasis.contract_isBasis_of_disjoint_indep (h : M.IsBasis I X) (hdj : Disj
 lemma Indep.of_contract (hI : (M ／ C).Indep I) : M.Indep I :=
   ((M.exists_isBasis' C).choose_spec.contract_indep_iff.1 hI).1.subset subset_union_left
 
-lemma Dep.of_contract (h : (M ／ C).Dep X) (hC : C ⊆ M.E := by aesop_mat) : M.Dep (C ∪ X) := by
+lemma Dep.of_contract (h : (M ／ C).Dep X) (hC : C ⊆ M.E := by ground) : M.Dep (C ∪ X) := by
   rw [Dep, and_iff_left (union_subset hC (h.subset_ground.trans diff_subset))]
   intro hi
   rw [Dep, (hi.subset subset_union_left).contract_indep_iff, union_comm,
@@ -406,7 +406,7 @@ lemma contract_closure_eq (M : Matroid α) (C X : Set α) :
     (closure_subset_ground _ _ he).2⟩, fun e ⟨⟨he, heC⟩, he'⟩ ↦
     mem_closure_of_mem' _ he' ⟨M.closure_subset_ground _ he, heC⟩⟩
 
-lemma contract_spanning_iff (hC : C ⊆ M.E := by aesop_mat) :
+lemma contract_spanning_iff (hC : C ⊆ M.E := by ground) :
     (M ／ C).Spanning X ↔ M.Spanning (X ∪ C) ∧ Disjoint X C := by
   rw [spanning_iff, contract_closure_eq, contract_ground, spanning_iff, union_subset_iff,
     subset_diff, ← and_assoc, and_congr_left_iff, and_comm (a := X ⊆ _), ← and_assoc,

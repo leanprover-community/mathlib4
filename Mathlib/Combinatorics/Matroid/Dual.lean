@@ -117,7 +117,7 @@ theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.IsBa
 
 @[simp] theorem dual_ground : M✶.E = M.E := rfl
 
-theorem dual_indep_iff_exists (hI : I ⊆ M.E := by aesop_mat) :
+theorem dual_indep_iff_exists (hI : I ⊆ M.E := by ground) :
     M✶.Indep I ↔ (∃ B, M.IsBase B ∧ Disjoint I B) := by
   rw [dual_indep_iff_exists', and_iff_right hI]
 
@@ -132,7 +132,7 @@ instance dual_finite [M.Finite] : M✶.Finite :=
 instance dual_nonempty [M.Nonempty] : M✶.Nonempty :=
   ⟨M.ground_nonempty⟩
 
-@[simp] theorem dual_isBase_iff (hB : B ⊆ M.E := by aesop_mat) :
+@[simp] theorem dual_isBase_iff (hB : B ⊆ M.E := by ground) :
     M✶.IsBase B ↔ M.IsBase (M.E \ B) := by
   rw [isBase_compl_iff_maximal_disjoint_isBase, isBase_iff_maximal_indep, maximal_subset_iff,
     maximal_subset_iff]
@@ -194,13 +194,13 @@ theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.I
   exact hfb.2 (hBX.mem_of_insert_indep (Or.elim (hem.1 hfb.1) (False.elim ∘ hfb.2) id) hi).1
 
 theorem IsBase.inter_isBasis_iff_compl_inter_isBasis_dual (hB : M.IsBase B)
-    (hX : X ⊆ M.E := by aesop_mat) :
+    (hX : X ⊆ M.E := by ground) :
     M.IsBasis (B ∩ X) X ↔ M✶.IsBasis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
   refine ⟨hB.compl_inter_isBasis_of_inter_isBasis, fun h ↦ ?_⟩
   simpa [inter_eq_self_of_subset_right hX, inter_eq_self_of_subset_right hB.subset_ground] using
     hB.compl_isBase_dual.compl_inter_isBasis_of_inter_isBasis h
 
-theorem base_iff_dual_isBase_compl (hB : B ⊆ M.E := by aesop_mat) :
+theorem base_iff_dual_isBase_compl (hB : B ⊆ M.E := by ground) :
     M.IsBase B ↔ M✶.IsBase (M.E \ B) := by
   rw [dual_isBase_iff, diff_diff_cancel_left hB]
 
@@ -233,7 +233,7 @@ theorem coindep_iff_exists' : M.Coindep X ↔ (∃ B, M.IsBase B ∧ B ⊆ M.E \
   exact fun _ ↦ ⟨fun ⟨B, hB, hXB⟩ ↦ ⟨B, hB, hB.subset_ground, hXB.symm⟩,
     fun ⟨B, hB, _, hBX⟩ ↦ ⟨B, hB, hBX.symm⟩⟩
 
-theorem coindep_iff_exists (hX : X ⊆ M.E := by aesop_mat) :
+theorem coindep_iff_exists (hX : X ⊆ M.E := by ground) :
     M.Coindep X ↔ ∃ B, M.IsBase B ∧ B ⊆ M.E \ X := by
   rw [coindep_iff_exists', and_iff_left hX]
 
@@ -242,7 +242,7 @@ theorem coindep_iff_subset_compl_isBase : M.Coindep X ↔ ∃ B, M.IsBase B ∧ 
   exact ⟨fun ⟨⟨B, hB, _, hBX⟩, hX⟩ ↦ ⟨B, hB, hX, hBX.symm⟩,
     fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground, hXB.symm⟩, hXE⟩⟩
 
-@[aesop unsafe 10% (rule_sets := [Matroid])]
+@[grind .]
 theorem Coindep.subset_ground (hX : M.Coindep X) : X ⊆ M.E :=
   hX.indep.subset_ground
 

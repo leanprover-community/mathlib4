@@ -71,7 +71,7 @@ lemma IsCircuit.not_indep (hC : M.IsCircuit C) : ¬ M.Indep C :=
 lemma IsCircuit.minimal (hC : M.IsCircuit C) : Minimal M.Dep C :=
   hC
 
-@[aesop unsafe 20% (rule_sets := [Matroid])]
+@[grind →]
 lemma IsCircuit.subset_ground (hC : M.IsCircuit C) : C ⊆ M.E :=
   hC.dep.subset_ground
 
@@ -182,7 +182,7 @@ lemma IsCircuit.isCircuit_restrict_of_subset (hC : M.IsCircuit C) (hCR : C ⊆ R
   simp_rw [isCircuit_iff, restrict_dep_iff, dep_iff, and_imp] at *
   exact ⟨⟨hC.1.1, hCR⟩, fun I hI _ hIC ↦ hC.2 hI (hIC.trans hC.1.2) hIC⟩
 
-lemma restrict_isCircuit_iff (hR : R ⊆ M.E := by aesop_mat) :
+lemma restrict_isCircuit_iff (hR : R ⊆ M.E := by ground) :
     (M ↾ R).IsCircuit C ↔ M.IsCircuit C ∧ C ⊆ R := by
   refine ⟨?_, fun h ↦ h.1.isCircuit_restrict_of_subset h.2⟩
   simp_rw [isCircuit_iff, restrict_dep_iff, and_imp, dep_iff]
@@ -209,7 +209,7 @@ lemma fundCircuit_subset_insert (M : Matroid α) (e : α) (I : Set α) :
     M.fundCircuit e I ⊆ insert e I :=
   insert_subset_insert inter_subset_left
 
-lemma fundCircuit_subset_ground (he : e ∈ M.E) (hI : I ⊆ M.E := by aesop_mat) :
+lemma fundCircuit_subset_ground (he : e ∈ M.E) (hI : I ⊆ M.E := by ground) :
     M.fundCircuit e I ⊆ M.E :=
   (M.fundCircuit_subset_insert e I).trans (insert_subset he hI)
 
@@ -308,7 +308,7 @@ lemma Dep.exists_isCircuit_subset (hX : M.Dep X) : ∃ C, C ⊆ X ∧ M.IsCircui
   exact ⟨M.fundCircuit e I, (M.fundCircuit_subset_insert e I).trans (insert_subset heX hI.subset),
     hI.indep.fundCircuit_isCircuit (hI.subset_closure heX) heI⟩
 
-lemma dep_iff_superset_isCircuit (hX : X ⊆ M.E := by aesop_mat) :
+lemma dep_iff_superset_isCircuit (hX : X ⊆ M.E := by ground) :
     M.Dep X ↔ ∃ C, C ⊆ X ∧ M.IsCircuit C :=
   ⟨Dep.exists_isCircuit_subset, fun ⟨C, hCX, hC⟩ ↦ hC.dep.superset hCX⟩
 
@@ -325,7 +325,7 @@ lemma indep_iff_forall_subset_not_isCircuit' :
   simp_rw [indep_iff_not_dep, dep_iff_superset_isCircuit']
   aesop
 
-lemma indep_iff_forall_subset_not_isCircuit (hI : I ⊆ M.E := by aesop_mat) :
+lemma indep_iff_forall_subset_not_isCircuit (hI : I ⊆ M.E := by ground) :
     M.Indep I ↔ ∀ C, C ⊆ I → ¬M.IsCircuit C := by
   rw [indep_iff_forall_subset_not_isCircuit', and_iff_left hI]
 
@@ -558,7 +558,7 @@ lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
 lemma IsCocircuit.nonempty (hC : M.IsCocircuit C) : C.Nonempty :=
   hC.isCircuit.nonempty
 
-@[aesop unsafe 10% (rule_sets := [Matroid])]
+@[grind →]
 lemma IsCocircuit.subset_ground (hC : M.IsCocircuit C) : C ⊆ M.E :=
   hC.isCircuit.subset_ground
 
@@ -584,7 +584,7 @@ lemma isCocircuit_iff_minimal :
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
   convert isCocircuit_iff_minimal with K
-  simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
+  simp_rw [M.spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
     not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
     inter_comm K]
 

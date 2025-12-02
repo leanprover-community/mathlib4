@@ -65,7 +65,7 @@ namespace Matroid
 /-- `Matroid.loops M` is the closure of the empty set. -/
 def loops (M : Matroid α) := M.closure ∅
 
-@[aesop unsafe 20% (rule_sets := [Matroid])]
+@[grind .]
 lemma loops_subset_ground (M : Matroid α) : M.loops ⊆ M.E :=
   M.closure_subset_ground ∅
 
@@ -76,7 +76,7 @@ lemma isLoop_iff : M.IsLoop e ↔ e ∈ M.loops := Iff.rfl
 
 lemma closure_empty (M : Matroid α) : M.closure ∅ = M.loops := rfl
 
-@[aesop unsafe 20% (rule_sets := [Matroid])]
+@[grind →]
 lemma IsLoop.mem_ground (he : M.IsLoop e) : e ∈ M.E :=
   closure_subset_ground M ∅ he
 
@@ -104,7 +104,7 @@ lemma singleton_dep : M.Dep {e} ↔ M.IsLoop e :=
 
 alias ⟨_, IsLoop.dep⟩ := singleton_dep
 
-lemma singleton_not_indep (he : e ∈ M.E := by aesop_mat) : ¬ M.Indep {e} ↔ M.IsLoop e := by
+lemma singleton_not_indep (he : e ∈ M.E := by ground) : ¬ M.Indep {e} ↔ M.IsLoop e := by
   rw [← singleton_dep, ← not_indep_iff]
 
 @[simp]
@@ -116,7 +116,7 @@ alias ⟨_, IsLoop.isCircuit⟩ := singleton_isCircuit
 lemma isLoop_iff_forall_mem_compl_isBase : M.IsLoop e ↔ ∀ B, M.IsBase B → e ∈ M.E \ B :=
   (M.isLoop_tfae e).out 0 4
 
-lemma isLoop_iff_forall_notMem_isBase (he : e ∈ M.E := by aesop_mat) :
+lemma isLoop_iff_forall_notMem_isBase (he : e ∈ M.E := by ground) :
     M.IsLoop e ↔ ∀ B, M.IsBase B → e ∉ B := by
   simp_rw [isLoop_iff_forall_mem_compl_isBase, mem_diff, and_iff_right he]
 
@@ -132,7 +132,7 @@ lemma IsLoop.mem_of_isFlat (he : M.IsLoop e) {F : Set α} (hF : M.IsFlat F) : e 
 lemma IsFlat.loops_subset (hF : M.IsFlat F) : M.loops ⊆ F :=
   fun _ he ↦ IsLoop.mem_of_isFlat he hF
 
-lemma IsLoop.dep_of_mem (he : M.IsLoop e) (h : e ∈ X) (hXE : X ⊆ M.E := by aesop_mat) : M.Dep X :=
+lemma IsLoop.dep_of_mem (he : M.IsLoop e) (h : e ∈ X) (hXE : X ⊆ M.E := by ground) : M.Dep X :=
   he.dep.superset (singleton_subset_iff.mpr h) hXE
 
 lemma IsLoop.not_indep_of_mem (he : M.IsLoop e) (h : e ∈ X) : ¬M.Indep X :=
@@ -177,7 +177,7 @@ lemma isLoop_iff_closure_eq_loops_and_mem_ground :
     rw [isLoop_iff, ← closure_empty, ← singleton_subset_iff,
       ← closure_subset_closure_iff_subset_closure, h.1, loops]
 
-lemma isLoop_iff_closure_eq_loops (he : e ∈ M.E := by aesop_mat) :
+lemma isLoop_iff_closure_eq_loops (he : e ∈ M.E := by ground) :
     M.IsLoop e ↔ M.closure {e} = M.loops := by
   rw [isLoop_iff_closure_eq_loops_and_mem_ground, and_iff_left he]
 
@@ -230,7 +230,7 @@ lemma map_loops {f : α → β} {hf : InjOn f M.E} : (M.map f hf).loops = f '' M
   simp [loops]
 
 @[simp]
-lemma map_isLoop_iff {f : α → β} {hf : InjOn f M.E} (he : e ∈ M.E := by aesop_mat) :
+lemma map_isLoop_iff {f : α → β} {hf : InjOn f M.E} (he : e ∈ M.E := by ground) :
     (M.map f hf).IsLoop (f e) ↔ M.IsLoop e := by
   rw [isLoop_iff, map_loops, hf.mem_image_iff M.loops_subset_ground he, isLoop_iff]
 
@@ -278,7 +278,7 @@ structure IsNonloop (M : Matroid α) (e : α) : Prop where
   not_isLoop : ¬ M.IsLoop e
   mem_ground : e ∈ M.E
 
-attribute [aesop unsafe 20% (rule_sets := [Matroid])] IsNonloop.mem_ground
+attribute [grind →] IsNonloop.mem_ground
 
 lemma IsLoop.not_isNonloop (he : M.IsLoop e) : ¬M.IsNonloop e :=
   fun h ↦ h.not_isLoop he
@@ -286,18 +286,18 @@ lemma IsLoop.not_isNonloop (he : M.IsLoop e) : ¬M.IsNonloop e :=
 lemma compl_loops_eq (M : Matroid α) : M.E \ M.loops = {e | M.IsNonloop e} := by
   simp [Set.ext_iff, isNonloop_iff, and_comm, isLoop_iff]
 
-lemma isNonloop_of_not_isLoop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsLoop e) : M.IsNonloop e :=
+lemma isNonloop_of_not_isLoop (he : e ∈ M.E := by ground) (h : ¬ M.IsLoop e) : M.IsNonloop e :=
   ⟨h,he⟩
 
-lemma isLoop_of_not_isNonloop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsNonloop e) : M.IsLoop e :=
+lemma isLoop_of_not_isNonloop (he : e ∈ M.E := by ground) (h : ¬ M.IsNonloop e) : M.IsLoop e :=
   by rwa [isNonloop_iff, and_iff_left he, not_not] at h
 
 @[simp]
-lemma not_isLoop_iff (he : e ∈ M.E := by aesop_mat) : ¬M.IsLoop e ↔ M.IsNonloop e :=
+lemma not_isLoop_iff (he : e ∈ M.E := by ground) : ¬M.IsLoop e ↔ M.IsNonloop e :=
   ⟨fun h ↦ ⟨h, he⟩, IsNonloop.not_isLoop⟩
 
 @[simp]
-lemma not_isNonloop_iff (he : e ∈ M.E := by aesop_mat) : ¬M.IsNonloop e ↔ M.IsLoop e := by
+lemma not_isNonloop_iff (he : e ∈ M.E := by ground) : ¬M.IsNonloop e ↔ M.IsLoop e := by
   rw [← not_isLoop_iff, not_not]
 
 lemma isNonloop_iff_mem_compl_loops : M.IsNonloop e ↔ e ∈ M.E \ M.loops := by
@@ -312,7 +312,7 @@ lemma not_isNonloop_iff_closure : ¬ M.IsNonloop e ↔ M.closure {e} = M.loops :
   simp [← closure_inter_ground, singleton_inter_eq_empty.2 he, loops,
     (show ¬ M.IsNonloop e from fun h ↦ he h.mem_ground)]
 
-lemma isLoop_or_isNonloop (M : Matroid α) (e : α) (he : e ∈ M.E := by aesop_mat) :
+lemma isLoop_or_isNonloop (M : Matroid α) (e : α) (he : e ∈ M.E := by ground) :
     M.IsLoop e ∨ M.IsNonloop e := by
   rw [isNonloop_iff, and_iff_left he]; apply em
 
@@ -347,14 +347,14 @@ lemma IsCircuit.isNonloop_of_mem_of_one_lt_card (hC : M.IsCircuit C) (h : 1 < C.
   rw [hlp.eq_of_isCircuit_mem hC he, encard_singleton] at h
   exact h.ne rfl
 
-lemma isNonloop_of_notMem_closure (h : e ∉ M.closure X) (he : e ∈ M.E := by aesop_mat) :
+lemma isNonloop_of_notMem_closure (h : e ∉ M.closure X) (he : e ∈ M.E := by ground) :
     M.IsNonloop e :=
   isNonloop_of_not_isLoop he (fun hel ↦ h (hel.mem_closure X))
 
 @[deprecated (since := "2025-05-23")]
 alias isNonloop_of_not_mem_closure := isNonloop_of_notMem_closure
 
-lemma isNonloop_iff_notMem_loops (he : e ∈ M.E := by aesop_mat) :
+lemma isNonloop_iff_notMem_loops (he : e ∈ M.E := by ground) :
     M.IsNonloop e ↔ e ∉ M.loops := by
   rw [isNonloop_iff, isLoop_iff, and_iff_left he]
 
@@ -470,13 +470,21 @@ def IsColoop (M : Matroid α) (e : α) : Prop := M✶.IsLoop e
 /-- `M.coloops` is the set of coloops of `M`. -/
 def coloops (M : Matroid α) := M✶.loops
 
-@[aesop unsafe 20% (rule_sets := [Matroid])]
+@[grind →]
 lemma IsColoop.mem_ground (he : M.IsColoop e) : e ∈ M.E :=
   @IsLoop.mem_ground α (M✶) e he
 
-@[aesop unsafe 20% (rule_sets := [Matroid])]
+@[grind .]
 lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
   fun _ ↦ IsColoop.mem_ground
+
+
+@[grind .]
+lemma trans_foo {Y : Set α} (h : X ⊆ Y) (h' : Y ⊆ M.E) : X ⊆ M.E := h.trans h'
+
+example (hX : X ⊆ M.coloops) : X ⊆ M.E := by
+  grind
+
 
 lemma isColoop_iff_mem_coloops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
 
@@ -570,7 +578,7 @@ lemma IsColoop.notMem_isCircuit (he : M.IsColoop e) (hC : M.IsCircuit C) : e ∉
 lemma IsCircuit.disjoint_coloops (hC : M.IsCircuit C) : Disjoint C M.coloops :=
   disjoint_right.2 <| fun _ he ↦ IsColoop.notMem_isCircuit he hC
 
-lemma isColoop_iff_forall_notMem_isCircuit (he : e ∈ M.E := by aesop_mat) :
+lemma isColoop_iff_forall_notMem_isCircuit (he : e ∈ M.E := by ground) :
     M.IsColoop e ↔ ∀ ⦃C⦄, M.IsCircuit C → e ∉ C := by
   simp_rw [(M.isColoop_tfae e).out 0 4, and_iff_left he]
 
@@ -612,7 +620,7 @@ alias ⟨IsColoop.diff_not_spanning, _⟩ := isColoop_iff_diff_not_spanning
 lemma isColoop_iff_diff_closure : M.IsColoop e ↔ M.closure (M.E \ {e}) ≠ M.E := by
   rw [isColoop_iff_diff_not_spanning, spanning_iff_closure_eq]
 
-lemma isColoop_iff_notMem_closure_compl (he : e ∈ M.E := by aesop_mat) :
+lemma isColoop_iff_notMem_closure_compl (he : e ∈ M.E := by ground) :
     M.IsColoop e ↔ e ∉ M.closure (M.E \ {e}) := by
   rw [isColoop_iff_diff_closure, not_iff_not]
   refine ⟨fun h ↦ by rwa [h], fun h ↦ (M.closure_subset_ground _).antisymm fun x hx ↦ ?_⟩
@@ -678,8 +686,8 @@ lemma closure_union_eq_of_subset_coloops (X : Set α) (hK : K ⊆ M.coloops) :
   obtain ⟨C, hCss, hC, heC⟩ := (mem_closure_iff_exists_isCircuit he).1 hecl
   rw [← singleton_union, ← union_assoc, union_comm, ← diff_subset_iff,
     (hC.disjoint_coloops.mono_right hK).sdiff_eq_left, singleton_union] at hCss
-  exact M.closure_subset_closure_of_subset_closure (by simpa) <|
-    hC.mem_closure_diff_singleton_of_mem heC
+  · exact M.closure_subset_closure_of_subset_closure (by simpa) <|
+      hC.mem_closure_diff_singleton_of_mem heC
 
 lemma closure_insert_isColoop_eq (X : Set α) (he : M.IsColoop e) :
     M.closure (insert e X) = insert e (M.closure X) := by
@@ -786,12 +794,12 @@ class Loopless (M : Matroid α) : Prop where
 lemma loops_eq_empty (M : Matroid α) [Loopless M] : M.loops = ∅ :=
   ‹Loopless M›.loops_eq_empty
 
-lemma isNonloop_of_loopless [Loopless M] (he : e ∈ M.E := by aesop_mat) :
+lemma isNonloop_of_loopless [Loopless M] (he : e ∈ M.E := by ground) :
     M.IsNonloop e := by
   rw [← not_isLoop_iff, isLoop_iff, loops_eq_empty]
   exact notMem_empty _
 
-lemma subsingleton_indep [M.Loopless] (hI : I.Subsingleton) (hIE : I ⊆ M.E := by aesop_mat) :
+lemma subsingleton_indep [M.Loopless] (hI : I.Subsingleton) (hIE : I ⊆ M.E := by ground) :
     M.Indep I := by
   obtain rfl | ⟨x, rfl⟩ := hI.eq_empty_or_singleton
   · simp

@@ -69,6 +69,7 @@ def IsStrictMinor (N M : Matroid α) : Prop := N ≤m M ∧ ¬ M ≤m N
 /-- `<m` denotes the strict minor relation on matroids. -/
 infixl:50 " <m " => Matroid.IsStrictMinor
 
+@[grind →]
 lemma IsMinor.subset (h : N ≤m M) : N.E ⊆ M.E := by
   obtain ⟨C, D, rfl⟩ := h
   exact diff_subset.trans diff_subset

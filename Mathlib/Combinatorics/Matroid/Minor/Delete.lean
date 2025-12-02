@@ -58,7 +58,7 @@ lemma delete_eq_restrict (M : Matroid α) (D : Set α) : M ＼ D = M ↾ (M.E \ 
 lemma restrict_compl (M : Matroid α) (D : Set α) : M ↾ (M.E \ D) = M ＼ D := rfl
 
 @[simp]
-lemma delete_compl (hR : R ⊆ M.E := by aesop_mat) : M ＼ (M.E \ R) = M ↾ R := by
+lemma delete_compl (hR : R ⊆ M.E := by ground) : M ＼ (M.E \ R) = M ↾ R := by
   rw [← restrict_compl, diff_diff_cancel_left hR]
 
 @[simp]
@@ -74,7 +74,7 @@ lemma isRestriction_iff_exists_eq_delete : N ≤r M ↔ ∃ D ⊆ M.E, N = M ＼
 @[simp]
 lemma delete_ground (M : Matroid α) (D : Set α) : (M ＼ D).E = M.E \ D := rfl
 
-@[aesop unsafe 10% (rule_sets := [Matroid])]
+@[grind .]
 lemma delete_subset_ground (M : Matroid α) (D : Set α) : (M ＼ D).E ⊆ M.E :=
   diff_subset
 

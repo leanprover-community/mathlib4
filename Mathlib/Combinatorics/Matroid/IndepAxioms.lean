@@ -276,7 +276,7 @@ provided independence is determined by its behaviour on finite sets. -/
       -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
       rw [ncard_insert_of_notMem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
       obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
-      exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
+      exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by grind), hfI₀⟩ hfi )
   (subset_ground := subset_ground)
 
 @[simp] theorem ofFinitaryCardAugment_indep (E : Set α) (Indep : Set α → Prop)

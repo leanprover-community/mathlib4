@@ -148,7 +148,7 @@ theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
   (M.cRk_le_cardinalMk I).antisymm' (hI.isBasis_self.cardinalMk_le_cRk)
 
 @[simp] theorem cRk_map_image_lift (M : Matroid α) (hf : InjOn f M.E) (X : Set α)
-    (hX : X ⊆ M.E := by aesop_mat) : lift.{u,v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
+    (hX : X ⊆ M.E := by ground) : lift.{u,v} ((M.map f hf).cRk (f '' X)) = lift (M.cRk X) := by
   nth_rw 1 [cRk, cRank, le_antisymm_iff, lift_iSup (bddAbove_range _), cRk, cRank, cRk, cRank]
   nth_rw 2 [lift_iSup (bddAbove_range _)]
   simp only [ciSup_le_iff (bddAbove_range _), ge_iff_le, Subtype.forall, isBase_restrict_iff',
@@ -162,7 +162,7 @@ theorem Indep.cRk_eq_cardinalMk (hI : M.Indep I) : #I = M.cRk I :=
   exact (hI.map hf).cardinalMk_le_cRk
 
 @[simp] theorem cRk_map_image {β : Type u} {f : α → β} (M : Matroid α) (hf : InjOn f M.E)
-    (X : Set α) (hX : X ⊆ M.E := by aesop_mat) : (M.map f hf).cRk (f '' X) = M.cRk X :=
+    (X : Set α) (hX : X ⊆ M.E := by ground) : (M.map f hf).cRk (f '' X) = M.cRk X :=
   lift_inj.1 <| M.cRk_map_image_lift ..
 
 theorem cRk_map_eq {β : Type u} {f : α → β} {X : Set β} (M : Matroid α) (hf : InjOn f M.E) :
