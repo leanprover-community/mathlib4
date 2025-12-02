@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Localization.Trifunctor
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Localization.Trifunctor
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Localization of monoidal categories
@@ -20,9 +22,12 @@ Here, the data `ε : L.obj (𝟙_ C) ≅ unit` is an isomorphism to some
 object `unit : D` which allows the user to provide a preferred choice
 of a unit object.
 
-The symmetric case is considered in the file `Mathlib.CategoryTheory.Localization.Monoidal.Braided`.
+The symmetric case is considered in the file
+`Mathlib/CategoryTheory/Localization/Monoidal/Braided.lean`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

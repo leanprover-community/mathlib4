@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.Algebra.Group.Equiv.TypeTags
+module
+
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Monoid representations
@@ -32,6 +34,8 @@ as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representati
 module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
 `M.ofModule` is the associated representation seen as a homomorphism.
 -/
+
+@[expose] public section
 
 open MonoidAlgebra (lift of)
 open LinearMap Module

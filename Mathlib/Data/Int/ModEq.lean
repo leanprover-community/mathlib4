@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.ModEq
+module
+
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 
@@ -18,6 +20,8 @@ which is defined to be `a % n = b % n` for integers `a b n`.
 modeq, congruence, mod, MOD, modulo, integers
 
 -/
+
+@[expose] public section
 
 
 namespace Int
@@ -164,7 +168,7 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction m with
-  | zero => rfl
+  | zero => simp
   | succ d hd => rw [pow_succ, pow_succ]; exact hd.mul h
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by

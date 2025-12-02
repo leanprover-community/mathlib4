@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Finite-dimensional vector spaces
@@ -58,6 +60,8 @@ You should not assume that there has been any effort to state lemmas as generall
 Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
 `Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Projective Subalgebra
 
@@ -150,6 +154,9 @@ This is not an instance because `n` cannot be inferred.
 theorem of_fact_finrank_eq_succ (n : ℕ) [hn : Fact (finrank K V = n + 1)] :
     FiniteDimensional K V :=
   of_finrank_eq_succ hn.out
+
+lemma of_fact_finrank_eq_two [Fact (finrank K V = 2)] : FiniteDimensional K V :=
+  of_fact_finrank_eq_succ 1
 
 end FiniteDimensional
 

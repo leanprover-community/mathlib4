@@ -3,9 +3,11 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Adam Topaz
 -/
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Topology.Defs.Filter
 
 /-!
 
@@ -58,6 +60,8 @@ Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 /-- The class `[ValuativeRel R]` class introduces an operator `x ≤ᵥ y : Prop` for `x y : R`
@@ -101,7 +105,7 @@ class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] w
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [CommRing R] [ValuativeRel R] {x y z : R}
 
 /-- The strict version of the valuative relation. -/
 def SRel (x y : R) : Prop := ¬ y ≤ᵥ x
@@ -154,12 +158,24 @@ lemma mul_rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
+@[simp] lemma mul_rel_mul_iff_left (hz : 0 <ᵥ z) : x * z ≤ᵥ y * z ↔ x ≤ᵥ y :=
+  ⟨rel_mul_cancel hz, rel_mul_right _⟩
+
+@[simp] lemma mul_rel_mul_iff_right (hx : 0 <ᵥ x) : x * y ≤ᵥ x * z ↔ y ≤ᵥ z := by
+  simp [mul_comm x, hx]
+
+@[simp] lemma mul_srel_mul_iff_left (hz : 0 <ᵥ z) : x * z <ᵥ y * z ↔ x <ᵥ y :=
+  (mul_rel_mul_iff_left hz).not
+
+@[simp] lemma mul_srel_mul_iff_right (hx : 0 <ᵥ x) : x * y <ᵥ x * z ↔ y <ᵥ z :=
+  (mul_rel_mul_iff_right hx).not
+
 @[deprecated (since := "2025-11-04")] alias rel_mul := mul_rel_mul
 
 theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
-lemma zero_srel_mul {x y : R} (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
+@[simp] lemma zero_srel_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose! hy
   rw [not_srel_iff] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
@@ -172,17 +188,16 @@ def posSubmonoid : Submonoid R where
   mul_mem' := zero_srel_mul
   one_mem' := zero_srel_one
 
+@[simp] lemma zero_srel_coe_posSubmonoid (x : posSubmonoid R) : 0 <ᵥ x.val := x.prop
+
 @[simp]
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ 0 <ᵥ x := Iff.rfl
 
-@[simp]
 lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
-    x * u ≤ᵥ y * u ↔ x ≤ᵥ y := ⟨rel_mul_cancel u.prop, rel_mul_right _⟩
+    x * u ≤ᵥ y * u ↔ x ≤ᵥ y := by simp
 
-@[simp]
 lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
-    u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
-  simp only [← right_cancel_posSubmonoid x y u, mul_comm]
+    u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by simp
 
 @[simp]
 lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) :
@@ -448,6 +463,10 @@ theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t := by
   rw [lt_iff_not_ge, srel_iff, mk_le_mk]
 
+@[simp]
+lemma ValueGroupWithZero.mk_pos {x : R} {s : posSubmonoid R} :
+    0 < ValueGroupWithZero.mk x s ↔ 0 <ᵥ x := by rw [← mk_zero 1]; simp [-mk_zero]
+
 instance : Bot (ValueGroupWithZero R) where
   bot := 0
 
@@ -466,7 +485,7 @@ instance : IsOrderedMonoid (ValueGroupWithZero R) where
     simp only [ValueGroupWithZero.mk_mul_mk, ValueGroupWithZero.mk_le_mk, Submonoid.coe_mul]
     conv_lhs => apply mul_mul_mul_comm
     conv_rhs => apply mul_mul_mul_comm
-    exact rel_mul_left _ hab
+    exact rel_mul_right _ hab
 
 instance : Inv (ValueGroupWithZero R) where
   inv := ValueGroupWithZero.lift (fun x s => by
@@ -539,6 +558,7 @@ lemma ValueGroupWithZero.mk_eq_div (r : R) (s : posSubmonoid R) :
   rw [eq_div_iff (valuation_posSubmonoid_ne_zero _)]
   simp [valuation, mk_eq_mk]
 
+set_option linter.flexible false in -- simp followed by gcongr
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
@@ -801,6 +821,13 @@ variable (R) in
 class IsNontrivial where
   condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
 
+lemma IsNontrivial.exists_lt_one [IsNontrivial R] :
+    ∃ γ : ValueGroupWithZero R, 0 < γ ∧ γ < 1 := by
+  obtain ⟨γ, h0, h1⟩ := IsNontrivial.condition (R := R)
+  obtain h1 | h1 := lt_or_lt_iff_ne.mpr h1
+  · exact ⟨γ, zero_lt_iff.mpr h0, h1⟩
+  · exact ⟨γ⁻¹, by simpa [zero_lt_iff], by simp [inv_lt_one_iff₀, h0, h1]⟩
+
 lemma isNontrivial_iff_nontrivial_units :
     IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
   constructor
@@ -863,6 +890,39 @@ has a maximal element `< 1`. -/
 class IsDiscrete where
   has_maximal_element :
     ∃ γ : ValueGroupWithZero R, γ < 1 ∧ (∀ δ : ValueGroupWithZero R, δ < 1 → δ ≤ γ)
+
+variable (R) in
+/-- The maximal element that is `< 1` in the value group of a discrete valuation. -/
+-- TODO: Link to `Valuation.IsUniformizer` once we connect `Valuation.IsRankOneDiscrete` with
+-- `ValuativeRel`.
+noncomputable
+def uniformizer [IsDiscrete R] : ValueGroupWithZero R :=
+  IsDiscrete.has_maximal_element.choose
+
+lemma uniformizer_lt_one [IsDiscrete R] :
+    uniformizer R < 1 := IsDiscrete.has_maximal_element.choose_spec.1
+
+lemma le_uniformizer_iff [IsDiscrete R] {a : ValueGroupWithZero R} :
+    a ≤ uniformizer R ↔ a < 1 :=
+  ⟨fun h ↦ h.trans_lt uniformizer_lt_one,
+    IsDiscrete.has_maximal_element.choose_spec.2 a⟩
+
+lemma uniformizer_pos [IsDiscrete R] [IsNontrivial R] :
+    0 < uniformizer R := by
+  obtain ⟨γ, hγ, hγ'⟩ := IsNontrivial.exists_lt_one (R := R)
+  exact hγ.trans_le (le_uniformizer_iff.mpr hγ')
+
+@[simp]
+lemma uniformizer_ne_zero [IsDiscrete R] [IsNontrivial R] :
+    uniformizer R ≠ 0 :=
+  uniformizer_pos.ne'
+
+lemma uniformizer_inv_le_iff [IsDiscrete R] [IsNontrivial R] {a : ValueGroupWithZero R} :
+    (uniformizer R)⁻¹ ≤ a ↔ 1 < a := by
+  by_cases ha : a = 0
+  · simp [ha]
+  replace ha : 0 < a := bot_lt_iff_ne_bot.mpr ha
+  rw [inv_le_comm₀ uniformizer_pos ha, le_uniformizer_iff, inv_lt_one₀ ha]
 
 end ValuativeRel
 
@@ -984,8 +1044,8 @@ lemma mapValueGroupWithZero_strictMono : StrictMono (mapValueGroupWithZero A B) 
 
 variable (B) in
 lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : IsRankLeOne A := by
-    obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
-    exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
+  obtain ⟨⟨f, hf⟩⟩ := IsRankLeOne.nonempty (R := B)
+  exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
 end ValuativeExtension
 

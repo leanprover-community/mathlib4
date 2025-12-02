@@ -3,9 +3,11 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
@@ -23,6 +25,8 @@ then `f'` is interval integrable on `a..b`.
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter
 

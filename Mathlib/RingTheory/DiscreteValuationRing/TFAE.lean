@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.Cotangent
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 
@@ -24,6 +26,8 @@ Noetherian local domain that is not a field `(R, m, k)`:
 
 Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version without `¬ IsField R`.
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) [CommRing R]
@@ -76,8 +80,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
   use Nat.find this
   apply le_antisymm
   · change ∀ s ∈ I, s ∈ _
-    by_contra! hI''
-    obtain ⟨s, hs₁, hs₂⟩ := hI''
+    by_contra! ⟨s, hs₁, hs₂⟩
     apply hs₂
     by_cases hs₃ : s = 0; · rw [hs₃]; exact zero_mem _
     obtain ⟨n, u, rfl⟩ := H' s hs₃ (le_maximalIdeal hI' hs₁)

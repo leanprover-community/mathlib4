@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Retract
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+module
+
+public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-!
 # The class of isomorphisms modulo a Serre class
@@ -24,6 +26,8 @@ of three property and is stable under retracts. (Similarly, we define
 * show that a localized category with respect to `P.isoModSerre` is abelian.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

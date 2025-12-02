@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Pointwise operations on sets in topological groups
 
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 

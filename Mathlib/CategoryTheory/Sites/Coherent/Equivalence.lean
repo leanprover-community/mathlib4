@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.CategoryTheory.Sites.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
 # Coherence and equivalence of categories
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 This file proves that the coherent and regular topologies transfer nicely along equivalences of
 categories.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

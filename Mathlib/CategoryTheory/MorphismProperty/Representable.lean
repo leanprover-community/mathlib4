@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
+module
 
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 
@@ -77,6 +78,8 @@ as possible is phrased internally to `C`.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

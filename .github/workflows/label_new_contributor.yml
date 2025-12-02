@@ -27,25 +27,50 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
-            const creator = context.payload.sender.login
+            const MIN_MERGED = 5;
+            const creator = context.payload.sender.login;
             const { owner, repo } = context.repo;
 
-            // Use search API to find merged PRs by this author
-            // Note: mathlib4 uses bors for merging, which doesn't mark PRs as merged in GitHub's sense
-            // Instead, we search for the exact "[Merged by Bors] - " prefix that bors adds to PR titles
-            const searchQuery = `repo:${owner}/${repo}+is:pr+author:${creator}+in:title+"[Merged by Bors] -"`;
-            const searchResult = await github.rest.search.issuesAndPullRequests({
-              q: searchQuery
-            });
-            const pullRequestCount = searchResult.data.total_count;
+            console.log(`Checking closed issues for user: ${creator}`);
 
-            // We could filter out bot users here, with:
-            // const isBot = (github.rest.users.getByUsername(creator).type === "Bot");
-            // But we choose to label PRs by new bot contributors as well.
+            let mergedByBorsPRs = [];
+            let totalIssuesChecked = 0;
 
-            // Determine if the creator has 5 or fewer merged pull requests
-            if (pullRequestCount <= 5) {
-              // Add the "new-contributor" label to the current pull request
+            // Paginate through issues, stopping when we have more than MIN_MERGED qualifying PRs
+            for await (const response of github.paginate.iterator(
+              github.rest.issues.listForRepo,
+              {
+                owner,
+                repo,
+                creator,
+                state: 'closed',
+                per_page: 100
+              }
+            )) {
+              totalIssuesChecked += response.data.length;
+
+              // Filter this page for PRs with "[Merged by Bors] -" in the title
+              const pageMatches = response.data.filter(item => 
+                item.pull_request && item.title.startsWith('[Merged by Bors] -')
+              );
+
+              mergedByBorsPRs.push(...pageMatches);
+
+              console.log(`Checked ${totalIssuesChecked} closed issues, found ${mergedByBorsPRs.length} PRs merged by Bors so far`);
+
+              // Stop early if we've found more than MIN_MERGED
+              if (mergedByBorsPRs.length > MIN_MERGED) {
+                console.log(`Found more than ${MIN_MERGED} PRs, stopping pagination early`);
+                break;
+              }
+            }
+
+            const pullRequestCount = mergedByBorsPRs.length;
+            console.log(`Found ${pullRequestCount} PRs merged by Bors`);
+
+            // Determine if the creator has MIN_MERGED or fewer merged pull requests
+            if (pullRequestCount <= MIN_MERGED) {
+              console.log('Adding "new-contributor" label...');
               await github.rest.issues.addLabels({
                 issue_number: context.issue.number,
                 owner,
@@ -54,7 +79,7 @@ jobs:
               });
             }
 
-            // Create a check run with a message about the merged PR count by this author
+            console.log('Creating check run with a message about the PR count by this author...');
             const message = `Found ${pullRequestCount} merged PRs by ${creator}.`;
             await github.rest.checks.create({
               owner,

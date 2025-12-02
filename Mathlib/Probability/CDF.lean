@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.CondCDF
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 
 /-!
 # Cumulative distribution function of a real probability measure
@@ -37,6 +39,8 @@ to have more structure on Stieltjes functions first. Right now, if `f` is a Stie
 The definition could be extended to `ℝⁿ`, either by extending the definition of `condCDF`, or by
 using another construction here.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure Set Filter
 

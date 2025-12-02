@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 ## Main definitions
@@ -34,6 +36,8 @@ See https://github.com/leanprover-community/mathlib4/issues/31690.
 ## Tags
 trails, paths, cycles, bridge edges
 -/
+
+@[expose] public section
 
 open Function
 
@@ -152,6 +156,11 @@ lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
   · simp
   · exact ⟨.cons huv .nil⟩
 
+@[nontriviality]
+lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
+    G.Reachable u v := by
+  rw [Subsingleton.allEq u v]
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
@@ -185,6 +194,10 @@ lemma not_preconnected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected
 alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
 @[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
 @[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
+
+@[nontriviality]
+lemma Preconnected.of_subsingleton {G : SimpleGraph V} [Subsingleton V] : G.Preconnected :=
+  fun _ _ ↦ .of_subsingleton
 
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Preconnected ↔ H.Preconnected :=
@@ -296,6 +309,11 @@ lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp 
 
 @[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
 @[deprecated (since := "2025-09-23")] alias top_connected := connected_top
+
+@[nontriviality]
+lemma Connected.of_subsingleton {G : SimpleGraph V} [Nonempty V] [Subsingleton V] :
+    G.Connected :=
+  ⟨.of_subsingleton⟩
 
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Connected ↔ H.Connected :=
@@ -759,8 +777,7 @@ theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) 
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
   intro h
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
   simp only [h, true_and]
 

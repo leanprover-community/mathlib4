@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Hom
-import Mathlib.RingTheory.Bialgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
 # Homomorphisms of `R`-bialgebras
@@ -23,6 +25,8 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
 -/
+
+@[expose] public section
 
 open TensorProduct Bialgebra Coalgebra Function
 

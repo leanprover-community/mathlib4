@@ -3,23 +3,25 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Distribution.TemperateGrowth
-import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.Tactic.MoveAdd
-import Mathlib.MeasureTheory.Function.L2Space
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Distribution.TemperateGrowth
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.Tactic.MoveAdd
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Schwartz space
 
 This file defines the Schwartz space. Usually, the Schwartz space is defined as the set of smooth
-functions $f : ℝ^n → ℂ$ such that there exists $C_{αβ} > 0$ with $$|x^α ∂^β f(x)| < C_{αβ}$$ for
-all $x ∈ ℝ^n$ and for all multiindices $α, β$.
+functions `f : ℝ^n → ℂ` such that there exists `C_{αβ} > 0` with `|x^α ∂^β f(x)| < C_{αβ}` for
+all `x ∈ ℝ^n` and for all multiindices `α`, `β`.
 In mathlib, we use a slightly different approach and define the Schwartz space as all
 smooth functions `f : E → F`, where `E` and `F` are real normed vector spaces such that for all
 natural numbers `k` and `n` we have uniform bounds `‖x‖^k * ‖iteratedFDeriv ℝ n f x‖ < C`.
@@ -62,6 +64,8 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 
 Schwartz space, tempered distributions
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -514,6 +518,7 @@ instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
 
 end Topology
 
+@[fun_prop]
 theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
   refine ⟨smooth f ⊤, fun n => ?_⟩
   rcases f.decay 0 n with ⟨C, Cpos, hC⟩

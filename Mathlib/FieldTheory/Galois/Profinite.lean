@@ -3,10 +3,11 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
+module
 
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.Galois.GaloisClosure
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.Galois.GaloisClosure
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
 
@@ -51,6 +52,8 @@ In a field extension `K/k`
 * `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Opposite
 
@@ -214,7 +217,7 @@ lemma mk_toAlgEquivAux [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor 
     (L : FiniteGaloisIntermediateField k K) (hx' : toAlgEquivAux g x ∈ L.toIntermediateField)
     (hx : x ∈ L.toIntermediateField) :
     (⟨toAlgEquivAux g x, hx'⟩ : L.toIntermediateField) = proj L g ⟨x, hx⟩ := by
-  rw [Subtype.eq_iff, Subtype.coe_mk, toAlgEquivAux_eq_proj_of_mem]
+  rw [Subtype.ext_iff, Subtype.coe_mk, toAlgEquivAux_eq_proj_of_mem]
 
 lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (L : FiniteGaloisIntermediateField k K) (hx : x ∈ L.toIntermediateField) :

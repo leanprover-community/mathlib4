@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Etale.Kaehler
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.Support
 
 /-!
 # Unramified locus of an algebra
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Support
 - `Algebra.isOpen_unramifiedLocus` :
   If `A` is (essentially) of finite type over `R`, then the unramified locus is open.
 -/
+
+@[expose] public section
 
 universe u
 

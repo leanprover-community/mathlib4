@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+module
+
+public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
 /-!
 # Formal multilinear series
@@ -21,6 +23,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 multilinear, formal series
 -/
+
+@[expose] public section
 
 
 noncomputable section

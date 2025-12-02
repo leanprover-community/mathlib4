@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Adapted
-import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
+module
+
+public import Mathlib.Probability.Process.Adapted
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -49,6 +51,8 @@ property.
 stopping time, stochastic process
 
 -/
+
+@[expose] public section
 
 open Filter Order TopologicalSpace WithTop
 
@@ -785,8 +789,7 @@ theorem stoppedProcess_stoppedProcess :
     · refine le_trans ?_ hστ
       simp [untopA_eq_untop]
   · nth_rewrite 2 [untopA_eq_untop]
-    · rw [coe_untop, min_assoc]
-      rfl
+    · rw [coe_untop, min_assoc, Pi.inf_apply]
     · exact (lt_of_le_of_lt (min_le_right _ _) <| lt_top_iff_ne_top.2 hσ).ne
 
 theorem stoppedProcess_stoppedProcess' :

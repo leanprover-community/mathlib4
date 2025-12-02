@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-! Shifted morphisms
 
@@ -15,6 +17,8 @@ defined as `X ⟶ (Y⟦m⟧)` for all `m : M`, and the composition on these
 shifted hom.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

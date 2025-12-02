@@ -3,7 +3,9 @@ Copyright (c) 2025 Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 
 /-!
 # Convolution
@@ -13,6 +15,8 @@ that maps `x ∈ G` to the number of distinct representations of `x` in the form
 `a ∈ A`, `b ∈ B`. It is shown how convolution behaves under the change of order of `A` and `B`, as
 well as under the left and right actions on `A`, `B`, and the function argument.
 -/
+
+@[expose] public section
 
 open MulOpposite MulAction
 open scoped Pointwise RightActions

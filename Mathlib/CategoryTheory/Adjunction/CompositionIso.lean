@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Compatibilities for left adjoints from compatibilities satisfied by right adjoints
@@ -17,9 +19,12 @@ satisfy the corresponding properties.
 This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
 the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
-pushforward functors. Similar results shall be obtained for sheaves of modules (TODO).
+pushforward functors. Similar results are obtained for sheaves of modules
+in `Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

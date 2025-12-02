@@ -3,10 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.SymmDiff
 
 /-! # Symmetric differences of sets -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

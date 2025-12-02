@@ -3,10 +3,12 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Probability.Process.HittingTime
-import Mathlib.Probability.Martingale.Basic
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Probability.Process.HittingTime
+public import Mathlib.Probability.Martingale.Basic
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 
@@ -53,6 +55,8 @@ convergence theorems.
 We mostly follow the proof from [Kallenberg, *Foundations of modern probability*][kallenberg2021]
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter

@@ -3,12 +3,16 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Tactic.Push
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # Results about `IsRegular` and `0`
 -/
+
+@[expose] public section
 
 variable {R}
 

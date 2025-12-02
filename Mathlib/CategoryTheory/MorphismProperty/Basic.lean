@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Properties of morphisms
@@ -19,6 +21,8 @@ The following meta-property is defined
 * `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
 
 -/
+
+@[expose] public section
 
 
 universe w v v' u u'
@@ -142,6 +146,16 @@ variable (P : MorphismProperty C)
 
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
 def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+
+lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
+
+lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
+    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
+  ext
+  simp [mem_toSet_iff]
+
+lemma toSet_max (W₁ W₂ : MorphismProperty C) :
+    (W₁ ⊔ W₂).toSet = W₁.toSet ∪ W₂.toSet := rfl
 
 /-- The family of morphisms indexed by `P.toSet` which corresponds
 to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/

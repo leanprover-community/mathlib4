@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Combinatorics.Enumerative.Composition
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Finsupp
+public import Mathlib.Combinatorics.Enumerative.Composition
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Partitions
@@ -41,6 +43,8 @@ Partition
 
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -148,7 +152,7 @@ theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAnt
 theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
     p.toFinsuppAntidiag ∈ (Finset.Icc 1 n).finsuppAntidiag n := by
   have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
-    grind [Multiset.mem_toFinset, Finset.mem_Icc]
+    grind
   suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
   convert ← p.parts_sum
   rw [Finset.sum_multiset_count]
