@@ -270,14 +270,16 @@ theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.
   · refine prod_ne_zero_iff.mpr (fun a _ => X_sub_C_ne_zero a)
 
 @[simp]
-theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
-  simp only [ofMultiset_apply]
+theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).prod.roots = s := by
   rw [roots_multiset_prod, Multiset.bind_map]
   · simp_rw [roots_X_sub_C]
     rw [Multiset.bind_singleton, Multiset.map_id']
   · rw [Multiset.mem_map]
     rintro ⟨a, -, h⟩
     exact X_sub_C_ne_zero a h
+
+theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
+  simp
 
 theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
     Multiset.card (roots ((X : R[X]) ^ n - C a)) ≤ n :=

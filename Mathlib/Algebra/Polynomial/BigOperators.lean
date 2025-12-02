@@ -272,13 +272,16 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
 variable [Nontrivial R]
 
 @[simp]
-lemma natDegree_ofMultiset_eq_card (s : Multiset R) :
-    (ofMultiset s).natDegree = Multiset.card s := by
-  simp only [ofMultiset_apply]
+lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
+    (s.map (X - C ·)).prod.natDegree = Multiset.card s := by
   rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
+
+lemma natDegree_ofMultiset_eq_card (s : Multiset R) :
+    (ofMultiset s).natDegree = Multiset.card s := by
+  simp
 
 @[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
