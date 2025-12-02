@@ -134,7 +134,6 @@
   "Mathlib.Tactic.ModCases",
   "Mathlib.Tactic.Monotonicity",
   "Mathlib.Tactic.Monotonicity.Attr",
-  "Mathlib.Tactic.MoveAdd",
   "Mathlib.Tactic.NoncommRing",
   "Mathlib.Tactic.Nontriviality",
   "Mathlib.Tactic.NormNum",

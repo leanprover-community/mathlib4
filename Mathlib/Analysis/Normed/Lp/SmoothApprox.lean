@@ -53,7 +53,7 @@ theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε
       Real.rpow_zero, mul_one]
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := h₂.exists_contDiff_approx ⊤ (ε := fun _ ↦ ε') (by fun_prop)
     (by intro; positivity)
-  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd' μ hp h₁.measurableSet hε'.le ?_
+  refine ⟨g, h₁.mono hg₃, hg₁, (eLpNorm_sub_le_of_dist_bdd μ hp h₁.measurableSet hε'.le ?_
     (subset_tsupport f) (hg₃.trans (subset_tsupport f))).trans hε₂⟩
   intro x
   rw [dist_comm]
@@ -84,7 +84,8 @@ theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
     (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
     eLpNorm_sub_comm, hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
-theorem dense_hasCompactSupport_contDiff {p : ℝ≥0∞} (hp : p ≠ ⊤) [hp₂ : Fact (1 ≤ p)] :
+theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞} (hp : p ≠ ⊤)
+    [hp₂ : Fact (1 ≤ p)] :
     Dense {f : Lp F p μ | ∃ (g : E → F), f =ᵐ[μ] g ∧ HasCompactSupport g ∧ ContDiff ℝ ∞ g} := by
   intro f
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_

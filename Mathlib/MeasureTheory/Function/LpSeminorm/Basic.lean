@@ -770,7 +770,7 @@ theorem eLpNorm_indicator_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β
   grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
     Real.norm_eq_abs, abs_of_nonneg hc]
 
-theorem eLpNorm_sub_le_of_dist_bdd' {β : Type*} [NormedAddCommGroup β]
+theorem eLpNorm_sub_le_of_dist_bdd {β : Type*} [NormedAddCommGroup β]
     (μ : Measure α := by volume_tac) (hp : p ≠ ⊤) (hs : MeasurableSet s) {c : ℝ} (hc : 0 ≤ c)
     {f g : α → β} (h : ∀ x, dist (f x) (g x) ≤ c) (hs₁ : f.support ⊆ s) (hs₂ : g.support ⊆ s) :
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
