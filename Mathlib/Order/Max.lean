@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Order.Synonym
 
 /-!
 # Minimal/maximal and bottom/top elements
@@ -27,6 +29,8 @@ See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)d
 * `NoMinOrder`: An order without minimal elements.
 * `NoMaxOrder`: An order without maximal elements.
 -/
+
+@[expose] public section
 
 
 open OrderDual
@@ -194,7 +198,7 @@ theorem IsTop.isMax_iff {α} [PartialOrder α] {i j : α} (h : IsTop i) : IsMax 
 
 theorem IsBot.isMin_iff {α} [PartialOrder α] {i j : α} (h : IsBot i) : IsMin j ↔ j = i := by
   simp_rw [le_antisymm_iff, h j, and_true]
-  exact ⟨fun a ↦ a (h j), fun a h' ↦ fun _ ↦ Preorder.le_trans j i h' a (h h')⟩
+  exact ⟨fun a ↦ a (h j), fun a h' ↦ fun _ ↦ le_trans a (h h')⟩
 
 @[simp]
 theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=

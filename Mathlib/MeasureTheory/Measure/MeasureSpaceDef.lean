@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Induced
-import Mathlib.MeasureTheory.OuterMeasure.AE
-import Mathlib.Order.Filter.CountableInter
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
+public import Mathlib.MeasureTheory.OuterMeasure.AE
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
@@ -51,6 +53,8 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 
 measure, almost everywhere, measure space
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
@@ -314,8 +318,8 @@ end ae
 open Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
-(This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
-σ-finite), see `measure_toMeasurable_inter_of_sFinite`).
+This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
+σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
@@ -386,7 +390,7 @@ section
 open MeasureTheory
 
 /-!
-# Almost everywhere measurable functions
+### Almost everywhere measurable functions
 
 A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. We define this property, called `AEMeasurable f μ`. It's properties are discussed in
@@ -402,7 +406,16 @@ function. -/
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 
-@[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
+/-- A function is `m`-`AEMeasurable` with respect to a measure `μ` if it coincides almost everywhere
+with a `m`-measurable function. -/
+scoped[MeasureTheory] notation "AEMeasurable[" m "]" => @AEMeasurable _ _ _ m
+
+add_aesop_rules safe tactic
+  (rule_sets := [Measurable])
+  (index := [target @AEMeasurable ..])
+  (by fun_prop (disch := measurability))
+
+@[fun_prop]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 
@@ -455,7 +468,6 @@ theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : 
 
 variable {δ : Type*} {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
 
-@[measurability]
 protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g μ) (a : δ) :
     AEMeasurable (fun x ↦ g x a) μ := by
   use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
@@ -471,7 +483,7 @@ theorem aemeasurable_pi_iff {g : α → Π a, X a} :
     use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
     exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 theorem aemeasurable_pi_lambda (f : α → Π a, X a) (hf : ∀ a, AEMeasurable (fun c ↦ f c a) μ) :
     AEMeasurable f μ :=
   aemeasurable_pi_iff.mpr hf

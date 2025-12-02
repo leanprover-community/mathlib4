@@ -3,10 +3,12 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.AlgCat.Monoidal
-import Mathlib.Algebra.Category.BialgCat.Basic
-import Mathlib.Algebra.Category.CoalgCat.Monoidal
-import Mathlib.RingTheory.Bialgebra.TensorProduct
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Monoidal
+public import Mathlib.Algebra.Category.BialgCat.Basic
+public import Mathlib.Algebra.Category.CoalgCat.Monoidal
+public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
 /-!
 # The monoidal structure on the category of bialgebras
@@ -20,6 +22,8 @@ fields proved by pulling back the `MonoidalCategory` instance on the category of
 using `Monoidal.induced`.
 
 -/
+
+@[expose] public section
 
 universe u
 

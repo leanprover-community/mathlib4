@@ -3,9 +3,11 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.Galois.GaloisClosure
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+module
+
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.Galois.GaloisClosure
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 /-!
 
 # The Fundamental Theorem of Infinite Galois Theory
@@ -15,7 +17,7 @@ open subgroups and normal subgroups. We first verify that `IntermediateField.fix
 `IntermediateField.fixedField` are inverses of each other between intermediate fields and
 closed subgroups of the Galois group.
 
-# Main definitions and results
+## Main definitions and results
 
 In `K/k`, for any intermediate field `L` :
 
@@ -47,6 +49,8 @@ Special cases :
   `L` is Galois.
 
 -/
+
+@[expose] public section
 
 variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 
@@ -100,6 +104,10 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
 lemma fixedField_bot [IsGalois k K] :
     IntermediateField.fixedField (⊤ : Subgroup Gal(K/k)) = ⊥ := by
   rw [← IntermediateField.fixingSubgroup_bot, fixedField_fixingSubgroup]
+
+theorem mem_bot_iff_fixed [IsGalois k K] (x : K) :
+    x ∈ (⊥ : IntermediateField k K) ↔ ∀ (f : Gal(K/k)), f x = x := by
+  simp [← fixedField_bot, IntermediateField.mem_fixedField_iff]
 
 open IntermediateField in
 /-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to

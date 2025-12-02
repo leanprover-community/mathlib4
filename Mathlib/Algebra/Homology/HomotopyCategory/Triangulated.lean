@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.ComposableArrows
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-! The triangulated structure on the homotopy category of complexes
 
@@ -13,6 +15,8 @@ In this file, we show that for any additive category `C`,
 the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is triangulated.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -66,7 +70,7 @@ lemma mappingConeCompTriangle_mor₃_naturality {Y₁ Y₂ Y₃ : CochainComplex
 namespace MappingConeCompHomotopyEquiv
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
-is the canonical morphism (which is an homotopy equivalence) from `mappingCone g` to
+is the canonical morphism (which is a homotopy equivalence) from `mappingCone g` to
 the mapping cone of the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
@@ -77,7 +81,7 @@ noncomputable def hom :
       simp [ext_from_iff _ _ _ rfl, inl_v_d_assoc _ (p+1) p (p+2) (by cutsat) (by cutsat)])
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
-is the canonical morphism (which is an homotopy equivalence) from the mapping cone of
+is the canonical morphism (which is a homotopy equivalence) from the mapping cone of
 the morphism `mappingCone f ⟶ mappingCone (f ≫ g)` to `mappingCone g`. -/
 noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ mappingCone g :=
   desc _ ((snd f).comp (inl g) (zero_add (-1)))

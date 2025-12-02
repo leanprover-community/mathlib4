@@ -3,17 +3,21 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Control.Basic
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.List.Defs
-import Mathlib.Data.List.Monad
-import Mathlib.Logic.OpClass
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.Monad
+public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists
 -/
+
+@[expose] public section
 
 assert_not_exists Lattice
 assert_not_exists Monoid
@@ -441,9 +445,17 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp only [mem_iff_getElem]
   exact ⟨fun ⟨_x, ⟨i, hi, hix⟩, hxp⟩ ↦ ⟨i, hi, hix ▸ hxp⟩, fun ⟨i, hi, hp⟩ ↦ ⟨_, ⟨i, hi, rfl⟩, hp⟩⟩
 
+theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ (i : Fin l.length), p (l.get i) :=
+  exists_mem_iff_getElem.trans ⟨fun ⟨i, hi, h⟩ ↦ ⟨⟨i, hi⟩, h⟩, fun ⟨i, h⟩ ↦ ⟨i, i.isLt, h⟩⟩
+
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
+
+theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
+  forall_mem_iff_getElem.trans ⟨fun h i ↦ h i i.isLt, fun h i hi ↦ h ⟨i, hi⟩⟩
 
 @[simp]
 theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
@@ -493,14 +505,14 @@ theorem Sublist.of_cons_of_ne {a b} (h₁ : a ≠ b) (h₂ : a :: l₁ <+ b :: l
 
 section IndexOf
 
-variable [DecidableEq α]
+variable [BEq α] [LawfulBEq α]
 
 theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
   | e => by rw [← e]; exact idxOf_cons_self
 
 @[simp]
-theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = succ (idxOf a l)
-  | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
+theorem idxOf_cons_ne {a b : α} (l : List α) (h : b ≠ a) : idxOf a (b :: l) = succ (idxOf a l) := by
+  simp [idxOf_cons, beq_false_of_ne h]
 
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
   grind
@@ -562,31 +574,21 @@ theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n 
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
 
-@[simp]
-theorem getElem_idxOf [DecidableEq α] {a : α} : ∀ {l : List α} (h : idxOf a l < l.length),
-    l[idxOf a l] = a
-  | b :: l, h => by
-    by_cases h' : b = a <;>
-    simp [h', getElem_idxOf]
-
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
-theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a l, h⟩ = a := by
+theorem idxOf_get [BEq α] [LawfulBEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a l, h⟩ = a := by
   simp
 
 @[simp]
-theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
+theorem getElem?_idxOf [BEq α] [LawfulBEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
   rw [getElem?_eq_getElem (idxOf_lt_length_iff.2 h), getElem_idxOf]
 
-theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
-    idxOf x l = idxOf y l ↔ x = y :=
-  ⟨fun h => by
-    have x_eq_y :
-        get l ⟨idxOf x l, idxOf_lt_length_iff.2 hx⟩ =
-        get l ⟨idxOf y l, idxOf_lt_length_iff.2 hy⟩ := by
-      simp only [h]
-    simp only [idxOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
+theorem idxOf_inj [BEq α] [LawfulBEq α] {l : List α} {x y : α} (hx : x ∈ l) :
+    idxOf x l = idxOf y l ↔ x = y := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
+  rw [← getElem_idxOf (idxOf_lt_length_iff.mpr hx)]
+  simp [h]
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
@@ -1006,23 +1008,23 @@ end eraseP
 
 section Erase
 
-variable [DecidableEq α]
+variable [BEq α] [LawfulBEq α]
 
 -- @[simp] -- removed because LHS is not in simp normal form
 theorem length_erase_add_one {a : α} {l : List α} (h : a ∈ l) :
     (l.erase a).length + 1 = l.length := by
-  rw [erase_eq_eraseP, length_eraseP_add_one h (decide_eq_true rfl)]
+  rw [erase_eq_eraseP, length_eraseP_add_one h BEq.rfl]
 
-theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
+theorem map_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
   have this : (a == ·) = (f a == f ·) := by ext b; simp [finj.eq_iff]
   rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 
-theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
+theorem map_foldl_erase [BEq β] [LawfulBEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 
-theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.length) :
+theorem erase_getElem [BEq ι] [LawfulBEq ι] {l : List ι} {i : ℕ} (hi : i < l.length) :
     Perm (l.erase l[i]) (l.eraseIdx i) := by
   induction l generalizing i with
   | nil => simp
@@ -1037,10 +1039,9 @@ end Erase
 
 section Diff
 
-variable [DecidableEq α]
-
 @[simp]
-theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
+theorem map_diff [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
+    (finj : Injective f) {l₁ l₂ : List α} :
     map f (l₁.diff l₂) = (map f l₁).diff (map f l₂) := by
   simp only [diff_eq_foldl, foldl_map, map_foldl_erase finj]
 

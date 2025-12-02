@@ -81,8 +81,8 @@ Q179208:
 Q179467:
   title: Fourier theorem
   decls:
-    - MeasureTheory.Integrable.fourier_inversion
-    - Continuous.fourier_inversion
+    - MeasureTheory.Integrable.fourierInv_fourier_eq
+    - Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouezel
   date: 2024
   comment: "The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results."
@@ -639,6 +639,9 @@ Q643513:
 
 Q643826:
   title: Slutsky's theorem
+  decl: MeasureTheory.TendstoInDistribution.continuous_comp_prodMk_of_tendstoInMeasure_const
+  authors: Rémy Degenne
+  date: 2025
 
 Q646523:
   title: Pick's theorem
@@ -965,6 +968,9 @@ Q858978:
 
 Q859122:
   title: Cauchy–Hadamard theorem
+  decl: FormalMultilinearSeries.radius_inv_eq_limsup
+  authors: Yury Kudryashov
+  date: 2020
 
 Q865665:
   title: Birkhoff's theorem (relativity)
@@ -1701,6 +1707,9 @@ Q1547975:
 
 Q1551745:
   title: Binomial inverse theorem
+  decl: Matrix.invOf_add_mul_mul'
+  authors: Antoine Chambert-Loir
+  date: 2025-11-11
 
 Q1555342:
   title: Reeh–Schlieder theorem
@@ -2558,7 +2567,7 @@ Q3984052:
 
 Q3984053:
   title: Fourier inversion theorem
-  decl: Continuous.fourier_inversion
+  decl: Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouëzel
   date: 2024
 

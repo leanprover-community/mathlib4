@@ -3,11 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.GroupTheory.GroupAction.ConjAct
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.GroupTheory.GroupAction.ConjAct
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -26,6 +29,8 @@ The pointwise section of this file is almost identical to
 the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 Where possible, try to keep them in sync.
 -/
+
+@[expose] public section
 
 assert_not_exists GroupWithZero
 
@@ -366,7 +371,7 @@ protected def pointwiseMulAction : MulAction α (Subgroup G) where
     change S.map _ = S
     simpa only [map_one] using S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : Monoid.End G => S.map f) (MonoidHom.map_mul _ _ _)).trans
+    (congr_arg (fun f : Monoid.End G => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Subgroup.pointwiseMulAction

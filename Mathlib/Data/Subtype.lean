@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Simps.Basic
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes
@@ -21,6 +23,8 @@ A subtype has a natural coercion to the parent type, by coercing `⟨val, proper
 such, subtypes can be thought of as bundled sets, the difference being that elements of a set are
 still of type `α` while elements of a subtype aren't.
 -/
+
+@[expose] public section
 
 
 open Function

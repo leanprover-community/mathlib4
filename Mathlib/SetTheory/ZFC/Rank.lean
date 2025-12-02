@@ -3,9 +3,11 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Ordinal.Rank
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Ordinal.Rank
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Ordinal ranks of PSet and ZFSet
@@ -19,6 +21,8 @@ same as the indexing types.
 * `PSet.rank`: Ordinal rank of a pre-set.
 * `ZFSet.rank`: Ordinal rank of a ZFC set.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -56,8 +60,7 @@ theorem rank_le_iff {o : Ordinal} : ∀ {x : PSet}, rank x ≤ o ↔ ∀ ⦃y⦄
     exact h (Mem.mk A a)
 
 theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
-  rw [← not_iff_not, not_lt, rank_le_iff]
-  simp
+  contrapose!; exact rank_le_iff
 
 variable {x y : PSet.{u}}
 
@@ -136,6 +139,10 @@ variable {x y : ZFSet.{u}}
 noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift _ fun _ _ => PSet.rank_congr
 
+@[simp]
+theorem rank_mk (x : PSet) : rank (.mk x) = x.rank :=
+  rfl
+
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.rank_lt_of_mem
 
@@ -145,8 +152,7 @@ theorem rank_le_iff {o : Ordinal} : rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → ra
       PSet.rank_le_iff.2 fun y h' => @h ⟦y⟧ h'⟩
 
 theorem lt_rank_iff {o : Ordinal} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
-  rw [← not_iff_not, not_lt, rank_le_iff]
-  simp
+  contrapose!; exact rank_le_iff
 
 @[gcongr] theorem rank_mono (h : x ⊆ y) : rank x ≤ rank y :=
   rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (h h₁)

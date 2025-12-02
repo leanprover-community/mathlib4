@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Interval.Set.Group
+module
+
+public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Rounding
@@ -20,6 +22,8 @@ to the nearest integer.
 
 rounding
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

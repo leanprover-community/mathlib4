@@ -3,12 +3,7 @@ Copyright (c) 2024 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Discrete uniformities and discrete topology
@@ -83,10 +78,9 @@ open Set Function Filter Metric
 
 /- We remove the "usual" instances of (discrete) topological space and of (discrete) uniform space
 from `ℕ`. -/
-attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat
+attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat Nat.instDist
 
 section Metric
-
 
 noncomputable local instance : PseudoMetricSpace ℕ where
   dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|

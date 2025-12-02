@@ -3,10 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Formal power series (in one variable) - Order
 
@@ -24,6 +25,8 @@ dividing out the largest power of X that divides `f`, that is its order. This is
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Polynomial
@@ -41,11 +44,10 @@ section OrderBasic
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine not_iff_not.mp ?_
-  push_neg
+  contrapose!
   simp
 
-/-- The order of a formal power series `φ` is the greatest `n : PartENat`
+/-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
 def order (φ : R⟦X⟧) : ℕ∞ :=
   letI := Classical.decEq R
@@ -194,11 +196,23 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
 
 alias order_mul_ge := le_order_mul
 
+theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
+    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+  constructor
+  · intro h
+    rw [← PowerSeries.coeff_zero_eq_constantCoeff]
+    apply coeff_of_lt_order
+    simpa using pos_of_ne_zero h
+  · intro h
+    refine ENat.one_le_iff_ne_zero.mp <| PowerSeries.le_order _ _ fun d hd ↦ ?_
+    rw [Nat.cast_lt_one] at hd
+    simp [hd, h]
+
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
-  · rw [h, order_eq_top, LinearMap.map_zero]
+  · rw [h, order_eq_top, map_zero]
   · rw [order_eq]
     constructor <;> intro i hi
     · simp only [Nat.cast_inj] at hi

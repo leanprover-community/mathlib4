@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Finiteness.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Basic results on finitely generated (sub)modules
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Finiteness.Defs
 This file contains the basic results on `Submodule.FG` and `Module.Finite` that do not need heavy
 further imports.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
