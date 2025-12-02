@@ -48,13 +48,14 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 and analysis hierachies, we should generalise this from `NormedRing` to `Ring`
 and `NormedAddCommGroup`.
 PR#24040 addresses this. -/
--- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map.
 
 This is implemented by providing an isometric linear equivalence between the inner product
-space and a normed algebra. -/
+space and a normed algebra.
+
+See note [reducible non-instances] -/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
   counit := adjoint (e.symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 A)
@@ -78,10 +79,11 @@ end coalgebraOfAlgebra
 section algebraOfCoalgebra
 variable [Coalgebra 𝕜 E]
 
--- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
 where multiplication is given by `x * y = (adjoint comul) (x ⊗ₜ y)` and
-`1 = (adjoint counit) (1 : 𝕜)`. -/
+`1 = (adjoint counit) (1 : 𝕜)`.
+
+See note [reducible non-instances] -/
 noncomputable abbrev ringOfCoalgebra :
     Ring E where
   mul x y := adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y)
@@ -115,24 +117,25 @@ attribute [local instance] InnerProductSpace.ringOfCoalgebra
 lemma ringOfCoalgebra_mul_def (x y : E) :
     x * y = adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y) := rfl
 
--- See note [reducible non-instances]
 /-- A finite-dimensional inner product space with a coalgebra structure induces an algebra
 structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`, `1 = (adjoint counit) 1` and
-`algebraMap = adjoint counit`. -/
+`algebraMap = adjoint counit`.
+
+See note [reducible non-instances] -/
 noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
   algebraMap :=
-  { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))
-    map_one' := rfl
-    map_mul' x y := by
-      simp_rw [ringOfCoalgebra_mul_def, ← map_tmul, ← adjoint_map, ← comp_apply, ← adjoint_comp,
-        ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, adjoint_comp,
-        ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
-        adjoint_toLinearMap_eq_symm]
-      simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
-        coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
-      rw [← smul_eq_mul, ← _root_.map_smul]
-    map_zero' := map_zero _
-    map_add' := map_add _ }
+    { toFun := adjoint (Coalgebra.counit (R := 𝕜) (A := E))
+      map_one' := rfl
+      map_mul' x y := by
+        simp_rw [ringOfCoalgebra_mul_def, ← map_tmul, ← adjoint_map, ← comp_apply, ← adjoint_comp,
+          ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, adjoint_comp,
+          ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm,
+          adjoint_toLinearMap_eq_symm]
+        simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
+          coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
+        rw [← smul_eq_mul, ← _root_.map_smul]
+      map_zero' := map_zero _
+      map_add' := map_add _ }
   commutes' r x := by
     dsimp
     simp_rw [ringOfCoalgebra_mul_def, ← rTensor_tmul, ← lTensor_tmul, ← adjoint_lTensor,
