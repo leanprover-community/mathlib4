@@ -163,3 +163,5 @@ def evalIsSquare : NormNumExt where eval {u αP} e := do
       | _, _ => failure
     | _ => failure
   | _ => failure
+
+end Mathlib.Meta.NormNum
