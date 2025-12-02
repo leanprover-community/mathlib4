@@ -270,7 +270,7 @@ theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.
   · refine prod_ne_zero_iff.mpr (fun a _ => X_sub_C_ne_zero a)
 
 @[simp]
-theorem roots_ofMultiset_C (s : Multiset R) : (ofMultiset s).roots = s := by
+theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
   simp only [ofMultiset_apply]
   rw [roots_multiset_prod, Multiset.bind_map]
   · simp_rw [roots_X_sub_C]
@@ -710,7 +710,7 @@ theorem exists_ofMultiset_mul (p : R[X]) :
   · conv_rhs => rw [he]
     rw [(monic_ofMultiset p.roots).natDegree_mul' hq, natDegree_ofMultiset_eq_card]
   · replace he := congr_arg roots he.symm
-    rw [roots_mul, roots_ofMultiset_C] at he
+    rw [roots_mul, roots_ofMultiset] at he
     exacts [add_eq_left.1 he, mul_ne_zero (monic_ofMultiset p.roots).ne_zero hq]
 
 /-- A polynomial `p` that has as many roots as its degree
