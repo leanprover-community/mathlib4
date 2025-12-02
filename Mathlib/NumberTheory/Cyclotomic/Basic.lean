@@ -686,10 +686,10 @@ instance isCyclotomicExtension [NeZero (n : K)] :
   have : NeZero (n : CyclotomicField n K) :=
     NeZero.nat_of_injective (algebraMap K _).injective
   letI := Classical.decEq (CyclotomicField n K)
+  have := (degree_cyclotomic_pos n K (NeZero.pos n)).ne'
   obtain ⟨ζ, hζ⟩ :=
-    exists_root_of_splits (algebraMap K (CyclotomicField n K)) (SplittingField.splits _)
-      (degree_cyclotomic_pos n K (NeZero.pos n)).ne'
-  rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
+    Splits.exists_eval_eq_zero (SplittingField.splits (cyclotomic n K)) (by rwa [degree_map])
+  rw [eval_map, ← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
   refine ⟨?_, ?_⟩
   · simp only [mem_singleton_iff, forall_eq]
     exact fun _ ↦ ⟨ζ, hζ⟩

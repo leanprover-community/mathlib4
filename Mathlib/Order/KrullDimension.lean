@@ -338,7 +338,7 @@ private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α �
   use x
   simpa [hx] using h
 
-/-- There exist a series ending in a element for any length up to the element’s height. -/
+/-- There exists a series ending in an element for any length up to the element’s height. -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
@@ -569,8 +569,8 @@ lemma krullDim_eq_bot_iff : krullDim α = ⊥ ↔ IsEmpty α := by
   exact ⟨fun H x ↦ H ⟨0, fun _ ↦ x, by simp⟩, (· <| · 1)⟩
 
 lemma krullDim_nonneg_iff : 0 ≤ krullDim α ↔ Nonempty α := by
-  rw [← not_iff_not, not_le, not_nonempty_iff, ← krullDim_eq_bot_iff, ← WithBot.lt_coe_bot,
-    bot_eq_zero, WithBot.coe_zero]
+  contrapose!
+  rw [← krullDim_eq_bot_iff, ← WithBot.lt_coe_bot, bot_eq_zero, WithBot.coe_zero]
 
 lemma krullDim_eq_bot [IsEmpty α] : krullDim α = ⊥ := krullDim_eq_bot_iff.mpr ‹_›
 
@@ -598,9 +598,8 @@ lemma krullDim_nonpos_iff_forall_isMin : krullDim α ≤ 0 ↔ ∀ x : α, IsMin
   exact forall_swap
 
 lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax x := by
-  rw [← not_iff_not]
   simp_rw [isMax_iff_forall_not_lt, isMin_iff_forall_not_lt, krullDim, iSup_le_iff]
-  push_neg
+  contrapose!
   constructor
   · rintro ⟨⟨_ | _ | n, l, hl⟩, hl'⟩
     iterate 2 · cases hl'.not_ge (by simp)
@@ -617,8 +616,7 @@ lemma krullDim_le_one_iff_forall_isMin {α : Type*} [PartialOrder α] [OrderTop 
   simp [krullDim_le_one_iff, ← or_iff_not_imp_right]
 
 lemma krullDim_pos_iff : 0 < krullDim α ↔ ∃ x y : α, x < y := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   simp_rw [← isMax_iff_forall_not_lt, ← krullDim_nonpos_iff_forall_isMax]
 
 lemma one_le_krullDim_iff : 1 ≤ krullDim α ↔ ∃ x y : α, x < y := by
