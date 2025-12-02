@@ -62,14 +62,14 @@ The transport tries to do the right thing in most cases using several
 heuristics described below.  However, in some cases it fails, and
 requires manual intervention.
 
-Use the `to_additive existing` syntax to use an existing additive declaration, instead of
-automatically generating it.
-
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+This is specified using cycle notation. For example `(reorder := α β, 5 6)` swaps the arguments
+`α` and `β` with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
 the fifth argument before the third argument. This is mostly useful to translate declarations using
 `Pow` to those using `SMul`.
+
+Use the `to_additive existing` syntax to use an existing additive declaration, instead of
+automatically generating it. This attempts to autogenerate the `(reorder := ...)` argument.
 
 Use the `(attr := ...)` syntax to apply attributes to both the multiplicative and the additive
 version:
@@ -341,13 +341,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("ltzero", "Neg"),
   ("lt_zero", "Neg"),
   ("addSingle", "Single"),
-  ("add_single", "Single"),
   ("addSupport", "Support"),
-  ("add_support", "Support"),
   ("addTSupport", "TSupport"),
-  ("add_tsupport", "TSupport"),
   ("addIndicator", "Indicator"),
-  ("add_indicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation

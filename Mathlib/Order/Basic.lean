@@ -77,13 +77,14 @@ variable [LE α] {a b c : α}
 protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
 protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
 
+@[deprecated le_of_eq_of_le (since := "2025-11-29")]
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
+
+@[deprecated le_of_le_of_eq (since := "2025-11-29")]
 theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
 
-alias LE.le.trans_eq := le_of_le_of_eq
-alias LE.le.trans_eq' := le_of_le_of_eq'
-alias Eq.trans_le := le_of_eq_of_le
-alias Eq.trans_ge := le_of_eq_of_le'
+@[to_dual trans_eq'] alias LE.le.trans_eq := le_of_le_of_eq
+@[to_dual trans_ge] alias Eq.trans_le := le_of_eq_of_le
 
 end LE
 
@@ -94,13 +95,14 @@ variable [LT α] {a b c : α}
 protected lemma LT.lt.gt (h : a < b) : b > a := h
 protected lemma GT.gt.lt (h : a > b) : b < a := h
 
+@[deprecated lt_of_eq_of_lt (since := "2025-11-29")]
 theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
+
+@[deprecated lt_of_lt_of_eq (since := "2025-11-29")]
 theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
 
-alias LT.lt.trans_eq := lt_of_lt_of_eq
-alias LT.lt.trans_eq' := lt_of_lt_of_eq'
-alias Eq.trans_lt := lt_of_eq_of_lt
-alias Eq.trans_gt := lt_of_eq_of_lt'
+@[to_dual trans_eq'] alias LT.lt.trans_eq := lt_of_lt_of_eq
+@[to_dual trans_gt] alias Eq.trans_lt := lt_of_eq_of_lt
 
 end LT
 
@@ -122,12 +124,12 @@ section Preorder
 
 variable [Preorder α] {a b c d : α}
 
-@[to_dual self (reorder := a b)]
+@[to_dual self]
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
 -- Unnecessary brackets are here for readability
-@[to_dual self (reorder := a b)]
+@[to_dual self]
 lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
   simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
 
@@ -143,10 +145,10 @@ lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim
 @[to_dual trans_lt'] alias LE.le.trans_lt := lt_of_le_of_lt
 @[to_dual trans_le'] alias LT.lt.trans_le := lt_of_lt_of_le
 
-@[to_dual self (reorder := a b)] alias LE.le.lt_of_not_ge := lt_of_le_not_ge
-@[to_dual self (reorder := a b)] alias LT.lt.le := le_of_lt
-@[to_dual self (reorder := a b)] alias LT.lt.asymm := lt_asymm
-@[to_dual self (reorder := a b)] alias LT.lt.not_gt := lt_asymm
+@[to_dual self] alias LE.le.lt_of_not_ge := lt_of_le_not_ge
+@[to_dual self] alias LT.lt.le := le_of_lt
+@[to_dual self] alias LT.lt.asymm := lt_asymm
+@[to_dual self] alias LT.lt.not_gt := lt_asymm
 
 @[to_dual ne'] alias LT.lt.ne := ne_of_lt
 @[to_dual ge] alias Eq.le := le_of_eq
@@ -161,11 +163,11 @@ lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim
 @[to_dual ne_of_not_ge]
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
-@[simp, to_dual self (reorder := a b)]
+@[simp, to_dual self]
 lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluence problems downstream.
-@[nontriviality, to_dual self (reorder := a b)]
+@[nontriviality, to_dual self]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 @[to_dual le_of_forall_ge]

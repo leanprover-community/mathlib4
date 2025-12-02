@@ -481,7 +481,7 @@ theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
     [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.isIntegral ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end
@@ -501,10 +501,10 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits ((cyclotomic n K).map (algebraMap K L)) := by
-  refine splits_of_splits_of_dvd _ (X_pow_sub_C_ne_zero (NeZero.pos _) _)
-    (splits_X_pow_sub_one K L hS) ?_
+  refine (splits_X_pow_sub_one K L hS).splits_of_dvd
+    (map_ne_zero (X_pow_sub_C_ne_zero (NeZero.pos _) _)) ((map_dvd_map' _).mpr ?_)
   use ∏ i ∈ n.properDivisors, Polynomial.cyclotomic i K
-  rw [(eq_cyclotomic_iff (NeZero.pos _) _).1 rfl, RingHom.map_one]
+  rw [(eq_cyclotomic_iff (NeZero.pos _) _).1 rfl]
 
 variable (n S)
 
@@ -516,13 +516,13 @@ theorem _root_.IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimit
     rintro b ⟨n, hn, h1, h2⟩
     exact ⟨X ^ n - 1, (monic_X_pow_sub_C (1 : K) h1).ne_zero, by simp [h2]⟩
   change IsCyclotomicExtension S K (IntermediateField.toSubalgebra _)
-  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_algebraic_toSubalgebra key))]
+  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_toSubalgebra_of_isAlgebraic key))]
   exact Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K L h
 
 theorem isSeparable [IsCyclotomicExtension S K L] : Algebra.IsSeparable K L := by
   have := integral S K L
   have h := (IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_› |>.2
-  rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+  rw [← IntermediateField.adjoin_toSubalgebra_of_isAlgebraic
     fun b _ ↦ Algebra.IsAlgebraic.isAlgebraic b, ← IntermediateField.top_toSubalgebra] at h
   rw [← AlgEquiv.Algebra.isSeparable_iff <|
     (IntermediateField.equivOfEq (IntermediateField.toSubalgebra_injective h)).trans
@@ -844,15 +844,15 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
-        ← RingHom.map_mul, hw, ← IsScalarTower.algebraMap_apply]
+        ← map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
-      rw [RingHom.map_mul, add_mul, ← mul_assoc, ha,
+      rw [map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
     · rintro y z - - ⟨a, ha⟩ ⟨b, hb⟩
       refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
-      rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
+      rw [map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
   exists_of_eq {x y} h := ⟨1, by rw [adjoin_algebra_injective n A K h]⟩
@@ -976,8 +976,8 @@ theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
 theorem IntermediateField.isCyclotomicExtension_singleton_iff_eq_adjoin (F : IntermediateField K L)
     {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K F ↔ F = IntermediateField.adjoin K {ζ} := by
-  rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_integral
-    (hζ.isIntegral (NeZero.pos _)).tower_top]
+  rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_isAlgebraic
+    (hζ.isIntegral (NeZero.pos _)).tower_top.isAlgebraic]
   exact _root_.isCyclotomicExtension_singleton_iff_eq_adjoin n F.toSubalgebra hζ
 
 theorem IntermediateField.isCyclotomicExtension_eq (F₁ F₂ : IntermediateField K L)
