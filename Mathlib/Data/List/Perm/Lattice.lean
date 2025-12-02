@@ -29,25 +29,22 @@ variable {α : Type*}
 
 open Perm (swap)
 
-lemma Nodup.splits_nodup (l : List α) : l.splits.Nodup :=
+lemma Nodup.splits {l : List α} : l.splits.Nodup :=
   nodup_range.map_on <| by grind [length_take_of_le]
 
-lemma Disjoint_self (l : List α) :
-    (∃ a, a ∈ l) → ¬ l.Disjoint l := by simp [Disjoint]
+lemma Nodup.splits₃Left {l : List α} : l.splits₃Left.Nodup :=
+  nodup_flatMap.mpr ⟨fun _ _ ↦ Nodup.splits.map_on <| by grind,
+    pairwise_of_forall_ne Nodup.splits <| by
+      simpa [Function.onFun, Disjoint] using by grind⟩
 
-lemma Nodup.splits₃_left_nodup (l : List α) : l.splits₃Left.Nodup :=
-  nodup_flatMap.mpr ⟨fun _ _ ↦ (Nodup.splits_nodup _).map_on <| by grind,
-    pairwise_of_forall_ne (Nodup.splits_nodup _) <| by
-      simpa [mem_splits_iff, Function.onFun, Disjoint] using by grind⟩
+lemma Nodup.splits₃Right {l : List α} : l.splits₃Right.Nodup :=
+  nodup_flatMap.mpr ⟨fun _ _ ↦ Nodup.splits.map_on <| by grind,
+    pairwise_of_forall_ne Nodup.splits <| by
+      simpa [Function.onFun, Disjoint] using by grind⟩
 
-lemma Nodup.splits₃_right_nodup (l : List α) : l.splits₃Right.Nodup :=
-  nodup_flatMap.mpr ⟨fun _ _ ↦ (Nodup.splits_nodup _).map_on <| by grind,
-    pairwise_of_forall_ne (Nodup.splits_nodup _) <| by
-      simpa [mem_splits_iff, Function.onFun, Disjoint] using by grind⟩
-
-lemma Perm.splits₃_left_right_perm (l : List α) : l.splits₃Left ~ l.splits₃Right := by
-  rw [List.perm_ext_iff_of_nodup (.splits₃_left_nodup _) (.splits₃_right_nodup _)]
-  grind [List.mem_splits₃_left_iff, List.mem_splits₃_right_iff]
+lemma Perm.splits₃LeftRight (l : List α) : l.splits₃Left ~ l.splits₃Right := by
+  rw [List.perm_ext_iff_of_nodup Nodup.splits₃Left Nodup.splits₃Right]
+  grind
 
 variable [DecidableEq α]
 

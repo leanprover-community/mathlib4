@@ -155,19 +155,22 @@ section Splits
 
 /-! ### Generate splits of a list. -/
 
-/-- Pairs of prefixes and suffixes of a list. -/
+/-- Pairs of prefixes and suffixes of a list.
+
+For example,
+`[1, 2, 3].splits = [([], [1, 2, 3]), ([1], [2, 3]), ([1, 2], [3]), ([1, 2, 3], [])]`. -/
 def splits (xs : List α) : List (List α × List α) :=
   (range (xs.length + 1)).map xs.splitAt
 
 @[simp]
 lemma splits_nil : ([] : List α).splits = [([], [])] := rfl
 
-@[simp]
 lemma splits_cons (x : α) (xs : List α) :
     (x :: xs).splits = ([], x :: xs) :: xs.splits.map fun td ↦ (x :: td.1, td.2) := by
   simp [splits, range_succ_eq_map]
 
-lemma mem_splits_iff (x y l : List α) :
+@[simp, grind =]
+lemma mem_splits_iff {x y l : List α} :
     (x, y) ∈ l.splits ↔ l = x ++ y := by
   simp only [splits, splitAt_eq, mem_map, mem_range, Prod.mk.injEq]
   constructor
@@ -177,26 +180,28 @@ lemma mem_splits_iff (x y l : List α) :
     exact ⟨x.length, by grind, by simp⟩
 
 lemma nil_self_mem_splits (l : List α) : ([], l) ∈ l.splits := by
-  simp [List.mem_splits_iff]
+  simp
 
 lemma self_nil_mem_splits (l : List α) : (l, []) ∈ l.splits := by
-  simp [List.mem_splits_iff]
+  simp
 
 /-- Left-associative triple splits of a list. -/
 def splits₃Left (l : List α) : List (List α × List α × List α) :=
   l.splits.flatMap fun td ↦ td.1.splits.map fun t ↦ (t.1, t.2, td.2)
 
-lemma mem_splits₃_left_iff (x y z l : List α) :
+@[simp, grind =]
+lemma mem_splits₃Left_iff {x y z l : List α} :
     (x, y, z) ∈ l.splits₃Left ↔ l = x ++ y ++ z := by
-  simp [splits₃Left, mem_splits_iff]
+  simp [splits₃Left]
 
 /-- Right-associative triple splits of a list. -/
 def splits₃Right (l : List α) : List (List α × List α × List α) :=
   l.splits.flatMap fun td ↦ td.2.splits.map fun d ↦ (td.1, d.1, d.2)
 
-lemma mem_splits₃_right_iff (x y z l : List α) :
+@[simp, grind =]
+lemma mem_splits₃Right_iff {x y z l : List α} :
     (x, y, z) ∈ l.splits₃Right ↔ l = x ++ y ++ z := by
-  simp [splits₃Right, mem_splits_iff]
+  simp [splits₃Right]
 
 end Splits
 
