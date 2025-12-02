@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 /-!
 # Multilinear maps from direct sums
