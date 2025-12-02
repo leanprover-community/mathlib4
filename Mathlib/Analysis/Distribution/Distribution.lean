@@ -14,7 +14,7 @@ public import Mathlib.Analysis.LocallyConvex.StrongTopology
 Let `E` be a real **finite-dimensional normed space**, `Ω` an open subset of `E`,
 and `F` a real **locally convex topological vector space**.
 
-A **`F`-valued distributions on `Ω`** is a continuous `ℝ`-linear map `T : 𝓓(Ω, ℝ) →L_c[ℝ] F`,
+A **`F`-valued distributions on `Ω`** is a continuous `ℝ`-linear map `T : 𝓓(Ω, ℝ) →L[ℝ] F`,
 defined on the space `𝓓(Ω, ℝ)` of real-valued test functions, and taking values in `F`.
 In particular, if `𝕜` is `RCLike`, this is the usual notion of real or complex distribution.
 
