@@ -1206,20 +1206,11 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
     Nontrivial.of_polynomial_ne hrs,
     fun h => @Polynomial.nontrivial _ _ h⟩
 
-section CommRing
-
-variable [CommRing R]
-
-/-- `ofMultiset s` defines a monic polynomial with roots equal to `s`. -/
-noncomputable def ofMultiset (s : Multiset R) : R[X] :=
-  (Multiset.map (fun (a : R) => X - C a) s).prod
-
-/-- TODO, add simp attribute once other theorems are in simp NF. -/
-theorem ofMultiset_eq_map_prod (s : Multiset R) :
-  (Multiset.map (fun (a : R) => X - C a) s).prod = ofMultiset s := rfl
-
-end CommRing
-
+/-- The map sending a collection of roots into a polynomial, as a morphism. -/
+@[simps] def ofMultiset [CommRing R] : AddChar (Multiset R) R[X] where
+  toFun s := (s.map (fun a ↦ X - C a)).prod
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' := by simp
 section repr
 
 variable [Semiring R]
