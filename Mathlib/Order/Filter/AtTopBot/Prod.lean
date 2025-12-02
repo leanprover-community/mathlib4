@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Finset.Prod
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Prod
+module
+
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products
 -/
+
+@[expose] public section
 
 variable {ι ι' α β γ : Type*}
 

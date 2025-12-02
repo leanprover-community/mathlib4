@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Order.Minimal
-import Mathlib.Order.Zorn
-import Mathlib.Topology.ContinuousOn
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.Zorn
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Irreducibility in topological spaces
@@ -29,6 +31,8 @@ and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
 
 -/
+
+@[expose] public section
 
 open Set Topology
 
@@ -268,8 +272,6 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   simp only [isOpen_compl_iff, ← compl_union, inter_compl_nonempty_iff]
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
-@[deprecated (since := "2024-11-19")] alias
-isPreirreducible_iff_closed_union_closed := isPreirreducible_iff_isClosed_union_isClosed
 
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
@@ -284,9 +286,6 @@ theorem isIrreducible_iff_sUnion_isClosed :
   refine forall_congr' fun _ => Iff.trans ?_ not_imp_not
   simp only [not_exists, not_and, ← compl_iInter₂, ← sInter_eq_biInter,
     subset_compl_iff_disjoint_right, not_disjoint_iff_nonempty_inter]
-
-@[deprecated (since := "2024-11-19")] alias
-isIrreducible_iff_sUnion_closed := isIrreducible_iff_sUnion_isClosed
 
 /-- A nonempty open subset of a preirreducible subspace is dense in the subspace. -/
 theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : IsPreirreducible S)

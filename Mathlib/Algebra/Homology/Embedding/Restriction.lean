@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Additive
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.Additive
 
 /-!
 # The restriction functor of an embedding of complex shapes
@@ -14,6 +16,8 @@ Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'`
 `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 

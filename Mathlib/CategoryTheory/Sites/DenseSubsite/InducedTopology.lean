@@ -3,7 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+module
+
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 
 /-!
 # Induced Topology
@@ -28,6 +30,8 @@ Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small site
 * https://ncatlab.org/nlab/show/comparison+lemma
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -62,7 +66,7 @@ theorem pushforward_cover_iff_cover_pullback [G.Full] [G.Faithful] {X : C} (S : 
 variable [G.IsLocallyFull K] [G.IsLocallyFaithful K]
 
 /-- If a functor `G : C ⥤ (D, K)` is fully faithful and locally dense,
-then the set `{ T ∩ mor(C) | T ∈ K }` is a grothendieck topology of `C`.
+then the set `{ T ∩ mor(C) | T ∈ K }` is a Grothendieck topology of `C`.
 -/
 @[simps]
 def inducedTopology : GrothendieckTopology C where
@@ -95,7 +99,7 @@ def inducedTopology : GrothendieckTopology C where
     apply K.pullback_stable i
     refine K.superset_covering ?_ (H' hg)
     rintro W _ ⟨Z', g', i', hg, rfl⟩
-    refine ⟨Z', g' ≫ g , i', hg, ?_⟩
+    refine ⟨Z', g' ≫ g, i', hg, ?_⟩
     simp
 
 @[simp]
@@ -103,11 +107,11 @@ lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
     S ∈ (G.inducedTopology K) X ↔ (S.functorPushforward G) ∈ K (G.obj X) :=
   Iff.rfl
 
-/-- `G` is cover-lifting wrt the induced topology. -/
+/-- `G` is cover-lifting w.r.t. the induced topology. -/
 instance inducedTopology_isCocontinuous : G.IsCocontinuous (G.inducedTopology K) K :=
   ⟨@fun _ S hS => LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
 
-/-- `G` is cover-preserving wrt the induced topology. -/
+/-- `G` is cover-preserving w.r.t. the induced topology. -/
 theorem inducedTopology_coverPreserving : CoverPreserving (G.inducedTopology K) K G :=
   ⟨@fun _ _ hS => hS⟩
 

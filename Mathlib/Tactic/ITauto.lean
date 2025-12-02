@@ -3,18 +3,19 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Exact
-import Batteries.Tactic.Init
-import Mathlib.Logic.Basic
-import Mathlib.Util.AtomM
-import Std.Data.TreeMap
-import Qq
+module
+
+public meta import Batteries.Tactic.Exact
+public meta import Batteries.Tactic.Init
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Util.AtomM
+public meta import Qq
 
 /-!
 
 # Intuitionistic tautology (`itauto`) decision procedure
 
-The `itauto` tactic will prove any intuitionistic tautology. It implements the well known
+The `itauto` tactic will prove any intuitionistic tautology. It implements the well-known
 `G4ip` algorithm:
 [Dyckhoff, *Contraction-free sequent calculi for intuitionistic logic*][dyckhoff_1992].
 
@@ -80,6 +81,8 @@ grammar if it matters.)
 propositional logic, intuitionistic logic, decision procedure
 -/
 
+public meta section
+
 
 open Std (TreeMap TreeSet)
 
@@ -100,22 +103,22 @@ inductive IProp : Type
   | and' : AndKind → IProp → IProp → IProp -- p ∧ q, p ↔ q, p = q
   | or : IProp → IProp → IProp   -- p ∨ q
   | imp : IProp → IProp → IProp  -- p → q
-  deriving Lean.ToExpr, DecidableEq
+  deriving Lean.ToExpr
 
 /-- Constructor for `p ∧ q`. -/
-@[match_pattern] def IProp.and : IProp → IProp → IProp := .and' .and
+@[match_pattern, expose] def IProp.and : IProp → IProp → IProp := .and' .and
 
 /-- Constructor for `p ↔ q`. -/
-@[match_pattern] def IProp.iff : IProp → IProp → IProp := .and' .iff
+@[match_pattern, expose] def IProp.iff : IProp → IProp → IProp := .and' .iff
 
 /-- Constructor for `p = q`. -/
-@[match_pattern] def IProp.eq : IProp → IProp → IProp := .and' .eq
+@[match_pattern, expose] def IProp.eq : IProp → IProp → IProp := .and' .eq
 
 /-- Constructor for `¬ p`. -/
-@[match_pattern] def IProp.not (a : IProp) : IProp := a.imp .false
+@[match_pattern, expose] def IProp.not (a : IProp) : IProp := a.imp .false
 
 /-- Constructor for `xor p q`. -/
-@[match_pattern] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
+@[match_pattern, expose] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
 
 instance : Inhabited IProp := ⟨IProp.true⟩
 
@@ -390,7 +393,7 @@ def isOk : (Bool × Proof) × Nat → Option (Proof × Nat)
   | ((false, _), _) => none
   | ((true, p), n) => some (p, n)
 
-/-- Skip the continuation and return a failed proof if the boolean is false. -/
+/-- Skip the continuation and return a failed proof if the Boolean is false. -/
 def whenOk : Bool → IProp → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
   | false, _, _ => pure (false, .sorry)
   | true, _, f => f

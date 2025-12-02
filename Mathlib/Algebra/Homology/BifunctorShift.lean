@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.TotalComplexShift
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.TotalComplexShift
 
 /-!
 # Behavior of the action of a bifunctor on cochain complexes with respect to shifts
@@ -22,6 +24,8 @@ that the two ways to deduce an isomorphism
 `(x * y).negOnePow`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

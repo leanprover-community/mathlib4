@@ -3,9 +3,13 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
+module
+
+public import Batteries.Data.List.Count
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # Prime factorizations
@@ -33,6 +37,8 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
 -/
+
+@[expose] public section
 
 open Nat Finset List Finsupp
 
@@ -82,7 +88,7 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
-  simp [factorization, pp, padicValNat_def' pp.ne_one hn.bot_lt]
+  simp [factorization, pp, padicValNat_def' pp.ne_one hn]
 
 /-! ### Basic facts about factorization -/
 
@@ -97,6 +103,10 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : ∀ p : ℕ, a.factorization p = b.factorization p) : a = b :=
   eq_of_perm_primeFactorsList ha hb
     (by simpa only [List.perm_iff_count, primeFactorsList_count_eq] using h)
+
+theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : a.factorization = b.factorization) : a = b :=
+  eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
 
 
 /-- Every nonzero natural number has a unique prime factorization -/
@@ -116,12 +126,19 @@ theorem factorization_eq_zero_iff (n p : ℕ) :
   simp_rw [← notMem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]
 
 @[simp]
-theorem factorization_eq_zero_of_non_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
+theorem factorization_eq_zero_of_not_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
     n.factorization p = 0 := by simp [factorization_eq_zero_iff, hp]
+
+@[deprecated (since := "2025-10-24")]
+alias factorization_eq_zero_of_non_prime := factorization_eq_zero_of_not_prime
 
 @[simp]
 theorem factorization_zero_right (n : ℕ) : n.factorization 0 = 0 :=
-  factorization_eq_zero_of_non_prime _ not_prime_zero
+  factorization_eq_zero_of_not_prime _ not_prime_zero
+
+@[simp]
+theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
+  factorization_eq_zero_of_not_prime _ not_prime_one
 
 theorem factorization_eq_zero_of_not_dvd {n p : ℕ} (h : ¬p ∣ n) : n.factorization p = 0 := by
   simp [factorization_eq_zero_iff, h]
@@ -169,11 +186,13 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]
 theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factorization := by
-  induction' k with k ih; · simp
-  rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-  rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
-    add_smul, one_smul, add_comm]
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rcases eq_or_ne n 0 with (rfl | hn)
+    · simp
+    rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
+      add_smul, one_smul, add_comm]
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
@@ -194,6 +213,12 @@ theorem pow_succ_factorization_not_dvd {n p : ℕ} (hn : n ≠ 0) (hp : p.Prime)
   intro h
   rw [← factorization_le_iff_dvd (pow_ne_zero _ hp.ne_zero) hn] at h
   simpa [hp.factorization] using h p
+
+lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
+    n.factorization n.minFac ≠ 0 := by
+  refine mt (factorization_eq_zero_iff _ _).mp ?_
+  push_neg
+  exact ⟨minFac_prime (by cutsat), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
@@ -253,7 +278,11 @@ theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   intro q hq
   simp [List.eq_of_mem_replicate hq]
 
-@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
+lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
+    (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by
+  rw [← factorization_le_iff_dvd ha hb, Finsupp.le_def]
+  congr! 1 with p
+  obtain _ | _ | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]
 
 /-! ### Factorization LCM definitions -/
 

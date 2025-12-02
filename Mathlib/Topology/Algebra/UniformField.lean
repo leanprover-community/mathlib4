@@ -3,9 +3,11 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Completion of topological fields
@@ -30,6 +32,8 @@ The main definition is `CompletableTopField` which packages the assumptions as a
 type class and the main results are the instances `UniformSpace.Completion.Field` and
 `UniformSpace.Completion.IsTopologicalDivisionRing`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,9 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Composing modules with a ring hom
@@ -19,6 +21,8 @@ import Mathlib.Algebra.Ring.Hom.Defs
 
 semimodule, module, vector space
 -/
+
+@[expose] public section
 
 assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
@@ -80,7 +84,7 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
 
-/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+/-- A homomorphism between semirings R and S can be equivalently specified by an R-module
 structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
     (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where

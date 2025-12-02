@@ -3,12 +3,16 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # The *-ring structure on suitable quotients of a *-ring.
 -/
+
+@[expose] public section
 
 namespace RingQuot
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.MellinTransform
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Analysis.MellinTransform
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Derivative of the Gamma function
@@ -23,6 +25,8 @@ This file shows that the (complex) `Γ` function is complex-differentiable at al
 
 Gamma
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -59,10 +63,12 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
 
 theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : ∀ m : ℕ, s ≠ -m) :
     DifferentiableAt ℂ (GammaAux n) s := by
-  induction' n with n hn generalizing s
-  · refine (hasDerivAt_GammaIntegral ?_).differentiableAt
+  induction n generalizing s with
+  | zero =>
+    refine (hasDerivAt_GammaIntegral ?_).differentiableAt
     rw [Nat.cast_zero] at h1; linarith
-  · dsimp only [GammaAux]
+  | succ n hn =>
+    dsimp only [GammaAux]
     specialize hn (s + 1)
     have a : 1 - (s + 1).re < ↑n := by
       rw [Nat.cast_succ] at h1; rw [Complex.add_re, Complex.one_re]; linarith

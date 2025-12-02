@@ -3,9 +3,10 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Algebra.Ring.Basic
-import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
+public import Mathlib.RingTheory.FreeCommRing
 
 /-!
 # Making a term in the language of rings from an element of the FreeCommRing
@@ -16,6 +17,8 @@ This file defines the function `FirstOrder.Ring.termOfFreeCommRing` which constr
 The theorem `FirstOrder.Ring.realize_termOfFreeCommRing` shows that the term constructed when
 realized in a ring `R` is equal to the lift of the element of `FreeCommRing α` to `R`.
 -/
+
+@[expose] public section
 
 namespace FirstOrder
 
@@ -51,7 +54,6 @@ variable {R : Type*} [CommRing R] [CompatibleRing R]
 @[simp]
 theorem realize_termOfFreeCommRing (p : FreeCommRing α) (v : α → R) :
     (termOfFreeCommRing p).realize v = FreeCommRing.lift v p := by
-  let _ := compatibleRingOfRing (FreeCommRing α)
   rw [termOfFreeCommRing]
   conv_rhs => rw [← Classical.choose_spec (exists_term_realize_eq_freeCommRing p)]
   induction Classical.choose (exists_term_realize_eq_freeCommRing p) with

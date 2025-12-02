@@ -3,14 +3,16 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Analysis.Asymptotics.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Super-Polynomial Function Decay
 
 This file defines a predicate `Asymptotics.SuperpolynomialDecay f` for a function satisfying
-  one of following equivalent definitions (The definition is in terms of the first condition):
+one of the following equivalent definitions (the definition is in terms of the first condition):
 
 * `x ^ n * f` tends to `𝓝 0` for all (or sufficiently large) naturals `n`
 * `|x ^ n * f|` tends to `𝓝 0` for all naturals `n` (`superpolynomialDecay_iff_abs_tendsto_zero`)
@@ -34,13 +36,15 @@ When the map `k` is given by `(r₁,...,rₙ) ↦ r₁*...*rₙ : ℝⁿ → ℝ
   to the definition of rapidly decreasing functions given here:
 https://ncatlab.org/nlab/show/rapidly+decreasing+function
 
-# Main Theorems
+## Main statements
 
 * `SuperpolynomialDecay.polynomial_mul` says that if `f(x)` is negligible,
     then so is `p(x) * f(x)` for any polynomial `p`.
 * `superpolynomialDecay_iff_zpow_tendsto_zero` gives an equivalence between definitions in terms
     of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
 -/
+
+@[expose] public section
 
 
 namespace Asymptotics
@@ -213,12 +217,12 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
 theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, Tendsto (fun a : α => k a ^ z * f a) l (𝓝 0) := by
   refine ⟨fun h z => ?_, fun h n => by simpa only [zpow_natCast] using h (n : ℤ)⟩
-  by_cases hz : 0 ≤ z
+  by_cases! hz : 0 ≤ z
   · unfold Tendsto
     lift z to ℕ using hz
     simpa using h z
   · have : Tendsto (fun a => k a ^ z) l (𝓝 0) :=
-      Tendsto.comp (tendsto_zpow_atTop_zero (not_le.1 hz)) hk
+      Tendsto.comp (tendsto_zpow_atTop_zero hz) hk
     have h : Tendsto f l (𝓝 0) := by simpa using h 0
     exact zero_mul (0 : β) ▸ this.mul h
 

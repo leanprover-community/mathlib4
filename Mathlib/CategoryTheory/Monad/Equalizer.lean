@@ -3,9 +3,11 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Special equalizers associated to a comonad
@@ -21,6 +23,8 @@ This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -106,7 +110,7 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
 def beckSplitEqualizer : IsSplitEqualizer (T.map X.a) (T.δ.app _) X.a :=
   ⟨T.ε.app _, T.ε.app _, X.coassoc.symm, X.counit, T.left_counit _, (T.ε.naturality _)⟩
 
-/-- This is the Beck fork. It is a split equalizer, in particular a equalizer. -/
+/-- This is the Beck fork. It is a split equalizer, in particular an equalizer. -/
 @[simps! pt]
 def beckFork : Fork (T.map X.a) (T.δ.app _) :=
   (beckSplitEqualizer X).asFork
@@ -115,7 +119,7 @@ def beckFork : Fork (T.map X.a) (T.δ.app _) :=
 theorem beckFork_ι : (beckFork X).ι = X.a :=
   rfl
 
-/-- The Beck fork is a equalizer. -/
+/-- The Beck fork is an equalizer. -/
 def beckEqualizer : IsLimit (beckFork X) :=
   (beckSplitEqualizer X).isEqualizer
 

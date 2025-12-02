@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.List.Permutation
+module
+
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Permutation
 
 /-!
 
@@ -20,6 +22,8 @@ to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -51,11 +55,6 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
   simpa using perm_comm
 
 end Multiset
-
-@[simp]
-theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList ~ f₂.toList ↔ f₁ = f₂ :=
-  ⟨fun h => Finset.ext_iff.mpr (fun x => by simpa [← Finset.mem_toList] using Perm.mem_iff h),
-   fun h ↦ Perm.of_eq <| congrArg Finset.toList h⟩
 
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
   refine Fintype.ofFinset ?_ ?_
@@ -93,7 +92,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         by_contra hab
         absurd h
         rw [hab] at ha
-        exact perm_toList.mp <| Perm.trans (id (Perm.symm ha)) hb
+        exact Finset.perm_toList.mp <| Perm.trans ha.symm hb
   · intro l
     simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
       Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]

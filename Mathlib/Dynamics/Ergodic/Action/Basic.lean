@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.AEStabilizer
-import Mathlib.Dynamics.Ergodic.Ergodic
+module
+
+public import Mathlib.MeasureTheory.Group.AEStabilizer
+public import Mathlib.Dynamics.Ergodic.Ergodic
 
 /-!
 # Ergodic group actions
@@ -14,6 +16,8 @@ if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.
 -/
+
+@[expose] public section
 
 open Set Filter MeasureTheory MulAction
 open scoped Pointwise

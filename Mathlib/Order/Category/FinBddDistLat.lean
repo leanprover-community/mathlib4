@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Category.BddDistLat
-import Mathlib.Order.Category.FinPartOrd
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Order.Category.BddDistLat
+public import Mathlib.Order.Category.FinPartOrd
 
 /-!
 # The category of finite bounded distributive lattices
@@ -13,6 +15,8 @@ import Mathlib.Order.Category.FinPartOrd
 This file defines `FinBddDistLat`, the category of finite distributive lattices with
 bounded lattice homomorphisms.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -118,8 +122,7 @@ lemma hom_ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
-    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : FinBddDistLat} (f : X ⟶ Y) :

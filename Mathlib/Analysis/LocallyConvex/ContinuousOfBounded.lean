@@ -3,13 +3,15 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Continuity and Von Neumann boundedness
 
-This files proves that for `E` and `F` two topological vector spaces over `ℝ` or `ℂ`,
+This file proves that for two topological vector spaces `E` and `F` over `ℝ` or `ℂ`,
 if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous
 (this is `LinearMap.continuous_of_locally_bounded`).
 
@@ -23,6 +25,8 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Bornology Filter Topology Pointwise
@@ -59,7 +63,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
         _ ⊆ x⁻¹ • f ⁻¹' (x • U) := Set.smul_set_mono (Set.preimage_mono h)
         _ = f ⁻¹' (x⁻¹ • x • U) := by
           ext
-          simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, LinearMap.map_smul]
+          simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, map_smul]
         _ ⊆ f ⁻¹' U := by rw [inv_smul_smul₀ x_ne _]
     -- Using this inclusion, it suffices to show that `x⁻¹ • V` is in `𝓝 0`, which is trivial.
     refine mem_of_superset ?_ this
@@ -152,7 +156,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   have h'' : f (u n) ∈ V := by
     simp only [Set.image_subset_iff] at h'
     specialize h' (n : 𝕜') h1 (Set.mem_range_self n)
-    simp only [Set.mem_preimage, LinearMap.map_smulₛₗ, map_natCast] at h'
+    simp only [Set.mem_preimage, map_smulₛₗ, map_natCast] at h'
     rcases h' with ⟨y, hy, h'⟩
     apply_fun fun y : F => (n : 𝕜')⁻¹ • y at h'
     simp only [hn', inv_smul_smul₀, Ne, Nat.cast_eq_zero, not_false_iff] at h'

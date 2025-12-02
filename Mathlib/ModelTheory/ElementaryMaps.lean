@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.ModelTheory.Substructures
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.ModelTheory.Substructures
 
 /-!
 # Elementary Maps Between First-Order Structures
@@ -23,6 +25,8 @@ import Mathlib.ModelTheory.Substructures
 - The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
   gives a simple criterion for an embedding to be elementary.
 -/
+
+@[expose] public section
 
 
 open FirstOrder
@@ -64,8 +68,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe_injective' f g h := by
     cases f
     cases g
-    simp only [ElementaryEmbedding.mk.injEq]
-    assumption
+    simpa only [ElementaryEmbedding.mk.injEq]
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)

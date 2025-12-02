@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
-import Mathlib.Condensed.Module
-import Mathlib.Condensed.Equivalence
+module
+
+public import Mathlib.Condensed.Module
+public import Mathlib.Condensed.Equivalence
 /-!
 
 # The explicit sheaf condition for condensed sets
@@ -28,6 +30,8 @@ We also give variants for condensed objects in concrete categories whose forgetf
 reflects finite limits (resp. products), where it is enough to check the sheaf condition after
 postcomposing with the forgetful functor.
 -/
+
+@[expose] public section
 
 universe u
 

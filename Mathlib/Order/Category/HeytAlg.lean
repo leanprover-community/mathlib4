@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddDistLat
-import Mathlib.Order.Heyting.Hom
+module
+
+public import Mathlib.Order.Category.BddDistLat
+public import Mathlib.Order.Heyting.Hom
 
 /-!
 # The category of Heyting algebras
 
 This file defines `HeytAlg`, the category of Heyting algebras.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -111,7 +115,8 @@ lemma hom_ext {X Y : HeytAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [HeytingAlgebra X] [HeytingAlgebra Y] (f : HeytingHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : HeytAlg} (f : X ⟶ Y) :

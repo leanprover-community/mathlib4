@@ -3,8 +3,10 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Nat.Factorial.Basic
+public meta import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for factorials
 
@@ -14,6 +16,8 @@ This is done by reducing each of these to `ascFactorial`, which is computed usin
 conquer strategy that improves performance and avoids exceeding the recursion depth.
 
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 

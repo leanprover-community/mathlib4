@@ -3,7 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.OuterMeasure.AE
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.AE
 
 /-!
 # Borel-Cantelli lemma, part 1
@@ -23,6 +25,8 @@ We prove several versions of this lemma:
 For the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
 see `ProbabilityTheory.measure_limsup_eq_one`.
 -/
+
+@[expose] public section
 
 open Filter Set
 open scoped ENNReal Topology

@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.UniformSpace.Completion
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The category of uniform spaces
@@ -17,6 +19,8 @@ form a reflective subcategory, and hence possess all limits that uniform spaces 
 TODO: show that uniform spaces actually have all limits!
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -25,6 +29,8 @@ open CategoryTheory
 
 /-- An object in the category of uniform spaces. -/
 structure UniformSpaceCat : Type (u + 1) where
+  /-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
+  of ::
   /-- The underlying uniform space. -/
   carrier : Type u
   [str : UniformSpace carrier]
@@ -35,10 +41,6 @@ namespace UniformSpaceCat
 
 instance : CoeSort UniformSpaceCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
-abbrev of (α : Type u) [UniformSpace α] : UniformSpaceCat where
-  carrier := α
 
 /-- A bundled uniform continuous map. -/
 @[ext]

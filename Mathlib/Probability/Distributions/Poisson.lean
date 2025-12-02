@@ -3,10 +3,11 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Probability.ProbabilityMassFunction.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Probability.ProbabilityMassFunction.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-! # Poisson distributions over ℕ
 
@@ -21,6 +22,8 @@ Define the Poisson measure over the natural numbers
 * `poissonMeasure`: a Poisson measure on `ℕ`, parametrized by its rate `λ`.
 -/
 
+@[expose] public section
+
 open scoped ENNReal NNReal Nat
 
 open MeasureTheory Real Set Filter Topology
@@ -31,7 +34,7 @@ section PoissonPMF
 
 /-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 noncomputable
-def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (- r) * r ^ n / n !
+def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / n !
 
 lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
   let r := r.toReal

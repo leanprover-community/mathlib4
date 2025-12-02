@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
@@ -47,7 +49,7 @@ to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
-extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
+extension of the other) over lower sets (which are all of the form `Iic`, `Iio`, or `univ`),
 we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
@@ -55,6 +57,8 @@ is everything. However, the author chose the `compat` approach in the end becaus
 the distinguished bijection that is compatible with the projections to all `X i`.
 
 -/
+
+@[expose] public section
 
 open Order Set
 
@@ -246,7 +250,7 @@ end DirectedSystem
 
 variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i ≤ j)
 
-/-- A inverse system indexed by a preorder is a contravariant functor from the preorder
+/-- An inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
   map_self ⦃i : ι⦄ (x : F i) : f le_rfl x = x
@@ -260,7 +264,7 @@ section proj
 def limit (i : ι) : Set (∀ l : Iio i, F l) :=
   {F | ∀ ⦃j k⦄ (h : j.1 ≤ k.1), f h (F k) = F j}
 
-/-- For a family of types `X` indexed by an preorder `ι` and an element `i : ι`,
+/-- For a family of types `X` indexed by a preorder `ι` and an element `i : ι`,
 `piLT X i` is the product of all the types indexed by elements below `i`. -/
 abbrev piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
 
@@ -307,10 +311,7 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
   left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
-  right_inv f := by
-    ext j; dsimp only; split_ifs with h
-    · cases (Subtype.ext h : j = ⟨i, le_rfl⟩); rfl
-    · rfl
+  right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
@@ -364,7 +365,7 @@ induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
   toFun t := ⟨fun l ↦ equiv l (t.1 l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.2 h]; apply nat⟩
   invFun t := ⟨fun l ↦ (equiv l).symm (t.1 l),
-    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h]; simp⟩
+    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
   right_inv t := by ext1; ext1; apply Equiv.right_inv
 

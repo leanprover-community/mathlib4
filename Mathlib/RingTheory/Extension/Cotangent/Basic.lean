@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Kaehler.Polynomial
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 
@@ -35,7 +37,9 @@ apply them to infinitesimal smooth (or versal) extensions later.
 
 -/
 
-open KaehlerDifferential TensorProduct MvPolynomial
+@[expose] public section
+
+open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra
 
@@ -394,6 +398,22 @@ lemma cotangentSpaceBasis_apply (i) :
 instance (P : Generators R S ι) : Module.Free S P.toExtension.CotangentSpace :=
   .of_basis P.cotangentSpaceBasis
 
+/-- Given generators `R[xᵢ] → S` and an injective map `σ → ι`, this is the
+composition `I/I² → ⊕ S dxᵢ → ⊕ S dxᵢ` where the second `i` only runs over `σ`. -/
+noncomputable
+def cotangentRestrict {σ : Type*} {u : σ → ι} (hu : Function.Injective u) :
+    P.toExtension.Cotangent →ₗ[S] (σ →₀ S) :=
+  Finsupp.lcomapDomain u hu ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ
+    P.toExtension.cotangentComplex
+
+lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective u) (x : P.ker) :
+    cotangentRestrict P hu (Extension.Cotangent.mk x) =
+      fun j ↦ (aeval P.val) <| pderiv (u j) x.val := by
+  ext j
+  simp only [cotangentRestrict, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    Finsupp.lcomapDomain_apply, Finsupp.comapDomain_apply, Extension.cotangentComplex_mk]
+  simp only [toExtension_Ring, P.cotangentSpaceBasis_repr_tmul, one_mul]
+
 universe w' u' v'
 
 variable {R' : Type u'} {S' : Type v'} {ι' : Type w'} [CommRing R'] [CommRing S'] [Algebra R' S']
@@ -425,20 +445,26 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
 
+lemma toKaehler_tmul_D (i) :
+    P.toExtension.toKaehler (1 ⊗ₜ D R P.Ring (X i)) = D _ _ (P.val i) :=
+  (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
+
 @[simp]
 lemma toKaehler_cotangentSpaceBasis (i) :
     P.toExtension.toKaehler (P.cotangentSpaceBasis i) = D R S (P.val i) := by
   rw [cotangentSpaceBasis_apply]
-  exact (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
+  exact toKaehler_tmul_D i
 
 end Generators
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 -- TODO: generalize to essentially of finite presentation algebras
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in
-instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄R]) := by
+instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R] := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ _
+  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
   exact (Extension.Cotangent.finite P.fg_ker).1.map P.toExtension.cotangentComplex
@@ -489,7 +515,7 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
       change ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
-    map_add' := LinearMap.map_add (map R R S S')
+    map_add' := map_add (map R R S S')
     map_smul' := LinearMap.CompatibleSMul.map_smul (map R R S S') }
 
 variable {R S S' T}
@@ -500,11 +526,13 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
     P.toExtension.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   Generators.H1Cotangent.equiv _ _
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 attribute [local instance] Module.finitePresentation_of_projective in
-instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
+instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
     Module.Finite S (H1Cotangent R S) := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R _
+  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Continuity of monotone functions
@@ -19,6 +21,8 @@ We also prove that an `OrderIso` is continuous.
 
 continuous, monotone
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -285,15 +289,16 @@ protected theorem continuous (e : α ≃o β) : Continuous e := by
   · rw [e.preimage_Iio]
     apply isOpen_gt'
 
-/-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
-def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
-  { e with
-    continuous_toFun := e.continuous
-    continuous_invFun := e.symm.continuous }
+instance : HomeomorphClass (α ≃o β) α β where
+  map_continuous := OrderIso.continuous
+  inv_continuous e := e.symm.continuous
 
-@[simp]
+/-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
+abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
+  HomeomorphClass.toHomeomorph e
+
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
-  rfl
+  rfl --Simp can prove this too
 
 @[simp]
 theorem coe_toHomeomorph_symm (e : α ≃o β) : ⇑e.toHomeomorph.symm = e.symm :=

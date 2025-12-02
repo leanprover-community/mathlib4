@@ -3,11 +3,15 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
-import Mathlib.Tactic.CongrExclamation
+module
+
+public meta import Mathlib.Tactic.CongrExclamation
 
 /-!
 # The `convert` tactic.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 

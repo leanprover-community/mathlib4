@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Analysis.Complex.RemovableSingularity
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Complex.RemovableSingularity
 
 /-!
 # Schwarz lemma
@@ -28,7 +30,7 @@ In this file we prove several versions of the Schwarz lemma.
   center `c` of this disk to itself, then for any point `z` of this disk we have
   `dist (f z) c ≤ dist z c`;
 
-* `Complex.abs_le_abs_of_mapsTo_ball_self`: if `f : ℂ → ℂ` sends an open disk with center `0` to
+* `Complex.norm_le_norm_of_mapsTo_ball_self`: if `f : ℂ → ℂ` sends an open disk with center `0` to
   itself, then for any point `z` of this disk we have `abs (f z) ≤ abs z`.
 
 ## Implementation notes
@@ -46,6 +48,8 @@ over complex numbers.
 
 Schwarz lemma
 -/
+
+@[expose] public section
 
 
 open Metric Set Function Filter TopologicalSpace
@@ -140,9 +144,6 @@ theorem norm_deriv_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R�
     (h_maps : MapsTo f (ball c R₁) (ball (f c) R₂)) (h₀ : 0 < R₁) : ‖deriv f c‖ ≤ R₂ / R₁ := by
   simpa only [dslope_same] using norm_dslope_le_div_of_mapsTo_ball hd h_maps (mem_ball_self h₀)
 
-@[deprecated (since := "2025-02-17")] alias abs_deriv_le_div_of_mapsTo_ball :=
-  norm_deriv_le_div_of_mapsTo_ball
-
 /-- The **Schwarz Lemma**: if `f : ℂ → E` sends an open disk with center `c` and radius `R₁` to an
 open ball with center `f c` and radius `R₂`, then for any `z` in the former disk we have
 `dist (f z) (f c) ≤ (R₂ / R₁) * dist z c`. -/
@@ -165,9 +166,6 @@ theorem norm_deriv_le_one_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R)
     (h_maps : MapsTo f (ball c R) (ball c R)) (hc : f c = c) (h₀ : 0 < R) : ‖deriv f c‖ ≤ 1 :=
   (norm_deriv_le_div_of_mapsTo_ball hd (by rwa [hc]) h₀).trans_eq (div_self h₀.ne')
 
-@[deprecated (since := "2025-02-17")] alias abs_deriv_le_one_of_mapsTo_ball :=
-  norm_deriv_le_one_of_mapsTo_ball
-
 /-- The **Schwarz Lemma**: if `f : ℂ → ℂ` sends an open disk to itself and the center `c` of this
 disk to itself, then for any point `z` of this disk we have `dist (f z) c ≤ dist z c`. -/
 theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R))
@@ -184,8 +182,5 @@ theorem norm_le_norm_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R)
     ‖f z‖ ≤ ‖z‖ := by
   replace hz : z ∈ ball (0 : ℂ) R := mem_ball_zero_iff.2 hz
   simpa only [dist_zero_right] using dist_le_dist_of_mapsTo_ball_self hd h_maps h₀ hz
-
-@[deprecated (since := "2025-02-17")] alias abs_le_abs_of_mapsTo_ball_self :=
-  norm_le_norm_of_mapsTo_ball_self
 
 end Complex

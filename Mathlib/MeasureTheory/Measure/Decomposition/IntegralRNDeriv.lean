@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.Convex.Continuous
-import Mathlib.Analysis.Convex.Integral
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+module
+
+public import Mathlib.Analysis.Convex.Continuous
+public import Mathlib.Analysis.Convex.Integral
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 /-!
 # Integrals of functions of Radon-Nikodym derivatives
@@ -17,6 +19,8 @@ import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
   `ν.real univ * f (μ.real univ / ν.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
 
 -/
+
+@[expose] public section
 
 
 open Set

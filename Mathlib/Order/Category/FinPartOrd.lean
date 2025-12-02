@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Order.Category.PartOrd
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # The category of finite partial orders
@@ -18,6 +20,8 @@ bounded.
 
 `FinPartOrd` is equivalent to a small category.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -85,8 +89,8 @@ lemma hom_ext {X Y : FinPartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y]
-    (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+    (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : FinPartOrd} (f : X ⟶ Y) :

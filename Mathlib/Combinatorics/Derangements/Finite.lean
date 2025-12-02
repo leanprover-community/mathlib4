@@ -3,17 +3,19 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.Derangements.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.Derangements.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Tactic.Ring
 
 /-!
 # Derangements on fintypes
 
 This file contains lemmas that describe the cardinality of `derangements α` when `α` is a fintype.
 
-# Main definitions
+## Main definitions
 
 * `card_derangements_invariant`: A lemma stating that the number of derangements on a type `α`
     depends only on the cardinality of `α`.
@@ -25,6 +27,8 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
     factorials.
 -/
 
+@[expose] public section
+
 
 open derangements Equiv Fintype
 
@@ -32,8 +36,9 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
--- Porting note: used to use the tactic delta_instance
-instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
+instance : Fintype (derangements α) :=
+  inferInstanceAs <| Fintype { f : Perm α | ∀ x : α, f x ≠ x }
+
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=

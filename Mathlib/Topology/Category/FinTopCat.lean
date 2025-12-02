@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of finite topological spaces
@@ -13,6 +15,8 @@ Definition of the category of finite topological spaces with the canonical
 forgetful functors.
 
 -/
+
+@[expose] public section
 
 
 universe u

@@ -3,10 +3,12 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Attr.Register
+public meta import Mathlib.Data.Int.Cast.Basic
+public meta import Mathlib.Order.Basic
 
 /-!
 # `zify` tactic
@@ -23,6 +25,8 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   -/
 ```
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Zify
 

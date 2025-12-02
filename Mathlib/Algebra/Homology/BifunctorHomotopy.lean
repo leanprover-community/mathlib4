@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.Homotopy
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.Homotopy
 
 /-!
 # The action of a bifunctor on homological complexes factors through homotopies
@@ -16,6 +18,8 @@ the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂` (TODO).
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -147,7 +151,7 @@ end mapBifunctorMapHomotopy
 
 open mapBifunctorMapHomotopy in
 /-- The homotopy between `mapBifunctorMap f₁ f₂ F c` and `mapBifunctorMap f₁' f₂ F c` that
-is induced by an homotopy between `f₁` and `f₁'`. -/
+is induced by a homotopy between `f₁` and `f₁'`. -/
 noncomputable def mapBifunctorMapHomotopy₁ :
     Homotopy (mapBifunctorMap f₁ f₂ F c) (mapBifunctorMap f₁' f₂ F c) where
   hom := hom₁ h₁ f₂ F c

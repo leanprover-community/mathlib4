@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqFun
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
 
@@ -16,12 +18,14 @@ about it.
 
 ## Implementation notes
 
-In fact, it suffices to require that `(c • ·)` is only quasi measure-preserving but we don't have a
-typeclass for quasi measure-preserving actions yet.
+In fact, it suffices to require that `(c • ·)` is only quasi-measure-preserving but we do not have a
+typeclass for quasi-measure-preserving actions yet.
 
 ## Keywords
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 

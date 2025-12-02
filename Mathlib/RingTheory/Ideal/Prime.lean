@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Lattice
+module
+
+public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
 
@@ -15,6 +17,8 @@ This file contains the definition of `Ideal.IsPrime` for prime ideals.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -100,6 +104,10 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
   carrier := (Pᶜ : Set α)
   one_mem' := P.one_notMem
   mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+
+@[simp]
+theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
+    x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
 
 end Ideal
 

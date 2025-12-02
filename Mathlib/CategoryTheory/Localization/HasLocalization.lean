@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-! Morphism properties equipped with a localized category
 
@@ -35,6 +37,8 @@ assumption, but one may use
 `HasLocalization.standard` in the proof instead.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

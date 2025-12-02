@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Quotients of semirings
@@ -20,7 +22,9 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-assert_not_exists Star.star
+@[expose] public section
+
+assert_not_exists TrivialStar
 
 universe uR uS uT uA u₄
 
@@ -32,14 +36,22 @@ variable {A : Type uA} [Semiring A] [Algebra S A]
 namespace RingCon
 
 instance (c : RingCon A) : Algebra S c.Quotient where
-  smul := (· • ·)
   algebraMap := c.mk'.comp (algebraMap S A)
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
 
+variable (S) in
+/-- The algebra morphism from `A` to the quotient by a ring congruence. -/
+@[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient :=
+  { mk' c with commutes' _ := rfl }
+
+theorem mkₐ_surjective (c : RingCon A) :
+    Function.Surjective (c.mkₐ (S := S)) :=
+  mk'_surjective c
+
 @[simp, norm_cast]
 theorem coe_algebraMap (c : RingCon A) (s : S) :
-    (algebraMap S A s : c.Quotient) = algebraMap S _ s :=
+    (algebraMap S A s : c.Quotient) = algebraMap S c.Quotient s :=
   rfl
 
 end RingCon
@@ -242,8 +254,6 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  change smul r _ _ = _
-  rw [smul]
   rfl
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
@@ -252,11 +262,9 @@ instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T 
 
 instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm s t]⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
-  add := (· + ·)
-  zero := 0
   add_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [add_quot, add_assoc]
@@ -329,11 +337,9 @@ private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : Ri
 
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
-    neg := Neg.neg
     neg_add_cancel := by
       rintro ⟨⟨⟩⟩
       simp [neg_quot, add_quot, ← zero_quot]
-    sub := Sub.sub
     sub_eq_add_neg := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
@@ -355,7 +361,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
-  CommSemiring (RingQuot r) :=
+    CommSemiring (RingQuot r) :=
   { RingQuot.instSemiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
@@ -368,7 +374,6 @@ instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
-  smul := (· • ·)
   algebraMap :=
   { toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
     map_one' := by simp [← one_quot]
@@ -458,10 +463,8 @@ theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r
   simp [h]
 
 theorem eq_lift_comp_mkRingHom {r : R → R → Prop} (f : RingQuot r →+* T) :
-    f = lift ⟨f.comp (mkRingHom r), fun _ _ h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
-  conv_lhs => rw [← lift.apply_symm_apply f]
-  rw [lift_def]
-  rfl
+    f = lift ⟨f.comp (mkRingHom r), fun _ _ h ↦ congr_arg f (mkRingHom_rel h)⟩ :=
+  lift_unique (f.comp (mkRingHom r)) (fun _ _ h ↦ congr_arg (⇑f) (mkRingHom_rel h)) f rfl
 
 section CommRing
 
@@ -493,7 +496,7 @@ def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* R
       · rintro y ⟨a, b, h, su⟩
         symm at su
         rw [← sub_eq_iff_eq_add] at su
-        rw [← su, RingHom.map_sub, mkRingHom_rel h, sub_self]
+        rw [← su, map_sub, mkRingHom_rel h, sub_self]
       · simp
       · intro a b _ _ ha hb
         simp [ha, hb]
@@ -512,16 +515,10 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change mkRingHom r x = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-      change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
-      rfl)
+      simp)
 
 end CommRing
 
@@ -613,10 +610,8 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
   simp [h]
 
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
-    f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
-  conv_lhs => rw [← (liftAlgHom S).apply_symm_apply f]
-  rw [liftAlgHom]
-  rfl
+    f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ :=
+  liftAlgHom_unique S (f.comp (mkAlgHom S s)) (fun _ _ h ↦ congr_arg (⇑f) (mkAlgHom_rel S h)) f rfl
 
 end Algebra
 

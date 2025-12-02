@@ -3,9 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Environment
-import Mathlib.Init
+public meta import Lean.Environment
+public import Mathlib.Init
 
 /-!
 # Environment extension for tracking existence of declarations and imports
@@ -13,12 +14,14 @@ import Mathlib.Init
 This is used by the `assert_not_exists` and `assert_not_imported` commands.
 -/
 
+public meta section
+
 open Lean
 
 namespace Mathlib.AssertNotExist
 
-/-- `AssertExists` is the structure that carries the data to check if a declaration or an
-import are meant to exist somewhere in Mathlib. -/
+/-- `AssertExists` is the structure that carries the data to check whether a declaration or an
+import is meant to exist somewhere in Mathlib. -/
 structure AssertExists where
   /-- The type of the assertion: `true` means declaration, `false` means import. -/
   isDecl : Bool
@@ -28,7 +31,7 @@ structure AssertExists where
   modName : Name
   deriving BEq, Hashable
 
-/-- Defines the `assertExistsExt` extension for adding a `HashSet` of `AssertExists`s
+/-- Defines the `assertExistsExt` extension for adding a `HashSet` of `AssertExists` entries
 to the environment. -/
 initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (Std.HashSet AssertExists) ←
   registerSimplePersistentEnvExtension {
@@ -40,8 +43,8 @@ initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (Std.Hash
 `addDeclEntry isDecl declName mod` takes as input the `Bool`ean `isDecl` and the `Name`s of
 a declaration or import, `declName`, and of a module, `mod`.
 It extends the `AssertExists` environment extension with the data `isDecl, declName, mod`.
-This information is used to capture declarations and modules that are required to not
-exist/be imported at some point, but should eventually exist/be imported.
+This information is used to capture declarations and modules that are forbidden from
+existing/being imported at some point, but should eventually exist/be imported.
 -/
 def addDeclEntry {m : Type → Type} [MonadEnv m] (isDecl : Bool) (declName mod : Name) : m Unit :=
   modifyEnv (assertExistsExt.addEntry · { isDecl := isDecl, givenName := declName, modName := mod })

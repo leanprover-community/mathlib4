@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Junyan Xu
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Purely inseparable extensions are universal homeomorphisms
@@ -21,6 +23,8 @@ homeomorphism, i.e. it stays a homeomorphism after arbitrary base change.
 - `PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable`: `Spec K ⟶ Spec k` is a universal
   homeomorphism for a purely inseparable field extension `K` over `k`.
 -/
+
+@[expose] public section
 
 open TensorProduct
 

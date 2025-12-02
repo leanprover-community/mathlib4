@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.LinearMap
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Diagonal matrices
@@ -16,6 +18,8 @@ diagonal matrix (`range`, `ker` and `rank`).
 
 matrix, diagonal, linear_map
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Polynomial.Laurent
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.RingTheory.Coalgebra.Basic
 
 /-!
 # The coalgebra structure on monoid algebras
@@ -21,7 +23,9 @@ corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coal
   `A[T;T⁻¹]` when `A` is an `R`-coalgebra.
 -/
 
-suppress_compilation
+@[expose] public section
+
+noncomputable section
 
 open Coalgebra
 

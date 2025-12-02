@@ -3,8 +3,9 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
+module
 
-import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Fin.VecNotation
 
 /-! # Function types of a given heterogeneous arity
 
@@ -15,6 +16,8 @@ Note that it is often preferable to use `((i : Fin n) → p i) → τ` in place 
 
 * `Function.FromTypes p τ`: `n`-ary function `p 0 → p 1 → ... → p (n - 1) → β`.
 -/
+
+@[expose] public section
 
 universe u
 

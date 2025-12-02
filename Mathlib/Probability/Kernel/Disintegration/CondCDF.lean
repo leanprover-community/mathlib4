@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!
 # Conditional cumulative distribution function
@@ -18,7 +20,7 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 `condCDF` is build from the more general tools about kernel CDFs developed in the file
-`Probability.Kernel.Disintegration.CDFToKernel`. In that file, we build a function
+`Mathlib/Probability/Kernel/Disintegration/CDFToKernel.lean`. In that file, we build a function
 `α × β → StieltjesFunction` (which is `α × β → ℝ → ℝ` with additional properties) from a function
 `α × β → ℚ → ℝ`. The restriction to `ℚ` allows to prove some properties like measurability more
 easily. Here we apply that construction to the case `β = Unit` and then drop `β` to build
@@ -36,6 +38,8 @@ easily. Here we apply that construction to the case `β = Unit` and then drop `�
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter TopologicalSpace
 

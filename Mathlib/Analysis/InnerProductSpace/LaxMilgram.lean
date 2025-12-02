@@ -3,7 +3,9 @@ Copyright (c) 2022 Daniel Roca González. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Roca González
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # The Lax-Milgram Theorem
@@ -28,6 +30,8 @@ that is, the map `InnerProductSpace.continuousLinearMapOfBilin` from
 dual, Lax-Milgram
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -51,7 +55,7 @@ theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * �
   refine ⟨C, C_ge_0, ?_⟩
   intro v
   by_cases h : 0 < ‖v‖
-  · refine (mul_le_mul_right h).mp ?_
+  · refine (mul_le_mul_iff_left₀ h).mp ?_
     calc
       C * ‖v‖ * ‖v‖ ≤ B v v := coercivity v
       _ = ⟪B♯ v, v⟫_ℝ := (continuousLinearMapOfBilin_apply B v v).symm

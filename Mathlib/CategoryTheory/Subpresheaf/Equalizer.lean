@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Subpresheaf.Image
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Subpresheaf.Image
 
 /-!
 # The equalizer of two morphisms of presheaves, as a subpresheaf
@@ -15,6 +17,8 @@ If `F₁` and `F₂` are presheaves of types, `A : Subpresheaf F₁`, and
 where `f` and `g` coincide.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

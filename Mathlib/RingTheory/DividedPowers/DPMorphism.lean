@@ -3,7 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DividedPowers.Basic
+module
+
+public import Mathlib.RingTheory.DividedPowers.Basic
 
 /-! # Divided power morphisms
 
@@ -48,6 +50,8 @@ modules*][Roby-1963]
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
+
+@[expose] public section
 
 open Ideal Set SetLike
 
@@ -218,7 +222,7 @@ protected def comp (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
   mk' (IsDPMorphism.comp hK g.isDPMorphism f.isDPMorphism)
 
 @[simp] lemma comp_toRingHom (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
-  (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
+    (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
 
 end DPMorphism
 

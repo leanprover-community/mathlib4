@@ -3,10 +3,12 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
@@ -21,10 +23,14 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 /-- The category of finite types. -/
 structure FintypeCat where
+  /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type*
   [str : Fintype carrier]
@@ -35,10 +41,6 @@ namespace FintypeCat
 
 instance instCoeSort : CoeSort FintypeCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [Fintype X] : FintypeCat where
-  carrier := X
 
 instance : Inhabited FintypeCat :=
   ⟨of PEmpty⟩
@@ -101,8 +103,8 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       invFun := i.inv
       left_inv := congr_fun i.hom_inv_id
       right_inv := congr_fun i.inv_hom_id }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
   inferInstanceAs <| Finite (X → Y)
@@ -236,11 +238,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     uSwitch.map (uSwitch.map f) =
     (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
-      Y.uSwitchEquiv)).inv := by
-  ext x
-  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
-  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
-  rfl
+      Y.uSwitchEquiv)).inv := rfl
 
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

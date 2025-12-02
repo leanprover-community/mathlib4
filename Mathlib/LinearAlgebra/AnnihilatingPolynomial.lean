@@ -3,9 +3,11 @@ Copyright (c) 2022 Justin Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Thomas
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.Polynomial.Module.AEval
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Annihilating Ideal
@@ -31,6 +33,8 @@ there are some common specializations which may be more familiar.
 * Example 1: `A = M →ₗ[R] M`, the endomorphism algebra of an `R`-module M.
 * Example 2: `A = n × n` matrices with entries in `R`.
 -/
+
+@[expose] public section
 
 
 open Polynomial

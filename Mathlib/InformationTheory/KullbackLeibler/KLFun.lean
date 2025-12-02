@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
-import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`
@@ -37,6 +39,8 @@ This is a continuous nonnegative, strictly convex function on [0,∞), with mini
   `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`.
 
 -/
+
+@[expose] public section
 
 open Real MeasureTheory Filter Set
 

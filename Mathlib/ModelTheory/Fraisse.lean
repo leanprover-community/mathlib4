@@ -3,10 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.ModelTheory.PartialEquiv
-import Mathlib.ModelTheory.Bundled
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.ModelTheory.FinitelyGenerated
+public import Mathlib.ModelTheory.PartialEquiv
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -65,6 +67,8 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 - Show existence of Fraïssé limits
 
 -/
+
+@[expose] public section
 
 
 universe u v w w'
@@ -212,7 +216,7 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     intro x hx
     refine ⟨f (out x).1 i (hi (out x).1 (Finset.mem_image_of_mem _ hx)) (out x).2, ?_⟩
     rw [Embedding.coe_toHom, DirectLimit.of_apply, @Quotient.mk_eq_iff_out _ (_),
-      DirectLimit.equiv_iff G f _ (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
+      DirectLimit.equiv_iff G f (le_refl _) (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
       DirectedSystem.map_self]
   · rintro ⟨i, Mfg, ⟨e⟩⟩
     exact ⟨Mfg, ⟨Embedding.comp (DirectLimit.of L ι G f i) e⟩⟩

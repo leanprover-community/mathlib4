@@ -1,12 +1,14 @@
 /-
-Copyright (c) 2022. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
+module
+
+public meta import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public meta import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # A `coherence` tactic for monoidal categories
@@ -22,6 +24,8 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
+
+public meta section
 
 universe v u
 
@@ -250,7 +254,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
 open Lean.Parser.Tactic
 
 /--
-Simp lemmas for rewriting a hom in monoical categories into a normal form.
+Simp lemmas for rewriting a hom in monoidal categories into a normal form.
 -/
 syntax (name := monoidal_simps) "monoidal_simps" optConfig : tactic
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Action
+module
+
+public import Mathlib.CategoryTheory.Galois.Action
 
 /-!
 
@@ -25,6 +27,8 @@ preserves connectedness, which translates to the fact that `Aut F` acts transiti
 the fibers of connected objects.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -70,10 +74,6 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
     (u : Y ≅ (functorToAction F).obj Z), Mono f ∧ u.hom ≫ (functorToAction F).map f = i := by
   obtain ⟨ι, hf, f, t, hc⟩ := has_decomp_connected_components' Y
   let i' (j : ι) : f j ⟶ (functorToAction F).obj X := Sigma.ι f j ≫ t.hom ≫ i
-  have (j : ι) : Mono (i' j) :=
-    have : Mono (Sigma.ι f j) := MonoCoprod.mono_ι f j
-    have : Mono (t.hom ≫ i) := mono_comp _ _
-    mono_comp _ _
   choose gZ gf gu _ _ h using fun i ↦ exists_lift_of_mono_of_isConnected F X (f i) (i' i)
   let is2 : (functorToAction F).obj (∐ gZ) ≅ ∐ fun i => (functorToAction F).obj (gZ i) :=
     PreservesCoproduct.iso (functorToAction F) gZ

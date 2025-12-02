@@ -3,11 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Fin.Tuple.Embedding
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Card
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Fin.Tuple.Embedding
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Card
 
 /-! # Existence of embeddings from finite types
 
@@ -31,6 +32,8 @@ Let `s : Set α` be a finite set.
   If `α` is finite and `m + n ≤ Nat.card α`, then the restriction
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
 -/
+
+@[expose] public section
 
 open Set Fin Function Function.Embedding
 
@@ -72,9 +75,19 @@ theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
   ext i
   simp [trans_apply, coe_castAddEmb, append]
 
+theorem restrictSurjective_of_le_ENatCard (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
+    Function.Surjective (fun x : Fin n ↪ α ↦ (castLEEmb hmn).trans x) := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  exact Fin.Embedding.restrictSurjective_of_add_le_ENatCard hn
+
 theorem restrictSurjective_of_add_le_natCard [Finite α] (hn : m + n ≤ Nat.card α) :
     Surjective (fun x : Fin (m + n) ↪ α ↦ (castAddEmb n).trans x) := by
   apply restrictSurjective_of_add_le_ENatCard
   rwa [← ENat.coe_add, ENat.card_eq_coe_natCard, ENat.coe_le_coe]
+
+theorem restrictSurjective_of_le_natCard [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
+    Function.Surjective (fun x : Fin n ↪ α ↦ (castLEEmb hmn).trans x) := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  exact Fin.Embedding.restrictSurjective_of_add_le_natCard hn
 
 end Fin.Embedding

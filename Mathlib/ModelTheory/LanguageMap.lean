@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.ModelTheory.Basic
+module
+
+public import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
@@ -30,6 +32,8 @@ For the Flypitch project:
   the continuum hypothesis*][flypitch_itp]
 
 -/
+
+@[expose] public section
 
 universe u v u' v' w w'
 
@@ -432,11 +436,6 @@ theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L 
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
-@[deprecated (since := "2025-02-21")] alias
-withConstants_funMap_sum_inl := withConstants_funMap_sumInl
-@[deprecated (since := "2025-02-21")] alias
-withConstants_relMap_sum_inl := withConstants_relMap_sumInl
-
 /-- The language map extending the constant set. -/
 def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
   LHom.sumMap (LHom.id L) (LHom.constantsOnMap f)
@@ -483,9 +482,6 @@ theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
     @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
-
-@[deprecated (since := "2025-02-21")] alias
-withConstants_funMap_sum_inr := withConstants_funMap_sumInr
 
 variable {α} (A : Set M)
 

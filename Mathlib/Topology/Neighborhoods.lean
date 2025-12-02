@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Topology.Closure
 
 /-!
 # Neighborhoods in topological spaces
@@ -15,6 +17,8 @@ Each point `x` of `X` gets a neighborhood filter `𝓝 x`.
 
 neighborhood
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 
@@ -256,7 +260,7 @@ theorem isOpen_iff_eventually : IsOpen s ↔ ∀ x, x ∈ s → ∀ᶠ y in 𝓝
   isOpen_iff_mem_nhds
 
 theorem isOpen_singleton_iff_nhds_eq_pure (x : X) : IsOpen ({x} : Set X) ↔ 𝓝 x = pure x := by
-  simp [← (pure_le_nhds _).le_iff_eq, isOpen_iff_mem_nhds]
+  simp [← (pure_le_nhds _).ge_iff_eq', isOpen_iff_mem_nhds]
 
 theorem isOpen_singleton_iff_punctured_nhds (x : X) : IsOpen ({x} : Set X) ↔ 𝓝[≠] x = ⊥ := by
   rw [isOpen_singleton_iff_nhds_eq_pure, nhdsWithin, ← mem_iff_inf_principal_compl,

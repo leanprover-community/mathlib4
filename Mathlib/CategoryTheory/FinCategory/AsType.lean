@@ -3,12 +3,16 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite categories are equivalent to category in `Type 0`.
 -/
+
+@[expose] public section
 
 
 universe w v u

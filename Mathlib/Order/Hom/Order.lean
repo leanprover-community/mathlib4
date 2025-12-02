@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Anne Baanen
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Lattice structure on order homomorphisms
@@ -22,6 +24,8 @@ monotone functions.
 monotone map, bundled morphism
 -/
 
+@[expose] public section
+
 
 namespace OrderHom
 
@@ -35,7 +39,7 @@ instance [SemilatticeSup β] : Max (α →o β) where
   max f g := ⟨fun a => f a ⊔ g a, f.mono.sup g.mono⟩
 
 @[simp] lemma coe_sup [SemilatticeSup β] (f g : α →o β) :
-  ((f ⊔ g : α →o β) : α → β) = (f : α → β) ⊔ g := rfl
+    ((f ⊔ g : α →o β) : α → β) = (f : α → β) ⊔ g := rfl
 
 instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
   { (_ : PartialOrder (α →o β)) with
@@ -48,7 +52,7 @@ instance [SemilatticeInf β] : Min (α →o β) where
   min f g := ⟨fun a => f a ⊓ g a, f.mono.inf g.mono⟩
 
 @[simp] lemma coe_inf [SemilatticeInf β] (f g : α →o β) :
-  ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
+    ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
 
 instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
   { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
@@ -62,7 +66,6 @@ instance [Preorder β] [OrderBot β] : Bot (α →o β) where
   bot := const α ⊥
 
 instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
-  bot := ⊥
   bot_le _ _ := bot_le
 
 @[simps]
@@ -70,7 +73,6 @@ instance instTopOrderHom [Preorder β] [OrderTop β] : Top (α →o β) where
   top := const α ⊤
 
 instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
-  top := ⊤
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where

@@ -3,7 +3,9 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Primes congruent to one
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 We prove that, for any positive `k : ℕ`, there are infinitely many primes `p` such that
 `p ≡ 1 [MOD k]`.
 -/
+
+@[expose] public section
 
 
 namespace Nat

@@ -3,11 +3,13 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Finite.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Shrink
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem
@@ -63,6 +65,8 @@ combinatorial line, Ramsey theory, arithmetic progression
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
 
 -/
+
+@[expose] public section
 
 open Function
 open scoped Finset
@@ -433,7 +437,7 @@ private theorem exists_mono_in_high_dimension' :
       · simp only [prod_apply, s.is_focused q hq]
     -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).
     · rw [Multiset.map_cons, Multiset.map_map, Multiset.nodup_cons, Multiset.mem_map]
-      exact ⟨fun ⟨q, hq, he⟩ => h ⟨q, hq, he⟩, s.distinct_colors⟩
+      exact ⟨h, s.distinct_colors⟩
     -- Finally, we really do have `r+1` lines!
     · rw [Multiset.card_cons, Multiset.card_map, sr])
 

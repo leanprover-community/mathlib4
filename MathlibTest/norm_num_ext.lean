@@ -7,11 +7,15 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
@@ -24,6 +28,9 @@ import Mathlib.Tactic.Simproc.Factors
 
 Some tests of unported extensions are still commented out.
 -/
+
+-- The default is very low, and we want to test performance on large numbers.
+set_option exponentiation.threshold 2000
 
 -- set_option profiler true
 -- set_option trace.profiler true
@@ -292,7 +299,7 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   rintro x ⟨dx, hd⟩
   revert x dx
   rw [Multiplicative.ofAdd.surjective.forall₂]
-  intros x dx h
+  intro x dx h
   simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
   cases x
   · simp [isUnit_one]
@@ -417,18 +424,59 @@ end big_operators
 
 section floor
 
+section Semiring
+
+variable (R : Type*) [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
+
+example : ⌊(2 : R)⌋₊ = 2 := by norm_num1
+example : ⌈(2 : R)⌉₊ = 2 := by norm_num1
+
+end Semiring
+
+section Ring
+
 variable (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+
+example : ⌊(-1 : R)⌋ = -1 := by norm_num1
+example : ⌊(2 : R)⌋ = 2 := by norm_num1
+example : ⌈(-1 : R)⌉ = -1 := by norm_num1
+example : ⌈(2 : R)⌉ = 2 := by norm_num1
+example : ⌊(-2 : R)⌋₊ = 0 := by norm_num1
+example : ⌈(-3 : R)⌉₊ = 0 := by norm_num1
+example : round (1 : R) = 1 := by norm_num1
+example : Int.fract (2 : R) = 0 := by norm_num1
+example : round (-3 : R) = -3 := by norm_num1
+example : Int.fract (-3 : R) = 0 := by norm_num1
+
+
+end Ring
+
+section Semifield
+
+variable (K : Type*) [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
+
+example : ⌊(35 / 16 : K)⌋₊ = 2 := by norm_num1
+example : ⌈(35 / 16 : K)⌉₊ = 3 := by norm_num1
+
+end Semifield
+
+section Field
+
 variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
-example : ⌊(-1 : R)⌋ = -1 := by norm_num
-example : ⌊(2 : R)⌋ = 2 := by norm_num
-example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
-example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
+example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num1
+example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num1
+example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num1
+example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num1
+example : ⌊(-35 / 16 : K)⌋₊ = 0 := by norm_num1
+example : ⌈(-35 / 16 : K)⌉₊ = 0 := by norm_num1
+example : round (-35 / 16 : K) = -2 := by norm_num1
+example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num1
+example : Int.fract (-35 / 16 : K) = 13 / 16 := by norm_num1
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num1
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num1
 
-example : ⌈(-1 : R)⌉ = -1 := by norm_num
-example : ⌈(2 : R)⌉ = 2 := by norm_num
-example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
-example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+end Field
 
 end floor
 
@@ -454,6 +502,24 @@ example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
 
+section even_odd
+
+example : Even 16 := by norm_num1
+example : ¬Even 17 := by norm_num1
+example : Even (16 : ℤ) := by norm_num1
+example : ¬Even (17 : ℤ) := by norm_num1
+example : Even (-20 : ℤ) := by norm_num1
+example : ¬Even (-21 : ℤ) := by norm_num1
+
+example : Odd 5 := by norm_num1
+example : ¬Odd 4 := by norm_num1
+example : Odd (5 : ℤ) := by norm_num1
+example : ¬Odd (4 : ℤ) := by norm_num1
+example : Odd (-5 : ℤ) := by norm_num1
+example : ¬Odd (-4 : ℤ) := by norm_num1
+
+end even_odd
+
 section mod
 
 example : (5 : ℕ) % 4 = 1 := by norm_num1
@@ -478,6 +544,19 @@ example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
+
 end mod
 
 section num_den
@@ -496,6 +575,7 @@ example : Real.sqrt 25 = 5 := by norm_num
 example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (0.25) = 1/2 := by norm_num
 example : NNReal.sqrt 25 = 5 := by norm_num
+example : NNReal.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (-37) = 0 := by norm_num
 example : Real.sqrt (-5 / 3) = 0 := by norm_num
 example : Real.sqrt 0 = 0 := by norm_num

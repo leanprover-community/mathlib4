@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompactlyGenerated
+module
+
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompactlyGenerated
 /-!
 
 # The adjunction between condensed sets and topological spaces
@@ -16,6 +18,8 @@ is bijective (but not in general an isomorphism) and conclude that the right adj
 The counit is an isomorphism for compactly generated spaces, and we conclude that the functor
 `topCatToCondensedSet` is fully faithful when restricted to compactly generated spaces.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -178,7 +182,6 @@ noncomputable def compactlyGeneratedAdjunctionCounitHomeo
     (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
-  continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
   continuous_invFun := by
     apply continuous_from_uCompactlyGeneratedSpace
     exact fun _ _ ↦ continuous_coinducingCoprod X.toCondensedSet _

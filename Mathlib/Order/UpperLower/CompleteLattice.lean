@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # The complete lattice structure on `UpperSet`/`LowerSet`
@@ -18,6 +20,8 @@ pulled back across the canonical injection (`UpperSet.carrier`, `LowerSet.carrie
 Upper sets are ordered by **reverse** inclusion. This convention is motivated by the fact that this
 makes them order-isomorphic to lower sets and antichains, and matches the convention on `Filter`.
 -/
+
+@[expose] public section
 
 open OrderDual Set
 
@@ -521,8 +525,8 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+ ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -560,8 +564,8 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+  ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map {f : α ≃o β} {b : β} : b ∈ map f s ↔ f.symm b ∈ s := by

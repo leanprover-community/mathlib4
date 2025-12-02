@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Indexed unions and intersections of pointwise operations of sets
@@ -19,7 +21,9 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists MulAction MonoidWithZero OrderedAddCommMonoid
+@[expose] public section
+
+assert_not_exists MulAction MonoidWithZero
 
 open Function MulOpposite
 

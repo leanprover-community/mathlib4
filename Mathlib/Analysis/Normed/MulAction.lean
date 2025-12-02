@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Data.ENNReal.Action
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Algebra
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Algebra
 
 /-!
 # Lemmas for `IsBoundedSMul` over normed additive groups
@@ -17,6 +19,8 @@ Notably we prove that `NonUnitalSeminormedRing`s have bounded actions by left- a
 multiplication. This allows downstream files to write general results about `IsBoundedSMul`, and
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -79,14 +83,8 @@ theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖
     IsBoundedSMul α β :=
   .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h)
 
-@[deprecated (since := "2025-03-10")]
-alias BoundedSMul.of_norm_smul_le := IsBoundedSMul.of_norm_smul_le
-
 theorem IsBoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
-
-@[deprecated (since := "2025-03-10")]
-alias BoundedSMul.of_nnnorm_smul_le := IsBoundedSMul.of_nnnorm_smul_le
 
 end SeminormedRing
 
@@ -109,6 +107,15 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
     NormSMulClass αᵐᵒᵖ α where
   norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
 
+/-- Mixin class for scalar-multiplication actions with a strictly multiplicative norm, i.e.
+`‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ`. -/
+class ENormSMulClass (α β : Type*) [ENorm α] [ENorm β] [SMul α β] : Prop where
+  protected enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ
+
+lemma enorm_smul [ENorm α] [ENorm β] [SMul α β] [ENormSMulClass α β] (r : α) (x : β) :
+    ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ :=
+  ENormSMulClass.enorm_smul r x
+
 variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
 
 theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
@@ -120,7 +127,8 @@ variable [NormSMulClass α β]
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x
 
-lemma enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ := by simp [enorm, nnnorm_smul]
+instance (priority := 100) : ENormSMulClass α β where
+  enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
     [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]

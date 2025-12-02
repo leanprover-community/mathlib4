@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Set.Pairwise.Basic
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Translating pairwise relations on sets to lists
 
 On a list with no duplicates, the condition of `Set.Pairwise` and `List.Pairwise` are equivalent.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} {r : α → α → Prop}

@@ -3,11 +3,12 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Batteries.Lean.Position
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Lean.GoalsLocation
-import Mathlib.Lean.Meta.KAbstractPositions
+module
+
+public meta import Mathlib.Tactic.NthRewrite
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
 
 /-!
 
@@ -46,10 +47,12 @@ are not presented in the list of suggested rewrites.
 This is implemented with `unfoldProjDefaultInst?`.
 
 Additionally, we don't want to unfold into expressions involving `match` terms or other
-constants marked as `Name.isInternalDetail`. So all such results are filtered out.
-This is implemented with `isUserFriendly`.
+constants marked as `Name.isInternalDetail`, and we don't want raw projections.
+So, all such results are filtered out. This is implemented with `isUserFriendly`.
 
 -/
+
+public meta section
 
 open Lean Meta Server Widget ProofWidgets Jsx
 
@@ -103,13 +106,24 @@ where
       fun _ =>
         return acc
 
-/-- Determine whether `e` contains no internal names. -/
-def isUserFriendly (e : Expr) : Bool :=
-  !e.foldConsts (init := false) (fun name => (· || name.isInternalDetail))
+/-- Determine whether `e` contains no internal names or raw projections.
+We only consider the explicit parts of `e`, because it may happen that an
+instance implicit argument is marked as an internal detail, but that is not a problem. -/
+partial def isUserFriendly (e : Expr) : MetaM Bool := do
+  match e with
+  | .const name _ => return !name.isInternalDetail
+  | .proj .. => return false
+  | .app .. =>
+    e.withApp fun f args => do
+    (isUserFriendly f) <&&> do
+      let finfo ← getFunInfoNArgs f e.getAppNumArgs
+      e.getAppNumArgs.allM fun i _ =>
+        if finfo.paramInfo[i]?.all (·.isExplicit) then isUserFriendly args[i]! else return true
+  | _ => return true
 
 /-- Return the consecutive unfoldings of `e` that are user friendly. -/
-def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
-  return (← unfolds e).filter isUserFriendly
+def filteredUnfolds (e : Expr) : MetaM (Array Expr) := do
+  (← unfolds e).filterM isUserFriendly
 
 end InteractiveUnfold
 
@@ -213,7 +227,7 @@ This gives a list of rewrite suggestions for the selected expression.
 Click on a suggestion to replace `unfold?` by a tactic that performs this rewrite.
 -/
 elab stx:"unfold?" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash UnfoldComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 

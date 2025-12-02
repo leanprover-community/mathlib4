@@ -3,8 +3,10 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Spectrum mapping theorem
@@ -16,7 +18,7 @@ spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebrai
 these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
 has positive degree), which is the **spectral mapping theorem**.
 
-In addition, this file contains the fact that every element of a finite dimensional nontrivial
+In addition, this file contains the fact that every element of a finite-dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
 `Module.End.exists_eigenvalue` to show that every linear map from a vector space to itself has an
 eigenvalue.
@@ -26,12 +28,14 @@ eigenvalue.
 * `spectrum.subset_polynomial_aeval`, `spectrum.map_polynomial_aeval_of_degree_pos`,
   `spectrum.map_polynomial_aeval_of_nonempty`: variations on the **spectral mapping theorem**.
 * `spectrum.nonempty_of_isAlgClosed_of_finiteDimensional`: the spectrum is nonempty for any
-  element of a nontrivial finite dimensional algebra over an algebraically closed field.
+  element of a nontrivial finite-dimensional algebra over an algebraically closed field.
 
-## Notations
+## Notation
 
 * `σ a` : `spectrum R a` of `a : A`
 -/
+
+@[expose] public section
 
 namespace spectrum
 
@@ -94,7 +98,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
   refine Set.eq_of_subset_of_subset (fun k hk => ?_) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
-  have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
+  have hprod := (IsAlgClosed.splits (C k - p)).eq_prod_roots
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
     rwa [degree_sub_eq_right_of_degree_lt (lt_of_le_of_lt degree_C_le hdeg)]
   have lead_ne := leadingCoeff_ne_zero.mpr h_ne
@@ -120,20 +124,23 @@ theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X]
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
 theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
-  simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
+  simpa only [eval_X_pow, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
+
+theorem pow_mem_pow (a : A) (n : ℕ) {k : 𝕜} (hk : k ∈ σ a) : k ^ n ∈ σ (a ^ n) :=
+  pow_image_subset a n ⟨k, ⟨hk, rfl⟩⟩
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_pos [IsAlgClosed 𝕜] (a : A) {n : ℕ} (hn : 0 < n) :
     σ (a ^ n) = (· ^ n) '' σ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X]
+  simpa only [aeval_X_pow, eval_X_pow]
     using map_polynomial_aeval_of_degree_pos a (X ^ n : 𝕜[X]) (by rwa [degree_X_pow, Nat.cast_pos])
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_nonempty [IsAlgClosed 𝕜] {a : A} (ha : (σ a).Nonempty) (n : ℕ) :
     σ (a ^ n) = (· ^ n) '' σ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval_of_nonempty a (X ^ n) ha
+  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval_of_nonempty a (X ^ n) ha
 
 variable (𝕜)
 
@@ -151,3 +158,17 @@ theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontriv
 end ScalarField
 
 end spectrum
+
+open Polynomial in
+theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+    {p : A} (hp : IsIdempotentElem p) : spectrum 𝕜 p ⊆ {0, 1} := by
+  nontriviality A
+  apply Set.image_subset_iff.mp (spectrum.subset_polynomial_aeval p (X ^ 2 - X)) |>.trans
+  refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
+  simpa [pow_two p, hp.eq, sub_eq_zero] using ha
+
+open Unitization in
+theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [NonUnitalRing A] [Module 𝕜 A]
+    [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+    quasispectrum 𝕜 p ⊆ {0, 1} :=
+  quasispectrum_eq_spectrum_inr' 𝕜 𝕜 p ▸ (hp.inr _ |>.spectrum_subset _)

@@ -1,13 +1,19 @@
 - attributes:
     description: build
+  # use build cache for proofwidgets, but not for anything else
+  build_config:
+    cmd: |
+      bash -c 'set -eo pipefail; lake clean 1>&2 && LEAN_PATH=$(lean --print-libdir) lake build proofwidgets 1>&2 && rm -f .lake/packages/batteries/.lake/build/bin/runLinter 1>&2'
   run_config:
     runner: perf_stat
     perf_stat:
       properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
     rusage_properties: ['maxrss']
     cmd: |
-      # use build cache for proofwidgets, but not for anything else
-      bash -c 'set -eo pipefail; lake clean 1>&2 && LEAN_PATH=$(lean --print-libdir) lake build proofwidgets 1>&2 && rm -f .lake/packages/batteries/.lake/build/bin/runLinter 1>&2 && LAKE_OVERRIDE_LEAN=true LEAN=$(readlink -m ./scripts/bench/fake-root/bin/lean) lake build --no-cache -v | ./scripts/bench/accumulate_profile.py | grep -v took'
+      set -euxo pipefail
+      bash -c 'set -eo pipefail; LAKE_OVERRIDE_LEAN=true LEAN=$(readlink -m ./scripts/bench/fake-root/bin/lean) lakeprof record lake build --no-cache -v | ./scripts/bench/accumulate_profile.py | grep -v "packages|took"'
+      lakeprof report -p | awk '{if ($3) cum = $3} END {print "longest build path: " cum}'
+      lakeprof report -r | awk '{if ($3) cum = $3} END {print "longest rebuild path: " cum}'
     parse_output: true
     runs: 1
 - attributes:
@@ -17,7 +23,7 @@
     perf_stat:
       properties: ['wall-clock', 'instructions:u']
     cmd: |
-      make lint
+      env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
     runs: 1
 - attributes:
     description: open Mathlib

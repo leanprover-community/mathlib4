@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Maximal
+module
+
+public import Mathlib.RingTheory.Ideal.Maximal
 
 /-!
 # The set of non-invertible elements of a monoid
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.Ideal.Maximal
 
 * `exists_max_ideal_of_mem_nonunits`: every element of `nonunits` is contained in a maximal ideal
 -/
+
+@[expose] public section
 
 
 variable {F α β : Type*} {a b : α}
@@ -37,14 +41,13 @@ theorem mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ 
 theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
   not_congr isUnit_zero_iff
 
-@[simp 1001] -- increased priority to appease `simpNF`
+@[simp high] -- High priority shortcut lemma
 theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 
 @[deprecated (since := "2025-05-23")] alias one_not_mem_nonunits := one_notMem_nonunits
 
--- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
-@[simp (high)]
+@[simp high] -- High priority shortcut lemma
 theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
     [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
   ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩

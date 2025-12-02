@@ -2,3 +2,4 @@ self-hosted-runner:
   labels:
     - bors
     - pr
+    - doc-gen

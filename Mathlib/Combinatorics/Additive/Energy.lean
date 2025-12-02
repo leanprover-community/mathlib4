@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Additive energy
@@ -34,6 +36,8 @@ It's possibly interesting to have
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α]
@@ -46,12 +50,13 @@ variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
 quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`.
 
 The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`. -/
-@[to_additive "The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of
-quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
+@[to_additive
+/-- The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
 
-The notation `E[s, t]` is available in scope `Combinatorics.Additive`."]
+The notation `E[s, t]` is available in scope `Combinatorics.Additive`. -/]
 def mulEnergy (s t : Finset α) : ℕ :=
-  (((s ×ˢ s) ×ˢ t ×ˢ t).filter fun x : (α × α) × α × α => x.1.1 * x.2.1 = x.1.2 * x.2.2).card
+  #{x ∈ ((s ×ˢ s) ×ˢ t ×ˢ t) | x.1.1 * x.2.1 = x.1.2 * x.2.2}
 
 /-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
@@ -81,15 +86,17 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma mulEnergy_mono_right (ht : t₁ ⊆ t₂) : Eₘ[s, t₁] ≤ Eₘ[s, t₂] :=
   mulEnergy_mono Subset.rfl ht
 
-@[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
+@[to_additive] lemma le_mulEnergy : #s * #t ≤ Eₘ[s, t] := by
   rw [← card_product]
-  refine
-    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by simp) fun a _ b _ => ?_
-  simp only [Prod.mk_inj, and_self_iff, and_imp]
-  exact Prod.ext
+  exact card_le_card_of_injOn (fun x => ((x.1, x.1), x.2, x.2)) (by simp [Set.MapsTo]) (by simp)
+
+@[to_additive] lemma le_mulEnergy_self : #s ^ 2 ≤ Eₘ[s] := sq #s ▸ le_mulEnergy
 
 @[to_additive] lemma mulEnergy_pos (hs : s.Nonempty) (ht : t.Nonempty) : 0 < Eₘ[s, t] :=
   (mul_pos hs.card_pos ht.card_pos).trans_le le_mulEnergy
+
+@[to_additive] lemma mulEnergy_self_pos (hs : s.Nonempty) : 0 < Eₘ[s] :=
+  mulEnergy_pos hs hs
 
 variable (s t)
 
@@ -106,50 +113,53 @@ variable {s t}
   mpr h := mulEnergy_pos h.1 h.2
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
-  simp [← (Nat.zero_le _).not_gt_iff_eq, imp_iff_or_not, or_comm]
+  simp [← (Nat.zero_le _).not_lt_iff_eq', imp_iff_or_not, or_comm]
+
+@[to_additive] lemma mulEnergy_self_pos_iff : 0 < Eₘ[s] ↔ s.Nonempty := by
+  rw [mulEnergy_pos_iff, and_self_iff]
+
+@[to_additive] lemma mulEnergy_self_eq_zero_iff : Eₘ[s] = 0 ↔ s = ∅ := by
+  rw [mulEnergy_eq_zero_iff, or_self_iff]
 
 @[to_additive] lemma mulEnergy_eq_card_filter (s t : Finset α) :
-    Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card :=
+    Eₘ[s, t] = #{x ∈ ((s ×ˢ t) ×ˢ s ×ˢ t) | x.1.1 * x.1.2 = x.2.1 * x.2.2} :=
   card_equiv (.prodProdProdComm _ _ _ _) (by simp [and_and_and_comm])
 
 @[to_additive] lemma mulEnergy_eq_sum_sq' (s t : Finset α) :
-    Eₘ[s, t] = ∑ a ∈ s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
+    Eₘ[s, t] = ∑ a ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = a} ^ 2 := by
   simp_rw [mulEnergy_eq_card_filter, sq, ← card_product]
   rw [← card_disjiUnion]
-  -- The `swap`, `ext` and `simp` calls significantly reduce heartbeats
   swap
-  · simp only [Set.PairwiseDisjoint, Set.Pairwise, coe_mul, ne_eq, disjoint_left, mem_product,
-      mem_filter, not_and, and_imp, Prod.forall]
-    aesop
+  · aesop (add simp [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left])
   · congr
-    ext
-    simp only [mem_filter, mem_product, disjiUnion_eq_biUnion, mem_biUnion]
     aesop (add unsafe mul_mem_mul)
 
 @[to_additive] lemma mulEnergy_eq_sum_sq [Fintype α] (s t : Finset α) :
-    Eₘ[s, t] = ∑ a, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
+    Eₘ[s, t] = ∑ a, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = a} ^ 2 := by
   rw [mulEnergy_eq_sum_sq']
   exact Fintype.sum_subset <| by aesop (add simp [filter_eq_empty_iff, mul_mem_mul])
 
 @[to_additive card_sq_le_card_mul_addEnergy]
 lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
-    ((s ×ˢ t).filter fun (a, b) ↦ a * b ∈ u).card ^ 2 ≤ u.card * Eₘ[s, t] := by
+    #{xy ∈ s ×ˢ t | xy.1 * xy.2 ∈ u} ^ 2 ≤ #u * Eₘ[s, t] := by
   calc
-    _ = (∑ c ∈ u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card) ^ 2 := by
+    _ = (∑ c ∈ u, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c}) ^ 2 := by
         rw [← sum_card_fiberwise_eq_card_filter]
-    _ ≤ u.card * ∑ c ∈ u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+    _ ≤ #u * ∑ c ∈ u, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
         simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
-    _ ≤ u.card * ∑ c ∈ s * t, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
-        refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
+    _ ≤ #u * ∑ c ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
+        refine mul_le_mul_right (sum_le_sum_of_ne_zero ?_) _
         aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
-    _ = u.card * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']
+    _ = #u * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']
 
-@[to_additive le_card_add_mul_addEnergy] lemma le_card_add_mul_mulEnergy (s t : Finset α) :
-    s.card ^ 2 * t.card ^ 2 ≤ (s * t).card * Eₘ[s, t] :=
+@[to_additive le_card_add_mul_addEnergy] lemma le_card_mul_mul_mulEnergy (s t : Finset α) :
+    #s ^ 2 * #t ^ 2 ≤ #(s * t) * Eₘ[s, t] :=
   calc
-    _ = ((s ×ˢ t).filter fun (a, b) ↦ a * b ∈ s * t).card ^ 2 := by
+    _ = #{xy ∈ s ×ˢ t | xy.1 * xy.2 ∈ s * t} ^ 2 := by
       rw [filter_eq_self.2, card_product, mul_pow]; aesop (add unsafe mul_mem_mul)
-    _ ≤ (s * t).card * Eₘ[s, t] := card_sq_le_card_mul_mulEnergy _ _ _
+    _ ≤ #(s * t) * Eₘ[s, t] := card_sq_le_card_mul_mulEnergy _ _ _
+
+@[deprecated (since := "2025-07-07")] alias le_card_add_mul_mulEnergy := le_card_mul_mul_mulEnergy
 
 end Mul
 

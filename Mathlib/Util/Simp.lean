@@ -3,15 +3,19 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Lean.Meta.Tactic.Simp.Types
-import Mathlib.Init
-import Qq
+module
+
+public meta import Lean.Meta.Tactic.Simp.Types
+public import Mathlib.Init
+public meta import Qq
 
 /-! # Additional simp utilities
 
 This file adds additional tools for metaprogramming with the `simp` tactic
 
 -/
+
+public meta section
 
 open Lean Meta Qq
 

@@ -3,9 +3,10 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
 /-! # Properties of `rpow` and `sqrt` over an algebra with an isometric CFC
 
@@ -20,6 +21,8 @@ rely on an isometric continuous functional calculus.
 
 continuous functional calculus, rpow, sqrt
 -/
+
+@[expose] public section
 
 open scoped NNReal
 
@@ -41,7 +44,7 @@ lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac
 
 lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
-  exact nnnorm_nnrpow a (by norm_num) ha
+  exact nnnorm_nnrpow a (by simp) ha
 
 lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖ := by
   simpa using congr(NNReal.toReal $(nnnorm_sqrt a ha))

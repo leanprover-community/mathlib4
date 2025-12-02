@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
@@ -25,6 +27,8 @@ additional assumption that for any map `f : j ⟶ j'` in `J`,
 `IsGrothendieckAbelian.preservesColimit_coyoneda_obj_of_mono`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -59,7 +63,7 @@ is an epimorphism (see `epi_f`). If `κ` is a regular cardinal that is
 bigger than the cardinality of `Subobject X` and `J` is `κ`-filtered,
 it follows that for some `φ : j₀ ⟶ j` in `Under j₀`,
 the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
-which implies that that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
+which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
@@ -91,7 +95,7 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun j ↦ by simpa using hf y j)
     (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
-/-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j`0`, and
+/-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
 noncomputable def F : Under j₀ ⥤ MonoOver X where
@@ -110,7 +114,7 @@ include hXκ hc
 open injectivity₀ in
 lemma injectivity₀ {j₀ : J} (y : X ⟶ Y.obj j₀) (hy : y ≫ c.ι.app j₀ = 0) :
     ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨j, h⟩ := exists_isIso_of_functor_from_monoOver (F y) hXκ _
       (colimit.isColimit (kernel (g y))) (f y) (fun j ↦ by simpa using hf y j)
       (epi_f hc hy)
@@ -198,7 +202,7 @@ lemma surjectivity [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
     {κ : Cardinal.{w}} [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ]
     (hXκ : HasCardinalLT (Subobject X) κ) (z : X ⟶ c.pt) :
     ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j₀ := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   have := hc.mono_ι_app_of_isFiltered
   have := NatTrans.mono_of_mono_app c.ι
   obtain ⟨j, _⟩ := exists_isIso_of_functor_from_monoOver (F z) hXκ _
@@ -221,7 +225,7 @@ lemma preservesColimit_coyoneda_obj_of_mono
     [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)] :
     PreservesColimit Y ((coyoneda.obj (op X))) where
   preserves {c} hc := ⟨by
-    have := isFiltered_of_isCardinalDirected J κ
+    have := isFiltered_of_isCardinalFiltered J κ
     exact Types.FilteredColimit.isColimitOf' _ _
       (surjectivity hc hXκ) (injectivity hc hXκ)⟩
 

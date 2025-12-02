@@ -3,9 +3,11 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Data.Nat.Cast.Field
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Binomial coefficients and factorial variants
@@ -18,6 +20,8 @@ This file proves asymptotic theorems for binomial coefficients and factorial var
 * `isEquivalent_choose` is the proof that `n.choose k ~ n^k / k!` as `n → ∞`.
 * `isTheta_choose` is the proof that `n.choose k = Θ(n^k)` as `n → ∞`.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Filter Nat Topology

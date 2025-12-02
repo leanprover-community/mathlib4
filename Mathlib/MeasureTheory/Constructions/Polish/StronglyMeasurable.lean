@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+module
+
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Results about strongly measurable functions
@@ -18,6 +20,8 @@ by corestricting the function to the closure of its range, some results about me
 can be extended to strongly measurable functions without assuming separability on the codomain.
 The purpose of this file is to collect those results.
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Set TopologicalSpace
 
