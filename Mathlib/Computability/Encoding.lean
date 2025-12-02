@@ -188,7 +188,7 @@ def decodeBool : List Bool → Bool
 
 @[simp] theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 
-/-- A fin_encoding of bool in bool. -/
+/-- A finEncoding of bool in bool. -/
 def finEncodingBoolBool : FinEncoding Bool where
   Γ := Bool
   encode := encodeBool
@@ -213,5 +213,26 @@ theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Countabl
 
 theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
   e.toEncoding.card_le_aleph0
+
+/-- A finEncoding of `List Bool` in `Bool`. -/
+def finEncodingListBool : Computability.FinEncoding (List Bool) where
+  Γ := Bool
+  encode := id
+  decode := Option.some
+  decode_encode _ := rfl
+  ΓFin := inferInstance
+
+/--
+Given finEncoding of α and β, constructs a finEncoding of α × β
+-/
+def finEncodingPair {α β : Type*} (ea : FinEncoding α) (eb : FinEncoding β) :
+    Computability.FinEncoding (α × β) where
+  Γ := ea.Γ ⊕ eb.Γ
+  encode x := (ea.encode x.1).map .inl ++ (eb.encode x.2).map .inr
+  decode x := Option.map₂ Prod.mk (ea.decode (x.filterMap Sum.getLeft?))
+      (eb.decode (x.filterMap Sum.getRight?))
+  decode_encode x := by
+    simp [List.filterMap_append, ea.decode_encode, eb.decode_encode]
+  ΓFin := inferInstance
 
 end Computability
