@@ -170,7 +170,8 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
 
 /-- The reachability relation as a set of pairs of vertices.
 A pair of vertices is in this set iff there exists a walk between these vertices. -/
-def reachabilitySet (G : SimpleGraph V) := Sym2.fromRel G.reachable_is_equivalence.symmetric
+def reachabilitySet (G : SimpleGraph V) : Set (Sym2 V) :=
+  Sym2.fromRel G.reachable_is_equivalence.symmetric
 
 @[simp]
 theorem mem_reachabilitySet_iff_reachable {u v : V} :
