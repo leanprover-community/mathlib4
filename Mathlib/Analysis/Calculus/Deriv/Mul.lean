@@ -16,7 +16,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 In this file we prove formulas for `(f x * g x)'` and `(f x • g x)'`.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`Analysis/Calculus/Deriv/Basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 

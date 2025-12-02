@@ -147,7 +147,7 @@ theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1
 theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (hk : k ≠ 0) :
     ∃ m < k, n * m % k = r % k := by
   obtain rfl | hk : k = 1 ∨ 1 < k := by omega
-  next => simp [mod_one]
+  · simp [mod_one]
   obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hkn hk
   use (m * r) % k, mod_lt _ (by omega)
   rw [mul_mod, mod_mod, ← mul_mod, ← mul_assoc, mul_mod, hm, one_mul, mod_mod]

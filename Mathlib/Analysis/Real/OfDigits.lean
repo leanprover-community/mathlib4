@@ -204,7 +204,7 @@ theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
     refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
     · simp only [ofDigitsTerm]
       fun_prop
-    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · exact summable_geometric_of_lt_one (by positivity) (inv_lt_one_of_one_lt₀ hb)
     · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
       apply ofDigitsTerm_le.trans
       calc

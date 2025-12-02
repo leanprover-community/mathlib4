@@ -43,7 +43,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
-we have `algebra.norm a ≤ normBound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
+we have `Algebra.norm a ≤ normBound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
 noncomputable def normBound : ℤ :=
   let n := Fintype.card ι
   let i : ι := Nonempty.some bS.index_nonempty
@@ -201,7 +201,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
       mul_left_comm, mul_inv_cancel₀, mul_one, rpow_natCast] <;>
       try norm_cast; cutsat
-    · exact Iff.mpr Int.cast_nonneg_iff this
+    · exact Int.cast_nonneg this
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm
   let s : ι →₀ R := bS.repr a

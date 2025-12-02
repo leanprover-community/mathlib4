@@ -789,8 +789,7 @@ theorem stoppedProcess_stoppedProcess :
     · refine le_trans ?_ hστ
       simp [untopA_eq_untop]
   · nth_rewrite 2 [untopA_eq_untop]
-    · rw [coe_untop, min_assoc]
-      rfl
+    · rw [coe_untop, min_assoc, Pi.inf_apply]
     · exact (lt_of_le_of_lt (min_le_right _ _) <| lt_top_iff_ne_top.2 hσ).ne
 
 theorem stoppedProcess_stoppedProcess' :
