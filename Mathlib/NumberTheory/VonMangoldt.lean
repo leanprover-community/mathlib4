@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.PrimePow
-public import Mathlib.NumberTheory.ArithmeticFunction.Examples
+public import Mathlib.NumberTheory.ArithmeticFunction.Specific
 
 /-!
 # The von Mangoldt Function

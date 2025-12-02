@@ -8,7 +8,7 @@ module
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.Data.Nat.Factorization.PrimePow
 /-!
-# Examples of Arithmetic Functions
+# Specific arithmetic Functions
 
 This file defines some standard examples of arithmetic functions (functions `ℕ → R` vanishing at
 `0`, considered as a ring under Dirichlet convolution).

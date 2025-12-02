@@ -6,7 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.SpecificLimits.Normed
-public import Mathlib.NumberTheory.ArithmeticFunction.Examples
+public import Mathlib.NumberTheory.ArithmeticFunction.Specific
 
 /-!
 # Lemmas on infinite sums over the antidiagonal of the divisors function

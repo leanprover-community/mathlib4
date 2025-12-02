@@ -32,7 +32,7 @@ The arithmetic function $n \mapsto \prod_{p \mid n} f(p)$ is given custom notati
 `∏ᵖ p ∣ n, f p` when applied to `n`.
 
 Further examples of arithmetic functions, such as the Möbius function `μ`, are available in
-`Mathlib.NumberTheory.ArithmeticFunction.Examples`.
+`Mathlib.NumberTheory.ArithmeticFunction.Specific`.
 
 ## Tags
 
