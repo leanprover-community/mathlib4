@@ -844,15 +844,6 @@ theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv 
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
-universe u v w
-
-class LineDeriv (V : Type u) (E : Type v) (F : outParam (Type w)) where
-  /-- `∂_{v} f` is the partial derivative of `f` in direction `v`. The meaning of this notation is
-  type-dependent. -/
-  lineDeriv : V → E → F
-
-@[inherit_doc] scoped notation "∂_{" v "}" => LineDeriv.lineDeriv v
-
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
 instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
@@ -1277,43 +1268,45 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
 
-/-- Integration by parts of Schwartz functions for partial derivatives.
+open scoped LineDeriv
+
+/-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for a general bilinear map. -/
-theorem integral_bilinear_pderivCLM_right_eq_neg_left (f : 𝓢(D, E)) (g : 𝓢(D, F))
+theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : 𝓢(D, F))
     (L : E →L[ℝ] F →L[ℝ] V) (v : D) :
     ∫ (x : D), L (f x) (∂_{v} g x) ∂μ = -∫ (x : D), L (∂_{v} f x) (g x) ∂μ := by
   apply integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable (v := v)
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
-    (bilinLeftCLM L ((pderivCLM ℝ v) g).hasTemperateGrowth _).integrable
+    (bilinLeftCLM L (∂_{v} g).hasTemperateGrowth _).integrable
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
   all_goals
   intro x
   exact (hasFDerivAt _ x).hasLineDerivAt v
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
-/-- Integration by parts of Schwartz functions for partial derivatives.
+/-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
-theorem integral_mul_pderivCLM_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢(D, 𝕜)) (v : D) :
+theorem integral_mul_lineDerivOp_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢(D, 𝕜)) (v : D) :
     ∫ (x : D), f x * ∂_{v} g x ∂μ = -∫ (x : D), ∂_{v} f x * g x ∂μ :=
-  integral_bilinear_pderivCLM_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜) v
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜) v
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
 
-/-- Integration by parts of Schwartz functions for partial derivatives.
+/-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for scalar multiplication. -/
-theorem integral_smul_pderivCLM_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢(D, F)) (v : D) :
+theorem integral_smul_lineDerivOp_right_eq_neg_left (f : 𝓢(D, 𝕜)) (g : 𝓢(D, F)) (v : D) :
     ∫ (x : D), f x • ∂_{v} g x ∂μ = -∫ (x : D), ∂_{v} f x • g x ∂μ :=
-  integral_bilinear_pderivCLM_right_eq_neg_left f g (ContinuousLinearMap.lsmul ℝ 𝕜) v
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g (ContinuousLinearMap.lsmul ℝ 𝕜) v
 
-/-- Integration by parts of Schwartz functions for partial derivatives.
+/-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for a Schwartz function with values in continuous linear maps. -/
-theorem integral_clm_comp_pderivCLM_right_eq_neg_left (f : 𝓢(D, F →L[𝕜] V)) (g : 𝓢(D, F)) (v : D) :
-    ∫ (x : D), f x (∂_{v} g x) ∂μ = -∫ (x : D), ∂_{v} f x (g x) ∂μ :=
-  integral_bilinear_pderivCLM_right_eq_neg_left f g
+theorem integral_clm_comp_lineDerivOp_right_eq_neg_left (f : 𝓢(D, F →L[𝕜] V)) (g : 𝓢(D, F))
+    (v : D) : ∫ (x : D), f x (∂_{v} g x) ∂μ = -∫ (x : D), ∂_{v} f x (g x) ∂μ :=
+  integral_bilinear_lineDerivOp_right_eq_neg_left f g
     ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ) v
 
 end integration_by_parts
