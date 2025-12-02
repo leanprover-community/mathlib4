@@ -167,8 +167,15 @@ lean_exe unused where
 lean_exe mathlib_test_executable where
   root := `MathlibTest.MathlibTestExecutable
 
+lean_lib RefactorGraph where
+  globs := #[.submodules `RefactorGraph]
+
 lean_exe refactor_graph where
   root := `RefactorGraph.Main
+  supportInterpreter := true
+
+lean_exe refactor_graph_test where
+  root := `RefactorGraph.Test
   supportInterpreter := true
 
 /-!
