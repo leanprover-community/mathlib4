@@ -63,17 +63,17 @@ a `P : PrelocalPredicate T` consists of:
 -/
 structure PrelocalPredicate where
   /-- The underlying predicate of a prelocal predicate -/
-  pred : ∀ ⦃U : Opens X⦄, (∀ x : U, T x) → Prop
+  pred : Π ⦃U : Opens X⦄, (Π x : U, T x) → Prop
   -- TODO: change `pred` to `Pred` according to naming convention
   /-- The underlying predicate should be invariant under restriction -/
-  res : ∀ {U V : Opens X} (i : U ⟶ V) (f : ∀ x : V, T x), pred f → pred fun x : U ↦ f (i x)
+  res : ∀ {U V : Opens X} (i : U ⟶ V) (f : Π x : V, T x), pred f → pred fun x : U ↦ f (i x)
 
 section Sheafify
 
-variable {T} (P : ∀ ⦃U : Opens X⦄, (∀ x : U, T x) → Prop)
+variable {T} (P : Π ⦃U : Opens X⦄, (Π x : U, T x) → Prop)
 
 /-- The sheafification of a predicate. -/
-def Sheafify ⦃U : Opens X⦄ (f : ∀ x : U, T x) :=
+def Sheafify ⦃U : Opens X⦄ (f : Π x : U, T x) :=
   ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U), P (f <| i ·)
 
 lemma le_sheafify : P ≤ Sheafify P := fun U _f hf x ↦ ⟨U, x.2, 𝟙 U, hf⟩
@@ -123,10 +123,10 @@ structure LocalPredicate extends PrelocalPredicate T where
 
 section Pullback
 
-variable {X T} {S : X → Type*} (F : Π x : X, T x → S x) (P : ∀ ⦃U : Opens X⦄, (∀ x : U, S x) → Prop)
+variable {X T} {S : X → Type*} (F : Π x : X, T x → S x) (P : Π ⦃U : Opens X⦄, (Π x : U, S x) → Prop)
 
 /-- The pullback of a predicate along a map between type families. -/
-def Pullback ⦃U : Opens X⦄ (s : ∀ x : U, T x) : Prop := P (F _ <| s ·)
+def Pullback ⦃U : Opens X⦄ (s : Π x : U, T x) : Prop := P (F _ <| s ·)
 
 /-- The pullback of a prelocal predicate. -/
 def PrelocalPredicate.pullback (P : PrelocalPredicate S) : PrelocalPredicate T where
@@ -350,7 +350,7 @@ def PrelocalPredicate.and (P Q : PrelocalPredicate T) : PrelocalPredicate T wher
   pred _ f := P.pred f ∧ Q.pred f
   res i f h := ⟨P.res i f h.1, Q.res i f h.2⟩
 
-lemma IsLocal.inf {P Q : ∀ ⦃U : Opens X⦄, (∀ x : U, T x) → Prop} (hP : IsLocal P) (hQ : IsLocal Q) :
+lemma IsLocal.inf {P Q : Π ⦃U : Opens X⦄, (Π x : U, T x) → Prop} (hP : IsLocal P) (hQ : IsLocal Q) :
     IsLocal (P ⊓ Q) := fun U f w ↦ by
   refine ⟨hP U f ?_, hQ U f ?_⟩ <;> (intro x; have ⟨V, hV, i, h⟩ := w x; use V, hV, i)
   exacts [h.1, h.2]
@@ -388,7 +388,7 @@ def PrelocalPredicate.sheafify : LocalPredicate T where
 
 variable {P}
 
-theorem PrelocalPredicate.sheafifyOf {U : Opens X} {f : ∀ x : U, T x} (h : P.pred f) :
+theorem PrelocalPredicate.sheafifyOf {U : Opens X} {f : Π x : U, T x} (h : P.pred f) :
     P.sheafify.pred f := le_sheafify _ _ _ h
 
 theorem IsStalkSurj.sheafify {x : X} (h : IsStalkSurj P.pred x) :
@@ -469,7 +469,7 @@ end PrelocalPredicate
 -/
 @[simps!]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
-  obj U := { f : ∀ x : U.unop, T x // P.pred f }
+  obj U := { f : Π x : U.unop, T x // P.pred f }
   map {_ _} i f := ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
@@ -552,7 +552,7 @@ theorem stalkToFiber_injective (P : PrelocalPredicate T) (x : X) (w : IsStalkInj
     Function.Injective (stalkToFiber P x) := fun tU tV h ↦ by
   -- We promise to provide all the ingredients of the proof later:
   let Q :
-    ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T w) (hW : P.pred s),
+    ∃ (W : (OpenNhds x)ᵒᵖ) (s : Π w : (unop W).1, T w) (hW : P.pred s),
       tU = (subpresheafToTypes P).germ _ x (unop W).2 ⟨s, hW⟩ ∧
         tV = (subpresheafToTypes P).germ _ x (unop W).2 ⟨s, hW⟩ := ?_
   · choose W s hW e using Q
