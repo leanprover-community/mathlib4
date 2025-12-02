@@ -782,55 +782,35 @@ lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
 
-theorem monomial_mul_cancel_left {m : σ →₀ ℕ} {a : R}
-    (ha : IsRegular a) (h : monomial m a * p = monomial m a * q) :
-    p = q := by
+theorem _root_.IsRegular.monomial {m : σ →₀ ℕ} {a : R}
+    (ha : IsRegular a) :
+    IsRegular (monomial m a) := by
+  rw [← isLeftRegular_iff_isRegular]
+  intro p q h
   ext d
   have h' := congr_arg  (coeff (m + d)) h
   simp only [coeff_monomial_mul] at h'
   rw [← ha.left.eq_iff, h']
 
-theorem monomial_mul_cancel_left_iff {m : σ →₀ ℕ} {a : R}
-    (ha : IsRegular a) :
-    monomial m a * p = monomial m a * q ↔ p = q := by
-  refine ⟨monomial_mul_cancel_left ha, fun h ↦ by simp [h]⟩
-
-theorem monomial_one_mul_cancel_left {m : σ →₀ ℕ}
-    (h : monomial m 1 * p = monomial m 1 * q) :
-    p = q :=
-  monomial_mul_cancel_left isRegular_one h
-
+@[simp]
 theorem monomial_one_mul_cancel_left_iff {m : σ →₀ ℕ} :
     monomial m 1 * p = monomial m 1 * q ↔ p = q :=
-  monomial_mul_cancel_left_iff isRegular_one
+  isRegular_one.monomial.left.eq_iff
 
+@[simp]
 theorem X_mul_cancel_left_iff {i : σ} :
     X i * p = X i * q ↔ p = q :=
-  monomial_one_mul_cancel_left_iff (m := Finsupp.single i 1)
+  monomial_one_mul_cancel_left_iff
 
-theorem monomial_mul_cancel_right {m : σ →₀ ℕ} {a : R}
-    (ha : IsRegular a) (h : p * monomial m a = q * monomial m a) :
-    p = q := by
-  simp only [mul_comm _ (monomial m a)] at h
-  apply monomial_mul_cancel_left ha h
-
-theorem monomial_mul_cancel_right_iff {m : σ →₀ ℕ} {a : R}
-    (ha : IsRegular a) :
-    p * monomial m a = q * monomial m a ↔ p = q := by
-  refine ⟨monomial_mul_cancel_right ha, fun h ↦ by simp [h]⟩
-
-theorem monomial_one_mul_cancel_right {m : σ →₀ ℕ}
-    (h : p * monomial m 1 = q * monomial m 1) :
-    p = q :=
-  monomial_mul_cancel_right isRegular_one h
-
+@[simp]
 theorem monomial_one_mul_cancel_right_iff {m : σ →₀ ℕ} :
     p * monomial m 1 = q * monomial m 1 ↔ p = q :=
-  monomial_mul_cancel_right_iff isRegular_one
+  isRegular_one.monomial.right.eq_iff
 
+@[simp]
 theorem X_mul_cancel_right_iff {i : σ} :
     p * X i = q * X i ↔ p = q :=
-  monomial_one_mul_cancel_right_iff (m := Finsupp.single i 1)
+  monomial_one_mul_cancel_right_iff
 
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by
   constructor

@@ -161,8 +161,7 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     simp only [Nat.cast_one, map_one, lt_self_iff_false] at hp1
   · rintro a b rfl
     rw [Nat.isUnit_iff, Nat.isUnit_iff]
-    by_contra! con
-    obtain ⟨ha₁, hb₁⟩ := con
+    by_contra! ⟨ha₁, hb₁⟩
     obtain ⟨ha₀, hb₀⟩ : a ≠ 0 ∧ b ≠ 0 := by
       refine mul_ne_zero_iff.mp fun h ↦ ?_
       rwa [h, Nat.cast_zero, map_zero, lt_self_iff_false] at hp0

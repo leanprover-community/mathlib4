@@ -233,10 +233,12 @@ theorem eq_divMonomial_single [IsLeftCancelAdd R]
   simpa using hr _ hn
 
 instance [IsLeftCancelAdd R] :
-    IsLeftCancelAdd (MvPolynomial σ R) where
-  add_left_cancel := fun f g h H ↦ by
-    ext d
-    simpa using congr_arg (coeff d) H
+    IsCancelAdd (MvPolynomial σ R) := by
+  suffices IsLeftCancelAdd (MvPolynomial σ R) from
+    AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
+  refine { add_left_cancel := fun f g h H ↦ ?_ }
+  ext d
+  simpa using congr_arg (coeff d) H
 
 theorem eq_modMonomial_single [IsLeftCancelAdd R]
     {σ : Type*} {i : σ} {p q r : MvPolynomial σ R}
@@ -249,6 +251,7 @@ theorem eq_modMonomial_single [IsLeftCancelAdd R]
 section CommRing
 
 variable {R : Type*} [CommRing R] {i : σ} {p q r : MvPolynomial σ R}
+
 theorem eq_modMonomial_single_iff (h : X i ∣ p - r) :
     r = p.modMonomial (Finsupp.single i 1) ↔
       ∀ n ∈ r.support, n i = 0 := by
@@ -292,37 +295,38 @@ theorem X_dvd_mul_iff [IsCancelMulZero R] :
         simpa [← Nat.one_le_iff_ne_zero] using hn
     · nth_rewrite 1 [← hp]
       nth_rewrite 1 [← hq]
-      simp  only [add_mul, mul_add, add_assoc, add_sub_cancel_left]
+      simp only [add_mul, mul_add, add_assoc, add_sub_cancel_left]
       simp only [← mul_assoc, mul_comm _ (X i)]
       simp only [mul_assoc, ← mul_add (X i)]
       apply dvd_mul_right
-  · intro h
-    rcases h with h | h
+  · rintro (h | h)
     · exact dvd_mul_of_dvd_left h q
     · exact dvd_mul_of_dvd_right h p
+
+theorem X_prime [IsCancelMulZero R] [Nontrivial R] : Prime (X i : MvPolynomial σ R) := by
+  refine ⟨X_ne_zero i, ?_, fun p q ↦ X_dvd_mul_iff.mp⟩
+  intro h
+  rw [isUnit_iff_exists] at h
+  rcases h with ⟨u, hu, -⟩
+  apply_fun constantCoeff at hu
+  simp at hu
 
 theorem dvd_X_mul_iff [IsCancelMulZero R] :
     p ∣ X i * q ↔ p ∣ q ∨ (X i ∣ p ∧ p.divMonomial (Finsupp.single i 1) ∣ q) := by
   constructor
-  · intro hp
-    obtain ⟨r, hp⟩ := hp
-    have := p.modMonomial_add_divMonomial_single i
+  · rintro ⟨r, hp⟩
     have : X i ∣ p ∨ X i ∣ r := by simp [← X_dvd_mul_iff, ← hp]
-    rcases this with hip | hir
-    · right
+    apply this.symm.imp
+    · rintro ⟨r, rfl⟩
+      obtain rfl : q = p * r := by rw [← X_mul_cancel_left_iff (i := i), hp, mul_left_comm]
+      exact dvd_mul_right p r
+    · intro hip
       refine ⟨hip, ?_⟩
       rw [X_dvd_iff_modMonomial_eq_zero] at hip
-      rw [hip, zero_add] at this
-      rw [← this, mul_assoc, X_mul_cancel_left_iff] at hp
+      rw [← p.modMonomial_add_divMonomial_single i, hip,
+        zero_add, mul_assoc, X_mul_cancel_left_iff] at hp
       use r
-    · obtain ⟨r, rfl⟩ := hir
-      replace hp : q = p * r := by
-        rwa [← mul_assoc, mul_comm p, mul_assoc, X_mul_cancel_left_iff] at hp
-      left
-      rw [hp]
-      exact dvd_mul_right p r
-  · rintro hp
-    rcases hp with hp | ⟨hi, hq⟩
+  · rintro (hp | ⟨hi, hq⟩)
     · exact dvd_mul_of_dvd_right hp (X i)
     · suffices p = X i * p.divMonomial (Finsupp.single i 1) by
         rw [this]
@@ -334,13 +338,10 @@ theorem dvd_X_mul_iff [IsCancelMulZero R] :
 theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
     p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r := by
   rcases subsingleton_or_nontrivial R with hR | hR
-  · have : Subsingleton (MvPolynomial σ R) := by
-      exact Unique.instSubsingleton
-    simp only [this.allEq _ p, dvd_refl, and_self, and_true, exists_const, true_iff]
+  · simp only [Subsingleton.elim _ p, dvd_refl, and_self, and_true, exists_const, true_iff]
     refine ⟨n, le_refl n⟩
   suffices ∀ (d) (n : σ →₀ ℕ) (hd : n.degree = d) (p q : MvPolynomial σ R),
-    p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r by
-    apply this n.degree n rfl
+    p ∣ monomial n 1 * q ↔ ∃ m r, m ≤ n ∧ r ∣ q ∧ p = monomial m 1 * r from this n.degree n rfl p q
   classical
   intro d
   induction d with
@@ -352,11 +353,10 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
   | succ d hd =>
     intro n hn p q
     refine ⟨fun hp ↦ ?_, fun ⟨m, r, hmn, hrq, hp⟩ ↦ ?_⟩
-    · have : n.support.Nonempty := by
+    · obtain ⟨i, hi⟩ : n.support.Nonempty := by
         rw [Finsupp.support_nonempty_iff]
         intro hn'
         simp [hn'] at hn
-      obtain ⟨i, hi⟩ := this
       let n' := n - Finsupp.single i 1
       have hn' : n' + Finsupp.single i 1 = n := by
         apply Finsupp.sub_add_single_one_cancel
@@ -369,11 +369,10 @@ theorem dvd_monomial_mul_iff_exists [IsCancelMulZero R] {n : σ →₀ ℕ} :
       rcases hp with hp | hp
       · obtain ⟨m, r, hm, hr, hp⟩ := (hd n' hd' p q).mp hp
         exact ⟨m, r, le_trans hm hnn', hr, hp⟩
-      · obtain ⟨p', hp'⟩ := hp.1
+      · obtain ⟨p', rfl⟩ := hp.1
         obtain ⟨m, r, hm, hr, hp⟩ := (hd n' hd' _ _).mp hp.2
         use m + Finsupp.single i 1, r, ?_, hr
-        · simp [monomial_add_single, pow_one, mul_comm _ (X i), mul_assoc, ← hp,
-          hp']
+        · simp [monomial_add_single, pow_one, mul_comm _ (X i), mul_assoc, ← hp]
         · simpa [← hn'] using hm
     · rw [hp, ← add_tsub_cancel_of_le hmn, ← mul_one 1, ← monomial_mul, mul_one, mul_assoc]
       apply mul_dvd_mul dvd_rfl
