@@ -90,8 +90,7 @@ theorem splitOnP_append_cons (xs as : List α) (sep : α) (hsep : p sep) :
   assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
 theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep = true) (as : List α) :
     (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
-  rw [splitOnP_append_cons p xs as sep hsep, splitOnP_eq_single p xs h]
-  rfl
+  rw [splitOnP_append_cons p xs as sep hsep, splitOnP_eq_single p xs h, singleton_append]
 
 /-- `intercalate [x]` is the left inverse of `splitOn x` -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
