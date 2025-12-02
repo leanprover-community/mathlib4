@@ -297,6 +297,10 @@ theorem Splits.roots_ne_zero (hf : Splits f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   simpa [hf.natDegree_eq_card_roots] using hf0
 
+theorem Splits.map_roots {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R] {f : R[X]}
+    (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
+  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
+
 theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := by
   refine ⟨fun hf ↦ ?_, ((Splits.X_sub_C _).mul ·)⟩
   by_cases hf₀ : f = 0
