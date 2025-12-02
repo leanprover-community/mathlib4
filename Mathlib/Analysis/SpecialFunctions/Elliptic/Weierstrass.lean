@@ -188,10 +188,12 @@ This is mainly a tool for calculations where one would want to omit a diverging 
 def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
+scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
+
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
-      (L.weierstrassPExcept l₀) := by
+      ℘[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := (10 * · * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
@@ -202,12 +204,12 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
 
 lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
     HasSum (fun l : L.lattice ↦ if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
-      (L.weierstrassPExcept l₀ z) :=
+      (℘[L - l₀] z) :=
   (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSum
 
 /- `℘Except l₀` is differentiable on non-lattice points and `l₀`. -/
 lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
-    DifferentiableOn ℂ (L.weierstrassPExcept l₀) (L.lattice \ {l₀})ᶜ := by
+    DifferentiableOn ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSumLocallyUniformlyOn.differentiableOn
     (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_)
     (L.isClosed_of_subset_lattice Set.diff_subset).isOpen_compl
@@ -216,7 +218,7 @@ lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
   · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
 
 lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
-    L.weierstrassPExcept l₀ (-z) = L.weierstrassPExcept (-l₀) z := by
+    ℘[L - l₀] (-z) = ℘[L - -l₀] z := by
   simp only [weierstrassPExcept]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   congr! 3 with l
@@ -234,9 +236,8 @@ def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l
 scoped notation3 "℘[" L "]" => weierstrassP L
 
 lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
-    L.weierstrassPExcept l₀ z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = ℘[L] z := by
-  trans L.weierstrassPExcept l₀ z +
-    ∑' i : L.lattice, if i.1 = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
+    ℘[L - l₀] z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = ℘[L] z := by
+  trans ℘[L - l₀] z + ∑' i : L.lattice, if i = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
   · simp
   rw [weierstrassPExcept, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
@@ -244,20 +245,19 @@ lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
   · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
 
 lemma weierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
-    L.weierstrassPExcept l₀ z = ℘[L] z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
+    ℘[L - l₀] z = ℘[L] z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
   rw [← L.weierstrassPExcept_add l₀]
   abel
 
 lemma weierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
-    L.weierstrassPExcept l₀ = ℘[L] := by
+    ℘[L - l₀] = ℘[L] := by
   delta weierstrassPExcept weierstrassP
   congr! 3 with z l
   have : l.1 ≠ l₀ := by rintro rfl; simp at hl
   simp [this]
 
 lemma hasSumLocallyUniformly_weierstrassP :
-    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2)
-      ℘[L] := by
+    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) ℘[L] := by
   convert L.hasSumLocallyUniformly_weierstrassPExcept (L.ω₁ / 2) using 3 with l
   · rw [if_neg]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
