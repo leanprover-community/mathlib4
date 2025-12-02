@@ -11,8 +11,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 /-!
 # Relative morphisms of simplicial sets
 
-Given two simplicial sets `X` and `Y`, and subcomplexes `A` of `X`, and `B` of `Y`.
-We introduce a type `RelativeMorphism A B φ` of morphisms `X ⟶ Y` which induce
+Given two simplicial sets `X` and `Y`, and subcomplexes `A` of `X`, and `B` of `Y`,
+we introduce a type `RelativeMorphism A B φ` of morphisms `X ⟶ Y` which induce
 a given morphism of simplicial sets `A ⟶ B`. We define homotopies between
 these relative morphisms and introduce the quotient type of homotopy classes.
 
