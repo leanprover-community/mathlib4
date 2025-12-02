@@ -3,14 +3,16 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Moritz Doll
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Opposite
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.LinearAlgebra.Basis.Bilinear
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Opposite
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.LinearAlgebra.Basis.Bilinear
 
 /-!
 # Sesquilinear form
@@ -34,6 +36,8 @@ generalized to fully semi-bilinear forms.
 Sesquilinear form, Sesquilinear map, matrix, basis
 
 -/
+
+@[expose] public section
 
 open Finset LinearMap Matrix Module
 open scoped RightActions
@@ -381,7 +385,7 @@ theorem dotProduct_toMatrix₂_mulVec (B : M₁ →ₛₗ[σ₁] M₂ →ₛₗ[
       B (b₁.equivFun.symm x) (b₂.equivFun.symm y) := by
   simp only [dotProduct, Function.comp_apply, Function.comp_def, mulVec_eq_sum, op_smul_eq_smul,
     Finset.sum_apply, Pi.smul_apply, transpose_apply, toMatrix₂_apply, smul_eq_mul, mul_sum,
-    Basis.equivFun_symm_apply, map_sum, LinearMap.map_smulₛₗ, coeFn_sum, LinearMap.smul_apply]
+    Basis.equivFun_symm_apply, map_sum, map_smulₛₗ, coe_sum, LinearMap.smul_apply]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
   ring

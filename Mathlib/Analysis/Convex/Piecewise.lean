@@ -3,7 +3,9 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.Convex.Function
+module
+
+public import Mathlib.Analysis.Convex.Function
 
 /-!
 # Convex and concave piecewise functions
@@ -25,6 +27,8 @@ This file proves convex and concave theorems for piecewise functions.
   See concave version(s) `concaveOn_univ_piecewise_Iic_of_monotoneOn_Iic_antitoneOn_Ici`
   and `concaveOn_univ_piecewise_Ici_of_antitoneOn_Ici_monotoneOn_Iic`.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]

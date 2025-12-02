@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctoriality of categorical joins
@@ -14,6 +16,8 @@ In this file, we promote the join construction to two pseudofunctors
 each variable.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

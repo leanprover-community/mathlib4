@@ -3,8 +3,10 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Rewrite
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Rewrite
 
 /-!
 # The `erw?` tactic
@@ -13,6 +15,8 @@ import Lean.Elab.Tactic.Rewrite
 and then attempts to identify any subexpression which would block the use of `rw` instead.
 It does so by identifying subexpressions which are defeq, but not at reducible transparency.
 -/
+
+public meta section
 
 open Lean Parser.Tactic Elab Tactic Meta
 

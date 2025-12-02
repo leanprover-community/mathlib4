@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Index
+module
+
+public import Mathlib.GroupTheory.Index
 
 /-!
 # Complements
@@ -23,6 +25,8 @@ In this file we define the complement of a subgroup.
 
 - `isComplement'_of_coprime` : Subgroups of coprime order are complements.
 -/
+
+@[expose] public section
 
 open Function Set
 open scoped Pointwise

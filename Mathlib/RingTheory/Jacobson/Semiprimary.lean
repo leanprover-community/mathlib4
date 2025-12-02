@@ -3,9 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Jacobson.Radical
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semiprimary rings
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.SimpleModule.Basic
 * `IsSemiprimaryRing R`: a ring `R` is semiprimary if
   `Ring.jacobson R` is nilpotent and `R ⧸ Ring.jacobson R` is semisimple.
 -/
+
+@[expose] public section
 
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]

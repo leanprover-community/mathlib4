@@ -3,9 +3,11 @@ Copyright (c) 2023 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Probability.ProbabilityMassFunction.Constructions
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Probability.ProbabilityMassFunction.Constructions
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The binomial distribution
@@ -16,6 +18,8 @@ This file defines the probability mass function of the binomial distribution.
 
 * `binomial_one_eq_bernoulli`: For `n = 1`, it is equal to `PMF.bernoulli`.
 -/
+
+@[expose] public section
 
 namespace PMF
 

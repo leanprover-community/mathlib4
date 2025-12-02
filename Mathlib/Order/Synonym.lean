@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Order.Basic
 
 /-!
 # Type synonyms
@@ -37,6 +39,8 @@ coercions should be inserted:
 
 This file is similar to `Algebra.Group.TypeTags`.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -177,6 +181,9 @@ instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
 instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
   inferInstanceAs (Inhabited α)
 
+instance {α γ} [H : CoeFun α γ] : CoeFun (Lex α) γ where
+  coe f := H.coe (ofLex f)
+
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
@@ -232,6 +239,9 @@ instance (α : Type*) [DecidableEq α] : DecidableEq (Colex α) :=
 
 instance (α : Type*) [Inhabited α] : Inhabited (Colex α) :=
   inferInstanceAs (Inhabited α)
+
+instance {α γ} [H : CoeFun α γ] : CoeFun (Colex α) γ where
+  coe f := H.coe (ofColex f)
 
 /-- A recursor for `Colex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]

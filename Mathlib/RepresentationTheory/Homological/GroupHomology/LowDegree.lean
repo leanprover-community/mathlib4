@@ -3,10 +3,12 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
@@ -42,6 +44,8 @@ We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ
   representation on `A` is trivial.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -122,6 +126,12 @@ def chains₁ToCoinvariantsKer :
     ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (Coinvariants.ker A.ρ) :=
   ModuleCat.ofHom <| (d₁₀ A).hom.codRestrict _ <|
     range_d₁₀_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
+
+lemma chains₁ToCoinvariantsKer_surjective :
+    Function.Surjective (chains₁ToCoinvariantsKer A) := by
+  rintro ⟨x, hx⟩
+  rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
 
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
@@ -241,7 +251,6 @@ square commutes:
 ```
 where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 -/
-
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by

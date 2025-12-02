@@ -3,10 +3,12 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.Finsupp.WellFounded
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.Data.Finsupp.Notation
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials
@@ -49,6 +51,8 @@ injective whenever `n ≤ m`, and then transfer the results to any Fintype `σ`.
 `MvPolynomial.injective_esymmAlgHom` and `MvPolynomial.esymmAlgHom_surjective`.
 
 -/
+
+@[expose] public section
 
 variable {σ τ R : Type*} {n m k : ℕ}
 
@@ -242,8 +246,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   · rw [supDegree_zero, Finsupp.bot_eq_zero]
     exact Pi.zero_mono
   rw [Antitone]
-  by_contra! h
-  obtain ⟨i, j, hle, hlt⟩ := h
+  by_contra! ⟨i, j, hle, hlt⟩
   apply (le_sup (s := p.support) (f := toLex) _).not_gt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain _ (Equiv.injective _)]

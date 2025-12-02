@@ -3,8 +3,10 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Powers of extended natural numbers
@@ -21,6 +23,8 @@ and `α` has cardinality `y`:
 The quantity `x ^ y` for `x`, `y : ℕ∞` is defined as a `Pow` instance. It is called `epow` in
 lemmas' names.
 -/
+
+@[expose] public section
 
 namespace ENat
 

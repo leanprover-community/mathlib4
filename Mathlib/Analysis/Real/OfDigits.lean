@@ -3,9 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Rify
 
 /-!
 # Representation of reals in positional system
@@ -24,10 +26,12 @@ representations of reals as sequences of digits in positional system.
 * `ofDigits_digits` states that `ofDigits (digits x b) = x`.
 -/
 
+@[expose] public section
+
 namespace Real
 
 /-- `ofDigits` takes a sequence of digits `(d₀, d₁, ...)` in base `b` and returns the
-  real numnber `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
+  real number `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
   sequence to the function sending `i` to `dᵢ/bⁱ`. -/
 noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ) ^ (i + 1))⁻¹
@@ -73,7 +77,7 @@ theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     rw [tsum_mul_left, tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
     have := sub_pos.mpr hb
-    field_simp
+    field
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
     simp [inv_lt_one_iff₀, hb]
@@ -119,9 +123,10 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by cutsat),
       Fin.val_ofNat, Nat.div_add_mod]
 
-theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
+theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
+  have := NeZero.pos b
   have := ofDigits_digits_sum_eq (b := b) hx n
   have h_le := Nat.lt_floor_add_one (b ^ n * x)
   rw [← this] at h_le
@@ -142,7 +147,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
     HasSum (ofDigitsTerm (digits x b)) x := by
   rw [hasSum_iff_tendsto_nat_of_summable_norm (by exact summable_ofDigitsTerm.abs)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds
-    (le_sum_ofDigitsTerm_digits hb hx) (sum_ofDigitsTerm_digits_le hx)
+    (le_sum_ofDigitsTerm_digits hx) (sum_ofDigitsTerm_digits_le hx)
   convert tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
   · simp
   · simp [abs_of_nonneg, inv_lt_one_iff₀, hb]
@@ -153,5 +158,60 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   rw [← Summable.hasSum_iff]
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
+
+/-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
+theorem ofDigits_const_last_eq_one (b : ℕ) [NeZero b] :
+    ofDigits (fun _ ↦ Fin.last b) = 1 := by
+  have : 1 < |(b + 1 : ℝ)| := by
+    rw [← Nat.cast_add_one, abs_of_nonneg (Nat.cast_nonneg _)]
+    simp [NeZero.pos b]
+  simp only [ofDigits, ofDigitsTerm, ← inv_pow]
+  rw [Summable.tsum_mul_left]
+  · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, this]),
+      tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, NeZero.pos b])]
+    push_cast
+    have : (b : ℝ) ≠ 0 := mod_cast NeZero.ne b
+    field [*]
+  · rw [summable_nat_add_iff (f := fun n ↦ ((b + 1 : ℕ) : ℝ)⁻¹ ^ n) 1]
+    apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, NeZero.pos b])
+
+/-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
+theorem ofDigits_const_last_eq_one' {b : ℕ} (hb : 1 < b) :
+    ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
+  convert ofDigits_const_last_eq_one (b - 1)
+  · grind
+  · constructor
+    grind
+
+theorem ofDigits_SurjOn {b : ℕ} (hb : 1 < b) :
+    Set.SurjOn (ofDigits (b := b)) Set.univ (Set.Icc 0 1) := by
+  have : NeZero b := ⟨by grind⟩
+  intro y hy
+  by_cases hy' : y ∈ Set.Ico 0 1
+  · use digits y b
+    simp [ofDigits_digits hb hy']
+  · simp only [Set.image_univ, show y = 1 by grind, Set.mem_range]
+    exact ⟨_, ofDigits_const_last_eq_one' hb⟩
+
+theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
+  match b with
+  | 0 => fun_prop
+  | 1 => fun_prop
+  | n + 2 =>
+    obtain ⟨hb0, hb⟩ : 0 < n + 2 ∧ 1 < n + 2 := by grind
+    generalize n + 2 = b at hb
+    rify at hb0 hb
+    refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
+    · simp only [ofDigitsTerm]
+      fun_prop
+    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
+      apply ofDigitsTerm_le.trans
+      calc
+        _ ≤ b * ((b : ℝ) ^ (n + 1))⁻¹ := by
+          gcongr
+          linarith
+        _ = _ := by
+          grind
 
 end Real

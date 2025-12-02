@@ -3,10 +3,12 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Algebra.Nonarchimedean.Completion
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
@@ -22,6 +24,8 @@ and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × 
 sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
+
+@[expose] public section
 
 open Filter Topology
 

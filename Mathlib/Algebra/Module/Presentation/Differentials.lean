@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.RingTheory.Kaehler.Polynomial
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Presentation of the module of differentials
@@ -30,6 +31,8 @@ of `Algebra.Extension.exact_cotangentComplex_toKaehler`
 from the file `Mathlib/RingTheory/Kaehler/CotangentComplex.lean`.
 
 -/
+
+@[expose] public section
 
 open Module
 

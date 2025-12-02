@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Max
-import Mathlib.Order.ULift
-import Mathlib.Tactic.Push
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.Max
+public import Mathlib.Order.ULift
+public import Mathlib.Tactic.ByCases
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Util.AssertExists
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -23,6 +25,8 @@ instances for `Prop` and `fun`.
 * `BoundedOrder α`: Order with a top and bottom element.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monotone
 
@@ -43,10 +47,9 @@ section OrderTop
 /-- An order is (noncomputably) either an `OrderTop` or a `NoTopOrder`. Use as
 `casesI topOrderOrNoTopOrder α`. -/
 noncomputable def topOrderOrNoTopOrder (α : Type*) [LE α] : OrderTop α ⊕' NoTopOrder α := by
-  by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
+  by_cases! H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-  · push_neg at H
-    letI : Top α := ⟨Classical.choose H⟩
+  · letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
 
 section LE
@@ -123,6 +126,7 @@ alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
   le_top.ge_iff_eq
 
+@[grind ←=, grind →] -- This tells grind that to prove `a = ⊤` it suffices to prove `⊤ ≤ a`.
 theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h
 
@@ -183,10 +187,9 @@ section OrderBot
 /-- An order is (noncomputably) either an `OrderBot` or a `NoBotOrder`. Use as
 `casesI botOrderOrNoBotOrder α`. -/
 noncomputable def botOrderOrNoBotOrder (α : Type*) [LE α] : OrderBot α ⊕' NoBotOrder α := by
-  by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
+  by_cases! H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-  · push_neg at H
-    letI : Bot α := ⟨Classical.choose H⟩
+  · letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
 
 section LE
@@ -229,21 +232,15 @@ instance instOrderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
-@[simp]
-theorem ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) :=
-  rfl
+@[simp] lemma ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) := rfl
+@[simp] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
+@[simp] lemma toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ := rfl
+@[simp] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
 
-@[simp]
-theorem ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) :=
-  rfl
-
-@[simp]
-theorem toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ :=
-  rfl
-
-@[simp]
-theorem toDual_top [Top α] : toDual (⊤ : α) = ⊥ :=
-  rfl
+@[simp] lemma ofDual_eq_bot [Bot α] {a : αᵒᵈ} : ofDual a = ⊥ ↔ a = ⊤ := .rfl
+@[simp] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ := .rfl
+@[simp] lemma toDual_eq_bot [Top α] {a : α} : toDual a = ⊥ ↔ a = ⊤ := .rfl
+@[simp] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ := .rfl
 
 end OrderDual
 
@@ -295,6 +292,7 @@ alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
   bot_le.ge_iff_eq'
 
+@[grind ←=, grind →] -- This tells grind that to prove `a = ⊥` it suffices to prove `a ≤ ⊥`.
 theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
 
