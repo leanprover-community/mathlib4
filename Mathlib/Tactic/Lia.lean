@@ -14,6 +14,7 @@ This file defines `lia` as an alias for `cutsat`, a linear integer arithmetic ta
 public meta section
 
 /-- `lia` is an alias for the `cutsat` tactic, which solves linear integer arithmetic goals. -/
-macro "lia" : tactic => `(tactic| cutsat)
+syntax (name := tacticLia) "lia" : tactic
+macro_rules | `(tactic| lia) => `(tactic| cutsat)
 
 end

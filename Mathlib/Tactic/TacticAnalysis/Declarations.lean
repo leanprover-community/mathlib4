@@ -6,6 +6,7 @@ Authors: Anne Baanen, Edward van de Meent
 module
 
 public meta import Mathlib.Tactic.TacticAnalysis
+public meta import Mathlib.Tactic.Lia
 public meta import Mathlib.Tactic.ExtractGoal
 public meta import Mathlib.Tactic.MinImports
 public meta import Lean.Elab.Command
@@ -144,24 +145,24 @@ register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
   inherit_doc linter.tacticAnalysis.regressions.ringToGrind]
 def ringToGrindRegressions := grindReplacementWith "ring" `Mathlib.Tactic.RingNF.ring
 
-/-- Debug `cutsat` by identifying places where it does not yet supersede `omega`. -/
+/-- Debug `lia` by identifying places where it does not yet supersede `omega`. -/
 register_option linter.tacticAnalysis.regressions.omegaToCutsat : Bool := {
   defValue := false
 }
 @[tacticAnalysis linter.tacticAnalysis.regressions.omegaToCutsat,
   inherit_doc linter.tacticAnalysis.regressions.omegaToCutsat]
 def omegaToCutsatRegressions :=
-  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| cutsat))
+  terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := false) (reportFailure := true)
 
-/-- Report places where `omega` can be replaced by `cutsat`. -/
+/-- Report places where `omega` can be replaced by `lia`. -/
 register_option linter.tacticAnalysis.omegaToCutsat : Bool := {
   defValue := false
 }
 @[tacticAnalysis linter.tacticAnalysis.omegaToCutsat,
   inherit_doc linter.tacticAnalysis.omegaToCutsat]
 def omegaToCutsat :=
-  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| cutsat))
+  terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/

@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Linter.FlexibleLinter
+import Mathlib.Tactic.Lia
 import Mathlib.Tactic.Linter.UnusedTactic
 import Batteries.Linter.UnreachableTactic
 import Batteries.Tactic.PermuteGoals
@@ -180,17 +181,17 @@ example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
   grind
 
--- as are its `grobner` and `cutsat` front-ends.
+-- as are its `grobner` and `lia` front-ends.
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
   grobner
 
--- `cutsat` is another flexible tactic.
+-- `lia` is another flexible tactic.
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
-  cutsat
+  lia
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
