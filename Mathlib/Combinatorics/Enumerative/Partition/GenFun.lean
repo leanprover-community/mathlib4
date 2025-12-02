@@ -61,20 +61,26 @@ lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
     (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
   PowerSeries.coeff_mk _ _
 
+/-- The summands in the formula `Nat.Partition.hasProd_genFun` tends to infinity in their order. -/
+theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : ℕ) :
+    Filter.Tendsto (fun j ↦ (f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1))).order)
+    Filter.atTop (nhds ⊤) := by
+  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
+  intro m hm
+  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
+  refine lt_add_of_nonneg_of_lt (by simp) ?_
+  nontriviality R using Subsingleton.eq_zero
+  rw [order_X_pow]
+  norm_cast
+  grind
+
 variable [TopologicalSpace R]
 
 /-- The infinite sum in the formula `Nat.Partition.hasProd_genFun` always converges. -/
 theorem summable_genFun_term (f : ℕ → ℕ → R) (i : ℕ) :
     Summable fun j ↦ f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1)) := by
-  nontriviality R
   apply WithPiTopology.summable_of_tendsto_order_atTop_nhds_top
-  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
-  intro m hm
-  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
-  refine lt_add_of_nonneg_of_lt (by simp) ?_
-  rw [order_X_pow]
-  norm_cast
-  grind
+  apply tendsto_order_genFun_term_atTop_nhds_top
 
 /-- Alternative form of `summable_genFun_term` that unshifts the first index. -/
 theorem summable_genFun_term' (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
