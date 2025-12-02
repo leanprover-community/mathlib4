@@ -362,8 +362,7 @@ lemma differentiableOn_derivWeierstrassPExcept (l₀ : ℂ) :
   simpa [sub_eq_zero]
 
 lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
-    Set.EqOn (deriv ℘[L - l₀]) ℘'[L - l₀]
-      (L.lattice \ {l₀})ᶜ := by
+    Set.EqOn (deriv ℘[L - l₀]) ℘'[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine ((L.hasSumLocallyUniformly_weierstrassPExcept l₀).tendstoLocallyUniformlyOn.deriv
     (.of_forall fun s ↦ ?_) L.isOpen_compl_lattice_diff).unique ?_
   · refine .fun_sum fun i hi ↦ ?_
@@ -463,10 +462,10 @@ private lemma weierstrassP_add_coe_aux (z : ℂ) (l : L.lattice) (hl : l.1 / 2 �
 @[simp]
 lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z := by
   let G : AddSubgroup ℂ :=
-  { carrier := { z | (℘[L] <| · + z) = ℘[L] }
-    add_mem' := by simp_all [funext_iff, ← add_assoc]
-    zero_mem' := by simp
-    neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
+    { carrier := { z | (℘[L] <| · + z) = ℘[L] }
+      add_mem' := by simp_all [funext_iff, ← add_assoc]
+      zero_mem' := by simp
+      neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
   have : L.lattice ≤ G.toIntSubmodule := by
     rw [lattice, Submodule.span_le]
     rintro _ (rfl|rfl)
@@ -475,6 +474,9 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z
     · ext i
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₂_mem_lattice⟩ L.ω₂_div_two_notMem_lattice
   exact congr_fun (this l.2) _
+
+lemma periodic_weierstrassP (l : L.lattice) : ℘[L].Periodic l :=
+  (L.weierstrassP_add_coe · l)
 
 @[simp]
 lemma weierstrassP_zero : ℘[L] 0 = 0 := by simp [weierstrassP]
@@ -549,6 +551,9 @@ lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
   simp only [derivWeierstrassP]
   rw [← (Equiv.addRight l).tsum_eq]
   simp only [← tsum_neg, ← div_neg, Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub]
+
+lemma periodic_derivWeierstrassP (l : L.lattice) : ℘'[L].Periodic l :=
+  (L.derivWeierstrassP_add_coe · l)
 
 @[simp]
 lemma derivWeierstrassP_zero : ℘'[L] 0 = 0 := by
