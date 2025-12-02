@@ -3,9 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Injective dimension
@@ -23,6 +25,8 @@ We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimensio
 `injectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -264,7 +268,7 @@ lemma injectiveDimension_le_iff (X : C) (n : ℕ) :
 
 lemma injectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ injectiveDimension X ↔ ¬ HasInjectiveDimensionLT X n := by
-  rw [← not_iff_not, not_le, not_not, injectiveDimension_lt_iff]
+  contrapose!; exact injectiveDimension_lt_iff
 
 lemma injectiveDimension_eq_bot_iff (X : C) :
     injectiveDimension X = ⊥ ↔ Limits.IsZero X := by

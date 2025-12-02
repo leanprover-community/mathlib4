@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Elementwise monoid structure of additive submonoids
@@ -34,6 +36,8 @@ Many results about multiplication are derived from the corresponding results abo
 multiplication, but results requiring right distributivity do not have SMul versions,
 due to the lack of a suitable typeclass (unless one goes all the way to `Module`).
 -/
+
+@[expose] public section
 
 open AddSubmonoid Set
 open scoped Pointwise

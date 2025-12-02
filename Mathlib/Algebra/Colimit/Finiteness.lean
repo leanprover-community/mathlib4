@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Modules as direct limits of finitely generated submodules
@@ -18,6 +20,8 @@ We show that every module is the direct limit of its finitely generated submodul
 * `Module.fgSystem.equiv`: the isomorphism between a module and the direct limit of its
   finitely generated submodules.
 -/
+
+@[expose] public section
 
 namespace Module
 

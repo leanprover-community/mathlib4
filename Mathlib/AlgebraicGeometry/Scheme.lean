@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.Spec
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.AlgebraicGeometry.Spec
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes
@@ -17,6 +19,8 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -50,7 +54,7 @@ instance : CoeSort Scheme Type* where
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Pretty printer for coercing schemes to types. -/
 @[app_delab TopCat.carrier]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
   withNaryArg 0 do
   guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3

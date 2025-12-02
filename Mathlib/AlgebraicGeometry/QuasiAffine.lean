@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
 
@@ -17,6 +19,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Immersion
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits TopologicalSpace
 

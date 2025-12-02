@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Integral
-import Mathlib.Algebra.Category.Ring.Epi
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
+public import Mathlib.Algebra.Category.Ring.Epi
 
 /-!
 
@@ -20,6 +22,8 @@ Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
 `Mathlib/AlgebraicGeometry/Fiber.lean` for the fact that finite morphisms have finite fibers.
 
 -/
+
+@[expose] public section
 
 universe v u
 

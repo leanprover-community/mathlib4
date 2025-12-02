@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Nat.BitIndices
-import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Nat.BitIndices
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Colexigraphic order
@@ -56,6 +58,8 @@ Related files are:
 
 colex, colexicographic, binary
 -/
+
+@[expose] public section
 
 open Function
 

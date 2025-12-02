@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Myers, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yaël Dillies
 -/
-import Aesop
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Aesop
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Triplewise predicates on list.
@@ -15,6 +17,8 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 * `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
 
 -/
+
+@[expose] public section
 
 
 namespace List

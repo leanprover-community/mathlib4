@@ -32,9 +32,9 @@ def get_imports(directory):
                         if '/-!' in line:
                             break
                         # Find an import statement
-                        match = re.match(r'^import\s+(.*)', line)
+                        match = re.match(r'^(public )?import\s+(?P<ref>.*)', line)
                         if match:
-                            imports.append(match.group(1))
+                            imports.append(match.groupdict()['ref'])
 
                 # Add the file and its imports to the dictionary
                 file_imports[module_name] = imports

@@ -3,8 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity
-import Mathlib.Topology.Order.UpperLowerSetTopology
+module
+
+public import Mathlib.Order.ScottContinuity
+public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
 # Scott topology
@@ -58,6 +60,8 @@ The converse is true in some special cases, but not in general
 
 Scott topology, preorder
 -/
+
+@[expose] public section
 
 open Set
 

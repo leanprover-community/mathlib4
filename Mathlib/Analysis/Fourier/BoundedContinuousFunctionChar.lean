@@ -3,10 +3,12 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # Definition of BoundedContinuousFunction.char
@@ -34,6 +36,8 @@ measure.
 - `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
 
 -/
+
+@[expose] public section
 
 open Filter BoundedContinuousFunction Complex
 
@@ -88,8 +92,8 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
   _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
     congr
-    · rw [neg_smul, ← LinearMap.map_smul (L v')]
-    · rw [← LinearMap.map_smul (L v)]
+    · rw [neg_smul, ← map_smul (L v')]
+    · rw [← map_smul (L v)]
   _ = e ((a / (L (v - v') w)) • (L (v - v') w)) := by
     simp only [map_sub, LinearMap.sub_apply]
     congr

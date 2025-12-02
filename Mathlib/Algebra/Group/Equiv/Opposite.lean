@@ -3,12 +3,16 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Group isomorphism between a group and its opposite
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -149,7 +153,7 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
 
 /-- A monoid is isomorphic to the opposite of its opposite. -/
 @[to_additive (attr := simps!)
-      /-- A additive monoid is isomorphic to the opposite of its opposite. -/]
+      /-- An additive monoid is isomorphic to the opposite of its opposite. -/]
 def MulEquiv.opOp (M : Type*) [Mul M] : M ≃* Mᵐᵒᵖᵐᵒᵖ where
   __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
   map_mul' _ _ := rfl
