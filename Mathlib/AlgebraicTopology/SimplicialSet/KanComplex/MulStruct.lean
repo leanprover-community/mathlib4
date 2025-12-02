@@ -61,7 +61,7 @@ end RelStruct
 /-- For each `i : Fin n`, this structure is a candidate for the relation saying
 that `fg` is the product of `f` and `g` in the homotopy group (of a Kan complex).
 It is so if `g`, `fg` and `f` are respectively the `i.castSucc.castSucc`,
-`i.succ.castSucc` and `i.succ.succ` faces of a `n + 1`-simplex such that
+`i.castSucc.succ` and `i.succ.succ` faces of a `n + 1`-simplex such that
 all the other faces are constant. (The multiplication on homotopy groups will be
 defined using `i := Fin.last _`, but in general, this structure is useful in
 order to obtain properties of `RelStruct`.) -/
