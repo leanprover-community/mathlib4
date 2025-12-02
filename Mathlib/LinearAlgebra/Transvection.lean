@@ -170,13 +170,13 @@ variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
 theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
-    ibc.endHom (transvection f v) = transvection (ibc.toDualHom f) (ε v) := by
+    ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w
   induction w using ibc.inductionOn with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul a w hw => simp [hw]
-  | tmul x => simp [transvection.apply, toDualHom_comp_apply, endHom_apply]
+  | tmul x => simp [transvection.apply, toDual_comp_apply, endHom_apply]
 
 end LinearMap.transvection
 
