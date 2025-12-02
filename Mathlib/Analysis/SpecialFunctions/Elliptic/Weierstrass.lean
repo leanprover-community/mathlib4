@@ -12,7 +12,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 
-# Weierstrass ℘ functions
+# Weierstrass `℘` functions
 
 ## Main definitions
 - `PeriodPair.weierstrassP`: The Weierstrass `℘`-function associated to a pair of periods.
@@ -229,7 +229,7 @@ end weierstrassPExcept
 
 section weierstrassP
 
-/-- The Weierstrass `℘` function. -/
+/-- The Weierstrass `℘` function. This has the notation `℘[L]` in `namespace PeriodPairs`. -/
 def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
 scoped notation3 "℘[" L "]" => weierstrassP L
