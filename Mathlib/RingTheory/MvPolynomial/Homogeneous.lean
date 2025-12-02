@@ -55,7 +55,7 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
   simp only [totalDegree, weightedTotalDegree, weight, LinearMap.toAddMonoidHom_coe,
     linearCombination, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
-    id, Algebra.id.smul_eq_mul, mul_one]
+    id, smul_eq_mul, mul_one]
 
 theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} {e : σ → τ}
     {w : τ → ℕ} {P : MvPolynomial σ R} (he : Function.Injective e) :
@@ -133,7 +133,7 @@ alias ⟨isHomogeneous_of_totalDegree_zero, _⟩ := totalDegree_zero_iff_isHomog
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
   apply isHomogeneous_monomial
-  simp only [degree_def, Finsupp.support_zero, zero_apply, Finset.sum_const_zero]
+  simp only [degree_apply, Finsupp.support_zero, zero_apply, Finset.sum_const_zero]
 
 variable (R)
 
@@ -147,7 +147,7 @@ variable {σ}
 
 theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
-  simp only [degree_def, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+  simp only [degree_apply, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
     single_eq_same]
 
 end
