@@ -235,8 +235,8 @@ open Monic
 
 -- Eventually this can be generalized with Vieta's formulas
 -- plus the connection between roots and factorization.
-theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
-    nextCoeff (t.map fun x => X - C x).prod = -t.sum := by
+theorem ofMultiset_nextCoeff (t : Multiset R) : nextCoeff (ofMultiset t) = -t.sum := by
+  simp only [ofMultiset, AddChar.coe_mk]
   rw [nextCoeff_multiset_prod]
   · simp only [nextCoeff_X_sub_C]
     exact t.sum_hom (-AddMonoidHom.id R)
@@ -245,15 +245,16 @@ theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
 
 theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
     nextCoeff (∏ i ∈ s, (X - C (f i))) = -∑ i ∈ s, f i := by
-  simpa using multiset_prod_X_sub_C_nextCoeff (s.1.map f)
+  simpa using ofMultiset_nextCoeff (s.1.map f)
 
-theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
-    (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
+theorem ofMultiset_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
+    (ofMultiset t).coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
-  convert multiset_prod_X_sub_C_nextCoeff (by assumption)
+  convert ofMultiset_nextCoeff (by assumption)
   rw [nextCoeff, if_neg]
   swap
-  · rw [natDegree_multiset_prod_of_monic]
+  · simp only [ofMultiset_apply]
+    rw [natDegree_multiset_prod_of_monic]
     swap
     · simp only [Multiset.mem_map]
       rintro _ ⟨_, _, rfl⟩
@@ -261,17 +262,19 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
     exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
-  congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [monic_X_sub_C]
+  congr; simp only [ofMultiset_apply]
+  rw [natDegree_multiset_prod_of_monic] <;> · simp [monic_X_sub_C]
 
 theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s) :
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
-  simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
+  simpa using ofMultiset_coeff_card_pred (s.1.map f) (by simpa using hs)
 
 variable [Nontrivial R]
 
 @[simp]
-lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
-    (s.map (X - C ·)).prod.natDegree = Multiset.card s := by
+lemma natDegree_ofMultiset_eq_card (s : Multiset R) :
+    (ofMultiset s).natDegree = Multiset.card s := by
+  simp only [ofMultiset_apply]
   rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
@@ -279,8 +282,9 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
 
 @[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
-  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
-    natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
+  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map]
+  change (ofMultiset (Multiset.map f s.val)).natDegree = #s
+  rw [natDegree_ofMultiset_eq_card, Multiset.card_map, Finset.card]
 
 end CommRing
 
