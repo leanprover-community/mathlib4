@@ -19,8 +19,6 @@ We also define a principal inverse of cosh, arcosh.
 
 - `Real.arsinh`: The inverse function of `Real.sinh`.
 
-- `Real.arcosh`: The inverse function of `Real.cosh`.
-
 - `Real.sinhEquiv`, `Real.sinhOrderIso`, `Real.sinhHomeomorph`: `Real.sinh` as an `Equiv`,
   `OrderIso`, and `Homeomorph`, respectively.
 
@@ -35,12 +33,9 @@ We also define a principal inverse of cosh, arcosh.
   continuous, differentiable, and continuously differentiable; we also provide dot notation
   convenience lemmas like `Filter.Tendsto.arsinh` and `ContDiffAt.arsinh`.
 
-- `Real.cos_arcosh`, `Real.arcosh_cosh`: `Real.arcosh` is an inverse of `Real.cosh`
-
 ## Tags
 
 arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
-arcosh, arccosh, argcosh, acosh
 -/
 
 @[expose] public section
@@ -56,7 +51,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
+/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + √(1 + x^2))`. -/
 @[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
@@ -181,36 +176,6 @@ theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
 @[continuity]
 theorem continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
-
-/-- `arcosh` is defined using a logarithm, `arcosh x = log (x + √(x ^ 2 - 1))`. -/
-@[pp_nodot]
-def arcosh (x : ℝ) :=
-  log (x + √(x ^ 2 - 1))
-
-theorem exp_arcosh (x : ℝ) (hx : 1 ≤ x) : exp (arcosh x) = x + √(x ^ 2 - 1) := by
-  apply exp_log
-  positivity
-
-/-- `arcosh` is the right inverse of `cosh` over [1, ∞). -/
-@[simp]
-theorem cosh_arcosh (x : ℝ) (hx : 1 ≤ x) : cosh (arcosh x) = x := by
-  unfold arcosh
-  have inv : (x + √(x ^ 2 - 1))⁻¹ = x - √(x ^ 2 - 1) := by
-    apply inv_eq_of_mul_eq_one_right
-    rw [← pow_two_sub_pow_two, sq_sqrt (sub_nonneg_of_le (one_le_pow₀ hx)), sub_sub_cancel]
-  rw [cosh_eq, exp_neg, exp_log (by positivity), inv]
-  ring
-
-/-- `arcosh` is the left inverse of `cosh` over [0, ∞). -/
-@[simp]
-theorem arcosh_cosh (x : ℝ) (hx : 0 ≤ x) : arcosh (cosh x) = x := by
-  unfold arcosh
-  apply exp_eq_exp.mp
-  rw [exp_log (by positivity)]
-  apply add_eq_of_eq_sub'
-  rw [exp_sub_cosh]
-  apply (sq_eq_sq₀ (by positivity) (by positivity)).mp
-  rw [← sinh_sq, sq_sqrt (by positivity)]
 
 end Real
 
