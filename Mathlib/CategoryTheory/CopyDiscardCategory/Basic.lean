@@ -3,7 +3,9 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # Copy-Discard Categories
@@ -35,6 +37,8 @@ The key axioms ensure tensor products respect the comonoid structure.
 
 copy-discard, comonoid, symmetric monoidal
 -/
+
+@[expose] public section
 
 universe v u
 

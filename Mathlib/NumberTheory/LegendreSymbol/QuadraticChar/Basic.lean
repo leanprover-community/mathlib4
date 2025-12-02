@@ -3,9 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.Fintype.Parity
-import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.Data.Fintype.Parity
+public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Quadratic characters of finite fields
@@ -17,6 +19,8 @@ some basic statements about it.
 
 quadratic character
 -/
+
+@[expose] public section
 
 
 /-!

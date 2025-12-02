@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Topology.MetricSpace.Gluing
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Topology.MetricSpace.Gluing
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Completely metrizable spaces
@@ -29,6 +31,8 @@ This can be done by writing `letI := upgradeIsCompletelyMetrizable X`, which wil
 an `UpgradedIsCompletelyMetrizableSpace X` instance. This class is a convenience class and
 no instance should be registered for it.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 

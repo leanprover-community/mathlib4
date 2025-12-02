@@ -3,8 +3,10 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # WithAbs
@@ -20,6 +22,8 @@ arise from absolute values.
 - `WithAbs.equiv v` : the canonical (type) equivalence between `WithAbs v` and `R`.
 - `WithAbs.ringEquiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
 -/
+
+@[expose] public section
 
 open Topology
 

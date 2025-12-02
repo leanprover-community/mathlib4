@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.CategoryTheory.Shift.SingleFunctors
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
 /-!
 # Single functors from the homotopy category
@@ -17,6 +19,8 @@ Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -85,8 +89,8 @@ end CochainComplex
 
 namespace HomotopyCategory
 
-/-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ))`
-for `n : ℤ` along with their compatibilites with shifts. -/
+/-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ)`
+for `n : ℤ` along with their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ :=
   (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _)
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.FunLike.Embedding
+module
+
+public import Mathlib.Data.FunLike.Embedding
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
@@ -122,6 +124,8 @@ and defining `CoolerIsoClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyIso`-related declaration.
 
 -/
+
+@[expose] public section
 
 
 /-- The class `EquivLike E α β` expresses that terms of type `E` have an

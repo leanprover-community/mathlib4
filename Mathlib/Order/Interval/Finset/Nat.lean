@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Order.Interval.Finset.SuccPred
-import Mathlib.Order.Interval.Multiset
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Order.Interval.Finset.SuccPred
+public import Mathlib.Order.Interval.Multiset
 
 /-!
 # Finite intervals of naturals
@@ -18,6 +20,8 @@ intervals as finsets and fintypes.
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

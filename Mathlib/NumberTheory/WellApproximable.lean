@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.AddCircle
-import Mathlib.MeasureTheory.Covering.LiminfLimsup
+module
+
+public import Mathlib.Dynamics.Ergodic.AddCircle
+public import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
@@ -56,6 +58,8 @@ Use `AddCircle.exists_norm_nsmul_le` to prove:
 `addWellApproximable 𝕊 (fun n ↦ 1 / n^2) = { ξ | ¬ IsOfFinAddOrder ξ }`
 (which is equivalent to `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`).
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Metric MeasureTheory
@@ -341,9 +345,8 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     exact hδ
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra
-    suffices μ (closedBall 0 (δ/2)) = 0 by
-      apply isOpen_univ.measure_ne_zero μ univ_nonempty <| le_zero_iff.mp <| le_trans hδ _
-      simp [this]
+    refine (isOpen_univ.measure_pos μ univ_nonempty).not_ge <| hδ.trans ?_
+    suffices μ (closedBall 0 (δ/2)) = 0 by simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
   have h'' : ∀ j, (B j).Nonempty := by intro j; rwa [nonempty_closedBall]

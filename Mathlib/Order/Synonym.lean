@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Order.Basic
 
 /-!
 # Type synonyms
@@ -38,6 +40,8 @@ coercions should be inserted:
 This file is similar to `Algebra.Group.TypeTags`.
 -/
 
+@[expose] public section
+
 
 variable {α : Type*}
 
@@ -46,8 +50,8 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
-  h
+instance [h : Nontrivial α] : Nontrivial αᵒᵈ := h
+instance [h : Unique α] : Unique αᵒᵈ := h
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=

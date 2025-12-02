@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ to the polynomial that has the same coefficients as `φ`, for all `m < n`,
 and `0` otherwise.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -33,19 +37,29 @@ section Trunc
 variable [Semiring R]
 open Finset Nat
 
-/-- The `n`th truncation of a formal power series to a polynomial -/
-def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
+private def trunc_aux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
+
+private theorem coeff_trunc_aux (m) (n) (φ : R⟦X⟧) :
+    (trunc_aux n φ).coeff m = if m < n then coeff m φ else 0 := by
+  simp [trunc_aux, Polynomial.coeff_monomial]
+
+/-- The `n`th truncation of a formal power series to a polynomial. -/
+def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
+  toFun := trunc_aux n
+  map_add' φ ψ := Polynomial.ext fun m => by
+    simp only [coeff_trunc_aux, Polynomial.coeff_add]
+    split_ifs with H
+    · rfl
+    · rw [zero_add]
+  map_smul' t φ := by ext; simp [trunc_aux, Polynomial.coeff_monomial]
+
+lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
+  trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff m φ else 0 := by
-  simp [trunc, Polynomial.coeff_monomial]
-
-@[simp]
-theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
-  Polynomial.ext fun m => by
-    rw [coeff_trunc, LinearMap.map_zero, Polynomial.coeff_zero]
-    split_ifs <;> rfl
+  simp [trunc, coeff_trunc_aux]
 
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
@@ -58,24 +72,16 @@ theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a :=
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
     split_ifs with H <;> first | rfl | try simp_all
 
-@[simp]
-theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trunc n ψ :=
-  Polynomial.ext fun m => by
-    simp only [coeff_trunc, Polynomial.coeff_add]
-    split_ifs with H
-    · rfl
-    · rw [zero_add]
-
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff n f) := by
-  rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
+  rw [trunc_apply, Ico_zero_eq_range, sum_range_succ, trunc_apply, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
   rw [Nat.lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [lt_succ, ← not_lt] at h
+  · rw [Nat.lt_succ_iff, ← not_lt] at h
     contradiction
   · rfl
 
@@ -150,6 +156,13 @@ lemma eq_shift_mul_X_pow_add_trunc (n : ℕ) (f : R⟦X⟧) :
 lemma eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : R⟦X⟧) :
     f = X ^ n * (mk fun i ↦ coeff (i + n) f) + (f.trunc n : R⟦X⟧) := by
   rw [← (commute_X_pow _ n).eq, ← eq_shift_mul_X_pow_add_trunc]
+
+lemma monomial_eq_C_mul_X_pow (r : R) (n : ℕ) : monomial n r = C r * X ^ n := by
+  ext; simp [coeff_X_pow, coeff_monomial]
+
+@[simp]
+lemma trunc_X_pow_self_mul (n : ℕ) (p : R⟦X⟧) : (X ^ n * p).trunc n = 0 := by
+  ext; simp +contextual [coeff_trunc, coeff_X_pow_mul']
 
 end Trunc
 
@@ -232,6 +245,17 @@ theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
   coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc
+
+section Ring
+
+variable [Ring R]
+
+@[simp]
+lemma trunc_sub (n : ℕ) (φ ψ : R⟦X⟧) : trunc n (φ - ψ) = trunc n φ - trunc n ψ := by
+  ext i
+  simp
+
+end Ring
 
 section Map
 variable {S : Type*} [Semiring R] [Semiring S] (f : R →+* S)

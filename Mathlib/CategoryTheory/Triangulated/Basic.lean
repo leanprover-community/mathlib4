@@ -3,10 +3,13 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Triangles
@@ -16,6 +19,8 @@ It also defines morphisms between these triangles.
 
 TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -230,6 +235,96 @@ lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
+namespace Triangle
+
+section Preadditive
+
+variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+@[simps (attr := grind =)]
+instance : Zero (T₁ ⟶ T₂) where
+  zero :=
+    { hom₁ := 0
+      hom₂ := 0
+      hom₃ := 0 }
+
+@[simps (attr := grind =)]
+instance : Add (T₁ ⟶ T₂) where
+  add f g :=
+    { hom₁ := f.hom₁ + g.hom₁
+      hom₂ := f.hom₂ + g.hom₂
+      hom₃ := f.hom₃ + g.hom₃ }
+
+@[simps (attr := grind =)]
+instance : Neg (T₁ ⟶ T₂) where
+  neg f :=
+    { hom₁ := -f.hom₁
+      hom₂ := -f.hom₂
+      hom₃ := -f.hom₃ }
+
+@[simps (attr := grind =)]
+instance : Sub (T₁ ⟶ T₂) where
+  sub f g :=
+    { hom₁ := f.hom₁ - g.hom₁
+      hom₂ := f.hom₂ - g.hom₂
+      hom₃ := f.hom₃ - g.hom₃ }
+
+section
+
+variable {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+@[simps (attr := grind =)]
+instance : SMul R (T₁ ⟶ T₂) where
+  smul n f :=
+    { hom₁ := n • f.hom₁
+      hom₂ := n • f.hom₂
+      hom₃ := n • f.hom₃ }
+
+omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+end
+
+instance : AddCommGroup (T₁ ⟶ T₂) where
+  zero_add f := by ext <;> apply zero_add
+  add_assoc f g h := by ext <;> apply add_assoc
+  add_zero f := by ext <;> apply add_zero
+  add_comm f g := by ext <;> apply add_comm
+  neg_add_cancel f := by ext <;> apply neg_add_cancel
+  sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
+  nsmul n f := n • f
+  nsmul_zero f := by cat_disch
+  nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
+  zsmul n f := n • f
+  zsmul_zero' := by cat_disch
+  zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
+  zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
+
+instance : Preadditive (Triangle C) where
+
+end Preadditive
+
+section Linear
+
+variable [Preadditive C] {R : Type*} [Semiring R] [Linear R C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
+
+attribute [local simp] mul_smul add_smul in
+instance : Module R (T₁ ⟶ T₂) where
+  one_smul := by aesop
+  mul_smul := by aesop
+  smul_zero := by aesop
+  smul_add := by aesop
+  add_smul := by aesop
+  zero_smul := by aesop
+
+instance : Linear R (Triangle C) where
+
+end Linear
+
+end Triangle
+
 /-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
 def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
@@ -347,6 +442,22 @@ def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+/-- The first morphism of a triangle, as a natural transformation `π₁ ⟶ π₂`. -/
+@[simps]
+def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
+  app T := T.mor₁
+
+/-- The second morphism of a triangle, as a natural transformation `π₂ ⟶ π₃`. -/
+@[simps]
+def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
+  app T := T.mor₂
+
+/-- The third morphism of a triangle, as a natural
+transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
+@[simps]
+def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C (1 : ℤ) where
+  app T := T.mor₃
+
 section
 
 variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
@@ -354,6 +465,23 @@ variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
 instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
 instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
 instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+
+end
+
+section
+
+variable {J : Type*} [Category J]
+
+/-- Constructor for functors to the category of triangles. -/
+@[simps]
+def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
+    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
+    J ⥤ Triangle C where
+  obj j := mk (mor₁.app j) (mor₂.app j) (mor₃.app j)
+  map φ :=
+    { hom₁ := obj₁.map φ
+      hom₂ := obj₂.map φ
+      hom₃ := obj₃.map φ }
 
 end
 

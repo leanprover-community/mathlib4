@@ -3,8 +3,10 @@ Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
-import Mathlib.ModelTheory.DirectLimit
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
@@ -33,6 +35,8 @@ This file defines partial isomorphisms between first-order structures.
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
 
 -/
+
+@[expose] public section
 
 universe u v w w'
 

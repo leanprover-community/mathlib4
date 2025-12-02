@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Analysis.Convex.PathConnected
+module
+
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Affine homotopy between two continuous maps
@@ -13,6 +15,8 @@ In this file we define `ContinuousMap.Homotopy.affine f g`
 to be the homotopy between `f` and `g`
 such that `affine f g (t, x) = AffineMap.lineMap (f x) (g x) t`.
 -/
+
+@[expose] public section
 
 variable {X E : Type*} [TopologicalSpace X]
   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
