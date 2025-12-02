@@ -68,11 +68,11 @@ def Simplicial (C : PointedCone R M) : Prop :=
   ∃ s : Set M, s.Finite ∧ LinearIndependent R (fun x : s => (x : M)) ∧ span R s = C
 
 /-- The zero cone is simplicial. -/
-theorem simplicial_bot : Simplicial (⊥ : PointedCone R M) :=
+theorem simplicial_bot : (⊥ : PointedCone R M).Simplicial :=
   ⟨∅, Set.finite_empty, linearIndependent_empty_type, by simp [Submodule.span_empty]⟩
 
 /-- A simplicial pointed cone is finitely generated. -/
-theorem Simplicial.fg {C : PointedCone R M} (hC : Simplicial C) : FG C :=
+theorem Simplicial.fg {C : PointedCone R M} (hC : C.Simplicial) : C.FG :=
   let ⟨s, hsfin, _, hspan⟩ := hC
   Submodule.fg_def.mpr ⟨s, hsfin, hspan⟩
 
