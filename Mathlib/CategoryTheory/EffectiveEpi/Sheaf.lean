@@ -50,6 +50,7 @@ instance [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D] :
 
 universe u
 
+-- TODO: cite Borceux Handbook of Algebra for the proof
 def regularEpiCategorySheaf (J : GrothendieckTopology C)
     [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
     (h : ∀ {F G : Sheaf J D} (f : F ⟶ G) [Epi f], ∃ (I : Cᵒᵖ ⥤ D) (p : F.val ⟶ I) (i : I ⟶ G.val),
