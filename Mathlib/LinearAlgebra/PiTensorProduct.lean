@@ -289,7 +289,7 @@ theorem tprod_eq_tprodCoeff_one :
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
-  have : z = z • (1 : R) := by simp only [mul_one, Algebra.id.smul_eq_mul]
+  have : z = z • (1 : R) := by simp only [mul_one, smul_eq_mul]
   conv_lhs => rw [this]
   rfl
 

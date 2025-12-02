@@ -107,7 +107,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
     rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
-  simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
+  simp only [nsmul_eq_mul, smul_eq_mul]
 
 @[to_additive]
 theorem image_pow_subset (n : ℕ) (hm : 0 < m) :

@@ -187,7 +187,7 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
 
 theorem units_smul_resolvent_self {r : Rˣ} {a : A} :
     r • resolvent a (r : R) = resolvent (r⁻¹ • a) (1 : R) := by
-  simpa only [Units.smul_def, Algebra.id.smul_eq_mul, Units.inv_mul] using
+  simpa only [Units.smul_def, smul_eq_mul, Units.inv_mul] using
     @units_smul_resolvent _ _ _ _ _ r r a
 
 /-- The resolvent is a unit when the argument is in the resolvent set. -/

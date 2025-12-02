@@ -161,7 +161,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
           exact differentiable_pow 2)
     simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, zero_mul, add_zero, neg_re,
       ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
-      mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
+      mul_one, zero_add, smul_eq_mul, ofReal_neg] using this
   simp_rw [id, ← HI₁]
   have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by
     ext1 T

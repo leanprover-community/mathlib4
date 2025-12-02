@@ -42,7 +42,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace AdicCompletion
 
-attribute [-simp] smul_eq_mul Algebra.id.smul_eq_mul
+attribute [-simp] smul_eq_mul
 
 @[local simp]
 theorem transitionMap_ideal_mk {m n : ℕ} (hmn : m ≤ n) (x : R) :

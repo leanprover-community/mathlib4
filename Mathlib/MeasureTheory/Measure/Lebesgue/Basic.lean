@@ -351,14 +351,14 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
   refine (Measure.pi_eq fun s hs => ?_).symm
-  simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
+  simp only [det_diagonal, Measure.coe_smul, smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
   have :
     (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
       Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
-    simp only [LinearMap.coe_proj, Algebra.id.smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
+    simp only [LinearMap.coe_proj, smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
       mem_preimage, LinearMap.pi_apply, diagonal_toLin']
   have B : ∀ i, ofReal (abs (D i)) * volume ((D i * ·) ⁻¹' s i) = volume (s i) := by
     intro i

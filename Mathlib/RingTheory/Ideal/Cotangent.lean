@@ -50,7 +50,7 @@ def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
 theorem map_toCotangent_ker : (LinearMap.ker I.toCotangent).map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
-    Algebra.id.smul_eq_mul, Submodule.map_subtype_top]
+    smul_eq_mul, Submodule.map_subtype_top]
 
 theorem mem_toCotangent_ker {x : I} : x ∈ LinearMap.ker I.toCotangent ↔ (x : R) ∈ I ^ 2 := by
   rw [← I.map_toCotangent_ker]
