@@ -187,7 +187,8 @@ This is mainly a tool for calculations where one would want to omit a diverging 
 def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
+@[inherit_doc weierstrassPExcept] scoped
+notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
 
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
@@ -232,7 +233,7 @@ section weierstrassP
 /-- The Weierstrass `℘` function. This has the notation `℘[L]` in `namespace PeriodPairs`. -/
 def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-scoped notation3 "℘[" L "]" => weierstrassP L
+@[inherit_doc weierstrassP] scoped notation3 "℘[" L "]" => weierstrassP L
 
 lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
     ℘[L - l₀] z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = ℘[L] z := by
