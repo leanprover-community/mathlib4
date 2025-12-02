@@ -257,14 +257,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · obtain ⟨h₁, h₂⟩ := h
-        rw [WellFounded.fixF_eq]
-        -- Porting note: used to be simp [h₁, h₂, h₄]
-        apply Part.mem_assert h₁
-        split
-        next e =>
-          injection h₂.symm.trans e
-        next e =>
-          injection h₂.symm.trans e; subst a'; exact h₄⟩
+        grind [WellFounded.fixF_eq]⟩
 
 /-- If advancing one step from `a` leads to `b : β`, then `f.fix a = b` -/
 theorem fix_stop {f : α →. β ⊕ α} {b : β} {a : α} (hb : Sum.inl b ∈ f a) : b ∈ f.fix a := by
