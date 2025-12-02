@@ -1214,7 +1214,7 @@ open UniqueFactorizationMonoid
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   ext n
   induction n using recOnPosPrimePosCoprime with
-  | zero => rw [ZeroHom.map_zero, ZeroHom.map_zero]
+  | zero => rw [map_zero, map_zero]
   | one => simp
   | prime_pow p n hp hn =>
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
@@ -1447,6 +1447,8 @@ theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     rw [sum_comm]
     exact sum_congr rfl fun _ _ ↦ (by simp_all)
 
+-- TODO: fix two non-terminal simp
+set_option linter.flexible false in
 theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
   rw [sum_Ioc_mul_eq_sum_prod_filter, sum_filter, sum_product]

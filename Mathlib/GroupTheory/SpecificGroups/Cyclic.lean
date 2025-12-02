@@ -122,7 +122,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
   obtain ⟨m, hm⟩ := hG (σ h)
   refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
-  rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
+  rw [map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 
 @[to_additive]
 lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :

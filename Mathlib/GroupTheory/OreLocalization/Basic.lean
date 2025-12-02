@@ -478,9 +478,9 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
-        simp only [← hf, MonoidHom.map_mul]
+        simp only [← hf, map_mul]
       conv_rhs =>
-        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
+        rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp

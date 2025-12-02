@@ -327,7 +327,8 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
   let H := invMulSubgroup A h
   refine ⟨H, inferInstance, ?_, fun a ha ↦ ⟨?_, ?_⟩⟩
-  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, - coe_inv, H]
+  · simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+      mem_coe, ← Nat.card_eq_fintype_card, H]
     rwa [Nat.card_eq_finsetCard, card_inv_mul_of_doubling_lt_three_halves h]
   · rw [invMulSubgroup_eq_inv_mul]
     exact_mod_cast A_subset_aH a ha
@@ -372,6 +373,7 @@ private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
     simpa [eq_inv_mul_iff_mul_eq.2 h, mul_assoc] using mul_mem (inv_mem hh₂) hh₁
   simp_all
 
+set_option linter.flexible false in -- simp followed by positivity
 open goldenRatio in
 /-- If `A` has doubling `K` strictly less than `φ`, then `A * A⁻¹` is covered by
 at most a constant number of cosets of a finite subgroup of `G`. -/

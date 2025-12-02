@@ -125,8 +125,8 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
   smul := (· <| ·)
-  smul_zero := LinearEquiv.map_zero
-  smul_add := LinearEquiv.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

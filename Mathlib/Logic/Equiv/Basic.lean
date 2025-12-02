@@ -776,12 +776,7 @@ theorem PLift.eq_up_iff_down_eq {x : PLift α} {y : α} : x = PLift.up y ↔ x.d
 theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α → β}
     (hf : Function.Injective f) (x y z : α) :
     f (Equiv.swap x y z) = Equiv.swap (f x) (f y) (f z) := by
-  conv_rhs => rw [Equiv.swap_apply_def]
-  split_ifs with h₁ h₂
-  · -- We can't yet use `grind` here because of https://github.com/leanprover/lean4/issues/11088
-    rw [hf h₁, Equiv.swap_apply_left]
-  · rw [hf h₂, Equiv.swap_apply_right]
-  · grind
+  grind
 
 namespace Equiv
 
@@ -927,6 +922,45 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
   simp [piCongr', piCongr_apply_apply]
 
 end
+
+variable {α : Type*} {β : Type*} {f : α → β}
+
+/-- A family of equivalences `∀ a, γ₁ a ≃ γ₂ a` generates an equivalence between the product
+over the fibers of a function `f : α → β` on index types. -/
+def piCongrSigmaFiber {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a) :
+    ((σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) ≃ ((a : α) → γ₂ a) :=
+  piCongrLeft γ₁ (sigmaFiberEquiv f) |>.trans (piCongrRight e)
+
+@[simp]
+theorem piCongrSigmaFiber_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
+    (g : (σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) (a : α) :
+    piCongrSigmaFiber e g a = e a (g ⟨f a, ⟨a, rfl⟩⟩) := rfl
+
+@[simp]
+theorem piCongrSigmaFiber_symm_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
+    (g : (a : α) → γ₂ a) (σ : (y : β) × { x : α // f x = y }) :
+    (piCongrSigmaFiber e).symm g σ = (e σ.2.1).symm (g σ.2.1) := rfl
+
+/-- Let `f : α → β` be a function on index types. A family of equivalences, indexed by `b : β`,
+between the product over the fiber of `b` under `f` given as
+`∀ (σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b` lifts to an equivalence over the products
+`∀ a, γ₁ a ≃ ∀ b, γ₂ b`. -/
+def piCongrFiberwise {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) :
+    ((a : α) → γ₁ a) ≃ ((b : β) → γ₂ b) :=
+  ((piCongrSigmaFiber (fun _ => Equiv.refl _)).symm.trans
+    (piCurry fun b (x : { x : α // f x = b }) => γ₁ x.1)).trans
+      (piCongrRight e)
+
+@[simp]
+theorem piCongrFiberwise_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (a : α) → γ₁ a) (b : β) :
+    piCongrFiberwise e g b = e b fun σ => g σ.1 := rfl
+
+@[simp]
+theorem piCongrFiberwise_symm_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+    (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (b : β) → γ₂ b) (a : α) :
+    (piCongrFiberwise e).symm g a = (e (f a)).symm (g (f a)) ⟨a, rfl⟩ := rfl
 
 /-- Transport dependent functions through an equality of sets. -/
 @[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :

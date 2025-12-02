@@ -239,7 +239,7 @@ theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
   card_le_one_iff.trans subsingleton_iff.symm
 
 theorem one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
-  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
+  contrapose!; exact card_le_one_iff_subsingleton
 
 theorem exists_ne_of_one_lt_card (h : 1 < card α) (a : α) : ∃ b : α, b ≠ a :=
   haveI : Nontrivial α := one_lt_card_iff_nontrivial.1 h

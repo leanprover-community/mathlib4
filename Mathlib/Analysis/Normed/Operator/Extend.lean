@@ -66,7 +66,7 @@ def extend : Eₗ →SL[σ₁₂] F :=
       · intro x
         rw [← map_smul]
         simp only [eq]
-        exact ContinuousLinearMap.map_smulₛₗ _ _ _
+        exact map_smulₛₗ _ _ _
     cont }
   else 0
 
