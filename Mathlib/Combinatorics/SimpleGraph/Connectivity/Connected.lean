@@ -185,6 +185,9 @@ theorem reachabilitySet_mono {G G' : SimpleGraph V} (h : G ≤ G') :
     G.reachabilitySet ⊆ G'.reachabilitySet :=
   Sym2.fromRel_mono _ _ <| Reachable.mono' h
 
+theorem reachabilitySet_monotone : Monotone (reachabilitySet : SimpleGraph V → Set (Sym2 V)) :=
+  @reachabilitySet_mono V
+
 theorem reachabilitySet_fromEdgeSet_fromRel_eq_fromRel_reflTransGen {r : V → V → Prop}
     (sym : Symmetric r) : (fromEdgeSet <| Sym2.fromRel sym).reachabilitySet =
       Sym2.fromRel (Relation.ReflTransGen.symmetric sym) := by
