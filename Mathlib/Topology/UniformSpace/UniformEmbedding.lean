@@ -181,6 +181,11 @@ theorem IsUniformEmbedding.of_comp_iff {g : β → γ} (hg : IsUniformEmbedding 
     IsUniformEmbedding (g ∘ f) ↔ IsUniformEmbedding f := by
   simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.injective.of_comp_iff f]
 
+theorem IsUniformEmbedding.of_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f)
+    (hg : UniformContinuous g) (hgf : IsUniformEmbedding (g ∘ f)) : IsUniformEmbedding f where
+  injective := .of_comp hgf.injective
+  toIsUniformInducing := .of_comp hf hg hgf.isUniformInducing
+
 theorem Equiv.isUniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : IsUniformEmbedding f :=
   isUniformEmbedding_iff'.2 ⟨f.injective, h₁, by rwa [← Equiv.prodCongr_apply, ← map_equiv_symm]⟩

@@ -239,6 +239,34 @@ def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K :
     (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
   rfl
 
+variable (𝕜) in
+/-- Inclusion of `𝓓^{n}(Ω, F)` into the space `E →ᵇ F` of bounded continuous maps
+as a `𝕜`-linear map.
+
+This is subsumed by `toBoundedContinuousFunctionCLM`, which also bundles the continuity. -/
+noncomputable def toBoundedContinuousFunctionLM [SMulCommClass ℝ 𝕜 F] :
+    𝓓^{n}(Ω, F) →ₗ[𝕜] E →ᵇ F where
+  toFun f := f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+lemma toBoundedContinuousFunctionLM_apply [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) :
+    toBoundedContinuousFunctionLM 𝕜 f = f :=
+  rfl
+
+lemma toBoundedContinuousFunctionLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
+  rfl
+
+variable (𝕜) in
+lemma toBoundedContinuousFunctionLM_ofSupportedIn [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
+    (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionLM 𝕜 (ofSupportedIn K_sub_Ω f) =
+      ContDiffMapSupportedIn.toBoundedContinuousFunctionLM 𝕜 f :=
+  rfl
+
 variable (𝕜 n k) in
 /-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}(Ω, E [×i]→L[ℝ] F)`.
@@ -436,23 +464,62 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 
+end Topology
+
+section ToBoundedContinuousFunctionCLM
+
+variable (𝕜) in
+/-- The inclusion of the space `𝓓^{n}(Ω, F)` into the space `E →ᵇ F` of bounded continuous
+functions as a continuous `𝕜`-linear map. -/
+noncomputable def toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+    𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F where
+  toLinearMap := toBoundedContinuousFunctionLM 𝕜
+  cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
+    rw [TestFunction.continuous_iff_continuous_comp]
+    intro K K_sub_Ω
+    refine .congr ?_ fun f ↦ (toBoundedContinuousFunctionLM_ofSupportedIn 𝕜 K_sub_Ω f).symm
+    exact (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous
+
+@[simp]
+lemma toBoundedContinuousFunctionCLM_apply [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) :
+    toBoundedContinuousFunctionCLM 𝕜 f = f :=
+  rfl
+
+lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
+  rfl
+
+variable (𝕜) in
+theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
+    Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
+  fun f g ↦ by simp [toBoundedContinuousFunctionCLM, toBoundedContinuousFunctionLM]
+
+instance : T3Space 𝓓^{n}(Ω, F) :=
+  have : T2Space 𝓓^{n}(Ω, F) := .of_injective_continuous
+    (injective_toBoundedContinuousFunctionCLM ℝ)
+    (toBoundedContinuousFunctionCLM ℝ).continuous
+  inferInstance
+
 theorem isUniformEmbedding_ofSupportedInCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     IsUniformEmbedding (ofSupportedInCLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
-  let φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] Π i, E →ᵇ E [×i]→L[ℝ] F :=
-  { toFun f i := iteratedFDerivWithOrderLM 𝕜 n 0 i f
-    map_add' _ _ := sorry
-    map_smul' _ _ := sorry }
-  have φ_comp (K' : Compacts E) (K'_sub_Ω : (K' : Set E) ⊆ Ω) :
-      φ ∘ₗ ofSupportedInLM 𝕜 K'_sub_Ω = LinearMap.pi fun i ↦ structureMapLM 𝕜 n i := by
+  let φ (i : ℕ) : 𝓓^{n}(Ω, F) →ₗ[𝕜] E →ᵇ E [×i]→L[ℝ] F :=
+    toBoundedContinuousFunctionLM 𝕜 ∘ₗ iteratedFDerivWithOrderLM 𝕜 n 0 i
+  let Φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] Π i, E →ᵇ E [×i]→L[ℝ] F := LinearMap.pi φ
+  have Φ_comp (K' : Compacts E) (K'_sub_Ω : (K' : Set E) ⊆ Ω) :
+      Φ ∘ₗ ofSupportedInLM 𝕜 K'_sub_Ω = LinearMap.pi fun i ↦ structureMapLM 𝕜 n i := by
     ext
-    simp [φ, structureMapLM_apply_withOrder]
-  have φ_cont : Continuous φ := by
-    simp_rw [TestFunction.continuous_iff_continuous_comp, φ_comp]
+    simp [Φ, φ, structureMapLM_apply_withOrder]
+  have Φ_cont : Continuous Φ := by
+    rw [TestFunction.continuous_iff_continuous_comp]
     intro K' K'_sub_Ω
-    exact (ContinuousLinearMap.pi fun i ↦ structureMapCLM 𝕜 n i).continuous
+    rw [Φ_comp K' K'_sub_Ω]
+    exact continuous_pi fun i ↦ (structureMapCLM 𝕜 n i).continuous
+  have Φ_unifCont : UniformContinuous Φ :=
+    uniformContinuous_of_continuousAt_zero Φ Φ_cont.continuousAt
   sorry
 
-end Topology
+end ToBoundedContinuousFunctionCLM
 
 end TestFunction
