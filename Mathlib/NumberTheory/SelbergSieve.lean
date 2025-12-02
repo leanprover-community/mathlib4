@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -37,9 +37,9 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 noncomputable section
 
-open scoped BigOperators ArithmeticFunction
+open scoped BigOperators ArithmeticFunction.Moebius
 
-open Finset Real Nat ArithmeticFunction.Moebius
+open Finset Real Nat ArithmeticFunction
 
 /-- We set up a sieve problem as follows. Take a finite set of natural numbers `A`, whose elements
 are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented by a squarefree
