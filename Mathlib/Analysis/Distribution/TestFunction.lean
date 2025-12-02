@@ -346,7 +346,8 @@ This is subsumed by `postcompCLM T`, which also bundles the continuity. -/
 noncomputable def postcompLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
     𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{n}(Ω, F') where
   toFun f := ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
-    f.hasCompactSupport.comp_left (map_zero _), sorry⟩ -- missing API
+    f.hasCompactSupport.comp_left (map_zero _),
+    (tsupport_comp_subset (map_zero _) f).trans f.tsupport_subset⟩
   map_add' f g := by ext x; exact map_add T (f x) (g x)
   map_smul' c f := by ext x; exact map_smul T c (f x)
 
