@@ -136,6 +136,8 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
 
 -- TODO: def or abbrev?
 variable (Ω F n) in
+/-- `𝓓'^{n}(Ω, F) = Distribution Ω F n` is the space of `F`-valued distributions on `Ω` with
+order at most `n`. In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/
 abbrev Distribution := 𝓓^{n}(Ω, ℝ) →SL_c[RingHom.id ℝ] F
 
 /-- We denote `𝓓'^{n}(Ω, F)` the space of `F`-valued distributions on `Ω` with order at most
@@ -156,6 +158,9 @@ section mapCLM
 -- TODO: generalize this section to `𝕜` linear maps (or even semilinear maps)
 -- by generalizing `ContinuousLinearMap.postcomp`
 
+/-- Any continuous linear map `A : F →L[ℝ] G` induces a continuous linear map
+`𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
+pointwise. -/
 def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
   ContinuousLinearMap.postcomp_uniformConvergenceCLM (_ : Set <| Set <| 𝓓^{n}(Ω, ℝ)) A
 
