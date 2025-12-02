@@ -299,7 +299,7 @@ maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-
 (Proposition 3.1.2/1(2))][bosch-guntzer-remmert]. -/
 theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) (s : Multiset L)
-    (hp : mapAlg K L p = (map (fun a : L ↦ X - C a) s).prod) :
+    (hp : mapAlg K L p = ofMultiset s) :
     (⨆ x : L, if x ∈ s then f x else 0) = spectralValue p := by
   have h_le : 0 ≤ ⨆ x : L, ite (x ∈ s) (f x) 0 := by
     apply iSup_nonneg (fun _ ↦ ?_)
@@ -311,7 +311,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
     · have hx0 : aeval x p = 0 := aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s hx hp
       rw [if_pos hx]
       exact norm_root_le_spectralValue hf_pm hf_na
-        (monic_of_monic_mapAlg (hp ▸ monic_multisetProd_X_sub_C s)) hx0
+        (monic_of_monic_mapAlg (hp ▸ monic_ofMultiset s)) hx0
     · simp only [if_neg hx, spectralValue_nonneg _]
   · apply ciSup_le (fun m ↦ ?_)
     by_cases hm : m < p.natDegree
@@ -321,10 +321,12 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
         one_div_mul_cancel (ne_of_gt h), rpow_one, ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
       have hps : card s = p.natDegree := by
         rw [← natDegree_map (algebraMap K L), ← mapAlg_eq_map, hp,
-          natDegree_multiset_prod_X_sub_C_eq_card]
+          natDegree_ofMultiset_eq_card]
       have hc : ‖p.coeff m‖ = f (((mapAlg K L) p).coeff m) := by
         rw [← AlgebraNorm.extends_norm hf1, mapAlg_eq_map, coeff_map]
-      rw [hc, hp, prod_X_sub_C_coeff s (hps ▸ le_of_lt hm)]
+      rw [hc, hp]-- prod_X_sub_C_coeff s (hps ▸ le_of_lt hm)]
+      simp only [ofMultiset_apply]
+      rw [prod_X_sub_C_coeff s (hps ▸ le_of_lt hm)]
       have h : f ((-1) ^ (card s - m) * s.esymm (card s - m)) = f (s.esymm (card s - m)) := by
         rcases neg_one_pow_eq_or L (card s - m) with h1 | hn1
         · rw [h1, one_mul]

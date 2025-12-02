@@ -124,7 +124,7 @@ theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitive
   rw [nthRoots]
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
-  apply prod_multiset_X_sub_C_of_monic_of_roots_card_eq hmonic
+  apply ofMultiset_of_monic_of_roots_card_eq hmonic
   rw [@natDegree_X_pow_sub_C R _ _ n 1, ← nthRoots]
   exact IsPrimitiveRoot.card_nthRoots_one h
 
