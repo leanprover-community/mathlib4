@@ -71,7 +71,7 @@ abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a.obj ⟶ b.obj} (η : f ⟶ 
   InducedBicategory.mkHom₂ η
 
 @[ext]
-abbrev hom₂_ext {a b : FullSubbicategory P} {f g : a ⟶ b} {η θ : f ⟶ g} (h : η.hom = θ.hom) :
+lemma hom₂_ext {a b : FullSubbicategory P} {f g : a ⟶ b} {η θ : f ⟶ g} (h : η.hom = θ.hom) :
     η = θ :=
   InducedBicategory.hom₂_ext h
 
