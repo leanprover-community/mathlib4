@@ -175,6 +175,11 @@ protected theorem LocallyIntegrableOn.sub
 protected theorem LocallyIntegrableOn.neg {f : X → E} (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (-f) s μ := fun x hx ↦ (hf x hx).neg
 
+-- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
+protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+    {f : X → E} (hf : LocallyIntegrableOn f s μ) (c : 𝕜) :
+    LocallyIntegrableOn (c • f) s μ := fun x hx ↦ (hf x hx).smul c
+
 end LocallyIntegrableOn
 
 /-- A function `f : X → ε` is *locally integrable* if it is integrable on a neighborhood of every
