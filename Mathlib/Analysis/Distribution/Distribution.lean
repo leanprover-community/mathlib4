@@ -14,9 +14,10 @@ public import Mathlib.Analysis.LocallyConvex.StrongTopology
 Let `E` be a real **finite-dimensional normed space**, `Ω` an open subset of `E`,
 and `F` a real **locally convex topological vector space**.
 
-A **`F`-valued distributions on `Ω`** is a continuous `ℝ`-linear map `T : 𝓓(Ω, ℝ) →L[ℝ] F`,
+A **`F`-valued distribution on `Ω`** is a continuous `ℝ`-linear map `T : 𝓓(Ω, ℝ) →L[ℝ] F`,
 defined on the space `𝓓(Ω, ℝ)` of real-valued test functions, and taking values in `F`.
-In particular, if `𝕜` is `RCLike`, this is the usual notion of real or complex distribution.
+In particular, if `𝕜` is an `RCLike` field, `𝓓'(Ω, 𝕜)` is the usual notion of real or complex
+distribution on `Ω`.
 
 We denote the space of `F`-valued distributions on `Ω` by `𝓓'(Ω, F)`. Topologically,
 it is defined as `𝓓(Ω, ℝ) →L_c[ℝ] F`, meaning that we endow it with topology of uniform
@@ -63,7 +64,7 @@ definition we choose is studied in
 Let us give two examples of how we plan to use this level of generality:
 * In the short term, this will allow us to define the *Fréchet derivative* of a distribution,
   as a continuous linear map `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, E →L[ℝ] F)`. Note that, even if `F = ℝ`,
-  the derivative is naturally vector valued.
+  the derivative is naturally vector-valued.
 * On a longer timescale, we should aim to prove the
   [Schwartz Kernel Theorem](https://en.wikipedia.org/wiki/Schwartz_kernel_theorem), which is
   formulated nicely in terms of vector-valued distributions. Indeed, it says precisely that one
@@ -106,7 +107,7 @@ Note that the topology on `𝓓'^{n}(Ω, F)` has no reason to be the subspace to
 
 Our choice of topology on `𝓓'^{n}(Ω, F)` follows
 [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]. Note that,
-since, `𝓓(Ω, ℝ)` is a Montel space, the topology on `𝓓'(Ω, F)` is also that of uniform convergence
+since `𝓓(Ω, ℝ)` is a Montel space, the topology on `𝓓'(Ω, F)` is also that of uniform convergence
 on `IsVonNBounded` subsets (the corresponding fact does not hold for `𝓓'^{n}(Ω, F)` though).
 Hence, our definition also agrees with [L. Schwartz, *Théorie des distributions*][schwartz1950].
 
@@ -128,10 +129,10 @@ See [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XII
 open Set TopologicalSpace
 open scoped Distributions CompactConvergenceCLM
 
-variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
+variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-  {F : Type*} [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [Module 𝕂 F] [TopologicalSpace F]
-  {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [Module 𝕜 F'] [Module 𝕂 F'] [TopologicalSpace F']
+  {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
   {n k : ℕ∞}
 
 -- TODO: def or abbrev?
@@ -149,8 +150,8 @@ scoped[Distributions] notation "𝓓'^{" n "}(" Ω ", " F ")" => Distribution Ω
 is a bit abusive since this is no longer a dual space unless `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
-variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] [ContinuousSMul 𝕜 F]
-variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F'] [ContinuousSMul 𝕜 F']
+variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
 
 namespace Distribution
 
