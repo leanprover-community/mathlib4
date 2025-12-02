@@ -478,14 +478,6 @@ lemma IsColoop.mem_ground (he : M.IsColoop e) : e ∈ M.E :=
 lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
   fun _ ↦ IsColoop.mem_ground
 
-
-@[grind .]
-lemma trans_foo {Y : Set α} (h : X ⊆ Y) (h' : Y ⊆ M.E) : X ⊆ M.E := h.trans h'
-
-example (hX : X ⊆ M.coloops) : X ⊆ M.E := by
-  grind
-
-
 lemma isColoop_iff_mem_coloops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
 
 @[simp]
