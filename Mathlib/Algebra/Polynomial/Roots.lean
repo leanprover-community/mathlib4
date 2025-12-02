@@ -315,7 +315,7 @@ theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := 
       WithBot.coe_le_coe.1
         (le_trans (card_roots h)
           (by
-            rw [hn, pow_zero, ← C_1, ← RingHom.map_sub]
+            rw [hn, pow_zero, ← C_1, ← map_sub]
             exact degree_C_le))
   else by
     rw [← Nat.cast_le (α := WithBot ℕ)]
