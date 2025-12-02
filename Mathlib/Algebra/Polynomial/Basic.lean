@@ -1212,6 +1212,7 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
   toFun s := (s.map (fun a ↦ X - C a)).prod
   map_zero_eq_one' := by simp
   map_add_eq_mul' := by simp
+
 section repr
 
 variable [Semiring R]
