@@ -202,14 +202,18 @@ lemma weierstrassP_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l 
 section weierstrassPExcept
 
 /-- The Weierstrass `℘` function with the `l₀`-term missing.
-This is mainly a tool for calculations where one would want to omit a diverging term. -/
+This is mainly a tool for calculations where one would want to omit a diverging term.
+This has the notation `℘[L - l₀]` in the namespace `PeriodPairs`. -/
 def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
+
+@[inherit_doc weierstrassPExcept]
+scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
 
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
-      (L.weierstrassPExcept l₀) := by
+      ℘[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := (10 * · * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
@@ -220,12 +224,12 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
 
 lemma hasSum_weierstrassPExcept (l₀ : ℂ) (z : ℂ) :
     HasSum (fun l : L.lattice ↦ if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
-      (L.weierstrassPExcept l₀ z) :=
+      (℘[L - l₀] z) :=
   (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSum
 
-/- `weierstrassPExcept l₀` is differentiable on non-lattice points and `l₀`. -/
+/- `℘Except l₀` is differentiable on non-lattice points and `l₀`. -/
 lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
-    DifferentiableOn ℂ (L.weierstrassPExcept l₀) (L.lattice \ {l₀})ᶜ := by
+    DifferentiableOn ℂ ℘[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine (L.hasSumLocallyUniformly_weierstrassPExcept l₀).hasSumLocallyUniformlyOn.differentiableOn
     (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_diff
   split_ifs
@@ -233,7 +237,7 @@ lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
   · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
 
 lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
-    L.weierstrassPExcept l₀ (-z) = L.weierstrassPExcept (-l₀) z := by
+    ℘[L - l₀] (-z) = ℘[L - -l₀] z := by
   simp only [weierstrassPExcept]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   congr! 3 with l
@@ -245,13 +249,14 @@ end weierstrassPExcept
 
 section weierstrassP
 
-/-- The Weierstrass `℘` function. -/
+/-- The Weierstrass `℘` function. This has the notation `℘[L]` in the namespace `PeriodPairs`. -/
 def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
+@[inherit_doc weierstrassP] scoped notation3 "℘[" L "]" => weierstrassP L
+
 lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
-    L.weierstrassPExcept l₀ z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = L.weierstrassP z := by
-  trans L.weierstrassPExcept l₀ z +
-    ∑' i : L.lattice, if i.1 = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
+    ℘[L - l₀] z + (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) = ℘[L] z := by
+  trans ℘[L - l₀] z + ∑' i : L.lattice, if i = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
   · simp
   rw [weierstrassPExcept, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
@@ -259,44 +264,42 @@ lemma weierstrassPExcept_add (l₀ : L.lattice) (z : ℂ) :
   · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
 
 lemma weierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
-    L.weierstrassPExcept l₀ z = L.weierstrassP z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
+    ℘[L - l₀] z = ℘[L] z + (1 / l₀.1 ^ 2 - 1 / (z - l₀.1) ^ 2) := by
   rw [← L.weierstrassPExcept_add l₀]
   abel
 
 lemma weierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
-    L.weierstrassPExcept l₀ = L.weierstrassP := by
+    ℘[L - l₀] = ℘[L] := by
   delta weierstrassPExcept weierstrassP
   congr! 3 with z l
   have : l.1 ≠ l₀ := by rintro rfl; simp at hl
   simp [this]
 
 lemma hasSumLocallyUniformly_weierstrassP :
-    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2)
-      L.weierstrassP := by
+    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ 1 / (z - ↑l) ^ 2 - 1 / l ^ 2) ℘[L] := by
   convert L.hasSumLocallyUniformly_weierstrassPExcept (L.ω₁ / 2) using 3 with l
   · rw [if_neg]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
 lemma hasSum_weierstrassP (z : ℂ) :
-    HasSum (fun l : L.lattice ↦ (1 / (z - l) ^ 2 - 1 / l ^ 2)) (L.weierstrassP z) :=
+    HasSum (fun l : L.lattice ↦ (1 / (z - l) ^ 2 - 1 / l ^ 2)) (℘[L] z) :=
   L.hasSumLocallyUniformly_weierstrassP.hasSum
 
 lemma differentiableOn_weierstrassP :
-    DifferentiableOn ℂ L.weierstrassP L.latticeᶜ := by
+    DifferentiableOn ℂ ℘[L] L.latticeᶜ := by
   rw [← L.weierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
   convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
-lemma weierstrassP_neg (z : ℂ) : L.weierstrassP (-z) = L.weierstrassP z := by
+lemma weierstrassP_neg (z : ℂ) : ℘[L] (-z) = ℘[L] z := by
   simp only [weierstrassP]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   congr with l
   simp
   ring
 
-lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) :
-    ¬ ContinuousAt L.weierstrassP x := by
+lemma not_continuousAt_weierstrassP (x : ℂ) (hx : x ∈ L.lattice) : ¬ ContinuousAt ℘[L] x := by
   eta_expand
   simp_rw [← L.weierstrassPExcept_add ⟨x, hx⟩]
   intro H
@@ -312,13 +315,17 @@ end weierstrassP
 section derivWeierstrassPExcept
 
 /-- The derivative of Weierstrass `℘` function with the `l₀`-term missing.
-This is mainly a tool for calculations where one would want to omit a diverging term. -/
+This is mainly a tool for calculations where one would want to omit a diverging term.
+This has the notation `℘'[L - l₀]` in the namespace `PeriodPairs`. -/
 def derivWeierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l.1 = l₀ then 0 else -2 / (z - l) ^ 3
 
+@[inherit_doc derivWeierstrassPExcept]
+scoped notation3 "℘'[" L:max " - " l₀ "]" => derivWeierstrassPExcept L l₀
+
 lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3)
-      (L.derivWeierstrassPExcept l₀) := by
+      ℘'[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := fun _ ↦ (16 * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
@@ -339,13 +346,12 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
   · exact Real.rpow_pos_of_pos (by simpa) _
 
 lemma hasSum_derivWeierstrassPExcept (l₀ : ℂ) (z : ℂ) :
-    HasSum (fun l : L.lattice ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3)
-      (L.derivWeierstrassPExcept l₀ z) :=
+    HasSum (fun l : L.lattice ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3) (℘'[L - l₀] z) :=
   (L.hasSumLocallyUniformly_derivWeierstrassPExcept l₀).tendstoLocallyUniformlyOn.tendsto_at
     (Set.mem_univ z)
 
 lemma differentiableOn_derivWeierstrassPExcept (l₀ : ℂ) :
-    DifferentiableOn ℂ (L.derivWeierstrassPExcept l₀) (L.lattice \ {l₀})ᶜ := by
+    DifferentiableOn ℂ ℘'[L - l₀] (L.lattice \ {l₀})ᶜ := by
   refine L.hasSumLocallyUniformly_derivWeierstrassPExcept l₀
     |>.tendstoLocallyUniformlyOn.differentiableOn
       (.of_forall fun s ↦ .fun_sum fun i hi ↦ ?_) L.isOpen_compl_lattice_diff
@@ -356,7 +362,7 @@ lemma differentiableOn_derivWeierstrassPExcept (l₀ : ℂ) :
   simpa [sub_eq_zero]
 
 lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
-    Set.EqOn (deriv (L.weierstrassPExcept l₀)) (L.derivWeierstrassPExcept l₀)
+    Set.EqOn (deriv ℘[L - l₀]) ℘'[L - l₀]
       (L.lattice \ {l₀})ᶜ := by
   refine ((L.hasSumLocallyUniformly_weierstrassPExcept l₀).tendstoLocallyUniformlyOn.deriv
     (.of_forall fun s ↦ ?_) L.isOpen_compl_lattice_diff).unique ?_
@@ -391,7 +397,7 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
       exact .sub (.div (by fun_prop) (by fun_prop) (by simpa)) (by fun_prop)
 
 lemma derivWeierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
-    L.derivWeierstrassPExcept l₀ (-z) = - L.derivWeierstrassPExcept (-l₀) z := by
+    ℘'[L - l₀] (-z) = - ℘'[L - (-l₀)] z := by
   simp only [derivWeierstrassPExcept]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   simp only [Equiv.neg_apply, NegMemClass.coe_neg, sub_neg_eq_add, neg_add_eq_sub,
@@ -405,7 +411,7 @@ end derivWeierstrassPExcept
 section Periodicity
 
 lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
-    L.derivWeierstrassPExcept l₀ (z + l) = L.derivWeierstrassPExcept (l₀ - l) z := by
+    ℘'[L - l₀] (z + l) = ℘'[L - (l₀ - l)] z := by
   simp only [derivWeierstrassPExcept]
   rw [← (Equiv.addRight l).tsum_eq]
   simp only [Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub, eq_sub_iff_add_eq]
@@ -413,8 +419,8 @@ lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
 -- Subsumed by `weierstrassP_add_coe`
 private lemma weierstrassPExcept_add_coe_aux
     (l₀ : ℂ) (hl₀ : l₀ ∈ L.lattice) (l : L.lattice) (hl : l.1 / 2 ∉ L.lattice) :
-    Set.EqOn (L.weierstrassPExcept l₀ <| · + l) (L.weierstrassPExcept (l₀ - l) · +
-      (1 / l₀ ^ 2 - 1 / (l₀ - ↑l) ^ 2)) (L.lattice \ {l₀ - l})ᶜ := by
+    Set.EqOn (℘[L - l₀] <| · + l) (℘[L - (l₀ - l)] · + (1 / l₀ ^ 2 - 1 / (l₀ - ↑l) ^ 2))
+      (L.lattice \ {l₀ - l})ᶜ := by
   apply IsOpen.eqOn_of_deriv_eq (𝕜 := ℂ) L.isOpen_compl_lattice_diff
     ?_ ?_ ?_ ?_ (x := - (l / 2)) ?_ ?_
   · refine (Set.Countable.isConnected_compl_of_one_lt_rank (by simp) ?_).2
@@ -438,7 +444,7 @@ private lemma weierstrassPExcept_add_coe_aux
 
 -- Subsumed by `weierstrassP_add_coe`
 private lemma weierstrassP_add_coe_aux (z : ℂ) (l : L.lattice) (hl : l.1 / 2 ∉ L.lattice) :
-    L.weierstrassP (z + l) = L.weierstrassP z := by
+    ℘[L] (z + l) = ℘[L] z := by
   have hl0 : l ≠ 0 := by rintro rfl; simp at hl
   by_cases hz : z ∈ L.lattice
   · have := L.weierstrassPExcept_add_coe_aux (z + l) (add_mem hz l.2) l hl (x := z) (by simp)
@@ -455,9 +461,9 @@ private lemma weierstrassP_add_coe_aux (z : ℂ) (l : L.lattice) (hl : l.1 / 2 �
     ring
 
 @[simp]
-lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : L.weierstrassP (z + l) = L.weierstrassP z := by
+lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z := by
   let G : AddSubgroup ℂ :=
-  { carrier := { z | (L.weierstrassP <| · + z) = L.weierstrassP }
+  { carrier := { z | (℘[L] <| · + z) = ℘[L] }
     add_mem' := by simp_all [funext_iff, ← add_assoc]
     zero_mem' := by simp
     neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
@@ -471,27 +477,29 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : L.weierstrassP (z + l) = 
   exact congr_fun (this l.2) _
 
 @[simp]
-lemma weierstrassP_zero : L.weierstrassP 0 = 0 := by simp [weierstrassP]
+lemma weierstrassP_zero : ℘[L] 0 = 0 := by simp [weierstrassP]
 
 @[simp]
-lemma weierstrassP_coe (l : L.lattice) : L.weierstrassP l = 0 := by
+lemma weierstrassP_coe (l : L.lattice) : ℘[L] l = 0 := by
   rw [← zero_add l.1, L.weierstrassP_add_coe, L.weierstrassP_zero]
 
 @[simp]
-lemma weierstrassP_sub_coe (z : ℂ) (l : L.lattice) : L.weierstrassP (z - l) = L.weierstrassP z := by
+lemma weierstrassP_sub_coe (z : ℂ) (l : L.lattice) : ℘[L] (z - l) = ℘[L] z := by
   rw [← L.weierstrassP_add_coe _ l, sub_add_cancel]
 
 end Periodicity
 
 section derivWeierstrassP
 
-/-- The derivative of Weierstrass `℘` function. -/
+/-- The derivative of Weierstrass `℘` function.
+This has the notation `℘'[L]` in the namespace `PeriodPairs`. -/
 def derivWeierstrassP (z : ℂ) : ℂ := - ∑' l : L.lattice, 2 / (z - l) ^ 3
 
+@[inherit_doc weierstrassP] scoped notation3 "℘'[" L "]" => derivWeierstrassP L
+
 lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
-    L.derivWeierstrassPExcept l₀ z - 2 / (z - l₀) ^ 3 = L.derivWeierstrassP z := by
-  trans L.derivWeierstrassPExcept l₀ z + ∑' i : L.lattice,
-    if i.1 = l₀.1 then (- 2 / (z - l₀) ^ 3) else 0
+    ℘'[L - l₀] z - 2 / (z - l₀) ^ 3 = ℘'[L] z := by
+  trans ℘'[L - l₀] z + ∑' i : L.lattice, if i.1 = l₀.1 then (- 2 / (z - l₀) ^ 3) else 0
   · simp [sub_eq_add_neg, neg_div]
   rw [derivWeierstrassP, derivWeierstrassPExcept, ← Summable.tsum_add, ← tsum_neg]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *, neg_div]
@@ -499,11 +507,11 @@ lemma derivWeierstrassPExcept_sub (l₀ : L.lattice) (z : ℂ) :
   · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
 
 lemma derivWeierstrassPExcept_def (l₀ : L.lattice) (z : ℂ) :
-    L.derivWeierstrassPExcept l₀ z = L.derivWeierstrassP z + 2 / (z - l₀) ^ 3 := by
+    ℘'[L - l₀] z = ℘'[L] z + 2 / (z - l₀) ^ 3 := by
   rw [← L.derivWeierstrassPExcept_sub l₀, sub_add_cancel]
 
 lemma derivWeierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
-    L.derivWeierstrassPExcept l₀ = L.derivWeierstrassP := by
+    ℘'[L - l₀] = ℘'[L] := by
   delta derivWeierstrassPExcept derivWeierstrassP
   simp_rw [← tsum_neg]
   congr! 3 with z l
@@ -511,24 +519,23 @@ lemma derivWeierstrassPExcept_of_notMem (l₀ : ℂ) (hl : l₀ ∉ L.lattice) :
   simp [this, neg_div]
 
 lemma hasSumLocallyUniformly_derivWeierstrassP :
-    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ - 2 / (z - l) ^ 3)
-      L.derivWeierstrassP := by
+    HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ - 2 / (z - l) ^ 3) ℘'[L] := by
   convert L.hasSumLocallyUniformly_derivWeierstrassPExcept (L.ω₁ / 2) using 3 with l z
   · rw [if_neg, neg_div]; exact fun e ↦ L.ω₁_div_two_notMem_lattice (e ▸ l.2)
   · rw [L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
 
 lemma hasSum_derivWeierstrassP (z : ℂ) :
-    HasSum (fun l : L.lattice ↦ - 2 / (z - l) ^ 3) (L.derivWeierstrassP z) :=
+    HasSum (fun l : L.lattice ↦ - 2 / (z - l) ^ 3) (℘'[L] z) :=
   L.hasSumLocallyUniformly_derivWeierstrassP.tendstoLocallyUniformlyOn.tendsto_at (Set.mem_univ z)
 
 lemma differentiableOn_derivWeierstrassP :
-    DifferentiableOn ℂ L.derivWeierstrassP L.latticeᶜ := by
+    DifferentiableOn ℂ ℘'[L] L.latticeᶜ := by
   rw [← L.derivWeierstrassPExcept_of_notMem _ L.ω₁_div_two_notMem_lattice]
   convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
 @[simp]
-lemma derivWeierstrassP_neg (z : ℂ) : L.derivWeierstrassP (-z) = - L.derivWeierstrassP z := by
+lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   simp only [derivWeierstrassP]
   rw [← (Equiv.neg L.lattice).tsum_eq]
   simp only [Equiv.neg_apply, NegMemClass.coe_neg, sub_neg_eq_add, neg_add_eq_sub, neg_neg,
@@ -538,26 +545,26 @@ lemma derivWeierstrassP_neg (z : ℂ) : L.derivWeierstrassP (-z) = - L.derivWeie
 
 @[simp]
 lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
-    L.derivWeierstrassP (z + l) = L.derivWeierstrassP z := by
+    ℘'[L] (z + l) = ℘'[L] z := by
   simp only [derivWeierstrassP]
   rw [← (Equiv.addRight l).tsum_eq]
   simp only [← tsum_neg, ← div_neg, Equiv.coe_addRight, Submodule.coe_add, add_sub_add_right_eq_sub]
 
 @[simp]
-lemma derivWeierstrassP_zero : L.derivWeierstrassP 0 = 0 := by
+lemma derivWeierstrassP_zero : ℘'[L] 0 = 0 := by
   rw [← CharZero.eq_neg_self_iff, ← L.derivWeierstrassP_neg, neg_zero]
 
 @[simp]
-lemma derivWeierstrassP_coe (l : L.lattice) : L.derivWeierstrassP l = 0 := by
+lemma derivWeierstrassP_coe (l : L.lattice) : ℘'[L] l = 0 := by
   rw [← zero_add l.1, L.derivWeierstrassP_add_coe, L.derivWeierstrassP_zero]
 
 @[simp]
 lemma derivWeierstrassP_sub_coe (z : ℂ) (l : L.lattice) :
-    L.derivWeierstrassP (z - l) = L.derivWeierstrassP z := by
+    ℘'[L] (z - l) = ℘'[L] z := by
   rw [← L.derivWeierstrassP_add_coe _ l, sub_add_cancel]
 
 /-- `deriv ℘ = ℘'`. This is true globally because of junk values. -/
-@[simp] lemma deriv_weierstrassP : deriv L.weierstrassP = L.derivWeierstrassP := by
+@[simp] lemma deriv_weierstrassP : deriv ℘[L] = ℘'[L] := by
   ext x
   by_cases hx : x ∈ L.lattice
   · rw [deriv_zero_of_not_differentiableAt, L.derivWeierstrassP_coe ⟨x, hx⟩]
