@@ -143,7 +143,7 @@ def encodingNatBool : Encoding ℕ where
   decode n := some (decodeNat n)
   decode_encode n := congr_arg _ (decode_encodeNat n)
 
-/-- A binary fin_encoding of ℕ in bool. -/
+/-- A binary finEncoding of ℕ in bool. -/
 def finEncodingNatBool : FinEncoding ℕ :=
   ⟨encodingNatBool, Bool.fintype⟩
 
@@ -170,7 +170,7 @@ def unaryDecodeNat : List Bool → Nat :=
 @[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
   Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
 
-/-- A unary fin_encoding of ℕ. -/
+/-- A unary finEncoding of ℕ. -/
 def unaryFinEncodingNat : FinEncoding ℕ where
   Γ := Bool
   encode := unaryEncodeNat
