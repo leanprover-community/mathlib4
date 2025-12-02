@@ -3,8 +3,10 @@ Copyright (c) 2025 Yong-Gyu Choi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yong-Gyu Choi
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Exactness properties of the difference map for tensor products
@@ -28,6 +30,8 @@ by `s ↦ (s ⊗ₜ[R] 1) - (1 ⊗ₜ[R] s)`.
   `toEqLocusOfInclusion R S` is surjective. -/
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
