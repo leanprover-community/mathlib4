@@ -262,18 +262,19 @@ theorem Splits.comp_X_sub_C (hf : f.Splits) (a : R) : (f.comp (X - C a)).Splits 
 variable [IsDomain R]
 
 theorem Splits.eq_prod_roots (hf : Splits f) :
-    f = C f.leadingCoeff * (f.roots.map (X - C ·)).prod := by
+    f = C f.leadingCoeff * (ofMultiset f.roots) := by
   by_cases hf0 : f.leadingCoeff = 0
   · simp [leadingCoeff_eq_zero.mp hf0]
   · obtain ⟨m, hm⟩ := splits_iff_exists_multiset.mp hf
     suffices hf : f.roots = m by rwa [hf]
-    rw [hm, roots_C_mul _ hf0, roots_multiset_prod_X_sub_C]
+    rw [hm, roots_C_mul _ hf0]
+    apply roots_ofMultiset
 
 theorem Splits.natDegree_eq_card_roots (hf : Splits f) :
     f.natDegree = f.roots.card := by
   by_cases hf0 : f.leadingCoeff = 0
   · simp [leadingCoeff_eq_zero.mp hf0]
-  · conv_lhs => rw [hf.eq_prod_roots, natDegree_C_mul hf0, natDegree_multiset_prod_X_sub_C_eq_card]
+  · conv_lhs => rw [hf.eq_prod_roots, natDegree_C_mul hf0, natDegree_ofMultiset_eq_card]
 
 theorem Splits.degree_eq_card_roots (hf : Splits f) (hf0 : f ≠ 0) :
     f.degree = f.roots.card :=
@@ -282,7 +283,7 @@ theorem Splits.degree_eq_card_roots (hf : Splits f) (hf0 : f ≠ 0) :
 /-- A polynomial splits if and only if it has as many roots as its degree. -/
 theorem splits_iff_card_roots : Splits f ↔ f.roots.card = f.natDegree :=
   ⟨fun h ↦ h.natDegree_eq_card_roots.symm, fun h ↦ splits_iff_exists_multiset.mpr
-    ⟨f.roots, (C_leadingCoeff_mul_prod_multiset_X_sub_C h).symm⟩⟩
+    ⟨f.roots, (C_leadingCoeff_mul_ofMultiset h).symm⟩⟩
 
 theorem Splits.roots_ne_zero (hf : Splits f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
@@ -295,7 +296,9 @@ theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := 
   have := hf.eq_prod_roots
   rw [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul,
     roots_mul (mul_ne_zero (X_sub_C_ne_zero _) hf₀), roots_X_sub_C,
-    Multiset.singleton_add, Multiset.map_cons, Multiset.prod_cons, mul_left_comm] at this
+    Multiset.singleton_add] at this
+  simp only [ofMultiset_apply, Multiset.map_cons, Multiset.prod_cons] at this
+  rw [mul_left_comm] at this
   rw [mul_left_cancel₀ (X_sub_C_ne_zero _) this]
   aesop
 
@@ -345,6 +348,7 @@ lemma map_sub_sprod_roots_eq_prod_map_eval
   have := hg'.eq_prod_roots
   rw [hg.leadingCoeff, map_one, one_mul] at this
   conv_rhs => rw [this]
+  simp only [ofMultiset_apply]
   simp_rw [eval_multiset_prod, Multiset.prod_map_product_eq_prod_prod, Multiset.map_map]
   congr! with x hx
   ext; simp
