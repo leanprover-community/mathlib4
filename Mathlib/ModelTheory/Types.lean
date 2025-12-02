@@ -225,5 +225,3 @@ end Theory
 end Language
 
 end FirstOrder
-
-#min_imports
