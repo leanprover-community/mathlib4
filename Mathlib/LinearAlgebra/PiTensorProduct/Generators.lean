@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.SubtypeNeLift
-import Mathlib.LinearAlgebra.PiTensorProduct.Basic
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Data.SubtypeNeLift
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Generators of multiple tensor products
@@ -19,6 +21,8 @@ In `LinearAlgebra.PiTensorProduct.Finite`, we deduce that if the modules `M i`
 are finitely generated, then so is `⨂[R] i, M i`.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
