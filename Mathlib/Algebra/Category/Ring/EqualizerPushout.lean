@@ -5,7 +5,6 @@ Authors: Yong-Gyu Choi
 -/
 module
 
-public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
@@ -171,9 +170,9 @@ noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : 
 
 /-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop` is
 an effective epimorphism. -/
-lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f := by
+lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f :=
   let := regularEpiOfFaithfullyFlat f hf
-  infer_instance
+  RegularEpi.effectiveEpi this
 
 end Opposite
 
