@@ -44,11 +44,14 @@ section definition
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F V) in
-/-- A tempered distribution is a continuous linear map from the Schwartz to -/
+/-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
+a normed space, equipped with the topology of pointwise convergence. -/
 abbrev TemperedDistribution := 𝓢(E, F) →Lₚₜ[𝕜] V
 
+@[inherit_doc]
 scoped[SchwartzMap] notation "𝓢'(" 𝕜 ", " E ", " F ", " V ")" => TemperedDistribution 𝕜 E F V
 
+@[inherit_doc]
 scoped[SchwartzMap] notation "𝓢'(" E ", " V ")" => TemperedDistribution ℂ E ℂ V
 
 end definition
@@ -66,6 +69,7 @@ variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 variable [BorelSpace E] [SecondCountableTopology E]
 
 variable (𝕜 F μ) in
+/-- Every temperate growth measure defines a tempered distribution. -/
 def MeasureTheory.Measure.toTemperedDistribution : 𝓢'(𝕜, E, F, F) :=
   toPointwiseConvergenceCLM _ _ _ _ (integralCLM 𝕜 μ)
 
@@ -93,6 +97,7 @@ variable
   [NormedSpace 𝕜 V]
 
 variable (𝕜 H E V) in
+/-- The Fourier transform on tempered distributions as a continuous linear map. -/
 def fourierTransformCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
   PointwiseConvergenceCLM.precomp V (SchwartzMap.fourierTransformCLM 𝕜)
 
@@ -109,6 +114,7 @@ theorem fourierTransform_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : �
 variable [CompleteSpace E]
 
 variable (𝕜 H E V) in
+/-- The inverse Fourier transform on tempered distributions as a continuous linear map. -/
 def fourierTransformInvCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
   PointwiseConvergenceCLM.precomp V (SchwartzMap.fourierTransformCLE 𝕜).symm.toContinuousLinearMap
 
