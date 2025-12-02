@@ -233,7 +233,7 @@ theorem Splits.dvd_of_roots_le_roots {p q : K[X]} (hp : p.Splits) (hp0 : p ≠ 0
   rw [Splits.eq_prod_roots hp, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
   exact dvd_trans
     (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq))
-    (prod_multiset_X_sub_C_dvd _)
+    (ofMultiset_dvd _)
 
 theorem Splits.dvd_iff_roots_le_roots {p q : K[X]}
     (hp : p.Splits) (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
@@ -398,7 +398,8 @@ theorem coeff_zero_eq_leadingCoeff_mul_prod_roots_of_splits {P : K[X]}
     (hP : P.Splits) :
     P.coeff 0 = (-1) ^ P.natDegree * P.leadingCoeff * P.roots.prod := by
   nth_rw 1 [hP.eq_prod_roots]
-  simp only [coeff_zero_eq_eval_zero, eval_mul, eval_C, eval_multiset_prod, Function.comp_apply,
+  simp only [ofMultiset_apply, mul_coeff_zero, coeff_C_zero]
+  simp only [coeff_zero_eq_eval_zero, eval_C, eval_multiset_prod, Function.comp_apply,
     Multiset.map_map, eval_sub, eval_X, zero_sub, Multiset.prod_map_neg]
   grind [splits_iff_card_roots]
 
