@@ -93,6 +93,35 @@ lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω 
     ofFun Ω f μ φ = ∫ x, φ x • f x ∂μ :=
   ofFunWithOrder_apply hf
 
+-- TODO: find a better name!
+lemma integrable_smul {f : E → F} {μ : Measure E} (φ : 𝓓(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
+    Integrable (fun x ↦ φ x • f x) μ := by
+  sorry -- φ has support inside Ω, and f is integrable on Ω
+
+@[simp]
+lemma ofFun_add {f g : E → F} {μ : Measure E}
+    (hf : LocallyIntegrableOn f Ω μ) (hg : LocallyIntegrableOn g Ω μ) :
+    ofFun Ω (f + g) μ = ofFun Ω f μ + ofFun Ω g μ := by
+  ext φ
+  simp only [ContinuousLinearMap.add_apply]
+  rw [ofFun_apply hf, ofFun_apply hg, ofFun_apply (hf.add hg),
+    ← integral_add (integrable_smul φ hf) (integrable_smul φ hg)]
+  congr with x
+  simp
+
+-- TODO: remove local integrability hypotheses
+-- if f is not locally integrable, neither is c • f, and the lemma is still true
+@[simp]
+lemma ofFun_smul {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) (c : ℝ) :
+    ofFun Ω (c • f) μ = c • ofFun Ω f μ := by
+  have : LocallyIntegrableOn (c • f) Ω μ := sorry -- missing lemma, should be `hf.smul`
+  ext φ
+  rw [ofFun_apply this]
+  simp only [Pi.smul_apply, ContinuousLinearMap.coe_smul']
+  rw [ofFun_apply hf, ← integral_smul c]
+  congr with x
+  module
+
 end ofFun
 
 section lineDeriv

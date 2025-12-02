@@ -29,6 +29,23 @@ namespace Distribution
 def IsRegular (f : 𝓓'(Ω, F)) (μ : Measure E) : Prop :=
   ∃ (g : E → F), LocallyIntegrableOn g Ω μ ∧ f = ofFun Ω g μ
 
+namespace IsRegular
+
+variable {f g : 𝓓'(Ω, F)}
+
+lemma add (hf : IsRegular f μ) (hg : IsRegular g μ) : IsRegular (f + g) μ := by
+  obtain ⟨f₀, hf₀, hf⟩ := hf
+  obtain ⟨g₀, hg₀, hg⟩ := hg
+  refine ⟨f₀ + g₀, hf₀.add hg₀, ?_⟩
+  rw [ofFun_add hf₀ hg₀, hf, hg]
+
+lemma smul (hf : IsRegular f μ) (c : ℝ) : IsRegular (c • f) μ := by
+  obtain ⟨f₀, hf₀, hf⟩ := hf
+  refine ⟨c • f₀, sorry, ?_⟩ -- same missing LocallyIntegrableOn lemma
+  rw [ofFun_smul hf₀, hf]
+
+end IsRegular
+
 open Classical in
 def out (f : 𝓓'(Ω, F)) (μ : Measure E) : E → F :=
   if h : IsRegular f μ then
