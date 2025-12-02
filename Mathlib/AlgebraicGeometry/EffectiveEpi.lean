@@ -3,9 +3,11 @@ Copyright (c) 2025 Yong-Gyu Choi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yong-Gyu Choi
 -/
-import Mathlib.Algebra.Category.Ring.EqualizerPushout
-import Mathlib.AlgebraicGeometry.Morphisms.Flat
-import Mathlib.Topology.Category.TopCat.EffectiveEpi
+module
+
+public import Mathlib.Algebra.Category.Ring.EqualizerPushout
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 
 /-!
 # Effective epimorphisms in the category of schemes
@@ -33,6 +35,8 @@ For a flat ring map  `f : R ⟶ S` with surjective `Spec.map f : Spec S ⟶ Spec
 * Generalize `effectiveEpi_Spec_of_flat_of_surjective` to quasi-compact coverings.
 
 -/
+
+@[expose] public section
 
 universe v u
 
