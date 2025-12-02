@@ -43,7 +43,8 @@ namespace LineDeriv
 
 variable {V E : Type*} [LineDeriv V E E]
 
-/-- `∂^{m} f` is the iterated line derivative of `f`. -/
+/-- `∂^{m} f` is the iterated line derivative of `f`, where `m` is a finite number of (different)
+directions. -/
 def iteratedLineDerivOp {n : ℕ} : (Fin n → V) → E → E :=
   Nat.recOn n (fun _ ↦ id) (fun _ rec y ↦ LineDeriv.lineDerivOp (y 0) ∘ rec (tail y))
 
@@ -78,12 +79,23 @@ theorem iteratedLineDerivOp_succ_right {n : ℕ} (m : Fin (n + 1) → V) (f : E)
       _ = _ := by
         rw [hmtail, iteratedLineDerivOp_succ_left, hmzero, tail_init_eq_init_tail]
 
+@[simp]
+theorem iteratedLineDerivOp_const_eq_iter_lineDerivOp (n : ℕ) (y : V) (f : E) :
+    ∂^{fun (_ : Fin n) ↦ y} f = ∂_{y}^[n] f := by
+  induction n with
+  | zero => rfl
+  | succ n IH =>
+    rw [iteratedLineDerivOp_succ_left, Function.iterate_succ', Function.comp]
+    congr
+
 end LineDeriv
 
 open LineDeriv
 
 /--
 The line derivative is additive, `∂_{v} (x + y) = ∂_{v} x + ∂_{v} y` for all `x y : E`.
+
+Note that `lineDeriv` on functions is not additive.
 -/
 class LineDerivAdd (V : Type u) (E : Type v) (F : outParam (Type w))
   [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] where
