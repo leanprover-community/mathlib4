@@ -123,10 +123,9 @@ instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
   sorry
 
 instance (J : GrothendieckTopology C) (A : Type*) [Category A] [Abelian A] [HasSheafify J A] :
-    IsRegularEpiCategory (Sheaf J A) := by
-  apply regularEpiCategorySheaf J
-  intro F G f hf
-  exact ⟨image f.val, factorThruImage f.val, image.ι f.val, inferInstance, inferInstance, by simp⟩
+    IsRegularEpiCategory (Sheaf J A) :=
+  regularEpiCategorySheaf J fun f hf ↦
+    ⟨image f.val, factorThruImage f.val, image.ι f.val, inferInstance, inferInstance, by simp⟩
 
 
 end CategoryTheory
