@@ -93,8 +93,8 @@ open NNReal ContinuousLinearMap
 
 variable (F G) in
 /-- Define a continuous linear map between `E →SLₚₜ[σ] F` and `D →SLₚₜ[τ] G`.
-Use `ContinuousLinearMap.postcomp_uniformConvergenceCLM` for the special case of the adjoint
-operator. -/
+
+Use `PointwiseConvergenceCLM.precomp` for the special case of the adjoint operator. -/
 def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f : D), ∃ (s : Finset E) (C : ℝ≥0),
   ∀ (B : E →SL[σ] F), ∃ (g : E) (_hb : g ∈ s), ‖(A B) f‖ ≤ C • ‖B g‖) :
     (E →SLₚₜ[σ] F) →L[𝕜₂] D →SLₚₜ[τ] G where
