@@ -72,8 +72,7 @@ theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     k < (b.digits n).length ↔ b ^ k ≤ n := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   exact digits_length_le_iff hb n
 
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
@@ -148,6 +147,8 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
+-- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
+set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
@@ -304,5 +305,19 @@ theorem ofDigits_neg_one :
   | a :: b :: t => by
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
+
+/-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
+theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
+  obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
+  clear h
+  rw [List.getD_eq_getElem?_getD]
+  induction n using Nat.caseStrongRecOn generalizing i with
+  | zero => simp
+  | ind n IH =>
+    rcases i with _ | i
+    · rw [← List.head?_eq_getElem?, ← default_eq_zero, Option.getD_default_eq_iget,
+        ← List.head!_eq_head?, head!_digits (by grind)]
+      simp
+    · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
 
 end Nat

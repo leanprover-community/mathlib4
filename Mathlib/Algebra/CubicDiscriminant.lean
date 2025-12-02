@@ -425,9 +425,9 @@ theorem splits_iff_roots_eq_three (ha : P.a ≠ 0) :
 theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     (map φ P).toPoly = C (φ P.a) * (X - C x) * (X - C y) * (X - C z) := by
   rw [map_toPoly,
-    eq_prod_roots_of_splits <|
+    Splits.eq_prod_roots <|
       (splits_iff_roots_eq_three ha).mpr <| Exists.intro x <| Exists.intro y <| Exists.intro z h3,
-    leadingCoeff_of_a_ne_zero ha, ← map_roots, h3]
+    leadingCoeff_map, leadingCoeff_of_a_ne_zero ha, ← map_roots, h3]
   change C (φ P.a) * ((X - C x) ::ₘ (X - C y) ::ₘ {X - C z}).prod = _
   rw [prod_cons, prod_cons, prod_singleton, mul_assoc, mul_assoc]
 
@@ -464,7 +464,7 @@ def discr {R : Type*} [Ring R] (P : Cubic R) : R :=
 
 theorem discr_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     φ P.discr = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [discr, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+  simp only [discr, RingHom.map_add, map_sub, map_mul, map_pow, map_ofNat]
   rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 
