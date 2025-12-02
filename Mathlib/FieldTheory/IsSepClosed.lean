@@ -93,7 +93,7 @@ namespace IsSepClosed
 
 theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, IsRoot p x :=
-  exists_root_of_splits _ ((IsSepClosed.splits_of_separable p hsep).map (RingHom.id k)) hp
+  (IsSepClosed.splits_of_separable p hsep).exists_eval_eq_zero hp
 
 /-- If `n ≥ 2` equals zero in a separably closed field `k`, `b ≠ 0`,
 then there exists `x` in `k` such that `a * x ^ n + b * x + c = 0`. -/

@@ -107,30 +107,23 @@ alias Splits.comp_of_map_degree_le_one := Splits.comp_of_degree_le_one
 
 variable (i)
 
-theorem exists_root_of_splits' {f : K[X]} (hs : Splits (f.map i)) (hf0 : degree (f.map i) ≠ 0) :
-    ∃ x, eval₂ i x f = 0 := by
-  simpa only [eval_map] using hs.exists_eval_eq_zero hf0
+@[deprecated (since := "2025-12-01")]
+alias exists_root_of_splits' := Splits.exists_eval_eq_zero
 
-theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits (f.map i))
-    (hf0 : natDegree (f.map i) ≠ 0) : (f.map i).roots ≠ 0 :=
-  hs.roots_ne_zero hf0
+@[deprecated (since := "2025-12-01")]
+alias roots_ne_zero_of_splits' := Splits.roots_ne_zero
 
-/-- Pick a root of a polynomial that splits. See `rootOfSplits` for polynomials over a field
-which has simpler assumptions. -/
-def rootOfSplits' {f : K[X]} (hf : (f.map i).Splits) (hfd : (f.map i).degree ≠ 0) : L :=
-  Classical.choose <| exists_root_of_splits' i hf hfd
+@[deprecated (since := "2025-12-01")]
+alias rootOfSplits' := rootOfSplits
 
-theorem map_rootOfSplits' {f : K[X]} (hf : (f.map i).Splits) (hfd) :
-    f.eval₂ i (rootOfSplits' i hf hfd) = 0 :=
-  Classical.choose_spec <| exists_root_of_splits' i hf hfd
+@[deprecated (since := "2025-12-01")]
+alias map_rootOfSplits' := eval_rootOfSplits
 
-theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits (p.map i)) :
-    (p.map i).natDegree = Multiset.card (p.map i).roots :=
-  hsplit.natDegree_eq_card_roots
+@[deprecated (since := "2025-12-01")]
+alias natDegree_eq_card_roots' := Splits.natDegree_eq_card_roots
 
-theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i ≠ 0)
-    (hsplit : Splits (p.map i)) : (p.map i).degree = Multiset.card (p.map i).roots := by
-  simp [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots' hsplit]
+@[deprecated (since := "2025-12-01")]
+alias degree_eq_card_roots' := Splits.degree_eq_card_roots
 
 end CommRing
 
@@ -171,27 +164,20 @@ theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0)
 @[deprecated (since := "2025-11-30")]
 alias degree_eq_one_of_irreducible_of_splits := Splits.degree_eq_one_of_irreducible
 
-theorem exists_root_of_splits {f : K[X]} (hs : Splits (f.map i)) (hf0 : degree f ≠ 0) :
-    ∃ x, eval₂ i x f = 0 :=
-  exists_root_of_splits' i hs ((f.degree_map i).symm ▸ hf0)
+@[deprecated (since := "2025-12-01")]
+alias exists_root_of_splits := Splits.exists_eval_eq_zero
 
-theorem roots_ne_zero_of_splits {f : K[X]} (hs : Splits (f.map i)) (hf0 : natDegree f ≠ 0) :
-    (f.map i).roots ≠ 0 :=
-  roots_ne_zero_of_splits' i hs (ne_of_eq_of_ne (natDegree_map i) hf0)
+@[deprecated (since := "2025-12-01")]
+alias roots_ne_zero_of_splits := Splits.roots_ne_zero
 
-/-- Pick a root of a polynomial that splits. This version is for polynomials over a field and has
-simpler assumptions. -/
-def rootOfSplits {f : K[X]} (hf : (f.map i).Splits) (hfd : f.degree ≠ 0) : L :=
-  rootOfSplits' i hf ((f.degree_map i).symm ▸ hfd)
+@[deprecated (since := "2025-12-01")]
+alias map_rootOfSplits := eval_rootOfSplits
 
 /-- `rootOfSplits'` is definitionally equal to `rootOfSplits`. -/
+@[deprecated "`rootOfSplits'` is now deprecated." (since := "2025-12-01")]
 theorem rootOfSplits'_eq_rootOfSplits {f : K[X]} (hf : (f.map i).Splits) (hfd) :
-    rootOfSplits' i hf hfd = rootOfSplits i hf (f.degree_map i ▸ hfd) :=
+    rootOfSplits hf hfd = rootOfSplits hf (f.degree_map i ▸ hfd) :=
   rfl
-
-theorem map_rootOfSplits {f : K[X]} (hf : (f.map i).Splits) (hfd) :
-    f.eval₂ i (rootOfSplits i hf hfd) = 0 :=
-  map_rootOfSplits' i hf (ne_of_eq_of_ne (degree_map f i) hfd)
 
 @[deprecated (since := "2025-11-30")]
 alias natDegree_eq_card_roots := Splits.natDegree_eq_card_roots
