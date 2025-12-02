@@ -165,7 +165,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"])]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
-def abbreviationDict : Std.HashMap String String := .ofList []
+def abbreviationDict : Std.HashMap String String := .ofList [
+  ("wellFoundedLT", "WellFoundedGT"),
+  ("wellFoundedGT", "WellFoundedLT")
+]
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
