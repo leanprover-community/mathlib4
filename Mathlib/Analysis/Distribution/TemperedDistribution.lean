@@ -3,8 +3,10 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Distribution.FourierSchwartz
-import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
+module
+
+public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 
 /-!
 # TemperedDistribution
@@ -22,6 +24,8 @@ distribution.
 in `SchwartzSpace`
 * `𝓢'(E, V)`: A shorthand for `𝓢'(ℂ, E, ℂ, V)`, the most common use-case.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -114,11 +118,9 @@ theorem fourierTransformInvCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
 @[simp]
 theorem fourierTransformInv_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
 
-noncomputable
 instance instFourierPair : FourierPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
   fourierInv_fourier_eq f := by ext; simp
 
-noncomputable
 instance instFourierPairInv : FourierInvPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
   fourier_fourierInv_eq f := by ext; simp
 
