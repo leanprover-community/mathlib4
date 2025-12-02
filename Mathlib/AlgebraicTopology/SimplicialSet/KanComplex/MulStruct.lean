@@ -43,6 +43,7 @@ variable {X} {n : ℕ} {x : X _⦋0⦌}
 if they appear respectively as the `i.castSucc` and `i.succ` faces of a
 `n + 1`-simplex such that all the other faces are constant. -/
 structure RelStruct (f g : X.PtSimplex n x) (i : Fin (n + 1)) where
+  /-- A `n + 1`-simplex -/
   map : Δ[n + 1] ⟶ X
   δ_castSucc_map : stdSimplex.δ i.castSucc ≫ map = f.map := by cat_disch
   δ_succ_map : stdSimplex.δ i.succ ≫ map = g.map := by cat_disch
@@ -65,9 +66,10 @@ all the other faces are constant. (The multiplication on homotopy groups will be
 defined using `i := Fin.last _`, but in general, this structure is useful in
 order to obtain properties of `RelStruct`.) -/
 structure MulStruct (f g fg : X.PtSimplex n x) (i : Fin n) where
+  /-- A `n + 1`-simplex -/
   map : Δ[n + 1] ⟶ X
   δ_castSucc_castSucc_map : stdSimplex.δ (i.castSucc.castSucc) ≫ map = g.map := by cat_disch
-  δ_castSucc_succ_map : stdSimplex.δ (i.succ.castSucc) ≫ map = fg.map := by cat_disch
+  δ_succ_castSucc_map : stdSimplex.δ (i.castSucc.succ) ≫ map = fg.map := by cat_disch
   δ_succ_succ_map : stdSimplex.δ (i.succ.succ) ≫ map = f.map := by cat_disch
   δ_map_of_lt (j : Fin (n + 2)) (hj : j < i.castSucc.castSucc) :
     stdSimplex.δ j ≫ map = const x := by cat_disch
@@ -76,13 +78,7 @@ structure MulStruct (f g fg : X.PtSimplex n x) (i : Fin n) where
 
 namespace MulStruct
 
-attribute [reassoc (attr := simp)] δ_castSucc_castSucc_map δ_castSucc_succ_map δ_succ_succ_map
-
-@[reassoc (attr := simp)]
-lemma δ_succ_castSucc_map {f g fg : X.PtSimplex n x} {i : Fin n}
-    (h : MulStruct f g fg i) :
-    stdSimplex.δ i.castSucc.succ ≫ h.map = fg.map := by
-  rw [Fin.succ_castSucc, h.δ_castSucc_succ_map]
+attribute [reassoc (attr := simp)] δ_castSucc_castSucc_map δ_succ_castSucc_map δ_succ_succ_map
 
 end MulStruct
 
