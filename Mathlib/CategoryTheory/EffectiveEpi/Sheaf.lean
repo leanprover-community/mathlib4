@@ -28,7 +28,7 @@ instance [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D] :
     isColimit := by
       apply evaluationJointlyReflectsColimits
       intro k
-      have : RegularEpi (f.app k) := regularEpiOfEpi (f.app k)
+      have : IsRegularEpi (f.app k) := IsRegularEpiCategory.regularEpiOfEpi (f.app k)
       refine .equivOfNatIsoOfIso ?_ _ _ ?_ (isColimitCoforkOfEffectiveEpi (f.app k)
         (pullback.cone (f.app k) (f.app k))
         (pullback.isLimit (f.app k) (f.app k)))
@@ -69,7 +69,7 @@ def regularEpiCategorySheaf (J : GrothendieckTopology C)
       simp [← cancel_mono i, hpi, ← Sheaf.comp_val, pullback.condition]
     let +nondep hc₃ : IsLimit c :=
       PullbackCone.isLimitOfFactors f.val f.val i _ _ hpi hpi _ hc₂
-    let +nondep : RegularEpi p := regularEpiOfEpi _
+    have : IsRegularEpi p := IsRegularEpiCategory.regularEpiOfEpi _
     let +nondep hc₄ := isColimitCoforkOfEffectiveEpi p _ hc₃
     have h₁ : (presheafToSheaf J D).map f.val =
           (sheafificationAdjunction J D).counit.app F ≫ f ≫
