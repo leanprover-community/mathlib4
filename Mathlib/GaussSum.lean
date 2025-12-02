@@ -578,7 +578,7 @@ theorem GaussSum_one_mk_sq_eq [P.LiesOver 𝒑] [(𝓟 ^ 2).LiesOver 𝒑] (h : 
   rw [map_sum]
   simp_rw [map_mul]
   simp_rw [addCharTrace_mk_sq _ _ h', mul_add, mul_one]
-  
+
   unfold Omega
 
   simp_rw [MulChar.ringHomComp_zpow, MulChar.ringHomComp_apply]
