@@ -162,7 +162,7 @@ def HomotopyClass.postcomp (h : HomotopyClass A B φ)
     (fun _ _ ⟨h⟩ ↦ (h.postcomp f' fac).eq) h
 
 @[simp]
-lemma homotopyClass_postcomp
+lemma postcomp_homotopyClass
     (f : RelativeMorphism A B φ) (f' : RelativeMorphism B C ψ)
     {φψ : (A : SSet) ⟶ (C : SSet)} (fac : φ ≫ ψ = φψ) :
     f.homotopyClass.postcomp f' fac =
