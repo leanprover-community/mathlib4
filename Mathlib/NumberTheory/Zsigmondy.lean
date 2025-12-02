@@ -3,21 +3,23 @@ Copyright (c) 2022 Johan Commelin (c) 2025 Concordance Inc. dba Harmonic. All ri
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yury Kudryashov, Alex Best
 -/
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.Polynomial.Homogenize
-import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.NumberTheory.Multiplicity
-import Mathlib.RingTheory.Fintype
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-import Mathlib.Tactic.NormNum.ModEq
-import Mathlib.Tactic.NormNum.Parity
-import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.Polynomial.Homogenize
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.Multiplicity
+public import Mathlib.RingTheory.Fintype
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+public import Mathlib.Tactic.NormNum.ModEq
+public import Mathlib.Tactic.NormNum.Parity
+public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Rify
 
 /-!
 ## Zsigmondy's theorem
@@ -30,6 +32,8 @@ primitive prime divisor `p`.
 
 Inspired by Mathlib 3 code at https://github.com/leanprover-community/mathlib3/tree/zsigmondy
 -/
+
+@[expose] public section
 
 namespace Int
 
