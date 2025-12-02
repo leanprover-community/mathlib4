@@ -104,7 +104,7 @@ Note that the topology on `𝓓'^{n}(Ω, F)` has no reason to be the subspace to
 
 ### Choice of topology
 
-Our choice of topology on `𝓓'^{n}(Ω, F)` follows from
+Our choice of topology on `𝓓'^{n}(Ω, F)` follows
 [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]. Note that,
 since, `𝓓(Ω, ℝ)` is a Montel space, the topology on `𝓓'(Ω, F)` is also that of uniform convergence
 on `IsVonNBounded` subsets (the corresponding fact does not hold for `𝓓'^{n}(Ω, F)` though).
