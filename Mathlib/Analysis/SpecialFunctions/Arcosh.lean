@@ -180,7 +180,6 @@ theorem cosh'_le_cosh' (x y : ℝ≥0) : cosh' x ≤ cosh' y ↔ x ≤ y := by
     exact h
 
 /-- `Real.cosh'` as an `OrderIso`. -/
-@[simps! -fullyApplied]
 def cosh'OrderIso : ℝ≥0 ≃o ℝ≥1 where
   toEquiv := cosh'Equiv
   map_rel_iff' := @cosh'_le_cosh'
