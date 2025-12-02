@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Dual vector spaces
@@ -39,6 +41,8 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
     subspaces of `Dual K (Dual K V)`.
 -/
 
+@[expose] public section
+
 open Module Submodule
 
 noncomputable section
@@ -48,8 +52,8 @@ namespace Module
 variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- The dual space of an R-module M is the R-module of linear maps `M → R`. -/
-abbrev Dual :=
+/-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
+abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
@@ -63,7 +67,7 @@ theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
 
 namespace Dual
 
-instance : Inhabited (Dual R M) := ⟨0⟩
+instance (R : Type*) [Semiring R] [Module R M] : Inhabited (Dual R M) := ⟨0⟩
 
 /-- Maps a module M to the dual of the dual of M. See `Module.erange_coe` and
 `Module.evalEquiv`. -/
@@ -305,7 +309,7 @@ instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
   ext n
   simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
   suffices r • n m = 0 from eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
-  rw [← LinearMap.map_smul_of_tower, hrm, LinearMap.map_zero]
+  rw [← LinearMap.map_smul_of_tower, hrm, map_zero]
 
 end IsReflexive
 

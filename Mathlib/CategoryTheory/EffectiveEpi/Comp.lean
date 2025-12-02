@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # Composition of effective epimorphisms
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 This file provides `EffectiveEpi` instances for certain compositions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -108,9 +112,7 @@ theorem effectiveEpiFamilyStructCompIso_aux
       g₁ ≫ π a₁ ≫ i = g₂ ≫ π a₂ ≫ i → g₁ ≫ e a₁ = g₂ ≫ e a₂)
     {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂) (hg : g₁ ≫ π a₁ = g₂ ≫ π a₂) :
     g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
-  apply h
-  rw [← Category.assoc, hg]
-  simp
+  grind
 
 variable [EffectiveEpiFamily X π] [IsIso i]
 

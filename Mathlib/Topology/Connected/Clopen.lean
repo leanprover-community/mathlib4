@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Subset
-import Mathlib.Topology.Clopen
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Connected subsets and their relation to clopen sets
@@ -21,6 +23,8 @@ to clopen sets.
 + `ConnectedComponents`: The connected components of a topological space, as a quotient type.
 
 -/
+
+@[expose] public section
 
 open Set Function Topology TopologicalSpace Relation
 
@@ -539,8 +543,7 @@ continuous on a set `s`, is constant on s, then s is preconnected -/
 theorem isPreconnected_of_forall_constant {s : Set α}
     (hs : ∀ f : α → Bool, ContinuousOn f s → ∀ x ∈ s, ∀ y ∈ s, f x = f y) : IsPreconnected s := by
   unfold IsPreconnected
-  by_contra!
-  rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
+  by_contra! ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩

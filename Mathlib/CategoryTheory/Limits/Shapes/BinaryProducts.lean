@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Binary (co)products
@@ -27,6 +29,8 @@ braiding and associating isomorphisms, and the product comparison morphism.
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
+
+@[expose] public section
 
 universe v v₁ u u₁ u₂
 
@@ -1076,6 +1080,18 @@ theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
   rw [prodComparison, prodComparison, prod.lift_map, ← F.map_comp, ← F.map_comp, prod.comp_lift, ←
     F.map_comp, prod.map_fst, ← F.map_comp, prod.map_snd]
 
+variable {F}
+
+/-- Naturality of the `prodComparison` morphism in a natural transformation. -/
+@[reassoc]
+theorem prodComparison_natural_of_natTrans {H : C ⥤ D} [HasBinaryProduct (H.obj A) (H.obj B)]
+    (α : F ⟶ H) :
+    α.app (prod A B) ≫ prodComparison H A B =
+      prodComparison F A B ≫ prod.map (α.app A) (α.app B) := by
+  rw [prodComparison, prodComparison, prod.lift_map, prod.comp_lift, α.naturality, α.naturality]
+
+variable (F)
+
 /-- The product comparison morphism from `F(A ⨯ -)` to `FA ⨯ F-`, whose components are given by
 `prodComparison`.
 -/
@@ -1381,6 +1397,8 @@ lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
 lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
     (assocInv P s).snd = s.snd ≫ sYZ.snd := rfl
 
+-- TODO: find a good way to fix the linter; simp applies to two goals with different simp sets
+set_option linter.flexible false in
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
 @[simps]
 protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}

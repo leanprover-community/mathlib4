@@ -3,13 +3,17 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.Algebra.Polynomial.Derivation
+module
+
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # The Kähler differential module of polynomial algebras
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped TensorProduct
@@ -44,7 +48,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     | add => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
     | single a b =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
-        LinearMap.map_smul, Derivation.liftKaehlerDifferential_comp_D]
+        map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
       induction a using MvPolynomial.induction_on
       · simp only [MvPolynomial.derivation_C, map_zero]

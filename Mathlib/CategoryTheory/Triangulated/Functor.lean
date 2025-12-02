@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Shift.CommShift
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Triangulated functors
@@ -18,6 +20,8 @@ is such a functor `F` which also sends distinguished triangles to
 distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -103,8 +107,8 @@ private theorem mapTriangleCommShiftIso_add
 
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
-  iso := F.mapTriangleCommShiftIso
-  add _ _ := mapTriangleCommShiftIso_add ..
+  commShiftIso := F.mapTriangleCommShiftIso
+  commShiftIso_add _ _ := mapTriangleCommShiftIso_add ..
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]

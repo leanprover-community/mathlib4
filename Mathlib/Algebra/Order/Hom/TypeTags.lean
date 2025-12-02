@@ -3,15 +3,19 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+module
+
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
 /-!
 
 # Order Monoid Isomorphisms on `Additive` and `Multiplicative`.
 
 -/
+
+@[expose] public section
 
 section TypeTags
 

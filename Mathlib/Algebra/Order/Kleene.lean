@@ -3,11 +3,13 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Kleene Algebras
@@ -47,6 +49,8 @@ Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `
 
 kleene algebra, idempotent semiring
 -/
+
+@[expose] public section
 
 
 open Function
@@ -324,7 +328,6 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
   { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
-    bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
 -- See note [reducible non-instances]

@@ -3,7 +3,9 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-! # Discrete uniformity
 
@@ -15,6 +17,8 @@ It induces the discrete topology.
 It is complete.
 
 -/
+
+@[expose] public section
 
 open Filter UniformSpace
 
@@ -36,7 +40,7 @@ theorem _root_.discreteUniformity_iff_eq_principal_relId {X : Type*} [UniformSpa
   rw [discreteUniformity_iff_eq_bot, UniformSpace.ext_iff, Filter.ext_iff, bot_uniformity]
 
 @[deprecated (since := "2025-10-17")]
-alias discreteUniformity_iff_eq_principal_idRel := discreteUniformity_iff_eq_principal_relId
+alias _root_.discreteUniformity_iff_eq_principal_idRel := discreteUniformity_iff_eq_principal_relId
 
 theorem eq_principal_relId : uniformity X = 𝓟 SetRel.id :=
   discreteUniformity_iff_eq_principal_relId.mp inferInstance
@@ -54,7 +58,8 @@ theorem _root_.discreteUniformity_iff_relId_mem_uniformity {X : Type*} [UniformS
   rw [← uniformSpace_eq_bot, discreteUniformity_iff_eq_bot]
 
 @[deprecated (since := "2025-10-17")]
-alias discreteUniformity_iff_idRel_mem_uniformity := discreteUniformity_iff_relId_mem_uniformity
+alias _root_.discreteUniformity_iff_idRel_mem_uniformity :=
+  discreteUniformity_iff_relId_mem_uniformity
 
 theorem relId_mem_uniformity : SetRel.id ∈ uniformity X :=
   discreteUniformity_iff_relId_mem_uniformity.mp inferInstance

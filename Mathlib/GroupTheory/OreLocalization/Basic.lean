@@ -3,11 +3,13 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.GroupTheory.OreLocalization.OreSet
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -32,6 +34,8 @@ a denominator `s : S`.
 localization, Ore, non-commutative
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 
@@ -474,9 +478,9 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
       have : (fS ⟨t * s, ht⟩ : T) = f t * fS s := by
-        simp only [← hf, MonoidHom.map_mul]
+        simp only [← hf, map_mul]
       conv_rhs =>
-        rw [MonoidHom.map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
+        rw [map_mul, ← one_mul (f r), ← Units.val_one, ← mul_inv_cancel (fS s)]
         rw [Units.val_mul, mul_assoc, ← mul_assoc _ (fS s : T), ← this, ← mul_assoc]
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp

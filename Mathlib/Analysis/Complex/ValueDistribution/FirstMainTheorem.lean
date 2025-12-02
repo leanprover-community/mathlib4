@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.JensenFormula
-import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
+module
+
+public import Mathlib.Analysis.Complex.JensenFormula
+public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 
 /-!
 # The First Main Theorem of Value Distribution Theory
@@ -24,6 +26,8 @@ See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 -/
+
+@[expose] public section
 namespace ValueDistribution
 
 open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real
@@ -62,10 +66,9 @@ lemma characteristic_sub_characteristic_inv_of_ne_zero
     (hf : MeromorphicOn f Set.univ) (hR : R ≠ 0) :
     characteristic f ⊤ R - characteristic f⁻¹ ⊤ R = log ‖meromorphicTrailingCoeffAt f 0‖ := by
   calc characteristic f ⊤ R - characteristic f⁻¹ ⊤ R
-  _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) R  := by simp
+  _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) R := by simp
   _ = circleAverage (log ‖f ·‖) 0 R - (divisor f Set.univ).logCounting R := by
-    rw [characteristic_sub_characteristic_inv hf]
-    rfl
+    rw [characteristic_sub_characteristic_inv hf, Pi.sub_apply]
   _ = log ‖meromorphicTrailingCoeffAt f 0‖ := by
     rw [MeromorphicOn.circleAverage_log_norm hR (hf.mono_set (by tauto))]
     unfold Function.locallyFinsuppWithin.logCounting
@@ -82,8 +85,7 @@ lemma characteristic_sub_characteristic_inv_at_zero (h : MeromorphicOn f Set.uni
   calc characteristic f ⊤ 0 - characteristic f⁻¹ ⊤ 0
   _ = (characteristic f ⊤ - characteristic f⁻¹ ⊤) 0 := by simp
   _ = circleAverage (log ‖f ·‖) 0 0 - (divisor f Set.univ).logCounting 0 := by
-    rw [ValueDistribution.characteristic_sub_characteristic_inv h]
-    rfl
+    rw [ValueDistribution.characteristic_sub_characteristic_inv h, Pi.sub_apply]
   _ = log ‖f 0‖ := by
     simp
 
@@ -123,8 +125,8 @@ variable
 
 /--
 Second part of the First Main Theorem of Value Distribution Theory, quantitative version: If `f` is
-meromorphic on the complex plane, then the characteristic functions (for value `⊤`) of `f` and `f -
-a₀` differ at most by `log⁺ ‖a₀‖ + log 2`.
+meromorphic on the complex plane, then the characteristic functions (for value `⊤`) of `f` and
+`f - a₀` differ at most by `log⁺ ‖a₀‖ + log 2`.
 -/
 theorem abs_characteristic_sub_characteristic_shift_le {r : ℝ} (h : MeromorphicOn f ⊤) :
     |characteristic f ⊤ r - characteristic (f · - a₀) ⊤ r| ≤ log⁺ ‖a₀‖ + log 2 := by

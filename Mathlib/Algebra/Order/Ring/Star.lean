@@ -3,8 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Star.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Commutative star-ordered rings are ordered rings
@@ -18,6 +20,8 @@ ordered ring, then it is commutative.
 
 In this file we prove the converse: a *commutative* star-ordered ring is an ordered ring.
 -/
+
+@[expose] public section
 
 namespace StarOrderedRing
 

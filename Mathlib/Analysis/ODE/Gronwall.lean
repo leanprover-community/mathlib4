@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Grönwall's inequality
@@ -26,6 +28,8 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
   or more generally `liminf_{y→x+0} (f y - f x)/(y - x) ≤ K x * f x + ε` with any sign
   of `K x` and `f x`.
 -/
+
+@[expose] public section
 
 open Metric Set Asymptotics Filter Real
 open scoped Topology NNReal
@@ -84,6 +88,16 @@ theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwa
     exact continuous_const.add (continuous_id.mul continuous_const)
   · simp only [gronwallBound_of_K_ne_0 hK]
     exact continuous_const.add ((continuous_id.mul continuous_const).mul continuous_const)
+
+/-- The Gronwall bound is monotone with respect to the time variable `x`. -/
+lemma gronwallBound_mono {δ K ε : ℝ} (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
+    Monotone (gronwallBound δ K ε) := by
+  intro x₁ x₂ hx
+  unfold gronwallBound
+  split_ifs with hK₀
+  · gcongr
+  · have hK_pos : 0 < K := by positivity
+    gcongr
 
 /-! ### Inequality and corollaries -/
 
