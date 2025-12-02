@@ -83,6 +83,37 @@ def AtomM.getAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
   | some (n, e') => some (n, ⟨e', ⟨⟩⟩)
   | none => none
 
+/-- If an atomic expression has already been encountered, return `true`, the index and the stored
+form of the atom (which will be defeq at the specified transparency, but not necessarily
+syntactically equal). If the atomic expression has *not* already been encountered, store it in the
+list of atoms, and return the new index (and the stored form of the atom, which will be itself).
+
+In a normalizing tactic, the expression returned by `containsThenAdd` should be considered
+the normal form.
+-/
+def AtomM.containsThenAdd (e : Expr) : AtomM (Bool × Nat × Expr) := do
+  let c ← get
+  for h : i in [:c.atoms.size] do
+    if ← withTransparency (← read).red <| isDefEqSafe e c.atoms[i] then
+      return (true, i, c.atoms[i])
+  modifyGet fun c ↦ ((false, c.atoms.size, e), { c with atoms := c.atoms.push e })
+
+open Qq in
+/-- If an atomic expression has already been encountered, return `true`, the index and the stored
+form of the atom (which will be defeq at the specified transparency, but not necessarily
+syntactically equal). If the atomic expression has *not* already been encountered, store it in the
+list of atoms, and return the new index (and the stored form of the atom, which will be itself).
+
+In a normalizing tactic, the expression returned by `AtomM.containsThenAddQ` should be considered
+the normal form.
+
+This is a strongly-typed version of `AtomM.containsThenAdd` for code using `Qq`.
+-/
+def AtomM.containsThenAddQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
+    AtomM (Bool × Nat × {e' : Q($α) // $e =Q $e'}) := do
+  let (b, n, e') ← AtomM.containsThenAdd e
+  return (b, n, ⟨e', ⟨⟩⟩)
+
 /-- If an atomic expression has already been encountered, get the index and the stored form of the
 atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
 If the atomic expression has *not* already been encountered, store it in the list of atoms, and
@@ -90,12 +121,8 @@ return the new index (and the stored form of the atom, which will be itself).
 
 In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
 -/
-def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
-  let c ← get
-  for h : i in [:c.atoms.size] do
-    if ← withTransparency (← read).red <| isDefEqSafe e c.atoms[i] then
-      return (i, c.atoms[i])
-  modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
+def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) :=
+  Prod.snd <$> AtomM.containsThenAdd e
 
 open Qq in
 /-- If an atomic expression has already been encountered, get the index and the stored form of the

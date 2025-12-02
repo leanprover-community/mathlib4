@@ -66,10 +66,9 @@ is `y ⊔ z`, adds a fact about it, then recursively calls `addAtom` on `y` and 
 Similarly for `⊓`. -/
 partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFactsM Nat := do
   modify fun res => res.insertIfNew type #[]
-  match ← AtomM.getAtomQ x with
-  | some (idx, _) => return idx
-  | none =>
-    let (idx, ⟨x', _⟩) := ← AtomM.addAtomQ x
+  match ← AtomM.containsThenAddQ x with
+  | (true, idx, _) => return idx
+  | (false, idx, ⟨x', _⟩) =>
     match x' with
     | ~q((@OrderTop.toTop _ $instLE $instTop).top) =>
       addFact type (.isTop idx)
