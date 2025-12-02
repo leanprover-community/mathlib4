@@ -42,8 +42,8 @@ variable [RCLike 𝕜] [NormedAddCommGroup D] [NormedAddCommGroup E] [NormedAddC
 section definition
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
-variable (𝕜 E F V)
 
+variable (𝕜 E F V) in
 /-- A tempered distribution is a continuous linear map from the Schwartz to -/
 abbrev TemperedDistribution := 𝓢(E, F) →Lₚₜ[𝕜] V
 
@@ -55,9 +55,11 @@ end definition
 
 namespace TemperedDistribution
 
+/-! ### Embeddings into tempered distributions -/
+
 section Embeddings
 
-section measure
+section Measure
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
 variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
@@ -73,11 +75,13 @@ theorem MeasureTheory.Measure.toTemperedDistribution_apply (g : 𝓢(E, F)) :
     Measure.toTemperedDistribution 𝕜 F μ g = ∫ (x : E), g x ∂μ := by
   rfl
 
-end measure
+end Measure
 
 end Embeddings
 
-section fourier
+/-! ### Fourier transform -/
+
+section Fourier
 
 open FourierTransform
 
@@ -124,6 +128,6 @@ instance instFourierPair : FourierPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V)
 instance instFourierPairInv : FourierInvPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
   fourier_fourierInv_eq f := by ext; simp
 
-end fourier
+end Fourier
 
 end TemperedDistribution
