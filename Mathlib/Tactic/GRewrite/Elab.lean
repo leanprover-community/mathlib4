@@ -96,6 +96,8 @@ This is useful when `grw` tries to rewrite in a position that is not valid for t
 
 To be able to use `grw`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
+
+To let `grw` unfold more aggressively, as in `erw`, use `grw (transparency := default)`.
 -/
 macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
   match s with
