@@ -47,8 +47,8 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
       suffices z ≠ w by simpa [sq_pos_iff, sub_eq_zero]
       rintro rfl
       simp_all
-    · rw [Multiset.toFinset_nonempty, ← P.map_id]
-      apply P.roots_ne_zero_of_splits _ (IsAlgClosed.splits _)
+    · rw [Multiset.toFinset_nonempty]
+      apply Splits.roots_ne_zero (IsAlgClosed.splits _)
       rwa [← pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
 
 /-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,

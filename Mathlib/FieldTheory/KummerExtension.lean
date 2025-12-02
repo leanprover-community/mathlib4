@@ -360,14 +360,14 @@ variable (a) (L)
 noncomputable
 abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
     (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=
-  (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
+  (rootOfSplits (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 
 lemma rootOfSplitsXPowSubC_pow [NeZero n] :
     (rootOfSplitsXPowSubC (NeZero.pos n) a L) ^ n = algebraMap K L a := by
-  have := map_rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
-  simp only [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at this
-  exact this _
+  have := eval_rootOfSplits (IsSplittingField.splits L (X ^ n - C a))
+    (by simp [degree_X_pow_sub_C (NeZero.pos n), NeZero.ne n])
+  simpa only [eval_map, eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] using this
 
 variable {a}
 
