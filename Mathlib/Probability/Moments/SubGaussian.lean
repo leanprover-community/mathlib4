@@ -736,7 +736,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
 lemma sub_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
-    (hY : HasSubgaussianMGF Y cY μ) (hindep : IndepFun X Y μ) :
+    (hY : HasSubgaussianMGF Y cY μ) (hindep : X ⟂ᵢ[μ] Y) :
     HasSubgaussianMGF (fun ω ↦ X ω - Y ω) (cX + cY) μ := by
   simp_rw [sub_eq_add_neg]
   exact hX.add_of_indepFun hY.neg hindep.neg_right
