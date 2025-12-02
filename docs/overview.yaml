@@ -374,6 +374,7 @@ Analysis:
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'
+    tempered distributions: 'TemperedDistribution'
 
   Fourier analysis:
     Fourier transform as an integral: 'Real.fourier_eq'
