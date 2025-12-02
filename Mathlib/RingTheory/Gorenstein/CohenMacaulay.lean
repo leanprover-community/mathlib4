@@ -736,6 +736,103 @@ section
 
 section
 
+--`Ext` iso quotient regular sequence
+
+variable {R}
+
+omit [IsLocalRing R] [IsNoetherianRing R]
+
+universe w
+
+variable [Small.{v} R] [UnivLE.{v, w}]
+
+lemma extClass_postcomp_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
+    (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b) :
+    Function.Surjective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
+  have epi := (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact a b h).epi_f
+    (ext_hom_eq_zero_of_mem_ann mem b)
+  exact (AddCommGrpCat.epi_iff_surjective _).mp epi
+
+lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
+    (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N)
+    (n : ℕ) (hn : n < rs.length) : Subsingleton (Ext.{w} N M n) := by
+  induction n generalizing M rs
+  · match rs with
+    | [] => simp at hn
+    | a :: rs' =>
+      simp only [List.mem_cons, forall_eq_or_imp] at mem
+      rw [Ext.homEquiv₀.subsingleton_congr, ModuleCat.homEquiv.subsingleton_congr]
+      exact IsSMulRegular.linearMap_subsingleton_of_mem_annihilator
+        ((isWeaklyRegular_cons_iff _ _ _).mp reg).1 mem.1
+  · rename_i n ih
+    match rs with
+    | [] => simp at hn
+    | a :: rs' =>
+      simp only [List.length_cons, add_lt_add_iff_right] at hn
+      have reg' := (isWeaklyRegular_cons_iff _ _ _).mp reg
+      have mem' := mem
+      simp only [List.mem_cons, forall_eq_or_imp] at mem'
+      let _ : Subsingleton (Ext N (M.smulShortComplex a).X₃ n) :=
+        ih (ModuleCat.of R (QuotSMulTop a M)) reg'.2 mem'.2 hn
+      exact (extClass_postcomp_surjective M N a reg'.1 mem'.1 (rfl : n + 1 = n + 1)).subsingleton
+
+lemma extClass_postcomp_bijective_of_lt (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
+    (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b)
+    {rs : List R} (reg' : IsWeaklyRegular M rs) (mem' : ∀ r ∈ rs, r ∈ Module.annihilator R N)
+    (ltlen : a < rs.length) :
+    Function.Bijective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
+  refine ⟨?_, extClass_postcomp_surjective M N x reg mem h⟩
+  let _ : Subsingleton (Ext N (M.smulShortComplex x).X₂ a) :=
+    ext_subsingleton_of_regualr_sequence M N reg' mem' a ltlen
+  have mono := (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact a b h).mono_g
+    (Limits.IsZero.eq_zero_of_src (AddCommGrpCat.isZero_of_subsingleton _) _)
+  exact (AddCommGrpCat.mono_iff_injective _).mp mono
+
+noncomputable def QuotientRegularSequenceToExt (M N : ModuleCat.{v} R) {rs : List R}
+    (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
+    (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) →ₗ[R] Ext.{w} N M rs.length :=
+  match rs with
+  | [] => List.length_nil ▸
+    ((Submodule.quotEquivOfEqBot (Ideal.ofList [] • ⊤ : Submodule R M) (by simp)).congrRight.trans
+      (ModuleCat.homLinearEquiv.symm.trans Ext.linearEquiv₀.symm)).toLinearMap
+  | a :: rs' =>
+    (((isWeaklyRegular_cons_iff _ a rs').mp
+      reg).1.smulShortComplex_shortExact.extClass.postcompOfLinear R N
+      (rs'.length_cons.symm)).comp
+      ((QuotientRegularSequenceToExt (ModuleCat.of R (QuotSMulTop a M)) N
+      ((isWeaklyRegular_cons_iff _ a rs').mp reg).2
+      (fun r hr ↦ mem r (List.mem_cons_of_mem a hr))).comp
+      (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M a rs').congrRight.toLinearMap)
+
+lemma quotientRegularSequenceToExt_bijective (M N : ModuleCat.{v} R) {rs : List R}
+    (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
+    Function.Bijective (QuotientRegularSequenceToExt M N reg mem) := by
+  match rs with
+  | [] =>
+    exact LinearEquiv.bijective _
+  | a :: rs' =>
+    simp only [List.length_cons, QuotientRegularSequenceToExt, ModuleCat.smulShortComplex_X₁,
+      LinearMap.coe_comp]
+    have reg' := (isWeaklyRegular_cons_iff _ _ _).mp reg
+    have mem' := mem
+    simp only [List.mem_cons, forall_eq_or_imp] at mem'
+    apply Function.Bijective.comp _
+    · apply Function.Bijective.comp _ (LinearEquiv.bijective _)
+      exact quotientRegularSequenceToExt_bijective
+        (ModuleCat.of R (QuotSMulTop a M)) N reg'.2 mem'.2
+    · exact extClass_postcomp_bijective_of_lt M N a reg'.1 mem'.1
+        (rs'.length_cons (a := a)).symm reg mem (by simp)
+
+noncomputable def ExtEquivQuotientRegularSequence (M N : ModuleCat.{v} R) {rs : List R}
+    (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
+    Ext.{w} N M rs.length ≃ₗ[R] (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) :=
+  (LinearEquiv.ofBijective (QuotientRegularSequenceToExt M N reg mem)
+    (quotientRegularSequenceToExt_bijective M N reg mem)).symm
+
+end
+
+section
+
 variable {R}
 
 class Ideal.isIrreducible (I : Ideal R) : Prop where
