@@ -1,5 +1,6 @@
 module
 
+public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
@@ -49,20 +50,23 @@ instance [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D] :
 
 universe u
 
-instance (J : GrothendieckTopology C) [HasPullbacks D] [HasEqualizers D] [HasPushouts D]
-    [HasImages (Cᵒᵖ ⥤ D)] [IsRegularEpiCategory D] [HasSheafify J D] [Balanced (Sheaf J D)] :
-    IsRegularEpiCategory (Sheaf J D) where
+def regularEpiCategorySheaf (J : GrothendieckTopology C)
+    [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
+    (h : ∀ {F G : Sheaf J D} (f : F ⟶ G) [Epi f], ∃ (I : Cᵒᵖ ⥤ D) (p : F.val ⟶ I) (i : I ⟶ G.val),
+      Epi p ∧ Mono i ∧ p ≫ i = f.val)
+    [HasSheafify J D] [Balanced (Sheaf J D)] : IsRegularEpiCategory (Sheaf J D) where
   regularEpiOfEpi {F G} f _ := by
-    let p := factorThruImage f.val
-    let i := image.ι f.val
-    have hpi : p ≫ i = f.val := by simp [p, i]
+    obtain ⟨I, p, i, hp, hi, hpi⟩ := h f
+    -- let p := factorThruImage f.val
+    -- let i := image.ι f.val
+    -- have hpi : p ≫ i = f.val := by simp [p, i]
     let +nondep hc₁ : IsLimit <| (sheafToPresheaf J D).mapCone (pullback.cone f f) :=
       isLimitOfPreserves _ <| pullback.isLimit f f
     let e := PullbackCone.isoMk ((sheafToPresheaf J D).mapCone (pullback.cone f f))
     let +nondep hc₂ := IsLimit.equivOfNatIsoOfIso _ _ _ e hc₁
     let c : PullbackCone p p := PullbackCone.mk
         (W := (pullback f f).val) (pullback.fst f f).val (pullback.snd f f).val <| by
-      simp [← cancel_mono i, p, i, ← Sheaf.comp_val, pullback.condition]
+      simp [← cancel_mono i, hpi, ← Sheaf.comp_val, pullback.condition]
     let +nondep hc₃ : IsLimit c :=
       PullbackCone.isLimitOfFactors f.val f.val i _ _ hpi hpi _ hc₂
     let +nondep : RegularEpi p := regularEpiOfEpi _
@@ -71,10 +75,9 @@ instance (J : GrothendieckTopology C) [HasPullbacks D] [HasEqualizers D] [HasPus
           (sheafificationAdjunction J D).counit.app F ≫ f ≫
           inv ((sheafificationAdjunction J D).counit.app G) := by
         simpa [← Category.assoc] using (sheafificationAdjunction J D).counit_naturality f
-    have h₂ : f =
-          inv ((sheafificationAdjunction J D).counit.app F) ≫ (presheafToSheaf J D).map f.val ≫
-          (sheafificationAdjunction J D).counit.app G := by
-        simp [h₁]
+    have h₂ : f = inv ((sheafificationAdjunction J D).counit.app F) ≫
+        (presheafToSheaf J D).map f.val ≫ (sheafificationAdjunction J D).counit.app G := by
+      simp [h₁]
     have : Epi ((presheafToSheaf J D).map f.val) := by
       rw [h₁]
       infer_instance
@@ -101,18 +104,29 @@ instance (J : GrothendieckTopology C) [HasPullbacks D] [HasEqualizers D] [HasPus
       isColimit := by
         refine .equivOfNatIsoOfIso ?_ _ _ ?_ hc₅
         · refine NatIso.ofComponents ?_ ?_
-          · rintro (_ | _)
-            · exact Iso.refl _
-            · exact Iso.refl _
-          · rintro (_ | _ | _) (_ | _ | _) (_ | _)
-            all_goals simp [c]
-        · refine Cocones.ext ?_ ?_
-          · exact Iso.refl _
-          · rintro (_ | _)
-            · simp
-              erw [id_comp]
-              cat_disch
-            · simp
-    }⟩
+          · rintro (_ | _); exacts [Iso.refl _, Iso.refl _]
+          · rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals simp [c]
+        · refine Cocones.ext (Iso.refl _) ?_
+          rintro (_ | _)
+          · simp only [parallelPair_obj_zero, Cofork.ofπ_pt, comp_obj, parallelPair_obj_one,
+              Cocones.precompose_obj_pt, mapCocone_pt, const_obj_obj, Cocones.precompose_obj_ι,
+              NatTrans.comp_app, NatIso.ofComponents_inv_app, Iso.refl_inv, mapCocone_ι_app,
+              Cofork.ofπ_ι_app, map_comp, Iso.refl_hom, comp_id]
+            erw [id_comp]
+            cat_disch
+          · simp }⟩
+
+instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
+    IsRegularEpiCategory (Sheaf J (Type u)) := by
+  apply regularEpiCategorySheaf J
+  intro F G f hf
+  sorry
+
+instance (J : GrothendieckTopology C) (A : Type*) [Category A] [Abelian A] [HasSheafify J A] :
+    IsRegularEpiCategory (Sheaf J A) := by
+  apply regularEpiCategorySheaf J
+  intro F G f hf
+  exact ⟨image f.val, factorThruImage f.val, image.ι f.val, inferInstance, inferInstance, by simp⟩
+
 
 end CategoryTheory
