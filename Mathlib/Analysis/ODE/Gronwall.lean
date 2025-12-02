@@ -240,7 +240,7 @@ theorem dist_le_of_trajectories_ODE
   dist_le_of_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg
     hg' (fun _ _ => trivial) ha
 
-/-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
+/-- There exists only one solution of an ODE $\dot x=v(t, x)$ in a set `s ⊆ ℝ × E` with
 a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
 
@@ -374,7 +374,7 @@ theorem ODE_solution_unique_of_eventually
     (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
     (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2) heq
 
-/-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
+/-- There exists only one solution of an ODE $\dot x=v(t, x)$ with
 a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
 theorem ODE_solution_unique
     (hv : ∀ t, LipschitzWith K (v t))
@@ -388,7 +388,7 @@ theorem ODE_solution_unique
   ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
 
-/-- There exists only one global solution to an ODE \(\dot x=v(t, x\) with a given initial value
+/-- There exists only one global solution to an ODE $\dot x=v(t, x)$ with a given initial value
 provided that the RHS is Lipschitz continuous. -/
 theorem ODE_solution_unique_univ
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))

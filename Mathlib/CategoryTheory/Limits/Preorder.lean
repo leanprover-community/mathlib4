@@ -150,7 +150,7 @@ def semilatticeInfOfIsLimitBinaryFan
   le_inf _ _ _ le_fst le_snd := leOfHom <| (h _ _).lift (BinaryFan.mk le_fst.hom le_snd.hom)
 
 variable (C) in
-/-- If a partial order has binary products, then it is a inf-semilattice -/
+/-- If a partial order has binary products, then it is an inf-semilattice -/
 noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
   semilatticeInfOfIsLimitBinaryFan
     (fun _ _ ↦ BinaryFan.mk prod.fst prod.snd) (fun X Y ↦ prodIsProd X Y)
