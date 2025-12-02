@@ -109,14 +109,23 @@ lemma ofFun_add {f g : E → F} {μ : Measure E}
   congr with x
   simp
 
--- TODO: remove local integrability hypotheses
--- if f is not locally integrable, neither is c • f, and the lemma is still true
-@[simp]
-lemma ofFun_smul {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) (c : ℝ) :
-    ofFun Ω (c • f) μ = c • ofFun Ω f μ := by
-  have : LocallyIntegrableOn (c • f) Ω μ := sorry -- missing lemma, should be `hf.smul`
+lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
+    ofFun Ω f μ = 0 := by
   ext φ
-  rw [ofFun_apply this]
+  simp [ofFun, ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
+    TestFunction.integralAgainstBilinLM, hf]
+
+@[simp]
+lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) μ = c • ofFun Ω f μ := by
+  by_cases! hc : c = 0
+  · simp [hc]
+    -- missing lemma, should be simp!
+    sorry
+  by_cases hf: LocallyIntegrableOn f Ω μ; swap
+  · have : ¬ LocallyIntegrableOn (c • f) Ω μ := sorry -- using hc and hf
+    simp [ofFun_of_not_locallyIntegrable this, ofFun_of_not_locallyIntegrable hf]
+  ext φ
+  rw [ofFun_apply (hf.smul c)]
   simp only [Pi.smul_apply, ContinuousLinearMap.coe_smul']
   rw [ofFun_apply hf, ← integral_smul c]
   congr with x

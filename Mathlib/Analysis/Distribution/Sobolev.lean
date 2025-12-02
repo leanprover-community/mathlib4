@@ -41,8 +41,8 @@ lemma add (hf : IsRegular f μ) (hg : IsRegular g μ) : IsRegular (f + g) μ := 
 
 lemma smul (hf : IsRegular f μ) (c : ℝ) : IsRegular (c • f) μ := by
   obtain ⟨f₀, hf₀, hf⟩ := hf
-  refine ⟨c • f₀, sorry, ?_⟩ -- same missing LocallyIntegrableOn lemma
-  rw [ofFun_smul hf₀, hf]
+  refine ⟨c • f₀, hf₀.smul c, ?_⟩
+  rw [ofFun_smul, hf]
 
 end IsRegular
 
