@@ -3,9 +3,11 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
-import Mathlib.MeasureTheory.Function.UniformIntegrable
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 /-!
 
@@ -23,6 +25,8 @@ This file proves some results regarding the conditional expectation of real-valu
   expectation.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -70,7 +74,7 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
       rw [eLpNorm_one_eq_lintegral_enorm, eLpNorm_one_eq_lintegral_enorm,
-        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
+        ← ENNReal.toReal_eq_toReal_iff' (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
           (hasFiniteIntegral_iff_enorm.mp hf.2).ne,
         ← integral_norm_eq_lintegral_enorm
           (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
@@ -255,13 +259,13 @@ theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
   have hfs_bound : ∀ n x, ‖fs n x‖ ≤ c := hf.norm_approxBounded_le hc
   have : μ[f * μ[g|m]|m] = f * μ[g|m] := by
     refine condExp_of_stronglyMeasurable hm (hf.mul stronglyMeasurable_condExp) ?_
-    exact integrable_condExp.bdd_mul' (hf.mono hm).aestronglyMeasurable hf_bound
+    exact integrable_condExp.bdd_mul (hf.mono hm).aestronglyMeasurable hf_bound
   rw [← this]
   refine tendsto_condExp_unique (fun n x => fs n x * g x) (fun n x => fs n x * (μ[g|m]) x) (f * g)
     (f * μ[g|m]) ?_ ?_ ?_ ?_ (c * ‖g ·‖) ?_ (c * ‖(μ[g|m]) ·‖) ?_ ?_ ?_ ?_
-  · exact fun n => hg.bdd_mul' ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
+  · exact fun n => hg.bdd_mul ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
-  · exact fun n => integrable_condExp.bdd_mul'
+  · exact fun n => integrable_condExp.bdd_mul
       ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
   · filter_upwards [hfs_tendsto] with x hx
@@ -279,7 +283,7 @@ theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     refine (condExp_stronglyMeasurable_simpleFunc_mul hm _ hg).trans ?_
     rw [condExp_of_stronglyMeasurable hm
       ((SimpleFunc.stronglyMeasurable _).mul stronglyMeasurable_condExp) _]
-    exact integrable_condExp.bdd_mul'
+    exact integrable_condExp.bdd_mul
       ((SimpleFunc.stronglyMeasurable (fs n)).mono hm).aestronglyMeasurable
       (Eventually.of_forall (hfs_bound n))
 

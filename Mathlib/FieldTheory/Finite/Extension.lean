@@ -3,7 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Kevin Buzzard
 -/
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Extensions of finite fields
@@ -28,6 +30,8 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
 isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

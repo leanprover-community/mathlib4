@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Subsemigroups: definition
@@ -45,6 +47,8 @@ numbers.
 ## Tags
 subsemigroup, subsemigroups
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 

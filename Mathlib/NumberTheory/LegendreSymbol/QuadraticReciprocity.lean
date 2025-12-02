@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
 
 /-!
 # Quadratic reciprocity.
@@ -32,6 +34,8 @@ properties of quadratic Gauss sums as provided by `NumberTheory.LegendreSymbol.G
 
 quadratic residue, quadratic nonresidue, Legendre symbol, quadratic reciprocity
 -/
+
+@[expose] public section
 
 
 open Nat

@@ -3,12 +3,14 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Preimage
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Preimage
 
 /-!
 # Pointwise operations of finsets
@@ -37,7 +39,7 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -45,7 +47,9 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 
@@ -61,7 +65,7 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
+/-- The finset `1 : Finset α` is defined as `{1}` in scope `Pointwise`. -/
 @[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
@@ -273,6 +277,7 @@ theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
     ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
   ext; simp
 
+@[to_additive]
 theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
     ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
   simp

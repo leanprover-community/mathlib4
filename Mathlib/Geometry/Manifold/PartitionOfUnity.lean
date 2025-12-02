@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Topology.MetricSpace.PartitionOfUnity
-import Mathlib.Topology.ShrinkingLemma
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
+public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Topology.MetricSpace.PartitionOfUnity
+public import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -56,6 +58,8 @@ function from local functions.
 
 smooth bump function, partition of unity
 -/
+
+@[expose] public section
 
 universe uι uE uH uM uF
 

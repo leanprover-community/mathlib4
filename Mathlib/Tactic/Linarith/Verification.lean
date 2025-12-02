@@ -3,9 +3,10 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+module
 
-import Mathlib.Tactic.Linarith.Parsing
-import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Linarith.Parsing
+public meta import Mathlib.Util.Qq
 
 /-!
 # Deriving a proof of false
@@ -18,6 +19,8 @@ This file implements the reconstruction.
 
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta
 
@@ -140,19 +143,22 @@ def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
 /--
-`addNegEqProofs l` inspects the list of proofs `l` for proofs of the form `t = 0`. For each such
-proof, it adds a proof of `-t = 0` to the list.
+`addNegEqProofsIdx l` inspects a list `l` of pairs `(h, i)` where `h` proves
+`tᵢ Rᵢ 0` and `i` records the original index of the hypothesis. For each
+equality proof `t = 0` in the list, it appends a proof of `-t = 0` with the
+same index `i`. All other entries are preserved.
 -/
-def addNegEqProofs : List Expr → MetaM (List Expr)
+def addNegEqProofsIdx : List (Expr × Nat) → MetaM (List (Expr × Nat))
   | [] => return []
-  | (h::tl) => do
+  | (⟨h, i⟩::tl) => do
     let (iq, t) ← parseCompAndExpr (← inferType h)
     match iq with
     | Ineq.eq => do
-      let nep := mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
-      let tl ← addNegEqProofs tl
-      return h::nep::tl
-    | _ => return h :: (← addNegEqProofs tl)
+      let nep :=
+        mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
+      let tl ← addNegEqProofsIdx tl
+      return (h, i)::(nep, i)::tl
+    | _ => return (h, i) :: (← addNegEqProofsIdx tl)
 
 /--
 `proveEqZeroUsing tac e` tries to use `tac` to construct a proof of `e = 0`.
@@ -188,15 +194,19 @@ tactic, which is typically `ring`. We prove (2) by folding over the set of hypot
 `transparency : TransparencyMode` controls the transparency level with which atoms are identified.
 -/
 def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
-    (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
+    (discharger : TacticM Unit) : MVarId → List Expr → MetaM (Expr × List Nat)
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
-      let l' ← detailTrace "addNegEqProofs" <| addNegEqProofs l
-      let inputs ← detailTrace "mkNegOneLtZeroProof" <|
-        return (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
+      let lidx := l.zipIdx
+      let l' ← detailTrace "addNegEqProofs" <| addNegEqProofsIdx lidx
+      let inputsTagged : List (Expr × Option Nat) ←
+        detailTrace "mkNegOneLtZeroProof" <|
+          return ((← mkNegOneLtZeroProof (← typeOfIneqProof h)), none) ::
+            (l'.reverse.map fun ⟨e, i⟩ => (e, some i))
+      let inputs := inputsTagged.map Prod.fst
       trace[linarith.detail] "inputs:{indentD <| toMessageData (← inputs.mapM inferType)}"
       let (comps, max_var) ← detailTrace "linearFormsAndMaxVar" <|
         linearFormsAndMaxVar transparency inputs
@@ -212,28 +222,36 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
               throwError "linarith failed to find a contradiction"
           trace[linarith] "found a contradiction: {certificate.toList}"
           return certificate
-      let (sm, zip) ←
+      let (sm, zip, idxs) ←
         withTraceNode `linarith (return m!"{exceptEmoji ·} Building final expression") do
-          let enum_inputs := inputs.zipIdx
+          let enum_inputs := inputsTagged.zipIdx
           -- construct a list pairing nonzero coeffs with the proof of their corresponding
-          -- comparison
-          let zip := enum_inputs.filterMap fun ⟨e, n⟩ => (certificate[n]?).map (e, ·)
-          let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
+          -- comparison and track the original index
+          let used := enum_inputs.filterMap fun ⟨⟨e, orig?⟩, n⟩ =>
+            (certificate[n]?).map fun c => (e, c, orig?)
+          let zip := used.map fun ⟨e, c, _⟩ => (e, c)
+          let mls ← used.mapM fun ⟨e, c, _⟩ => do mulExpr c (← leftOfIneqProof e)
           -- `sm` is the sum of input terms, scaled to cancel out all variables.
           let sm ← addExprs mls
           -- let sm ← instantiateMVars sm
           trace[linarith] "{indentD sm}\nshould be both 0 and negative"
-          return (sm, zip)
+          let idxs :=
+            (used.foldl (fun acc (_, _, orig?) =>
+                match orig? with
+                | some i => i :: acc
+                | none => acc) []).eraseDups
+          return (sm, zip, idxs)
       -- we prove that `sm = 0`, typically with `ring`.
       let sm_eq_zero ← detailTrace "proveEqZeroUsing" <| proveEqZeroUsing discharger sm
       -- we also prove that `sm < 0`
       let sm_lt_zero ← detailTrace "mkLTZeroProof" <| mkLTZeroProof zip
-      detailTrace "Linarith.lt_irrefl" do
+      let pf ← detailTrace "Linarith.lt_irrefl" do
         -- this is a contradiction.
         let pftp ← inferType sm_lt_zero
         let ⟨_, nep, _⟩ ← g.rewrite pftp sm_eq_zero
         let pf' ← mkAppM ``Eq.mp #[nep, sm_lt_zero]
         mkAppM ``Linarith.lt_irrefl #[pf']
+      return (pf, idxs)
 where
   /-- Log `f` under `linarith.detail`, with exception emojis and the provided name. -/
   detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=

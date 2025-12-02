@@ -3,13 +3,17 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.G2
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
 /-!
 # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
 -/
+
+@[expose] public section
 
 open Set
 open FaithfulSMul (algebraMap_injective)
@@ -125,7 +129,7 @@ include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
@@ -207,7 +211,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   letI := P.indexNeg
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
   have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
@@ -269,7 +273,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   letI := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   /- Establish basic relationships about roots and their sums / differences. -/
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m

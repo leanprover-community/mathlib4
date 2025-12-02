@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -17,6 +19,8 @@ We provide `path_composition : paths C ⥤ C`.
 We check that the quotient of the path category of a category by the canonical relation
 (paths are related if they compose to the same path) is equivalent to the original category.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

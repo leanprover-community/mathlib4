@@ -3,9 +3,11 @@ Copyright (c) 2021 Gabriel Moise. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Incidence matrix of a simple graph
@@ -40,6 +42,8 @@ incidence matrix for each `SimpleGraph α` has the same type.
 * Define the graph Laplacian of a simple graph using the oriented incidence matrix from an
   arbitrary orientation of a simple graph.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

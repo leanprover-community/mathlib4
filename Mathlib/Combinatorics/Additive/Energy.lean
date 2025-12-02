@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Additive energy
@@ -33,6 +35,8 @@ It's possibly interesting to have
 `(s ×ˢ s) ×ˢ t ×ˢ t).filter (fun x : (α × α) × α × α ↦ x.1.1 * x.2.1 = x.1.2 * x.2.2)`
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -144,7 +148,7 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     _ ≤ #u * ∑ c ∈ u, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
         simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
     _ ≤ #u * ∑ c ∈ s * t, #{xy ∈ s ×ˢ t | xy.1 * xy.2 = c} ^ 2 := by
-        refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
+        refine mul_le_mul_right (sum_le_sum_of_ne_zero ?_) _
         aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
     _ = #u * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']
 

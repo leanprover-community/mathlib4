@@ -3,12 +3,14 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Subobject.Comma
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!
 # Adjoint functor theorem
@@ -36,6 +38,8 @@ Finally, we prove the following corollaries of the special adjoint functor theor
   `hasLimits_of_hasColimits_of_isSeparating`, `hasLimits_of_hasColimits_of_hasSeparator`
 
 -/
+
+@[expose] public section
 
 
 universe v u u'
@@ -105,7 +109,7 @@ lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimits D] [WellPow
     (hP : P.IsCoseparating) (G : D ⥤ C) [PreservesLimits G] :
     G.IsRightAdjoint := by
   have : ∀ A, HasInitial (StructuredArrow A G) := fun A ↦
-    hasInitial_of_isCoseparating (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
+    hasInitial_of_isCoseparating.{v} (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
   exact isRightAdjointOfStructuredArrowInitials _
 
 /-- The special adjoint functor theorem: if `F : C ⥤ D` preserves colimits and `C` is cocomplete,
@@ -116,7 +120,7 @@ lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimits C] [WellPo
     (h𝒢 : P.IsSeparating) (F : C ⥤ D) [PreservesColimits F] :
     F.IsLeftAdjoint :=
   have : ∀ A, HasTerminal (CostructuredArrow F A) := fun A =>
-    hasTerminal_of_isSeparating (CostructuredArrow.isSeparating_inverseImage_proj F A h𝒢)
+    hasTerminal_of_isSeparating.{v} (CostructuredArrow.isSeparating_inverseImage_proj F A h𝒢)
   isLeftAdjoint_of_costructuredArrowTerminals _
 
 end SpecialAdjointFunctorTheorem

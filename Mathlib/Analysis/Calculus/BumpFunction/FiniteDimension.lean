@@ -3,13 +3,15 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
-import Mathlib.Analysis.Convolution
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.Data.Set.Pointwise.Support
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.Data.Set.Pointwise.Support
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Bump functions in finite-dimensional vector spaces
@@ -21,6 +23,8 @@ in `IsOpen.exists_smooth_support_eq`.
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -403,7 +407,7 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         linarith only
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp [field]
+          · field
           · field_simp
             linarith only
         rw [← mem_closedBall_iff_norm']
@@ -504,14 +508,14 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           abs_of_nonneg A.le]
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) := mul_le_of_le_one_right (by positivity) hx
-          _ = 1 - (R - 1) / (R + 1) := by field_simp; ring
+          _ = 1 - (R - 1) / (R + 1) := by field
       support := fun R hR => by
         have A : 0 < (R + 1) / 2 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
         refine congr (congr_arg ball (Eq.refl 0)) ?_
-        field_simp; ring }
+        field }
 
 end ExistsContDiffBumpBase
 

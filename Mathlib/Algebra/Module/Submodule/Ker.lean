@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Module.Submodule.Map
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Module.Submodule.Map
 
 /-!
 # Kernel of a linear map
@@ -25,6 +27,8 @@ This file defines the kernel of a linear map.
 linear algebra, vector space, module
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -153,7 +157,7 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
   monotone' n m w x h := by
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
-    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, LinearMap.map_zero]
+    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
 
 end AddCommMonoid
 
@@ -173,19 +177,22 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
 
 theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker, map_sub, sub_eq_zero]
 
+theorem disjoint_ker_iff_injOn {p : Submodule R M} :
+    Disjoint p (LinearMap.ker f) ↔ Set.InjOn f p := by
+  rw [disjoint_ker, Set.injOn_iff_map_eq_zero]
+
+@[deprecated disjoint_ker_iff_injOn (since := "2025-11-07")]
 theorem disjoint_ker' {p : Submodule R M} :
-    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y :=
-  disjoint_ker.trans
-    ⟨fun H x hx y hy h => eq_of_sub_eq_zero <| H _ (sub_mem hx hy) (by simp [h]),
-     fun H x h₁ h₂ => H x h₁ 0 (zero_mem _) (by simpa using h₂)⟩
+    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
+  simp [disjoint_ker_iff_injOn, Set.InjOn]
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
-    (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
-  disjoint_ker'.1 hd _ (h hx) _ (h hy)
+    (hd : Disjoint p (ker f)) : Set.InjOn f s :=
+  disjoint_ker_iff_injOn.mp hd |>.mono h
 
 variable (F) in
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
-  simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
+  simpa [disjoint_iff_inf_le] using disjoint_ker_iff_injOn (f := f) (p := ⊤)
 
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f :=
   LinearMapClass.ker_eq_bot _

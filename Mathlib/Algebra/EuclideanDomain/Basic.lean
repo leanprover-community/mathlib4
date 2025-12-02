@@ -3,11 +3,13 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Defs
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Lemmas about Euclidean domains
@@ -17,6 +19,8 @@ import Mathlib.Algebra.Ring.Basic
 * `gcd_eq_gcd_ab`: states Bézout's lemma for Euclidean domains.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -212,6 +216,13 @@ instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R
 -- see Note [lower instance priority]
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
   { e, NoZeroDivisors.to_isDomain R with }
+
+theorem div_pow {R : Type*} [EuclideanDomain R] {a b : R} {n : ℕ} (hab : b ∣ a) :
+    (a / b) ^ n = a ^ n / b ^ n := by
+  obtain ⟨c, rfl⟩ := hab
+  obtain rfl | hb := eq_or_ne b 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  · simp [hb, mul_pow]
 
 end GCD
 
