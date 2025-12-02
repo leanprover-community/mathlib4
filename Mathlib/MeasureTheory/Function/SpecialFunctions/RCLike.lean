@@ -24,11 +24,9 @@ namespace RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 
-@[measurability]
 theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
   continuous_re.measurable
 
-@[measurability]
 theorem measurable_im : Measurable (im : 𝕜 → ℝ) :=
   continuous_im.measurable
 

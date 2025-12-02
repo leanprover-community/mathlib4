@@ -50,7 +50,6 @@ theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
   Metric.isClosed_closedBall.measurableSet
 
-@[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
   (continuous_infDist_pt s).measurable
 
@@ -59,7 +58,6 @@ theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infDist (f x) s :=
   measurable_infDist.comp hf
 
-@[measurability]
 theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
   (continuous_infNndist_pt s).measurable
 
@@ -72,7 +70,6 @@ section
 
 variable [SecondCountableTopology α]
 
-@[measurability]
 theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
   continuous_dist.measurable
 
@@ -87,7 +84,6 @@ lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
     AEMeasurable (fun b ↦ dist (f b) (g b)) μ :=
   continuous_dist.aemeasurable2 hf hg
 
-@[measurability]
 theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
   continuous_nndist.measurable
 
@@ -119,7 +115,6 @@ theorem measurable_edist_right : Measurable (edist x) :=
 theorem measurable_edist_left : Measurable fun y => edist y x :=
   (continuous_id.edist continuous_const).measurable
 
-@[measurability]
 theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
   continuous_infEdist.measurable
 
@@ -174,7 +169,6 @@ theorem tendsto_measure_thickening_of_isClosed {μ : Measure α} {s : Set α}
 
 variable [SecondCountableTopology α]
 
-@[measurability]
 theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
   continuous_edist.measurable
 
@@ -257,7 +251,6 @@ theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f
     AEMeasurable (fun a => norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
 
-@[measurability]
 theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 

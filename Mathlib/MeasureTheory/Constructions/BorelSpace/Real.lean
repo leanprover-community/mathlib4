@@ -153,7 +153,6 @@ theorem AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMe
     AEMeasurable (fun x => Real.toNNReal (f x)) μ :=
   measurable_real_toNNReal.comp_aemeasurable hf
 
-@[measurability]
 theorem measurable_coe_nnreal_real : Measurable ((↑) : ℝ≥0 → ℝ) :=
   NNReal.continuous_coe.measurable
 
@@ -167,7 +166,6 @@ theorem AEMeasurable.coe_nnreal_real {f : α → ℝ≥0} {μ : Measure α} (hf 
     AEMeasurable (fun x => (f x : ℝ)) μ :=
   measurable_coe_nnreal_real.comp_aemeasurable hf
 
-@[measurability]
 theorem measurable_coe_nnreal_ennreal : Measurable ((↑) : ℝ≥0 → ℝ≥0∞) :=
   ENNReal.continuous_coe.measurable
 
@@ -236,15 +234,12 @@ theorem measurable_of_measurable_nnreal_nnreal {_ : MeasurableSpace β} {f : ℝ
     (measurable_swap_iff.1 <| measurable_of_measurable_nnreal_prod (h₁.comp measurable_swap) h₃)
     (measurable_of_measurable_nnreal h₂)
 
-@[measurability]
 theorem measurable_ofReal : Measurable ENNReal.ofReal :=
   ENNReal.continuous_ofReal.measurable
 
-@[measurability]
 theorem measurable_toReal : Measurable ENNReal.toReal :=
   ENNReal.measurable_of_measurable_nnreal measurable_coe_nnreal_real
 
-@[measurability]
 theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
   ENNReal.measurable_of_measurable_nnreal measurable_id
 
@@ -389,7 +384,6 @@ theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Typ
 theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
   continuous_coe_real_ereal.measurable
 
-@[measurability]
 theorem Measurable.coe_real_ereal {f : α → ℝ} (hf : Measurable f) :
     Measurable fun x => (f x : EReal) :=
   measurable_coe_real_ereal.comp hf
@@ -408,7 +402,6 @@ theorem EReal.measurable_of_measurable_real {f : EReal → α} (h : Measurable f
   measurable_of_measurable_on_compl_finite {⊥, ⊤} (by simp)
     (MeasurableEquiv.erealEquivReal.symm.measurable_comp_iff.1 h)
 
-@[measurability]
 theorem measurable_ereal_toReal : Measurable EReal.toReal :=
   EReal.measurable_of_measurable_real (by simpa using measurable_id)
 
@@ -422,7 +415,6 @@ theorem AEMeasurable.ereal_toReal {f : α → EReal} {μ : Measure α} (hf : AEM
     AEMeasurable (fun x => (f x).toReal) μ :=
   measurable_ereal_toReal.comp_aemeasurable hf
 
-@[measurability]
 theorem measurable_coe_ennreal_ereal : Measurable ((↑) : ℝ≥0∞ → EReal) :=
   continuous_coe_ennreal_ereal.measurable
 
@@ -436,7 +428,6 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
-@[measurability]
 theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
   EReal.measurable_of_measurable_real (by simpa using ENNReal.measurable_ofReal)
 
