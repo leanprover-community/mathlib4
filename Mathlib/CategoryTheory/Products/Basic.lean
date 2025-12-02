@@ -40,26 +40,34 @@ section
 
 variable (C : Type u₁) [CategoryStruct.{v₁} C] (D : Type u₂) [CategoryStruct.{v₂} D]
 
+variable {C D} in
+@[ext]
+structure Prod.Hom (X Y : C × D) where
+  /-- This constructor is made private to encourage using `Prod.mkHom` instead. -/
+  private mk ::
+  prod : (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
+
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
-@[simps (notRecursive := [])] -- notRecursive to generate simp lemmas like `id_fst` and `comp_snd`
+@[simps]
 instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
-  Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
+  Hom X Y := Prod.Hom X Y
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
-  comp f g := (f.1 ≫ g.1, f.2 ≫ g.2)
+  comp f g := ⟨f.prod.1 ≫ g.prod.1, f.prod.2 ≫ g.prod.2⟩
 
 variable {C D}
 
 namespace Prod
 
 @[ext]
-lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.2) : f = g :=
-  Prod.ext h₁ h₂
+lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.prod.1 = g.prod.1)
+    (h₂ : f.prod.2 = g.prod.2) : f = g :=
+  Prod.Hom.ext <| Prod.ext h₁ h₂
 
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
-  ⟨f, g⟩
+  ⟨⟨f, g⟩⟩
 
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom
@@ -70,6 +78,9 @@ lemma mkHom_eq {X₁ X₂ : C} {Y₁ Y₂ : D} (f f' : X₁ ⟶ X₂) (g g' : Y�
     f ×ₘ g = f' ×ₘ g' ↔ (f = f' ∧ g = g') :=
   Prod.hom_ext_iff
 
+@[simp]
+lemma mkHom_self {X Y : C × D} (f : X ⟶ Y) : f.prod.1 ×ₘ f.prod.2 = f :=
+  rfl
 
 end Prod
 
@@ -82,7 +93,7 @@ theorem prod_id (X : C) (Y : D) : 𝟙 (X, Y) = 𝟙 X ×ₘ 𝟙 Y :=
 
 @[simp]
 theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) ⟶ (R, U)) :
-    f ≫ g = f.1 ≫ g.1 ×ₘ f.2 ≫ g.2 :=
+    f ≫ g = f.prod.1 ≫ g.prod.1 ×ₘ f.prod.2 ≫ g.prod.2 :=
   rfl
 
 end
@@ -100,15 +111,15 @@ instance prod' : Category.{max v₁ v₂} (C × D) where
 -- TODO: is there a nice way to fix the non-terminal simp?
 set_option linter.flexible false in
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
-    IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
+    IsIso f ↔ IsIso f.prod.1 ∧ IsIso f.prod.2 := by
   constructor
   · rintro ⟨g, hfg, hgf⟩
     rcases Prod.hom_ext_iff.1 hfg with ⟨hfg₁, hfg₂⟩
     rcases Prod.hom_ext_iff.1 hgf with ⟨hgf₁, hgf₂⟩
-    exact ⟨⟨⟨g.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.2, hfg₂, hgf₂⟩⟩⟩
+    exact ⟨⟨⟨g.prod.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.prod.2, hfg₂, hgf₂⟩⟩⟩
   · rintro ⟨⟨g₁, hfg₁, hgf₁⟩, ⟨g₂, hfg₂, hgf₂⟩⟩
     dsimp at hfg₁ hgf₁ hfg₂ hgf₂
-    refine ⟨⟨(g₁, g₂), by aesop_cat, by aesop_cat⟩⟩
+    refine ⟨⟨g₁ ×ₘ g₂, by aesop_cat, by aesop_cat⟩⟩
 
 section
 
@@ -164,19 +175,19 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 @[simps]
 def fst : C × D ⥤ C where
   obj X := X.1
-  map f := f.1
+  map f := f.prod.1
 
 /-- `snd` is the functor `(X, Y) ↦ Y`. -/
 @[simps]
 def snd : C × D ⥤ D where
   obj X := X.2
-  map f := f.2
+  map f := f.prod.2
 
 /-- The functor swapping the factors of a Cartesian product of categories, `C × D ⥤ D × C`. -/
 @[simps]
 def swap : C × D ⥤ D × C where
   obj X := (X.2, X.1)
-  map f := f.2 ×ₘ f.1
+  map f := f.prod.2 ×ₘ f.prod.1
 
 /-- Swapping the factors of a Cartesian product of categories twice is naturally isomorphic
 to the identity functor.
@@ -203,12 +214,14 @@ variable {C D}
 /-- Any morphism in a product factors as a morphism whose left component is an identity
 followed by a morphism whose right component is an identity. -/
 @[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by cat_disch
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.prod.2) ≫ (f.prod.1 ×ₘ (𝟙 y.2)) := by
+  aesop_cat
 
 /-- Any morphism in a product factors as a morphism whose right component is an identity
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by cat_disch
+lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.prod.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.prod.2) := by
+  cat_disch
 
 end Prod
 
@@ -234,7 +247,7 @@ as a functor `C × (C ⥤ D) ⥤ D`.
 @[simps]
 def evaluationUncurried : C × (C ⥤ D) ⥤ D where
   obj p := p.2.obj p.1
-  map := fun {x} {y} f => x.2.map f.1 ≫ f.2.app y.1
+  map := fun {x} {y} f => x.2.map f.prod.1 ≫ f.prod.2.app y.1
 
 variable {C}
 
@@ -251,15 +264,15 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 namespace Functor
 
 /-- The Cartesian product of two functors. -/
-@[simps]
+@[simps obj map]
 def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
   obj X := (F.obj X.1, G.obj X.2)
-  map f := F.map f.1 ×ₘ G.map f.2
+  map f := F.map f.prod.1 ×ₘ G.map f.prod.2
 
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
 You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
 /-- Similar to `prod`, but both functors start from the same category `A` -/
-@[simps]
+@[simps obj map]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
   obj a := (F.obj a, G.obj a)
   map f := F.map f ×ₘ G.map f
@@ -290,7 +303,7 @@ end Functor
 namespace NatTrans
 
 /-- The Cartesian product of two natural transformations. -/
-@[simps! app_fst app_snd]
+@[simps! app_prod_fst app_prod_snd]
 def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod H ⟶ G.prod I where
   app X := α.app X.1 ×ₘ β.app X.2
 
@@ -299,7 +312,7 @@ use instead `α.prod β` or `NatTrans.prod α β`. -/
 
 /-- The Cartesian product of two natural transformations where both functors have the
 same source. -/
-@[simps! app_fst app_snd]
+@[simps! app_prod_fst app_prod_snd]
 def prod' {F G : A ⥤ B} {H K : A ⥤ C} (α : F ⟶ G) (β : H ⟶ K) : F.prod' H ⟶ G.prod' K where
   app X := α.app X ×ₘ β.app X
 
@@ -309,7 +322,7 @@ end NatTrans
 @[simps]
 def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
   obj FG := FG.1.prod FG.2
-  map nm := NatTrans.prod nm.1 nm.2
+  map nm := NatTrans.prod nm.prod.1 nm.prod.2
 
 namespace NatIso
 
@@ -382,7 +395,7 @@ variable (A B C)
 @[simps]
 def prodFunctorToFunctorProd : (A ⥤ B) × (A ⥤ C) ⥤ A ⥤ B × C where
   obj F := F.1.prod' F.2
-  map {F G} f := NatTrans.prod' f.1 f.2
+  map {F G} f := NatTrans.prod' f.prod.1 f.prod.2
 
 /-- The backward direction for `functorProdFunctorEquiv` -/
 @[simps]
@@ -417,14 +430,14 @@ section Opposite
 open Opposite
 
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
-@[simps!]
+@[simps! functor_obj functor_map counitIso_hom_app unitIso_hom_app]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
     { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
-      map := fun f ↦ f.unop.1.op ×ₘ f.unop.2.op }
+      map := fun f ↦ f.unop.prod.1.op ×ₘ f.unop.prod.2.op }
   inverse :=
     { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
-      map := fun ⟨f,g⟩ ↦ op (f.unop ×ₘ g.unop) }
+      map := fun f ↦ op (f.prod.1.unop ×ₘ f.prod.2.unop) }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

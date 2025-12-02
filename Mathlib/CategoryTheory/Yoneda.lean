@@ -677,7 +677,7 @@ def yonedaEvaluation : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁
 @[simp]
 theorem yonedaEvaluation_map_down (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q)
     (x : (yonedaEvaluation C).obj P) :
-    ((yonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) :=
+    ((yonedaEvaluation C).map α x).down = α.prod.2.app Q.1 (P.2.map α.prod.1 x.down) :=
   rfl
 
 /-- The "Yoneda pairing" functor, which sends `X : Cᵒᵖ` and `F : Cᵒᵖ ⥤ Type`
@@ -693,7 +693,7 @@ lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPa
 
 @[simp]
 theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
-    (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
+    (yonedaPairing C).map α β = yoneda.map α.prod.1.unop ≫ β ≫ α.prod.2 :=
   rfl
 
 /-- The Yoneda lemma asserts that the Yoneda pairing
@@ -904,7 +904,7 @@ def coyonedaEvaluation : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
 @[simp]
 theorem coyonedaEvaluation_map_down (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q)
     (x : (coyonedaEvaluation C).obj P) :
-    ((coyonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) :=
+    ((coyonedaEvaluation C).map α x).down = α.prod.2.app Q.1 (P.2.map α.prod.1 x.down) :=
   rfl
 
 /-- The "Coyoneda pairing" functor, which sends `X : C` and `F : C ⥤ Type`
@@ -920,7 +920,7 @@ lemma coyonedaPairingExt {X : C × (C ⥤ Type v₁)} {x y : (coyonedaPairing C)
 
 @[simp]
 theorem coyonedaPairing_map (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q) (β : (coyonedaPairing C).obj P) :
-    (coyonedaPairing C).map α β = coyoneda.map α.1.op ≫ β ≫ α.2 :=
+    (coyonedaPairing C).map α β = coyoneda.map α.prod.1.op ≫ β ≫ α.prod.2 :=
   rfl
 
 /-- The Coyoneda lemma asserts that the Coyoneda pairing

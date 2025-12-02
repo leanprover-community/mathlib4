@@ -129,7 +129,7 @@ end fromIncl
 @[simps!] def inclHomEquiv (X : C) (Y : FormalCoproduct.{w} C) :
     ((incl C).obj X ⟶ Y) ≃ (i : Y.I) × (X ⟶ Y.obj i) where
   toFun f := f.asSigma
-  invFun f := .fromIncl f.1 f.2
+  invFun f := .fromIncl f.prod.1 f.prod.2
   left_inv f := f.fromIncl_asSigma
   right_inv _ := rfl
 

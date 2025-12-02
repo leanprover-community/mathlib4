@@ -23,6 +23,8 @@ namespace CategoryTheory
 
 namespace Functor
 
+open Prod
+
 variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃]
   [Category D₁] [Category D₂] [Category D₃] [Category E]
@@ -46,17 +48,17 @@ def fullyFaithfulUncurry₃ :
 @[simp]
 lemma curry₃_obj_map_app_app (F : C₁ × C₂ × C₃ ⥤ E)
     {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) :
-    (((curry₃.obj F).map f).app X₂).app X₃ = F.map ⟨f, 𝟙 X₂, 𝟙 X₃⟩ := rfl
+    (((curry₃.obj F).map f).app X₂).app X₃ = F.map (f ×ₘ 𝟙 X₂ ×ₘ 𝟙 X₃) := rfl
 
 @[simp]
 lemma curry₃_obj_obj_map_app (F : C₁ × C₂ × C₃ ⥤ E)
     (X₁ : C₁) {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) (X₃ : C₃) :
-    (((curry₃.obj F).obj X₁).map f).app X₃ = F.map ⟨𝟙 X₁, f, 𝟙 X₃⟩ := rfl
+    (((curry₃.obj F).obj X₁).map f).app X₃ = F.map (𝟙 X₁ ×ₘ f ×ₘ 𝟙 X₃) := rfl
 
 @[simp]
 lemma curry₃_obj_obj_obj_map (F : C₁ × C₂ × C₃ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) {X₃ Y₃ : C₃} (f : X₃ ⟶ Y₃) :
-    (((curry₃.obj F).obj X₁).obj X₂).map f = F.map ⟨𝟙 X₁, 𝟙 X₂, f⟩ := rfl
+    (((curry₃.obj F).obj X₁).obj X₂).map f = F.map (𝟙 X₁ ×ₘ 𝟙 X₂ ×ₘ f) := rfl
 
 @[simp]
 lemma curry₃_map_app_app_app {F G : C₁ × C₂ × C₃ ⥤ E} (f : F ⟶ G)
