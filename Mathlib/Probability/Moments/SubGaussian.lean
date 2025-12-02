@@ -308,9 +308,8 @@ protected lemma const_mul (h : HasSubgaussianMGF X c κ ν) (r : ℝ) :
     exact h.integrable_exp_mul (t * r)
   mgf_le := by
     filter_upwards [h.mgf_le] with ω hω t
-    specialize hω (t * r)
     rw [mgf_const_mul, mul_comm]
-    refine hω.trans_eq ?_
+    refine (hω (t * r)).trans_eq ?_
     congr 1
     simp only [NNReal.coe_mul, NNReal.coe_mk]
     ring
