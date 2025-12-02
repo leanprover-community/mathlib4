@@ -305,9 +305,7 @@ instance : Category (HomotopyCategory₂ A) where
     exact ((compStruct _ _).comp_unique (compId _) .refl .refl).congr_homotopyCategory₂HomMk
   assoc := by
     rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩
-    exact (Quasicategory₂.fill31
-      (compStruct f g)
-      (compStruct g h)
+    exact (Quasicategory₂.fill31 (compStruct f g) (compStruct g h)
       (compStruct _ _)).some.homotopyCategory₂_fac
 
 end homotopy_category
