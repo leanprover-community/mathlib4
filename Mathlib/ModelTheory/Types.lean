@@ -83,7 +83,7 @@ theorem subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆
 theorem mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
   p.isMaximal.mem_or_not_mem φ
 
-lemma mem_not_mem (hT : T.IsSatisfiable) {φ : L.Sentence} (hφ : φ ∈ T) (hφ' : ∼φ ∈ T) : ⊥ :=
+lemma mem_not_mem (hT : T.IsSatisfiable) {φ : L.Sentence} (hφ : φ ∈ T) (hφ' : ∼φ ∈ T) : False :=
   have ⟨M⟩ := hT
   (M.is_model.realize_of_mem _ hφ') (M.is_model.realize_of_mem _ hφ)
 
