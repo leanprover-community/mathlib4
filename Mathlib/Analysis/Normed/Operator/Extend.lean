@@ -260,12 +260,14 @@ def extend (h_dense₁ : DenseRange e₁) (h_norm₁ : ∃ C, ∀ x, ‖e₂ (f 
     refine h_dense₁.induction ?_ ?_
     · rintro _ ⟨_, rfl⟩
       simp [LinearMap.extendOfNorm_eq, h_dense₁, h_norm₁, h_dense₂, h_norm₂]
-    · exact isClosed_eq (by simp; fun_prop) continuous_id
+    · exact isClosed_eq (by simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+      ContinuousLinearMap.coe_coe]; fun_prop) continuous_id
   right_inv := by
     refine h_dense₂.induction ?_ ?_
     · rintro _ ⟨_, rfl⟩
       simp [LinearMap.extendOfNorm_eq, h_dense₁, h_norm₁, h_dense₂, h_norm₂]
-    · exact isClosed_eq (by simp; fun_prop) continuous_id
+    · exact isClosed_eq (by simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+      ContinuousLinearMap.coe_coe]; fun_prop) continuous_id
   continuous_invFun := ContinuousLinearMap.continuous _
 
 theorem extend_apply (h_dense₁ : DenseRange e₁)
@@ -323,7 +325,8 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
   have h_norm₂ : ∀ x, ‖e₁ (f.symm x)‖ = ‖e₂ x‖ := fun x ↦ by simpa using (h_norm (f.symm x)).symm
   { __ := f.extend e₁ e₂ h_dense₁ ⟨1, by simp [h_norm]⟩ h_dense₂ ⟨1, by simp [h_norm₂]⟩
     norm_map' := by
-      refine h_dense₁.induction ?_ (isClosed_eq (by simp; fun_prop) continuous_norm)
+      refine h_dense₁.induction ?_ (isClosed_eq (by
+        simp only [ContinuousLinearEquiv.coe_toLinearEquiv]; fun_prop) continuous_norm)
       rintro x ⟨y, rfl⟩
       convert h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
