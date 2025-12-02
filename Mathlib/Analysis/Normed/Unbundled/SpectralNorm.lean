@@ -324,7 +324,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
           natDegree_ofMultiset_eq_card]
       have hc : ‖p.coeff m‖ = f (((mapAlg K L) p).coeff m) := by
         rw [← AlgebraNorm.extends_norm hf1, mapAlg_eq_map, coeff_map]
-      rw [hc, hp]-- prod_X_sub_C_coeff s (hps ▸ le_of_lt hm)]
+      rw [hc, hp]
       simp only [ofMultiset_apply]
       rw [prod_X_sub_C_coeff s (hps ▸ le_of_lt hm)]
       have h : f ((-1) ^ (card s - m) * s.esymm (card s - m)) = f (s.esymm (card s - m)) := by
