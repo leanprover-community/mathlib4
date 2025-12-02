@@ -321,7 +321,7 @@ def CongrResult.trans (res1 res2 : CongrResult) : CongrResult where
         | .eq => do mkEqTrans (← res1.eq) (← res2.eq)
         | .heq => do mkHEqTrans (← res1.heq) (← res2.heq)
 
-/-- Make a `CongrResult` from a LHS, a RHS, and a proof of an Iff, Eq, or HEq.
+/-- Make a `CongrResult` from an LHS, an RHS, and a proof of an Iff, Eq, or HEq.
 The proof is allowed to have a metavariable for its type.
 Validates the inputs and throws errors in the `pf?` function.
 

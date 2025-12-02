@@ -206,7 +206,10 @@ This is protected so that it does not conflict with global `Infinite`. -/
 protected def Infinite (s : Set α) : Prop :=
   ¬s.Finite
 
-@[simp]
+@[push]
+theorem not_finite {s : Set α} : ¬s.Finite ↔ s.Infinite := Iff.rfl
+
+@[simp, push]
 theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 
