@@ -688,15 +688,6 @@ jobs:
           echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
           echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
 
-      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
-        name: If `bench-after-CI` is present, add a `!bench` comment.
-        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
-        with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
-          issue-number: ${{ steps.PR.outputs.number }}
-          body: |
-            !bench
-
       - id: remove_labels
         name: Remove "awaiting-CI"
         # we use curl rather than octokit/request-action so that the job won't fail
