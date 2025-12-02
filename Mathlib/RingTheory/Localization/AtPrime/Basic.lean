@@ -274,8 +274,8 @@ namespace AtPrime
 
 section
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  [Algebra R A] [Algebra R B] [IsScalarTower R A B]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
+  [Algebra R A] [Algebra R B] [IsScalarTower R A B] [Algebra B C] [IsScalarTower A B C]
 
 noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
@@ -287,6 +287,12 @@ instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
       Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
       IsScalarTower.algebraMap_apply R A B]
+
+instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] (Q : Ideal C)
+    [Q.IsPrime] [Q.LiesOver P] [Q.LiesOver p] :
+    IsScalarTower (Localization.AtPrime p) (Localization.AtPrime P) (Localization.AtPrime Q) :=
+  .of_algebraMap_eq' <| by
+    simp [RingHom.algebraMap_toAlgebra, ← localRingHom_comp, ← IsScalarTower.algebraMap_eq]
 
 end
 
