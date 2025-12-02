@@ -18,7 +18,8 @@ open Category Functor Limits EffectiveEpiFamily
 
 variable {C D : Type*} [Category C] [Category D]
 
-instance [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D] :
+instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
+    [IsRegularEpiCategory D] :
     IsRegularEpiCategory (C ⥤ D) where
   regularEpiOfEpi {F G} f := ⟨⟨{
     W := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.pt
@@ -117,11 +118,25 @@ def regularEpiCategorySheaf (J : GrothendieckTopology C)
             cat_disch
           · simp }⟩⟩
 
+instance : HasStrongEpiMonoFactorisations (C ⥤ Type*) where
+  has_fac {F G} f := ⟨{
+    I := coequalizer (pullback.fst f f) (pullback.snd f f)
+    m := coequalizer.desc f pullback.condition
+    m_mono := sorry -- proved in #31152
+    e := coequalizer.π _ _
+    fac := by simp
+    e_strong_epi := by
+      suffices IsRegularEpi (coequalizer.π (pullback.fst f f) (pullback.snd f f)) by infer_instance
+      suffices Epi (coequalizer.π (pullback.fst f f) (pullback.snd f f)) by
+        apply IsRegularEpiCategory.regularEpiOfEpi
+      exact { left_cancellation _ _ w := coequalizer.hom_ext w } }⟩
+
 instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
     IsRegularEpiCategory (Sheaf J (Type u)) := by
   apply regularEpiCategorySheaf J
-  intro F G f hf
-  sorry
+  intro F G f _
+  obtain ⟨⟨I, m, e, fac⟩, _⟩ := HasStrongEpiMonoFactorisations.has_fac f.val
+  refine ⟨I, e, m, inferInstance, inferInstance, fac⟩
 
 instance (J : GrothendieckTopology C) (A : Type*) [Category A] [Abelian A] [HasSheafify J A] :
     IsRegularEpiCategory (Sheaf J A) :=
