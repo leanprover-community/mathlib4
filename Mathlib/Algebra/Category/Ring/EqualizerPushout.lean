@@ -3,10 +3,11 @@ Copyright (c) 2025 Yong-Gyu Choi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yong-Gyu Choi
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-import Mathlib.RingTheory.RingHom.FaithfullyFlat
-import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 
 /-!
 # Equalizer of inclusions to pushout in `CommRingCat`
@@ -18,6 +19,8 @@ to `R` when `R ⟶ S` is a faithfully flat ring map.
 Note that, under `CommRingCat.pushoutCoconeIsColimit`, the two maps `inl` and `inr` above can be
 described as `s ↦ s ⊗ₜ[R] 1` and `s ↦ 1 ⊗ₜ[R] s`, respectively.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -167,9 +170,8 @@ noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : 
 
 /-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop` is
 an effective epimorphism. -/
-lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f := by
-  let := regularEpiOfFaithfullyFlat f hf
-  infer_instance
+lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f :=
+  RegularEpi.effectiveEpi (regularEpiOfFaithfullyFlat f hf)
 
 end Opposite
 
