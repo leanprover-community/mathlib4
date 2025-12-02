@@ -223,7 +223,10 @@ def finEncodingListBool : Computability.FinEncoding (List Bool) where
   ΓFin := inferInstance
 
 /--
-Given finEncoding of α and β, constructs a finEncoding of α × β
+Given `finEncoding` of `α` and `β`,
+constructs a `finEncoding` of `α × β` by concatenating the encodings,
+mapping the symbols from the first encoding with `Sum.inl`
+and those from the second with `Sum.inr`.
 -/
 def finEncodingPair {α β : Type*} (ea : FinEncoding α) (eb : FinEncoding β) :
     Computability.FinEncoding (α × β) where
