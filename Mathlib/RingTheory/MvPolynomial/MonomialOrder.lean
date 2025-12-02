@@ -25,6 +25,8 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.leadingTerm f` is the leading term of `f` for the monomial ordering `m`.
 
+* `m.sPolynomial f g` is S-polynomial of `f` and `g`.
+
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
 
 * in a field, `m.isUnit_leadingCoeff f` asserts that this coefficient is a unit iff `f ≠ 0`.
@@ -693,6 +695,47 @@ section Ring
 
 variable {R : Type*} [CommRing R]
 
+variable (m) in
+/-- The S-polynomial of two polynomials.
+
+Denoting
+
+- the leading monomial of polynomial $f$ and $g$ as $lm(f)$ and $lm(g)$,
+- the leading coefficient of $f$ and $g$ as $lc(f)$ and $lc(g)$
+  (formalized as `m.leadingCoeff f` and `m.leadingCoeff g`), and
+- the least common multiple of $lm(f)$ and $lm(g)$ as $lcm(lm(f),lm(g))$,
+
+the S-polynomial of $f$ and $g$ is defined as
+$$sPoly(f,g) := (lcm(lm(f),lm(g)) / lm(f)) * lc(g) * f - (lcm(lm(f),lm(g)) / lm(g)) * lc(f) * g.$$
+
+$(lcm(lm(f),lm(g)) / lm(f))$ and $lcm(lm(f),lm(g)) / lm(g)$ is formalized as
+`monomial (m.degree g - m.degree f) 1` and `monomial (m.degree g - m.degree f) 1`, while there is
+also another more direct formalization in `sPolynomial_def`.
+
+Notice that, when the polynomial ring is over a field, S-polynomial is usually defined as
+$$sPoly'(f,g) :=
+  (lcm(lm(f),lm(g)) / (lm(f) * lc(f))) * f - (lcm(lm(f),lm(g)) / (lm(g) * lc(g))) * g,$$
+while we avoid inverting $lc(f)$ and $lc(g)$ in this formalization so that it doesn't require a
+field or units (`IsUnit`) over ring.
+
+An equality between these two versions holds: $$sPoly(f,g) = lc(f) * lc(g) * sPoly'(f,g).$$
+-/
+noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
+  monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
+  monomial (m.degree f - m.degree g) (m.leadingCoeff f) * g
+
+lemma sPolynomial_def (f g : MvPolynomial σ R) :
+    m.sPolynomial f g =
+      monomial (m.degree f ⊔ m.degree g - m.degree f) (m.leadingCoeff g) * f -
+      monomial (m.degree f ⊔ m.degree g - m.degree g) (m.leadingCoeff f) * g := by
+  unfold sPolynomial
+  congr 4
+  all_goals
+    ext a
+    by_cases h : (m.degree f) a ≤ (m.degree g) a
+    ·simp [h]
+    ·simp [le_of_lt (not_le.mp h)]
+
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
   contrapose! h
@@ -751,6 +794,179 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
   simp only [h', map_zero] at h
   exact not_lt_bot h
 
+lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
+    m.sPolynomial f g = - m.sPolynomial g f :=
+  Eq.symm (neg_sub (_ * g) (_ * f))
+
+@[simp]
+lemma sPolynomial_left_zero (g : MvPolynomial σ R) :
+    m.sPolynomial 0 g = 0 := by
+  simp [sPolynomial]
+
+@[simp]
+lemma sPolynomial_right_zero (f : MvPolynomial σ R) :
+    m.sPolynomial f 0 = 0 := by
+  rw [sPolynomial_antisymm, sPolynomial_left_zero, neg_zero]
+
+@[simp]
+lemma sPolynomial_self (f : MvPolynomial σ R) : m.sPolynomial f f = 0 := sub_self _
+
+lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
+    ((m.degree <| m.sPolynomial f g) ≼[m] m.degree f ⊔ m.degree g) := by
+  classical
+  by_cases hf_zero: f = 0
+  · simp [hf_zero]
+  by_cases hg_zero: g = 0
+  · simp [hg_zero]
+  simp [sPolynomial_def]
+  calc
+    _ ≤ _ ⊔ _ := degree_sub_le
+    _ ≤ m.toSyn (m.degree _ + m.degree _) ⊔ m.toSyn (m.degree _ + m.degree _) :=
+      sup_le_sup degree_mul_le degree_mul_le
+    _ ≤ (m.toSyn <| m.degree f ⊔ m.degree g - m.degree f + m.degree f) ⊔
+          (m.toSyn <| m.degree f ⊔ m.degree g - m.degree g + m.degree g) := by
+      simp_rw [degree_monomial]
+      simp [hg_zero, hf_zero]
+    _ ≤ m.toSyn (m.degree f ⊔ m.degree g) := by
+      simp only [map_add, sup_le_iff]
+      constructor
+      all_goals
+        apply le_of_eq
+        simp_rw [← AddEquiv.map_add, (AddEquiv.injective m.toSyn).eq_iff, Finsupp.ext_iff]
+        exact fun _ ↦ Nat.sub_add_cancel <| by simp
+
+lemma coeff_sPolynomial_sup_eq_zero (f g : MvPolynomial σ R) :
+    (m.sPolynomial f g).coeff (m.degree f ⊔ m.degree g) = 0 := by
+  rw [sPolynomial_def, coeff_sub]
+  have : m.degree f ⊔ m.degree g = m.degree f ⊔ m.degree g - m.degree f + m.degree f := by
+    ext
+    exact (Nat.sub_add_cancel <| by simp).symm
+  nth_rewrite 1 [this, coeff_monomial_mul]
+  have : m.degree f ⊔ m.degree g = m.degree f ⊔ m.degree g - m.degree g + m.degree g := by
+    ext
+    exact (Nat.sub_add_cancel <| by simp).symm
+  nth_rewrite 1 [this, coeff_monomial_mul]
+  unfold leadingCoeff
+  ring
+
+lemma degree_sPolynomial (f g : MvPolynomial σ R) :
+    (m.degree <| m.sPolynomial f g) ≺[m] m.degree f ⊔ m.degree g ∨ m.sPolynomial f g = 0 := by
+  by_cases hf : m.degree f = 0 ∧ m.degree g = 0
+  · rcases hf with ⟨h₁, h₂⟩
+    right
+    -- simp [sPolynomial_def, h₁, h₂]
+    simp only [sPolynomial_def, h₁, h₂, le_refl, sup_of_le_left, tsub_self, monomial_zero']
+    nth_rewrite 1 [degree_eq_zero_iff.mp h₁]
+    nth_rewrite 2 [degree_eq_zero_iff.mp h₂]
+    ring
+  · by_cases hs: m.sPolynomial f g = 0
+    · simp [hs]
+    left
+    apply lt_of_le_of_ne (m.degree_sPolynomial_le f g)
+    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq]
+    have : coeff (m.degree (m.sPolynomial f g)) (m.sPolynomial f g) ≠ 0 :=
+      coeff_degree_ne_zero_iff.mpr hs
+    contrapose! this
+    simp [this, m.coeff_sPolynomial_sup_eq_zero]
+
+lemma degree_sPolynomial_lt_sup_degree {f g : MvPolynomial σ R} (h : m.sPolynomial f g ≠ 0) :
+    (m.degree <| m.sPolynomial f g) ≺[m] m.degree f ⊔ m.degree g :=
+  (or_iff_left h).mp <| m.degree_sPolynomial f g
+
+lemma sPolynomial_lt_of_degree_ne_zero_of_degree_eq {f g : MvPolynomial σ R}
+    (h : m.degree f = m.degree g) (hs : m.sPolynomial f g ≠ 0) :
+    m.degree (m.sPolynomial f g) ≺[m] m.degree f := by
+  convert m.degree_sPolynomial f g
+  simp [h, hs]
+
+lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
+    (c₁ c₂ : R) :
+    m.sPolynomial ((monomial d₁ c₁) * p₁) ((monomial d₂ c₂) * p₂) =
+      monomial ((d₁ + m.degree p₁) ⊔ (d₂ + m.degree p₂) - m.degree p₁ ⊔ m.degree p₂) (c₁ * c₂) *
+      m.sPolynomial p₁ p₂ := by
+  classical
+  simp only [sPolynomial_def]
+  by_cases hc1 : c₁ = 0
+  · by_cases hc2 : c₂ = 0 <;> simp [hc1, hc2]
+  by_cases hc2 : c₂ = 0
+  · simp [hc2]
+  by_cases hp1 : p₁ = 0
+  · simp [hp1]
+  by_cases hp2 : p₂ = 0
+  · simp [hp2]
+  have hm1 := (monomial_eq_zero (s:=d₁)).not.mpr hc1
+  have hm2 := (monomial_eq_zero (s:=d₂)).not.mpr hc2
+  simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
+    mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
+    m.leadingCoeff_mul hm1 hp1, m.leadingCoeff_mul hm2 hp2, m.leadingCoeff_monomial,
+    degree_monomial, hc1, hc2, reduceIte]
+  congr 2
+  all_goals
+    congr 1
+    · congr 1
+      ext a
+      -- simp
+      simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply, Finsupp.sup_apply]
+      rw [Nat.sub_add_sub_cancel (by rw [Nat.max_le]; simp) (by simp)]
+      rw [← Nat.sub_add_comm (by simp)]
+      nth_rewrite 3 [add_comm _ <| (m.degree _) a]
+      rw [Nat.add_sub_add_right]
+    · ring
+
+lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
+    {B : Finset ι} {g : ι → MvPolynomial σ R}
+    (hd : ∀ b ∈ B,
+      (m.toSyn <| m.degree <| g b) = d ∧ IsUnit (m.leadingCoeff <| g b) ∨ g b = 0)
+    (hfd : (m.toSyn <| m.degree <| ∑ b ∈ B, g b) < d) :
+    ∃ (c : ι → ι → R),
+      ∑ b ∈ B, g b = ∑ b₁ ∈ B, ∑ b₂ ∈ B, (c b₁ b₂) • m.sPolynomial (g b₁) (g b₂) := by
+  classical
+  induction B using Finset.induction_on with
+  | empty => simp
+  | insert b B hb h =>
+    by_cases hb0 : g b = 0
+    · -- simp? [Finset.sum_insert hb, hb0] at hd hfd ⊢
+      simp only [Finset.mem_insert, forall_eq_or_imp, hb0, degree_zero, map_zero,
+        leadingCoeff_zero, isUnit_zero_iff, or_true, true_and, Finset.sum_insert hb, zero_add,
+        sPolynomial_right_zero, smul_zero, sPolynomial_left_zero, Finset.sum_const_zero] at hd hfd ⊢
+      exact h hd hfd
+    -- simp? [Finset.sum_insert hb, hb0] at hfd hd
+    simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
+    obtain ⟨⟨deg_gb_eq_d, isunit_gb⟩, hd⟩ := hd
+    use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
+    -- simp? [Finset.sum_insert hb, hb]
+    simp only [Finset.sum_insert hb, ite_smul, zero_smul, ↓reduceIte, Finset.sum_ite_eq', hb,
+      add_zero, sPolynomial_self, smul_zero, zero_add]
+    simp only [← deg_gb_eq_d, EmbeddingLike.apply_eq_iff_eq] at *
+    clear d
+    trans ∑ b' ∈ B, (g b' - (m.leadingCoeff (g b') * ↑isunit_gb.unit⁻¹) • g b)
+    · rw [Finset.sum_sub_distrib, add_comm, sub_eq_add_neg,
+        ← Finset.sum_smul, ← Finset.sum_mul, ← neg_smul]
+      nth_rewrite 1 [← one_smul R <| g b]
+      congr
+      rw [← neg_mul, eq_comm]
+      convert isunit_gb.mul_val_inv
+      rw [← add_eq_zero_iff_neg_eq']
+      trans (g b).coeff (m.degree <| g b) + ∑ i ∈ B, (g i).coeff (m.degree <| g b)
+      · unfold leadingCoeff
+        congr 1
+        apply Finset.sum_congr rfl
+        intro b' hb'
+        rcases hd b' hb' with h | h <;> simp [h]
+      · rw [← coeff_sum, ← coeff_add, ← notMem_support_iff]
+        exact m.notMem_support_of_degree_lt hfd
+    · apply Finset.sum_congr rfl
+      intro b' hb'
+      rw [sPolynomial]
+      by_cases h : g b' = 0
+      · simp [h]
+      have := (hd b' hb').resolve_right h
+      -- simp [this, smul_eq_C_mul, mul_sub, ← mul_assoc _ _ (g b), ← mul_assoc _ _ (g b')]
+      simp only [smul_eq_C_mul, C_mul, this, tsub_self, monomial_zero', mul_sub,
+        ← mul_assoc _ _ (g b'), ← mul_assoc _ _ (g b)]
+      simp_rw [← C_mul]
+      simp [mul_comm]
+
 end Ring
 
 section Field
@@ -760,6 +976,15 @@ variable {R : Type*} [Field R]
 theorem isUnit_leadingCoeff {f : MvPolynomial σ R} :
     IsUnit (m.leadingCoeff f) ↔ f ≠ 0 := by
   simp only [isUnit_iff_ne_zero, ne_eq, leadingCoeff_eq_zero_iff]
+
+lemma sPolynomial_decomposition' {d : m.syn} {ι : Type*}
+    {B : Finset ι} (g : ι → MvPolynomial σ R)
+    (hd : ∀ b ∈ B, (m.toSyn <| m.degree <| g b) = d ∨ g b = 0)
+    (hfd : (m.toSyn <| m.degree <| ∑ b ∈ B, g b) < d) :
+    ∃ (c : ι → ι → R),
+      ∑ b ∈ B, g b = ∑ b₁ ∈ B, ∑ b₂ ∈ B, (c b₁ b₂) • m.sPolynomial (g b₁) (g b₂) := by
+  refine m.sPolynomial_decomposition ?_ hfd
+  simpa [and_or_right, em']
 
 end Field
 
