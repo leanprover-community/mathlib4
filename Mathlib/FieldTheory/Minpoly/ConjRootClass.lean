@@ -193,8 +193,11 @@ theorem minpoly.map_eq_prod [Normal K L] (c : ConjRootClass K L) [Fintype c.carr
   classical
   simp_rw [← rootSet_minpoly_eq_carrier, Finset.prod_eq_multiset_prod, rootSet_def,
     Finset.toFinset_coe, Multiset.toFinset_val]
-  rw [Multiset.dedup_eq_self.mpr (nodup_roots c.separable_minpoly.map),
-    prod_multiset_X_sub_C_of_monic_of_roots_card_eq (c.monic_minpoly.map _)]
+  rw [Multiset.dedup_eq_self.mpr (nodup_roots c.separable_minpoly.map)]
+  conv =>
+    rhs
+    change ofMultiset (map (algebraMap K L) c.minpoly).roots
+  rw [ofMultiset_of_monic_of_roots_card_eq (c.monic_minpoly.map _)]
   rw [← splits_iff_card_roots]
   exact c.splits_minpoly
 

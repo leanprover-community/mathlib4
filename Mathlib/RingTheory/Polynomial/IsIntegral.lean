@@ -31,7 +31,8 @@ lemma isIntegral_coeff_of_factors [IsDomain S] (p : S[X])
     (hpr : ∀ x ∈ p.roots, IsIntegral R x) (i : ℕ) :
     IsIntegral R (p.coeff i) := by
   classical
-  rw [hp.eq_prod_roots, Multiset.prod_eq_prod_coe, coeff_C_mul]
+  rw [hp.eq_prod_roots, coeff_C_mul]
+  simp only [ofMultiset_apply, Multiset.prod_eq_prod_coe]
   refine .mul hpmon (isIntegral_coeff_prod _ _ ?_ _)
   rintro ⟨a, ⟨i, hi⟩⟩ -
   obtain ⟨x, hx, rfl⟩ := Multiset.mem_map.mp (Multiset.count_pos.mp (i.zero_le.trans_lt hi))
