@@ -3,10 +3,12 @@ Copyright (c) 2023 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets
@@ -17,14 +19,16 @@ hulls intersect nontrivially.
 As a corollary, we prove Helly's theorem, which is a basic result in discrete geometry on the
 intersection of convex sets. Let `X₁, ⋯, Xₙ` be a finite family of convex sets in `ℝᵈ` with
 `n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect nontrivially,
-then the whole family intersect nontrivially. For the infinite family of sets it is not true, as
-example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true, if we assume
-compactness of sets (see `helly_theorem_compact`)
+then the whole family intersects nontrivially. For the infinite family of sets it is not true, as
+the example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true if we assume
+compactness of sets (see `helly_theorem_compact`).
 
 ## Tags
 
 convex hull, affine independence, Radon, Helly
 -/
+
+@[expose] public section
 
 open Fintype Finset Set
 

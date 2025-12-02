@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 

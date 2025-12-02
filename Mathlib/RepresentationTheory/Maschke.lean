@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Maschke's theorem
@@ -30,6 +32,8 @@ taking the average over `G` of the conjugates of `π`.
 It's not so far to give the usual statement, that every finite-dimensional representation
 of a finite group is semisimple (i.e. a direct sum of irreducibles).
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -147,10 +151,12 @@ theorem exists_leftInverse_of_injective
   letI : Module k V := .compHom V (algebraMap k A)
   have := IsScalarTower.of_compHom k A W
   have := IsScalarTower.of_compHom k A V
-  obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
-    simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| DFunLike.congr_fun hφ
+  set φ := (f.restrictScalars k).leftInverse
+  have hφ : ∀ (x : V), φ (f x) = x := by
+    apply LinearMap.leftInverse_apply_of_inj
+    simp [hf]
+  refine ⟨φ.equivariantProjection G, LinearMap.ext ?_⟩
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| hφ
 
 namespace Submodule
 

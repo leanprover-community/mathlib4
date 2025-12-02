@@ -3,9 +3,11 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Partial sums of geometric series in a ring
@@ -17,6 +19,8 @@ Several variants are recorded, generalising in particular to the case of a nonco
 which `x` and `y` commute. Even versions not using division or subtraction, valid in each semiring,
 are recorded.
 -/
+
+@[expose] public section
 
 assert_not_exists Field IsOrderedRing
 
@@ -293,6 +297,14 @@ end Ring
 
 section CommRing
 variable [CommRing R]
+
+theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ} :
+    (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
+  grind [geom_sum_mul]
+
+@[deprecated (since := "2025-10-31")]
+protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
+  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
 
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=

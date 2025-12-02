@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 # Subfields
@@ -42,6 +44,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 subfield, subfields
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -330,7 +334,7 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
     S.toSubring.subtype = S.subtype :=
   rfl
 
-/-! # Partial order -/
+/-! ### Partial order -/
 
 
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=

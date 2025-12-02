@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.Unramified.Locus
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Frobenius elements
@@ -42,6 +44,8 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 - `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -146,7 +150,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
     rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime Q), ← Ideal.comap_comap,
       Localization.AtPrime.comap_maximalIdeal]
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
   simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
     ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,

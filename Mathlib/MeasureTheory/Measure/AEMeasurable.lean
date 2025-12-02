@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+module
+
+public import Mathlib.MeasureTheory.Measure.Trim
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 
 /-!
 # Almost everywhere measurable functions
@@ -13,6 +15,8 @@ A function is almost everywhere measurable if it coincides almost everywhere wit
 function. This property, called `AEMeasurable f μ`, is defined in the file `MeasureSpaceDef`.
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
@@ -184,8 +188,10 @@ theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AE
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
 
-@[deprecated (since := "2025-03-05")]
-alias prod_mk := prodMk
+theorem _root_.nullMeasurableSet_eq_fun [MeasurableEq β]
+    {f g : α → β} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { x | f x = g x } μ :=
+  (hf.prodMk hg).nullMeasurableSet_preimage measurableSet_diagonal
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by

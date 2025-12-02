@@ -3,18 +3,19 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Eigenspace.Pi
-import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.LinearAlgebra.Eigenspace.Pi
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
 This file collects various decomposition results for joint eigenspaces of commuting
 symmetric operators on a finite-dimensional inner product space.
 
-# Main Result
+## Main Result
 
 * `LinearMap.IsSymmetric.directSum_isInternal_of_commute` establishes that in finite dimensions
   if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `Commute A B` imply that
@@ -37,6 +38,8 @@ and a proof obligation that the basis vectors are eigenvectors.
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
+
+@[expose] public section
 
 open Module.End
 

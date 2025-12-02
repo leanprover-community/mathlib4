@@ -3,10 +3,14 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Infinite sums in topological vector spaces -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*}
 
@@ -29,8 +33,6 @@ theorem Summable.const_smul (b : γ) (hf : Summable f L) : Summable (fun i ↦ b
 protected theorem Summable.tsum_const_smul [T2Space α] [L.NeBot] (b : γ) (hf : Summable f L) :
     ∑'[L] i, b • f i = b • ∑'[L] i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_const_smul := Summable.tsum_const_smul
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
@@ -72,8 +74,6 @@ theorem Summable.smul_const (hf : Summable f L) (a : M) : Summable (fun z ↦ f 
 protected theorem Summable.tsum_smul_const [T2Space M] [L.NeBot] (hf : Summable f L) (a : M) :
     ∑'[L] z, f z • a = (∑'[L] z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
-
-@[deprecated (since := "2025-04-12")] alias tsum_smul_const := Summable.tsum_smul_const
 
 end SMulConst
 

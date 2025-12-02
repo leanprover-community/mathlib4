@@ -3,8 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
-import Mathlib.NumberTheory.ModularForms.SlashActions
+module
+
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+public import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
 # Slash invariant forms
@@ -13,6 +15,8 @@ This file defines functions that are invariant under a `SlashAction` which forms
 defining `ModularForm` and `CuspForm`. We prove several instances for such spaces, in particular
 that they form a module over `ℝ`, and over `ℂ` if the group is contained in `SL(2, ℝ)`.
 -/
+
+@[expose] public section
 
 open Complex UpperHalfPlane ModularForm
 
