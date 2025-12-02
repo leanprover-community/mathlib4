@@ -100,7 +100,7 @@ theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
     Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
   classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 

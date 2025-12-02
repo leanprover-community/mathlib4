@@ -380,7 +380,7 @@ lemma mem_convexHull_iff_exists_fintype {s : Set E} {x : E} :
   · simp only [convexHull_eq, mem_setOf_eq]
     rintro ⟨ι, t, w, z, h⟩
     refine ⟨t, inferInstance, w ∘ (↑), z ∘ (↑), ?_⟩
-    simpa [← sum_attach t, centerMass_eq_of_sum_1 _ _ h.2.1] using h
+    simpa [← sum_attach t, centerMass_eq_of_sum_1 _ _ h.2.1, -sum_attach] using h
   · rintro ⟨ι, _, w, z, hw₀, hw₁, hz, hx⟩
     exact mem_convexHull_of_exists_fintype w z hw₀ hw₁ hz hx
 
