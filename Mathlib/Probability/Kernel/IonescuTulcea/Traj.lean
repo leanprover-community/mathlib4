@@ -542,11 +542,10 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
 
 /-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
 lemma traj_map_eq_kernel {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
-  set f : (Π n, X n) → X (a + 1) := fun x ↦ x (a + 1)
-  set g : (Π n : Iic (a + 1), X n) → X (a + 1) := fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩
-  have hf : f = g ∘ (frestrictLe (a + 1)) := by rfl
+  have hf : (fun x : Π n, X n ↦ x (a + 1)) =
+      (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl
   rw [hf, map_comp_right _ (by fun_prop) (by fun_prop), traj_map_frestrictLe,
-    partialTraj_map_eq_kernel (_root_.le_refl a), partialTraj_self, comp_id]
+    partialTraj_map_eq_kernel]
 
 variable (κ)
 
