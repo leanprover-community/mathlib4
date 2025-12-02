@@ -110,8 +110,6 @@ instance bicategory : Bicategory (InducedBicategory C F) where
   rightUnitor x := isoMk (ρ_ x.hom)
   whisker_exchange {_ _ _ _ _ _ _} η θ := by ext; simpa using whisker_exchange _ _
 
-attribute [-simp] bicategory_comp_hom bicategory_Hom
-
 section
 
 variable (F) in

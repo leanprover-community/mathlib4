@@ -48,7 +48,6 @@ section
 
 variable (P : ObjectProperty B)
 
--- TODO: Should bicategory_Hom should be a simp projection?
 @[simps!]
 instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
