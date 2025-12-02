@@ -215,7 +215,7 @@ theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ 
   e.toEncoding.card_le_aleph0
 
 /-- A finEncoding of `List Bool` in `Bool`. -/
-def finEncodingListBool : Computability.FinEncoding (List Bool) where
+def finEncodingListBool : FinEncoding (List Bool) where
   Γ := Bool
   encode := id
   decode := Option.some
@@ -229,7 +229,7 @@ mapping the symbols from the first encoding with `Sum.inl`
 and those from the second with `Sum.inr`.
 -/
 def finEncodingPair {α β : Type*} (ea : FinEncoding α) (eb : FinEncoding β) :
-    Computability.FinEncoding (α × β) where
+    FinEncoding (α × β) where
   Γ := ea.Γ ⊕ eb.Γ
   encode x := (ea.encode x.1).map .inl ++ (eb.encode x.2).map .inr
   decode x := Option.map₂ Prod.mk (ea.decode (x.filterMap Sum.getLeft?))
