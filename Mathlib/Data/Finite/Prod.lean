@@ -235,7 +235,7 @@ theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀
 
 lemma finite_image2 (hfs : ∀ b ∈ t, InjOn (f · b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ := by
-  in contrapose! +distrib
+  contrapose! +distrib
   rw [Set.infinite_image2 hfs hft]
   grind only [Set.Infinite.nonempty]
 
