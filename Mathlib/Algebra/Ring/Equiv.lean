@@ -825,11 +825,9 @@ theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
 /-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.
 -/
 @[simps]
-def ofHomInv' {R S F G : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    [FunLike F R S] [FunLike G S R]
-    [NonUnitalRingHomClass F R S] [NonUnitalRingHomClass G S R] (hom : F) (inv : G)
-    (hom_inv_id : (inv : S →ₙ+* R).comp (hom : R →ₙ+* S) = NonUnitalRingHom.id R)
-    (inv_hom_id : (hom : R →ₙ+* S).comp (inv : S →ₙ+* R) = NonUnitalRingHom.id S) :
+abbrev ofHomInv' {R S : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+    (hom : R →ₙ+* S) (inv : S →ₙ+* R) (hom_inv_id : inv.comp hom = .id R)
+    (inv_hom_id : hom.comp inv = .id S) :
     R ≃+* S where
   toFun := hom
   invFun := inv
@@ -842,11 +840,8 @@ def ofHomInv' {R S F G : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssoc
 Construct an equivalence of rings from unital homomorphisms in both directions, which are inverses.
 -/
 @[simps]
-def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    [FunLike F R S] [FunLike G S R] [RingHomClass F R S]
-    [RingHomClass G S R] (hom : F) (inv : G)
-    (hom_inv_id : (inv : S →+* R).comp (hom : R →+* S) = RingHom.id R)
-    (inv_hom_id : (hom : R →+* S).comp (inv : S →+* R) = RingHom.id S) :
+abbrev ofHomInv (hom : R →+* S) (inv : S →+* R)
+    (hom_inv_id : inv.comp hom = .id R) (inv_hom_id : hom.comp inv = .id S) :
     R ≃+* S where
   toFun := hom
   invFun := inv
