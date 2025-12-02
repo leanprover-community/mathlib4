@@ -692,6 +692,9 @@ lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
   ext t
   simpa using hX.integrable_exp_mul t
 
+lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
+  memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p
+
 lemma integrable (hX : HasSubgaussianMGF X c μ) : Integrable X μ :=
   integrable_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX])
 
