@@ -156,16 +156,6 @@ def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1
     cases Nat.mem_Ioc_succ' i; rfl
   measurable_invFun := measurable_pi_apply _
 
-instance : Unique (Iic (0 : ℕ)) := by
-  simp_rw [← Nat.bot_eq_zero, Finset.Iic_bot]
-  infer_instance
-
-/-- Measurable equivalence between `(i : Iic 0) → X i` and `X 0`. -/
-def MeasurableEquiv.piIicZero (X : ℕ → Type*) [∀ n, MeasurableSpace (X n)] :
-    ((i : Iic 0) → X i) ≃ᵐ X 0 :=
-  (MeasurableEquiv.piUnique _).trans
-    ((Finset.coe_default_Iic_bot (α := ℕ)).symm ▸ MeasurableEquiv.refl _)
-
 end Nat
 
 end Definitions

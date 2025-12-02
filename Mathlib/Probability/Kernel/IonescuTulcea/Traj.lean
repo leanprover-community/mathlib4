@@ -763,13 +763,13 @@ noncomputable
 def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1)))
     [∀ n, IsMarkovKernel (κ n)] :
     Measure (Π n, X n) :=
-  (traj κ 0) ∘ₘ (μ₀.map (MeasurableEquiv.piIicZero _).symm)
+  (traj κ 0) ∘ₘ (μ₀.map (MeasurableEquiv.piUnique _).symm)
 
 variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
-  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piIicZero _).symm) :=
+  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique (fun i : Iic 0 ↦ X i)).symm) :=
     Measure.isProbabilityMeasure_map <| by fun_prop
   infer_instance
 
