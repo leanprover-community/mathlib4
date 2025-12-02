@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
