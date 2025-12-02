@@ -667,9 +667,8 @@ lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
 
 lemma partialTraj_compProd_kernel_eq_traj_map {a b : ℕ} (hab : a ≤ b) {x₀ : Π n : Iic a, X n} :
     (partialTraj κ a b x₀) ⊗ₘ (κ b) = (traj κ a x₀).map (fun x ↦ (frestrictLe b x, x (b + 1))) := by
-  set f := fun x ↦ (frestrictLe b x, x (b + 1))
-  set g := fun x ↦ (frestrictLe b x, x)
-  have hf : f = (Prod.map id (fun x ↦ x (b + 1))) ∘ g := rfl
+  have hf : (fun x : Π n, X n ↦ (frestrictLe b x, x (b + 1))) =
+      (Prod.map id (fun x ↦ x (b + 1))) ∘ (fun x ↦ (frestrictLe b x, x)) := rfl
   rw [hf, ← Measure.map_map (by fun_prop) (by fun_prop), ← partialTraj_compProd_traj hab,
     ← MeasureTheory.Measure.compProd_map (by fun_prop), traj_map_eq_kernel]
 
