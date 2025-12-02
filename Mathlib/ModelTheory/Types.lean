@@ -6,9 +6,6 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.Satisfiability
-public import Mathlib.ModelTheory.Satisfiability
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Type Spaces
@@ -47,7 +44,7 @@ This file defines the space of complete types over a first-order theory.
 
 universe u v w w'
 
-open Cardinal Set FirstOrder TopologicalSpace
+open Cardinal Set FirstOrder
 
 namespace FirstOrder
 
@@ -188,8 +185,6 @@ theorem formula_mem_typeOf {φ : L.Formula α} :
 /-- The clopen set of complete types which contain a formula. -/
 def typesWith : L[[α]].Sentence → Set (CompleteType T α) := fun φ ↦ {p | φ ∈ p.toTheory}
 
-instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
-
 lemma typesWith_inter (φ ψ : L[[α]].Sentence)
     : typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
   ext p
@@ -197,78 +192,6 @@ lemma typesWith_inter (φ ψ : L[[α]].Sentence)
     ↔ φ ∈ (p : Set (L[[α]]).Sentence) ∧ ψ ∈ (p : Set (L[[α]]).Sentence)
   simp only [p.isMaximal.mem_iff_models, ModelsBoundedFormula, ←forall_and]
   exact forall₃_congr fun _ _ _ ↦ BoundedFormula.realize_inf
-
-lemma TypeBasisIsBasis : IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
-  exists_subset_inter := by
-    rintro t₁ ⟨φ, ht₁⟩ t₂ ⟨ψ, ht₂⟩ x hx
-    refine ⟨typesWith (φ ⊓ ψ), ⟨φ ⊓ ψ, rfl⟩, ?_⟩
-    rw [typesWith_inter, ht₁, ht₂]
-    exact ⟨hx, fun _ ↦ id⟩
-  sUnion_eq := by
-    rw [←Set.univ_subset_iff]
-    refine Set.subset_sUnion_of_mem ⟨⊤, ?_⟩
-    rw [←Set.univ_subset_iff]
-    exact fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun M v xs a ↦ a)
-  eq_generateFrom := rfl
-
-instance : CompactSpace (CompleteType T α) := by
-  classical
-  apply compactSpace_generateFrom' rfl
-  intro ι U hcover
-  have hU : ∀ i, ∃ φ, typesWith φ = (U i).1 := by
-    intro i
-    obtain ⟨_, φ, _, _⟩ := U i
-    exact ⟨φ, rfl⟩
-  choose φ hφ using hU
-  let nφ : ι → L[[α]].Sentence := fun i ↦ ∼(φ i)
-  let T' := (L.lhomWithConstants α).onTheory T ∪ (range nφ)
-  have : ¬T'.IsSatisfiable := by
-    rintro ⟨M⟩
-    let p : CompleteType T α := {
-      toTheory := L[[α]].completeTheory M
-      subset' := subset_trans subset_union_left (completeTheory.subset (MT := M.is_model))
-      isMaximal' := completeTheory.isMaximal _ _
-    }
-    obtain ⟨Ui, ⟨⟨i, hi⟩, hi'⟩⟩ := (propext_iff.mp (congr_arg (fun s ↦ p ∈ s) hcover)).mpr trivial
-    refine mem_not_mem p.isMaximal.isComplete.1
-      (by simpa [←hi, ←hφ] using hi')
-      (completeTheory.subset (T := T') (mem_union_right _ ⟨i, rfl⟩))
-  rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable] at this
-  push_neg at this
-  obtain ⟨t, ht, htsat⟩ := this
-  let t : Set (L[[α]]).Sentence := ↑t
-  have ht : t ⊆ T' := ht
-  let Tfin := {ψ ∈ t | ψ ∈ (L.lhomWithConstants α).onTheory T}
-  let negfin := {ψ ∈ t | ψ ∈ range nφ}
-  have tdecomp : t = Tfin ∪ negfin := by
-    apply Subset.antisymm
-    · intro ψ hψ
-      rw [
-          mem_union,
-          mem_setOf, mem_setOf,
-          ←and_or_left
-      ]
-      exact ⟨hψ, ht hψ⟩
-    · exact union_subset
-        (sep_subset _ (Membership.mem _))
-        (sep_subset _ (Membership.mem _))
-  have : ∀ ψ : negfin, ∃ i, nφ i = ψ :=
-    fun ψ ↦ by have := ψ.2; simp only [negfin] at this; exact this.2
-  choose index index_inv using this
-  refine ⟨(range index), finite_range index, ?_⟩
-  rw [←univ_subset_iff]
-  intro p _
-  simp only [mem_iUnion, exists_prop, negfin, mem_range,]
-  have : ¬t ⊆ p.toTheory := htsat ∘ (IsSatisfiable.mono p.isMaximal.isComplete.1 ·)
-  rw [tdecomp] at this ht
-  simp only [Tfin, negfin, LHom.mem_onTheory, mem_range, union_subset_iff,
-    not_and] at this
-  specialize this (subset_trans (fun _ hx ↦ hx.2) p.subset)
-  obtain ⟨ψ, ⟨hψt, i, hi⟩, hψ⟩ := not_subset.mp this
-  refine ⟨index ⟨ψ, hψt, i, hi⟩, ⟨⟨ψ, hψt, i, hi⟩, rfl⟩, ?_⟩
-  have : Formula.not (φ _) = ψ := index_inv ⟨ψ, ⟨hψt, ⟨i, hi⟩⟩⟩
-  erw [←hφ, typesWith, mem_setOf, ←not_not (a := φ _ ∈ p), ←p.not_mem_iff, this]
-  exact hψ
 
 end CompleteType
 
@@ -302,3 +225,5 @@ end Theory
 end Language
 
 end FirstOrder
+
+#min_imports
