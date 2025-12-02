@@ -118,25 +118,92 @@ def regularEpiCategorySheaf (J : GrothendieckTopology C)
             cat_disch
           · simp }⟩⟩
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
+
+-- TODO: pick apart and clean up
+instance : HasImages (C ⥤ Type*) where
+  has_image {F G} f := {
+    exists_image := ⟨{
+      F := {
+        I := {
+          obj X := Set.range <| f.app X
+          map g := by
+            rintro ⟨x, hx⟩
+            refine ⟨G.map g x, ?_⟩
+            obtain ⟨y, rfl⟩ := hx
+            refine ⟨F.map g y, ?_⟩
+            change _ = (f.app _ ≫ G.map g) y
+            rw [← NatTrans.naturality]
+            rfl
+          map_id := by cat_disch
+          map_comp := by cat_disch
+        }
+        m := {
+          app X := Subtype.val
+          naturality := by cat_disch
+        }
+        m_mono := by
+          rw [NatTrans.mono_iff_mono_app]
+          intro X
+          simp [mono_iff_injective]
+        e := {
+          app X := fun x ↦ ⟨f.app _ x, ⟨x, rfl⟩⟩
+          naturality := by
+            intro X Y g
+            ext
+            change (F.map g ≫ _) _ = _
+            rw [NatTrans.naturality]
+            rfl
+        }
+        fac := rfl
+      }
+      isImage := {
+        lift F' := {
+          app X := by
+            intro ⟨x, hx⟩
+            apply F'.e.app _
+            exact hx.choose
+          naturality := by
+            intro X Y g
+            ext a
+            simp only [types_comp_apply]
+            have hm := F'.m_mono
+            rw [NatTrans.mono_iff_mono_app] at hm
+            simp_rw [mono_iff_injective] at hm
+            apply hm _
+            change (F'.e.app _ ≫ _) _ = _
+            rw [← NatTrans.comp_app, F'.fac, ]
+            change _ = (F'.e.app _ ≫ _ ≫ _) _
+            rw [← F'.e.naturality_assoc]
+            change _ = (_ ≫ _ ≫ F'.m.app _) _
+            rw [← NatTrans.comp_app, F'.fac]
+            generalize_proofs h₁ h₂
+            rw [h₁.choose_spec]
+            rw [f.naturality]
+            dsimp
+            apply congr_arg
+            exact h₂.choose_spec.symm }
+        lift_fac F' := by
+          ext
+          simp only [FunctorToTypes.comp]
+          change (F'.e ≫ F'.m).app _ _ = _
+          simp only [F'.fac]
+          generalize_proofs h
+          exact h.choose_spec } }⟩ }
+
 instance : HasStrongEpiMonoFactorisations (C ⥤ Type*) where
   has_fac {F G} f := ⟨{
-    I := coequalizer (pullback.fst f f) (pullback.snd f f)
-    m := coequalizer.desc f pullback.condition
-    m_mono := sorry -- proved in #31152
-    e := coequalizer.π _ _
-    fac := by simp
-    e_strong_epi := by
-      suffices IsRegularEpi (coequalizer.π (pullback.fst f f) (pullback.snd f f)) by infer_instance
-      suffices Epi (coequalizer.π (pullback.fst f f) (pullback.snd f f)) by
-        apply IsRegularEpiCategory.regularEpiOfEpi
-      exact { left_cancellation _ _ w := coequalizer.hom_ext w } }⟩
+    I := image f
+    m := image.ι f
+    e := factorThruImage f }⟩
 
 instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
     IsRegularEpiCategory (Sheaf J (Type u)) := by
-  apply regularEpiCategorySheaf J
-  intro F G f _
-  obtain ⟨⟨I, m, e, fac⟩, _⟩ := HasStrongEpiMonoFactorisations.has_fac f.val
-  refine ⟨I, e, m, inferInstance, inferInstance, fac⟩
+  apply regularEpiCategorySheaf J fun f hf ↦
+    ⟨image f.val, factorThruImage f.val, image.ι f.val, inferInstance, inferInstance, by simp⟩
+  -- intro F G f _
+  -- obtain ⟨⟨I, m, e, fac⟩, _⟩ := HasStrongEpiMonoFactorisations.has_fac f.val
+  -- refine ⟨I, e, m, inferInstance, inferInstance, fac⟩
 
 instance (J : GrothendieckTopology C) (A : Type*) [Category A] [Abelian A] [HasSheafify J A] :
     IsRegularEpiCategory (Sheaf J A) :=
