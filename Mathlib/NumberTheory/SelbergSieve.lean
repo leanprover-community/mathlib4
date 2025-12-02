@@ -349,7 +349,7 @@ section QuadForm
 
 /-- The main sum we get from Λ² coefficients is a quadratic form. Used to prove the Selberg sieve
   identity by choosing weights that maximize this sum. -/
-theorem mainSum_lambdaSquared_eq_quad_form (w : ℕ → ℝ) :
+theorem mainSum_lambdaSquared_eq_sum_sum_mul (w : ℕ → ℝ) :
     s.mainSum (lambdaSquared w) =
       ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
         s.nu d1 * w d1 * s.nu d2 * w d2 * (s.nu (d1.gcd d2))⁻¹ := by
@@ -357,7 +357,7 @@ theorem mainSum_lambdaSquared_eq_quad_form (w : ℕ → ℝ) :
       = ∑ d ∈ divisors s.prodPrimes, ∑ d1 ∈ divisors d, ∑ d2 ∈ divisors d,
           if d = d1.lcm d2 then w d1 * w d2 * s.nu d else 0 := ?caseA
     _ = ∑ d ∈ divisors s.prodPrimes, ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
-          if d = d1.lcm d2 then w d1 * w d2 * s.nu d else 0 := by apply sum_divisors_lambda_sq_larger_sum
+          if d = d1.lcm d2 then w d1 * w d2 * s.nu d else 0 := sum_divisors_lambda_sq_larger_sum _ _
     _ = ∑ d1 ∈ divisors s.prodPrimes, ∑ d2 ∈ divisors s.prodPrimes,
           s.nu d1 * w d1 * s.nu d2 * w d2 * (s.nu (d1.gcd d2))⁻¹ := ?caseB
   case caseA =>
@@ -375,7 +375,7 @@ theorem mainSum_lambdaSquared_eq_quad_form (w : ℕ → ℝ) :
 
 /-- The main sum we get from Λ² coefficients can be written as a diagonalized quadratic form with
   eigenvalues given by `1/selbergTerms` -/
-theorem mainSum_lambdaSquared_eq_diag_quad_form (w : ℕ → ℝ) :
+theorem mainSum_lambdaSquared_eq_sum_mul_sum_sq (w : ℕ → ℝ) :
     s.mainSum (lambdaSquared w) =
       ∑ l ∈ divisors s.prodPrimes, (s.selbergTerms l)⁻¹ *
         (∑ d ∈ divisors s.prodPrimes, if l ∣ d then s.nu d * w d else 0) ^ 2 := by
@@ -390,7 +390,7 @@ theorem mainSum_lambdaSquared_eq_diag_quad_form (w : ℕ → ℝ) :
       (s.selbergTerms l)⁻¹ * (∑ d ∈ divisors s.prodPrimes, if l ∣ d then s.nu d * w d else 0) ^ 2
         := ?caseC
   case caseA =>
-    rw [mainSum_lambdaSquared_eq_quad_form w]
+    rw [mainSum_lambdaSquared_eq_sum_sum_mul w]
     refine sum_congr rfl fun d1 hd1 ↦ sum_congr rfl fun d2 _ ↦ ?_
     have hgcd_dvd : d1.gcd d2 ∣ s.prodPrimes :=
       (Nat.gcd_dvd_left d1 d2).trans (dvd_of_mem_divisors hd1)
