@@ -171,8 +171,7 @@ noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : 
 /-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop` is
 an effective epimorphism. -/
 lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f :=
-  let := regularEpiOfFaithfullyFlat f hf
-  RegularEpi.effectiveEpi this
+  RegularEpi.effectiveEpi (regularEpiOfFaithfullyFlat f hf)
 
 end Opposite
 
