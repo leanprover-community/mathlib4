@@ -1,5 +1,9 @@
-import Mathlib
-import Batteries.Tactic.Instances
+module
+
+public import Mathlib
+public import Batteries.Tactic.Instances
+
+@[expose] public section
 
 theorem Nat.Prime.three_le_of_odd {p : ℕ} (h₁ : Nat.Prime p) (h₂ : Odd p) : 3 ≤ p :=
   Nat.lt_of_le_of_ne h₁.two_le (by grind)
@@ -76,8 +80,8 @@ theorem jacobiSum_ne_zero {F F' : Type*} [Field F] [Fintype F] [Field F'] {χ ψ
     have := congr_arg (· ^ 2) h
     dsimp at this
     rw [zero_pow, ← map_pow, neg_one_pow_two, map_one] at this
-    exact one_ne_zero this
-    exact two_ne_zero
+    · exact one_ne_zero this
+    · exact two_ne_zero
   have := jacobiSum_mul_jacobiSum_inv hF₂ hχ hψ (by rwa [ne_eq, mul_eq_one_iff_eq_inv'])
   have : (Fintype.card F : F') ≠ 0 := by
     rw [ne_eq, CharP.cast_eq_zero_iff]
@@ -634,9 +638,6 @@ theorem Int.ideal_span_ne_bot [NeZero p] : 𝒑 ≠ ⊥ := by
 instance [NeZero p] : Finite (ℤ ⧸ 𝒑) := by
   refine Ideal.finiteQuotientOfFreeOfNeBot 𝒑 ?_
   exact Int.ideal_span_ne_bot _
-
-theorem Int.card_ideal_quot : Nat.card (ℤ ⧸ 𝒑) = p := by
-  simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
 
 end ExpChar
 

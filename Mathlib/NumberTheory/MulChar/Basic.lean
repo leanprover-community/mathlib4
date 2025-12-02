@@ -438,6 +438,13 @@ lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
   | zero => simp only [pow_zero, ringHomComp_one]
   | succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
 
+lemma ringHomComp_zpow {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'')
+    (n : ℤ) :
+    χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f := by
+  obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n
+  · rw [zpow_natCast, zpow_natCast, ringHomComp_pow]
+  · rw [zpow_neg, zpow_neg, zpow_natCast, zpow_natCast, ringHomComp_pow, ringHomComp_inv]
+
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
   simpa
@@ -452,6 +459,14 @@ lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
   (ringHomComp_eq_one_iff hf).not
+
+variable (R) in
+@[simps]
+def ringHomCompMonoidHom (f : R' →+* R'') :
+    MulChar R R' →* MulChar R R'' where
+  toFun := fun χ ↦ ringHomComp χ f
+  map_one' := by simp
+  map_mul' _ _ := by rw [ringHomComp_mul]
 
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
 theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :
