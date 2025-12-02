@@ -104,9 +104,9 @@ The type of 2-morphisms in the bicategory of categories `Cat`.
 This is a wrapper around `NatTrans` to prevent defeq-abuse.
 -/
 structure Hom₂ {C D : Cat.{v, u}} (F G : C ⟶ D) where
-private ofNatTrans ::
-/-- The natural transformation underlying a 2-morphism in `Cat` -/
-toNatTrans : F.toFunctor ⟶ G.toFunctor
+  private ofNatTrans ::
+  /-- The natural transformation underlying a 2-morphism in `Cat` -/
+  toNatTrans : F.toFunctor ⟶ G.toFunctor
 
 namespace Hom
 
