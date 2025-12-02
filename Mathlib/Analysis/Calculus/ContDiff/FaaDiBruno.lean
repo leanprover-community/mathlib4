@@ -772,7 +772,7 @@ theorem applyOrderedFinpartition_update_left (p : ∀ (i : Fin c.length), E [×c
     simp [applyOrderedFinpartition]
   · simp [h, applyOrderedFinpartition]
 
-/-- Given a an ordered finite partition `c` of `n`, a continuous multilinear map `f` in `c.length`
+/-- Given an ordered finite partition `c` of `n`, a continuous multilinear map `f` in `c.length`
 variables, and for each `m` a continuous multilinear map `p m` in `c.partSize m` variables,
 one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
