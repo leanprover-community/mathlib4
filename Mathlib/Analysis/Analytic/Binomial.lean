@@ -33,7 +33,7 @@ and $x$ is an element of a normed algebra over $\mathbb{K}$.
 
 @[expose] public section
 
-open scoped Nat NNReal
+open scoped Nat
 
 universe u v
 
