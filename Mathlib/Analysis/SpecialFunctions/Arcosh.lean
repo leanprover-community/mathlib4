@@ -63,18 +63,18 @@ lemma x_add_sqrt_x_sq_sub_one_inv (x : ℝ) (hx : 1 ≤ x) :
 
 /-- `arcosh` is the right inverse of `cosh` over [1, ∞). -/
 @[simp]
-theorem cosh_arcosh (x : ℝ) (hx : 1 ≤ x) : cosh (arcosh x) = x := by
+theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
   rw [arcosh, cosh_eq, exp_neg, exp_log (by positivity), x_add_sqrt_x_sq_sub_one_inv x hx]
   ring
 
 @[simp]
-theorem sinh_arcosh (x : ℝ) (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) := by
+theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) := by
   rw [arcosh, sinh_eq, exp_neg, exp_log (by positivity), x_add_sqrt_x_sq_sub_one_inv x hx]
   ring
 
 /-- `arcosh` is the left inverse of `cosh` over [0, ∞). -/
 @[simp]
-theorem arcosh_cosh (x : ℝ) (hx : 0 ≤ x) : arcosh (cosh x) = x := by
+theorem arcosh_cosh {x : ℝ} (hx : 0 ≤ x) : arcosh (cosh x) = x := by
   rw [arcosh]
   apply exp_eq_exp.mp
   rw [exp_log (by positivity)]
