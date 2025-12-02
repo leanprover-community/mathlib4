@@ -532,4 +532,12 @@ section Mul
 
 end Mul
 
+protected alias val_sub := Fin.coe_sub
+alias val_castSucc := coe_castSucc
+alias val_cast := coe_cast
+alias val_castLT := coe_castLT
+alias val_castLE := coe_castLE
+alias val_natAdd := coe_natAdd
+alias val_pred := coe_pred
+
 end Fin
