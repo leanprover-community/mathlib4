@@ -21,6 +21,8 @@ This file describes multilinear maps on direct sums.
   `MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'`.
 -/
 
+@[expose] public section
+
 namespace MultilinearMap
 
 open DirectSum LinearMap Function

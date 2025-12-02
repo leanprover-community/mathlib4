@@ -288,11 +288,14 @@ theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r 
   congr
   classical
   ext i'
-  simp_all [freeDFinsuppEquiv_def, DFinsupp.domLCongr_apply, Equiv.symm_symm,
-    DFinsupp.sigmaCurryLEquiv_apply, DFinsupp.single_apply, eq_rec_constant, dite_eq_ite,
-    fromDFinsuppEquiv_apply, LinearEquiv.piCongrRight_apply, DFinsupp.linearEquivFunOnFintype_apply,
-    DFinsupp.finset_sum_apply, DFinsupp.comapDomain', DFinsupp.sigmaCurryEquiv,
-    MultilinearMap.piRingEquiv]
+  simp_all only [freeDFinsuppEquiv_def, MultilinearMap.piRingEquiv, DFinsupp.domLCongr_apply,
+    DFinsupp.comapDomain', Equiv.symm_symm, Equiv.sigmaEquivProd_apply, DFinsupp.toFun_eq_coe,
+    Equiv.sigmaEquivProd_symm_apply, DFinsupp.sigmaCurryLEquiv_apply, DFinsupp.sigmaCurryEquiv,
+    Equiv.coe_fn_mk, fromDFinsuppEquiv_apply, LinearEquiv.piCongrRight_apply,
+    DFinsupp.linearEquivFunOnFintype_apply, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk,
+    mkPiRing_apply, DFinsupp.finset_sum_apply, DFinsupp.coe_smul, Pi.smul_apply,
+    DFinsupp.sigmaCurry_apply, DFinsupp.coe_mk', DFinsupp.single_apply, eq_rec_constant,
+    dite_eq_ite, smul_eq_mul, mul_ite, mul_one, mul_zero]
   obtain ⟨fst, snd⟩ := p
   simp_all only [Prod.mk.injEq]
   by_cases h : snd = i'
