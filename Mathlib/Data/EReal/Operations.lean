@@ -241,7 +241,7 @@ instance : InvolutiveNeg EReal where
     | (a : ℝ) => congr_arg Real.toEReal (neg_neg a)
 
 @[simp]
-theorem toReal_neg : ∀ {a : EReal}, toReal (-a) = -toReal a
+theorem toReal_neg_eq : ∀ {a : EReal}, toReal (-a) = -toReal a
   | ⊤ => by simp
   | ⊥ => by simp
   | (x : ℝ) => rfl
@@ -803,6 +803,9 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
 
+-- TODO: is there a nice way to fix the non-terminal simp? It's called on nine goals,
+-- with quite different simp sets.
+set_option linter.flexible false in
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by

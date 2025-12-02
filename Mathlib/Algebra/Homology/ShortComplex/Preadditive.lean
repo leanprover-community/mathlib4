@@ -672,7 +672,7 @@ lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasH
 
 end Homotopy
 
-/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+/-- A homotopy equivalence between two short complexes `S₁` and `S₂` consists
 of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
 `hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
 @[ext]

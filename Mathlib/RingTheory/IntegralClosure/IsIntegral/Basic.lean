@@ -174,7 +174,7 @@ protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x :
     (h : IsIntegral R x) : IsIntegral R (algebraMap A B x) := by
   rcases h with ⟨f, hf, hx⟩
   use f, hf
-  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, RingHom.map_zero]
+  rw [IsScalarTower.algebraMap_eq R A B, ← hom_eval₂, hx, map_zero]
 
 theorem isIntegral_algebraMap_iff [Algebra A B] [IsScalarTower R A B] {x : A}
     (hAB : Function.Injective (algebraMap A B)) :
