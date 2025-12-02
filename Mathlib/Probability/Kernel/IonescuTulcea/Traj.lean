@@ -53,8 +53,8 @@ expectation.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
   gives the distribution of the trajectory up to time `b`, and composing this with
   `traj κ b` gives the distribution of the whole trajectory.
-* `traj_map_eq_kernel`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
-  kernel `κ a`.
+* `traj_map_succ_self_eq_kernel`: the pushforward of `traj κ a` along the the point at time `a + 1`
+  is the kernel `κ a`.
 * `condDistrib_trajMeasure_ae_eq_kernel`: a regular conditional probability distribution of the
   point at time `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
@@ -541,11 +541,11 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
   rw [traj_map_frestrictLe, partialTraj_le]
 
 /-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
-lemma traj_map_eq_kernel {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
+lemma traj_map_succ_self_eq_kernel {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
   have hf : (fun x : Π n, X n ↦ x (a + 1)) =
       (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl
   rw [hf, map_comp_right _ (by fun_prop) (by fun_prop), traj_map_frestrictLe,
-    partialTraj_map_eq_kernel]
+    partialTraj_succ_self_map_eq_kernel]
 
 variable (κ)
 
@@ -670,7 +670,7 @@ lemma partialTraj_compProd_kernel_eq_traj_map {a b : ℕ} (hab : a ≤ b) {x₀ 
   have hf : (fun x : Π n, X n ↦ (frestrictLe b x, x (b + 1))) =
       (Prod.map id (fun x ↦ x (b + 1))) ∘ (fun x ↦ (frestrictLe b x, x)) := rfl
   rw [hf, ← Measure.map_map (by fun_prop) (by fun_prop), ← partialTraj_compProd_traj hab,
-    ← MeasureTheory.Measure.compProd_map (by fun_prop), traj_map_eq_kernel]
+    ← MeasureTheory.Measure.compProd_map (by fun_prop), traj_map_succ_self_eq_kernel]
 
 theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π i : Iic b, X i) → (Π n : ℕ, X n) → E}
@@ -767,7 +767,7 @@ variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
-  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique (fun i : Iic 0 ↦ X i)).symm) :=
+  have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=
     Measure.isProbabilityMeasure_map <| by fun_prop
   infer_instance
 
