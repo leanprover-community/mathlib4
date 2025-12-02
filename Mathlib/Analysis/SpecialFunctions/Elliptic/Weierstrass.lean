@@ -183,12 +183,13 @@ lemma weierstrassP_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l 
 section weierstrassPExcept
 
 /-- The Weierstrass `℘` function with the `l₀`-term missing.
-This is mainly a tool for calculations where one would want to omit a diverging term. -/
+This is mainly a tool for calculations where one would want to omit a diverging term.
+This has the notation `℘[L - l₀]` in the namespace `PeriodPairs`. -/
 def weierstrassPExcept (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
-@[inherit_doc weierstrassPExcept] scoped
-notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
+@[inherit_doc weierstrassPExcept]
+scoped notation3 "℘[" L:max " - " l₀ "]" => weierstrassPExcept L l₀
 
 lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly
@@ -230,7 +231,7 @@ end weierstrassPExcept
 
 section weierstrassP
 
-/-- The Weierstrass `℘` function. This has the notation `℘[L]` in `namespace PeriodPairs`. -/
+/-- The Weierstrass `℘` function. This has the notation `℘[L]` in the namespace `PeriodPairs`. -/
 def weierstrassP (z : ℂ) : ℂ := ∑' l : L.lattice, (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
 @[inherit_doc weierstrassP] scoped notation3 "℘[" L "]" => weierstrassP L
