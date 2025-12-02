@@ -97,7 +97,7 @@ theorem integral_abs_condExp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
   by_cases hfint : Integrable f μ
   swap
   · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const,
-      Algebra.id.smul_eq_mul, mul_zero]
+      smul_eq_mul, mul_zero]
     positivity
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
   · apply ENNReal.toReal_mono <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_enorm]
@@ -120,7 +120,7 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   by_cases hfint : Integrable f μ
   swap
   · simp only [condExp_of_not_integrable hfint, Pi.zero_apply, abs_zero, integral_const,
-      Algebra.id.smul_eq_mul, mul_zero]
+      smul_eq_mul, mul_zero]
     positivity
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator (hnm _ hs)]
@@ -226,7 +226,7 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     intro s c f
     ext1 x
     by_cases hx : x ∈ s
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, smul_eq_mul,
         Function.const_apply]
     · simp only [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
