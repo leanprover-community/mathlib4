@@ -23,16 +23,11 @@ to form the Dirichlet ring.
 
 * `ArithmeticFunction R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
 * An arithmetic function `f` `IsMultiplicative` when `x.Coprime y → f (x * y) = f x * f y`.
-* The pointwise operations `pmul` and `ppow` differ from the multiplication
-  and power instances on `ArithmeticFunction R`, which use Dirichlet multiplication.
-* `ArithmeticFunction.zeta` is the arithmetic function such that `ζ x = 1` for `0 < x`. The notation
-  `ζ` for this function is available by opening `ArithmeticFunction.zeta`.
-
-The arithmetic function $n \mapsto \prod_{p \mid n} f(p)$ is given custom notation
-`∏ᵖ p ∣ n, f p` when applied to `n`.
+* Multiplication and power instances on `ArithmeticFunction R`, are defined using Dirichlet
+  convolution.
 
 Further examples of arithmetic functions, such as the Möbius function `μ`, are available in
-`Mathlib.NumberTheory.ArithmeticFunction.Specific`.
+other files in the `Mathlib.NumberTheory.ArithmeticFunction` directory.
 
 ## Tags
 
@@ -346,185 +341,6 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     ext
     simp only [smul_apply, sum_const_zero, zero_smul, zero_apply]
 
-section Zeta
-
-/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
-def zeta : ArithmeticFunction ℕ :=
-  ⟨fun x => ite (x = 0) 0 1, rfl⟩
-
-@[inherit_doc]
-scoped[ArithmeticFunction.zeta] notation "ζ" => ArithmeticFunction.zeta
-
-open scoped zeta
-
-@[simp]
-theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
-  rfl
-
-theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
-  if_neg h
-
-theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
-
-theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [pos_iff_ne_zero]
-
-theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
-    {f : ArithmeticFunction M} {x : ℕ} :
-    ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
-  rw [smul_apply]
-  trans ∑ i ∈ divisorsAntidiagonal x, f i.snd
-  · refine sum_congr rfl fun i hi => ?_
-    rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
-    rw [natCoe_apply, zeta_apply_ne (left_ne_zero_of_mul h), cast_one, one_smul]
-  · rw [← map_div_left_divisors, sum_map, Function.Embedding.coeFn_mk]
-
-/-- `@[simp]`-normal form of `coe_zeta_smul_apply`. -/
-@[simp]
-theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
-    {f : ArithmeticFunction M} {x : ℕ} :
-    (∑ x ∈ x.divisorsAntidiagonal, if x.1 = 0 then (0 : R) • f x.2 else f x.2) =
-      ∑ i ∈ divisors x, f i := by
-  simp [← coe_zeta_smul_apply (R := R)]
-
-theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
-    (ζ * f) x = ∑ i ∈ divisors x, f i :=
-  coe_zeta_smul_apply
-
-theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
-    (f * ζ) x = ∑ i ∈ divisors x, f i := by
-  rw [mul_apply]
-  trans ∑ i ∈ divisorsAntidiagonal x, f i.1
-  · refine sum_congr rfl fun i hi => ?_
-    rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
-    rw [natCoe_apply, zeta_apply_ne (right_ne_zero_of_mul h), cast_one, mul_one]
-  · rw [← map_div_right_divisors, sum_map, Function.Embedding.coeFn_mk]
-
-theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
-  ext x
-  rw [coe_zeta_mul_apply, coe_mul_zeta_apply]
-
-theorem zeta_mul_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (ζ * f) x = ∑ i ∈ divisors x, f i := by
-  rw [← natCoe_nat ζ, coe_zeta_mul_apply]
-
-theorem mul_zeta_apply {f : ArithmeticFunction ℕ} {x : ℕ} : (f * ζ) x = ∑ i ∈ divisors x, f i := by
-  rw [← natCoe_nat ζ, coe_mul_zeta_apply]
-
-theorem zeta_mul_comm {f : ArithmeticFunction ℕ} : ζ * f = f * ζ := by
-  rw [← natCoe_nat ζ, coe_zeta_mul_comm]
-
-end Zeta
-
-open ArithmeticFunction
-
-section Pmul
-
-/-- This is the pointwise product of `ArithmeticFunction`s. -/
-def pmul [MulZeroClass R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
-  ⟨fun x => f x * g x, by simp⟩
-
-@[simp]
-theorem pmul_apply [MulZeroClass R] {f g : ArithmeticFunction R} {x : ℕ} : f.pmul g x = f x * g x :=
-  rfl
-
-theorem pmul_comm [CommMonoidWithZero R] (f g : ArithmeticFunction R) : f.pmul g = g.pmul f := by
-  ext
-  simp [mul_comm]
-
-lemma pmul_assoc [SemigroupWithZero R] (f₁ f₂ f₃ : ArithmeticFunction R) :
-    pmul (pmul f₁ f₂) f₃ = pmul f₁ (pmul f₂ f₃) := by
-  ext
-  simp only [pmul_apply, mul_assoc]
-
-section NonAssocSemiring
-
-variable [NonAssocSemiring R]
-
-open scoped zeta
-
-@[simp]
-theorem pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
-  ext x
-  cases x <;> simp
-
-@[simp]
-theorem zeta_pmul (f : ArithmeticFunction R) : (ζ : ArithmeticFunction R).pmul f = f := by
-  ext x
-  cases x <;> simp
-
-end NonAssocSemiring
-
-variable [Semiring R]
-
-open scoped zeta
-
-/-- This is the pointwise power of `ArithmeticFunction`s. -/
-def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
-  if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
-
-@[simp]
-theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif_pos rfl]
-
-@[simp]
-theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
-  ext; simp [ppow]
-
-@[simp]
-theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
-  rw [ppow, dif_neg (Nat.ne_of_gt kpos), coe_mk]
-
-theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul (f.ppow k) := by
-  ext x
-  rw [ppow_apply (succ_pos k), _root_.pow_succ']
-  induction k <;> simp
-
-theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
-    f.ppow (k + 1) = (f.ppow k).pmul f := by
-  ext x
-  rw [ppow_apply (succ_pos k), _root_.pow_succ]
-  induction k <;> simp
-
-end Pmul
-
-section Pdiv
-
-/-- This is the pointwise division of `ArithmeticFunction`s. -/
-def pdiv [GroupWithZero R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
-  ⟨fun n => f n / g n, by simp only [map_zero, div_zero]⟩
-
-@[simp]
-theorem pdiv_apply [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ) :
-    pdiv f g n = f n / g n := rfl
-
-/-- This result only holds for `DivisionSemiring`s instead of `GroupWithZero`s because zeta takes
-values in ℕ, and hence the coercion requires an `AddMonoidWithOne`. TODO: Generalise zeta -/
-@[simp]
-theorem pdiv_zeta [DivisionSemiring R] (f : ArithmeticFunction R) :
-    pdiv f zeta = f := by
-  ext n
-  cases n <;> simp
-
-end Pdiv
-
-section ProdPrimeFactors
-
-/-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
-def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
-  toFun d := if d = 0 then 0 else ∏ p ∈ d.primeFactors, f p
-  map_zero' := if_pos rfl
-
-open Batteries.ExtendedBinder
-
-/-- `∏ᵖ p ∣ n, f p` is custom notation for `prodPrimeFactors f n` -/
-scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term
-scoped macro_rules (kind := bigproddvd)
-  | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodPrimeFactors (fun $x ↦ $r) $n)
-
-@[simp]
-theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
-    ∏ᵖ p ∣ n, f p = ∏ p ∈ n.primeFactors, f p :=
-  if_neg hn
-
-end ProdPrimeFactors
 
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
@@ -650,21 +466,6 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
       hg.map_mul_of_coprime cop.coprime_mul_left.coprime_mul_left_right]
     ring
 
-@[arith_mult]
-theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
-    (hg : g.IsMultiplicative) : IsMultiplicative (f.pmul g) :=
-  ⟨by simp [hf, hg], fun cop => by
-    simp only [pmul_apply, hf.map_mul_of_coprime cop, hg.map_mul_of_coprime cop]
-    ring⟩
-
-@[arith_mult]
-theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
-    (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
-  ⟨by simp [hf, hg], fun cop => by
-    simp only [pdiv_apply, map_mul_of_coprime hf cop, map_mul_of_coprime hg cop, div_eq_mul_inv,
-      mul_inv]
-    apply mul_mul_mul_comm ⟩
-
 /-- For any multiplicative function `f` and any `n > 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
 theorem multiplicative_factorization [CommMonoidWithZero R] (f : ArithmeticFunction R)
@@ -695,32 +496,6 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   · rw [hn, ArithmeticFunction.map_zero, ArithmeticFunction.map_zero]
   rw [multiplicative_factorization f hf hn, multiplicative_factorization g hg hn]
   exact prod_congr rfl fun p hp ↦ h p _ (prime_of_mem_primeFactors hp)
-
-@[arith_mult]
-theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
-    IsMultiplicative (prodPrimeFactors f) := by
-  rw [iff_ne_zero]
-  simp only [ne_eq, one_ne_zero, not_false_eq_true, prodPrimeFactors_apply, primeFactors_one,
-    prod_empty, true_and]
-  intro x y hx hy hxy
-  have hxy₀ : x * y ≠ 0 := mul_ne_zero hx hy
-  rw [prodPrimeFactors_apply hxy₀, prodPrimeFactors_apply hx, prodPrimeFactors_apply hy,
-    primeFactors_mul hx hy, ← prod_union hxy.disjoint_primeFactors]
-
-theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFunction R}
-    (hf : IsMultiplicative f) (hg : IsMultiplicative g) {n : ℕ} (hn : Squarefree n) :
-    ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
-  rw [prodPrimeFactors_apply hn.ne_zero]
-  simp_rw [add_apply (f := f) (g := g)]
-  rw [prod_add, mul_apply, sum_divisorsAntidiagonal (f · * g ·),
-    ← divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
-    factors_eq]
-  apply sum_congr rfl
-  intro t ht
-  rw [t.prod_val, Function.id_def,
-    ← prod_primeFactors_sdiff_of_squarefree hn (mem_powerset.mp ht),
-    hf.map_prod_of_subset_primeFactors n t (mem_powerset.mp ht),
-    ← hg.map_prod_of_subset_primeFactors n (_ \ t) sdiff_subset]
 
 theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} :
@@ -768,21 +543,10 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
 
 end IsMultiplicative
 
+@[arith_mult]
+theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
+  IsMultiplicative.iff_ne_zero.2 ⟨by simp, by
+    intro m n hm hn hmn
+    by_cases h : m = 1 <;> aesop⟩
+
 end ArithmeticFunction
-
-namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
-
-/-- Extension for `ArithmeticFunction.zeta`. -/
-@[positivity ArithmeticFunction.zeta _]
-meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
-    let rn ← core z p n
-    assumeInstancesCommute
-    match rn with
-    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
-    | _ => return .nonnegative q(Nat.zero_le _)
-  | _, _, _ => throwError "not ArithmeticFunction.zeta"
-
-end Mathlib.Meta.Positivity
