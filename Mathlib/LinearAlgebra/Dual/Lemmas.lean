@@ -47,7 +47,7 @@ This file contains basic results on dual vector spaces.
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
   * `Submodule.quotDualCoannihilatorToDual` is the nondegenerate pairing
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
-    It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
+    It is a perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
@@ -202,8 +202,7 @@ theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=
 
 @[simp]
 theorem nontrivial_dual_iff : Nontrivial (Dual K V) ↔ Nontrivial V := by
-  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
-    subsingleton_dual_iff]
+  contrapose!; exact subsingleton_dual_iff K
 
 instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance

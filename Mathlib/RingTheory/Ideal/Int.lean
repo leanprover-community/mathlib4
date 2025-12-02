@@ -100,7 +100,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
   · rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
     exact Nat.dvd_zero _
 
-theorem ringChar_idealQuot {S : Type*} [CommRing S] (I : Ideal S) :
+theorem _root_.Ideal.ringChar_quot {S : Type*} [CommRing S] (I : Ideal S) :
     ringChar (S ⧸ I) = absNorm (under ℤ I) := by
   refine ringChar.eq_iff.mpr <| (charP_iff _ _).mpr fun x ↦ ?_
   change Ideal.Quotient.mk I x = 0 ↔ _
