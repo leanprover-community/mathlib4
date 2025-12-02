@@ -388,7 +388,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
   refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
   classical
-  rw [Measure.map_apply, restrict_preimage, hν, ← prod_attach, univ_eq_attach]
+  rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
   · congr with i
     rw [dif_pos i.2]
   any_goals fun_prop
@@ -414,7 +414,7 @@ theorem infinitePi_map_restrict' {I : Set ι} :
   apply eq_infinitePi
   intro s t ht
   classical
-  rw [map_apply (by fun_prop), restrict_preimage', infinitePi_pi _ (by measurability)]
+  rw [map_apply (by fun_prop), restrict_preimage, infinitePi_pi _ (by measurability)]
   · simp
   · exact .pi s.countable_toSet (by measurability)
 
@@ -428,7 +428,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
   · conv in ∏ _ ∈ _, _ =>
       rw [← infinitePi_pi _ (by measurability), ← infinitePi_map_restrict', map_apply
         (by fun_prop) (by apply MeasurableSet.pi (countable_toSet _) (by measurability)),
-        restrict_preimage']
+        restrict_preimage]
       simp only [coe_image, dite_eq_ite]
     have : s.pi t
       = ⋂ s' : Finset s,
