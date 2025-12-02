@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Bases for root pairings / systems
@@ -45,6 +47,8 @@ is too strong.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Function Set Submodule
@@ -67,9 +71,9 @@ structure Base (P : RootPairing ι R M N) where
   linearIndepOn_root : LinearIndepOn R P.root support
   linearIndepOn_coroot : LinearIndepOn R P.coroot support
   root_mem_or_neg_mem (i : ι) : P.root i ∈ AddSubmonoid.closure (P.root '' support) ∨
-                              - P.root i ∈ AddSubmonoid.closure (P.root '' support)
+                               -P.root i ∈ AddSubmonoid.closure (P.root '' support)
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
-                                - P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support)
+                                 -P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support)
 
 namespace Base
 
@@ -95,7 +99,7 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
-    P.root i ≠ - P.root j := by
+    P.root i ≠ -P.root j := by
   classical
   intro contra
   have := linearIndepOn_iff'.mp b.linearIndepOn_root ({i, j} : Finset ι) 1
@@ -146,7 +150,7 @@ lemma span_coroot_support :
 
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
-    [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+    [IsAddTorsionFree M] [IsAddTorsionFree N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     ∃ z : ℤ, z * t = 1 := by
   classical
@@ -173,18 +177,17 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
 variable [CharZero R]
 
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
-    [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+    [IsAddTorsionFree M] [IsAddTorsionFree N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
-    t = 1 ∨ t = - 1 := by
+    t = 1 ∨ t = -1 := by
   obtain ⟨z, hz⟩ := b.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h t ht
-  obtain ⟨s, hs⟩ := IsUnit.exists_left_inv <| isUnit_of_mul_eq_one_right _ t hz
-  replace ht : s • P.coroot i ∈ range P.coroot := by
+  replace ht : (z : R) • P.coroot i ∈ range P.coroot := by
     obtain ⟨j, hj⟩ := ht
-    simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hs, one_smul] using mem_range_self j
-  obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h s ht
+    simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hz, one_smul] using mem_range_self j
+  obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h _ ht
   have : (z : R) * w = 1 := by
-    simpa [mul_mul_mul_comm _ t _ s, mul_comm t s, hs] using congr_arg₂ (· * ·) hz hw
-  suffices z = 1 ∨ z = - 1 by
+    simpa [mul_mul_mul_comm _ t, mul_comm t, mul_comm _ (z : R), hz] using congr_arg₂ (· * ·) hz hw
+  suffices z = 1 ∨ z = -1 by
     rcases this with rfl | rfl
     · left; simpa using hz
     · right; simpa [neg_eq_iff_eq_neg] using hz
@@ -507,7 +510,7 @@ lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h�
   have : P.pairingIn ℤ i i = ∑ j ∈ b.support, f j • P.pairingIn ℤ j i :=
     algebraMap_injective ℤ R <| by
       simp_rw [algebraMap_pairingIn, map_sum, ← root_coroot_eq_pairing, hf₂, map_sum, map_zsmul,
-        LinearMap.coeFn_sum, Finset.sum_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
+        LinearMap.coe_sum, Finset.sum_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
         zsmul_eq_mul, algebraMap_pairingIn]
   rw [this]
   refine Finset.sum_nonpos fun j _ ↦ ?_

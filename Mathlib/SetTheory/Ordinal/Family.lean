@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Arithmetic on families of ordinals
@@ -17,6 +19,8 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Module
 
@@ -204,8 +208,8 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
     ⟨fun h i => ?_, fun h =>
-      le_antisymm (Ordinal.iSup_le fun i => Ordinal.le_zero.2 (h i)) (Ordinal.zero_le _)⟩
-  rw [← Ordinal.le_zero, ← h]
+      le_antisymm (Ordinal.iSup_le fun i => nonpos_iff_eq_zero.2 (h i)) (zero_le _)⟩
+  rw [← nonpos_iff_eq_zero, ← h]
   exact Ordinal.le_iSup f i
 
 -- TODO: generalize or remove
@@ -213,10 +217,7 @@ theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
 
-theorem iSup_succ (o : Ordinal) : ⨆ a : Iio o, succ a.1 = o := by
-  apply (le_of_forall_lt _).antisymm'
-  · simp [Ordinal.iSup_le_iff]
-  · exact fun a ha ↦ (lt_succ a).trans_le <| Ordinal.le_iSup (fun x : Iio _ ↦ _) ⟨a, ha⟩
+@[deprecated (since := "2025-10-08")] alias iSup_succ := _root_.iSup_succ
 
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β] :
@@ -388,8 +389,8 @@ theorem bsup_not_succ_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max 
 theorem bsup_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : bsup o f = 0 ↔ ∀ i hi, f i hi = 0 := by
   refine
     ⟨fun h i hi => ?_, fun h =>
-      le_antisymm (bsup_le fun i hi => Ordinal.le_zero.2 (h i hi)) (Ordinal.zero_le _)⟩
-  rw [← Ordinal.le_zero, ← h]
+      le_antisymm (bsup_le fun i hi => nonpos_iff_eq_zero.2 (h i hi)) (zero_le _)⟩
+  rw [← nonpos_iff_eq_zero, ← h]
   exact le_bsup f i hi
 
 theorem lt_bsup_of_limit {o : Ordinal} {f : ∀ a < o, Ordinal}
@@ -403,11 +404,11 @@ theorem bsup_succ_of_mono {o : Ordinal} {f : ∀ a < succ o, Ordinal}
 
 @[simp]
 theorem bsup_zero (f : ∀ a < (0 : Ordinal), Ordinal) : bsup 0 f = 0 :=
-  bsup_eq_zero_iff.2 fun i hi => (Ordinal.not_lt_zero i hi).elim
+  bsup_eq_zero_iff.2 fun _i hi => (not_neg hi).elim
 
 theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
     (bsup.{_, v} o fun _ _ => a) = a :=
-  le_antisymm (bsup_le fun _ _ => le_rfl) (le_bsup _ 0 (Ordinal.pos_iff_ne_zero.2 ho))
+  le_antisymm (bsup_le fun _ _ => le_rfl) (le_bsup _ 0 (pos_iff_ne_zero.2 ho))
 
 @[simp]
 theorem bsup_one (f : ∀ a < (1 : Ordinal), Ordinal) : bsup 1 f = f 0 zero_lt_one := by
@@ -508,11 +509,11 @@ theorem iSup_eq_lsub_iff_lt_iSup {ι} (f : ι → Ordinal) :
 
 @[simp]
 theorem lsub_empty {ι} [h : IsEmpty ι] (f : ι → Ordinal) : lsub f = 0 := by
-  rw [← Ordinal.le_zero, lsub_le_iff]
+  rw [← nonpos_iff_eq_zero, lsub_le_iff]
   exact h.elim
 
 theorem lsub_pos {ι} [h : Nonempty ι] (f : ι → Ordinal) : 0 < lsub f :=
-  h.elim fun i => (Ordinal.zero_le _).trans_lt (lt_lsub f i)
+  h.elim fun i => (zero_le _).trans_lt (lt_lsub f i)
 
 @[simp]
 theorem lsub_eq_zero_iff {ι} (f : ι → Ordinal) :
@@ -718,7 +719,7 @@ theorem blsub_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : blsub o f = 0 ↔ o = 0
 theorem blsub_zero (f : ∀ a < (0 : Ordinal), Ordinal) : blsub 0 f = 0 := by rw [blsub_eq_zero_iff]
 
 theorem blsub_pos {o : Ordinal} (ho : 0 < o) (f : ∀ a < o, Ordinal) : 0 < blsub o f :=
-  (Ordinal.zero_le _).trans_lt (lt_blsub f 0 ho)
+  (zero_le _).trans_lt (lt_blsub f 0 ho)
 
 theorem blsub_type {α : Type u} (r : α → α → Prop) [IsWellOrder α r]
     (f : ∀ a < type r, Ordinal.{max u v}) :

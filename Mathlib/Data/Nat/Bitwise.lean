@@ -3,15 +3,19 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Nat.Bits
-import Mathlib.Order.Basic
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Data.List.GetD
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Common
+public import Batteries.Data.Nat.Bitwise
+import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
 # Bitwise operations on natural numbers
@@ -37,6 +41,8 @@ should be connected.
 
 bitwise, and, or, xor
 -/
+
+@[expose] public section
 
 open Function
 
@@ -242,7 +248,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   rcases m with - | m
   <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m+1) / 2) (div_lt_self' ..)
+  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
@@ -283,45 +289,28 @@ theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwi
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
--- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [Nat.xor_assoc, Nat.xor_self, xor_zero]
+@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
+theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
 
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
+@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
+theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
 
-theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
-  rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
+@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
+theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
 
-theorem xor_left_injective {n : ℕ} : Function.Injective fun m => m ^^^ n :=
-  fun m m' (h : m ^^^ n = m' ^^^ n) => by
-  rw [← xor_cancel_right n m, ← xor_cancel_right n m', h]
-
-@[simp]
-theorem xor_right_inj {n m m' : ℕ} : n ^^^ m = n ^^^ m' ↔ m = m' :=
-  xor_right_injective.eq_iff
-
-@[simp]
-theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
-  xor_left_injective.eq_iff
-
-@[simp]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
-
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
-  xor_eq_zero.not
+@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
+theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
   set v := a ^^^ b ^^^ c with hv
   -- The xor of any two of `a`, `b`, `c` is the xor of `v` and the third.
   have hab : a ^^^ b = c ^^^ v := by
-    rw [Nat.xor_comm c, xor_cancel_right]
+    rw [Nat.xor_comm c, Nat.xor_xor_cancel_right]
   have hbc : b ^^^ c = a ^^^ v := by
-    rw [← Nat.xor_assoc, xor_cancel_left]
+    rw [← Nat.xor_assoc, Nat.xor_xor_cancel_left]
   have hca : c ^^^ a = b ^^^ v := by
-    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, xor_cancel_left]
+    rw [hv, Nat.xor_assoc, Nat.xor_comm a, ← Nat.xor_assoc, Nat.xor_xor_cancel_left]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit h
@@ -343,7 +332,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     · simp only [testBit_xor, hi' _ hj, Bool.bne_false]
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c := by
-  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero.2 h.ne
+  obtain ha | hb | hc := xor_trichotomy <| Nat.xor_assoc _ _ _ ▸ xor_ne_zero_iff.2 h.ne
   exacts [(h.asymm ha).elim, Or.inl <| Nat.xor_comm _ _ ▸ hb, Or.inr hc]
 
 @[simp]
@@ -360,6 +349,45 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
   cutsat
+
+@[simp]
+theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
+  cases n with
+  | zero => rfl
+  | succ n =>
+    simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
+
+@[simp]
+theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
+  cases n with
+  | zero =>
+    exact not_odd_zero h |>.elim
+  | succ n =>
+    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    grind
+
+/-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
+theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
+    match Fin.ofNat 4 n with | 0 => n | 1 => 1 | 2 => n + 1 | 3 => 0 := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    nth_rw 3 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+    rw [List.range_succ, List.foldl_append, ih, ← Fin.ofNat_add, List.foldl_cons, List.foldl_nil]
+    match h : Fin.ofNat 4 n with
+    | 0 =>
+      rw [Fin.zero_add, ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
+      rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
+    | 1 =>
+      rw [Nat.xor_comm]
+      refine xor_one_of_even <| even_iff.mpr ?_
+      rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
+    | 2 =>
+      apply Nat.xor_self
+    | 3 =>
+      apply zero_xor
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega

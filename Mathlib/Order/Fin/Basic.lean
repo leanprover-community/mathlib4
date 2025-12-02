@@ -3,9 +3,11 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Embedding
-import Mathlib.Data.Fin.Rev
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -33,6 +35,8 @@ This file expands on the development in the core library.
 * `Fin.revOrderIso`: `Fin.rev` as an `OrderIso`, the antitone involution given by `i ↦ n-(i+1)`
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 open Function Nat Set
@@ -53,12 +57,9 @@ theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
 theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
 
-@[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
-@[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
-
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
-    Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val
+    Fin.le_iff_val_le_val Fin.lt_def coe_min coe_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
@@ -185,8 +186,7 @@ lemma strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m))
 
 lemma strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   strictMono_castSucc.ite strictMono_succ
-    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun i =>
-    (castSucc_lt_succ i).le
+    (fun _ _ hij hj => (castSucc_lt_castSucc_iff.mpr hij).trans hj) fun _ => castSucc_lt_succ.le
 
 variable {p : Fin (n + 1)} {i j : Fin n}
 
@@ -418,6 +418,6 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
     specialize h _ this (e.symm _).is_lt
     simp only [Fin.eta, OrderIso.apply_symm_apply] at h
     rwa [h]
-  · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
+  · rwa [← h j hj (hj.trans hi), ← lt_def, e.lt_iff_lt]
 
 end Fin

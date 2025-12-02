@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Set.Prod
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Set.Prod
 
 /-!
 # Finite products of types
@@ -34,6 +36,8 @@ construction/theorem that is easier to define/prove on binary products than on f
 * The product of sets is `Set.tprod : (∀ i, Set (α i)) → Set (TProd α l)`.
 -/
 
+@[expose] public section
+
 
 open List Function
 universe u v
@@ -62,7 +66,7 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 
 @[simp]
 theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
-    (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
+    (TProd.mk.{u, v} (i :: l) f).2 = TProd.mk.{u, v} l f :=
   rfl
 
 variable [DecidableEq ι]

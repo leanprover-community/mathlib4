@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Data.Multiset.Powerset
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Big operators on a finset in ordered groups
@@ -18,6 +20,8 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups/monoids.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -71,7 +75,7 @@ such that `f 1 = 1` and `f` is submultiplicative on `{x | p x}`, i.e.,
 that `∀ i ∈ s, p (g i)`. Then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_of_subadditive_on_pred]
 theorem le_prod_of_submultiplicative_on_pred [IsOrderedMonoid N] (f : M → N) (p : M → Prop)
-    (h_one : f 1 = 1) (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y)
+    (h_one : f 1 ≤ 1) (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y)
     (hp_mul : ∀ x y, p x → p y → p (x * y)) (g : ι → M) {s : Finset ι} (hs : ∀ i ∈ s, p (g i)) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
   rcases eq_empty_or_nonempty s with (rfl | hs_nonempty)
@@ -87,7 +91,7 @@ add_decl_doc le_sum_of_subadditive_on_pred
 /-- If `f : M → N` is a submultiplicative function, `f (x * y) ≤ f x * f y`, `f 1 = 1`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_of_subadditive]
-theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : f 1 = 1)
+theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : f 1 ≤ 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) (by simp)
@@ -133,10 +137,24 @@ theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
       _ = ∏ i ∈ t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
       _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
 
+@[to_additive]
+theorem prod_le_prod_of_subset_of_le_one
+    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+    {f : ι → N} {s t : Finset ι} [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
+    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
+  prod_le_prod_of_subset_of_one_le' (N := Nᵒᵈ) h hf
+
 @[to_additive sum_mono_set_of_nonneg]
 theorem prod_mono_set_of_one_le' [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
     Monotone fun s ↦ ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_one_le' hst fun x _ _ ↦ hf x
+
+@[to_additive]
+theorem prod_anti_set_of_le_one
+    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+    {f : ι → N} [MulLeftMono N] (hf : ∀ (x : ι), f x ≤ 1) :
+    Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
+  fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by simp [hf])
 
 @[to_additive sum_le_univ_sum_of_nonneg]
 theorem prod_le_univ_prod_of_one_le' [MulLeftMono N] [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
@@ -236,6 +254,22 @@ lemma prod_image_le_of_one_le [MulLeftMono N]
 
 end OrderedCommMonoid
 
+section ProdSum
+
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+  (s : Finset ι) {f : ι → α} (g : α → β)
+
+theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
+    g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
+  refine (Multiset.apply_prod_le_sum_map _ _ h_one h_mul).trans_eq ?_
+  rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
+
+theorem sum_apply_le_apply_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
+    ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) :=
+  s.apply_prod_le_sum_apply (β := βᵒᵈ) g h_one h_mul
+
+end ProdSum
+
 @[to_additive]
 lemma max_prod_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :
     max (s.prod f) (s.prod g) ≤ s.prod (fun i ↦ max (f i) (g i)) :=
@@ -248,7 +282,7 @@ lemma prod_min_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι �
 
 theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
     (f : ι → G) (s : Finset ι) :
-    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add_le s f
+    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero.le abs_add_le s f
 
 theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [AddLeftMono G]
     {f : ι → G} {s : Finset ι}
@@ -352,18 +386,13 @@ theorem card_le_card_biUnion {s : Finset ι} {f : ι → Finset α} (hs : (s : S
 theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset α}
     (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + #{i ∈ s | f i = ∅} := by
   rw [← Finset.filter_card_add_filter_neg_card_eq_card fun i ↦ f i = ∅, add_comm]
-  exact
-    add_le_add_right
-      ((card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
-            nonempty_of_ne_empty <| (mem_filter.1 hi).2).trans <|
-        card_le_card <| biUnion_subset_biUnion_of_subset_left _ <| filter_subset _ _)
-      _
+  grw [card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
+    nonempty_of_ne_empty (mem_filter.1 hi).2, filter_subset]
 
 theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
-    (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + 1 :=
-  (card_le_card_biUnion_add_card_fiber hs).trans <|
-    add_le_add_left
-      (card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm) _
+    (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + 1 := by
+  grw [card_le_card_biUnion_add_card_fiber hs,
+    card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm]
 
 end DoubleCounting
 

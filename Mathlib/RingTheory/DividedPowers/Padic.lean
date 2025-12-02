@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.NumberTheory.Padics.PadicIntegers
-import Mathlib.RingTheory.DividedPowers.RatAlgebra
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.RingTheory.DividedPowers.RatAlgebra
 
 /-! # Divided powers on ℤ_[p]
 
@@ -23,11 +24,9 @@ TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer
 
 -/
 
-namespace PadicInt
+@[expose] public section
 
 open DividedPowers DividedPowers.OfInvertibleFactorial Nat Ring
-
-variable (p : ℕ) [hp : Fact p.Prime]
 
 section Injective
 
@@ -38,7 +37,7 @@ variable {A B : Type*} [CommSemiring A] [CommSemiring B] (I : Ideal A) (J : Idea
 /-- Given a divided power algebra `(B, J, δ)` and an injective ring morphism `f : A →+* B`, if `I`
 is an `A`-ideal such that `I.map f = J` and such that for all `n : ℕ`, `x ∈ I`, the preimage of
 `hJ.dpow n (f x)` under `f` belongs to `I`, this is the induced divided power structure on `I`. -/
-noncomputable def dividedPowers_of_injective (f : A →+* B) (hf : Injective f)
+noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     (hJ : DividedPowers J) (hIJ : I.map f = J)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
@@ -74,7 +73,11 @@ noncomputable def dividedPowers_of_injective (f : A →+* B) (hf : Injective f)
 
 end Injective
 
+namespace PadicInt
+
 section Padic
+
+variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The family `ℕ → ℚ_[p] → ℚ_[p]` given by `dpow n x = x ^ n / n!`. -/
 private noncomputable def dpow' : ℕ → ℚ_[p] → ℚ_[p] := fun m x => inverse (m ! : ℚ_[p]) * x ^ m
@@ -109,7 +112,7 @@ private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ
     ‖dpow' p n x‖ ≤ 1 := by
   unfold dpow'
   by_cases hn : n = 0
-  · simp [hn, factorial_zero, cast_one, inverse_one, pow_zero, mul_one, norm_one, le_refl]
+  · simp [hn]
   · apply le_trans (dpow'_norm_le_of_ne_zero p hn hx)
     rw [← zpow_neg_one, ← zpow_zero ↑p]
     gcongr
@@ -128,14 +131,13 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
   classical
-  refine dividedPowers_of_injective (Ideal.span {(p : ℤ_[p])}) (⊤)
+  refine ofInjective (Ideal.span {(p : ℤ_[p])}) (⊤)
     PadicInt.Coe.ringHom ((Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a)
     (RatAlgebra.dividedPowers (⊤ : Ideal ℚ_[p])) ?_ ?_
   · rw [Ideal.map_span, Set.image_singleton, map_natCast]
     simp only [Ideal.span_singleton_eq_top, isUnit_iff_ne_zero, ne_eq, cast_eq_zero]
     exact Nat.Prime.ne_zero hp.elim
   · intro n x hx
-    have hx' : (x : ℚ_[p]) ∈ (⊤ : Ideal ℚ_[p]) := trivial
     exact ⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply, RatAlgebra.dpow_apply,
         Submodule.mem_top, ↓reduceIte]⟩
@@ -145,7 +147,7 @@ open Function
 private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
     (dividedPowers p).dpow n x = open Classical in
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
-  simp only [dividedPowers, dividedPowers_of_injective]
+  simp only [dividedPowers, ofInjective]
   split_ifs with hx
   · have hinj : Injective (PadicInt.Coe.ringHom (p := p)) :=
       (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a

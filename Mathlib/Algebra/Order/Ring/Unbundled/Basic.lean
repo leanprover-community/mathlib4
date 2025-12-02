@@ -3,15 +3,17 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings
@@ -112,7 +114,9 @@ TODO: the mixin assumptions can be relaxed in most cases
 
 -/
 
-assert_not_exists OrderedCommMonoid MonoidHom
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid MonoidHom
 
 open Function
 
@@ -454,7 +458,7 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass R] [NeZero (1 : R)]
       _ ≤ a := a2
       _ ≤ b := ab
   calc
-    a + b ≤ b + b := add_le_add_right ab b
+    a + b ≤ b + b := by gcongr
     _ = 2 * b := (two_mul b).symm
     _ ≤ a * b := (mul_le_mul_iff_left₀ this).mpr a2
 
@@ -467,7 +471,7 @@ theorem add_le_mul_of_right_le_left [ZeroLEOneClass R] [NeZero (1 : R)]
       _ ≤ b := b2
       _ ≤ a := ba
   calc
-    a + b ≤ a + a := add_le_add_left ba a
+    a + b ≤ a + a := by gcongr
     _ = a * 2 := (mul_two a).symm
     _ ≤ a * b := (mul_le_mul_iff_right₀ this).mpr b2
 
@@ -687,8 +691,7 @@ lemma sq_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
   obtain ha | ha := le_or_gt 0 a
   · exact pow_succ_nonneg ha _
   obtain ⟨b, hab⟩ := exists_add_of_le ha.le
-  have hb : 0 < b := not_le.1 fun hb ↦
-    ((add_le_add_left hb a).trans_lt ((add_zero a).trans_lt ha)).ne' hab
+  have hb : 0 < b := not_le.1 fun hb ↦ (add_neg_of_neg_of_nonpos ha hb).ne' hab
   calc
     0 ≤ b ^ 2 := pow_succ_nonneg hb.le _
     _ = b ^ 2 + a * (a + b) := by rw [← hab, mul_zero, add_zero]

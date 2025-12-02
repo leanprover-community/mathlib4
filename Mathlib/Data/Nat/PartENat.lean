@@ -3,16 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Part
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Part
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Natural numbers with infinity
 
 The natural numbers and an extra `top` element `⊤`. This implementation uses `Part ℕ` as an
-implementation. Use `ℕ∞` instead unless you care about computability.
+implementation. This version is deprecated, use `ℕ∞` instead.
 
 ## Main definitions
 
@@ -53,6 +55,8 @@ If `ENat` does not serve your purposes, please raise this on the community Zulip
 PartENat, ℕ∞
 -/
 
+@[expose] public section
+
 
 open Part hiding some
 
@@ -92,8 +96,6 @@ theorem dom_some (x : ℕ) : (some x).Dom :=
   trivial
 
 instance addCommMonoid : AddCommMonoid PartENat where
-  add := (· + ·)
-  zero := 0
   add_comm _ _ := Part.ext' and_comm fun _ _ => add_comm _ _
   zero_add _ := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
   add_zero _ := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
@@ -102,7 +104,6 @@ instance addCommMonoid : AddCommMonoid PartENat where
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with
-    one := 1
     natCast := some
     natCast_zero := rfl
     natCast_succ := fun _ => Part.ext' (iff_of_eq (true_and _)).symm fun _ _ => rfl }
@@ -223,7 +224,6 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 
 instance partialOrder : PartialOrder PartENat where
-  le := (· ≤ ·)
   le_refl _ := ⟨id, fun _ => le_rfl⟩
   le_trans := fun _ _ _ ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
     ⟨hxy₁ ∘ hyz₁, fun _ => le_trans (hxy₂ _) (hyz₂ _)⟩
@@ -249,11 +249,11 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
 
-noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
-  { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp [top_add]) fun c =>
-        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
-          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
+noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat where
+  add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
+      PartENat.casesOn c (by simp [add_top]) fun c =>
+        ⟨fun h => And.intro (h₁ h.1) (dom_natCast _), fun h => by
+          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩
 
 instance semilatticeSup : SemilatticeSup PartENat :=
   { PartENat.partialOrder with
@@ -264,11 +264,9 @@ instance semilatticeSup : SemilatticeSup PartENat :=
       ⟨fun hz => ⟨hx₁ hz, hy₁ hz⟩, fun _ => sup_le (hx₂ _) (hy₂ _)⟩ }
 
 instance orderBot : OrderBot PartENat where
-  bot := ⊥
   bot_le _ := ⟨fun _ => trivial, fun _ => Nat.zero_le _⟩
 
 instance orderTop : OrderTop PartENat where
-  top := ⊤
   le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
 
 instance : ZeroLEOneClass PartENat where
@@ -435,7 +433,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
     exact_mod_cast natCast_lt_top _
   intro h
   norm_cast at h
-  exact_mod_cast add_lt_add_right h _
+  exact mod_cast add_lt_add_left h _
 
 protected theorem add_lt_add_iff_right {x y z : PartENat} (hz : z ≠ ⊤) : x + z < y + z ↔ x < y :=
   ⟨lt_of_add_lt_add_right, fun h => PartENat.add_lt_add_right h hz⟩

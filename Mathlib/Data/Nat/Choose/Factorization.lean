@@ -3,10 +3,12 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Nat.Digits.Lemmas
-import Mathlib.Data.Nat.Factorization.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Data.Nat.Digits.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Factorization of Binomial Coefficients
@@ -25,6 +27,8 @@ bounds in binomial coefficients. These include:
 
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
+
+@[expose] public section
 
 open Finset List Finsupp
 
@@ -55,7 +59,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_factorization_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * (n)!.factorization p = n - (p.digits n).sum := by
-  simp only [factorization_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+  simp only [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
     ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
@@ -181,7 +185,7 @@ variable {p n k : ℕ}
 theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
   by_cases h : (choose n k).factorization p = 0
   · simp [h]
-  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
+  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_not_prime h
   have hkn : k ≤ n := by
     refine le_of_not_gt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
@@ -202,7 +206,7 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
-  · exact factorization_eq_zero_of_non_prime (choose n k) hp
+  · exact factorization_eq_zero_of_not_prime (choose n k) hp
   rcases lt_or_ge n k with hnk | hkn
   · simp [choose_eq_zero_of_lt hnk]
   simp only [factorization_choose hp hkn (Nat.lt_add_one _), card_eq_zero, filter_eq_empty_iff,
@@ -213,15 +217,15 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     exact
       lt_of_le_of_lt
         (add_le_add
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
             ((n - k) % p)))
         (by rwa [div_add_mod, div_add_mod, add_tsub_cancel_of_le hkn])
   · replace hn : n < p ^ i := by
       have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
       calc
         n < 3 * p := hn
-        _ ≤ p * p := mul_le_mul_right' this p
+        _ ≤ p * p := by gcongr
         _ = p ^ 2 := (sq p).symm
         _ ≤ p ^ i := pow_right_mono₀ hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
@@ -243,9 +247,9 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
       Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
-  by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
-  rw [choose_eq_factorial_div_factorial (le_of_not_gt hnk),
-    factorization_div (factorial_mul_factorial_dvd_factorial (le_of_not_gt hnk)), Finsupp.coe_tsub,
+  by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
+  rw [choose_eq_factorial_div_factorial hnk,
+    factorization_div (factorial_mul_factorial_dvd_factorial hnk), Finsupp.coe_tsub,
     Pi.sub_apply, factorization_factorial_eq_zero_of_lt h, zero_tsub]
 
 /-- If a prime `p` has positive multiplicity in the `n`th central binomial coefficient,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Seewoo Lee
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.RingTheory.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 
 /-
 # Irrational power of irrational numbers are not necessarily irrational.

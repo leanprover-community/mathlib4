@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Opposite
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Opposite
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Endomorphisms of a module
@@ -19,6 +21,8 @@ including the action of `Module.End` on the module we are considering endomorphi
 * `Module.End.instSemiring` and `Module.End.instRing`: the (semi)ring of endomorphisms formed by
   taking the additive structure above with composition as multiplication.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -189,8 +193,8 @@ end
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
-  smul_zero := LinearMap.map_zero
-  smul_add := LinearMap.map_add
+  smul_zero := map_zero
+  smul_add := map_add
   add_smul := LinearMap.add_apply
   zero_smul := (LinearMap.zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
   one_smul _ := rfl
@@ -280,9 +284,6 @@ def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
     invFun := fun f ↦ f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
-
-@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelf := RingEquiv.moduleEndSelf
-@[deprecated (since := "2025-04-13")] alias Module.moduleEndSelfOp := RingEquiv.moduleEndSelfOp
 
 theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=

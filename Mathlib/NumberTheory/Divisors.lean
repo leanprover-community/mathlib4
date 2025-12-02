@@ -3,15 +3,17 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Divisor Finsets
@@ -36,6 +38,8 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 divisors, perfect numbers
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -407,7 +411,7 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
-  simp [Nat.lt_succ, eq_comm]
+  simp [Nat.lt_succ_iff, eq_comm]
 
 theorem divisors_injective : Function.Injective divisors :=
   Function.LeftInverse.injective sup_divisors_id
@@ -430,7 +434,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     rw [← Ne, ← nonempty_iff_ne_empty] at h
     apply ne_of_lt
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
-    apply add_lt_add_right
+    gcongr
     have hlt :=
       sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset hx)
     simp only [sum_const_zero] at hlt
@@ -579,6 +583,21 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han _ha hn hbn _hb -
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
+
+/-- Useful lemma for reordering sums. -/
+lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
+    n.divisorsAntidiagonal = ((Ioc 0 N) ×ˢ (Ioc 0 N)).filter
+    (fun x ↦ x.1 * x.2 = n) := by
+  ext ⟨n1, n2⟩
+  rw [Nat.mem_divisorsAntidiagonal]
+  simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Ioc]
+  constructor
+  · intro ⟨rfl, hn2⟩
+    grw [← hn]
+    simp (disch := cutsat) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
+    cutsat
+  · intro ⟨⟨hn1, hn2⟩, hn3⟩
+    exact ⟨hn3, n_ne_zero⟩
 
 end Nat
 

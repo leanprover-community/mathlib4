@@ -3,8 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Process.Stopping
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.Predictable
 
 /-!
 # Martingales
@@ -34,6 +37,8 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
   martingale with respect to `ℱ` and `μ`.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter
@@ -443,10 +448,42 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
     exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
+section IsPredictable
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- A predictable submartingale is a.e. greater than or equal to its initial state.
+
+In constrast to the non-primed version, this results require second countablility as `Adapted` is
+defined using strong measurability while `IsPredictable` only provides measurable. -/
+theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
+    {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hf : IsPredictable 𝒢 f) (n : ℕ) :
+    f 0 ≤ᵐ[μ] f n :=
+  zero_le_of_predictable hfmgle (fun _ ↦ (hf.measurable_add_one _).stronglyMeasurable) n
+
+/-- A predictable supermartingale is a.e. less equal than its initial state.
+
+In constrast to the non-primed version, this results require second countablility as `Adapted` is
+defined using strong measurability while `IsPredictable` only provides measurable. -/
+theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
+    {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f)
+    (n : ℕ) : f n ≤ᵐ[μ] f 0 :=
+  le_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+
+/-- A predictable martingale is a.e. equal to its initial state.
+
+In constrast to the non-primed version, this results require second countablility as `Adapted` is
+defined using strong measurability while `IsPredictable` only provides measurable. -/
+theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
+    (hfmgle : Martingale f 𝒢 μ) (hfadp : IsPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
+  eq_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+
+end IsPredictable
+
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
-    {τ : Ω → ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
+    {τ : Ω → ℕ∞} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue f τ) μ :=
   integrable_stoppedValue ℕ hτ hf.integrable hbdd
 
@@ -456,11 +493,12 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
     (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
     Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k)) 𝒢 μ := by
-  have hξbdd : ∀ i, ∃ C, ∀ ω, |ξ i ω| ≤ C := fun i =>
+  have hξbdd : ∀ i, ∃ C, ∀ ω, ‖ξ i ω‖ ≤ C := fun i =>
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
+  choose C hξbdd using hξbdd
   have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k * (f (k + 1) - f k)) μ := fun m =>
     integrable_finset_sum' _ fun i _ => Integrable.bdd_mul ((hf.integrable _).sub (hf.integrable _))
-      hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _)
+      hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hξbdd i))
   have hadp : Adapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k) := by
     intro m
     refine Finset.stronglyMeasurable_sum _ fun i hi => ?_
@@ -474,7 +512,7 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
   exact EventuallyLE.trans (EventuallyLE.mul_nonneg (Eventually.of_forall (hnonneg _))
     (hf.condExp_sub_nonneg (Nat.le_succ _))) (condExp_mul_of_stronglyMeasurable_left (hξ _)
     (((hf.integrable _).sub (hf.integrable _)).bdd_mul
-      hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _))
+      hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hξbdd i)))
     ((hf.integrable _).sub (hf.integrable _))).symm.le
 
 /-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)

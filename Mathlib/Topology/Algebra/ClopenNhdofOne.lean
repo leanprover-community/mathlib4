@@ -3,11 +3,13 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Topology.Separation.Profinite
-import Mathlib.Topology.Separation.Connected
+module
+
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Separation.Connected
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 
@@ -17,6 +19,8 @@ there exists an open normal subgroup contained within it.
 
 This file is split out from the file `OpenSubgroup` because it needs more imports.
 -/
+
+@[expose] public section
 
 namespace IsTopologicalGroup
 
@@ -40,7 +44,7 @@ namespace ProfiniteGrp
 theorem exist_openNormalSubgroup_sub_open_nhds_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G] {U : Set G}
     (UOpen : IsOpen U) (einU : 1 ∈ U) : ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ U := by
-  rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U ).mp <|
+  rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U).mp <|
     mem_nhds_iff.mpr (by use U)) with ⟨W, hW, h⟩
   rcases IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhds_of_one hW.2 hW.1 with ⟨H, hH⟩
   exact ⟨H, fun _ a ↦ h (hH a)⟩

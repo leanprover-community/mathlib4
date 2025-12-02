@@ -3,12 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Pointwise operations on sets in topological groups
 
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -44,38 +49,33 @@ section ContinuousSMul
 variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
-@[to_additive]
+open Prod in
+/-- If `G` acts on `X` continuously, the set `s • t` is closed when `s : Set G` is *compact* and
+`t : Set X` is *closed*.
+
+See also `IsClosed.smul_right_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed, assuming that the action is *proper*. -/
+@[to_additive
+/-- If `G` acts on `X` continuously, the set `s +ᵥ t` is closed when `s : Set G` is *compact* and
+`t : Set X` is *closed*.
+
+See also `IsClosed.vadd_right_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed, assuming that the action is *proper*. -/]
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
-  have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
-    rintro x ⟨g, hgs, y, hyt, rfl⟩
-    refine ⟨g, hgs, ?_⟩
-    rwa [inv_smul_smul]
-  choose! f hf using this
-  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
-  rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
-  have : Ultrafilter.map f u ≤ 𝓟 s :=
-    calc Ultrafilter.map f u ≤ map f (𝓟 (s • t)) := map_mono (le_principal_iff.mpr hust)
-      _ = 𝓟 (f '' (s • t)) := map_principal
-      _ ≤ 𝓟 s := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
-  rcases hs.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨g, hg, hug⟩
-  suffices g⁻¹ • x ∈ t from
-    ⟨g, hg, g⁻¹ • x, this, smul_inv_smul _ _⟩
-  exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
-    (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
-
-/-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
-closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
-`ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
-closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
-closed in `ℝ`.
-To fix the proof, we would need to make two additional assumptions:
-- for any `x ∈ t`, `s • {x}` is closed
-- for any `x ∈ t`, there is a continuous function `g : s • {x} → s` such that, for all
-  `y ∈ s • {x}`, we have `y = (g y) • x`
-These are fairly specific hypotheses so we don't state this version of the lemmas, but an
-interesting fact is that these two assumptions are verified in the case of an
-`IsTopologicalAddTorsor`. We prove this special case in `IsClosed.vadd_right_of_isCompact`. -/
+  let Φ : s × β ≃ₜ s × β :=
+  { toFun := fun gx ↦ (gx.1, (gx.1 : α) • gx.2)
+    invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
+    left_inv := fun _ ↦ by simp
+    right_inv := fun _ ↦ by simp }
+  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
+    subset_antisymm
+      (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
+      (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
+  rw [this]
+  have : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  exact (isProperMap_snd_of_compactSpace.comp Φ.isProperMap).isClosedMap _
+    (ht.preimage continuous_snd)
 
 @[to_additive]
 theorem MulAction.isClosedMap_quotient [CompactSpace α] :

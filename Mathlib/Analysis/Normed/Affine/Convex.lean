@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
-import Mathlib.Analysis.Normed.Module.Convex
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Simplices in normed affine spaces
@@ -17,6 +19,8 @@ We prove the following facts:
 * `Convex.exists_subset_interior_convexHull_finset_of_isCompact`: We can intercalate a convex
   polytope between a compact convex set and one of its neighborhoods.
 -/
+
+@[expose] public section
 
 variable {E P : Type*}
 
@@ -103,7 +107,7 @@ theorem Convex.exists_subset_interior_convexHull_finset_of_isCompact
   lift u to Finset E using hu₂
   refine ⟨Finset.univ.image b + u, ?_, ?_⟩
   all_goals rw [Finset.coe_add, Finset.coe_image, Finset.coe_univ, Set.image_univ, convexHull_add]
-  · grw [hu₃, ← subset_interior_add_left, Set.iUnion₂_subset_iff, ← subset_convexHull _ u.toSet]
+  · grw [hu₃, ← subset_interior_add_left, Set.iUnion₂_subset_iff, ← subset_convexHull _ (u : Set E)]
     intros
     gcongr
     simpa

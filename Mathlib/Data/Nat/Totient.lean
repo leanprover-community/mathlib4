@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Data.Nat.Periodic
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Periodic
 
 /-!
 # Euler's totient function
@@ -19,6 +21,8 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `sum_totient`. We also prove two lemmas to help compute totients, namely `totient_mul` and
 `totient_prime_pow`.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra LinearMap
 
@@ -95,7 +99,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
-    _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
+    _ ≤ a.totient * i + a.totient + a.totient := by grw [← mul_add_one, ih]
 
 open ZMod
 
@@ -346,8 +350,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   · simp
   have hd0 : 0 < d := Nat.gcd_pos_of_pos_left _ ha0
   apply le_of_mul_le_mul_right _ hd0
-  rw [← totient_gcd_mul_totient_mul a b, mul_comm]
-  apply mul_le_mul_left' (Nat.totient_le d)
+  grw [← totient_gcd_mul_totient_mul a b, mul_comm, d.totient_le]
 
 @[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
@@ -371,6 +374,26 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   rw [totient_mul _, totient_prime hp]
   simpa [h] using coprime_or_dvd_of_prime hp n
 
+theorem prime_pow_pow_totient_ediv_prod {p k : ℕ} (hp : p.Prime) (hk : 0 < k) :
+      (p ^ k : ℕ) ^ φ (p ^ k) / ∏ q ∈ (p ^ k).primeFactors, q ^ (φ (p ^ k) / (q - 1)) =
+        p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
+  have h : p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
+    rw [mul_left_comm]
+    refine le_mul_of_one_le_right (Nat.zero_le _) ?_
+    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt <| hp.one_lt
+  simp_rw [Nat.totient_prime_pow hp hk, Nat.primeFactors_prime_pow hk.ne' hp, Finset.prod_singleton,
+    Nat.mul_div_left _ (Nat.sub_pos_of_lt hp.one_lt), ← pow_mul]
+  rw [Nat.pow_div h hp.pos]
+  simp_rw [Nat.sub_mul, one_mul, Nat.mul_sub, mul_one]
+  ring_nf
+
+theorem prod_primeFactors_pow_totient_ediv_dvd {n : ℕ} (hn : 0 < n) :
+    ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) ∣ n ^ φ n := by
+  have := Nat.prod_primeFactors_dvd n
+  rw [← Nat.pow_dvd_pow_iff (Nat.totient_pos.mpr hn).ne', ← Finset.prod_pow] at this
+  refine dvd_trans (Finset.prod_dvd_prod_of_dvd _ _ fun p hp ↦ ?_) this
+  exact Nat.pow_dvd_pow p <| Nat.div_le_self _ _
+
 end Nat
 
 namespace Mathlib.Meta.Positivity
@@ -378,7 +401,7 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.totient`. -/
 @[positivity Nat.totient _]
-def evalNatTotient : PositivityExt where eval {u α} z p e := do
+meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
     assumeInstancesCommute

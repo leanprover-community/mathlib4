@@ -3,27 +3,29 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Sesquilinear maps
 
-This files provides properties about sesquilinear maps and forms. The maps considered are of the
+This file provides properties about sesquilinear maps and forms. The maps considered are of the
 form `M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M`, where `I₁ : R₁ →+* R` and `I₂ : R₂ →+* R` are ring homomorphisms and
 `M₁` is a module over `R₁`, `M₂` is a module over `R₂` and `M` is a module over `R`.
 Sesquilinear forms are the special case that `M₁ = M₂`, `M = R₁ = R₂ = R`, and `I₁ = RingHom.id R`.
 Taking additionally `I₂ = RingHom.id R`, then one obtains bilinear forms.
 
-Sesquilinear maps are a special case of the bilinear maps defined in `BilinearMap.lean` and `many`
+Sesquilinear maps are a special case of the bilinear maps defined in `BilinearMap.lean`, and many
 basic lemmas about construction and elementary calculations are found there.
 
 ## Main declarations
 
 * `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear map
 * `IsSymm`, `IsAlt`: states that a sesquilinear form is symmetric and alternating, respectively
-* `orthogonalBilin`: provides the orthogonal complement with respect to sesquilinear form
+* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear form
 
 ## References
 
@@ -31,8 +33,10 @@ basic lemmas about construction and elementary calculations are found there.
 
 ## Tags
 
-Sesquilinear form, Sesquilinear map,
+Sesquilinear form, Sesquilinear map
 -/
+
+@[expose] public section
 
 open Module
 
@@ -369,7 +373,7 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
     rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
       zero_add]
   smul_mem' c x hx n hn := by
-    rw [LinearMap.IsOrtho, LinearMap.map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
+    rw [LinearMap.IsOrtho, map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
 
 variable {N L : Submodule R₁ M₁}
 
@@ -938,7 +942,8 @@ lemma apply_mul_apply_lt_iff_linearIndependent [NoZeroSMulDivisors R M]
     (B x y) * (B y x) < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
   have hle : ∀ z, 0 ≤ B z z := by
     intro z
-    by_cases hz : z = 0; simp [hz]
+    by_cases hz : z = 0
+    · simp [hz]
     exact le_of_lt (hp z hz)
   constructor
   · contrapose!
@@ -977,7 +982,7 @@ lemma apply_apply_same_eq_zero_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) {x 
   ext y
   have := B.apply_sq_le_of_symm hs hB x y
   simp only [h, zero_mul] at this
-  exact pow_eq_zero <| le_antisymm this (sq_nonneg (B x y))
+  exact eq_zero_of_pow_eq_zero <| le_antisymm this (sq_nonneg (B x y))
 
 lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
     B.Nondegenerate ↔ ∀ x, B x x = 0 ↔ x = 0 := by
@@ -989,8 +994,8 @@ lemma nondegenerate_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
 positive definiteness. -/
 lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
     B.Nondegenerate ↔ ∀ x, x ≠ 0 → 0 < B x x := by
-  rw [B.nondegenerate_iff hs hB, ← not_iff_not]
-  push_neg
+  rw [B.nondegenerate_iff hs hB]
+  contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)

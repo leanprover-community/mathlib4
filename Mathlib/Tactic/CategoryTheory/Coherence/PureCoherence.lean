@@ -3,8 +3,10 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean.Meta.Tactic.Apply
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+module
+
+public meta import Lean.Meta.Tactic.Apply
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
 # Coherence tactic
@@ -24,6 +26,8 @@ The actual tactics that users will use are given in
 - `Mathlib/Tactic/CategoryTheory/Bicategory/PureCoherence.lean`
 
 -/
+
+public meta section
 
 open Lean Meta
 

@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-import Mathlib.SetTheory.Cardinal.Embedding
-import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.SetTheory.Cardinal.Embedding
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -32,6 +33,20 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
+## Results for `SubMulAction`.
+
+* `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
+  that for `a`, `b` and `g` such that `g • a = b`, the actions
+  of `stabilizer G a` and of `stabilizer G b` are equivalently `n`-pretransitive for all `n : ℕ`.
+
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows the
+  same result for `n`-transitivity.
+
+
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
+  is pretransitive, then it is `n.succ` pretransitive if and only if
+  the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
+
 ## Results for permutation groups
 
 * The permutation group is pretransitive, is multiply pretransitive,
@@ -46,6 +61,8 @@ These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
 
 -/
+
+@[expose] public section
 
 open MulAction MulActionHom Function.Embedding Fin Set Nat
 
@@ -256,7 +273,7 @@ variable (G α) in
 @[to_additive
 /-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding `e : m ↪ n`. -/]
 def _root_.MulActionHom.embMap {m n : Type*} (e : m ↪ n) :
-    (n ↪ α) →[G]  (m ↪ α) where
+    (n ↪ α) →[G] (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
@@ -304,6 +321,19 @@ namespace SubMulAction.ofStabilizer
 variable {G α : Type*} [Group G] [MulAction G α]
 
 open scoped BigOperators Pointwise Cardinal
+
+@[to_additive]
+theorem isPretransitive_iff_of_conj {a b : α} {g : G} (hg : b = g • a) :
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
+
+@[to_additive]
+theorem isPretransitive_iff [IsPretransitive G α] {a b : α} :
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isPretransitive_iff_of_conj hg.symm
 
 @[to_additive]
 theorem isMultiplyPretransitive_iff_of_conj
@@ -453,7 +483,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hat', eq_comm]
       suffices ¬ a ∈ (Subtype.val '' t) by
         convert Set.ncard_insert_of_notMem this ?_
-        rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
+        · rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
       obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
@@ -493,7 +523,7 @@ variable {α : Type*}
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
-    IsMultiplyPretransitive (Perm  α) α n := by
+    IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
   classical
   intro x y
@@ -529,8 +559,8 @@ theorem isMultiplyPretransitive (n : ℕ) :
           apply this
           exact mem_range_self i
       · by_cases hb : b ∈ range x
-        obtain ⟨j, rfl⟩ := hb
-        · simp only [ψ, φ', x.injective.extend_apply] at hab
+        · obtain ⟨j, rfl⟩ := hb
+          simp only [ψ, φ', x.injective.extend_apply] at hab
           rw [Function.extend_apply' _ _ _ ha] at hab
           rw [← Set.mem_compl_iff] at ha
           rw [← Subtype.coe_mk a ha, Subtype.val_injective.extend_apply] at hab
@@ -614,7 +644,7 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
   simp [← hgk, Subgroup.smul_def, Perm.smul_def]
 
-@[deprecated  (since := "2025-10-03")]
+@[deprecated (since := "2025-10-03")]
 alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm

@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Analytic.Order
-import Mathlib.Analysis.Meromorphic.Basic
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Analytic.Order
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Orders of Meromorphic Functions
@@ -20,6 +22,8 @@ to infinity, resp. a nonzero constant, resp. zero.
 
 Uniformize API between analytic and meromorphic functions
 -/
+
+@[expose] public section
 
 open Filter Set WithTop.LinearOrderedAddCommGroup
 open scoped Topology
@@ -170,7 +174,7 @@ lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x <
         simpa using this.tendsto
       · filter_upwards [self_mem_nhdsWithin] with y hy
         simpa [sub_eq_zero] using hy
-    apply Tendsto.comp (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop m_neg) this
+    exact (tendsto_norm_cobounded_atTop.comp (tendsto_zpow_nhdsNE_zero_cobounded m_neg)).comp this
   apply A.congr'
   filter_upwards [hg] with z hz using by simp [hz]
 
@@ -359,6 +363,37 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
       filter_upwards [hg] with z hz using by simpa using hz.symm
     exact AnalyticAt.congr (by fun_prop) A
 
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
+    meromorphicOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℤ) := by
+  split_ifs with he
+  · simp [he, meromorphicOrderAt_eq_top_iff]
+  · exact (meromorphicOrderAt_eq_int_iff (.const e z₀)).2 ⟨fun _ ↦ e, by fun_prop, by simpa⟩
+
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const_intCast (z₀ : 𝕜) (n : ℤ) [Decidable ((n : 𝕜) = 0)] :
+    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜)
+
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
+    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜)
+
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+@[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
+    meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
+  convert meromorphicOrderAt_const z₀ (n : 𝕜)
+  simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
+
 /-!
 ## Order at a Point: Behaviour under Ring Operations
 
@@ -501,7 +536,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
   have h₁g : AnalyticAt 𝕜 g x := by
     apply AnalyticAt.add
-    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
+    · apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
     apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_right n₁ n₂))).smul h₁g₂
   have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]

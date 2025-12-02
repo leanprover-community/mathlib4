@@ -3,12 +3,14 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
@@ -77,6 +79,8 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 [van der Waerden, *Free products of groups*][MR25465]
 
 -/
+
+@[expose] public section
 
 
 open Set
@@ -228,12 +232,12 @@ instance : Group (CoprodI G) :=
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
-      | one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
+      | one => rw [map_one, MulOpposite.unop_one, one_mul]
       | of m ih =>
         change of _⁻¹ * of _ = 1
         rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | mul x y ihx ihy =>
-        rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
+        rw [map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
@@ -315,7 +319,7 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       rintro l (rfl | hl)
       · exact h1
       · exact w.ne_one l hl
-    chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
+    chain_ne := w.chain_ne.cons (fstIdx_ne_iff.mp hmw) }
 
 @[simp]
 theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
@@ -337,7 +341,7 @@ def rcons {i} (p : Pair M i) : Word M :=
 
 @[simp]
 theorem prod_rcons {i} (p : Pair M i) : prod (rcons p) = of p.head * prod p.tail :=
-  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, MonoidHom.map_one, one_mul]
+  if hm : p.head = 1 then by rw [rcons, dif_pos hm, hm, map_one, one_mul]
   else by rw [rcons, dif_neg hm, cons, prod, List.map_cons, List.prod_cons, prod]
 
 theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
@@ -379,7 +383,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   | nil => exact empty
   | cons m w ih =>
     refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
-    · rw [List.isChain_cons'] at h2
+    · rw [List.isChain_cons] at h2
       simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
@@ -501,7 +505,7 @@ theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
 theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
-      ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
+      ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j), (⟨i, m₁⟩ ∈ w.toList.tail) ∨
         (∃ m', ⟨j, m'⟩ ∈ w.toList.head? ∧ m₁ = hij ▸ (m₂ * m')) ∨
         (w.fstIdx ≠ some j ∧ m₁ = hij ▸ m₂)) := by
   rw [of_smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]
@@ -514,7 +518,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
       intro hm1
       split_ifs with h
       · rcases h with ⟨hnil, rfl⟩
-        simp only [List.head?_eq_head hnil, Option.some.injEq]
+        simp only [List.head?_eq_some_head hnil, Option.some.injEq]
         constructor
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
@@ -524,7 +528,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
             rfl
           · simp only [fstIdx, Option.map_eq_some_iff, Sigma.exists,
               exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
-            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
+            exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_some_head])).elim
       · revert h
         rw [fstIdx]
         cases w.toList

@@ -3,16 +3,19 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
 
 -/
+
+@[expose] public section
 
 namespace Con
 

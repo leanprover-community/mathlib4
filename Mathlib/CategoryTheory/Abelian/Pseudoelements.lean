@@ -3,9 +3,11 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Pseudoelements in abelian categories
@@ -71,6 +73,8 @@ writing `g a` raises a "function expected" error. This error can be fixed by wri
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

@@ -3,14 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Tactic.Tauto
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Nat.Units
+module
+
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Units
 
 /-!
 # Units in the integers
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -45,7 +49,7 @@ lemma isUnit_iff : IsUnit u ↔ u = 1 ∨ u = -1 := by
   · exact ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩
 
 lemma eq_one_or_neg_one_of_mul_eq_one (h : u * v = 1) : u = 1 ∨ u = -1 :=
-  isUnit_iff.1 (isUnit_of_mul_eq_one u v h)
+  isUnit_iff.1 (.of_mul_eq_one v h)
 
 lemma eq_one_or_neg_one_of_mul_eq_one' (h : u * v = 1) : u = 1 ∧ v = 1 ∨ u = -1 ∧ v = -1 := by
   have h' : v * u = 1 := mul_comm u v ▸ h

@@ -3,14 +3,17 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
+module
 
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The "DocString" style linter
+# The "DocString" style linter
 
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/
+
+public meta section
 
 open Lean Elab Linter
 
@@ -48,7 +51,7 @@ in the input string `docString`.
 If/when the `docString` linter expands, it may take on more string processing.
 -/
 def deindentString (currIndent : Nat) (docString : String) : String :=
-  let indent : String := ⟨'\n' :: List.replicate currIndent ' '⟩
+  let indent : String := String.ofList ('\n' :: List.replicate currIndent ' ')
   docString.replace indent " "
 
 namespace Style
@@ -93,7 +96,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let tail := docTrim.length
     -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
     let endRange (n : Nat) : Syntax := .ofRange
-      {start := docStx.getTailPos?.get! - ⟨n⟩, stop := docStx.getTailPos?.get! - ⟨n⟩}
+      {start := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩, stop := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩}
     if docTrim.takeRight 1 == "," then
       Linter.logLintIf linter.style.docString (endRange (docString.length - tail + 3))
         s!"error: doc-strings should not end with a comma"

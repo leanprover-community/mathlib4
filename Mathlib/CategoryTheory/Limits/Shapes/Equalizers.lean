@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Equalizers and coequalizers
@@ -42,6 +44,8 @@ general limits can be used.
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 section
 
@@ -169,6 +173,40 @@ theorem walkingParallelPairOpEquiv_counitIso_zero :
 @[simp]
 theorem walkingParallelPairOpEquiv_counitIso_one :
     walkingParallelPairOpEquiv.counitIso.app (op one) = Iso.refl (op one) :=
+  rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_zero :
+    walkingParallelPairOpEquiv.unitIso.hom.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_one :
+    walkingParallelPairOpEquiv.unitIso.hom.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_zero :
+    walkingParallelPairOpEquiv.unitIso.inv.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_one :
+    walkingParallelPairOpEquiv.unitIso.inv.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op one) = 𝟙 (op one) :=
+  rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
   rfl
 
 variable {C : Type u} [Category.{v} C]
@@ -300,6 +338,9 @@ theorem Cofork.app_zero_eq_comp_π_left (s : Cofork f g) : s.ι.app zero = f ≫
 theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w right, parallelPair_map_right]
 
+-- TODO: is there a nice way to fix the non-terminal simp? It's called on four goals,
+-- only one needs an assumption at the end.
+set_option linter.flexible false in
 /-- A fork on `f g : X ⟶ Y` is determined by the morphism `ι : P ⟶ X` satisfying `ι ≫ f = ι ≫ g`.
 -/
 @[simps]
@@ -430,7 +471,7 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
   { lift
     fac := fun s j =>
       WalkingParallelPair.casesOn j (fac s) <| by
-        erw [← s.w left, ← t.w left, ← Category.assoc, fac]; rfl
+        simp [← Category.assoc, fac]
     uniq := fun s m j => by aesop}
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
@@ -667,6 +708,11 @@ def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 
+/-- Two coforks of the form `ofπ` are isomorphic whenever their `π`'s are equal. -/
+def CoforkOfπ.ext {P : C} {π π' : Y ⟶ P} (w : f ≫ π = g ≫ π) (w' : f ≫ π' = g ≫ π') (h : π = π') :
+    Cofork.ofπ π w ≅ Cofork.ofπ π' w' :=
+  Cofork.ext (Iso.refl _) (by simp [h])
+
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
   Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by simp)
@@ -715,7 +761,7 @@ noncomputable abbrev equalizer : C :=
   limit (parallelPair f g)
 
 /-- If an equalizer of `f` and `g` exists, we can access the inclusion
-equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
+`equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
 noncomputable abbrev equalizer.ι : equalizer f g ⟶ X :=
   limit.π (parallelPair f g) zero
 

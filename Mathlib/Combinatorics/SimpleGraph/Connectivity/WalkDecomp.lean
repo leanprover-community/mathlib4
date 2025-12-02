@@ -3,8 +3,9 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 
 /-!
 # Decomposing walks
@@ -13,6 +14,8 @@ import Mathlib.Combinatorics.SimpleGraph.Walk
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
 - `rotate`: Rotate a loop walk such that it is centered at the given vertex.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph.Walk
 
@@ -269,6 +272,11 @@ theorem support_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
   simp only [rotate, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
+
+@[simp]
+theorem mem_support_rotate_iff (c : G.Walk v v) (h : u ∈ c.support) :
+    w ∈ (c.rotate h).support ↔ w ∈ c.support := by
+  grind [rotate, take_spec, mem_support_append_iff]
 
 theorem rotate_darts {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).darts ~r c.darts := by
