@@ -83,8 +83,10 @@ noncomputable abbrev mulOfCoalgebra :
     Mul E where mul x y := adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y)
 
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
-@[simp] lemma AlgebraOfCoalgebra.mul_def (x y : E) :
+lemma AlgebraOfCoalgebra.mul_def (x y : E) :
     x * y = adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y) := rfl
+
+attribute [local simp] AlgebraOfCoalgebra.mul_def
 
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
