@@ -109,6 +109,10 @@ theorem mem_bot_iff_fixed [IsGalois k K] (x : K) :
     x ∈ (⊥ : IntermediateField k K) ↔ ∀ (f : Gal(K/k)), f x = x := by
   simp [← fixedField_bot, IntermediateField.mem_fixedField_iff]
 
+theorem mem_range_algebraMap_iff_fixed [IsGalois k K] (x : K) :
+    x ∈ Set.range (algebraMap k K) ↔ ∀ f : Gal(K/k), f x = x :=
+  mem_bot_iff_fixed x
+
 open IntermediateField in
 /-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
 a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`. -/
