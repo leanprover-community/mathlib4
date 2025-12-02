@@ -57,32 +57,6 @@ TODO: don't catch any other errors
 def isDefEqSafe (a b : Expr) : MetaM Bool :=
   try isDefEq a b catch _ => pure false
 
-/-- If an atomic expression has already been encountered, get the index and the stored form of the
-atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
-
-In a normalizing tactic, the expression returned by `getAtom` should be considered the normal form.
--/
-def AtomM.getAtom (e : Expr) : AtomM <| Option (Nat × Expr) := do
-  let c ← get
-  for h : i in [:c.atoms.size] do
-    if ← withTransparency (← read).red <| isDefEqSafe e c.atoms[i] then
-      return some (i, c.atoms[i])
-  return none
-
-open Qq in
-/-- If an atomic expression has already been encountered, get the index and the stored form of the
-atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
-
-In a normalizing tactic, the expression returned by `getAtomQ` should be considered the normal form.
-
-This is a strongly-typed version of `AtomM.getAtom` for code using `Qq`.
--/
-def AtomM.getAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
-    AtomM <| Option (Nat × {e' : Q($α) // $e =Q $e'}) := do
-  return match ← AtomM.getAtom e with
-  | some (n, e') => some (n, ⟨e', ⟨⟩⟩)
-  | none => none
-
 /-- If an atomic expression has already been encountered, return `true`, the index and the stored
 form of the atom (which will be defeq at the specified transparency, but not necessarily
 syntactically equal). If the atomic expression has *not* already been encountered, store it in the
