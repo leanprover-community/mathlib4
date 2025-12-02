@@ -420,7 +420,7 @@ theorem infinitePi_map_restrict' {I : Set ι} :
 
 lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
-    infinitePi μ (Set.pi s t) = ∏' i : s, (μ i) (t i) := by
+    infinitePi μ (Set.pi s t) = ∏' i : s, μ i (t i) := by
   wlog s_ne : Nonempty s
   · simp [Set.not_nonempty_iff_eq_empty'.mp s_ne]
   apply tendsto_nhds_unique (f := fun s' : Finset s ↦ ∏ i ∈ s', (μ i) (t i)) (l := atTop)
