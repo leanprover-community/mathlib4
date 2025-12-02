@@ -225,8 +225,10 @@ lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : S
   exact h.degree_pos_of_nontrivial v
 
 lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
-    (v : V) [Fintype (G.neighborSet v)] : ∃ u, G.Adj v u :=
-  (G.degree_pos_iff_exists_adj v).mp (h.degree_pos_of_nontrivial v)
+    (v : V) : ∃ u, G.Adj v u :=
+  obtain ⟨u, huv⟩ := (nontrivial_iff_exists_ne v).mp (by trivial)
+  obtain ⟨w, _⟩ := h.set_univ_walk_nonempty v u
+  exact ⟨w.snd, w.adj_snd (Walk.not_nil_of_ne huv.symm)⟩
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
