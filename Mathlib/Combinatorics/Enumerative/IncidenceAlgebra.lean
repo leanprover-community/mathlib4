@@ -291,14 +291,14 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
   algebraMap :=
   { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
     map_one' := by
-      ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
+      ext; simp only [mul_boole, one_apply, smul_eq_mul, constSMul_apply, map_one]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, constSMul_apply, map_mul,
+        · simp only [one_apply, smul_eq_mul, mul_apply, constSMul_apply, map_mul,
             eq_comm, Icc_self]
           simp
-        · simp only [one_apply, mul_one, Algebra.id.smul_eq_mul, mul_apply, zero_mul,
+        · simp only [one_apply, mul_one, smul_eq_mul, mul_apply, zero_mul,
             constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1

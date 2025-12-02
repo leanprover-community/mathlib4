@@ -1037,7 +1037,7 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) 
   have : Set.indicator s (Function.const X c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, smul_eq_mul,
         ← Function.const_def]
     · simp only [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
   rw [this, integrable_indicator_iff hs]

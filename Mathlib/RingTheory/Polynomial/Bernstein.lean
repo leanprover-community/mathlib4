@@ -308,12 +308,12 @@ theorem sum_smul (n : ℕ) :
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
-    simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
+    simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]
   · rw [(pderiv true).leibniz_pow, (pderiv true).map_add, pderiv_true_x, pderiv_true_y]
-    simp only [x, y, e, Algebra.id.smul_eq_mul, nsmul_eq_mul, map_natCast, map_pow, map_add,
+    simp only [x, y, e, smul_eq_mul, nsmul_eq_mul, map_natCast, map_pow, map_add,
       map_mul, Bool.cond_true, Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel,
       one_pow, add_zero, mul_one]
 
@@ -347,14 +347,14 @@ theorem sum_mul_smul (n : ℕ) :
       Finset.sum_mul]
     -- Step inside the sum:
     refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
-    simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
+    simp only [x, y, e, pderiv_true_x, pderiv_true_y, smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]
   -- On the right-hand side, we'll just simplify.
   · simp only [x, y, e, (pderiv _).leibniz_pow,
-      (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero,
+      (pderiv true).map_add, pderiv_true_x, pderiv_true_y, smul_eq_mul, add_zero,
       mul_one, map_nsmul, map_pow, map_add, Bool.cond_true,
       Bool.cond_false, MvPolynomial.aeval_X, add_sub_cancel, one_pow, smul_smul,
       smul_one_mul]

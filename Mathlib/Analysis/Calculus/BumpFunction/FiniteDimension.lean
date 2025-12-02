@@ -160,7 +160,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
-      simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx
+      simp only [Pi.smul_apply, smul_eq_mul, mem_support, Ne] at hx
       contrapose! hx
       have : ∀ n, g n x = 0 := by
         intro n
@@ -306,7 +306,7 @@ theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 
   have C : D ^ finrank ℝ E ≠ 0 := by
     norm_cast
     exact pow_ne_zero _ Dpos.ne'
-  simp only [w_def, Algebra.id.smul_eq_mul, support_mul, support_inv, univ_inter,
+  simp only [w_def, smul_eq_mul, support_mul, support_inv, univ_inter,
     support_comp_inv_smul₀ Dpos.ne', u_support, B, support_const (u_int_pos E).ne', support_const C,
     abs_of_nonneg Dpos.le]
 
@@ -345,7 +345,7 @@ theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
   have Bx : φ x = 1 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, integral_mul_const, w_integral E Dpos, Bx,
+  simp only [lsmul_apply, smul_eq_mul, integral_mul_const, w_integral E Dpos, Bx,
     one_mul]
 
 theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ball (0 : E) (1 + D)) :
@@ -363,7 +363,7 @@ theorem y_eq_zero_of_notMem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (hx : x ∉ ba
   have Bx : φ x = 0 := B _ (mem_ball_self Dpos)
   have B' : ∀ y, y ∈ ball x D → φ y = φ x := by rw [Bx]; exact B
   rw [convolution_eq_right' _ (le_of_eq (w_support E Dpos)) B']
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul, Bx, mul_zero, integral_const]
+  simp only [lsmul_apply, smul_eq_mul, Bx, mul_zero, integral_const]
 
 @[deprecated (since := "2025-05-23")] alias y_eq_zero_of_not_mem_ball := y_eq_zero_of_notMem_ball
 
@@ -379,7 +379,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
       (locallyIntegrable_const (1 : ℝ)) x).integrable
     exact continuous_const.mul ((u_continuous E).comp (continuous_id.const_smul _))
   have B : (w D ⋆[lsmul ℝ ℝ, μ] fun _ => (1 : ℝ)) x = 1 := by
-    simp only [convolution, mul_one, lsmul_apply, Algebra.id.smul_eq_mul, w_integral E Dpos]
+    simp only [convolution, mul_one, lsmul_apply, smul_eq_mul, w_integral E Dpos]
   exact A.trans (le_of_eq B)
 
 theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
@@ -426,7 +426,7 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
   have hk : IsCompact (closedBall (0 : E) 1) := ProperSpace.isCompact_closedBall _ _
   refine contDiffOn_convolution_left_with_param (lsmul ℝ ℝ) hs hk ?_ ?_ ?_
   · rintro p x hp hx
-    simp only [w, mul_inv_rev, Algebra.id.smul_eq_mul, mul_eq_zero, inv_eq_zero]
+    simp only [w, mul_inv_rev, smul_eq_mul, mul_eq_zero, inv_eq_zero]
     right
     contrapose! hx
     have : p⁻¹ • x ∈ support u := mem_support.2 hx

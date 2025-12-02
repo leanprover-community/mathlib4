@@ -454,7 +454,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   simp_rw [cst, ENNReal.ofReal_one, mul_one] at key
   rw [← key]
   congr with ω
-  simp only [intervalIntegral.integral_const, sub_zero, Algebra.id.smul_eq_mul, mul_one]
+  simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
 
 end Layercake
 

@@ -387,7 +387,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       simp only [Fin.sum_univ_succ, coe_basisRightAngleRotation, Matrix.cons_val_zero,
         Fin.succ_zero_eq_one', Finset.univ_eq_empty, Finset.sum_empty, areaForm_apply_self,
         map_smul, map_add, real_inner_smul_right, inner_add_right, Matrix.cons_val_one,
-        Algebra.id.smul_eq_mul, areaForm_rightAngleRotation_right,
+        smul_eq_mul, areaForm_rightAngleRotation_right,
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
         real_inner_self_eq_norm_sq]
       exact this
@@ -399,7 +399,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, map_smulₛₗ, areaForm_apply_self,
-      Algebra.id.smul_eq_mul, mul_zero, and_true]
+      smul_eq_mul, mul_zero, and_true]
     positivity
 
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
