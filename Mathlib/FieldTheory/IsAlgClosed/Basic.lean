@@ -223,7 +223,7 @@ If `k` is algebraically closed, then every irreducible polynomial over `k` is li
 @[stacks 09GR "(4) ⟹ (2)"]
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
-  degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
+  (IsAlgClosed.splits p).degree_eq_one_of_irreducible hp
 
 theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
