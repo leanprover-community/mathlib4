@@ -416,7 +416,7 @@ theorem infinitePi_map_restrict' {I : Set ι} :
   classical
   rw [map_apply (by fun_prop), restrict_preimage', infinitePi_pi _ (by measurability)]
   · simp
-  · exact MeasurableSet.pi s.countable_toSet (by measurability)
+  · exact .pi s.countable_toSet (by measurability)
 
 lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
