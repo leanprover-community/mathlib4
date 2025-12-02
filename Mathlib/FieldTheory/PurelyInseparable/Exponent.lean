@@ -223,7 +223,7 @@ instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimen
     have h_elemexp_bound (a : L) : elemExponent K a ≤ e :=
       Nat.le_log_of_pow_le (Nat.Prime.one_lt <| ringExpChar.eq K p ▸ hp)
         (minpoly_natDegree_eq K a ▸ minpoly.natDegree_le a)
-    rw [RingHom.map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
+    rw [map_pow, algebraMap_elemReduct_eq, ← pow_mul, ← pow_add,
       Nat.add_sub_cancel' (h_elemexp_bound a)]
 
 end Field
@@ -251,7 +251,7 @@ variable {L} in
 /-- Action of `iterateFrobeniusAux` on the top field. -/
 private theorem algebraMap_iterateFrobeniusAux {n : ℕ} (hn : exponent K L ≤ n) (a : L) :
     algebraMap K L (iterateFrobeniusAux K L p n a) = a ^ p ^ n := by
-  rw [iterateFrobeniusAux, RingHom.map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
+  rw [iterateFrobeniusAux, map_pow, algebraMap_elemReduct_eq' K p, ← pow_mul, ← pow_add,
     Nat.add_sub_cancel' <| (elemExponent_le_exponent K a).trans hn]
 
 section RingHom

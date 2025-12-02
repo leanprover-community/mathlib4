@@ -390,7 +390,7 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
       hf.localInverse_left_inv hf.localInverse_mem_target]
   continuous_toFun := (mfderiv I J f x).cont
   continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
-  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_add' := fun x_1 y ↦ map_add _ x_1 y
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
+public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 /-!
@@ -20,15 +21,16 @@ for `P.leftOrthogonal` is also obtained.
 
 @[expose] public section
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits
+open Limits Pretriangulated
 
 namespace ObjectProperty
 
-variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+  (P : ObjectProperty C)
 
 section
 
@@ -66,6 +68,37 @@ instance [P.IsStableUnderShift ℤ] : P.leftOrthogonal.IsTriangulated where
 example [P.IsTriangulated] : P.rightOrthogonal.IsTriangulated := inferInstance
 
 example [P.IsTriangulated] : P.leftOrthogonal.IsTriangulated := inferInstance
+
+lemma isLocal_trW [P.IsTriangulated] :
+    P.trW.isLocal = P.rightOrthogonal := by
+  ext Y
+  refine ⟨fun hY X f hX ↦ ?_, fun hY X₁ X₂ f ⟨X₃, g, h, hT, hX₃⟩ ↦ ⟨?_, fun α ↦ ?_⟩⟩
+  · exact (hY _ (trW.mk P (contractible_distinguished₁ X) hX)).injective (by simp)
+  · suffices ∀ (α : X₂ ⟶ Y), f ≫ α = 0 → α = 0 from fun α₁ α₂ hα ↦ by
+      simpa [sub_eq_zero] using this (α₁ - α₂) (by simpa [sub_eq_zero] using hα)
+    intro α hα
+    obtain ⟨β, rfl⟩ := Triangle.yoneda_exact₂ _ hT α hα
+    simp [hY β hX₃]
+  · obtain ⟨β, rfl⟩ := Triangle.yoneda_exact₂ _ (inv_rot_of_distTriang _ hT)
+      α (hY _ (P.le_shift _ _ hX₃))
+    exact ⟨β, rfl⟩
+
+variable {P} in
+lemma rightOrthogonal.map_bijective_of_isTriangulated
+    [P.IsTriangulated] [IsTriangulated C] {Y : C} (hY : P.rightOrthogonal Y)
+    (L : C ⥤ D) [L.IsLocalization P.trW] (X : C) :
+    Function.Bijective (L.map : (X ⟶ Y) → _) := by
+  rw [← isLocal_trW] at hY
+  refine ⟨fun f₁ f₂ hf ↦ ?_, fun g ↦ ?_⟩
+  · rw [MorphismProperty.map_eq_iff_precomp L P.trW] at hf
+    obtain ⟨Z, s, hs, eq⟩ := hf
+    exact (hY _ hs).1 eq
+  · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.trW g
+    have := Localization.inverts L P.trW φ.s φ.hs
+    obtain ⟨α, hα⟩ := (hY _ φ.hs).2 φ.f
+    refine ⟨α, ?_⟩
+    rw [hφ, ← cancel_epi (L.map φ.s), MorphismProperty.RightFraction.map_s_comp_map,
+      ← hα, Functor.map_comp]
 
 end ObjectProperty
 

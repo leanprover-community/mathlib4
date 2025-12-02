@@ -33,7 +33,7 @@ attribute [to_dual DecidableLE' /-- `DecidableLE'` is equivalent to `DecidableLE
 It is used by `@[to_dual]` in order to deal with `DecidableLE`. -/] DecidableLE
 
 set_option linter.existingAttributeWarning false in
-attribute [to_dual self (reorder := 3 4)] ge_iff_le gt_iff_lt
+attribute [to_dual self] ge_iff_le gt_iff_lt
 
 attribute [to_dual le_of_eq_of_le''] le_of_eq_of_le
 attribute [to_dual le_of_le_of_eq''] le_of_le_of_eq
@@ -46,12 +46,11 @@ attribute [to_dual] Max
 namespace Lean.Grind.Order
 
 attribute [to_dual existing le_of_eq_1] le_of_eq_2
-attribute [to_dual self (reorder := a b)] le_of_not_le lt_of_not_le le_of_not_lt
+attribute [to_dual self] le_of_not_le lt_of_not_le le_of_not_lt
 attribute [to_dual self (reorder := 6 7)] eq_of_le_of_le
 attribute [to_dual self (reorder := a c, h₁ h₂)] le_trans lt_trans
 attribute [to_dual existing (reorder := a c, h₁ h₂) le_lt_trans] lt_le_trans
-attribute [to_dual self (reorder := a b)]
-  le_eq_true_of_lt le_eq_false_of_lt lt_eq_false_of_lt lt_eq_false_of_le
+attribute [to_dual self] le_eq_true_of_lt le_eq_false_of_lt lt_eq_false_of_lt lt_eq_false_of_le
 
 /- For now, we don't tag any `grind` lemmas involving offsets, but this may be done in the future.
 These offset lemmas are:
