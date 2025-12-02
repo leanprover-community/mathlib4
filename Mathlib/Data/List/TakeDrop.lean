@@ -185,6 +185,46 @@ lemma nil_self_mem_splits (l : List α) : ([], l) ∈ l.splits := by
 lemma self_nil_mem_splits (l : List α) : (l, []) ∈ l.splits := by
   simp
 
+private lemma splits_eq_cons_tail (l : List α) : l.splits = ([], l) :: l.splits.tail := by
+  cases l <;> simp [splits_cons]
+
+private lemma splits_eq_append_singleton_dropLast (l : List α) :
+    l.splits = l.splits.dropLast ++ [(l, [])] := by
+  induction l with
+  | nil =>
+    simp
+  | cons a l ih =>
+    rw [splits_cons, dropLast.eq_3 _ _ <| by grind [map_eq_nil_iff]]
+    rw (occs := .pos [1]) [ih]
+    simp
+
+lemma splits_append_tail {x y : List α} :
+    (x ++ y).splits =
+    (x.splits.map (fun td ↦ (td.1, td.2 ++ y)))
+    ++ (y.splits.map (fun td ↦ (x ++ td.1, td.2))).tail := by
+  induction x generalizing y with
+  | nil => simp [←splits_eq_cons_tail]
+  | cons a x ih => simp [splits_cons, ih, Function.comp_def, ←map_tail]
+
+lemma splits_append_dropLast {x y : List α} :
+    (x ++ y).splits =
+    (x.splits.map (fun td ↦ (td.1, td.2 ++ y))).dropLast
+    ++ (y.splits.map (fun td ↦ (x ++ td.1, td.2))) := by
+  rw [splits_append_tail]
+  rw (occs := .pos [1]) [splits_eq_append_singleton_dropLast x]
+  rw (occs := .pos [2]) [splits_eq_cons_tail y]
+  simp
+
+lemma splits_append_singleton {x : List α} {a : α} :
+    (x ++ [a]).splits = x.splits.map (fun td ↦ (td.1, td.2 ++ [a])) ++ [(x ++ [a], [])] := by
+  simp [splits_append_tail, List.splits_cons]
+
+lemma splits_reverse {l : List α} :
+    l.reverse.splits = (l.splits.map (fun td ↦ (td.2.reverse, td.1.reverse))).reverse := by
+  induction l with
+  | nil => simp
+  | cons a l ih => simp [splits_cons, splits_append_singleton, ih]
+
 /-- Left-associative triple splits of a list. -/
 def splits₃Left (l : List α) : List (List α × List α × List α) :=
   l.splits.flatMap fun td ↦ td.1.splits.map fun t ↦ (t.1, t.2, td.2)
