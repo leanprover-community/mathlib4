@@ -87,17 +87,7 @@ theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
     (degree_X_pow_le _).trans (WithBot.coe_le_coe.2 <| Nat.le_of_lt_succ <| Finset.mem_range.1 hk)
 
 theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n := by
-  rw [degreeLT, Submodule.mem_iInf]
-  conv_lhs => intro i; rw [Submodule.mem_iInf]
-  rw [degree, Finset.max_eq_sup_coe]
-  rw [Finset.sup_lt_iff ?_]
-  rotate_left
-  · apply WithBot.bot_lt_coe
-  conv_rhs =>
-    simp only [mem_support_iff]
-    intro b
-    rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_ge, Ne, not_imp_not]
-  rfl
+  simpa [degreeLT, Submodule.mem_iInf] using (degree_lt_iff_coeff_zero _ _).symm
 
 @[mono]
 theorem degreeLT_mono {m n : ℕ} (H : m ≤ n) : degreeLT R m ≤ degreeLT R n := fun _ hf =>
