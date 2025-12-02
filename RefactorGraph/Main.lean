@@ -44,13 +44,14 @@ def ancestors (a : α) : HashSet α := Id.run do
 /-- Compute ancestors for all nodes efficiently using topological sort and dynamic programming.
     Returns a HashMap where each node maps to its set of ancestors. -/
 def allAncestors : HashMap α (HashSet α) := Id.run do
-  -- Compute in-degrees
+  -- Compute in-degrees (number of incoming edges to each node)
   let mut inDegree : HashMap α Nat := {}
-  for (node, _) in G.parent do
-    inDegree := inDegree.insert node 0
-  for (_, parents) in G.parent do
+  -- First, ensure all nodes (including those that only appear as parents) are in the map
+  for (node, parents) in G.parent do
+    inDegree := inDegree.insert node parents.size
     for p in parents do
-      inDegree := inDegree.insert p ((inDegree.getD p 0) + 1)
+      if !inDegree.contains p then
+        inDegree := inDegree.insert p 0
 
   -- Topological sort using Kahn's algorithm
   let mut queue : Array α := #[]
@@ -122,6 +123,87 @@ def transitiveReduction : DAG α := Id.run do
 
 end DAG
 
+def runTests : IO Unit := do
+  let stderr ← IO.getStderr
+  stderr.putStrLn "Running tests..."
+
+  -- Test 1: Simple chain A → B → C
+  stderr.putStrLn "Test 1: Chain graph A → B → C"
+  let g1 : DAG String := DAG.empty
+    |>.insertEdge "A" "B"
+    |>.insertEdge "B" "C"
+
+  let ancsC := g1.ancestors "C"
+  assert! ancsC.contains "A" && ancsC.contains "B" && ancsC.size == 2
+  stderr.putStrLn "  ✓ ancestors(C) = {A, B}"
+
+  -- Test 2: Diamond A → B, A → C, B → D, C → D
+  stderr.putStrLn "Test 2: Diamond graph"
+  let g2 : DAG String := DAG.empty
+    |>.insertEdge "A" "B"
+    |>.insertEdge "A" "C"
+    |>.insertEdge "B" "D"
+    |>.insertEdge "C" "D"
+
+  let ancsD := g2.ancestors "D"
+  assert! ancsD.contains "A" && ancsD.contains "B" && ancsD.contains "C" && ancsD.size == 3
+  stderr.putStrLn "  ✓ ancestors(D) = {A, B, C}"
+
+  -- Test 3: allAncestors matches individual ancestors calls
+  stderr.putStrLn "Test 3: allAncestors consistency"
+  let allAncs := g2.allAncestors
+  for node in ["A", "B", "C", "D"] do
+    let expected := g2.ancestors node
+    let actual := allAncs.getD node {}
+    -- Check that both sets have the same elements
+    assert! expected.size == actual.size
+    for e in expected do
+      assert! actual.contains e
+  stderr.putStrLn "  ✓ allAncestors matches individual ancestors calls"
+
+  -- Test 4: Transitive reduction removes A → C from A → B → C, A → C
+  stderr.putStrLn "Test 4: Transitive reduction"
+  let g3 : DAG String := DAG.empty
+    |>.insertEdge "A" "B"
+    |>.insertEdge "B" "C"
+    |>.insertEdge "A" "C"  -- This edge should be removed
+
+  let g3reduced := g3.transitiveReduction
+  -- After reduction, A should not be a parent of C
+  let parentsOfC := g3reduced.parent.getD "C" {}
+  assert! !parentsOfC.contains "A" && parentsOfC.contains "B" && parentsOfC.size == 1
+  stderr.putStrLn "  ✓ Transitive edge A → C removed"
+
+  -- Test 5: Diamond with transitive edges
+  stderr.putStrLn "Test 5: Diamond with all edges"
+  let g4 : DAG String := DAG.empty
+    |>.insertEdge "A" "B"
+    |>.insertEdge "A" "C"
+    |>.insertEdge "B" "D"
+    |>.insertEdge "C" "D"
+    |>.insertEdge "A" "D"  -- This edge should be removed (transitive via B and C)
+
+  let g4reduced := g4.transitiveReduction
+  let parentsOfD := g4reduced.parent.getD "D" {}
+  assert! !parentsOfD.contains "A" && parentsOfD.contains "B" && parentsOfD.contains "C"
+  stderr.putStrLn "  ✓ Transitive edge A → D removed in diamond"
+
+  -- Test 6: No false removals
+  stderr.putStrLn "Test 6: Non-transitive edges preserved"
+  let g5 : DAG String := DAG.empty
+    |>.insertEdge "A" "B"
+    |>.insertEdge "A" "C"
+
+  let g5reduced := g5.transitiveReduction
+  -- Both edges should remain (neither is transitive)
+  let parentsOfB := g5reduced.parent.getD "B" {}
+  let parentsOfC := g5reduced.parent.getD "C" {}
+  assert! parentsOfB.size == 1 && parentsOfB.contains "A"
+  assert! parentsOfC.size == 1 && parentsOfC.contains "A"
+  stderr.putStrLn "  ✓ Non-transitive edges preserved"
+
+  stderr.putStrLn "All tests passed! ✓"
+
 def importGraph (env : Environment) : IO (DAG Name) := do
   let stderr ← IO.getStderr
   stderr.putStrLn "Computing import graph..."
@@ -150,23 +232,28 @@ def importsUsing (env : Environment) (nm : Name) : IO (HashSet Name) := do
   return out
 
 def main (args : List String) : IO Unit := do
-  initSearchPath (← findSysroot)
-  let [name] := args.map String.toName | throw <| .userError "Expected a single argument"
-  let env ← Lean.importModules #[{ module := `Mathlib }] {}
-  let importGraph ← importGraph env
-  let stderr ← IO.getStderr
-  stderr.putStrLn "Computing ancestors..."
-  stderr.flush
-  let importGraph := importGraph.allAncestors
-  let importsUsing ← importsUsing env name
-  let mut G : DAG Name := .empty
-  for mod in importsUsing do
-    stderr.putStr s!"\rProcessing {mod}"
+  match args with
+  | ["test"] =>
+    runTests
+  | [name] =>
+    initSearchPath (← findSysroot)
+    let env ← Lean.importModules #[{ module := `Mathlib }] {}
+    let importGraph ← importGraph env
+    let stderr ← IO.getStderr
+    stderr.putStrLn "Computing ancestors..."
     stderr.flush
-    let parents := (importGraph.getD mod {}).filter fun n => importsUsing.contains n
-    G := G.insert mod parents
-  stderr.putStrLn "\nComputing transitive reduction..."
-  stderr.flush
-  G := G.transitiveReduction
-  for (a,bs) in G.parent do for b in bs do
-    println! s!"{a} -> {b}"
+    let importGraph := importGraph.allAncestors
+    let importsUsing ← importsUsing env (String.toName name)
+    let mut G : DAG Name := .empty
+    for mod in importsUsing do
+      stderr.putStr s!"\rProcessing {mod}"
+      stderr.flush
+      let parents := (importGraph.getD mod {}).filter fun n => importsUsing.contains n
+      G := G.insert mod parents
+    stderr.putStrLn "\nComputing transitive reduction..."
+    stderr.flush
+    G := G.transitiveReduction
+    for (a,bs) in G.parent do for b in bs do
+      println! s!"{a} -> {b}"
+  | _ =>
+    throw <| .userError "Usage: RefactorGraph <name> or RefactorGraph test"
