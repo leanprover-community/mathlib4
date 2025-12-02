@@ -93,6 +93,16 @@ lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω 
     ofFun Ω f μ φ = ∫ x, φ x • f x ∂μ :=
   ofFunWithOrder_apply hf
 
+@[simp]
+lemma ofFunWithOrder_zero {μ : Measure E} : ofFunWithOrder Ω n (0 : E → F) μ = 0 := by
+  ext φ
+  simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM, TestFunction.integralAgainstBilinLM]
+
+@[simp]
+lemma ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ = 0 := by
+  ext φ
+  simp [ofFun]
+
 -- TODO: find a better name!
 lemma integrable_smul {f : E → F} {μ : Measure E} (φ : 𝓓(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
     Integrable (fun x ↦ φ x • f x) μ := by
@@ -109,18 +119,21 @@ lemma ofFun_add {f g : E → F} {μ : Measure E}
   congr with x
   simp
 
+lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
+    (hf : ¬LocallyIntegrableOn f Ω μ) : ofFunWithOrder Ω n f μ = 0 := by
+  ext φ
+  simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
+    TestFunction.integralAgainstBilinLM, hf]
+
 lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
     ofFun Ω f μ = 0 := by
   ext φ
-  simp [ofFun, ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
-    TestFunction.integralAgainstBilinLM, hf]
+  simp [ofFun, ofFunWithOrder_of_not_locallyIntegrable hf]
 
 @[simp]
 lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) μ = c • ofFun Ω f μ := by
   by_cases! hc : c = 0
   · simp [hc]
-    -- missing lemma, should be simp!
-    sorry
   by_cases hf: LocallyIntegrableOn f Ω μ; swap
   · have : ¬ LocallyIntegrableOn (c • f) Ω μ := sorry -- using hc and hf
     simp [ofFun_of_not_locallyIntegrable this, ofFun_of_not_locallyIntegrable hf]
