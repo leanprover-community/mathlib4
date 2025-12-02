@@ -91,28 +91,23 @@ private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ
   rw [expand]
   simp_rw [mul_add]
   rw [Finset.sum_add_distrib, Finset.sum_add_distrib]
-
   suffices h_cancel : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * p k +
                      ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * c k = 0 by
     rw [add_assoc, h_cancel, add_zero]
-
   have split_first := Finset.Ico_eq_singleton_union_Ico_succ a b hab
   have split_last := Finset.Ico_eq_Ico_union_singleton a b hab
-
   have hp : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * p k =
       (-1 : α)^a.natAbs * p a + ∑ k ∈ Finset.Ico (a + 1) (b + 1), (-1 : α)^k.natAbs * p k := by
     rw [split_first, Finset.sum_union]
     · simp [Finset.sum_singleton]
     · simp [Finset.disjoint_singleton_left, Finset.mem_Ico]
   rw [hp, h_pa, mul_zero, zero_add]
-
   have hc : ∑ k ∈ Finset.Ico a (b + 1), (-1 : α)^k.natAbs * c k =
       ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * c k + (-1 : α)^b.natAbs * c b := by
     rw [split_last, Finset.sum_union]
     · simp [Finset.sum_singleton]
     · simp [Finset.disjoint_singleton_right, Finset.mem_Ico]
   rw [hc, h_cb, mul_zero, add_zero]
-
   have c_as_p : ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * c k =
       ∑ k ∈ Finset.Ico a b, (-1 : α)^k.natAbs * p (k + 1) := by
     apply Finset.sum_congr rfl
@@ -120,11 +115,9 @@ private lemma sum_Ico_alternating_shift_decomp {α : Type*} [Ring α] (a b : ℤ
     congr 1
     exact (h_shift k hk).symm
   rw [c_as_p]
-
   have index_shift : Finset.Ico (a + 1) (b + 1) = (Finset.Ico a b).image (· + 1) := by
     ext x
     simp [Finset.mem_Ico]
-
   rw [index_shift, Finset.sum_image]
   · rw [← Finset.sum_add_distrib]
     apply Finset.sum_eq_zero
@@ -241,22 +234,17 @@ lemma homology_finrank_formula (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
     (Module.finrank k (LinearMap.ker (C.dFrom i).hom) : ℤ) := by
   let S := C.sc i
   let data := S.moduleCatLeftHomologyData
-
   have homology_iso : C.homology i ≅ data.H := S.moduleCatHomologyIso
   have cycles_iso : C.cycles i ≅ data.K := S.moduleCatCyclesIso
-
   -- Use the lemma about the range of moduleCatToCycles
   have dim_image := moduleCatToCycles_range_finrank_eq C i
-
   have dim_homology : Module.finrank k (C.homology i) = Module.finrank k data.H := by
     exact LinearEquiv.finrank_eq homology_iso.toLinearEquiv
   have dim_cycles : Module.finrank k (C.cycles i) = Module.finrank k data.K := by
     exact LinearEquiv.finrank_eq cycles_iso.toLinearEquiv
-
   have data_K_eq : data.K = ModuleCat.of k (LinearMap.ker (C.dFrom i).hom) := rfl
   have data_H_eq : data.H = ModuleCat.of k (LinearMap.ker (C.dFrom i).hom ⧸
     LinearMap.range S.moduleCatToCycles) := rfl
-
   calc (Module.finrank k (C.homology i) : ℤ) +
        (Module.finrank k (LinearMap.range (C.dTo i).hom) : ℤ)
       = (Module.finrank k data.H : ℤ) +
@@ -307,15 +295,12 @@ theorem eulerChar_eq_homology_eulerChar (C : ChainComplex (ModuleCat k) ℤ)
     homologyBoundedEulerChar C (Finset.Ico a (b + 1)) := by
   -- Expand definitions directly
   rw [boundedEulerChar, homologyBoundedEulerChar]
-
   let s := fun i => (Module.finrank k (C.X i) : ℤ)
   let h := fun i => (Module.finrank k (C.homology i) : ℤ)
   let p := fun i => (Module.finrank k (LinearMap.range (C.dFrom i).hom) : ℤ)
   let c := fun i => (Module.finrank k (LinearMap.range (C.dTo i).hom) : ℤ)
-
   -- Apply the telescoping sum lemma
   apply sum_Ico_alternating_shift_decomp a b hab s h p c
-
   -- s(k) = h(k) + p(k) + c(k)
   · intros k hk
     simp only [Finset.mem_Ico] at hk
@@ -324,14 +309,12 @@ theorem eulerChar_eq_homology_eulerChar (C : ChainComplex (ModuleCat k) ℤ)
     rw [chain_dimension_decomposition C k]
     rw [cycles_dimension_decomposition C k]
     ring
-
   -- p(k+1) = c(k)
   · intros k hk
     simp only [Finset.mem_Ico] at hk
     unfold p c
     congr 1
     exact dFrom_succ_range_finrank_eq_dTo C k
-
   -- p(a) = 0
   · unfold p
     have ha_zero : IsZero (C.X (a - 1)) := hC_bounded_below (a - 1) (by omega)
@@ -339,7 +322,6 @@ theorem eulerChar_eq_homology_eulerChar (C : ChainComplex (ModuleCat k) ℤ)
       exact dFrom_zero_range C a ha_zero
     rw [this]
     simp
-
   -- c(b) = 0
   · unfold c
     have hb_zero : IsZero (C.X (b + 1)) := hC_bounded_above (b + 1) (by omega)
