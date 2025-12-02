@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.ZLattice.Summable
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 
