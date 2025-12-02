@@ -295,6 +295,29 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
     convert (h_int t).1
     rw [map_apply _ hY]
 
+lemma id_map_iff (hX : Measurable X) :
+    HasSubgaussianMGF id c (κ.map X) ν ↔ HasSubgaussianMGF X c κ ν := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨fun t ↦ ?_, ?_⟩⟩
+  · change HasSubgaussianMGF (id ∘ X) c κ ν
+    exact .of_map hX h
+  · rw [← Kernel.deterministic_comp_eq_map hX, ← Measure.comp_assoc,
+      Measure.deterministic_comp_eq_map, integrable_map_measure (by fun_prop) hX.aemeasurable]
+    exact h.integrable_exp_mul t
+  · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h.mgf_le
+
+protected lemma const_mul (h : HasSubgaussianMGF X c κ ν) (r : ℝ) :
+    HasSubgaussianMGF (fun ω ↦ r * X ω) (⟨r ^ 2, sq_nonneg r⟩ * c) κ ν where
+  integrable_exp_mul t := by
+    simp_rw [← mul_assoc]
+    exact h.integrable_exp_mul (t * r)
+  mgf_le := by
+    filter_upwards [h.mgf_le] with ω hω t
+    rw [mgf_const_mul, mul_comm]
+    refine (hω (t * r)).trans_eq ?_
+    congr 1
+    simp only [NNReal.coe_mul, NNReal.coe_mk]
+    ring
+
 section ChernoffBound
 
 lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
@@ -633,6 +656,22 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     convert h.mgf_le t using 1
     rw [mgf_map hY (h.integrable_exp_mul t).1]
 
+lemma id_map_iff (hX : AEMeasurable X μ) :
+    HasSubgaussianMGF id c (μ.map X) ↔ HasSubgaussianMGF X c μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨fun t ↦ ?_, fun t ↦ ?_⟩⟩
+  · change HasSubgaussianMGF (id ∘ X) c μ
+    exact .of_map hX h
+  · rw [integrable_map_measure (by fun_prop) hX]
+    exact h.integrable_exp_mul t
+  · rw [mgf_id_map hX]
+    exact h.mgf_le t
+
+lemma congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
+    {Y : Ω' → ℝ} (hX : HasSubgaussianMGF X c μ) (hXY : IdentDistrib X Y μ μ') :
+    HasSubgaussianMGF Y c μ' := by
+  rw [← id_map_iff hXY.aemeasurable_fst] at hX
+  rwa [← id_map_iff hXY.aemeasurable_snd, ← hXY.map_eq]
+
 lemma trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : HasSubgaussianMGF X c μ) :
     HasSubgaussianMGF X c (μ.trim hm) where
   integrable_exp_mul t := by
@@ -642,6 +681,22 @@ lemma trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : HasSubgaussianMGF X c 
     rw [mgf, ← integral_trim]
     · exact hX.mgf_le t
     · exact Measurable.stronglyMeasurable <| by fun_prop
+
+protected lemma const_mul (h : HasSubgaussianMGF X c μ) (r : ℝ) :
+    HasSubgaussianMGF (fun ω ↦ r * X ω) (⟨r ^ 2, sq_nonneg r⟩ * c) μ := by
+  rw [HasSubgaussianMGF_iff_kernel] at h ⊢
+  exact Kernel.HasSubgaussianMGF.const_mul h r
+
+lemma integrableExpSet_eq_univ (hX : HasSubgaussianMGF X c μ) :
+    integrableExpSet X μ = Set.univ := by
+  ext t
+  simpa using hX.integrable_exp_mul t
+
+lemma memLp (hX : HasSubgaussianMGF X c μ) (p : ℝ≥0) : MemLp X p μ :=
+  memLp_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX]) p
+
+lemma integrable (hX : HasSubgaussianMGF X c μ) : Integrable X μ :=
+  integrable_of_mem_interior_integrableExpSet (by simp [integrableExpSet_eq_univ hX])
 
 section ChernoffBound
 
@@ -687,6 +742,12 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
       · exact hY.mgf_le t
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
+lemma sub_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
+    (hY : HasSubgaussianMGF Y cY μ) (hindep : X ⟂ᵢ[μ] Y) :
+    HasSubgaussianMGF (fun ω ↦ X ω - Y ω) (cX + cY) μ := by
+  simp_rw [sub_eq_add_neg]
+  exact hX.add_of_indepFun hY.neg hindep.neg_right
+
 private lemma sum_of_iIndepFun_of_forall_aemeasurable
     {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, AEMeasurable (X i) μ)
@@ -729,6 +790,28 @@ lemma measure_sum_range_ge_le_of_iIndepFun {X : ℕ → Ω → ℝ} (h_indep : i
   have h := (sum_of_iIndepFun h_indep (c := fun _ ↦ c)
     (s := Finset.range n) (by simpa)).measure_ge_le hε
   simpa [← mul_assoc] using h
+
+/-- For `X, Y` two independent sub-Gaussian random variables such that `μ[X] ≥ μ[Y]`,
+the probability that `X ≤ Y` is bounded by an exponential decay term. -/
+lemma measureReal_le_le_exp {Y : Ω → ℝ} {cX cY : ℝ≥0}
+    (hX : HasSubgaussianMGF (fun ω ↦ X ω - μ[X]) cX μ)
+    (hY : HasSubgaussianMGF (fun ω ↦ Y ω - μ[Y]) cY μ)
+    (hindep : IndepFun X Y μ) (h_le : μ[Y] ≤ μ[X]) :
+    μ.real {ω | X ω ≤ Y ω} ≤ Real.exp (- (μ[Y] - μ[X]) ^ 2 / (2 * (cX + cY))) := by
+  calc μ.real {ω | X ω ≤ Y ω}
+  _ = μ.real {ω | (μ[X] - μ[Y]) ≤ (Y ω - μ[Y]) - (X ω - μ[X])} := by
+    congr with ω
+    grind
+  _ ≤ Real.exp (- (μ[Y] - μ[X]) ^ 2 / (2 * (cX + cY))) := by
+    refine (measure_ge_le (X := fun ω ↦ (Y ω - μ[Y]) - (X ω - μ[X])) (c := cX + cY) ?_ ?_).trans_eq
+      ?_
+    · rw [add_comm cX]
+      refine sub_of_indepFun hY hX ?_
+      exact hindep.symm.comp (φ := fun x ↦ x - μ[Y]) (ψ := fun x ↦ x - μ[X])
+        (by fun_prop) (by fun_prop)
+    · grind
+    · congr 2
+      grind
 
 end Add
 
