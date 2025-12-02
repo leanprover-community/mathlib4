@@ -3,16 +3,22 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Normed.Operator.Extend
-import Mathlib.Analysis.Distribution.FourierSchwartz
-import Mathlib.Analysis.Distribution.DenseLp
-import Mathlib.Analysis.Distribution.TemperedDistribution
+module
+
+public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.TemperedDistribution
+public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
 
 /-!
 
 # The Fourier transform on L^2
 
 -/
+
+@[expose] public section
+
+noncomputable section
 
 section FourierTransform
 
@@ -25,7 +31,6 @@ open SchwartzMap MeasureTheory FourierTransform
 variable [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
 
 variable (V E) in
-noncomputable
 def Lp.fourierTransformLI : (Lp (α := V) E 2) ≃ₗᵢ[ℂ] (Lp (α := V) E 2) :=
   (SchwartzMap.fourierTransformCLE ℂ (V := V) (E := E)).toLinearEquiv.extendOfIsometry
     (SchwartzMap.toLpCLM ℂ (E := V) E 2) (SchwartzMap.toLpCLM ℂ (E := V) E 2)
@@ -39,19 +44,15 @@ def Lp.fourierTransformLI : (Lp (α := V) E 2) ≃ₗᵢ[ℂ] (Lp (α := V) E 2)
       convert (norm_fourierTransform_toL2_eq (𝓕⁻ f)).symm
       simp)
 
-noncomputable
 instance Lp.instFourierTransform : FourierTransform (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourierTransform := fourierTransformLI V E
 
-noncomputable
 instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourierTransformInv := (fourierTransformLI V E).symm
 
-noncomputable
 instance instFourierPair : FourierPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
   inv_fourier := (Lp.fourierTransformLI V E).symm_apply_apply
 
-noncomputable
 instance instFourierPairInv : FourierPairInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourier_inv := (Lp.fourierTransformLI V E).apply_symm_apply
 
