@@ -536,9 +536,7 @@ lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpS
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
 
 /-- If 0 belongs to the interior of the interval `integrableExpSet X μ`, then `X` is integrable. -/
-lemma integrable_of_mem_interior_integrableExpSet
-    {Ω : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω}
-    (h : 0 ∈ interior (integrableExpSet X μ)) :
+lemma integrable_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) :
     Integrable X μ := by
   simpa using integrable_pow_of_mem_interior_integrableExpSet h 1
 
