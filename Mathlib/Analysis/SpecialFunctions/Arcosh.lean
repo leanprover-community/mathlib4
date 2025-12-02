@@ -75,14 +75,8 @@ theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) 
 /-- `arcosh` is the left inverse of `cosh` over [0, ∞). -/
 @[simp]
 theorem arcosh_cosh {x : ℝ} (hx : 0 ≤ x) : arcosh (cosh x) = x := by
-  rw [arcosh]
-  apply exp_eq_exp.mp
-  rw [exp_log (by positivity)]
-  apply add_eq_of_eq_sub'
-  rw [exp_sub_cosh]
-  apply (sq_eq_sq₀ (by positivity) (by positivity)).mp
-  rw [← sinh_sq, sq_sqrt (by positivity)]
-
+rw [arcosh, ← exp_eq_exp, exp_log (by positivity), ← eq_sub_iff_add_eq', exp_sub_cosh,
+    ← sq_eq_sq₀ (sqrt_nonneg _) (sinh_nonneg_iff.mpr hx), ← sinh_sq, sq_sqrt (pow_two_nonneg _)]
 end Real
 
 /-- Real numbers which are at least 1. -/
