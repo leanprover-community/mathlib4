@@ -274,6 +274,7 @@ def yonedaCompSheafToPresheaf :
   Iso.refl _
 
 /-- A variant of `yonedaCompSheafToPresheaf` with a raise in the universe level. -/
+@[simps!]
 def uliftYonedaCompSheafToPresheaf :
     GrothendieckTopology.uliftYoneda.{w} J ⋙ sheafToPresheaf J (Type max v w) ≅
       CategoryTheory.uliftYoneda.{w} :=
