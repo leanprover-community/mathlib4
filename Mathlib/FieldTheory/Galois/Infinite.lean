@@ -221,8 +221,8 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
   choice_eq _ _ := rfl
 
 open IntermediateField in
-/-- If `H` is a closed normal subgroup of `Gal(L / K)`,
-then `Gal(fixedField H / K)` is isomorphic to `Gal(L / K) ⧸ H`. -/
+/-- If `H` is a closed normal subgroup of `Gal(K / k)`,
+then `Gal(fixedField H / k)` is isomorphic to `Gal(K / k) ⧸ H`. -/
 noncomputable def normalAutEquivQuotient [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [Subgroup.Normal H.1] :
     Gal(K/k) ⧸ H.1 ≃* Gal(fixedField H.1/k) :=
