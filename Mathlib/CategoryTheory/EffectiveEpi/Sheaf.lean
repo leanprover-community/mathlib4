@@ -20,7 +20,7 @@ variable {C D : Type*} [Category C] [Category D]
 
 instance [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D] :
     IsRegularEpiCategory (C ⥤ D) where
-  regularEpiOfEpi {F G} f := ⟨{
+  regularEpiOfEpi {F G} f := ⟨⟨{
     W := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.pt
     left := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.fst
     right := combinePullbackCones f f _ (fun k ↦ pullback.isLimit (f.app k) (f.app k)) |>.snd
@@ -46,7 +46,7 @@ instance [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D] :
             Cofork.ofπ_ι_app, Iso.refl_hom, comp_id, mapCocone_ι_app, evaluation_obj_map]
           erw [id_comp] -- when `D` is `Type*`, `cat_disch` just works and this `erw` is not needed
           cat_disch
-        · cat_disch }⟩
+        · cat_disch }⟩⟩
 
 universe u
 
@@ -93,7 +93,7 @@ def regularEpiCategorySheaf (J : GrothendieckTopology C)
     rw [← hpi, Functor.map_comp]
     suffices EffectiveEpi ((presheafToSheaf J D).map p) by infer_instance
     rw [← isRegularEpi_iff_effectiveEpi]
-    exact ⟨{
+    exact ⟨⟨{
       W := (presheafToSheaf J D).obj (pullback f f).val
       left := (presheafToSheaf J D).map (pullback.fst f f).val
       right := (presheafToSheaf J D).map (pullback.snd f f).val
@@ -115,7 +115,7 @@ def regularEpiCategorySheaf (J : GrothendieckTopology C)
               Cofork.ofπ_ι_app, map_comp, Iso.refl_hom, comp_id]
             erw [id_comp]
             cat_disch
-          · simp }⟩
+          · simp }⟩⟩
 
 instance (J : GrothendieckTopology C) [HasSheafify J (Type u)] :
     IsRegularEpiCategory (Sheaf J (Type u)) := by
