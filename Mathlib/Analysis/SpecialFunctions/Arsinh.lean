@@ -182,7 +182,7 @@ theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
 theorem continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
 
-/-- `arcosh` is defined using a logarithm, `arcosh x = log (x + sqrt(x^2 - 1))`. -/
+/-- `arcosh` is defined using a logarithm, `arcosh x = log (x + √(x ^ 2 - 1))`. -/
 @[pp_nodot]
 def arcosh (x : ℝ) :=
   log (x + √(x ^ 2 - 1))
