@@ -315,6 +315,8 @@ end IntermediateField
 
 namespace IsGalois
 
+/-- See `InfiniteGalois.fixedField_fixingSubgroup` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
@@ -327,15 +329,21 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     Nat.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
 
+/-- See `InfiniteGalois.fixedField_bot` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 @[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
     fixedField (⊤ : Subgroup Gal(E/F)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
 
+/-- See `InfiniteGalois.mem_bot_iff_fixed` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : Gal(E/F), f x = x := by
   rw [← fixedField_top, mem_fixedField_iff]
   simp only [Subgroup.mem_top, forall_const]
 
+/-- See `InfiniteGalois.mem_range_algebraMap_iff_fixed` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ Set.range (algebraMap F E) ↔ ∀ f : Gal(E/F), f x = x :=
   mem_bot_iff_fixed x
