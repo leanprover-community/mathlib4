@@ -676,16 +676,8 @@ def supp : Ideal R where
 lemma supp_def (x : R) : x ∈ supp R ↔ x ≤ᵥ 0 := Iff.refl _
 
 lemma supp_eq_valuation_supp : supp R = (valuation R).supp := by
-  ext x
-  constructor
-  · intro h
-    simp only [supp_def, Valuation.mem_supp_iff] at h ⊢
-    apply ValueGroupWithZero.sound
-    · simpa
-    · simp
-  · intro h
-    have := ValueGroupWithZero.exact h
-    simpa using this.left
+  ext
+  simpa using valuation_eq_zero_iff.symm
 
 instance : (supp R).IsPrime := by
   rw [supp_eq_valuation_supp]

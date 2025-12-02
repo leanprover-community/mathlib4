@@ -719,10 +719,7 @@ theorem not_one_le_div_iff : ¬1 ≤ f / g ↔ Disjoint f g :=
 
 @[to_additive]
 theorem NeBot.one_le_div (h : f.NeBot) : 1 ≤ f / f := by
-  rintro s ⟨t₁, h₁, t₂, h₂, hs⟩
-  obtain ⟨a, ha₁, ha₂⟩ := Set.not_disjoint_iff.1 (h.not_disjoint h₁ h₂)
-  rw [mem_one, ← div_self' a]
-  exact hs (Set.div_mem_div ha₁ ha₂)
+  simpa using neBot_iff.mp h
 
 @[to_additive]
 theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
