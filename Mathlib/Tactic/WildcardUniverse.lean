@@ -6,6 +6,7 @@ Authors: Adam Topaz
 module
 
 public meta import Lean.Elab.App
+public meta import Lean.Util.CollectLevelParams
 public meta import Mathlib.Lean.Elab.Term
 
 open Lean Elab Term
@@ -71,17 +72,25 @@ meta def elabWildcardUniverseShort : TermElab := fun stx expectedType? => do
     let constLevels ← constLevels.mapM Lean.instantiateLevelMVars
     let levelSpecWithLevel := levels.zip constLevels
 
+    -- Collect all level params from the elaborated expression and its type
+    let expr ← instantiateMVars expr
+    let exprType ← Meta.inferType expr
+    let exprParams := (collectLevelParams (collectLevelParams {} expr) exprType).params
+
     let mut levelNames ← getLevelNames
 
     for ((k, l), idx) in levelSpecWithLevel.zipIdx do
       unless k matches .param do continue
       let .param name := l | continue
+      -- Collect level params from later universe arguments
       let laterLevels := constLevels.toList.drop (idx + 1)
       let laterParams := laterLevels.flatMap Level.getParams
+      -- Also include all level params from the expression (arguments) that aren't our fresh param
+      let allLaterParams := (laterParams ++ exprParams.toList).filter (· != name)
       let levelNames' := levelNames.filter (· != name)
       let mut lastIdx : Option Nat := none
       for (n, i) in levelNames'.zipIdx do
-        if laterParams.contains n then
+        if allLaterParams.contains n then
           lastIdx := some i
       levelNames := match lastIdx with
         | some pos => levelNames'.insertIdx (pos + 1) name
