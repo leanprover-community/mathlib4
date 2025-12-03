@@ -40,9 +40,9 @@ namespace Ordinal
 
 /-- Converts an ordinal into the corresponding pre-game. -/
 noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩
+  ⟨o.toType, PEmpty, fun x => toPGame x, PEmpty.elim⟩
 termination_by o
-decreasing_by exact ((enumIsoToType o).symm x).prop
+decreasing_by exact (toType.mk.symm x).prop
 
 @[simp]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.toType := by

@@ -513,6 +513,7 @@ noncomputable def toType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
+/-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 noncomputable
 abbrev toType.get {o : Ordinal} (α : o.toType) : Set.Iio o := toType.mk.symm α
 
@@ -523,12 +524,10 @@ noncomputable
 instance (o : Ordinal) : CoeOut (Ordinal.toType o) Ordinal where
   coe x := x.get
 
- -- TODO: replace in Mathlib & add deprecation warning
-noncomputable
-abbrev enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType := toType.mk
+@[deprecated (since := "2025-12-04")] alias enumIsoToType := toType.mk
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
-  ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
+  ⟨_, ⟨toType.mk.toEquiv⟩⟩
 
 instance small_Iic (o : Ordinal.{u}) : Small.{u} (Iic o) := by
   rw [← Iio_union_right]
@@ -926,7 +925,7 @@ theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
 
 /-! ### Extra properties of typein and enum -/
 
--- TODO: use `enumIsoToType` for lemmas on `toType` rather than `enum` and `typein`.
+-- TODO: use `toType.mk` for lemmas on `toType` rather than `enum` and `typein`.
 
 @[simp]
 theorem typein_one_toType (x : toType 1) : typein (α := toType 1) (· < ·) x = 0 := by
