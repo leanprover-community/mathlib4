@@ -6,6 +6,9 @@ Authors: Sébastien Gouëzel, Kexing Ying
 module
 
 public import Mathlib.Probability.Moments.Covariance
+public import Mathlib.Probability.Notation
+import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+import Mathlib.Probability.Independence.Integrable
 
 /-!
 # Variance of random variables
@@ -177,14 +180,20 @@ lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
 
-theorem variance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
+theorem variance_const_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (fun ω => c * X ω) μ = c ^ 2 * variance X μ := by
   rw [variance, evariance_mul, ENNReal.toReal_mul, ENNReal.toReal_ofReal (sq_nonneg _)]
   rfl
 
+theorem variance_mul_const (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
+    variance (fun ω => X ω * c) μ = variance X μ * c ^ 2 := by
+  simp [mul_comm, variance_const_mul]
+
+@[deprecated (since := "2025-11-29")] alias variance_mul := variance_const_mul
+
 theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     variance (c • X) μ = c ^ 2 * variance X μ :=
-  variance_mul c X μ
+  variance_const_mul c X μ
 
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
@@ -216,7 +225,7 @@ lemma variance_const_add [IsProbabilityMeasure μ] (hX : AEStronglyMeasurable X 
   simp_rw [add_comm c, variance_add_const hX c]
 
 lemma variance_fun_neg : Var[fun ω ↦ -X ω; μ] = Var[X; μ] := by
-  convert variance_mul (-1) X μ
+  convert variance_const_mul (-1) X μ
   · ext; ring
   · simp
 
