@@ -306,8 +306,8 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
-  cases n <;> simp
+@[deprecated not_neg (since := "2025-12-03")]
+lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_neg
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
