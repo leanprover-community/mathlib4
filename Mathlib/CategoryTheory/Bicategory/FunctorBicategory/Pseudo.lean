@@ -96,9 +96,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory
 def eval (b : B) : StrictPseudofunctor (B ⥤ᵖ C) C := .mk' {
   obj P := P.obj b
   map θ := θ.app b
-  map₂ Γ := Γ.as.app b
-  map₂_id P := rfl
-  map₂_comp f g := rfl }
+  map₂ Γ := Γ.as.app b }
 
 /-- The evaluation pseudofunctor, sending `X : B` and `F : B ⥤ᵖ C` to `F.obj X`. It is
 pseudofunctorial in both `X` and `F`. -/
