@@ -5,9 +5,48 @@ Authors: Adam Topaz
 -/
 module
 
-public meta import Lean.Elab.App
-public meta import Lean.Util.CollectLevelParams
-public meta import Mathlib.Lean.Elab.Term
+meta import Lean.Elab.App
+public import Lean.Parser.Term
+import Mathlib.Lean.Elab.Term
+
+/-!
+# Wildcard Universe Syntax
+
+This module provides a convenient syntax for specifying universe parameters when applying
+type constructors, using wildcards to automatically generate fresh universe parameters.
+
+## Syntax
+
+The syntax `Foo.!{u₁, u₂, ...}` allows specifying universe parameters for a constant `Foo`,
+where each universe parameter can be:
+
+- `_` : A universe metavariable (inferred by unification)
+- `*` : A fresh universe parameter with base name `u`
+- `v*` : A fresh universe parameter with base name `v` (for any identifier `v`)
+- An explicit level expression (e.g., `0`, `u+1`, `max u v`)
+
+## Examples
+
+```lean
+-- Both universe parameters are fresh and inferred
+#check ULift.!{*, *}
+
+-- First parameter is a fresh universe parameter, second is inferred
+#check ULift.!{*}
+
+-- Named universe parameter
+variable (C : Type*) [Category.!{v*} C]
+
+-- Explicit universe level
+variable (X : Type*) (y : ULift.!{0} X)
+```
+
+## Implementation Notes
+
+The elaborator automatically reorganizes universe parameters to ensure proper dependency ordering:
+fresh universe parameters are placed after any parameters they depend on (from later universe
+arguments or from the term arguments).
+-/
 
 open Lean Elab Term
 
@@ -21,22 +60,35 @@ syntax level : wildcard_universe
 syntax (name := appWithWildcards)
     ident noWs ".!{" wildcard_universe,* "}" Parser.Term.argument* : term
 
+/--
+Represents the kind of wildcard universe parameter.
+
+- `mvar`: A universe metavariable to be inferred (`_` syntax)
+- `param`: A fresh universe parameter (`*` or `name*` syntax)
+- `explicit`: An explicit level expression
+-/
 inductive LevelWildcardKind where
   | mvar
   | param (baseName : Name := `u)
-  | explicit (l : Level)
+  | explicit (l : TSyntax `level)
 
-meta def elabWildcardUniverses (us : Array Syntax) : TermElabM (Array LevelWildcardKind) := do
+/--
+Parses an array of wildcard universe syntax into `LevelWildcardKind` values.
+-/
+meta def elabWildcardUniverses {m : Type → Type}
+    [Monad m] [MonadExceptOf Exception m] (us : Array Syntax) :
+    m (Array LevelWildcardKind) :=
   us.mapM fun u =>
     match u with
     | `(wildcard_universe|_) => return .mvar
     | `(wildcard_universe|*) => return .param
     | `(wildcard_universe|$n:ident*) => return .param n.getId
-    | `(wildcard_universe|$l:level) => do
-      let lvl ← elabLevel l
-      return .explicit lvl
+    | `(wildcard_universe|$l:level) => return .explicit l
     | _ => throwUnsupportedSyntax
 
+/--
+Extracts all universe parameter names appearing in a level expression.
+-/
 meta def Lean.Level.getParams (l : Level) : List Name :=
   match l with
   | .param n => [n]
@@ -46,6 +98,37 @@ meta def Lean.Level.getParams (l : Level) : List Name :=
   | .max a b => a.getParams ++ b.getParams
   | .imax a b => a.getParams ++ b.getParams
 
+/--
+Reorganizes universe parameter names to ensure proper dependency ordering.
+This is used in the implementation of `elabAppWithWildcards`.
+-/
+meta def reorganizeUniverseParams
+    (levels : Array LevelWildcardKind)
+    (constLevels : Array Level)
+    (levelNames : List Name) : List Name := Id.run do
+  let mut result := levelNames
+  for ((wildcardKind, elaboratedLevel), idx) in (levels.zip constLevels).zipIdx do
+    -- Only process param wildcards that elaborated to param levels
+    unless wildcardKind matches .param _ do continue
+    let .param newParamName := elaboratedLevel | continue
+    -- Collect dependencies: params from later universe arguments
+    let laterLevels := constLevels.toList.drop (idx + 1)
+    let dependencies := laterLevels.flatMap Level.getParams |>.filter (· != newParamName)
+    -- Remove newParamName from list (if it already exists)
+    let currentNames := result.filter (· != newParamName)
+    -- Find position after last dependency
+    let lastDependencyIdx := currentNames.zipIdx
+      |>.foldl (fun acc (name, idx) => if dependencies.contains name then some idx else acc) none
+    let insertPos := lastDependencyIdx.map (· + 1) |>.getD 0
+    result := currentNames.insertIdx insertPos newParamName
+  return result
+
+/--
+Term elaborator for the wildcard universe syntax `Foo.!{u₁, u₂, ...}`.
+
+This elaborator handles expressions of the form `ident.!{wildcard_universe,*} args*`,
+where each wildcard universe can be `_`, `*`, `name*`, or an explicit level.
+-/
 @[term_elab appWithWildcards]
 meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
   match stx with
@@ -62,7 +145,7 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
       match k with
       | .mvar => Meta.mkFreshLevelMVar
       | .param baseName => mkFreshLevelParam baseName
-      | .explicit l => return l
+      | .explicit l => elabLevel l
 
     let fn : Expr := .const constName constLevels.toList
 
@@ -72,33 +155,11 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
       (explicit := false) (ellipsis := ellipsis)
 
     let constLevels ← constLevels.mapM Lean.instantiateLevelMVars
-    let levelSpecWithLevel := levels.zip constLevels
 
-    -- Collect all level params from the elaborated expression and its type
-    let expr ← instantiateMVars expr
-    let exprType ← Meta.inferType expr
-    let exprParams := (collectLevelParams (collectLevelParams {} expr) exprType).params
+    let levelNames ← getLevelNames
+    let newLevelNames := reorganizeUniverseParams levels constLevels levelNames
 
-    let mut levelNames ← getLevelNames
-
-    for ((k, l), idx) in levelSpecWithLevel.zipIdx do
-      unless k matches .param _ do continue
-      let .param name := l | continue
-      -- Collect level params from later universe arguments
-      let laterLevels := constLevels.toList.drop (idx + 1)
-      let laterParams := laterLevels.flatMap Level.getParams
-      -- Also include all level params from the expression (arguments) that aren't our fresh param
-      let allLaterParams := (laterParams ++ exprParams.toList).filter (· != name)
-      let levelNames' := levelNames.filter (· != name)
-      let mut lastIdx : Option Nat := none
-      for (n, i) in levelNames'.zipIdx do
-        if allLaterParams.contains n then
-          lastIdx := some i
-      levelNames := match lastIdx with
-        | some pos => levelNames'.insertIdx (pos + 1) name
-        | none => name :: levelNames'
-
-    setLevelNames levelNames
+    setLevelNames newLevelNames
 
     pure expr
   | _ => throwUnsupportedSyntax

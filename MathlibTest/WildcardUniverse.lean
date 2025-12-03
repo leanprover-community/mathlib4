@@ -1,4 +1,6 @@
-import Mathlib.Tactic.WildcardUniverse
+module
+
+import all Mathlib.Tactic.WildcardUniverse
 import Mathlib.Tactic.TypeStar
 import Mathlib.CategoryTheory.Functor.Basic
 
@@ -86,7 +88,7 @@ variable [Category.!{*} TypeWithParam.{w}]
 
 def ff := TypeWithParam.{w} ⥤ TypeWithParam.{w}
 
-/-- info: ff.{u_1, w} [Category.{u_1, 0} TypeWithParam.{w}] : Type u_1 -/
+/-- info: ff.{w, u_1} [Category.{u_1, 0} TypeWithParam.{w}] : Type u_1 -/
 #guard_msgs in #check ff
 
 end CategoryExplicitUniverseTest
@@ -225,3 +227,115 @@ def testPartialArgs := y
 #guard_msgs in #check testPartialArgs
 
 end PartialUniverseArgs
+
+section ReorganizeUniverseParamsTests
+
+open Lean
+
+/-!
+This section contains direct unit tests for the `reorganizeUniverseParams` function,
+which is responsible for reorganizing universe parameter names to ensure proper ordering.
+-/
+
+def mkMVar (id : Nat) : Level := .mvar { name := Name.mkNum .anonymous id }
+
+open Lean Elab Command in
+meta def testReorganize (a b c d) :=
+  liftTermElabM <| guard <| reorganizeUniverseParams a b c = d
+
+-- Empty inputs should return empty list
+run_cmd testReorganize #[] #[] [] []
+
+-- Single mvar (no reordering needed)
+run_cmd testReorganize #[.mvar] #[mkMVar 1] [] []
+
+-- Single param with no dependencies
+run_cmd testReorganize #[.param] #[.param `u_1] [] [`u_1]
+
+-- Single param already in list
+run_cmd testReorganize #[.param] #[.param `u_1] [`u_1] [`u_1]
+
+-- Two independent params
+run_cmd testReorganize #[.param, .param] #[.param `u_1, .param `u_2] [] [`u_2, `u_1]
+
+-- Two params where first already exists
+run_cmd testReorganize #[.param, .param] #[.param `u_1, .param `u_2] [`u_1] [`u_2, `u_1]
+
+-- Two params where first depends on second (needs reordering)
+run_cmd testReorganize #[.param, .param] #[.param `u_2, .param `u_1] [`u_1] [`u_1, `u_2]
+
+-- Named wildcards - basic case
+run_cmd testReorganize #[.param `v, .param `w] #[.param `v_1, .param `w_1] [] [`w_1, `v_1]
+
+-- Named wildcards with dependency
+run_cmd testReorganize #[.param `v, .param `w] #[.param `v_1, .param `w_1] [`v_1] [`w_1, `v_1]
+
+-- Mixed mvar and param
+run_cmd testReorganize #[.mvar, .param] #[mkMVar 1, .param `u_1] [] [`u_1]
+
+-- Mixed param and mvar
+run_cmd testReorganize #[.param, .mvar] #[.param `u_1, mkMVar 1] [] [`u_1]
+
+-- Explicit level (should be ignored)
+run_cmd Lean.Elab.Command.liftTermElabM do
+  let zero ← `(level|0)
+  guard <| reorganizeUniverseParams #[.explicit zero, .param] #[.zero, .param `u_1] [] = [`u_1]
+
+-- Complex case - three params with dependencies
+run_cmd
+  testReorganize #[.param, .param, .param] #[.param `u_3, .param `u_2, .param `u_1]
+    [`u_1, `u_2] [`u_1, `u_2, `u_3]
+
+-- Param depends on later level max
+run_cmd
+  testReorganize #[.param, .param] #[.param `u_1, .max (.param `v) (.param `u_1)] [`v] [`v, `u_1]
+
+-- Param depends on later level imax
+run_cmd
+  testReorganize #[.param, .param] #[.param `u_1, .imax (.param `w) (.param `u_1)] [`w] [`w, `u_1]
+
+-- Param depends on later level succ
+run_cmd testReorganize #[.param, .param] #[.param `u_1, .succ (.param `u_1)] [] [`u_1]
+
+-- Multiple dependencies in later levels
+run_cmd
+  testReorganize #[.param, .param] #[.param `u_3, .max (.param `u_1) (.param `u_2)]
+    [`u_1, `u_2] [`u_1, `u_2, `u_3]
+
+-- Chain of dependencie
+run_cmd
+  testReorganize #[.param, .param, .param] #[.param `u_3, .param `u_2, .param `u_1]
+    [`u_1] [`u_1, `u_2, `u_3]
+
+-- All mvars (no params to reorganize)
+run_cmd
+  testReorganize #[.mvar, .mvar, .mvar] #[mkMVar 1, mkMVar 2, mkMVar 3] [`u_1, `u_2] [`u_1, `u_2]
+
+-- Param that doesn't depend on anything goes first
+run_cmd testReorganize #[.param, .param] #[.param `u_2, .param `u_1] [] [`u_1, `u_2]
+
+-- Test 21: Complex named wildcards with multiple dependencies
+run_cmd
+  testReorganize #[.param `v, .param `w, .param `u]
+    #[.param `v_1, .param `w_1, .max (.param `v_1) (.param `w_1)] [] [`v_1, `w_1]
+
+-- Existing params that aren't being added
+run_cmd
+  testReorganize #[.param] #[.param `u_2] [`existing_1, `existing_2]
+    [`u_2, `existing_1, `existing_2]
+
+-- Insert after specific dependency
+run_cmd
+  testReorganize #[.param, .param] #[.param `new_1, .param `new_2] [`v, `w]
+    [`new_2, `new_1, `v, `w]
+
+-- Insert between existing params based on dependency
+run_cmd
+  testReorganize #[.param, .mvar] #[.param `u_3, .max (.param `u_1) (.param `u_2)]
+    [`u_1, `u_2, `u_4] [`u_1, `u_2, `u_3, `u_4]
+
+-- No later dependencies - param goes to front
+run_cmd
+  testReorganize #[.param, .mvar] #[.param `u_new, mkMVar 1] [`u_1, `u_2] [`u_new, `u_1, `u_2]
+
+end ReorganizeUniverseParamsTests
