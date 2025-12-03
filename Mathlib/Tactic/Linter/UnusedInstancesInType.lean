@@ -255,11 +255,15 @@ remainder of the type, and suggests replacing them with a use of `classical` in 
 def unusedFintypeInType : Linter where
   run := /- withSetOptionIn -/ fun cmd => do
     /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
-    until this is fixed: [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/bug.3A.20withSetOptionIn.20creates.20context-free.20info.20nodes/with/556896993) -/
-    if let `(command| set_option $opt:ident false in $_:command) := cmd then
+    until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313) -/
+    let mut override := false
+    if let `(command| set_option $opt:ident $val in $_:command) := cmd then
       if opt.getId == `linter.unusedFintypeInType then
-        return
-    unless getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
+        match val.raw with
+        | Syntax.atom _ "true" => override := true
+        | Syntax.atom _ "false" => return -- exit early
+        | _ => pure () -- invalid option value, should be caught during elaboration
+    unless override || getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
       (·.isAppOrForallOfConst `Fintype)
