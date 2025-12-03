@@ -164,10 +164,8 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
-  rcases v with ⟨l, rfl⟩
-  apply toList_injective
-  dsimp
-  simpa only [toList_ofFn] using List.ofFn_get _
+  ext
+  apply List.Vector.get_ofFn
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=

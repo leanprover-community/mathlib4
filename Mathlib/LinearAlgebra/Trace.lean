@@ -235,7 +235,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear (.id R) M N M N) (trace R (M
   ext f m g n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
-    trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
+    trace_eq_contract_apply, contractLeft_apply, lsmul_apply, smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]
 
 theorem trace_comp_comm :
@@ -260,7 +260,7 @@ theorem trace_tensorProduct' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M ⊗ N) (map f g) = trace R M f * trace R N g := by
   have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_tensorProduct R M N) f) g
   simp only [compr₂_apply, mapBilinear_apply, compl₁₂_apply, lsmul_apply,
-    Algebra.id.smul_eq_mul] at h
+    smul_eq_mul] at h
   exact h
 
 theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
