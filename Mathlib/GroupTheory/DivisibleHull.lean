@@ -54,6 +54,8 @@ namespace DivisibleHull
 /-- Create an element `m / s`. -/
 def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
 
+noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
+
 /-- Define coercion as `m ↦ m / 1`. -/
 @[coe]
 abbrev coe (m : M) := mk m 1
@@ -162,8 +164,6 @@ theorem coe_injective : Function.Injective ((↑) : M → DivisibleHull M) :=
 @[simp, norm_cast]
 theorem coe_inj {m m' : M} : (m : DivisibleHull M) = ↑m' ↔ m = m' :=
   coe_injective.eq_iff
-
-noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
 
 end TorsionFree
 
