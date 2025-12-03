@@ -148,7 +148,7 @@ lemma qExpansion_coeff_zero [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     (qExpansion h f).coeff 0 = valueAtInfty f := by
   simp [qExpansion_coeff, cuspFunction_apply_zero f hh hΓ]
 
-lemma hasSum_qExpansion_of_abs_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
+lemma hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
   simp only [qExpansion_coeff]
@@ -157,7 +157,7 @@ lemma hasSum_qExpansion_of_abs_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinusO
     simpa using hz
   have qmem : q ∈ Metric.ball 0 1 := by simpa using hq
   convert hasSum_taylorSeries_on_ball hdiff qmem using 2 with m
-  rw [sub_zero, smul_eq_mul, smul_eq_mul, mul_right_comm, smul_eq_mul, mul_assoc]
+  grind [sub_zero, smul_eq_mul]
 
 lemma hasSum_qExpansion [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
@@ -226,7 +226,7 @@ lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] [Γ.HasDetP
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (n : ℕ)
     {t : ℝ} (ht : 0 < t) : (qExpansion h f).coeff n =
     1 / h * ∫ u in (0)..h, 1 / 𝕢 h (u + t * I) ^ n * f (⟨u + t * I, by simpa using ht⟩) := by
-  -- We use a circle integral in the `q`-domain of radius `R = exp (-2 * π * t / N)`.
+  -- We use a circle integral in the `q`-domain of radius `R = exp (-2 * π * t / h)`.
   let R := Real.exp (-2 * π * t / h)
   have hR0 : 0 < R := Real.exp_pos _
   have hR1 : R < 1 := Real.exp_lt_one_iff.2 <| by simpa [neg_div] using div_pos (by positivity) hh
