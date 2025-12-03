@@ -103,7 +103,6 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
   hasWeakDeriv : ∀ m : ℕ, m < k → HasWeakDeriv Ω (g · m) (g · m.succ |>.curryLeft) μ
   memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p (μ.restrict Ω)
 
-
 lemma hasWTaylorSeriesUpTo_congr_ae (h : f =ᵐ[μ.restrict Ω] f')
   (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (μ : Measure E) :
     HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g k p μ := by
@@ -111,11 +110,44 @@ lemma hasWTaylorSeriesUpTo_congr_ae (h : f =ᵐ[μ.restrict Ω] f')
 
 namespace HasWTaylorSeriesUpTo
 
--- add basic lemmas: add, neg, sub and smul
+variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
+
+lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
+    HasWTaylorSeriesUpTo Ω (f + f') (g + g') k p μ where
+  zero_eq x := by simp [← hf.zero_eq, ← hf'.zero_eq]
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm)
+  memLp m hm := (hf.memLp m hm).add (hf'.memLp m hm)
+
+lemma neg (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    HasWTaylorSeriesUpTo Ω (-f) (-g) k p μ where
+  zero_eq x := by simp [← hf.zero_eq]
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).neg
+  memLp m hm := (hf.memLp m hm).neg
 
 @[simp]
-lemma zero : HasWTaylorSeriesUpTo Ω 0 (0 : E → FormalMultilinearSeries ℝ E F) k p μ := by
-  sorry
+lemma _root_.hasWTaylorSeriesUpTo_neg :
+    HasWTaylorSeriesUpTo Ω (-f) (-g) k p μ ↔ HasWTaylorSeriesUpTo Ω f g k p μ :=
+  ⟨fun hf ↦ by simpa using hf.neg, fun hf ↦ hf.neg⟩
+
+lemma sub (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
+    HasWTaylorSeriesUpTo Ω (f - f') (g - g') k p μ := by
+  rw [sub_eq_add_neg f f', sub_eq_add_neg g g']
+  exact hf.add hf'.neg
+
+lemma smul (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    HasWTaylorSeriesUpTo Ω (c • f) (c • g) k p μ where
+  zero_eq x := by simp [← hf.zero_eq]
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).smul
+  memLp m hm := (hf.memLp m hm).const_smul c
+
+@[simp]
+lemma zero : HasWTaylorSeriesUpTo Ω 0 (0 : E → FormalMultilinearSeries ℝ E F) k p μ where
+  zero_eq := by simp
+  hasWeakDeriv m hm := by
+    simp
+    -- HasWeakDeriv.zero morally proves this...
+    sorry
+  memLp m hm := by simp
 
 end HasWTaylorSeriesUpTo
 
@@ -125,24 +157,30 @@ def MemSobolev (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Pr
 
 namespace MemSobolev
 
-variable {g : E → F} {c : ℝ}
+variable {c : ℝ}
 
-lemma add (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) : MemSobolev Ω (f + g) k p μ := by
-  sorry
+lemma add (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
+    MemSobolev Ω (f + f') k p μ := by
+  obtain ⟨g, hg⟩ := hf
+  obtain ⟨g', hg'⟩ := hf'
+  exact ⟨g + g', hg.add hg'⟩
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
-  sorry
+  obtain ⟨g, hg⟩ := hf
+  exact ⟨-g, hg.neg⟩
 
-lemma sub (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) : MemSobolev Ω (f - g) k p μ := by
-  sorry
+lemma sub (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
+    MemSobolev Ω (f - f') k p μ := by
+  obtain ⟨g, hg⟩ := hf
+  obtain ⟨g', hg'⟩ := hf'
+  exact ⟨g - g', hg.sub hg'⟩
 
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
-  sorry
+  obtain ⟨g, hg⟩ := hf
+  exact ⟨c • g, hg.smul⟩
 
 @[simp]
-lemma zero : MemSobolev Ω (0 : E → F) k p μ := by
-  use 0
-  simp
+lemma zero : MemSobolev Ω (0 : E → F) k p μ := ⟨0, by simp⟩
 
 end MemSobolev
 
@@ -187,7 +225,6 @@ lemma add (hT₁ : IsRegular T₁ μ) (hT₂ : IsRegular T₂ μ) : IsRegular (T
   obtain ⟨f, hf, rfl⟩ := hT₁
   obtain ⟨g, hg, rfl⟩ := hT₂
   exact ⟨f + g, hf.add hg, ofFun_add hf hg |>.symm⟩
-
 
 lemma smul (hT : IsRegular T μ) (c : ℝ) : IsRegular (c • T) μ := by
   obtain ⟨f, hf, rfl⟩ := hT
