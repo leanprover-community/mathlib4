@@ -349,7 +349,7 @@ variable (𝕜 Ω Ω' n k) in
 /-- If `k ≤ n` and `Ω ⊆ Ω'`, `monoLM 𝕜 Ω Ω' n k` is the `𝕜`-linear inclusion of
 `𝓓^{n}(Ω, F)` inside `𝓓^{k}(Ω', F)`. Otherwise, this is the zero map.
 
-This is in fact continuous (see `monoCLM`), a topological embedding when `k = n` and `Ω ⊆ Ω'`
+This is in fact continuous (see `monoCLM`), and a topological embedding when `k = n` and `Ω ⊆ Ω'`
 (not in Mathlib yet). -/
 noncomputable def monoLM :
     𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω', F) where
@@ -393,7 +393,7 @@ variable (𝕜 Ω Ω' n k) in
 /-- If `k ≤ n` and `Ω ⊆ Ω'`, `monoCLM 𝕜 Ω Ω' n k` is the continuous `𝕜`-linear inclusion of
 `𝓓^{n}(Ω, F)` inside `𝓓^{k}(Ω', F)`. Otherwise, this is the zero map.
 
-This is in  topological embedding when `k = n` and `Ω ⊆ Ω'` (not in Mathlib yet). -/
+This is in fact a topological embedding when `k = n` and `Ω ⊆ Ω'` (not in Mathlib yet). -/
 noncomputable def monoCLM :
     𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω', F) where
   toLinearMap := monoLM 𝕜 Ω Ω' n k
