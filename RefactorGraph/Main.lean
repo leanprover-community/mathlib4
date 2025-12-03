@@ -22,12 +22,22 @@ def importsUsing (env : Environment) (nm : Name) : IO (HashSet Name) := do
   for (n,c) in env.constants do
     counter := counter + 1
     if counter % 1000 == 0 then
-      stderr.putStr s!"\rProgress: {counter} "
+      stderr.putStr s!"\rProgress: {counter}"
       stderr.flush
     if c.getUsedConstantsAsSet.contains nm then
       let some mod := env.getModuleFor? n | continue
       out := out.insert mod
+  stderr.putStrLn ""
+  stderr.flush
   return out
+
+def computeSubgraph
+    (importGraph : HashMap Name (HashSet Name)) (importsUsing : HashSet Name) :
+    IO (DAG Name) := do
+  let mut G := .empty
+  for mod in importsUsing do
+    G := G.insert mod <| (importGraph.getD mod {}).filter importsUsing.contains
+  return G
 
 def main (args : List String) : IO Unit := do
   match args with
@@ -40,16 +50,14 @@ def main (args : List String) : IO Unit := do
     stderr.flush
     let importGraph := importGraph.allAncestors
     let importsUsing ← importsUsing env (String.toName name)
-    let mut G : DAG Name := .empty
-    for mod in importsUsing do
-      stderr.putStr s!"\rProcessing {mod}"
-      stderr.flush
-      let parents := (importGraph.getD mod {}).filter fun n => importsUsing.contains n
-      G := G.insert mod parents
-    stderr.putStrLn "\nComputing transitive reduction..."
+    stderr.putStrLn "Computing subgraph... this may take a while..."
+    stderr.flush
+    let mut G ← computeSubgraph importGraph importsUsing
+    stderr.putStrLn "Computing transitive reduction..."
     stderr.flush
     G := G.transitiveReduction
-    for node in G.leaves do
-      println! node
+    stderr.putStrLn "Done!"
+    stderr.flush
+    println! G.dot
   | _ =>
     throw <| .userError "Usage: RefactorGraph <name>"

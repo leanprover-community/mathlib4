@@ -128,4 +128,17 @@ def transitiveReduction : DAG α := Id.run do
           result := result.removeEdge a b
   return result
 
+def dot [ToString α] : String := Id.run do
+  let mut result := "digraph G {\n"
+
+  for node in G.nodes do
+    result := result ++ s!"  \"{toString node}\";\n"
+
+  for (child, parents) in G.parent do
+    for parent in parents do
+      result := result ++ s!"  \"{toString parent}\" -> \"{toString child}\";\n"
+
+  result := result ++ "}"
+  return result
+
 end DAG
