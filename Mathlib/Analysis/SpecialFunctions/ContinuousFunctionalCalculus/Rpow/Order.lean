@@ -16,12 +16,6 @@ This file shows that `a ↦ a ^ p` is monotone for `p ∈ [0, 1]`, where `a` is 
 C⋆-algebra. The proof makes use of the integral representation of `rpow` in
 `Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation`.
 
-## Notes
-
-Here we only compute the integral up to a constant, even though the actual constant can be
-computed via contour integration. We chose to avoid this, as the constant is seldom if ever
-relevant in applications, and would needlessly complicate the proof.
-
 ## Main declarations
 
 + `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
