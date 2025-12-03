@@ -57,9 +57,9 @@ open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] [RCLike 𝕂]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω' : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕂 F]
-  {n : ℕ∞}
+  {n k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -157,6 +157,12 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+
+@[simp]
+theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
+    {tsupport_subset : tsupport f ⊆ Ω} :
+    TestFunction.mk f contDiff hasCompactSupport tsupport_subset = f :=
+  rfl
 
 section AddCommGroup
 
@@ -331,5 +337,91 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
     continuous_coinduced_dom]
 
 end Topology
+
+section Mono
+
+section
+
+variable [SMulCommClass ℝ 𝕜 F]
+
+open scoped Classical in
+variable (𝕜 Ω Ω' n k) in
+/-- If `k ≤ n` and `Ω ⊆ Ω'`, `monoLM 𝕜 Ω Ω' n k` is the `𝕜`-linear inclusion of
+`𝓓^{n}(Ω, F)` inside `𝓓^{k}(Ω', F)`. Otherwise, this is the zero map.
+
+This is in fact continuous (see `monoCLM`), and a topological embedding when `k = n` and `Ω ⊆ Ω'`
+(not in Mathlib yet). -/
+noncomputable def monoLM :
+    𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω', F) where
+  toFun f :=
+    if h : k ≤ n ∧ Ω ≤ Ω' then
+      ⟨f, f.contDiff.of_le (mod_cast h.1), f.hasCompactSupport, f.tsupport_subset.trans h.2⟩
+    else 0
+  map_add' f g := by split_ifs <;> ext <;> simp
+  map_smul' c f := by split_ifs <;> ext <;> simp
+
+open scoped Classical in
+@[simp]
+lemma monoLM_apply (f : 𝓓^{n}(Ω, F)) :
+    (monoLM 𝕜 Ω Ω' n k f : E → F) = if k ≤ n ∧ Ω ≤ Ω' then f else 0 := by
+  rw [monoLM]
+  split_ifs <;> rfl
+
+@[simp]
+lemma monoLM_eq_zero (H : ¬ (k ≤ n ∧ Ω ≤ Ω')) :
+    (monoLM 𝕜 Ω Ω' n k : 𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω', F)) = 0 := by
+  ext; simp [H]
+
+lemma monoLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoLM 𝕜 Ω Ω' n k : 𝓓^{n}(Ω, F) → _) = monoLM 𝕜' Ω Ω' n k :=
+  rfl
+
+variable (𝕜) in
+lemma monoLM_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (hΩ : Ω ≤ Ω')
+    (f : 𝓓^{n}_{K}(E, F)) :
+    monoLM 𝕜 Ω Ω' n k (ofSupportedIn K_sub_Ω f) =
+      ofSupportedIn (subset_trans K_sub_Ω hΩ) (ContDiffMapSupportedIn.monoLM 𝕜 n k K K f) := by
+  ext
+  by_cases hkn : k ≤ n <;> simp [hΩ, hkn]
+
+end
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜 Ω Ω' n k) in
+/-- If `k ≤ n` and `Ω ⊆ Ω'`, `monoCLM 𝕜 Ω Ω' n k` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n}(Ω, F)` inside `𝓓^{k}(Ω', F)`. Otherwise, this is the zero map.
+
+This is in fact a topological embedding when `k = n` and `Ω ⊆ Ω'` (not in Mathlib yet). -/
+noncomputable def monoCLM :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω', F) where
+  toLinearMap := monoLM 𝕜 Ω Ω' n k
+  cont := show Continuous (monoLM 𝕜 Ω Ω' n k) by
+    by_cases hΩ : Ω ≤ Ω'
+    · rw [TestFunction.continuous_iff_continuous_comp]
+      intro K K_sub_Ω
+      refine .congr ?_ fun f ↦ (monoLM_ofSupportedIn 𝕜 K_sub_Ω hΩ f).symm
+      exact (continuous_ofSupportedIn (subset_trans K_sub_Ω hΩ)).comp
+        (ContDiffMapSupportedIn.monoCLM 𝕜 n k K K).continuous
+    · simpa [hΩ] using continuous_zero
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n}(Ω, F)) :
+    (monoCLM 𝕜 Ω Ω' n k f : E → F) = if k ≤ n ∧ Ω ≤ Ω' then f else 0 :=
+  monoLM_apply f
+
+@[simp]
+lemma monoCLM_eq_zero (H : ¬ (k ≤ n ∧ Ω ≤ Ω')) :
+    (monoCLM 𝕜 Ω Ω' n k : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω', F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
+    (monoCLM 𝕜 Ω Ω' n k : 𝓓^{n}(Ω, F) → _) = monoCLM 𝕜' Ω Ω' n k :=
+  rfl
+
+end Mono
 
 end TestFunction
