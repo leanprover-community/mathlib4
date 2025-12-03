@@ -25,7 +25,7 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
     -- [NormedSpace 𝕂 F]
-  {n : ℕ∞} {μ : Measure E}
+  {f f' : E → F} {n : ℕ∞} {k : ℕ∞} {p : ℝ≥0∞} {μ : Measure E}
 
 namespace Distribution
 
@@ -62,6 +62,26 @@ variable (Ω) in
 def HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop :=
   IsRepresentedBy (weakDeriv Ω f μ) g μ
 
+namespace HasWeakDeriv
+
+variable {g g' : E → E →L[ℝ] F} {c : ℝ}
+
+lemma add (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ) :
+    HasWeakDeriv Ω (f + f') (g + g') μ := by
+  sorry
+
+lemma neg (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (-f) (-g) μ := by
+  sorry
+
+lemma sub (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ) :
+    HasWeakDeriv Ω (f - f') (g - g') μ := by
+  sorry
+
+lemma smul (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (c • f) (c • g) μ := by
+  sorry
+
+end HasWeakDeriv
+
 variable (Ω) in
 /-- `f` has "weak taylor series" g, which are all L^p
 k currently can be `∞`. Do we want that? -/
@@ -74,6 +94,24 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
 variable (Ω) in
 def MemSobolev (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
   ∃ g : E → FormalMultilinearSeries ℝ E F, HasWTaylorSeriesUpTo Ω f g k p μ
+
+namespace MemSobolev
+
+variable {g : E → F} {c : ℝ}
+
+lemma add (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) : MemSobolev Ω (f + g) k p μ := by
+  sorry
+
+lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
+  sorry
+
+lemma sub (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) : MemSobolev Ω (f - g) k p μ := by
+  sorry
+
+lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
+  sorry
+
+end MemSobolev
 
 /- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp, we maybe should
 disable the Norm → ENorm instance. -/
