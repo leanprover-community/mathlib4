@@ -87,5 +87,4 @@ theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(V, E)) : 𝓕⁻ (f.to
   convert (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
   simp
 
-
 end FourierTransform
