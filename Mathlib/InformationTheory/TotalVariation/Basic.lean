@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Decision.DeGrootInfo
-import Mathlib.Probability.Distributions.Gaussian.Real
+module
+
+public import Mathlib.Probability.Decision.DeGrootInfo
+public import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!
 # Total variation distance
@@ -18,6 +20,8 @@ import Mathlib.Probability.Distributions.Gaussian.Real
 * `fooBar_unique`
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Bool
 

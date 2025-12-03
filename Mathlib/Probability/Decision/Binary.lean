@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Decision.BayesEstimator
-import Mathlib.Probability.Decision.BoolMeasure
-import Mathlib.Probability.Decision.Risk.Countable
+module
+
+public import Mathlib.Probability.Decision.BayesEstimator
+public import Mathlib.Probability.Decision.BoolMeasure
+public import Mathlib.Probability.Decision.Risk.Countable
 
 /-!
 # Simple Bayesian binary hypothesis testing
@@ -19,6 +21,8 @@ import Mathlib.Probability.Decision.Risk.Countable
 * `fooBar_unique`
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 

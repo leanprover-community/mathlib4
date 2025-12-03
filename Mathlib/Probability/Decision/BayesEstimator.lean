@@ -3,10 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+module
 
-import Mathlib.Probability.Decision.AuxLemmas
-import Mathlib.Probability.Decision.Risk.Basic
-import Mathlib.Probability.Kernel.Posterior
+public import Mathlib.Probability.Decision.AuxLemmas
+public import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Kernel.Posterior
 
 /-!
 # Bayes estimator and generalized Bayes estimator
@@ -36,6 +37,8 @@ estimator, then the Bayesian risk attains the risk lower bound
 
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 open scoped ENNReal NNReal

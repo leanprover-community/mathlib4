@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Decision.Risk.Basic
+module
+
+public import Mathlib.Probability.Decision.Risk.Basic
 
 /-!
 # Statistical information
@@ -23,6 +25,8 @@ TODO: cite DeGroot and also Duchi et al.
 ## Implementation details
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Function
 

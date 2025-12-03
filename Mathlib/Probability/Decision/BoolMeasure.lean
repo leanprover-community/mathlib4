@@ -3,7 +3,9 @@ Copyright (c) 2025 Lorenzo Luccioli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.MeasureTheory.Measure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # BoolMeasure
@@ -33,6 +35,7 @@ import Mathlib.MeasureTheory.Measure.WithDensity
 Foobars, barfoos
 -/
 
+@[expose] public section
 
 open MeasureTheory
 
