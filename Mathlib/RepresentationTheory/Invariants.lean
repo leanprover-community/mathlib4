@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.FDRep
+module
+
+public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.FDRep
 
 /-!
 # Subspace of invariants a group representation
@@ -17,6 +19,8 @@ subspace of invariants.
 In order for the definition of the average element to make sense, we need to assume for most of the
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -73,7 +77,7 @@ def invariants : Submodule k V where
   carrier := setOf fun v => ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
-  smul_mem' r v hv g := by simp only [hv g, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  smul_mem' r v hv g := by simp only [hv g, map_smulₛₗ, RingHom.id_apply]
 
 @[simp]
 theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v := by rfl

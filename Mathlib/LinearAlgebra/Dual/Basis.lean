@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Bases of dual vector spaces
@@ -29,6 +31,8 @@ This file concerns bases on dual vector spaces.
   * `Module.DualBases.coe_dualBasis`: if `e` and `ε` form a dual pair,
     then `ε` is a basis.
 -/
+
+@[expose] public section
 
 open Module Dual Submodule LinearMap Function
 
@@ -57,14 +61,14 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
   rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, LinearMap.sum_apply]
-  simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
+  simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq', Finsupp.if_mem_support]
 
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
   rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
-  simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq,
+  simp_rw [map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq,
     Finsupp.if_mem_support]
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
@@ -209,7 +213,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open Lean.Elab.Tactic in
 /-- Try using `Set.toFinite` to dispatch a `Set.Finite` goal. -/
-def evalUseFiniteInstance : TacticM Unit := do
+meta def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 
 elab "use_finite_instance" : tactic => evalUseFiniteInstance

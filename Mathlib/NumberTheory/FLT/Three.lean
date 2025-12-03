@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
   Lorenzo Luccioli, Pietro Monticone, Alexis Saurin, Florent Schaffhauser
 -/
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
-import Mathlib.Algebra.Ring.Divisibility.Lemmas
+module
+
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
@@ -47,6 +49,8 @@ The strategy is the following:
   construct such an isomorphism, tactics like `decide` would not work.
 
 -/
+
+@[expose] public section
 
 section case1
 
@@ -318,8 +322,7 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
     λ ^ 2 ∣ S'.a + S'.b ∨ λ ^ 2 ∣ S'.a + η * S'.b ∨ λ ^ 2 ∣ S'.a + η ^ 2 * S'.b := by
-  by_contra! h
-  rcases h with ⟨h1, h2, h3⟩
+  by_contra! ⟨h1, h2, h3⟩
   rw [← emultiplicity_lt_iff_not_dvd] at h1 h2 h3
   have h1' : FiniteMultiplicity (hζ.toInteger - 1) (S'.a + S'.b) :=
     finiteMultiplicity_iff_emultiplicity_ne_top.2 (fun ht ↦ by simp [ht] at h1)

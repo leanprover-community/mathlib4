@@ -3,8 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Cardinality of a module
@@ -12,6 +14,8 @@ import Mathlib.SetTheory.Cardinal.Basic
 This file proves that the cardinality of a module without zero divisors is at least the cardinality
 of its base ring.
 -/
+
+@[expose] public section
 
 open Function
 

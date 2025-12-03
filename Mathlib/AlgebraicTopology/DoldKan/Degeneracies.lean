@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -24,6 +26,8 @@ statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -48,7 +52,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
       nonpos_iff_eq_zero, add_eq_zero, false_and, reduceCtorEq] at hj
   · dsimp
-    rw [Fin.lt_iff_val_lt_val, Fin.val_succ]
+    rw [Fin.lt_def, Fin.val_succ]
     linarith
 
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :

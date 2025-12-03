@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Countable
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.Measurability
+module
+
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.Measurability
 
 /-!
 # Measurable spaces and measurable functions
@@ -34,6 +36,8 @@ contains all of them.
 
 measurable space, σ-algebra, measurable function
 -/
+
+@[expose] public section
 
 assert_not_exists Covariant MonoidWithZero
 
@@ -249,7 +253,6 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 
 @[measurability]
@@ -503,7 +506,6 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
 @[fun_prop, measurability]

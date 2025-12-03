@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # Finite-dimensional vector spaces
@@ -33,6 +35,8 @@ You should not assume that there has been any effort to state lemmas as generall
 Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
 `Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
+
+@[expose] public section
 
 universe u v v' w
 
@@ -111,12 +115,12 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
         apply_fun Equiv.finsuppUnique
-        simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
+        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext
-        simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
+        simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
         exact mul_div_cancel_right₀ _ h }
 

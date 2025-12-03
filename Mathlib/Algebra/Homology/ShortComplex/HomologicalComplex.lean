@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.Algebra.Homology.ShortComplex.Preadditive
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.Tactic.Linarith
 
 /-!
 # The short complexes attached to homological complexes
@@ -21,6 +23,8 @@ the homology of the short complex `(shortComplexFunctor C c i).obj K`, which can
 abbreviated as `K.sc i`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 

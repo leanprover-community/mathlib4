@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Update
-import Mathlib.Data.Prod.TProd
-import Mathlib.Data.Set.UnionLift
-import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Data.Finset.Update
+public import Mathlib.Data.Prod.TProd
+public import Mathlib.Data.Set.UnionLift
+public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Instances
+public import Mathlib.Order.Disjointed
 
 /-!
 # Constructions for measurable spaces and functions
@@ -17,6 +19,8 @@ import Mathlib.Order.Disjointed
 This file provides several ways to construct new measurable spaces and functions from old ones:
 `Quotient`, `Subtype`, `Prod`, `Pi`, etc.
 -/
+
+@[expose] public section
 
 assert_not_exists Filter
 
@@ -186,7 +190,6 @@ section
 
 variable [MeasurableSpace α]
 
-@[measurability]
 theorem measurable_subtype_coe {p : α → Prop} : Measurable ((↑) : Subtype p → α) :=
   MeasurableSpace.le_map_comap
 
@@ -364,12 +367,10 @@ instance Prod.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : Me
     MeasurableSpace (α × β) :=
   m₁.prod m₂
 
-@[measurability]
 theorem measurable_fst {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.fst : α × β → α) :=
   Measurable.of_comap_le le_sup_left
 
-@[measurability]
 theorem measurable_snd {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.snd : α × β → β) :=
   Measurable.of_comap_le le_sup_right
@@ -879,6 +880,17 @@ lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Mea
 
 end prop
 
+@[fun_prop]
+lemma Measurable.eq_const {_ : MeasurableSpace α} [MeasurableSpace β] [MeasurableSingletonClass β]
+    {f : α → β} (hf : Measurable f) (a : β) : Measurable fun x => f x = a :=
+  measurableSet_setOf.mp (measurableSet_eq.preimage hf)
+
+@[fun_prop]
+lemma Measurable.const_eq {_ : MeasurableSpace α} [MeasurableSpace β] [MeasurableSingletonClass β]
+    {f : α → β} (hf : Measurable f) (a : β) : Measurable fun x => a = f x := by
+  conv => enter [1, x]; rw [eq_comm]
+  exact .eq_const hf a
+
 section Set
 variable [MeasurableSpace β] {g : β → Set α}
 
@@ -888,6 +900,8 @@ instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; in
 
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
   unfold Set; infer_instance
+
+@[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
@@ -913,19 +927,26 @@ lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
 
-lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.Finite} :=
+variable [Countable α]
+
+lemma MeasurableSet.setOf_finite : MeasurableSet {s : Set α | s.Finite} :=
   Countable.setOf_finite.measurableSet
 
-lemma MeasurableSet.setOf_infinite [Countable α] : MeasurableSet {s : Set α | s.Infinite} :=
+lemma MeasurableSet.setOf_infinite : MeasurableSet {s : Set α | s.Infinite} :=
   .setOf_finite |> .compl
 
-lemma MeasurableSet.sep_finite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+lemma MeasurableSet.sep_finite {S : Set (Set α)} (hS : MeasurableSet S) :
     MeasurableSet {s ∈ S | s.Finite} :=
   hS.inter .setOf_finite
 
-lemma MeasurableSet.sep_infinite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+lemma MeasurableSet.sep_infinite {S : Set (Set α)} (hS : MeasurableSet S) :
     MeasurableSet {s ∈ S | s.Infinite} :=
   hS.inter .setOf_infinite
+
+@[fun_prop]
+protected lemma Measurable.subset {s t : β → Set α} (hs : Measurable s) (hs : Measurable t) :
+    Measurable fun a ↦ s a ⊆ t a :=
+  .forall fun i ↦ .imp (by fun_prop) (by fun_prop)
 
 end Set
 
@@ -975,3 +996,31 @@ lemma measurable_piCurry_symm : Measurable (Equiv.piCurry X).symm := measurable_
 end Sigma
 
 end curry
+
+variable (α) in
+/-- Typeclass for a measurable space `α` for which the diagonal of `α × α` is measurable. -/
+class MeasurableEq [MeasurableSpace α] where
+  measurableSet_diagonal : MeasurableSet (diagonal α)
+
+export MeasurableEq (measurableSet_diagonal)
+
+attribute [measurability] measurableSet_diagonal
+
+theorem measurableSet_eq_fun {m : MeasurableSpace α} [MeasurableSpace β] [MeasurableEq β]
+    {f g : α → β} (hf : Measurable f) (hg : Measurable g) : MeasurableSet {x | f x = g x} :=
+  measurableSet_diagonal.preimage (hf.prodMk hg)
+
+@[fun_prop]
+theorem Measurable.eq {m : MeasurableSpace α} [MeasurableSpace β] [MeasurableEq β]
+    {f g : α → β} (hf : Measurable f) (hg : Measurable g) : Measurable fun x => f x = g x :=
+  measurableSet_setOf.mp (measurableSet_eq_fun hf hg)
+
+instance [MeasurableSpace α] [MeasurableEq α] : MeasurableSingletonClass α := by
+  constructor
+  simp_rw [← setOf_eq_eq_singleton, measurableSet_setOf]
+  measurability
+
+instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] : MeasurableEq α := by
+  constructor
+  simp_rw [← Set.range_diag, Set.range_eq_iUnion]
+  measurability

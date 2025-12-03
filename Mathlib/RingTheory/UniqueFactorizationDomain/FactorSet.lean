@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Set of factors
@@ -17,6 +19,8 @@ import Mathlib.Tactic.Ring
 * set up the complete lattice structure on `FactorSet`.
 
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -233,8 +237,7 @@ theorem factors_prod (a : Associates α) : a.factors.prod = a := by
   rcases Associates.mk_surjective a with ⟨a, rfl⟩
   rcases eq_or_ne a 0 with rfl | ha
   · simp
-  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod,
-      -Quotient.eq]
+  · simp [ha, prod_mk, mk_eq_mk_iff_associated, UniqueFactorizationMonoid.factors_prod]
 
 @[simp]
 theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
@@ -366,7 +369,7 @@ theorem mem_factors'_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) (hd 
     Subtype.mk (Associates.mk p) (irreducible_mk.2 hp) ∈ factors' a := by
   obtain ⟨q, hq, hpq⟩ := exists_mem_factors_of_dvd ha0 hp hd
   apply Multiset.mem_pmap.mpr; use q; use hq
-  exact Subtype.eq (Eq.symm (mk_eq_mk_iff_associated.mpr hpq))
+  exact Subtype.ext (Eq.symm (mk_eq_mk_iff_associated.mpr hpq))
 
 theorem mem_factors'_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     Subtype.mk (Associates.mk p) (irreducible_mk.2 hp) ∈ factors' a ↔ p ∣ a := by

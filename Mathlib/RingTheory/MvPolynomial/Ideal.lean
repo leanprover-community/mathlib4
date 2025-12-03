@@ -3,8 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Ideal
-import Mathlib.Algebra.MvPolynomial.Division
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Ideal
+public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -16,6 +19,8 @@ Notably this contains results about monomial ideals.
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
 -/
+
+@[expose] public section
 
 
 variable {σ R : Type*}
@@ -50,3 +55,51 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
   simp [Nat.one_le_iff_ne_zero]
 
 end MvPolynomial
+
+namespace MonomialOrder
+
+variable [CommSemiring R] {m : MonomialOrder σ}
+open Ideal
+
+lemma span_leadingTerm_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
+    span (m.leadingTerm '' (B \ {0})) = span (m.leadingTerm '' B) :=
+  m.image_leadingTerm_sdiff_singleton_zero B ▸ Ideal.span_sdiff_singleton_zero
+
+lemma span_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
+    span (m.leadingTerm '' (insert 0 B)) = span (m.leadingTerm '' B) := by
+  by_cases h : 0 ∈ B
+  · rw [Set.insert_eq_of_mem h]
+  · simp [image_leadingTerm_insert_zero]
+
+lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
+    (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p)) :
+    span (m.leadingTerm '' B) =
+      span ((fun p ↦ MvPolynomial.monomial (m.degree p) (1 : R)) '' B) := by
+  classical
+  apply le_antisymm
+  all_goals
+    rw [Ideal.span_le, Set.image_subset_iff]
+    intro p hp
+  · rw [Set.mem_preimage, SetLike.mem_coe, ← C_mul_leadingCoeff_monomial_degree]
+    exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨_, hp, rfl⟩)
+  · rw [Set.mem_preimage, SetLike.mem_coe]
+    convert (span <| m.leadingTerm '' B).mul_mem_left
+      (MvPolynomial.C (hB p hp).unit⁻¹.val) <| subset_span ⟨p, hp, rfl⟩
+    rw [← C_mul_leadingCoeff_monomial_degree, ← mul_assoc, ← map_mul,
+      IsUnit.val_inv_mul, MvPolynomial.C_1, one_mul]
+
+lemma span_leadingTerm_eq_span_monomial₀ {B : Set (MvPolynomial σ R)}
+    (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p) ∨ p = 0) :
+    span (m.leadingTerm '' B) =
+      span ((fun p ↦ MvPolynomial.monomial (m.degree p) 1) '' (B \ {0})) := by
+  rw [← m.span_leadingTerm_sdiff_singleton_zero]
+  apply span_leadingTerm_eq_span_monomial
+  simp_intro .. [or_iff_not_imp_right.mp (hB _ _)]
+
+lemma span_leadingTerm_eq_span_monomial' {k : Type*} [Field k] {B : Set (MvPolynomial σ k)} :
+    span (m.leadingTerm '' B) =
+      span ((fun p ↦ MvPolynomial.monomial (m.degree p) 1) '' (B \ {0})) := by
+  apply span_leadingTerm_eq_span_monomial₀
+  simp [em']
+
+end MonomialOrder

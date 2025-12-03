@@ -3,7 +3,9 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Semiconj.Defs
+module
+
+public import Mathlib.Algebra.Group.Semiconj.Defs
 
 /-!
 # Commuting pairs of elements in monoids
@@ -23,6 +25,8 @@ This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other o
 
 Most of the proofs come from the properties of `SemiconjBy`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

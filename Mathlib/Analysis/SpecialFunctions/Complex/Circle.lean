@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+module
+
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-!
 # Maps on the unit circle
@@ -13,6 +15,8 @@ In this file we prove some basic lemmas about `expMapCircle` and the restriction
 to the unit circle. These two maps define a partial equivalence between `circle` and `ℝ`, see
 `circle.argPartialEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
+
+@[expose] public section
 
 
 open Complex Function Set

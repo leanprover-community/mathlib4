@@ -3,14 +3,18 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Operator.Bilinear
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Normed.Operator.Bilinear
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Measurable functions in normed spaces
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -55,7 +59,6 @@ theorem measurable_apply' [MeasurableSpace E] [OpensMeasurableSpace E] [Measurab
     [BorelSpace F] : Measurable fun (x : E) (f : E →L[𝕜] F) => f x :=
   measurable_pi_lambda _ fun f => f.measurable
 
-@[measurability]
 theorem measurable_coe [MeasurableSpace F] [BorelSpace F] :
     Measurable fun (f : E →L[𝕜] F) (x : E) => f x :=
   measurable_pi_lambda _ measurable_apply

@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.CategoryTheory.Shift.Adjunction
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The (naive) shift on the opposite category
@@ -45,6 +47,8 @@ We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` st
 `CommShift` structures.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -142,7 +146,7 @@ variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
 The functor `F.op`, seen as a functor from `OppositeShift C A` to `OppositeShift D A`.
 (We will use this to carry a `CommShift` instance for the naive shifts on the opposite category.
 Then, in the pretriangulated case, we will be able to put a `CommShift` instance on `F.op`
-for the modified shifts and not deal with instance clashes.
+for the modified shifts and not deal with instance clashes.)
 -/
 def OppositeShift.functor : OppositeShift C A ⥤ OppositeShift D A := F.op
 

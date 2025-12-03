@@ -3,8 +3,10 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating.Curry
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Exterior Algebras
@@ -43,6 +45,8 @@ of the exterior algebra.
 The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : QuadraticForm R M)`,
 as this avoids us having to duplicate API.
 -/
+
+@[expose] public section
 
 
 universe u1 u2 u3 u4 u5
@@ -206,7 +210,7 @@ theorem ι_inj (x y : M) : ι R x = ι R y ↔ x = y :=
   ι_leftInverse.injective.eq_iff
 
 @[simp]
-theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, LinearMap.map_zero]
+theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0, map_zero]
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
@@ -218,7 +222,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
     have : r = 0 ∧ 0 = x := Prod.ext_iff.1 hf0
     exact this.symm.imp_left Eq.symm
   · rintro ⟨rfl, rfl⟩
-    rw [LinearMap.map_zero, RingHom.map_zero]
+    rw [map_zero, map_zero]
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
@@ -233,7 +237,7 @@ theorem ι_range_disjoint_one :
   rintro _ ⟨x, hx⟩ h
   obtain ⟨r, rfl : algebraMap R (ExteriorAlgebra R M) r = _⟩ := Submodule.mem_one.mp h
   rw [ι_eq_algebraMap_iff x] at hx
-  rw [hx.2, RingHom.map_zero]
+  rw [hx.2, map_zero]
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=

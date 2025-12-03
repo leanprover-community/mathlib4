@@ -3,15 +3,19 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Init
-import Qq
-import Lean.Expr
+module
+
+public import Mathlib.Init
+public meta import Qq
+public meta import Lean.Expr
 
 /-!
 # Extra `Qq` helpers
 
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta
 

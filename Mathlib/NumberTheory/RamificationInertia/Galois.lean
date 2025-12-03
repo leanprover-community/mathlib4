@@ -3,8 +3,10 @@ Copyright (c) 2024 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-import Mathlib.NumberTheory.RamificationInertia.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Ramification theory in Galois extensions of Dedekind domains
@@ -18,11 +20,11 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 ## Main definitions
 
 * `Ideal.ramificationIdxIn`: It can be seen from
-  the theorem `Ideal.ramificationIdx_eq_of_IsGalois` that all `Ideal.ramificationIdx` over a fixed
-  maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`.
+  the theorem `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a
+  fixed maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`.
 
 * `Ideal.inertiaDegIn`: It can be seen from
-  the theorem `Ideal.inertiaDeg_eq_of_IsGalois` that all `Ideal.inertiaDeg` over a fixed
+  the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`.
 
 ## Main results
@@ -41,6 +43,8 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 -/
 
+@[expose] public section
+
 open Algebra Pointwise
 
 attribute [local instance] FractionRing.liftAlgebra
@@ -49,7 +53,7 @@ namespace Ideal
 
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from the theorem
-  `Ideal.ramificationIdx_eq_of_IsGalois` that all `Ideal.ramificationIdx` over a fixed
+  `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
@@ -58,7 +62,7 @@ noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
 
 open scoped Classical in
 /-- If `L / K` is a Galois extension, it can be seen from
-  the theorem `Ideal.inertiaDeg_eq_of_IsGalois` that all `Ideal.inertiaDeg` over a fixed
+  the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`. -/
 noncomputable def inertiaDegIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
@@ -137,7 +141,7 @@ instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesO
 alias isPretransitive_of_isGalois := isPretransitive_of_isGaloisGroup
 
 include G in
-/-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
+/-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
     ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
@@ -147,7 +151,7 @@ theorem ramificationIdx_eq_of_isGaloisGroup :
 alias ramificationIdx_eq_of_isGalois := ramificationIdx_eq_of_isGaloisGroup
 
 include G in
-/-- All the `inertiaDeg` over a fixed maximal ideal are the same. -/
+/-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
 theorem inertiaDeg_eq_of_isGaloisGroup [p.IsMaximal] :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
@@ -205,15 +209,9 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Nat.card G := by
   let K := FractionRing A
   let L := FractionRing B
-  let _ : MulSemiringAction G L := MulSemiringAction.compHom L
-      ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
-  have : SMulDistribClass G B L := ⟨fun g b x ↦ by
-    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
-    congr
-    exact IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b⟩
-  have hGKL : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A B K L
+  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
-  rw [hGKL.card_eq_finrank, ← sum_ramification_inertia B K L hpb]
+  rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank, ← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
   rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp

@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+module
+
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 # Reflexive coequalizers
@@ -49,6 +51,8 @@ reflexive.
 * Bundle the reflexive pairs of kernel pairs and of adjunction as functors out of the walking
   reflexive pair.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

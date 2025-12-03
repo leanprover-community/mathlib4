@@ -3,10 +3,11 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.CategoryTheory.ToApp
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Lax functors
@@ -21,10 +22,10 @@ A lax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`, which we
+* `CategoryTheory.LaxFunctor B C` : a lax functor between bicategories `B` and `C`, which we
   denote by `B ⥤ᴸ C`.
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
-* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
+* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on a Lax functor that promotes a
   Lax functor to a pseudofunctor
 
 ## Future work
@@ -34,6 +35,8 @@ since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A poss
 be to mirror these constructions for lax functors.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -189,7 +192,7 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]
 
-/-- A structure on an Lax functor that promotes an Lax functor to a pseudofunctor.
+/-- A structure on a Lax functor that promotes a Lax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfLax`. -/
 structure PseudoCore (F : B ⥤ᴸ C) where

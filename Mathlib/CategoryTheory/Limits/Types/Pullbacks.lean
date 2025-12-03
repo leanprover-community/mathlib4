@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Pullbacks in the category of types
@@ -12,6 +14,8 @@ In `Type*`, the pullback of `f : X ⟶ Z` and `g : Y ⟶ Z` is the
 subtype `{ p : X × Y // f p.1 = g p.2 }` of the product.
 We show some additional lemmas for pullbacks in the category of types.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -196,5 +200,41 @@ lemma range_pullbackFst : Set.range (pullback.fst f g) = f ⁻¹' Set.range g :=
 @[simp]
 lemma range_pullbackSnd : Set.range (pullback.snd f g) = g ⁻¹' Set.range f :=
   range_snd_of_isPullback (.of_hasPullback f g)
+
+section
+
+variable {X₁ X₂ X₃ X₄ : Type u} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X₄}
+  {l : X₁ ⟶ X₃} {b : X₃ ⟶ X₄}
+
+lemma ext_of_isPullback (h : IsPullback t l r b) {x₁ y₁ : X₁}
+    (h₁ : t x₁ = t y₁) (h₂ : l x₁ = l y₁) : x₁ = y₁ :=
+  (h.isLimit.conePointUniqueUpToIso (Types.pullbackLimitCone _ _).isLimit).toEquiv.injective
+    (by dsimp; ext <;> assumption)
+
+lemma exists_of_isPullback (h : IsPullback t l r b)
+    (x₂ : X₂) (x₃ : X₃) (hx : r x₂ = b x₃) :
+    ∃ x₁, t x₁ = x₂ ∧ l x₁ = x₃ := by
+  obtain ⟨x₁, hx₁⟩ :=
+    (PullbackCone.IsLimit.equivPullbackObj h.isLimit).surjective ⟨⟨x₂, x₃⟩, hx⟩
+  rw [Subtype.ext_iff] at hx₁
+  exact ⟨x₁, congr_arg _root_.Prod.fst hx₁,
+    congr_arg _root_.Prod.snd hx₁⟩
+
+variable (t l r b) in
+lemma isPullback_iff :
+  IsPullback t l r b ↔ t ≫ r = l ≫ b ∧
+    (∀ x₁ y₁, t x₁ = t y₁ ∧ l x₁ = l y₁ → x₁ = y₁) ∧
+    ∀ x₂ x₃, r x₂ = b x₃ → ∃ x₁, t x₁ = x₂ ∧ l x₁ = x₃:= by
+  constructor
+  · intro h
+    exact ⟨h.w, fun x₁ y₁ ⟨h₁, h₂⟩ ↦ ext_of_isPullback h h₁ h₂, exists_of_isPullback h⟩
+  · rintro ⟨w, h₁, h₂⟩
+    let φ : X₁ ⟶ PullbackObj r b := fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_fun w x₁⟩
+    have hφ : IsIso φ := by
+      rw [isIso_iff_bijective]
+      grind [Function.Bijective, Function.Injective, Function.Surjective]
+    exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
+      (PullbackCone.ext (asIso φ)).symm⟩⟩
+end
 
 end CategoryTheory.Limits.Types

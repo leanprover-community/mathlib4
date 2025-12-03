@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -14,6 +16,8 @@ We define the pointwise category structure on indexed families of objects in a c
 (and also the dependent generalization).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.ZeroCons
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Empty and nonempty finite sets
@@ -20,6 +22,8 @@ This file defines the empty finite set ∅ and a predicate for nonempty `Finset`
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -203,7 +207,7 @@ You can add lemmas to the rule-set by tagging them with either:
 
 TODO: should some of the lemmas be `aesop safe simp` instead?
 -/
-def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
+meta def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (Option Q(Finset.Nonempty $s)) := do
   -- Aesop expects to operate on goals, so we're going to make a new goal.
   let goal ← Lean.Meta.mkFreshExprMVar q(Finset.Nonempty $s)

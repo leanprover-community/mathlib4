@@ -3,11 +3,13 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Triangles
@@ -17,6 +19,8 @@ It also defines morphisms between these triangles.
 
 TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -438,6 +442,22 @@ def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃
 
+/-- The first morphism of a triangle, as a natural transformation `π₁ ⟶ π₂`. -/
+@[simps]
+def π₁Toπ₂ : (π₁ : Triangle C ⥤ C) ⟶ Triangle.π₂ where
+  app T := T.mor₁
+
+/-- The second morphism of a triangle, as a natural transformation `π₂ ⟶ π₃`. -/
+@[simps]
+def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
+  app T := T.mor₂
+
+/-- The third morphism of a triangle, as a natural
+transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
+@[simps]
+def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C (1 : ℤ) where
+  app T := T.mor₃
+
 section
 
 variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
@@ -445,6 +465,23 @@ variable {A B : Triangle C} (φ : A ⟶ B) [IsIso φ]
 instance : IsIso φ.hom₁ := (inferInstance : IsIso (π₁.map φ))
 instance : IsIso φ.hom₂ := (inferInstance : IsIso (π₂.map φ))
 instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
+
+end
+
+section
+
+variable {J : Type*} [Category J]
+
+/-- Constructor for functors to the category of triangles. -/
+@[simps]
+def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
+    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
+    J ⥤ Triangle C where
+  obj j := mk (mor₁.app j) (mor₂.app j) (mor₃.app j)
+  map φ :=
+    { hom₁ := obj₁.map φ
+      hom₂ := obj₂.map φ
+      hom₃ := obj₃.map φ }
 
 end
 

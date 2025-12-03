@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Kaehler
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Support
 
 /-!
 # Smooth locus of an algebra
@@ -21,6 +23,8 @@ Some of them are true for arbitrary algebras but the proof is substantially hard
   The smooth locus is the whole spectrum if and only if `A` is smooth over `R`.
 - `Algebra.isOpen_smoothLocus` : The smooth locus is open.
 -/
+
+@[expose] public section
 
 universe u
 

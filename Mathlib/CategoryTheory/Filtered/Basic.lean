@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Filtered categories
@@ -49,6 +51,8 @@ functor from a finite category, there is `X : C` such that `Nonempty (limit (F.o
 This is shown in `CategoryTheory.Limits.Filtered`.
 
 -/
+
+@[expose] public section
 
 
 open Function

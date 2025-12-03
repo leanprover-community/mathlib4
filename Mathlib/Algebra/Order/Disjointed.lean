@@ -3,9 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Order.SuccPred.PartialSups
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Algebra.Order.SuccPred.PartialSups
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Disjointed
 
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`
@@ -17,6 +19,8 @@ dependencies from `Mathlib.Algebra.Order` into `Mathlib.Order`.
 
 Find a useful statement of `disjointedRec_succ`.
 -/
+
+@[expose] public section
 
 open Order
 
