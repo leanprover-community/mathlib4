@@ -244,8 +244,6 @@ end Complex
 
 namespace Real
 
-attribute [norm_cast] Complex.ofReal_cpow
-
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
       (.ofScalars ℝ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
