@@ -265,6 +265,12 @@ lemma continuous_coeClosure (s : Submodule R M) :
   unfold coeClosure
   fun_prop
 
+lemma denseRange_coeClosure (s : Submodule R M) : DenseRange (coeClosure (s := s)) := by
+  rw [DenseRange, Subtype.dense_iff]
+  refine closure_mono fun x hx ↦ ?_
+  simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe] at hx
+  simpa [subset_closure hx] using ⟨x, hx, rfl⟩
+
 end closure
 
 section Completion

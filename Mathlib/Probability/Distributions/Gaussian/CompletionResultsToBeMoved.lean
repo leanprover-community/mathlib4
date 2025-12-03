@@ -89,10 +89,18 @@ def toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Topo
   map_add' := coeClosure_add
   map_smul' := coeClosure_smul
 
+lemma IsUniformInducing_toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [UniformSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
+    IsUniformInducing (toClosureCLM s) := by
+  constructor
+  simp only [toClosureCLM, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
+    uniformity_subtype, Filter.comap_comap]
+  congr
+
 section Extension
 
 variable {M R F : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
-  [CompleteSpace M] [UniformContinuousConstSMul R M]
+  [UniformContinuousConstSMul R M]
   [UniformSpace F] [AddCommGroup F] [Module R F] [T2Space F] [CompleteSpace F]
   [IsUniformAddGroup F] [UniformContinuousConstSMul R F]
   {s : Submodule R M}
@@ -102,14 +110,6 @@ closure of the submodule. -/
 noncomputable
 def closureExtensionCLM (s : Submodule R M) (f : s →L[R] F) : s.topologicalClosure →L[R] F :=
   ContinuousLinearMap.extend f (toClosureCLM s)
-
-lemma denseRange_coeClosure (s : Submodule R M) :
-    DenseRange (coeClosure : s → s.topologicalClosure) := by
-  sorry
-
-lemma IsUniformInducing_toClosureCLM (s : Submodule R M) :
-    IsUniformInducing (toClosureCLM s) := by
-  sorry
 
 @[simp]
 lemma closureExtensionCLM_coe (s : Submodule R M) (f : s →L[R] F) (x : s) :
