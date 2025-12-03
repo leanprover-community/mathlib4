@@ -61,8 +61,8 @@ instance instFourierPairInv : FourierInvPair (Lp (α := V) E 2) (Lp (α := V) E 
   fourier_fourierInv_eq := (Lp.fourierTransformLI V E).apply_symm_apply
 
 @[simp]
-theorem norm_fourier_eq (f : Lp (α := V) E 2) :
-    ‖𝓕 f‖ = ‖f‖ := (Lp.fourierTransformLI V E).norm_map f
+theorem norm_fourier_eq (f : Lp (α := V) E 2) : ‖𝓕 f‖ = ‖f‖ :=
+  (Lp.fourierTransformLI V E).norm_map f
 
 @[simp]
 theorem inner_fourier_eq (f g : Lp (α := V) E 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
