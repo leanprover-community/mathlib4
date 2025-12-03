@@ -91,7 +91,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     IsNonarchimedean B.norm := fun x y ↦ by
   obtain ⟨ixy, _, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
   have hxy : ‖B.repr (x + y) ixy‖ ≤ max ‖B.repr x ixy‖ ‖B.repr y ixy‖ := by
-    rw [LinearEquiv.map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
+    rw [map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
   rw [Basis.norm, hixy]
   rcases le_max_iff.mp hxy with (hx | hy)
   · exact le_max_of_le_left (le_trans hx (norm_repr_le_norm B ixy))
@@ -113,8 +113,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     -- We rewrite the LHS using `ixy`.
     conv_lhs => simp only [Basis.norm]; rw [hixy_def, ← Basis.sum_repr B x, ← Basis.sum_repr B y]
     rw [sum_mul, map_finset_sum]
-    simp_rw [smul_mul_assoc, LinearEquiv.map_smul, mul_sum, map_finset_sum,
-      mul_smul_comm, LinearEquiv.map_smul]
+    simp_rw [smul_mul_assoc, map_smul, mul_sum, map_finset_sum, mul_smul_comm, map_smul]
     have hna' : IsNonarchimedean (NormedField.toMulRingNorm K) := hna
     /- Since the norm is nonarchimidean, the norm of a finite sum is bounded by the maximum of the
           norms of the summands. -/
