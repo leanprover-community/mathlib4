@@ -845,7 +845,7 @@ lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
         simp
       · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero, comp_zero, smul_zero]
         cutsat
-    · simp only [single_v_eq_zero' _ _ _ _ _ h, comp_zero, smul_zero]
+    · simp [single_v_eq_zero' _ _ _ _ _ h]
 
 end Cochain
 
