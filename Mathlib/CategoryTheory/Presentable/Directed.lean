@@ -515,10 +515,6 @@ lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w}
 
 end IsCardinalFiltered
 
-lemma IsFiltered.isDirected (α : Type w) [PartialOrder α] [IsFiltered α] :
-    IsDirected α (· ≤ ·) where
-  directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
-
 attribute [local instance] Cardinal.fact_isRegular_aleph0 in
 @[stacks 0032]
 lemma IsFiltered.exists_directed
