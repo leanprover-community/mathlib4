@@ -20,10 +20,9 @@ type constructors, using wildcards to automatically generate fresh universe para
 The syntax `Foo.!{u₁, u₂, ...}` allows specifying universe parameters for a constant `Foo`,
 where each universe parameter can be:
 
-- `_` : A universe metavariable (inferred by unification)
 - `*` : A fresh universe parameter with base name `u`
 - `v*` : A fresh universe parameter with base name `v` (for any identifier `v`)
-- An explicit level expression (e.g., `0`, `u+1`, `max u v`)
+- An explicit level expression (e.g., `0`, `u+1`, `max u v`, `_` for a level mvar, etc.)
 
 ## Examples
 
@@ -52,23 +51,29 @@ open Lean Elab Term
 
 declare_syntax_cat wildcard_universe
 
-syntax "_" : wildcard_universe
+/-- Syntax for level params. -/
 syntax "*" : wildcard_universe
+/-- Syntax for level params with a specified base name. -/
 syntax ident noWs "*" : wildcard_universe
+/-- Syntax for an existing level. -/
 syntax level : wildcard_universe
 
+/--
+Term elaborator for the wildcard universe syntax `Foo.!{u₁, u₂, ...}`.
+
+This elaborator handles syntax of the form `ident.!{wildcard_universe,*} args*`,
+where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
+-/
 syntax (name := appWithWildcards)
     ident noWs ".!{" wildcard_universe,* "}" Parser.Term.argument* : term
 
 /--
 Represents the kind of wildcard universe parameter.
 
-- `mvar`: A universe metavariable to be inferred (`_` syntax)
 - `param`: A fresh universe parameter (`*` or `name*` syntax)
-- `explicit`: An explicit level expression
+- `explicit`: An explicit level expression (including `_` for level mvars)
 -/
 inductive LevelWildcardKind where
-  | mvar
   | param (baseName : Name := `u)
   | explicit (l : TSyntax `level)
 
@@ -80,7 +85,6 @@ meta def elabWildcardUniverses {m : Type → Type}
     m (Array LevelWildcardKind) :=
   us.mapM fun u =>
     match u with
-    | `(wildcard_universe|_) => return .mvar
     | `(wildcard_universe|*) => return .param
     | `(wildcard_universe|$n:ident*) => return .param n.getId
     | `(wildcard_universe|$l:level) => return .explicit l
@@ -103,13 +107,13 @@ Reorganizes universe parameter names to ensure proper dependency ordering.
 This is used in the implementation of `elabAppWithWildcards`.
 -/
 meta def reorganizeUniverseParams
-    (levels : Array LevelWildcardKind)
+    (levels : Array (Option LevelWildcardKind))
     (constLevels : Array Level)
     (levelNames : List Name) : List Name := Id.run do
   let mut result := levelNames
   for ((wildcardKind, elaboratedLevel), idx) in (levels.zip constLevels).zipIdx do
     -- Only process param wildcards that elaborated to param levels
-    unless wildcardKind matches .param _ do continue
+    unless wildcardKind matches some (.param _) do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
     let laterLevels := constLevels.toList.drop (idx + 1)
@@ -123,13 +127,7 @@ meta def reorganizeUniverseParams
     result := currentNames.insertIdx insertPos newParamName
   return result
 
-/--
-Term elaborator for the wildcard universe syntax `Foo.!{u₁, u₂, ...}`.
-
-This elaborator handles expressions of the form `ident.!{wildcard_universe,*} args*`,
-where each wildcard universe can be `_`, `*`, `name*`, or an explicit level.
--/
-@[term_elab appWithWildcards]
+@[term_elab appWithWildcards, inherit_doc appWithWildcards]
 meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
   match stx with
   | `($id:ident.!{$us,*} $args*) =>
@@ -137,15 +135,15 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
     let constInfo ← Lean.getConstInfo constName
     let numLevels := constInfo.levelParams.length
 
-    let mut levels ← elabWildcardUniverses us
+    let mut levels : Array (Option LevelWildcardKind) := (← elabWildcardUniverses us).map some
     while levels.size < numLevels do
-      levels := levels.push .mvar
+      levels := levels.push .none
 
     let constLevels : Array Level ← levels.mapM fun k => do
       match k with
-      | .mvar => Meta.mkFreshLevelMVar
-      | .param baseName => mkFreshLevelParam baseName
-      | .explicit l => elabLevel l
+      | none => Meta.mkFreshLevelMVar
+      | some (.param baseName) => mkFreshLevelParam baseName
+      | some (.explicit l) => elabLevel l
 
     let fn : Expr := .const constName constLevels.toList
 
