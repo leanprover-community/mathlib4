@@ -447,6 +447,7 @@ variable [PartialOrder α] [BoundedOrder α] [Nontrivial α]
 @[to_dual (attr := simp)]
 theorem bot_ne_top : (⊥ : α) ≠ ⊤ := fun h => not_subsingleton _ <| subsingleton_of_bot_eq_top h
 
+@[simp]
 theorem bot_lt_top : (⊥ : α) < ⊤ :=
   lt_top_iff_ne_top.2 bot_ne_top
 
