@@ -160,7 +160,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     rw [← P.cancel_left_of_respectsIso iso.inv]
     simp [Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
-    convert P.pullback_fst _ _ (𝒰.property_trans hij)
+    convert P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
 
 end BaseChange
