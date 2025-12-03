@@ -68,7 +68,7 @@ protected theorem monotone : Monotone expNegInvGlue := by
     inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
 
 /-- The function `expNegInvGlue` is not analytic at `0`. -/
-theorem expNegInvGlue_not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
+theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
   intro h
   -- Analytic functions are either always zero or have isolated zeros
   obtain h_zero | h_nonzero := h.eventually_eq_zero_or_eventually_ne_zero
