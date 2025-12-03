@@ -1140,17 +1140,19 @@ Copies equation lemmas and attributes from `src` to `tgt`
 -/
 partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
     CoreM (Array Name) := do
-  if let some eqns := eqnsAttribute.find? (← getEnv) src then
-    unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
-      for eqn in eqns do
-        _ ← addTranslationAttr t eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
-  else
-    /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-    definitions. If we don't do that, the equation lemma for `src` might be generated later
-    when doing a `rw`, but it won't be generated for `tgt`. -/
-    translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
-      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
+  -- The equation lemmas can only be related if the value of `tgt` is the translated value of `src`.
+  unless cfg.existing do
+    if let some eqns := eqnsAttribute.find? (← getEnv) src then
+      unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
+        for eqn in eqns do
+          _ ← addTranslationAttr t eqn cfg
+        eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
+    else
+      /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+      definitions. If we don't do that, the equation lemma for `src` might be generated later
+      when doing a `rw`, but it won't be generated for `tgt`. -/
+      translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
+        (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes t cfg.ref cfg.attrs src tgt argInfo
 
