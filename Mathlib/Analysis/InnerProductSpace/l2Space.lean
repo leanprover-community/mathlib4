@@ -57,9 +57,9 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
 ## Main results
 
 * `lp.instInnerProductSpace`: Construction of the inner product space instance on the Hilbert sum
-  `lp G 2`. Note that from the file `Analysis.Normed.Lp.lpSpace`, the space `lp G 2` already
-  held a normed space instance (`lp.normedSpace`), and if each `G i` is a Hilbert space (i.e.,
-  complete), then `lp G 2` was already known to be complete (`lp.completeSpace`). So the work
+  `lp G 2`. Note that from the file `Mathlib/Analysis/Normed/Lp/lpSpace.lean`, the space `lp G 2`
+  already held a normed space instance (`lp.normedSpace`), and if each `G i` is a Hilbert space
+  (i.e., complete), then `lp G 2` was already known to be complete (`lp.completeSpace`). So the work
   here is to define the inner product and show it is compatible.
 
 * `OrthogonalFamily.range_linearIsometry`: Given a family `G` of inner product spaces and a family
@@ -437,8 +437,7 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
   have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
     lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (f i) (1 : 𝕜)
   rw [mul_one] at this
-  rw [LinearIsometryEquiv.map_smul, b.repr_self, ← this,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv]
+  rw [map_smul, b.repr_self, ← this, LinearIsometryEquiv.coe_toContinuousLinearEquiv]
   exact (b.repr.apply_symm_apply (lp.single 2 i (f i))).symm
 
 protected theorem hasSum_repr (b : HilbertBasis ι 𝕜 E) (x : E) :

@@ -146,7 +146,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
   Iff.rfl
 
 @[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = {x} :=
   rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
@@ -352,7 +352,7 @@ theorem mem_singleton (x y : α) : x ∈ ({y} : NonemptyCompacts α) ↔ x = y :
   Iff.rfl
 
 @[simp]
-theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = {x} :=
   rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts α) :=

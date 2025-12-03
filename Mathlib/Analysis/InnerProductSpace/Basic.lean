@@ -72,7 +72,7 @@ theorem inner_add_left (x y z : E) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   InnerProductSpace.add_left _ _ _
 
 theorem inner_add_right (x y z : E) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
-  rw [← inner_conj_symm, inner_add_left, RingHom.map_add]
+  rw [← inner_conj_symm, inner_add_left, map_add]
   simp only [inner_conj_symm]
 
 theorem inner_re_symm (x y : E) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← inner_conj_symm, conj_re]
@@ -169,17 +169,17 @@ protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → 
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
-  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, RingHom.map_zero, zero_mul]
+  rw [← zero_smul 𝕜 (0 : E), inner_smul_left, map_zero, zero_mul]
 
 theorem inner_re_zero_left (x : E) : re ⟪0, x⟫ = 0 := by
-  simp only [inner_zero_left, AddMonoidHom.map_zero]
+  simp only [inner_zero_left, map_zero]
 
 @[simp]
 theorem inner_zero_right (x : E) : ⟪x, 0⟫ = 0 := by
-  rw [← inner_conj_symm, inner_zero_left, RingHom.map_zero]
+  rw [← inner_conj_symm, inner_zero_left, map_zero]
 
 theorem inner_re_zero_right (x : E) : re ⟪x, 0⟫ = 0 := by
-  simp only [inner_zero_right, AddMonoidHom.map_zero]
+  simp only [inner_zero_right, map_zero]
 
 theorem inner_self_nonneg {x : E} : 0 ≤ re ⟪x, x⟫ :=
   PreInnerProductSpace.toCore.re_inner_nonneg x
@@ -215,7 +215,7 @@ theorem inner_neg_left (x y : E) : ⟪-x, y⟫ = -⟪x, y⟫ := by
 
 @[simp]
 theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_neg_left]; simp only [RingHom.map_neg, inner_conj_symm]
+  rw [← inner_conj_symm, inner_neg_left]; simp only [map_neg, inner_conj_symm]
 
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 
@@ -388,7 +388,7 @@ theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
   repeat' rw [sq (M := ℝ), ← @inner_self_eq_norm_mul_norm 𝕜]
   rw [inner_add_add_self, two_mul]
-  simp only [add_assoc, add_left_inj, add_right_inj, AddMonoidHom.map_add]
+  simp only [add_assoc, add_left_inj, add_right_inj, map_add]
   rw [← inner_conj_symm, conj_re]
 
 alias norm_add_pow_two := norm_add_sq
@@ -796,6 +796,27 @@ the equality case for Cauchy-Schwarz. -/
 theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = 1 ↔ x = y := by
   convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
+
+/-- If the inner product of two unit vectors is `-1`, then the two vectors are negations of each
+other. -/
+theorem inner_eq_neg_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫ = -1 ↔ x = -y := by
+  rw [← neg_eq_iff_eq_neg, ← inner_neg_right, inner_eq_one_iff_of_norm_eq_one hx (norm_neg y ▸ hy)]
+
+/-- The inner product of two unit vectors is less than or equal to `1`. -/
+theorem real_inner_le_one_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫_ℝ ≤ 1 := by
+  simpa [hx, hy] using real_inner_le_norm x y
+
+/-- The inner product of two unit vectors is greater than or equal to `-1`. -/
+theorem neg_one_le_real_inner_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    -1 ≤ ⟪x, y⟫_ℝ := by
+  simpa [hx, hy] using neg_le_of_abs_le (abs_real_inner_le_norm x y)
+
+/-- If `x` and `y` are unit vectors, then `-1 ≤ ⟪x, y⟫ ≤ 1`. -/
+theorem real_inner_mem_Icc_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫_ℝ ∈ Set.Icc (-1) 1 :=
+  ⟨neg_one_le_real_inner_of_norm_eq_one hx hy, real_inner_le_one_of_norm_eq_one hx hy⟩
 
 theorem inner_self_eq_one_of_norm_eq_one {x : E} (hx : ‖x‖ = 1) : ⟪x, x⟫_𝕜 = 1 :=
   (inner_eq_one_iff_of_norm_eq_one hx hx).mpr rfl

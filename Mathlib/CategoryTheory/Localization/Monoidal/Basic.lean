@@ -22,7 +22,8 @@ Here, the data `ε : L.obj (𝟙_ C) ≅ unit` is an isomorphism to some
 object `unit : D` which allows the user to provide a preferred choice
 of a unit object.
 
-The symmetric case is considered in the file `Mathlib.CategoryTheory.Localization.Monoidal.Braided`.
+The symmetric case is considered in the file
+`Mathlib/CategoryTheory/Localization/Monoidal/Braided.lean`.
 
 -/
 

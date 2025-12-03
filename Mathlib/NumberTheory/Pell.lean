@@ -346,7 +346,6 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     exact q.pos
   obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
     contrapose! hM
-    simp only [not_infinite] at hM ⊢
     refine (congr_arg _ (ext fun x => ?_)).mp (Finite.biUnion (finite_Ioo (-M) M) fun m _ => hM m)
     simp only [abs_lt, mem_setOf, mem_Ioo, mem_iUnion, exists_prop, exists_eq_right']
   have hm₀ : m ≠ 0 := by

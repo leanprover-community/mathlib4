@@ -207,8 +207,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     StandardOneDimIsocrystal.frobenius_apply]
   unfold StandardOneDimIsocrystal
   rw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
-  simp only [hax,
-    LinearEquiv.map_smulₛₗ, Algebra.id.smul_eq_mul]
+  simp only [hax, map_smulₛₗ, smul_eq_mul]
   simp only [← mul_smul]
   congr 1
   linear_combination φ(p, k) c * hmb

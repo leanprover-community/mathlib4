@@ -288,10 +288,7 @@ lemma false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
   exact false_of_nontrivial_of_subsingleton R
 
 lemma ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
-  intro h
-  apply zero_ne_one' R
-  symm
-  rw [← Nat.cast_one, ringChar.spec, h]
+  simpa using not_subsingleton R
 
 lemma nontrivial_of_char_ne_one {v : ℕ} (hv : v ≠ 1) [hr : CharP R v] : Nontrivial R :=
   ⟨⟨(1 : ℕ), 0, fun h =>

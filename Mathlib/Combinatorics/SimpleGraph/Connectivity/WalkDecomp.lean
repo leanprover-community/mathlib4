@@ -5,7 +5,7 @@ Authors: Kyle Miller, Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 
 /-!
 # Decomposing walks
@@ -272,6 +272,11 @@ theorem support_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
   simp only [rotate, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
+
+@[simp]
+theorem mem_support_rotate_iff (c : G.Walk v v) (h : u ∈ c.support) :
+    w ∈ (c.rotate h).support ↔ w ∈ c.support := by
+  grind [rotate, take_spec, mem_support_append_iff]
 
 theorem rotate_darts {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).darts ~r c.darts := by

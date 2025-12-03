@@ -133,8 +133,7 @@ theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateG
   obtain ⟨k₁, h₁⟩ := hf.2 n
   obtain ⟨k₂, h₂⟩ := hg.2 n
   use max k₁ k₂
-  rw [iteratedFDeriv_add (hf.1.of_le (WithTop.coe_le_coe.mpr (le_of_lt (ENat.coe_lt_top _))))
-    (hg.1.of_le (WithTop.coe_le_coe.mpr (le_of_lt (ENat.coe_lt_top _))))]
+  rw [iteratedFDeriv_add (hf.1.of_le <| mod_cast le_top) (hg.1.of_le <| mod_cast le_top)]
   have : 1 ≤ᶠ[⊤] fun (x : E) ↦ 1 + ‖x‖ := by
     filter_upwards with _ using (le_add_iff_nonneg_right _).mpr (by positivity)
   exact (h₁.trans (IsBigO.pow_of_le_right this (k₁.le_max_left k₂))).add
@@ -171,15 +170,14 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   use k1 + k2
   have estimate (x : D) : ‖iteratedFDeriv ℝ n (fun x ↦ B (f x) (g x)) x‖ ≤
       ‖B‖ * ∑ i ∈ Finset.range (n+1), (n.choose i) *
-        ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n-i) g x‖ := by
-    refine (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x ?_
-    exact WithTop.coe_le_coe.mpr le_top
+        ‖iteratedFDeriv ℝ i f x‖ * ‖iteratedFDeriv ℝ (n-i) g x‖ :=
+    (B.bilinearRestrictScalars ℝ).norm_iteratedFDeriv_le_of_bilinear hf.1 hg.1 x (mod_cast le_top)
   refine (IsBigO.of_norm_le estimate).trans (.const_mul_left (.sum fun i hi ↦ ?_) _)
   simp_rw [mul_assoc, pow_add]
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
   grind
 
-lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
+lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
   · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
     exact fderiv_id'
@@ -187,14 +185,14 @@ lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : 
   · simp
 
 @[fun_prop]
-lemma _root_.Function.HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
+lemma HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
   Function.HasTemperateGrowth.id
 
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for scalar multiplication. -/
 @[fun_prop]
-theorem _root_.Function.HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
+theorem HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=
   (ContinuousLinearMap.lsmul ℝ 𝕜).bilinear_hasTemperateGrowth hf hg
 
@@ -202,9 +200,16 @@ variable [NormedRing R] [NormedAlgebra ℝ R]
 
 /-- The product of two functions of temperate growth is again of temperate growth. -/
 @[fun_prop]
-theorem _root_.Function.HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
+theorem HasTemperateGrowth.mul {f g : E → R} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth :=
   (ContinuousLinearMap.mul ℝ R).bilinear_hasTemperateGrowth hf hg
+
+@[fun_prop]
+theorem HasTemperateGrowth.pow {f : E → R} (hf : f.HasTemperateGrowth) (k : ℕ) :
+    (f ^ k).HasTemperateGrowth := by
+  induction k with
+  | zero => simpa using HasTemperateGrowth.const 1
+  | succ k IH => rw [pow_succ]; fun_prop
 
 end Multiplication
 
@@ -223,7 +228,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • (innerSL ℝ)).hasTemperateGrowth
+    convert (2 • innerSL ℝ).hasTemperateGrowth
   · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]
@@ -271,7 +276,7 @@ lemma _root_.pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f :
     x ^ k * f ≤ 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) := by
   have : 0 ≤ C₂ := le_trans (by positivity) h₂
   have : 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) = ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
-    rw [Real.div_rpow (by linarith) zero_le_two]
+    rw [Real.div_rpow (by positivity) zero_le_two]
     simp [div_eq_inv_mul, ← Real.rpow_neg_one, ← Real.rpow_mul]
     ring
   rw [this]
@@ -279,17 +284,17 @@ lemma _root_.pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f :
   · gcongr
     · apply (pow_le_one₀ hx h'x).trans
       apply Real.one_le_rpow_of_pos_of_le_one_of_nonpos
-      · linarith
+      · positivity
       · linarith
       · simp
     · linarith
   · calc
     x ^ k * f = x ^ (-(l : ℝ)) * (x ^ (k + l) * f) := by
-      rw [← Real.rpow_natCast, ← Real.rpow_natCast, ← mul_assoc, ← Real.rpow_add (by linarith)]
+      rw [← Real.rpow_natCast, ← Real.rpow_natCast, ← mul_assoc, ← Real.rpow_add (by positivity)]
       simp
     _ ≤ ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
       apply mul_le_mul _ _ (by positivity) (by positivity)
-      · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
+      · exact Real.rpow_le_rpow_of_nonpos (by positivity) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
 variable [NormedAddCommGroup F]

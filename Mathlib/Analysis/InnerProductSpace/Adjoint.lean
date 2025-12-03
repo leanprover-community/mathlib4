@@ -210,10 +210,10 @@ instance : StarMul (E →L[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →L[𝕜] E) :=
-  ⟨LinearIsometryEquiv.map_add adjoint⟩
+  ⟨map_add adjoint⟩
 
 instance : StarModule 𝕜 (E →L[𝕜] E) :=
-  ⟨LinearIsometryEquiv.map_smulₛₗ adjoint⟩
+  ⟨map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
   rfl
@@ -561,10 +561,10 @@ instance : StarMul (E →ₗ[𝕜] E) :=
   ⟨adjoint_comp⟩
 
 instance : StarRing (E →ₗ[𝕜] E) :=
-  ⟨LinearEquiv.map_add adjoint⟩
+  ⟨map_add adjoint⟩
 
 instance : StarModule 𝕜 (E →ₗ[𝕜] E) :=
-  ⟨LinearEquiv.map_smulₛₗ adjoint⟩
+  ⟨map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →ₗ[𝕜] E) : star A = A.adjoint :=
   rfl

@@ -85,7 +85,7 @@ def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
   (eqToIso <| congr_arg FundamentalGroupoid.mk h).conj.toMonoidHom.comp (map f x)
 
 theorem mapOfEq_apply (p : Path x x) :
-    mapOfEq f h (fromPath ⟦p⟧) = fromPath ⟦(p.map f.continuous).cast h.symm h.symm⟧ :=
+    mapOfEq f h (fromPath <| .mk p) = fromPath (.mk <| (p.map f.continuous).cast h.symm h.symm) :=
   FundamentalGroupoid.conj_eqToHom ..
 
 end FundamentalGroup

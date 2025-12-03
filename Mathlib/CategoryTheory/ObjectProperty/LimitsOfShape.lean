@@ -101,6 +101,16 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+/-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
+of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
+@[simps]
+def toStructuredArrow
+    {X : C} (p : P.LimitOfShape J X) :
+    J ⥤ StructuredArrow X P.ι where
+  obj j := StructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.π.app j)
+  map f := StructuredArrow.homMk (by exact p.diag.map f)
+    (by simpa using (p.π.naturality f).symm)
+
 end LimitOfShape
 
 /-- The property of objects that are the point of a limit cone for a

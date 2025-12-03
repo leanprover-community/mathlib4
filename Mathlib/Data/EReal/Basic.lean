@@ -366,6 +366,34 @@ lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
   · simp
 
+lemma toReal_pos {x : EReal} (hx : 0 < x) (h'x : x ≠ ⊤) : 0 < x.toReal := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+lemma toReal_neg {x : EReal} (hx : x < 0) (h'x : x ≠ ⊥) : x.toReal < 0 := by
+  lift x to ℝ using by aesop
+  simpa using hx
+
+@[simp] lemma toReal_image_Ioo_zero_top : toReal '' (Ioo 0 ⊤) = Ioi 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨hy0, _⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
+
+@[simp] lemma toReal_image_Ioo_bot_zero : toReal '' (Ioo ⊥ 0) = Iio 0 := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨_, hy0⟩, rfl⟩
+    lift y to ℝ using by aesop
+    simpa using hy0
+  · intro hx
+    use (x : EReal)
+    simpa using hx
+
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
   lift x to ℝ using ⟨ne_top_of_le_ne_top hy h, hx⟩

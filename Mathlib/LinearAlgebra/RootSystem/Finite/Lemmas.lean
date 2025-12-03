@@ -322,8 +322,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h
     refine ⟨i, j, fun k ↦ ?_⟩
-    by_contra! hk
-    obtain ⟨hki_ne, hkj_ne⟩ := hk
+    by_contra! ⟨hki_ne, hkj_ne⟩
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm

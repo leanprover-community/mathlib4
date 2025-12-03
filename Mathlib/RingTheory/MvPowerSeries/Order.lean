@@ -219,7 +219,7 @@ theorem weightedOrder_monomial {d : σ →₀ ℕ} {a : R} [Decidable (a = 0)] :
     weightedOrder w (monomial d a) = if a = 0 then (⊤ : ℕ∞) else weight w d := by
   classical
   split_ifs with h
-  · rw [h, weightedOrder_eq_top_iff, LinearMap.map_zero]
+  · rw [h, weightedOrder_eq_top_iff, map_zero]
   · rw [weightedOrder_eq_nat]
     constructor
     · use d

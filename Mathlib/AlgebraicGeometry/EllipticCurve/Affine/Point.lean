@@ -276,6 +276,8 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)

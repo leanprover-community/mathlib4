@@ -290,7 +290,7 @@ theorem casesOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid �
 @[to_additive (attr := ext)]
 theorem hom_eq ⦃f g : FreeMonoid α →* M⦄ (h : ∀ x, f (of x) = g (of x)) : f = g :=
   MonoidHom.ext fun l ↦ recOn l (f.map_one.trans g.map_one.symm)
-    (fun x xs hxs ↦ by simp only [h, hxs, MonoidHom.map_mul])
+    (fun x xs hxs ↦ by simp only [h, hxs, map_mul])
 
 /-- A variant of `List.prod` that has `[x].prod = x` true definitionally.
 The purpose is to make `FreeMonoid.lift_eval_of` true by `rfl`. -/

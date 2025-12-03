@@ -98,7 +98,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
   refine Set.eq_of_subset_of_subset (fun k hk => ?_) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
-  have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
+  have hprod := (IsAlgClosed.splits (C k - p)).eq_prod_roots
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
     rwa [degree_sub_eq_right_of_degree_lt (lt_of_le_of_lt degree_C_le hdeg)]
   have lead_ne := leadingCoeff_ne_zero.mpr h_ne

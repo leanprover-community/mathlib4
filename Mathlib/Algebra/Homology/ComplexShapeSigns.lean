@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
-the monoidal category structure on categories of homological complexes (TODO).
+monoidal category structure on categories of homological complexes (TODO).
 
 The most important definition is that of `TotalComplexShape c₁ c₂ c₁₂` given
 three complex shapes `c₁`, `c₂`, `c₁₂`: it allows the definition of a total
@@ -136,13 +136,13 @@ lemma add_rel (r : I) {p q : I} (hpq : c.Rel p q) : c.Rel (r + p) (r + q) :=
 
 @[simp]
 lemma ε_zero : c.ε 0 = 1 := by
-  apply MonoidHom.map_one
+  apply map_one
 
 lemma ε_succ {p q : I} (hpq : c.Rel p q) : c.ε q = - c.ε p :=
   TensorSigns.ε'_succ p q hpq
 
 lemma ε_add (p q : I) : c.ε (p + q) = c.ε p * c.ε q := by
-  apply MonoidHom.map_mul
+  apply map_mul
 
 lemma next_add (p q : I) (hp : c.Rel p (c.next p)) :
     c.next (p + q) = c.next p + q :=

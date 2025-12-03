@@ -22,7 +22,7 @@ lattice. `limsSup f` is the smallest element `a` such that, eventually, `u ≤ a
 Usually, one defines the Limsup as `inf (sup s)` where the Inf is taken over all sets in the filter.
 For instance, in ℕ along a function `u`, this is `inf_n (sup_{k ≥ n} u k)` (and the latter quantity
 decreases with `n`, so this is in fact a limit.). There is however a difficulty: it is well possible
-that `u` is not bounded on the whole space, only eventually (think of `limsup (fun x ↦ 1/x)` on ℝ.
+that `u` is not bounded on the whole space, only eventually (think of `limsup (fun x ↦ 1/x)` on ℝ).
 Then there is no guarantee that the quantity above really decreases (the value of the `sup`
 beforehand is not really well defined, as one cannot use ∞), so that the Inf could be anything.
 So one cannot use this `inf sup ...` definition in conditionally complete lattices, and one has

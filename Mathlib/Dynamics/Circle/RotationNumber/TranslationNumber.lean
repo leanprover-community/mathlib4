@@ -270,7 +270,7 @@ theorem translate_inv_apply (x y : ℝ) : (translate <| Multiplicative.ofAdd x)�
 @[simp]
 theorem translate_zpow (x : ℝ) (n : ℤ) :
     translate (Multiplicative.ofAdd x) ^ n = translate (Multiplicative.ofAdd <| ↑n * x) := by
-  simp only [← zsmul_eq_mul, ofAdd_zsmul, MonoidHom.map_zpow]
+  simp only [← zsmul_eq_mul, ofAdd_zsmul, map_zpow]
 
 @[simp]
 theorem translate_pow (x : ℝ) (n : ℕ) :
@@ -838,7 +838,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     refine fun x => ⟨x + 2, ?_⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
-      rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,
+      rw [← MonoidHom.coe_toHomUnits, map_inv, translationNumber_units_inv,
         MonoidHom.coe_toHomUnits]
     calc
       f₂ g⁻¹ (f₁ g x) ≤ f₂ g⁻¹ (x + τ (f₁ g) + 1) :=

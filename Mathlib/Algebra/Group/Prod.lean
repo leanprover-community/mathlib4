@@ -598,12 +598,17 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     simp only [Units.map, MonoidHom.coe_fst, Units.inv_eq_val_inv,
       MonoidHom.coe_snd, MonoidHom.prod_apply, Prod.mk.injEq]
     exact ⟨rfl, rfl⟩
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[to_additive]
 lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
   mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
   mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
+@[to_additive]
+instance _root_.Prod.instSubsingletonUnits [Subsingleton Mˣ] [Subsingleton Nˣ] :
+    Subsingleton (M × N)ˣ :=
+  .units_of_isUnit <| by simp [Prod.isUnit_iff, Prod.ext_iff]
 
 end
 

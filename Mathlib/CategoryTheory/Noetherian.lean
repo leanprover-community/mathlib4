@@ -17,7 +17,7 @@ have infinite decreasing sequences of subobjects.
 A Noetherian category is a category in which objects do not
 have infinite increasing sequences of subobjects.
 
-Note: In the file, `CategoryTheory.Subobject.ArtinianObject`,
+Note: In the file, `Mathlib/CategoryTheory/Subobject/ArtinianObject.lean`,
 it is shown that any nonzero Artinian object has a simple subobject.
 
 ## Future work

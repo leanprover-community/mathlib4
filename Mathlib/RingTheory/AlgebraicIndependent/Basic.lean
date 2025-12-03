@@ -308,7 +308,7 @@ lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A 
   .of_comp (IsScalarTower.toAlgHom R A A') (FaithfulSMul.algebraMap_injective A A') H
 
 /-- Also see `IsTranscendenceBasis.algebraMap_comp`
-for the composition with a algebraic extension. -/
+for the composition with an algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
     IsTranscendenceBasis R (e ∘ x) :=
   .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)

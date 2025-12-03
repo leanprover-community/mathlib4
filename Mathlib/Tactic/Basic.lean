@@ -167,7 +167,7 @@ in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
 You can access this note using, for example, `#print Mathlib.LibraryNote.«my note»`.
 -/
 macro "library_note2 " name:ident ppSpace dc:docComment : command =>
-  `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
+  `($dc:docComment def $(mkIdent (`_root_.Mathlib.LibraryNote ++ name.getId)) : LibraryNote := ())
 
 open Lean Elab Command in
 /-- Support the old `library_note "foo"` syntax, with a deprecation warning. -/

@@ -637,7 +637,7 @@ theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
 protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
-  rw [Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, map_eq]
+  rw [Algebra.smul_def, Algebra.smul_def, map_mul, map_eq]
 
 end
 

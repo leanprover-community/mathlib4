@@ -17,11 +17,23 @@ public import Mathlib.Topology.Instances.Sign
 This file defines the insphere and exspheres of a simplex (tangent to the faces of the simplex),
 and the center and radius of such spheres.
 
+The terms "exsphere", "excenter" and "exradius" are used in this file in a general sense where
+a `Finset` `signs` of indices is given that determine, up to negating all the signs, which
+vertices of the simplex lie on the same side of the opposite face as the excenter and which lie
+on the opposite side of that face. This includes the cases of the insphere, incenter and
+inradius, when `signs` is `∅` (or `univ`); the insphere always exists. It also includes the case
+of an exsphere opposite a vertex, when `signs` is a singleton (or its complement), which always
+exists in two or more dimensions. In three or more dimensions, there are further possibilities
+for `signs`, and the corresponding excenters may or may not exist, depending on the choice of
+simplex. For convenience, the most common definitions `exsphere`, `excenter` and `exradius` have
+corresponding `insphere`, `incenter` and `inradius` definitions, and various lemmas are duplicated
+for the case of the insphere to avoid needing to pass an `ExcenterExists` hypothesis in that case.
+However, other definitions such as `excenterWeights`, `touchpoint` and `touchpointWeights` are not
+duplicated.
+
 ## Main definitions
 
-* `Affine.Simplex.ExcenterExists` says whether an excenter exists with a given set of indices
-  (that determine, up to negating all the signs, which vertices of the simplex lie on the same
-  side of the opposite face as the excenter and which lie on the opposite side of that face).
+* `Affine.Simplex.ExcenterExists` says whether an excenter exists with a given set of indices.
 * `Affine.Simplex.excenterWeights` are the weights of the excenter with the given set of
   indices, if it exists, as an affine combination of the vertices.
 * `Affine.Simplex.exsphere` is the exsphere with the given set of indices, if it exists, with
@@ -31,6 +43,10 @@ and the center and radius of such spheres.
 * `Affine.Simplex.insphere` is the insphere, with shorthands:
   * `Affine.Simplex.incenter` for the center of this sphere
   * `Affine.Simplex.inradius` for the radius of this sphere
+* `Affine.Simplex.touchpoint` for the point where an exsphere of a simplex is tangent to one of
+  the faces.
+* `Affine.Simplex.touchpointWeights` for the weights of a touchpoint as an affine combination of
+  the vertices.
 
 ## References
 
@@ -203,8 +219,8 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
 
 /-- The inverse of the distance from one vertex to the opposite face is less than the sum of that
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
-it also implies that the image of the incenter under a homothety with scale factor 2 about a
-vertex lies outside the simplex. -/
+it also gives information about the location of the incenter (see
+`excenterWeights_empty_lt_inv_two`). -/
 lemma inv_height_lt_sum_inv_height [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     (s.height i)⁻¹ < ∑ j ∈ {k | k ≠ i}, (s.height j)⁻¹ := by
   rw [inv_height_eq_sum_mul_inv_dist]
@@ -250,6 +266,22 @@ lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} 
 terms of `ExcenterExists`. -/
 lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.ExcenterExists {i} :=
   (s.sum_excenterWeightsUnnorm_singleton_pos i).ne'
+
+open Finset in
+/-- The barycentric coordinates of the incenter are less than `2⁻¹` (thus, it lies closer on an
+angle bisector to the opposite side than to the vertex, or equivalently the image of the incenter
+under a homothety with scale factor 2 about a vertex lies outside the simplex). -/
+lemma excenterWeights_empty_lt_inv_two [n.AtLeastTwo] (i : Fin (n + 1)) :
+    s.excenterWeights ∅ i < 2⁻¹ := by
+  have h : (s.height i)⁻¹ + (s.height i)⁻¹ < (s.height i)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    have := s.inv_height_lt_sum_inv_height i
+    rwa [filter_ne', ← compl_singleton, ← add_lt_add_iff_left (s.height i)⁻¹] at this
+  replace h : 2 * (s.height i)⁻¹ < ∑ j ∈ {i}, (s.height j)⁻¹ + ∑ j ∈ {i}ᶜ, (s.height j)⁻¹ := by
+    rwa [two_mul, sum_singleton]
+  replace h : (s.height i)⁻¹ / ∑ i, (s.height i)⁻¹ < 2⁻¹ := by
+    rwa [sum_add_sum_compl, ← lt_inv_mul_iff₀ zero_lt_two, ← div_lt_iff₀ (by positivity)] at h
+  convert h
+  simp [excenterWeights, excenterWeightsUnnorm, div_eq_inv_mul]
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
 the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only

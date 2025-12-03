@@ -290,7 +290,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_def] at hab
-      rw [← LinearMap.map_sub]
+      rw [← map_sub]
       exact Ideal.map_pi _ _ hab e h)
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules

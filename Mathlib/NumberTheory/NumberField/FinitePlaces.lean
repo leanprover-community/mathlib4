@@ -140,7 +140,7 @@ noncomputable instance instRankOneValuedAdicCompletion :
     toFun := toNNReal (absNorm_ne_zero v)
     map_zero' := rfl
     map_one' := rfl
-    map_mul' := MonoidWithZeroHom.map_mul (toNNReal (absNorm_ne_zero v))
+    map_mul' := map_mul (toNNReal (absNorm_ne_zero v))
   }
   strictMono' := toNNReal_strictMono (one_lt_absNorm_nnreal v)
   exists_val_nontrivial := by

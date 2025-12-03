@@ -114,6 +114,12 @@ instance : LE (RingCon R) where
 /-- Definition of `≤` for congruence relations. -/
 theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
 
+theorem comap_mono {R' : Type*} [Add R'] [Mul R']
+    {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
+    {J J' : RingCon R'} {f : F} (h : J ≤ J') :
+    J.comap f ≤ J'.comap f :=
+  fun _ _ h₁ ↦ h h₁
+
 /-- The infimum of a set of congruence relations on a given type with multiplication and
 addition. -/
 instance : InfSet (RingCon R) where

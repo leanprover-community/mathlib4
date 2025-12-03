@@ -73,6 +73,10 @@ theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     · exact Subtype.ext_iff.mp (eq.subset (a := ⟨_, x', x'.2, rfl⟩) mem.2)
     · rintro x rfl; exact ⟨hx, eq.superset rfl⟩
 
+lemma isDiscrete_of_image (h : IsLocalHomeomorphOn f s)
+    (hs : IsDiscrete (f '' s)) : IsDiscrete s :=
+  have := hs.1; ⟨discreteTopology_of_image h⟩
+
 theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
     DiscreteTopology (f '' s) ↔ DiscreteTopology s := by
   refine ⟨fun _ ↦ h.discreteTopology_of_image, ?_⟩
@@ -82,6 +86,10 @@ theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s)
   refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩
   · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
   · ext; simp [Subtype.ext_iff]
+
+lemma isDiscrete_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
+    IsDiscrete (f '' s) ↔ IsDiscrete s :=
+  ⟨h.isDiscrete_of_image, fun hs' ↦ ⟨h.discreteTopology_image_iff hs |>.mpr hs'.to_subtype⟩⟩
 
 variable (f s) in
 /-- Proves that `f` satisfies `IsLocalHomeomorphOn f s`. The condition `h` is weaker than the

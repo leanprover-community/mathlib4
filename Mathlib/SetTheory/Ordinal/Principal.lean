@@ -166,7 +166,7 @@ theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o
     · exact op_eq_self_of_principal hao (isNormal_add_right a) ho
         (isSuccLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
-      · exact (Ordinal.not_lt_zero a hao).elim
+      · exact (not_neg hao).elim
       · rw [lt_one_iff_zero] at hao
         rw [hao, zero_add]
   · rw [← h a hao]
@@ -191,10 +191,10 @@ theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
 
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
-  refine le_antisymm ?_ (le_add_left _ a)
+  refine le_antisymm ?_ le_add_self
   induction b using limitRecOn with
   | zero =>
-    rw [opow_zero, ← succ_zero, lt_succ_iff, Ordinal.le_zero] at h
+    rw [opow_zero, ← succ_zero, lt_succ_iff, nonpos_iff_eq_zero] at h
     rw [h, zero_add]
   | succ =>
     rw [opow_succ] at h
@@ -232,7 +232,7 @@ theorem principal_add_iff_zero_or_omega0_opow :
     revert h'
     apply not_lt_of_ge
     suffices e : ω ^ log ω o * n + o = o by
-      simpa only [e] using le_add_right (ω ^ log ω o * ↑n) o
+      simpa only [e] using le_self_add (a := ω ^ log ω o * ↑n) (b := o)
     induction n with
     | zero => simp [Nat.cast_zero, mul_zero, zero_add]
     | succ n IH => simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
@@ -319,7 +319,7 @@ theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a �
         (isSuccLimit_of_principal_mul ho h)
   · rcases eq_or_ne a 0 with (rfl | ha)
     · dsimp only; rwa [zero_mul]
-    rw [← Ordinal.pos_iff_ne_zero] at ha
+    rw [← pos_iff_ne_zero] at ha
     rw [← h a ha hao]
     exact (isNormal_mul_right ha).strictMono hbo
 
@@ -378,7 +378,7 @@ theorem principal_mul_iff_le_two_or_omega0_opow_opow :
     · exact Or.inl ho₂
     · rcases principal_add_iff_zero_or_omega0_opow.1 (principal_add_of_principal_mul ho ho₂.ne')
         with (rfl | ⟨a, rfl⟩)
-      · exact (Ordinal.not_lt_zero 2 ho₂).elim
+      · exact (not_neg ho₂).elim
       · rcases principal_add_iff_zero_or_omega0_opow.1
           (principal_add_of_principal_mul_opow one_lt_omega0 ho) with (rfl | ⟨b, rfl⟩)
         · simp
@@ -394,11 +394,11 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : Principal (· * ·) b) (hb₂ 
     a * b = b ^ succ (log b a) := by
   apply le_antisymm
   · have hbl := isSuccLimit_of_principal_mul hb₂ hb
-    rw [(isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 ha)).apply_of_isSuccLimit hbl,
+    rw [(isNormal_mul_right (pos_iff_ne_zero.2 ha)).apply_of_isSuccLimit hbl,
       Ordinal.iSup_le_iff]
     intro ⟨c, hcb⟩
     have hb₁ : 1 < b := one_lt_two.trans hb₂
-    have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
+    have hbo₀ : b ^ log b a ≠ 0 := pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
     apply (mul_le_mul_left (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
     rw [mul_assoc, opow_succ]
     gcongr

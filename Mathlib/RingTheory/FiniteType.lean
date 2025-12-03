@@ -246,6 +246,8 @@ end Finite
 
 namespace FiniteType
 
+-- TODO: should infer_instance be marked as normalising?
+set_option linter.flexible false in
 variable (A) in
 theorem id : FiniteType (RingHom.id A) := by simp [FiniteType]; infer_instance
 

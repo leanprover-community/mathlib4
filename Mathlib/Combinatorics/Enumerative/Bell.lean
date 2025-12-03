@@ -185,7 +185,6 @@ which counts the number of partitions of a set of cardinality `n`.
 Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
 over all multisets `m : Multiset ℕ` such that `m.sum = n`.
 -/
-
 protected def bell : ℕ → ℕ
   | 0 => 1
   | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)

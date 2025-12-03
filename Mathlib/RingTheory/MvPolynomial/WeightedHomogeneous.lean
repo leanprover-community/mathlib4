@@ -341,7 +341,7 @@ theorem weightedHomogeneousComponent_mem (w : σ → M) (φ : MvPolynomial σ R)
 @[simp]
 theorem weightedHomogeneousComponent_C_mul (n : M) (r : R) :
     weightedHomogeneousComponent w n (C r * φ) = C r * weightedHomogeneousComponent w n φ := by
-  simp only [C_mul', LinearMap.map_smul]
+  simp only [C_mul', map_smul]
 
 theorem weightedHomogeneousComponent_eq_zero'
     (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → weight w d ≠ n) :

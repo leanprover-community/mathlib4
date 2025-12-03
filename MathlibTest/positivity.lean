@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic
@@ -251,6 +251,19 @@ example (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
 example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.sqrt := by positivity
 example (a : ℕ) (ha : a ≠ 0) : 0 < a.totient := by positivity
+
+section NNReal
+
+example (a : ℝ) (ha : 0 < a) : 0 < a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.toNNReal := by positivity
+example (a : ℝ) : 0 ≤ a.nnabs := by positivity
+example (a : ℝ) (ha : 0 < a) : 0 < a.nnabs := by positivity
+example (a : ℝ) (ha : a ≠ 0) : 0 < a.nnabs := by positivity
+example (a : ℝ≥0) (ha : 0 < a) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) (ha : a ≠ 0) : 0 < (a : ℝ) := by positivity
+example (a : ℝ≥0) : 0 ≤ (a : ℝ) := by positivity
+
+end NNReal
 
 section ENNReal
 

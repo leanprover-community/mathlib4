@@ -77,7 +77,7 @@ section Pretriangulated
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A]
 
-/-- A functor from a pretriangulated category to an abelian category is an homological functor
+/-- A functor from a pretriangulated category to an abelian category is a homological functor
 if it sends distinguished triangles to exact sequences. -/
 class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -167,7 +167,7 @@ end Pretriangulated
 
 section
 
-/-- The connecting homomorphism in the long exact sequence attached to an homological
+/-- The connecting homomorphism in the long exact sequence attached to a homological
 functor and a distinguished triangle. -/
 noncomputable def homologySequenceδ
     [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :

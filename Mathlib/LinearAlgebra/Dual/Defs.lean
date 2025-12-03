@@ -309,7 +309,7 @@ instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
   ext n
   simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
   suffices r • n m = 0 from eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
-  rw [← LinearMap.map_smul_of_tower, hrm, LinearMap.map_zero]
+  rw [← LinearMap.map_smul_of_tower, hrm, map_zero]
 
 end IsReflexive
 

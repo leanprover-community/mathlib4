@@ -108,6 +108,15 @@ noncomputable def reindex {X : C} (h : P.ColimitOfShape J X) (G : J' ⥤ J) [G.F
   toColimitPresentation := h.toColimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+/-- Given `P : ObjectProperty C`, and a presentation `P.ColimitOfShape J X`
+of an object `X : C`, this is the induced functor `J ⥤ CostructuredArrow P.ι X`. -/
+@[simps]
+def toCostructuredArrow
+    {X : C} (p : P.ColimitOfShape J X) :
+    J ⥤ CostructuredArrow P.ι X where
+  obj j := CostructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.ι.app j)
+  map f := CostructuredArrow.homMk (by exact p.diag.map f)
+
 end ColimitOfShape
 
 /-- The property of objects that are the point of a colimit cocone for a

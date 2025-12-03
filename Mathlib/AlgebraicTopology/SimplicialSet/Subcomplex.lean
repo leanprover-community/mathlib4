@@ -95,7 +95,7 @@ instance mono_homOfLE : Mono (homOfLE h) := mono_of_mono_fac (homOfLE_ι h)
 /-- This is the isomorphism of simplicial sets corresponding to
 an equality of subcomplexes. -/
 @[simps]
-def eqToIso (h : S₁ = S₂) : (S₁ : SSet.{u}) ≅ S₂ where
+protected def eqToIso (h : S₁ = S₂) : (S₁ : SSet.{u}) ≅ S₂ where
   hom := homOfLE h.le
   inv := homOfLE h.symm.le
 

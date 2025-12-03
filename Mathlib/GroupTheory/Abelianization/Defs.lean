@@ -169,7 +169,7 @@ def MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* Abeliani
   right_inv := by
     rintro ⟨a⟩
     simp
-  map_mul' := MonoidHom.map_mul _
+  map_mul' := map_mul _
 
 @[simp]
 theorem abelianizationCongr_of (e : G ≃* H) (x : G) :

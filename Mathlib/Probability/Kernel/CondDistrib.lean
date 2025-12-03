@@ -387,7 +387,7 @@ theorem condExp_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpace F]
 
 /-- The conditional expectation of `Y` given `X` is almost everywhere equal to the integral
 `∫ y, y ∂(condDistrib Y X μ (X a))`. -/
-theorem condExp_ae_eq_integral_condDistrib' {Ω} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
+theorem condExp_ae_eq_integral_condDistrib' {Ω : Type*} [NormedAddCommGroup Ω] [NormedSpace ℝ Ω]
     [CompleteSpace Ω] [MeasurableSpace Ω] [BorelSpace Ω] [SecondCountableTopology Ω] {Y : α → Ω}
     (hX : Measurable X) (hY_int : Integrable Y μ) :
     μ[Y|mβ.comap X] =ᵐ[μ] fun a => ∫ y, y ∂condDistrib Y X μ (X a) :=

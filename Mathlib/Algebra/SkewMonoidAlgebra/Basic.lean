@@ -161,8 +161,7 @@ theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) =
 
 lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
     (p + q).support ⊆ p.support ∪ q.support := by
-  simp [support]
-  exact Finsupp.support_add
+  simpa [support] using Finsupp.support_add
 
 end Support
 

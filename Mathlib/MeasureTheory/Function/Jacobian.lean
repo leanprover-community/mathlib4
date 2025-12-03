@@ -522,10 +522,10 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   have I : r * ‖(f' x - A) a‖ ≤ r * (δ + ε) * (‖z‖ + ε) :=
     calc
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
-        simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
+        simp only [map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
         simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
-          Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
+          Pi.sub_apply, map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by

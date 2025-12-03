@@ -136,7 +136,7 @@ theorem card_opow_omega0 {a : Ordinal} (h : 1 < a) : card (a ^ ω) = max ℵ₀ 
   rw [card_opow_eq_of_omega0_le_right h le_rfl, card_omega0, max_comm]
 
 theorem principal_opow_omega (o : Ordinal) : Principal (· ^ ·) (ω_ o) := by
-  obtain rfl | ho := Ordinal.eq_zero_or_pos o
+  obtain rfl | ho := eq_zero_or_pos o
   · rw [omega_zero]
     exact principal_opow_omega0
   · intro a b ha hb

@@ -104,27 +104,27 @@ limits.
 /-- A locally uniform limit on a set of functions which are continuous on this set is itself
 continuous on this set. -/
 protected theorem TendstoLocallyUniformlyOn.continuousOn (h : TendstoLocallyUniformlyOn F f p s)
-    (hc : ∀ᶠ n in p, ContinuousOn (F n) s) [NeBot p] : ContinuousOn f s := by
+    (hc : ∃ᶠ n in p, ContinuousOn (F n) s) : ContinuousOn f s := by
   refine continuousOn_of_locally_uniform_approx_of_continuousWithinAt fun x hx u hu => ?_
   rcases h u hu x hx with ⟨t, ht, H⟩
-  rcases (hc.and H).exists with ⟨n, hFc, hF⟩
+  rcases (hc.and_eventually H).exists with ⟨n, hFc, hF⟩
   exact ⟨t, ht, ⟨F n, hFc.continuousWithinAt hx, hF⟩⟩
 
 /-- A uniform limit on a set of functions which are continuous on this set is itself continuous
 on this set. -/
 protected theorem TendstoUniformlyOn.continuousOn (h : TendstoUniformlyOn F f p s)
-    (hc : ∀ᶠ n in p, ContinuousOn (F n) s) [NeBot p] : ContinuousOn f s :=
+    (hc : ∃ᶠ n in p, ContinuousOn (F n) s) : ContinuousOn f s :=
   h.tendstoLocallyUniformlyOn.continuousOn hc
 
 /-- A locally uniform limit of continuous functions is continuous. -/
 protected theorem TendstoLocallyUniformly.continuous (h : TendstoLocallyUniformly F f p)
-    (hc : ∀ᶠ n in p, Continuous (F n)) [NeBot p] : Continuous f :=
+    (hc : ∃ᶠ n in p, Continuous (F n)) : Continuous f :=
   continuousOn_univ.mp <|
     h.tendstoLocallyUniformlyOn.continuousOn <| hc.mono fun _n hn => hn.continuousOn
 
 /-- A uniform limit of continuous functions is continuous. -/
 protected theorem TendstoUniformly.continuous (h : TendstoUniformly F f p)
-    (hc : ∀ᶠ n in p, Continuous (F n)) [NeBot p] : Continuous f :=
+    (hc : ∃ᶠ n in p, Continuous (F n)) : Continuous f :=
   h.tendstoLocallyUniformly.continuous hc
 
 /-!

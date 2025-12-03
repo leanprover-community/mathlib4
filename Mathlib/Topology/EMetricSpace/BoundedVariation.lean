@@ -304,11 +304,11 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
             ∑ i ∈ Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
         congr 1
         · congr 1
-          · grind [Finset.mem_Ico, Finset.sum_congr]
+          · grind [Finset.sum_congr]
           · have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
             have : Finset.Ico (N - 1) N = {N - 1} := by rw [← Nat.Ico_succ_singleton, A]
             simp only [this, A, Finset.sum_singleton]
-        · grind [Finset.sum_congr, Finset.mem_Ico]
+        · grind [Finset.sum_congr]
       _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (w (N + 1))) (f (w (N - 1))) +
             ∑ i ∈ Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by

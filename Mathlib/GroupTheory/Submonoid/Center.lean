@@ -53,7 +53,7 @@ variable {M}
 
 /-- The center of a multiplication with unit is commutative and associative.
 
-This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
+This is not an instance as it forms a non-defeq diamond with `Submonoid.toMonoid` in the `npow`
 field. -/
 @[to_additive /-- The center of an addition with zero is commutative and associative. -/]
 abbrev center.commMonoid' : CommMonoid (center M) :=

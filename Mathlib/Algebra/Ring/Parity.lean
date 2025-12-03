@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Data.Set.Operations
@@ -47,16 +47,6 @@ variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
 lemma Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
 
 end Monoid
-
-section DivisionMonoid
-variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
-
-lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
-  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
-
-lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
-
-end DivisionMonoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
@@ -362,6 +352,20 @@ lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
     (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
 
 end DistribNeg
+
+section DivisionMonoid
+variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
+
+lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+  rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
+
+lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
+
+lemma neg_one_zpow_eq_ite : (-1 : α) ^ n = if Even n then 1 else -1 := by
+  obtain ⟨n, _⟩ := n.eq_nat_or_neg
+  aesop (add safe (by rw [neg_one_pow_eq_ite]))
+
+end DivisionMonoid
 
 section CharTwo
 

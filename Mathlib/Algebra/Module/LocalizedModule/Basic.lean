@@ -567,7 +567,7 @@ instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocaliz
   surj x := by
     obtain ⟨p, h⟩ := hf.surj (e.symm x)
     exact ⟨p, by rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ← e.congr_arg h,
-      Submonoid.smul_def, Submonoid.smul_def, LinearEquiv.map_smul, LinearEquiv.apply_symm_apply]⟩
+      Submonoid.smul_def, Submonoid.smul_def, map_smul, LinearEquiv.apply_symm_apply]⟩
   exists_of_eq h := by
     simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       EmbeddingLike.apply_eq_iff_eq] at h
@@ -810,7 +810,7 @@ theorem fromLocalizedModule.inj : Function.Injective <| fromLocalizedModule S f 
   induction x with | _ a b
   induction y with | _ a' b'
   simp only [fromLocalizedModule_mk] at eq1
-  rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← LinearMap.map_smul,
+  rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← map_smul,
     Module.End.algebraMap_isUnit_inv_apply_eq_iff'] at eq1
   rw [LocalizedModule.mk_eq, ← IsLocalizedModule.eq_iff_exists S f, Submonoid.smul_def,
     Submonoid.smul_def, f.map_smul, f.map_smul, eq1]
@@ -973,7 +973,7 @@ noncomputable def mk' (m : M) (s : S) : M' :=
 
 theorem mk'_smul (r : R) (m : M) (s : S) : mk' f (r • m) s = r • mk' f m s := by
   delta mk'
-  rw [← LocalizedModule.smul'_mk, LinearMap.map_smul]
+  rw [← LocalizedModule.smul'_mk, map_smul]
 
 theorem mk'_add_mk' (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f m₁ s₁ + mk' f m₂ s₂ = mk' f (s₂ • m₁ + s₁ • m₂) (s₁ * s₂) := by

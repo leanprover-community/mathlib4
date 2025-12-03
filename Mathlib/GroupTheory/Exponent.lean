@@ -366,7 +366,7 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
 If there exists a multiplication-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`.
 -/
-@[to_additive /-- If there exists a addition-preserving equivalence between `G` and `H`,
+@[to_additive /-- If there exists an addition-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`. -/]
 theorem exponent_eq_of_mulEquiv (e : G ≃* H) : Monoid.exponent G = Monoid.exponent H :=
   Nat.dvd_antisymm
@@ -436,8 +436,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   apply Nat.dvd_antisymm (order_dvd_exponent _)
   refine Nat.dvd_of_primeFactorsList_subperm he ?_
   rw [List.subperm_ext_iff]
-  by_contra! h
-  obtain ⟨p, hp, hpe⟩ := h
+  by_contra! ⟨p, hp, hpe⟩
   replace hp := Nat.prime_of_mem_primeFactorsList hp
   simp only [Nat.primeFactorsList_count_eq] at hpe
   set k := (orderOf t).factorization p with hk

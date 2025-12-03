@@ -607,6 +607,19 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
   mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
 
+variable {P : C → Prop}
+
+@[to_additive, simp high]
+lemma forall_mem_sup :
+    (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+  aesop
+
+@[to_additive, simp high]
+lemma exists_mem_sup :
+    (∃ x ∈ s ⊔ t, P x) ↔ (∃ x₁ ∈ s, ∃ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+
 @[to_additive]
 theorem mem_sup_of_normal_right {s t : Subgroup G} [ht : t.Normal] {x : G} :
     x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by

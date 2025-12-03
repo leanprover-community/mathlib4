@@ -275,7 +275,7 @@ instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
-  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
+  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=

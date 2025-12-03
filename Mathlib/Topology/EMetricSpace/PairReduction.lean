@@ -381,7 +381,7 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
   wlog hn : 1 ≤ n
   · convert zero_le (n * c)
     convert edist_self _
-    simp [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn)] at hJ_card
+    simp only [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn), pow_zero, Nat.cast_le_one] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
     exact Finset.card_le_one_iff.mp hJ_card ht hs
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
@@ -400,8 +400,7 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
   let l := Nat.findGreatest P (#J - 1)
   obtain ⟨hsV, htV⟩ : P l := by
     apply Nat.findGreatest_spec (zero_le _)
-    simp [P, finset_logSizeBallSeq_zero]
-    exact ⟨hs, ht⟩
+    simpa [P, finset_logSizeBallSeq_zero] using ⟨hs, ht⟩
   wlog h : s ∉ (logSizeBallSeq J hJ a c (l + 1)).finset generalizing s t
   · have h' : t ∉ (logSizeBallSeq J hJ a c (l + 1)).finset := by
       have hl : l < #J - 1 := by
@@ -419,13 +418,13 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
         apply card_finset_logSizeBallSeq_le
       simp only [Decidable.not_not] at h
       have hP := Nat.findGreatest_is_greatest (lt_add_one l) (Nat.add_one_le_of_lt hl)
-      simp [P, h] at hP; exact hP
+      simpa [P, h] using hP
     have hts : edist t s ≤ c := by rw [edist_comm]; exact hst
     rw [edist_comm]
     have hP : P = (fun l ↦
       t ∈ (logSizeBallSeq J hJ a c l).finset ∧ s ∈ (logSizeBallSeq J hJ a c l).finset) := by
         ext; simp [P, and_comm]
-    simp [l, hP] at htV hsV h'
+    simp only [hP, l] at htV hsV h'
     exact this t ht s hs hts htV hsV h'
   simp only [finset_logSizeBallSeq_add_one, logSizeBallStruct.smallBall, Finset.mem_sdiff, hsV,
     Finset.mem_filter, true_and, not_le, not_lt] at h

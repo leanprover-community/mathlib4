@@ -433,7 +433,7 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
 theorem pre_id : pre F (𝟭 C) = 𝟭 _ := rfl
 
 /--
-An natural isomorphism between functors `G ≅ H` induces a natural isomorphism between the canonical
+A natural isomorphism between functors `G ≅ H` induces a natural isomorphism between the canonical
 morphism `pre F G` and `pre F H`, up to composition with
 `Grothendieck (G ⋙ F) ⥤ Grothendieck (H ⋙ F)`.
 -/

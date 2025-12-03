@@ -84,10 +84,10 @@ variable (Q)
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
     LinearMap.mk₂ R (fun m₁ m₂ => ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)
-      (fun _ _ _ => by simp only [LinearMap.map_add, add_mul]; rfl)
-      (fun _ _ _ => by simp only [LinearMap.map_smul, smul_mul_assoc]; rfl)
-      (fun _ _ _ => by simp only [LinearMap.map_add, mul_add]; rfl) fun _ _ _ => by
-      simp only [LinearMap.map_smul, mul_smul_comm]; rfl
+      (fun _ _ _ => by simp only [map_add, add_mul]; rfl)
+      (fun _ _ _ => by simp only [map_smul, smul_mul_assoc]; rfl)
+      (fun _ _ _ => by simp only [map_add, mul_add]; rfl) fun _ _ _ => by
+      simp only [map_smul, mul_smul_comm]; rfl
   contract m := Subtype.ext <| ι_sq_scalar Q m
   contract_mid m₁ m₂ m₃ :=
     Subtype.ext <|
@@ -145,17 +145,17 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
       (acc.2.val m,
         ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
     (fun m₁ m₂ a =>
-      Prod.ext (LinearMap.map_add _ m₁ m₂)
+      Prod.ext (map_add _ m₁ m₂)
         (Subtype.ext <|
           LinearMap.ext fun m₃ =>
             show f.bilin m₃ (m₁ + m₂) * a.1 = f.bilin m₃ m₁ * a.1 + f.bilin m₃ m₂ * a.1 by
               rw [map_add, add_mul]))
     (fun c m a =>
-      Prod.ext (LinearMap.map_smul _ c m)
+      Prod.ext (map_smul _ c m)
         (Subtype.ext <|
           LinearMap.ext fun m₃ =>
             show f.bilin m₃ (c • m) * a.1 = c • (f.bilin m₃ m * a.1) by
-              rw [LinearMap.map_smul, smul_mul_assoc]))
+              rw [map_smul, smul_mul_assoc]))
     (fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_add _ _ _))
     fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_smul_comm _ _ _)
 
@@ -220,8 +220,8 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
     generalize_proofs at ⊢
     simpa using Algebra.smul_def r _
   | add x y hx hy ihx ihy =>
-    rw [LinearMap.map_add, Prod.fst_add]
-    simp [ihx, ihy, ← add_mul, ← LinearMap.map_add]
+    rw [map_add, Prod.fst_add]
+    simp [ihx, ihy, ← add_mul, ← map_add]
   | ι_mul_ι_mul m₁ m₂ x hx ih =>
     simp [aux_apply, ih, ← mul_assoc]
 

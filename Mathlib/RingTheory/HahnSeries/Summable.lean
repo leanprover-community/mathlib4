@@ -522,7 +522,7 @@ def lsum : SummableFamily Γ R α →ₗ[HahnSeries Γ R] HahnSeries Γ R where
 @[simp]
 theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
     (s - t).hsum = s.hsum - t.hsum := by
-  rw [← lsum_apply, LinearMap.map_sub, lsum_apply, lsum_apply]
+  rw [← lsum_apply, map_sub, lsum_apply, lsum_apply]
 
 theorem isPWO_iUnion_support_prod_mul {s : α → HahnSeries Γ R} {t : β → HahnSeries Γ R}
     (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
@@ -751,7 +751,7 @@ theorem embDomain_succ_smul_powers :
   · simp [hx]
   · -- FIXME: smul_eq_mul introduces type confusion between HahnModule and HahnSeries.
     simp [embDomain_apply, of_symm_smul_of_eq_mul, powers_of_orderTop_pos hx, pow_succ',
-      -smul_eq_mul, -Algebra.id.smul_eq_mul]
+      -smul_eq_mul]
 
 include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by

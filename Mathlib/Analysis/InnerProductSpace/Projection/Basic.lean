@@ -448,7 +448,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     simp [Submodule.span_zero_singleton 𝕜]
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
   convert key using 1 <;> match_scalars <;> field_simp [hv']

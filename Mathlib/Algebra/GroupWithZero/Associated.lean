@@ -28,7 +28,7 @@ multiplied by a unit on the right. -/
 def Associated [Monoid M] (x y : M) : Prop :=
   ∃ u : Mˣ, x * u = y
 
-/-- Notation for two elements of a monoid are associated, i.e.
+/-- Notation for two elements of a monoid being associated, i.e.
 if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
@@ -38,6 +38,7 @@ namespace Associated
 protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
   ⟨1, by simp⟩
 
+@[simp]
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
@@ -356,7 +357,7 @@ variable [Monoid M] [Subsingleton Mˣ]
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
   constructor
   · rintro ⟨c, rfl⟩
-    rw [units_eq_one c, Units.val_one, mul_one]
+    rw [c.eq_one, Units.val_one, mul_one]
   · rintro rfl
     rfl
 

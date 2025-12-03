@@ -251,7 +251,6 @@ square commutes:
 ```
 where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 -/
-
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by

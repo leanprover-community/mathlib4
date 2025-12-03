@@ -174,6 +174,10 @@ theorem mem_rangeS_self (f : R →+* S) (x : R) : f x ∈ f.rangeS :=
 theorem map_rangeS : f.rangeS.map g = (g.comp f).rangeS := by
   simpa only [rangeS_eq_map] using (⊤ : Subsemiring R).map_map g f
 
+variable {f} in
+theorem rangeS_eq_top : f.rangeS = ⊤ ↔ Function.Surjective f := by
+  simp [← Set.range_eq_univ, SetLike.ext'_iff]
+
 /-- The range of a morphism of semirings is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
@@ -704,6 +708,18 @@ def codRestrict (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) : R →+* s :=
 theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : R) :
     (f.codRestrict s h x : S) = f x :=
   rfl
+
+theorem injective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
+    Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
+  Set.injective_codRestrict h
+
+theorem rangeS_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
+    rangeS (codRestrict f s h) = Subsemiring.comap (SubsemiringClass.subtype s) f.rangeS :=
+  SetLike.coe_injective <| Set.range_codRestrict h
+
+theorem surjective_codRestrict {f : R →+* S} {s : σS} {h : ∀ x, f x ∈ s} :
+    Function.Surjective (codRestrict f s h) ↔ f.rangeS = ofClass s :=
+  (Set.surjective_codRestrict h).trans <| .symm <| SetLike.coe_set_eq.symm
 
 /-- The ring homomorphism from the preimage of `s` to `s`. -/
 def restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f x ∈ s) : s' →+* s :=

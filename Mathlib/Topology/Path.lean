@@ -394,11 +394,22 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
 @[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
 
 @[simp]
+theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
+    (γ.symm).cast hb ha = (γ.cast ha hb).symm :=
+  rfl
+
+@[deprecated cast_symm (since := "2025-11-13")]
 theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=
   rfl
 
 @[simp]
+theorem cast_trans {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
+    (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
+    (γ.trans γ').cast ha hc = (γ.cast ha hb).trans (γ'.cast hb hc) :=
+  rfl
+
+@[deprecated cast_trans (since := "2025-11-13")]
 theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
@@ -491,10 +502,7 @@ theorem prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
 /-- Path composition commutes with products -/
 theorem trans_prod_eq_prod_trans (γ₁ : Path a₁ a₂) (δ₁ : Path a₂ a₃) (γ₂ : Path b₁ b₂)
     (δ₂ : Path b₂ b₃) : (γ₁.prod γ₂).trans (δ₁.prod δ₂) = (γ₁.trans δ₁).prod (γ₂.trans δ₂) := by
-  unfold Path.trans
-  ext t <;>
-  · simp only [Path.coe_mk_mk, Path.prod_coe]
-    grind
+  grind
 
 end Prod
 

@@ -197,7 +197,7 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, ← Int.cast_smul_eq_zsmul R, ← Int.cast_smul_eq_zsmul R]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
-  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, LinearMap.map_smul]
+  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, map_smul]
   dsimp
 
 variable {R}
@@ -244,7 +244,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp [mA]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
-    LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
+    LinearMap.map_smul₂, map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, mul_assoc]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, smul_smul, ← uzpow_add, add_mul, mul_add]
@@ -262,7 +262,7 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
-  simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, LinearMap.map_smul,
+  simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     LinearMap.smul_apply]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,

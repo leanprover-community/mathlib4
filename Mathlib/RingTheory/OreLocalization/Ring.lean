@@ -153,7 +153,7 @@ def universalHom : R[S⁻¹] →+* T :=
       clear h₃'
       simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
         Submonoid.smul_def]
-      simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
+      simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
       simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1

@@ -333,10 +333,10 @@ theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
 /-- A non-constant polynomial has non-zero separable degree. -/
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
   rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
-  use rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)
+  use rootOfSplits (SplittingField.splits f) (degree_ne_of_natDegree_ne (by rwa [natDegree_map]))
   classical
   rw [Multiset.mem_toFinset, mem_aroots]
-  exact ⟨ne_of_apply_ne _ h, map_rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)⟩
+  exact ⟨ne_of_apply_ne _ h, by simp only [aeval_def, ← eval_map, eval_rootOfSplits]⟩
 
 /-- A polynomial has zero separable degree if and only if it is constant. -/
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=

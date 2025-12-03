@@ -75,8 +75,8 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
       ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
       ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
-  rfl
+  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2,
+    SetLike.mem_coe, mem_dual, LinearMap.flip_apply, dualPairing_apply]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)

@@ -1394,7 +1394,7 @@ and supremum of increasing sequences of functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`. -/
+of their images is a subset of `{0}`). -/
 @[elab_as_elim]
 theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → motive (Set.indicator s fun _ => c))
@@ -1417,7 +1417,7 @@ functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`. -/
+of their images is a subset of `{0}`). -/
 @[elab_as_elim]
 lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (Set.indicator s fun _ ↦ c))

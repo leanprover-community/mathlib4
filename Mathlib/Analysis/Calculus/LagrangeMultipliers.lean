@@ -93,8 +93,8 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
     simpa [hΛ.1] using Λ.map_smul x 1
   · ext x
     have H₁ : Λ (f' x) = f' x * Λ 1 := by
-      simpa only [mul_one, Algebra.id.smul_eq_mul] using Λ.map_smul (f' x) 1
-    have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [Algebra.id.smul_eq_mul, H₁] using hfΛ x
+      simpa only [mul_one, smul_eq_mul] using Λ.map_smul (f' x) 1
+    have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [smul_eq_mul, H₁] using hfΛ x
     simpa [mul_comm] using H₂
 
 /-- Lagrange multipliers theorem, 1d version. Let `f : ι → E → ℝ` be a finite family of functions.

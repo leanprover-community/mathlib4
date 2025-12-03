@@ -370,14 +370,14 @@ run_cmd do
   unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
   unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
-@[to_additive, to_additive_dont_translate]
-def MonoidEnd : Type := Unit
+@[to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
+def Unit' : Type := Unit
+@[to_additive_do_translate] def Unit'' : Type := Unit
 
-run_cmd do
-  let stx ← `(Semigroup MonoidEnd)
-  liftTermElabM do
-    let e ← Term.elabTerm stx none
-    guard <| shouldTranslate (← getEnv) ToAdditive.data e == some (.inl `Test.MonoidEnd)
+run_meta do
+  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) == some (.inl `Test.MonoidEnd)
+  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') == some (.inl `Test.Unit')
+  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') == none
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -410,10 +410,6 @@ run_cmd
   -- `AddCommMonoid` instead of `CommAddMonoid`.
   checkGuessName "comm_mul_CommMul_commMul" "comm_add_AddComm_addComm"
   checkGuessName "mul_comm_MulComm_mulComm" "add_comm_AddComm_addComm"
-  checkGuessName "mul_single_eq_same" "single_eq_same"
-  checkGuessName "mul_support" "support"
-  checkGuessName "mul_tsupport" "tsupport"
-  checkGuessName "mul_indicator" "indicator"
 
   checkGuessName "CommMonoid" "AddCommMonoid"
   checkGuessName "commMonoid" "addCommMonoid"

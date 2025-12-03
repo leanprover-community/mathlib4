@@ -184,7 +184,7 @@ section Directed
 
 variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
 
-/-- In a directed and nonempty order, the top ideal of a is `univ`. -/
+/-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
   le_top _ _ _ := LowerSet.mem_top
