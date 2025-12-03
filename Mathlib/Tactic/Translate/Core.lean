@@ -668,7 +668,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
     setEnv <| addNoncomputable (← getEnv) tgt
   else
     addAndCompile trgDecl.toDeclaration! (logCompileErrors := (IR.findEnvDecl env src).isSome)
-  if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
+  if let .defnInfo { hints := .abbrev, .. } := trgDecl then
     if (← getReducibilityStatus src) == .reducible then
       setReducibilityStatus tgt .reducible
     if Compiler.getInlineAttribute? (← getEnv) src == some .inline then
@@ -682,11 +682,7 @@ partial def transformDeclRec (t : TranslateData) (ref : Syntax) (pre tgt_pre src
   if defeqAttr.hasTag (← getEnv) src then
     defeqAttr.setTag tgt
   if let some matcherInfo ← getMatcherInfo? src then
-    /-
-    Use `Match.addMatcherInfo tgt matcherInfo`
-    once https://github.com/leanprover/lean4/pull/5068 is in
-    -/
-    modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
+    Match.addMatcherInfo tgt matcherInfo
   -- necessary so that e.g. match equations can be generated for `tgt`
   enableRealizationsForConst tgt
 
