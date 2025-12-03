@@ -113,7 +113,7 @@ noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
   app := Φ.toPresheafFiber X x
   naturality _ _ f := by simp [presheafFiber, toPresheafFiber]
 
-@[elementwise (attr := simp), reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.map f.op ≫ Φ.toPresheafFiber X x P =
       Φ.toPresheafFiber Y (Φ.fiber.map f x) P :=
