@@ -178,6 +178,11 @@ lemma factorₐ_evalₐ_one (x : AdicCompletion I R) :
     Ideal.Quotient.factor (show I ^ 1 ≤ I by simp) (evalₐ I 1 x) = evalOneₐ I x :=
   rfl
 
+lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
+  dsimp [evalOneₐ]
+  exact (Ideal.Quotient.factor_surjective (show I ^ 1 ≤ I by simp)).comp
+    (AdicCompletion.surjective_evalₐ I 1)
+
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
   Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
@@ -456,9 +461,8 @@ variable {A : Type*} [CommRing A] [Algebra R A] [Algebra R S]
 in terms of a surjective map `S →ₐ[R] A`. -/
 noncomputable def kerProj {f : S →ₐ[R] A} (hf : Function.Surjective f) :
     AdicCompletion (RingHom.ker f) S →ₐ[R] A :=
-  (Ideal.quotientKerAlgEquivOfSurjective hf).toAlgHom.comp
-    ((Ideal.quotientEquivAlgOfEq R (by simp)).toAlgHom.comp <|
-    AlgHom.restrictScalars R (AdicCompletion.evalₐ (RingHom.ker f) 1))
+  (Ideal.quotientKerAlgEquivOfSurjective hf).toAlgHom.comp <|
+    (AdicCompletion.evalOneₐ <| RingHom.ker f).restrictScalars R
 
 @[simp]
 lemma kerProj_of {f : S →ₐ[R] A} (hf : Function.Surjective f) (x : S) :
@@ -467,10 +471,8 @@ lemma kerProj_of {f : S →ₐ[R] A} (hf : Function.Surjective f) (x : S) :
 
 lemma kerProj_surjective {f : S →ₐ[R] A} (hf : Function.Surjective f) :
     Function.Surjective (kerProj hf) := by
-  intro x
-  obtain ⟨x, rfl⟩ := hf x
-  use .of _ _ x
-  simp
+  dsimp [kerProj]
+  exact (AlgEquiv.surjective _).comp (evalOneₐ_surjective _)
 
 end
 
