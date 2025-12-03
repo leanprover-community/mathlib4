@@ -15,6 +15,7 @@ declare_syntax_cat wildcard_universe
 
 syntax "_" : wildcard_universe
 syntax "*" : wildcard_universe
+syntax ident noWs "*" : wildcard_universe
 syntax level : wildcard_universe
 
 syntax (name := wildcardUniverse)
@@ -22,7 +23,7 @@ syntax (name := wildcardUniverse)
 
 inductive LevelWildcardKind where
   | mvar
-  | param
+  | param (baseName : Name := `u)
   | explicit (l : Level)
 
 meta def elabWildcardUniverses (us : Array Syntax) : TermElabM (Array LevelWildcardKind) := do
@@ -30,6 +31,7 @@ meta def elabWildcardUniverses (us : Array Syntax) : TermElabM (Array LevelWildc
     match u with
     | `(wildcard_universe|_) => return .mvar
     | `(wildcard_universe|*) => return .param
+    | `(wildcard_universe|$n:ident*) => return .param n.getId
     | `(wildcard_universe|$l:level) => do
       let lvl ← elabLevel l
       return .explicit lvl
@@ -59,7 +61,7 @@ meta def elabWildcardUniverseShort : TermElab := fun stx expectedType? => do
     let constLevels : Array Level ← levels.mapM fun k => do
       match k with
       | .mvar => Meta.mkFreshLevelMVar
-      | .param => mkFreshLevelParam
+      | .param baseName => mkFreshLevelParam baseName
       | .explicit l => return l
 
     let fn : Expr := .const constName constLevels.toList
@@ -80,7 +82,7 @@ meta def elabWildcardUniverseShort : TermElab := fun stx expectedType? => do
     let mut levelNames ← getLevelNames
 
     for ((k, l), idx) in levelSpecWithLevel.zipIdx do
-      unless k matches .param do continue
+      unless k matches .param _ do continue
       let .param name := l | continue
       -- Collect level params from later universe arguments
       let laterLevels := constLevels.toList.drop (idx + 1)
