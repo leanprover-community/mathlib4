@@ -789,8 +789,7 @@ theorem IsBasis'.isBasis (hI : M.IsBasis' I X) (hX : X ⊆ M.E := by ground) : M
 theorem IsBasis'.subset (hI : M.IsBasis' I X) : I ⊆ X :=
   hI.1.2
 
-
-@[grind .]
+@[grind →]
 theorem IsBasis.subset_ground (hI : M.IsBasis I X) : X ⊆ M.E :=
   hI.2
 
@@ -798,7 +797,7 @@ theorem IsBasis.isBasis_inter_ground (hI : M.IsBasis I X) : M.IsBasis I (X ∩ M
   convert hI
   rw [inter_eq_self_of_subset_left hI.subset_ground]
 
-@[grind .]
+@[grind →]
 theorem IsBasis.left_subset_ground (hI : M.IsBasis I X) : I ⊆ M.E :=
   hI.indep.subset_ground
 

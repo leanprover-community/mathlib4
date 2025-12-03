@@ -242,7 +242,7 @@ theorem coindep_iff_subset_compl_isBase : M.Coindep X ↔ ∃ B, M.IsBase B ∧ 
   exact ⟨fun ⟨⟨B, hB, _, hBX⟩, hX⟩ ↦ ⟨B, hB, hX, hBX.symm⟩,
     fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground, hXB.symm⟩, hXE⟩⟩
 
-@[grind .]
+@[grind →]
 theorem Coindep.subset_ground (hX : M.Coindep X) : X ⊆ M.E :=
   hX.indep.subset_ground
 

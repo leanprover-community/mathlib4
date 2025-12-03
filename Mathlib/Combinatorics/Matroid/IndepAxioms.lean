@@ -168,6 +168,8 @@ namespace IndepMatroid
 @[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
+attribute [ground_simps] matroid_E
+
 /-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if
 `Indep J` for every finite subset `J` of `I`,
 then an `IndepMatroid` can be constructed without proving the maximality axiom.
@@ -198,6 +200,8 @@ This needs choice, since it can be used to prove that every vector space has a b
     · exact hxmax hyJ hle <| (hf _ hyJ).2
     · exact hle (hf _ hyJ).2
   subset_ground := subset_ground
+
+attribute [ground_simps] ofFinitary_E
 
 @[simp] theorem ofFinitary_indep (E : Set α) (Indep : Set α → Prop)
     indep_empty indep_subset indep_aug indep_compact subset_ground :
@@ -279,6 +283,8 @@ provided independence is determined by its behaviour on finite sets. -/
       exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by grind), hfI₀⟩ hfi )
   (subset_ground := subset_ground)
 
+attribute [ground_simps] ofFinitaryCardAugment_E
+
 @[simp] theorem ofFinitaryCardAugment_indep (E : Set α) (Indep : Set α → Prop)
     indep_empty indep_subset indep_aug indep_compact subset_ground :
     (IndepMatroid.ofFinitaryCardAugment
@@ -327,6 +333,8 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
   indep_maximal X _ := Matroid.existsMaximalSubsetProperty_of_bdd indep_bdd X
   subset_ground := subset_ground
 
+attribute [ground_simps] ofBdd_E
+
 @[simp] theorem ofBdd_indep (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground h_bdd : (IndepMatroid.ofBdd
       E Indep indep_empty indep_subset indep_aug subset_ground h_bdd).Indep = Indep := rfl
@@ -369,7 +377,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
       exact hBmax.not_prop_of_ssuperset (ssubset_insert hyB) hi)
     (indep_bdd := indep_bdd) (subset_ground := subset_ground)
 
-@[simp] theorem ofBddAugment_E (E : Set α) Indep indep_empty indep_subset indep_aug
+@[simp, ground_simps] theorem ofBddAugment_E (E : Set α) Indep indep_empty indep_subset indep_aug
     indep_bdd subset_ground : (IndepMatroid.ofBddAugment
       E Indep indep_empty indep_subset indep_aug indep_bdd subset_ground).E = E := rfl
 
@@ -402,8 +410,8 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
       exact encard_le_encard <| subset_ground hI ⟩)
     (subset_ground := subset_ground)
 
-@[simp] theorem ofFinite_E {E : Set α} hE Indep indep_empty indep_subset indep_aug subset_ground :
-    (IndepMatroid.ofFinite
+@[simp, ground_simps] theorem ofFinite_E {E : Set α} hE Indep indep_empty indep_subset
+    indep_aug subset_ground : (IndepMatroid.ofFinite
       (hE : E.Finite) Indep indep_empty indep_subset indep_aug subset_ground).E = E := rfl
 
 @[simp] theorem ofFinite_indep {E : Set α} hE Indep indep_empty indep_subset indep_aug
@@ -437,7 +445,8 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
     (indep_compact := fun _ h J hJ ↦ h _ hJ J.finite_toSet _ Subset.rfl )
     (subset_ground := fun I hI x hxI ↦ by simpa using subset_ground <| hI {x} (by simpa) )
 
-@[simp] theorem ofFinset_E [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
+@[simp, ground_simps]
+theorem ofFinset_E [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).E = E := rfl
 
@@ -477,6 +486,8 @@ namespace Matroid
   (indep_maximal := by obtain ⟨M, rfl, rfl⟩ := hex; exact M.existsMaximalSubsetProperty_indep)
   (subset_ground := by obtain ⟨M, rfl, rfl⟩ := hex; exact fun I ↦ Indep.subset_ground)
 
+attribute [ground_simps] ofExistsMatroid_E
+
 /-- A matroid defined purely in terms of its bases. -/
 @[simps E] protected def ofBase (E : Set α) (IsBase : Set α → Prop) (exists_isBase : ∃ B, IsBase B)
     (isBase_exchange : ExchangeProperty IsBase)
@@ -490,6 +501,8 @@ namespace Matroid
   isBase_exchange := isBase_exchange
   maximality := maximality
   subset_ground := subset_ground
+
+attribute [ground_simps] ofBase_E
 
 /-- A collection of bases with the exchange property and at least one finite member is a matroid -/
 @[simps! E] protected def ofExistsFiniteIsBase (E : Set α) (IsBase : Set α → Prop)
@@ -506,6 +519,8 @@ namespace Matroid
     rw [hfin.cast_ncard_eq, isBase_exchange.encard_isBase_eq hB hB']
     exact encard_mono hYB')
   (subset_ground := subset_ground)
+
+attribute [ground_simps] ofExistsFiniteIsBase_E
 
 @[simp] theorem ofExistsFiniteIsBase_isBase (E : Set α) IsBase exists_finite_base
     isBase_exchange subset_ground : (Matroid.ofExistsFiniteIsBase

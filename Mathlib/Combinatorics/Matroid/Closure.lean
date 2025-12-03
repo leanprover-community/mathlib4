@@ -239,7 +239,7 @@ lemma notMem_of_mem_diff_closure (he : e ∈ M.E \ M.closure X) : e ∉ X :=
 @[deprecated (since := "2025-05-23")]
 alias not_mem_of_mem_diff_closure := notMem_of_mem_diff_closure
 
-@[grind .]
+@[grind →]
 lemma mem_ground_of_mem_closure (he : e ∈ M.closure X) : e ∈ M.E :=
   (M.closure_subset_ground _) he
 
