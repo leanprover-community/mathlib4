@@ -1276,6 +1276,7 @@ public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.AlgebraicGeometry.LimitsOver
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.AlgebraicGeometry.Modules.Tilde
@@ -1750,6 +1751,7 @@ public import Mathlib.Analysis.Convex.Visible
 public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.FourierSchwartz
 public import Mathlib.Analysis.Distribution.SchwartzSpace
 public import Mathlib.Analysis.Distribution.TemperateGrowth
@@ -1919,6 +1921,7 @@ public import Mathlib.Analysis.Normed.Lp.LpEquiv
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.ProdLp
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
 public import Mathlib.Analysis.Normed.Lp.WithLp
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
@@ -2080,6 +2083,7 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Pos
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
 public import Mathlib.Analysis.SpecialFunctions.Elliptic.Weierstrass
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
@@ -4809,6 +4813,7 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
@@ -5600,6 +5605,7 @@ public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.HasLawExists
 public import Mathlib.Probability.IdentDistrib
+public import Mathlib.Probability.IdentDistribIndep
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Independence.BoundedContinuousFunction
 public import Mathlib.Probability.Independence.CharacteristicFunction
