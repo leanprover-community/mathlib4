@@ -266,7 +266,6 @@ def sobolevNorm (T : 𝓓'(Ω, F)) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) :
 end Distribution
 
 
-
 variable [FiniteDimensional ℝ E]
 
 
@@ -279,31 +278,58 @@ lemma MemSobolev.ae_eq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p
     MemSobolev Ω f' k p μ :=
   memSobolev_congr_ae h |>.mp hf
 
-lemma MemSobolev.AEStronglyMeasurable (hf : MemSobolev Ω f k p μ) :
+lemma MemSobolev.aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
   AEStronglyMeasurable f (μ.restrict Ω) := sorry
 
-lemma MemSobolev.restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
+lemma MemSobolev.indicator {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
   MemSobolev Ω (s.indicator f) k p μ := sorry
 
-lemma MemSobolev.restrict' {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
+lemma MemSobolev.restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
   MemSobolev Ω f k p (μ.restrict s) := sorry
 
+-- todo: move
+lemma MeasureTheory.ae_eq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
+    f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by
+  rfl
+
+-- todo: move
+lemma Set.EqOn.ae_eq {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    {f g : α → β} (h : s.EqOn f g) (h2 : μ sᶜ = 0) : f =ᵐ[μ] g :=
+  Measure.mono_null (fun _x hx h2x ↦ hx (h h2x)) h2
+
+-- todo: move
+lemma Set.EqOn.ae_eq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
+  h.ae_eq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
+
+-- todo: replace `AddSubgroup (E →ₘ[μ] F)` with `AddSubgroup (E →ₘ[μ.restrict Ω] F)`?
 variable (Ω F) in
 def SobolevSpace (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) :
     AddSubgroup (E →ₘ[μ] F) where
-  carrier := { f | MemSobolev Ω f k p μ }
-  zero_mem' := by simp [memSobolev_congr_ae AEEqFun.coeFn_zero.restrict, MemSobolev.zero]
+  carrier := { f | MemSobolev Ω f k p μ ∧ f =ᵐ[μ.restrict Ωᶜ] 0 }
+  zero_mem' := by
+    simp [memSobolev_congr_ae AEEqFun.coeFn_zero.restrict, AEEqFun.coeFn_zero.restrict,
+      MemSobolev.zero]
   add_mem' {f g} hf hg := by
-    simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g).restrict, hf.add hg]
-  neg_mem' {f} hf := by simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f).restrict, hf.neg]
+    constructor
+    · simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g).restrict, hf.1.add hg.1]
+    exact (AEEqFun.coeFn_add f g).restrict.trans <| hf.2.add hg.2 |>.trans (add_zero 0).eventuallyEq
+  neg_mem' {f} hf := by
+    constructor
+    · simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f).restrict, hf.1.neg]
+    exact (AEEqFun.coeFn_neg f).restrict.trans <| hf.2.neg |>.trans neg_zero.eventuallyEq
+
+open AEEqFun
 
 namespace MemSobolev
+-- AEStronglyMeasurable f (μ.restrict Ω)
+/-- make an element of Lp from a function verifying `MemSobolev` -/
+def toSobolev (f : E → F) (h : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p μ :=
+  ⟨AEEqFun.mk (Ω.1.indicator f) sorry, sorry,
+  coeFn_mk _ _ |>.restrict.trans <| Set.eqOn_indicator'.ae_eq_restrict Ω.isOpen.measurableSet.compl⟩
 
--- /-- make an element of Lp from a function verifying `MemSobolev` -/
--- def toSobolev (f : E → F) (h_mem_ℒp : MemSobolev Ω f k p μ) : Lp E p μ :=
---   ⟨AEEqFun.mk f h_mem_ℒp.1, h_mem_ℒp.eLpNorm_mk_lt_top⟩
-
--- theorem toSobolev_val {f : E → F} (h : MemSobolev Ω f k p μ) : (toSobolev f h).1 = AEEqFun.mk f h.1 := rfl
+-- theorem toSobolev_val {f : E → F} (h : MemSobolev Ω f k p μ) :
+--     (toSobolev f h).1 = AEEqFun.mk f h.1 := rfl
 
 -- theorem coeFn_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) : hf.toSobolev f =ᵐ[μ] f :=
 --   AEEqFun.coeFn_mk _ _
