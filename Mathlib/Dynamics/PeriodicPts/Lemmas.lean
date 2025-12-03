@@ -157,8 +157,7 @@ theorem minimalPeriod_piMap :
   simp [← isPeriodicPt_iff_minimalPeriod_dvd]
 
 -- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
--- alternative name: `minimalPeriod_piMap_fintype`
-theorem fintype_minimalPeriod_piMap [Fintype ι] :
+theorem minimalPeriod_piMap_fintype [Fintype ι] :
     minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd]
 
