@@ -63,13 +63,13 @@ def externalCoveringNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
 the minimal cardinal of an `ε`cover contained in `A`. -/
 noncomputable
 def coveringNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
-  ⨅ (C : Set X) (_ : ↑C ⊆ A) (_ : IsCover ε A C), C.encard
+  ⨅ (C : Set X) (_ : C ⊆ A) (_ : IsCover ε A C), C.encard
 
 /-- The packing number of a set `A` for radius `ε` is the maximal cardinal of an `ε`-separated set
 in `A`. -/
 noncomputable
 def packingNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
-  ⨆ (C : Set X) (_ : ↑C ⊆ A) (_ : IsSeparated ε C), C.encard
+  ⨆ (C : Set X) (_ : C ⊆ A) (_ : IsSeparated ε C), C.encard
 
 end Definitions
 
@@ -87,10 +87,10 @@ lemma externalCoveringNumber_eq_zero :
 @[simp]
 lemma coveringNumber_eq_zero : coveringNumber ε A = 0 ↔ A = ∅ := by simp [coveringNumber]
 
-lemma externalCoveringNumber_le_encard {C : Set X} (hC : IsCover ε A C) :
+lemma externalCoveringNumber_le_encard (hC : IsCover ε A C) :
     externalCoveringNumber ε A ≤ C.encard := iInf₂_le C hC
 
-lemma coveringNumber_le_encard {C : Set X} (h_subset : ↑C ⊆ A) (hC : IsCover ε A C) :
+lemma coveringNumber_le_encard (h_subset : C ⊆ A) (hC : IsCover ε A C) :
     coveringNumber ε A ≤ C.encard := (iInf₂_le C h_subset).trans (iInf_le _ hC)
 
 lemma externalCoveringNumber_anti (h : ε ≤ δ) :
