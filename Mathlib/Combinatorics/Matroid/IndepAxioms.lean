@@ -228,8 +228,7 @@ provided independence is determined by its behaviour on finite sets. -/
     (indep_aug := by
       have htofin : ∀ I e, Indep I → ¬ Indep (insert e I) →
         ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
-        by_contra! h
-        obtain ⟨I, e, -, hIe, h⟩ := h
+        by_contra! ⟨I, e, -, hIe, h⟩
         refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
         exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
       intro I B hI hImax hBmax
