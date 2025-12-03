@@ -23,19 +23,19 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 * `IsCyclotomicExtension.Rat.inertiaDeg_eq_of_prime_pow`: the residual degree of the prime ideal
   above `p` in `ℚ(ζ_pᵏ)` is `1`.
 
-* `IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime_pow`: the ramification index of the prime
+* `IsCyclotomicExtension.Rat.ramificationIdxIn_eq_of_prime_pow`: the ramification index of the prime
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
 
-* `IsCyclotomicExtension.Rat.inertiaDeg_eq_of_not_dvd`: if the prime `p` does not divide `m`, then
+* `IsCyclotomicExtension.Rat.inertiaDegIn_eq_of_not_dvd`: if the prime `p` does not divide `m`, then
   the inertia degree of `p` in `ℚ(ζₘ)` is the order of `p` modulo `m`.
 
-* `IsCyclotomicExtension.Rat.ramificationIdx_eq_of_not_dvd`: if the prime `p` does not divide `m`,
+* `IsCyclotomicExtension.Rat.ramificationIdxIn_eq_of_not_dvd`: if the prime `p` does not divide `m`,
   then the ramification index of `p` in `ℚ(ζₘ)` is `1`.
 
-* `IsCyclotomicExtension.Rat.inertiaDeg_eq`: write `n = p ^ (k + 1) * m` where the prime `p` does
+* `IsCyclotomicExtension.Rat.inertiaDegIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p` does
   not divide `m`, then the inertia degree of `p` in `ℚ(ζₙ)` is the order of `p` modulo `m`.
 
-* `IsCyclotomicExtension.Rat.ramificationIdx_eq`: write `n = p ^ (k + 1) * m` where the prime `p`
+* `IsCyclotomicExtension.Rat.ramificationIdxIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p`
   does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ k * (p - 1)`.
 
 -/
@@ -129,14 +129,14 @@ theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
   have : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) (K ≃ₐ[ℚ] K)
+  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) Gal(K/ℚ)
   have hζ := hK.zeta_spec
   have := liesOver_span_zeta_sub_one p k hζ
-  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) (K ≃ₐ[ℚ] K),
-    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) (K ≃ₐ[ℚ] K),
+  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ),
+    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) Gal(K/ℚ),
     inertiaDeg_span_zeta_sub_one,
     ramificationIdx_span_zeta_sub_one, mul_one, ← Nat.totient_prime_pow_succ hp.out,
-    ← finrank _ K, IsGaloisGroup.card_eq_finrank (K ≃ₐ[ℚ] K) ℚ K, Nat.mul_eq_right] at h_main
+    ← finrank _ K, IsGaloisGroup.card_eq_finrank Gal(K/ℚ) ℚ K, Nat.mul_eq_right] at h_main
   exact Module.finrank_pos.ne'
 
 theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
@@ -161,14 +161,14 @@ include hK in
 theorem inertiaDegIn_eq_of_prime_pow :
     𝒑.inertiaDegIn (𝓞 K) = 1 := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
-  rw [inertiaDegIn_eq_inertiaDeg 𝒑 (span {hK.zeta_spec.toInteger - 1}) (K ≃ₐ[ℚ] K),
+  rw [inertiaDegIn_eq_inertiaDeg 𝒑 (span {hK.zeta_spec.toInteger - 1}) Gal(K/ℚ),
     inertiaDeg_span_zeta_sub_one]
 
 include hK in
 theorem ramificationIdxIn_eq_of_prime_pow :
     𝒑.ramificationIdxIn (𝓞 K) = p ^ k * (p - 1) := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hK.zeta_spec.toInteger - 1}) (K ≃ₐ[ℚ] K),
+  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hK.zeta_spec.toInteger - 1}) Gal(K/ℚ),
     ramificationIdx_span_zeta_sub_one]
 
 end PrimePow
@@ -220,10 +220,13 @@ theorem inertiaDegIn_eq_of_prime :
   exact inertiaDegIn_eq_of_prime_pow p 0 K
 
 include hK in
-theorem ramificationIdxIn_of_prime :
+theorem ramificationIdxIn_eq_of_prime :
     𝒑.ramificationIdxIn (𝓞 K) = p - 1 := by
   rw [← pow_one p] at hK
   rw [ramificationIdxIn_eq_of_prime_pow p 0, pow_zero, one_mul]
+
+@[deprecated (since := "2025-12-03")] alias ramificationIdxIn_of_prime :=
+  ramificationIdxIn_eq_of_prime
 
 end Prime
 
@@ -233,7 +236,7 @@ open NumberField.Ideal Polynomial
 
 variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
-theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
+theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
   let ζ := (zeta_spec m ℚ K).toInteger
@@ -252,7 +255,7 @@ theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
     rfl
 
-theorem ramificationIdx_of_not_dvd (hm : ¬ p ∣ m) :
+theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
@@ -275,13 +278,17 @@ theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
-  rw [inertiaDegIn_eq_inertiaDeg 𝒑 P (K ≃ₐ[ℚ] K), inertiaDeg_of_not_dvd p K P hm]
+  rw [inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDeg_eq_of_not_dvd p K P hm]
 
 theorem ramificationIdxIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.ramificationIdxIn (𝓞 K) = 1 := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P (K ≃ₐ[ℚ] K), ramificationIdx_of_not_dvd p K P hm]
+  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdx_eq_of_not_dvd p K P hm]
+
+@[deprecated (since := "2025-12-03")] alias inertiaDegIn_of_not_dvd := inertiaDegIn_eq_of_not_dvd
+@[deprecated (since := "2025-12-03")] alias ramificationIdxIn_of_not_dvd :=
+  ramificationIdxIn_eq_of_not_dvd
 
 end notDvd
 
@@ -290,7 +297,7 @@ section general
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
 open IntermediateField in
-theorem inertiaDegIn_ramificationIdxIn (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧
       𝒑.ramificationIdxIn (𝓞 K) = p ^ k * (p - 1) := by
   have : IsAbelianGalois ℚ K := IsCyclotomicExtension.isAbelianGalois {n} ℚ K
@@ -348,20 +355,27 @@ theorem inertiaDegIn_ramificationIdxIn (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣
 Write `n = p ^ (k + 1) * m` where the prime `p` does not divide `m`, then the inertia degree of
 `p` in `ℚ(ζₙ)` is the order of `p` modulo `m`.
 -/
-theorem inertiaDeg_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
-    inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
-  have : IsGalois ℚ K := isGalois {n} ℚ K
-  rw [← inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), (inertiaDegIn_ramificationIdxIn n K hn hm).1]
+theorem inertiaDegIn_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+    𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) :=
+  (inertiaDegIn_ramificationIdxIn_aux n K hn hm).1
 
 /--
 Write `n = p ^ (k + 1) * m` where the prime `p` does not divide `m`, then the ramification index
 of `p` in `ℚ(ζₙ)` is `p ^ k * (p - 1)`.
 -/
+theorem ramificationIdxIn_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+    𝒑.ramificationIdxIn (𝓞 K) = p ^ k * (p - 1) :=
+  (inertiaDegIn_ramificationIdxIn_aux n K hn hm).2
+
+theorem inertiaDeg_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+    inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
+  have : IsGalois ℚ K := isGalois {n} ℚ K
+  rw [← inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDegIn_eq n K hn hm]
+
 theorem ramificationIdx_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
   have : IsGalois ℚ K := isGalois {n} ℚ K
-  rw [← ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ),
-    (inertiaDegIn_ramificationIdxIn n K hn hm).2]
+  rw [← ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdxIn_eq n K hn hm]
 
 end general
 
