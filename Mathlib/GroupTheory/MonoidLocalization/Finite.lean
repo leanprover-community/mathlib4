@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies, Patrick Luo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo
 -/
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 
 /-!
 # Localization of a finitely generated submonoid
@@ -13,6 +15,8 @@ import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 
 If `Mathlib/GroupTheory/Finiteness.lean` wasn't so heavy, this could move earlier.
 -/
+
+@[expose] public section
 
 open Localization
 

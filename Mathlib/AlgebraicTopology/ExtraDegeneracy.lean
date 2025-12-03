@@ -3,11 +3,13 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.AlgebraicTopology.CechNerve
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.CechNerve
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -41,6 +43,8 @@ equivalence.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Category SimplicialObject.Augmented Opposite Simplicial
@@ -160,9 +164,6 @@ def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) 
 @[simp]
 theorem shiftFun_zero {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias shiftFun_0 := shiftFun_zero
 
 @[simp]
 theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :

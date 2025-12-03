@@ -3,15 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Order.Monoid.WithTop
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-! # Structures involving `*` and `0` on `WithTop` and `WithBot`
 The main results of this section are `WithTop.instOrderedCommSemiring` and
 `WithBot.instOrderedCommSemiring`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

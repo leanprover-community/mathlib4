@@ -3,12 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Ring.TransferInstance
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Completion of topological rings:
@@ -34,6 +36,8 @@ the main constructions deal with continuous ring morphisms.
 
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -238,7 +242,7 @@ theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologic
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
+continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
 def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where

@@ -3,8 +3,10 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
+module
+
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Hermite polynomials
@@ -33,6 +35,8 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

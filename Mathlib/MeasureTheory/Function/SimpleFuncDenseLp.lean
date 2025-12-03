@@ -3,9 +3,11 @@ Copyright (c) 2022 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
-import Mathlib.MeasureTheory.Function.LpSpace.Complete
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-!
 # Density of simple functions
@@ -39,6 +41,8 @@ For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ --
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 * `α →₁ₛ[μ] E`: the type of `L1` simple functions `α → β`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -402,7 +406,7 @@ section Instances
 
 
 protected theorem eq' {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
-  Subtype.eq ∘ Subtype.eq
+  Subtype.ext ∘ Subtype.ext
 
 /-! Implementation note:  If `Lp.simpleFunc E p μ` were defined as a `𝕜`-submodule of `Lp E p μ`,
 then the next few lemmas, putting a normed `𝕜`-group structure on `Lp.simpleFunc E p μ`, would be
@@ -447,8 +451,6 @@ attribute [local instance] simpleFunc.module
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
   IsBoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
-
-@[deprecated (since := "2025-03-10")] protected alias boundedSMul := simpleFunc.isBoundedSMul
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
@@ -771,7 +773,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
     · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.2
       refine hg_nonneg.mono fun a ha => subset_closure ?_
       simpa using ha
-    · simp_rw [sub_zero]; exact hg_memLp.eLpNorm_lt_top
+    · simp_rw [sub_zero]; finiteness
   refine
     ⟨fun n =>
       (coeSimpleFuncNonnegToLpNonneg p μ G) ⟨toLp (x n) (hx_memLp n), hx_nonneg_Lp n⟩,
@@ -869,7 +871,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
   rcases eq_or_ne p 0 with (rfl | hp_pos)
   · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
         hε with ⟨g, _, Pg⟩
-    exact ⟨g, by simp only [eLpNorm_exponent_zero, zero_le'], Pg⟩
+    exact ⟨g, by simp, Pg⟩
   suffices H : ∀ (f' : α →ₛ E) (δ : ℝ≥0∞) (hδ : δ ≠ 0), MemLp f' p μ →
       ∃ g, eLpNorm (⇑f' - g) p μ ≤ δ ∧ P g by
     obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p hε

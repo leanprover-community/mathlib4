@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Zhao, Daniel Buth, Sebastian Meier, Junyan Xu
 -/
-import Mathlib.RingTheory.Ideal.NatInt
+module
+
+public import Mathlib.RingTheory.Ideal.NatInt
 
 /-!
 # Frobenius Number
@@ -34,6 +36,8 @@ is a multiple of n, and we're done.
 
 frobenius number, chicken mcnugget, chinese remainder theorem, AddSubmonoid.closure
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -74,7 +78,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
       obtain ⟨a, ha⟩ := modEq_zero_iff_dvd.mp x.2.1
       obtain ⟨b, hb⟩ := (modEq_iff_dvd' key).mp x.2.2
       exact ⟨a, b, by rw [mul_comm, ← ha, mul_comm, ← hb, Nat.add_sub_of_le key]⟩
-    refine ModEq.le_of_lt_add x.2.2 (lt_of_le_of_lt ?_ (add_lt_add_right hk n))
+    refine x.2.2.le_of_lt_add (lt_of_le_of_lt ?_ (add_lt_add_left hk n))
     rw [Nat.sub_add_cancel (le_tsub_of_add_le_left hmn)]
     exact
       ModEq.le_of_lt_add

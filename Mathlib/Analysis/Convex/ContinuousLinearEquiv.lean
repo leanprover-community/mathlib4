@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Strict
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # (Pre)images of strict convex sets under continuous linear equivalences
@@ -12,6 +14,8 @@ import Mathlib.Topology.Algebra.Module.Equiv
 In this file we prove that the (pre)image of a strict convex set
 under a continuous linear equivalence is a strict convex set.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*}
   [Field 𝕜] [PartialOrder 𝕜]
@@ -30,6 +34,6 @@ lemma strictConvex_preimage {s : Set F} (e : E ≃L[𝕜] F) :
 @[simp]
 lemma strictConvex_image {s : Set E} (e : E ≃L[𝕜] F) :
     StrictConvex 𝕜 (e '' s) ↔ StrictConvex 𝕜 s := by
-  rw [e.image_eq_preimage, e.symm.strictConvex_preimage]
+  rw [e.image_eq_preimage_symm, e.symm.strictConvex_preimage]
 
 end ContinuousLinearEquiv

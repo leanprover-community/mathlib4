@@ -3,8 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
@@ -13,6 +15,8 @@ The main result is the first part of the statement of Lemma 00FB in the Stacks P
 
 https://stacks.math.columbia.edu/tag/00FB
 -/
+
+@[expose] public section
 
 
 open Ideal Polynomial PrimeSpectrum Set
