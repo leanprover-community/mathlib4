@@ -474,7 +474,7 @@ def coloops (M : Matroid α) := M✶.loops
 lemma IsColoop.mem_ground (he : M.IsColoop e) : e ∈ M.E :=
   @IsLoop.mem_ground α (M✶) e he
 
-@[grind .]
+@[grind ·]
 lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
   fun _ ↦ IsColoop.mem_ground
 

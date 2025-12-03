@@ -321,69 +321,44 @@ end exchange
 
 section aesop
 
-/-- The `ground` tactic attempts to prove a set is contained in the ground set of a matroid.
-  It uses a `[Matroid]` ruleset, and is allowed to fail. -/
+/-- The `ground` tactic attempts to prove a set is contained in the ground set of a matroid. -/
 macro (name := ground) "ground" : tactic =>
-`(tactic |
-  ((try simp only [union_subset_iff, insert_subset_iff, iUnion_subset_iff]) <;> grind)
-)
-
-/- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
-  ground set of a matroid) to the ruleset `Matroid` for `aesop`. -/
+`(tactic | (
+  (try simp only [ground_simps]) <;>
+  grind
+  ))
 
 variable {X Y : Set α} {e : α}
 
-@[grind .]
-private theorem inter_right_subset_ground (hX : X ⊆ M.E) :
+attribute [ground_simps] union_subset_iff insert_subset_iff iUnion_subset_iff
+
+@[grind ←]
+theorem inter_right_subset_ground (hX : X ⊆ M.E) :
     X ∩ Y ⊆ M.E := inter_subset_left.trans hX
 
 @[grind .]
-private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
+theorem inter_left_subset_ground (hX : X ⊆ M.E) :
     Y ∩ X ⊆ M.E := inter_subset_right.trans hX
 
 @[grind .]
-private theorem diff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
+theorem diff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   diff_subset.trans hX
 
 @[grind .]
-private theorem ground_diff_subset_ground : M.E \ X ⊆ M.E :=
+theorem ground_diff_subset_ground : M.E \ X ⊆ M.E :=
   diff_subset_ground rfl.subset
 
 @[grind .]
-private theorem singleton_subset_ground (he : e ∈ M.E) : {e} ⊆ M.E :=
+theorem singleton_subset_ground (he : e ∈ M.E) : {e} ⊆ M.E :=
   singleton_subset_iff.mpr he
 
 @[grind .]
-private theorem subset_ground_of_subset (hXY : X ⊆ Y) (hY : Y ⊆ M.E) : X ⊆ M.E :=
+theorem subset_ground_of_subset (hXY : X ⊆ Y) (hY : Y ⊆ M.E) : X ⊆ M.E :=
   hXY.trans hY
 
 @[grind .]
-private theorem mem_ground_of_mem_of_subset (hX : X ⊆ M.E) (heX : e ∈ X) : e ∈ M.E :=
+theorem mem_ground_of_mem_of_subset (hX : X ⊆ M.E) (heX : e ∈ X) : e ∈ M.E :=
   hX heX
-
-@[grind ←]
-private theorem insert_subset_ground {e : α} {X : Set α} {M : Matroid α}
-    (he : e ∈ M.E) (hX : X ⊆ M.E) : insert e X ⊆ M.E :=
-  insert_subset he hX
-
-@[grind .]
-private theorem ground_subset_ground {M : Matroid α} : M.E ⊆ M.E :=
-  rfl.subset
-
-@[grind ←]
-private theorem union_subset_ground (hX : X ⊆ M.E) (hY : Y ⊆ M.E) : X ∪ Y ⊆ M.E :=
-  union_subset hX hY
-
-@[grind .]
-private theorem empty_subset_ground (M : Matroid α) : ∅ ⊆ M.E :=
-  empty_subset ..
-
--- @[aesop safe (rule_sets := [Matroid])]
--- private theorem iUnion_subset_ground {ι : Type*} {X : ι → Set α} (hX : ∀ i, X i ⊆ M.E) :
---     ⋃ i, X i ⊆ M.E :=
---   iUnion_subset hX
-
-attribute [aesop safe (rule_sets := [Matroid])] empty_subset union_subset iUnion_subset
 
 end aesop
 
