@@ -165,7 +165,7 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset M}
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
 
-/-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
+/-- A set of `finrank R M` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
 noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set M} [Fintype s]
     (le_span : ⊤ ≤ span R s) (card_eq : s.toFinset.card = finrank R M) : Basis s R M :=
