@@ -444,7 +444,7 @@ theorem degree_optionEquivLeft {f : MvPolynomial (Option σ) R} (h : f ≠ 0) :
     Function.comp_def]
 
 @[simp]
-lemma natDegree_optionEquivLeft [DecidableEq σ] (p : MvPolynomial (Option σ) R) :
+lemma natDegree_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     Polynomial.natDegree (optionEquivLeft R σ p) = p.degreeOf none := by
   by_cases c : p = 0
   · rw [c, map_zero, Polynomial.natDegree_zero, degreeOf_zero]
