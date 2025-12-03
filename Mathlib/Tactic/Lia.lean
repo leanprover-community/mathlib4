@@ -5,6 +5,8 @@ Authors: Mathlib contributors
 -/
 module
 
+public import Mathlib.Init
+
 /-!
 # `lia` tactic
 
