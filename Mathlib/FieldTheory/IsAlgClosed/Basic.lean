@@ -88,7 +88,7 @@ If `k` is algebraically closed, then every nonconstant polynomial has a root.
 -/
 @[stacks 09GR "(4) ⟹ (3)"]
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
-  exists_root_of_splits _ ((IsAlgClosed.splits p).map <| .id k) hp
+  (IsAlgClosed.splits p).exists_eval_eq_zero hp
 
 theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by
   have : degree (X ^ n - C x) ≠ 0 := by
@@ -223,7 +223,7 @@ If `k` is algebraically closed, then every irreducible polynomial over `k` is li
 @[stacks 09GR "(4) ⟹ (2)"]
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
-  degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
+  (IsAlgClosed.splits p).degree_eq_one_of_irreducible hp
 
 theorem algebraMap_bijective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
