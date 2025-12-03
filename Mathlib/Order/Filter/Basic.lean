@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Defs
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Filter.Defs
 
 /-!
 # Theory of filters on sets
@@ -58,6 +60,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing Fintype
 
@@ -218,6 +222,11 @@ theorem mem_inf_iff_superset {f g : Filter α} {s : Set α} :
     s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ ∩ t₂ ⊆ s :=
   ⟨fun ⟨t₁, h₁, t₂, h₂, Eq⟩ => ⟨t₁, h₁, t₂, h₂, Eq ▸ Subset.rfl⟩, fun ⟨_, h₁, _, h₂, sub⟩ =>
     mem_inf_of_inter h₁ h₂ sub⟩
+
+theorem mem_sdiff_iff_union {f g : Filter α} {s : Set α} :
+    s ∈ f \ g ↔ ∀ t ∈ g, s ∪ t ∈ f :=
+  ⟨fun hs _ ht => hs (mem_of_superset ht subset_union_right) subset_union_left,
+    fun h t htg hst => union_eq_right.2 hst ▸ h t htg⟩
 
 section CompleteLattice
 
@@ -462,15 +471,20 @@ theorem sup_join {f₁ f₂ : Filter (Filter α)} : join f₁ ⊔ join f₂ = jo
 theorem iSup_join {ι : Sort w} {f : ι → Filter (Filter α)} : ⨆ x, join (f x) = join (⨆ x, f x) :=
   Filter.ext fun x => by simp only [mem_iSup, mem_join]
 
-instance : DistribLattice (Filter α) :=
-  { Filter.instCompleteLatticeFilter with
-    le_sup_inf := by
-      intro x y z s
-      simp only [and_assoc, mem_inf_iff, mem_sup, exists_imp, and_imp]
-      rintro hs t₁ ht₁ t₂ ht₂ rfl
-      exact
-        ⟨t₁, x.sets_of_superset hs inter_subset_left, ht₁, t₂,
-          x.sets_of_superset hs inter_subset_right, ht₂, rfl⟩ }
+
+/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
+instance instCoframe : Coframe (Filter α) where
+  sdiff_le_iff a b c :=
+    ⟨fun h s hs ↦ h hs.right hs.left (subset_refl s),
+      fun h s hsc t htb hst ↦ h ⟨htb, mem_of_superset hsc hst⟩⟩
+  top_sdiff f := by
+    ext s
+    simp only [mem_sdiff_iff_union, Filter.hnot_def, mem_principal, compl_subset_iff_union,
+      mem_top_iff_forall, eq_univ_iff_forall, ker, mem_union, mem_sInter, Filter.mem_sets]
+    grind
+
+instance : DistribLattice (Filter α) where
+  le_sup_inf := @le_sup_inf _ _
 
 /-- If `f : ι → Filter α` is directed, `ι` is not empty, and `∀ i, f i ≠ ⊥`, then `iInf f ≠ ⊥`.
 See also `iInf_neBot_of_directed` for a version assuming `Nonempty α` instead of `Nonempty ι`. -/
@@ -767,11 +781,11 @@ theorem frequently_iff {f : Filter α} {P : α → Prop} :
   simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _)]
   rfl
 
-@[simp]
+@[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
   simp [Filter.Frequently]
 
-@[simp]
+@[simp, push]
 theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, ¬p x := by
   simp only [Filter.Frequently, not_not]
 

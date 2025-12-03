@@ -3,9 +3,11 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.NatPowAssoc
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.SMul
+module
+
+public import Mathlib.Algebra.Group.NatPowAssoc
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Scalar-multiple polynomial evaluation
@@ -36,6 +38,8 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 

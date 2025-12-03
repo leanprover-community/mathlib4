@@ -3,9 +3,10 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Group Extensions
@@ -49,6 +50,8 @@ If `N` is abelian,
 - there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
   (which is also stated as a TODO in `RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
+
+@[expose] public section
 
 variable (N E G : Type*)
 

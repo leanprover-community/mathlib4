@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Order.SuccPred.Limit
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Limits of inverse systems indexed by well-ordered types
@@ -26,6 +27,8 @@ allows the construction, by transfinite induction, of a section of `F`
 which restricts to `val₀`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

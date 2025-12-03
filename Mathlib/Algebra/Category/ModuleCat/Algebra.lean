@@ -3,9 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Additional typeclass for modules over an algebra
@@ -28,6 +30,8 @@ that carries these typeclasses, this seems hard to achieve.
 (An alternative would be to always require these typeclasses, and remove the original `ModuleCat`,
 requiring users to write `ModuleCat' ℤ A` when `A` is merely a ring.)
 -/
+
+@[expose] public section
 
 
 universe v u w

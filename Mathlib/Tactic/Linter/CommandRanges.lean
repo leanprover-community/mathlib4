@@ -3,8 +3,9 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init -- `import Lean.Elab.Command` is enough
+public import Mathlib.Init -- `import Lean.Elab.Command` is enough
 
 /-!
 # The "commandRanges" linter
@@ -18,6 +19,8 @@ of each declaration that should be removed.
 This linter is strictly tied to the `#clear_deprecations` command in
 `Mathlib/Tactic/Linter/FindDeprecations.lean`.
 -/
+
+public meta section
 
 open Lean Elab Linter
 

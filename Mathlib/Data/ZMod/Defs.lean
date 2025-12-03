@@ -3,12 +3,14 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -28,6 +30,8 @@ is not an issue mathematically. For this to be possible, however, we need `CharP
 able to import some part of `ZMod`.
 
 -/
+
+@[expose] public section
 
 
 namespace Fin

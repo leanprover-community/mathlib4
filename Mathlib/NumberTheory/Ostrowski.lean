@@ -5,11 +5,12 @@ Authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Cop
 María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
 Francesco Veneziano
 -/
+module
 
-import Mathlib.Analysis.AbsoluteValue.Equivalence
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!
 # Ostrowski’s Theorem
@@ -37,6 +38,8 @@ Extend to arbitrary number fields.
 
 absolute value, Ostrowski's theorem
 -/
+
+@[expose] public section
 
 open Filter Nat Real Topology
 
@@ -158,8 +161,7 @@ lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
     simp only [Nat.cast_one, map_one, lt_self_iff_false] at hp1
   · rintro a b rfl
     rw [Nat.isUnit_iff, Nat.isUnit_iff]
-    by_contra! con
-    obtain ⟨ha₁, hb₁⟩ := con
+    by_contra! ⟨ha₁, hb₁⟩
     obtain ⟨ha₀, hb₀⟩ : a ≠ 0 ∧ b ≠ 0 := by
       refine mul_ne_zero_iff.mp fun h ↦ ?_
       rwa [h, Nat.cast_zero, map_zero, lt_self_iff_false] at hp0
@@ -249,7 +251,6 @@ theorem equiv_padic_of_bounded :
       rw [← padicNorm.nat_eq_one_iff] at hpm
       simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, neg_mul, mul_one, ← rpow_neg, hpm,
         cast_one]
-      congr
       field_simp [h.1.ne']
   · by_contra! hne
     apply hq_prime.elim.ne_one
