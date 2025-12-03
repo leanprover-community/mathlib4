@@ -148,7 +148,7 @@ in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficien
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
-While the particular choice of complement is often not important, chosing a complement is useful
+While the particular choice of complement is often not important, choosing a complement is useful
 in some settings, such as proving that embedded submanifolds are locally given either by an
 immersion or a submersion.
 Unless you have a particular reason, prefer to use `IsImmersionAt` instead.

@@ -338,7 +338,7 @@ private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R
   aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 
 /-- A choice of pre-image of `Q.relation r` under the canonical
-map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evalation of `P`. -/
+map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evaluation of `P`. -/
 noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
   Finsupp.sum (Q.relation r)
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
