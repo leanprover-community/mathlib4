@@ -221,7 +221,9 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
   ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
 
 variable (𝕜) in
-/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map.
+
+This is subsumed by `ofSupportedInCLM`, which also bundles the continuity. -/
 def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
   toFun f := ofSupportedIn K_sub_Ω f
@@ -231,34 +233,6 @@ def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K :
 @[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
     (K_sub_Ω : (K : Set E) ⊆ Ω) :
     (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
-  rfl
-
-variable (𝕜) in
-/-- Inclusion of `𝓓^{n}(Ω, F)` into the space `E →ᵇ F` of bounded continuous maps
-as a `𝕜`-linear map.
-
-This is subsumed by `toBoundedContinuousFunctionCLM`, which also bundles the continuity. -/
-noncomputable def toBoundedContinuousFunctionLM [SMulCommClass ℝ 𝕜 F] :
-    𝓓^{n}(Ω, F) →ₗ[𝕜] E →ᵇ F where
-  toFun f := f
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-@[simp]
-lemma toBoundedContinuousFunctionLM_apply [SMulCommClass ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) :
-    toBoundedContinuousFunctionLM 𝕜 f = f :=
-  rfl
-
-lemma toBoundedContinuousFunctionLM_eq_of_scalars [SMulCommClass ℝ 𝕜 F] (𝕜' : Type*)
-    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
-    (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}(Ω, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
-  rfl
-
-variable (𝕜) in
-lemma toBoundedContinuousFunctionLM_ofSupportedIn [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
-    (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionLM 𝕜 (ofSupportedIn K_sub_Ω f) =
-      ContDiffMapSupportedIn.toBoundedContinuousFunctionLM 𝕜 f :=
   rfl
 
 section Topology
@@ -358,6 +332,22 @@ protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTow
   simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
     continuous_coinduced_dom]
 
+variable (𝕜) in
+/-- Reformulation of the universal property of the topology on `𝓓^{n}(Ω, F)`, in the form of a
+custom constructor for continuous linear maps `𝓓^{n}(Ω, F) →L[𝕜] V`, where `V` is an arbitrary
+locally convex topological vector space. -/
+@[simps]
+protected def mkCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [Module 𝕜 V] [IsScalarTower ℝ 𝕜 V]
+    (toFun : 𝓓^{n}(Ω, F) → V)
+    (map_add : ∀ f g, toFun (f + g) = toFun f + toFun g)
+    (map_smul : ∀ c : 𝕜, ∀ f, toFun (c • f) = c • toFun f)
+    (cont : ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+      Continuous (toFun ∘ ofSupportedIn K_sub_Ω)) :
+    𝓓^{n}(Ω, F) →L[𝕜] V :=
+  letI Φ : 𝓓^{n}(Ω, F) →ₗ[𝕜] V := ⟨⟨toFun, map_add⟩, map_smul⟩
+  { toLinearMap := Φ
+    cont := show Continuous Φ by rwa [TestFunction.continuous_iff_continuous_comp] }
+
 end Topology
 
 section ToBoundedContinuousFunctionCLM
@@ -365,19 +355,11 @@ section ToBoundedContinuousFunctionCLM
 variable (𝕜) in
 /-- The inclusion of the space `𝓓^{n}(Ω, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
+@[simps! apply]
 noncomputable def toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
-    𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F where
-  toLinearMap := toBoundedContinuousFunctionLM 𝕜
-  cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-    rw [TestFunction.continuous_iff_continuous_comp]
-    intro K K_sub_Ω
-    refine .congr ?_ fun f ↦ (toBoundedContinuousFunctionLM_ofSupportedIn 𝕜 K_sub_Ω f).symm
-    exact (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous
-
-@[simp]
-lemma toBoundedContinuousFunctionCLM_apply [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (f : 𝓓^{n}(Ω, F)) :
-    toBoundedContinuousFunctionCLM 𝕜 f = f :=
-  rfl
+    𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F :=
+  TestFunction.mkCLM 𝕜 (↑) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ (ContDiffMapSupportedIn.toBoundedContinuousFunctionCLM 𝕜).continuous)
 
 lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] (𝕜' : Type*)
     [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F] :
@@ -387,7 +369,7 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars [Algebra ℝ 𝕜] [IsScalarT
 variable (𝕜) in
 theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
-  fun f g ↦ by simp [toBoundedContinuousFunctionCLM, toBoundedContinuousFunctionLM]
+  fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
 
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
