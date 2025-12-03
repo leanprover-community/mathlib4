@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Smooth.Basic
 /-!
 # Formally smooth algebras and adic completion
 
-Let `A` be a  formally smooth `R`-algebra. Then any algebra map
+Let `A` be a formally smooth `R`-algebra. Then any algebra map
 `A →ₐ[R] S ⧸ I` lifts to an algebra map `A →ₐ[R] S` if `S` is `I`-adically complete.
 
 This is used in the proof that a smooth algebra over a Noetherian ring is flat
