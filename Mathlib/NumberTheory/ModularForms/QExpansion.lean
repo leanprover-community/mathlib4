@@ -165,7 +165,8 @@ lemma hasSum_qExpansion_of_abs_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinusO
 lemma hasSum_qExpansion [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • 𝕢 h τ ^ m) (f τ) := by
-  have : ‖𝕢 h τ‖ < 1 := by simp [Periodic.qParam, Complex.norm_exp, neg_div]; positivity
+  have : 0 < 2 * π * τ.im / h := by positivity
+  have : ‖𝕢 h τ‖ < 1 := by simpa [Periodic.qParam, Complex.norm_exp, neg_div]
   simpa only [eq_cuspFunction f _ hΓ hh.ne'] using hasSum_qExpansion_of_abs_lt f hh hΓ this
 
 variable (h) in
@@ -219,8 +220,10 @@ lemma qExpansion_coeff_eq_circleIntegral [ModularFormClass F Γ k] [Γ.HasDetPlu
   simp_rw [qExpansion, PowerSeries.coeff_mk, ← this, sub_zero, smul_eq_mul, one_div_mul_eq_div,
     div_eq_inv_mul]
 
-/-- The `q`-expansion coefficient can be expressed as an integral along a horizontal line
-in the upper half-plane from `t * I` to `N + t * I`, for any `0 < t`.
+/--
+If `h` is a positivie strict period of `f`, then the `q`-expansion coefficient can be expressed
+as an integral along a horizontal line in the upper half-plane from `t * I` to `h + t * I`, for
+any `0 < t`.
 -/
 lemma qExpansion_coeff_eq_intervalIntegral [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (n : ℕ)
@@ -274,7 +277,7 @@ practice (not specifying the growth rate precisely). Note that the `Fact` hypoth
 automatically synthesized for arithmetic subgroups. -/
 theorem exp_decay_sub_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] [Fact (IsCusp OnePoint.infty Γ)] :
-    ∃ h > 0, (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] (fun τ ↦ Real.exp (-h * τ.im)) := by
+    ∃ c > 0, (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] (fun τ ↦ Real.exp (-c * τ.im)) := by
   have hh : 0 < Γ.strictWidthInfty := Γ.strictWidthInfty_pos_iff.mpr Fact.out
   have hΓ : Γ.strictWidthInfty ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
   refine ⟨2 * π / Γ.strictWidthInfty, div_pos Real.two_pi_pos hh, ?_⟩
@@ -307,7 +310,7 @@ theorem exp_decay_atImInfty [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
 synthesized for arithmetic subgroups. -/
 theorem exp_decay_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] [Fact (IsCusp OnePoint.infty Γ)] (hf : IsZeroAtImInfty f) :
-    ∃ h > 0, f =O[atImInfty] fun τ ↦ Real.exp (-h * τ.im) := by
+    ∃ c > 0, f =O[atImInfty] fun τ ↦ Real.exp (-c * τ.im) := by
   simpa [hf.valueAtInfty_eq_zero] using exp_decay_sub_atImInfty' f
 
 end UpperHalfPlane.IsZeroAtImInfty
