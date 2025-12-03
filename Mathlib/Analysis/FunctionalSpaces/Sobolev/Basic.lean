@@ -1,8 +1,13 @@
+/-
+Copyright (c) 2025 Filippo A. E. Nuccio. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Filippo A. E. Nuccio, Michael Rothgang, Floris van Doorn
+-/
 module
 
--- public import Mathlib.Analysis.Distribution.WeakDeriv
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.Analysis.Normed.Lp.PiLp
 
 /-!
 # Attempts for Sobolev Space definitions
@@ -93,7 +98,8 @@ def MemSobolev (f : E → F) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) : Prop 
 -- def MemSobolev' (f : E → F) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
 --   match k with
 --   | 0     => MemLp f p (μ.restrict Ω)
---   | k + 1 => MemLp f p μ ∧ (weakDeriv Ω f μ).IsRegular μ ∧ MemSobolev' ((weakDeriv Ω f μ).out μ) p μ
+--   | k + 1 => MemLp f p μ ∧ (weakDeriv Ω f μ).IsRegular μ ∧
+--     MemSobolev' ((weakDeriv Ω f μ).out μ) p μ
 
 /-- `g` represents distribution `f` and is in `L^p`. -/
 structure Distribution.MemLpWith (f : 𝓓'(Ω, F)) (g : E → F) (p : ℝ≥0∞) (μ : Measure E) : Prop where
@@ -133,16 +139,47 @@ structure MemSobolevWith' (f : E → F) (g : E → FormalMultilinearSeries ℝ E
   memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p μ
 
 variable (Ω) in
-def MemSobolev'' (f : E → F) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
+def MemSobolev'' (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
   ∃ g : E → FormalMultilinearSeries ℝ E F, MemSobolevWith' Ω f g k p μ
 
-/- to try: define MemSobolev on distributions. -/
+/- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp, we maybe should
+disable the Norm → ENorm instance. -/
+/- to do: the EDist instance on PiLp for p = 0 is wrong. -/
+/- to do: move this -/
+/- to do: do we indeed want this for non-fintypes? -/
+instance PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} (β : ι → Type*) [(i : ι) → ENorm (β i)] :
+    ENorm (PiLp p β) where
+  enorm f :=
+    if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
+    else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑' i, ‖f i‖ₑ ^ p.toReal) ^ (1 / p.toReal)
 
+open Finset in
+/-- Only used to write API. Use `sobolevNorm` instead. -/
+/- to do: this feels natural for `k = ∞`, but might not give the desired result. -/
+def sobolevNormAux (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) :
+    ℝ≥0∞ :=
+  ‖WithLp.toLp p fun i : {i : ℕ // i ≤ k} ↦ eLpNorm (g · i) p μ‖ₑ
+
+open Classical Finset in
+/-- This definition is different than in (most) textbooks, since we use the `L^p`-norm of the total
+derivative instead of the `L^p`-norm of partial derivatives. These definitions are equivalent
+for finite dimensional `E` and `k < ∞` [argument todo]. -/
+def sobolevNorm (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : ℝ≥0∞ :=
+  if h : MemSobolev'' Ω f k p μ then sobolevNormAux h.choose k p μ else ∞
 
 namespace Distribution
 
 def MemSobolev (f : 𝓓'(Ω, F)) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
   ∀ m : ℕ, m ≤ k → (iteratedFDerivCLM (E := E) (F := F) m f).MemLp p μ
+
+open Classical Finset in
+/-- This definition is different than in (most) textbooks, since we use the `L^p`-norm of the total
+derivative instead of the `L^p`-norm of partial derivatives. These definitions are equivalent
+for finite dimensional `E` and `k < ∞` [argument todo]. -/
+def sobolevNorm (f : 𝓓'(Ω, F)) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) : ℝ≥0∞ :=
+  if MemSobolev f k p μ then
+    sobolevNormAux (fun x i ↦ (iteratedFDerivCLM (E := E) (F := F) i f).out μ x) k p μ
+  else ∞
 
 variable (F Ω) in
 @[nolint unusedArguments]
