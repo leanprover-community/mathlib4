@@ -79,7 +79,7 @@ theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
     have : expNegInvGlue (ε / 2) = 0 := by
       refine hU _ (ht_sub (hε_ball ?_))
       simp_all [abs_of_pos]
-    linarith [expNegInvGlue.zero_iff_nonpos.mp this]
+    linarith [zero_iff_nonpos.mp this]
   · -- Case 2: Isolated zero contradicts expNegInvGlue x = 0 for x < 0
     obtain ⟨U, hU_mem, hU⟩ := h_nonzero.exists_mem
     obtain ⟨t, ht_open, ht_mem, ht_sub⟩ := mem_nhdsWithin.mp hU_mem
@@ -89,9 +89,8 @@ theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
       constructor
       · apply hε_ball
         simp_all [abs_of_pos hε_pos]
-      · apply ne_of_lt
-        linarith
-    simp_all [expNegInvGlue.zero_iff_nonpos]
+      · grind
+    rw [ne_eq, zero_iff_nonpos] at this
     linarith
 
 /-!
