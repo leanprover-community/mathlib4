@@ -279,7 +279,7 @@ The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
   ⟨o.toType, fun a ↦ toPSet a⟩
 termination_by o
-decreasing_by exact a.get.prop
+decreasing_by exact a.toOrd.prop
 
 @[simp]
 theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.toType := by

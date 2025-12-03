@@ -42,7 +42,7 @@ namespace Ordinal
 noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
   ⟨o.toType, PEmpty, fun x => toPGame x, PEmpty.elim⟩
 termination_by o
-decreasing_by exact x.get.prop
+decreasing_by exact x.toOrd.prop
 
 @[simp]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.toType := by

@@ -33,7 +33,7 @@ lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardi
   rw [mk_toType]
   refine mul_le_mul' ho (ciSup_le' ?_)
   intro i
-  simpa using hA _ i.get.prop
+  simpa using hA _ i.toOrd.prop
 
 lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
@@ -51,8 +51,8 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordi
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
   simp_rw [← mk_toType]
   rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
-  apply lift_mk_le_lift_mk_of_surjective (f := .mk ∘ (⟨·.2.get,
-    (mem_Iio.mp (toType.get _).2).trans_le (Ordinal.le_iSup _ _)⟩))
+  apply lift_mk_le_lift_mk_of_surjective (f := .mk ∘ (⟨·.2.toOrd,
+    (mem_Iio.mp (toType.toOrd _).2).trans_le (Ordinal.le_iSup _ _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
   obtain ⟨i, hi⟩ := Ordinal.lt_iSup_iff.mp hx
@@ -64,7 +64,7 @@ theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
   rwa [Cardinal.lift_id'] at this
 
 theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
-    (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i : o.toType ↦ (f i.get).card := by
+    (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i : o.toType ↦ (f i.toOrd).card := by
   apply le_of_eq_of_le (congr_arg _ _).symm (card_iSup_le_sum_card _)
   simpa using toType.mk.symm.iSup_comp (g := fun x ↦ f x)
 

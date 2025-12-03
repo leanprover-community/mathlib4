@@ -515,14 +515,14 @@ noncomputable def toType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 noncomputable
-abbrev toType.get {o : Ordinal} (α : o.toType) : Set.Iio o := toType.mk.symm α
+abbrev toType.toOrd {o : Ordinal} (α : o.toType) : Set.Iio o := toType.mk.symm α
 
 noncomputable
 instance (o : Ordinal) : Coe (Ordinal.toType o) (Set.Iio o) where
-  coe := toType.get
+  coe := toType.toOrd
 noncomputable
 instance (o : Ordinal) : CoeOut (Ordinal.toType o) Ordinal where
-  coe x := x.get
+  coe x := x.toOrd
 
 @[deprecated (since := "2025-12-04")] alias enumIsoToType := toType.mk
 

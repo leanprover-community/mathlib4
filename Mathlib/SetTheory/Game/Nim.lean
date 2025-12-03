@@ -56,7 +56,7 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
     fun x => nim x,
     fun x => nim x⟩
 termination_by o
-decreasing_by all_goals exact x.get.prop
+decreasing_by all_goals exact x.toOrd.prop
 
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
@@ -167,7 +167,7 @@ def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.ofUnique
-  all_goals simpa [toType.get, toType.mk] using nimZeroRelabelling
+  all_goals simpa [toType.toOrd, toType.mk] using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nimOneRelabelling.equiv
