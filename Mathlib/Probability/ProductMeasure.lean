@@ -388,7 +388,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
   refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
   classical
-  rw [Measure.map_apply, restrict_preimage, hν, ← prod_attach, univ_eq_attach]
+  rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
   · congr with i
     rw [dif_pos i.2]
   any_goals fun_prop
@@ -398,10 +398,9 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
     · exact .univ
   · exact .univ_pi ht
 
--- TODO: add a version for an infinite product
 lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
-    infinitePi μ (Set.pi s t) = ∏ i ∈ s, (μ i) (t i) := by
+    infinitePi μ (Set.pi s t) = ∏ i ∈ s, μ i (t i) := by
   have : Set.pi s t = cylinder s ((@Set.univ s).pi (fun i : s ↦ t i)) := by
     ext x
     simp
@@ -410,12 +409,56 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
--- TODO: add a version for infinite `ι`. See TODO on `infinitePi_pi`.
+theorem infinitePi_map_restrict' {I : Set ι} :
+    (infinitePi μ).map I.restrict = infinitePi fun i : I ↦ μ i := by
+  apply eq_infinitePi
+  intro s t ht
+  classical
+  rw [map_apply (by fun_prop), restrict_preimage, infinitePi_pi _ (by measurability)]
+  · simp
+  · exact .pi s.countable_toSet (by measurability)
+
+lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) → Set (X i)}
+    (mt : ∀ i ∈ s, MeasurableSet (t i)) :
+    infinitePi μ (Set.pi s t) = ∏' i : s, μ i (t i) := by
+  wlog s_ne : Nonempty s
+  · simp [Set.not_nonempty_iff_eq_empty'.mp s_ne]
+  apply tendsto_nhds_unique (f := fun s' : Finset s ↦ ∏ i ∈ s', μ i (t i)) (l := atTop)
+  classical
+  · conv in ∏ _ ∈ _, _ =>
+      rw [← infinitePi_pi _ (by measurability), ← infinitePi_map_restrict', map_apply
+        (by fun_prop) (by apply MeasurableSet.pi (countable_toSet _) (by measurability)),
+        restrict_preimage]
+      simp only [coe_image, dite_eq_ite]
+    have : s.pi t
+      = ⋂ s' : Finset s,
+        (Subtype.val '' (s': Set s)).pi (fun i ↦ if i ∈ s then t i else Set.univ) := by
+      rw [← Set.pi_iUnion_eq_iInter_pi, Set.iUnion_finset_eq_set]
+      grind
+    rw [this]
+    apply tendsto_measure_iInter_atTop
+    · refine fun s' ↦ MeasurableSet.nullMeasurableSet (MeasurableSet.pi ?_ (by measurability))
+      exact (Finset.countable_toSet _).image _
+    · intro _ _ h
+      simpa using Set.pi_mono' (by simp) (Set.image_mono h)
+    · exact ⟨{Nonempty.some s_ne}, by simp⟩
+  · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
+    exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
+
+lemma infinitePi_pi_univ [Countable ι] {t : (i : ι) → Set (X i)}
+    (mt : ∀ i : ι, MeasurableSet (t i)) :
+    infinitePi μ (Set.univ.pi t) = ∏' i, μ i (t i) := by
+  rw [infinitePi_pi_of_countable, tprod_univ (f := fun i ↦ μ i (t i))]
+  · simpa [Set.countable_univ_iff]
+  · measurability
+
 @[simp]
-lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
-    infinitePi μ {f} = ∏ i, μ i {f i} := by
-  simpa [Set.univ_pi_singleton] using
-    infinitePi_pi μ (s := .univ) (t := fun i ↦ {f i}) fun _ _ ↦ .singleton _
+lemma infinitePi_singleton [Countable ι] [∀ i, MeasurableSingletonClass (X i)]
+    (f : ∀ i, X i) : infinitePi μ {f} = ∏' i, μ i {f i} := by
+  rw [← Set.univ_pi_singleton, infinitePi_pi_univ _ (by measurability)]
+
+lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
+    (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by simp
 
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
   .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
