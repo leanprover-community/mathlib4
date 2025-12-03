@@ -816,6 +816,80 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   congr
   ring
 
+@[simp]
+lemma cos_pi_div_twelve : cos (π / 12) = (√6 + √2) / 4 := by
+  have pi_div_twelve : π / 12 = π / 4 - π / 6 := by ring
+  have : √2 * √3 = √6 := by rw [← sqrt_mul zero_le_two]; norm_num
+  rw [pi_div_twelve, cos_sub, cos_pi_div_four, cos_pi_div_six, sin_pi_div_four, sin_pi_div_six]
+  grind
+
+@[simp]
+lemma sin_pi_div_twelve : sin (π / 12) = (√6 - √2) / 4 := by
+  have pi_div_twelve : π / 12 = π / 4 - π / 6 := by ring
+  have : √2 * √3 = √6 := by rw [← sqrt_mul zero_le_two]; norm_num
+  rw [pi_div_twelve, sin_sub, sin_pi_div_four, cos_pi_div_six, cos_pi_div_four, sin_pi_div_six]
+  grind
+
+@[simp]
+lemma cos_five_pi_div_twelve : cos (π * 5 / 12) = (√6 - √2) / 4 := by
+  rw [← sin_pi_div_twelve, ← cos_pi_div_two_sub]
+  ring_nf
+
+@[simp]
+lemma sin_five_pi_div_twelve : sin (π * 5 / 12) = (√6 + √2) / 4 := by
+  rw [← cos_pi_div_twelve, ← cos_pi_div_two_sub]
+  ring_nf
+
+@[simp]
+lemma cos_seven_pi_div_twelve : cos (π * 7 / 12) = (√2 - √6) / 4 := by
+  rw [← neg_sub, neg_div, ← cos_five_pi_div_twelve, ← cos_pi_sub]
+  ring_nf
+
+@[simp]
+lemma sin_seven_pi_div_twelve : sin (π * 7 / 12) = (√6 + √2) / 4 := by
+  rw [← sin_five_pi_div_twelve, ← sin_pi_sub]
+  ring_nf
+
+@[simp]
+lemma cos_two_pi_div_three : cos (π * 2 / 3) = -1 / 2 := by
+  rw [neg_div, ← cos_pi_div_three, ← cos_pi_sub]
+  ring_nf
+
+@[simp]
+lemma sin_two_pi_div_three : sin (π * 2 / 3) = √3 / 2 := by
+  rw [← sin_pi_div_three, ← sin_pi_sub]
+  ring_nf
+
+@[simp]
+lemma cos_three_pi_div_four : cos (π * 3 / 4) = -√2 / 2 := by
+  rw [neg_div, ← cos_pi_div_four, ← cos_pi_sub]
+  ring_nf
+
+@[simp]
+lemma sin_three_pi_div_four : sin (π * 3 / 4) = √2 / 2 := by
+  rw [← sin_pi_div_four, ← sin_pi_sub]
+  ring_nf
+
+@[simp]
+lemma cos_five_pi_div_six : cos (π * 5 / 6) = -√3 / 2 := by
+  rw [neg_div, ← cos_pi_div_six, ← cos_pi_sub]
+  ring_nf
+
+@[simp]
+lemma sin_five_pi_div_six : sin (π * 5 / 6) = 1 / 2 := by
+  rw [← sin_pi_div_six, ← sin_pi_sub]
+  ring_nf
+
+@[simp]
+lemma cos_eleven_pi_div_twelve : cos (π * 11 / 12) = (-√2 - √6) / 4 := by
+  rw [← neg_sub, neg_div, sub_neg_eq_add, ← cos_pi_div_twelve, ← cos_pi_sub]
+  ring_nf
+
+@[simp]
+lemma sin_eleven_pi_div_twelve : sin (π * 11 / 12) = (√6 - √2) / 4 := by
+  rw [← sin_pi_div_twelve, ← sin_pi_sub]
+  ring_nf
+
 theorem quadratic_root_cos_pi_div_five :
     letI c := cos (π / 5)
     4 * c ^ 2 - 2 * c - 1 = 0 := by
