@@ -88,8 +88,8 @@ public lemma exists_adicCompletionEvalOneₐ_comp_eq {I : Ideal S} (f : A →ₐ
 
 /-- If `A` is formally smooth over `R`, any map `A →ₐ[R] S ⧸ I` lifts
 to `A →ₐ[R] S` if `S` is `I`-adically complete.
-See `Algebra.FormallySmooth.exists_adicCompletionEvalOneₐ_comp_eq` for a version without the
-`IsAdicComplete` assumption. -/
+See `Algebra.FormallySmooth.exists_adicCompletionEvalOneₐ_comp_eq` for a version
+about `AdicCompletion`. -/
 public lemma exists_mkₐ_comp_eq_of_isAdicComplete {I : Ideal S} [IsAdicComplete I S]
     (f : A →ₐ[R] S ⧸ I) :
     ∃ (g : A →ₐ[R] S), (Ideal.Quotient.mkₐ _ _).comp g = f := by
