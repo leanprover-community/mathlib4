@@ -115,7 +115,7 @@ postfix:max "✶" => Matroid.dual
 theorem dual_indep_iff_exists' : (M✶.Indep I) ↔ I ⊆ M.E ∧ (∃ B, M.IsBase B ∧ Disjoint I B) :=
   Iff.rfl
 
-@[simp] theorem dual_ground : M✶.E = M.E := rfl
+@[simp, ground_simps] theorem dual_ground : M✶.E = M.E := rfl
 
 theorem dual_indep_iff_exists (hI : I ⊆ M.E := by ground) :
     M✶.Indep I ↔ (∃ B, M.IsBase B ∧ Disjoint I B) := by
