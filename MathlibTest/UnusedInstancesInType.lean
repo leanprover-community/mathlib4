@@ -1,11 +1,11 @@
-import Mathlib.Tactic.Linter.UnusedInstancesInType
+import Mathlib.Init
 import Mathlib.Data.Fintype.Defs
 
 def Uses (α : Sort u) (_ : α := by infer_instance) : Prop := True
 
-section decidable
+set_option linter.mathlibStandardSet true
 
-set_option linter.unusedDecidableInType true
+section decidable
 
 section unused
 
@@ -101,17 +101,6 @@ theorem fooUsing₂ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
 -- Note `optParam` test
 theorem fooUsing₃ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)]
     (_ : Uses (DecidablePred Nonempty) := trivial) : Uses (DecidableEq (Nat → Nat)) → True :=
-  fun _ =>  trivial
-
-end used
-
-section setOptionIn
-
-/-! Test workaround for lean4#11313 -/
-
-set_option linter.unusedDecidableInType false in
-theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
-    Uses (DecidableEq (Nat → Nat)) → True :=
   fun _ =>  trivial
 
 end used
@@ -228,6 +217,16 @@ theorem fooUsing₂' [Fintype Bool] [Fintype (Nat → Nat)] :
 end used
 
 end Fintype
+
+section setOptionIn
+
+/-! Test workaround for lean4#11313 -/
+
+set_option linter.unusedDecidableInType false in
+theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
+    Uses (DecidableEq (Nat → Nat)) → True :=
+  fun _ => trivial
+
 set_option linter.unusedDecidableInType false
 
 /--
@@ -246,5 +245,3 @@ theorem fooUsing₂'' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
   fun _ =>  trivial
 
 end setOptionIn
-
-end decidable
