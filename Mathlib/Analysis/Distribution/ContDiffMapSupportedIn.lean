@@ -302,9 +302,9 @@ variable (n k K K') in
 /-- If `k ≤ n` and `Q ⊆ Q'`, `monoLM 𝕜 n k Q Q'` is the `𝕜`-linear inclusion of
 `𝓓^{n}_{Q}(E, F)` inside `𝓓^{k}_{Q'}(E, F)`. Otherwise, this is the zero map.
 
-This is in fact continuous (see `monoCLM`), and:
-* a topological embedding when `k = n` and `Q ⊆ Q'` (not in Mathlib yet)
-* a compact operator when `k + 1 ≤ n` and `Q ⊆ Q'` (not in Mathlib yet)
+This is in fact continuous (see `monoCLM`). Furthermore:
+* it is a topological embedding when `k = n` and `Q ⊆ Q'` (not in Mathlib yet)
+* it maps bounded sets to compact sets when `k + 1 ≤ n` and `Q ⊆ Q'` (not in Mathlib yet)
 -/
 noncomputable def monoLM :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K'}(E, F) where
@@ -710,9 +710,9 @@ variable (n k K K') in
 /-- If `k ≤ n` and `Q ⊆ Q'`, `monoCLM 𝕜 n k Q Q'` is the continuous `𝕜`-linear inclusion of
 `𝓓^{n}_{Q}(E, F)` inside `𝓓^{k}_{Q'}(E, F)`. Otherwise, this is the zero map.
 
-This is in fact:
-* a topological embedding when `k = n` and `Q ⊆ Q'` (not in Mathlib yet)
-* a compact operator when `k + 1 ≤ n` and `Q ⊆ Q'` (not in Mathlib yet)
+Furthermore:
+* it is a topological embedding when `k = n` and `Q ⊆ Q'` (not in Mathlib yet)
+* it maps bounded sets to compact sets when `k + 1 ≤ n` and `Q ⊆ Q'` (not in Mathlib yet)
 -/
 noncomputable def monoCLM :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K'}(E, F) where
