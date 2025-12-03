@@ -575,4 +575,12 @@ instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category
     [HasWidePushouts.{w} D] : HasPushouts.{v, u} D :=
   hasWidePushouts_shrink WalkingPair
 
+theorem hasPullback_symmetry_of_hasPullbacksAlong {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f]
+    {g : Y ⟶ S} : HasPullback f g :=
+  hasPullback_symmetry g f
+
+theorem hasPushouts_symmetry_of_hasPushoutsAlong {S X Y : C} {f : S ⟶ X} [HasPushoutsAlong f]
+    {g : S ⟶ Y} : HasPushout f g :=
+  hasPushout_symmetry g f
+
 end CategoryTheory.Limits

@@ -3,7 +3,9 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Strict
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
 /-!
 # Cartesian products of bicategories
@@ -19,17 +21,21 @@ We define:
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Bicategory
+
+open Prod
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 /-- The cartesian product of two bicategories. -/
-@[simps! (notRecursive := [])]
+@[simps! (notRecursive := [])] -- notRecurvsive to generate simp lemmas like _fst and _snd
 instance prod (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C] :
     Bicategory (B × C) where
   homCategory X Y := CategoryTheory.prod' (X.1 ⟶ Y.1) (X.2 ⟶ Y.2)
-  whiskerLeft f g h θ := ⟨f.1 ◁ θ.1, f.2 ◁ θ.2⟩
-  whiskerRight θ g := ⟨θ.1 ▷ g.1, θ.2 ▷ g.2⟩
+  whiskerLeft f g h θ := f.1 ◁ θ.1 ×ₘ f.2 ◁ θ.2
+  whiskerRight θ g := θ.1 ▷ g.1 ×ₘ θ.2 ▷ g.2
   associator f g h := Iso.prod (α_ f.1 g.1 h.1) (α_ f.2 g.2 h.2)
   leftUnitor f := Iso.prod (λ_ f.1) (λ_ f.2)
   rightUnitor f := Iso.prod (ρ_ f.1) (ρ_ f.2)
@@ -42,17 +48,17 @@ namespace Prod
 def sectL (B : Type u₁) [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C] (c : C) :
     StrictlyUnitaryPseudofunctor B (B × C) := .mk'
   { obj X := (X, c)
-    map f := (f, 𝟙 c)
-    map₂ η := (η, 𝟙 _)
+    map f := f ×ₘ 𝟙 c
+    map₂ η := η ×ₘ 𝟙 _
     mapComp f g := Iso.prod (Iso.refl _) (λ_ (g, 𝟙 c).2).symm }
 
 /-- `sectR b C` is the strictly unitary pseudofunctor `C ⥤ B × C` given by `Y ↦ (b, Y)`. -/
 @[simps!]
-def sectR {B : Type u₁} [Bicategory.{w₁, v₁} B] (b : B) {C : Type u₂} [Bicategory.{w₂, v₂} C] :
+def sectR {B : Type u₁} [Bicategory.{w₁, v₁} B] (b : B) (C : Type u₂) [Bicategory.{w₂, v₂} C] :
     StrictlyUnitaryPseudofunctor C (B × C) := .mk'
   { obj Y := (b, Y)
-    map f := (𝟙 b, f)
-    map₂ η := (𝟙 _, η)
+    map f := 𝟙 b ×ₘ f
+    map₂ η := 𝟙 _ ×ₘ η
     mapComp f g := Iso.prod (ρ_ (𝟙 b)).symm (Iso.refl _) }
 
 variable (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
@@ -76,8 +82,8 @@ def snd : StrictPseudofunctor (B × C) C := .mk'
 @[simps!]
 def swap : StrictPseudofunctor (B × C) (C × B) := .mk'
   { obj X := (X.2, X.1)
-    map f := (f.2, f.1)
-    map₂ η := (η.2, η.1) }
+    map f := f.2 ×ₘ f.1
+    map₂ η := η.2 ×ₘ η.1 }
 
 end Prod
 
