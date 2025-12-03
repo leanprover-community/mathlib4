@@ -440,7 +440,7 @@ theorem mul_div_one {p r : R} {s : S} : (p /ₒ s) * (r /ₒ 1) = (p * r) /ₒ s
   simp [oreDiv_mul_char p r s 1 p 1 (by simp)]
 
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
-@[to_additive /-- The difference `s -ₒ 0` as a an additive unit. -/]
+@[to_additive /-- The difference `s -ₒ 0` as an additive unit. -/]
 def numeratorUnit (s : S) : Units R[S⁻¹] where
   val := (s : R) /ₒ 1
   inv := (1 : R) /ₒ s
@@ -533,7 +533,7 @@ protected def hsmul (c : R) :
     rw [← mul_one (oreDenom (c • 1) s), ← oreDiv_smul_oreDiv, ← mul_one (oreDenom (c • 1) _),
       ← oreDiv_smul_oreDiv, ← OreLocalization.expand])
 
-/- Warning: This gives an diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
+/- Warning: This gives a diamond on `SMul R[S⁻¹] M[S⁻¹][S⁻¹]`, but we will almost never localize
 at the same monoid twice. -/
 /- Although the definition does not require `IsScalarTower R M X`,
 it does not make sense without it. -/
