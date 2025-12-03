@@ -159,6 +159,12 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 
+@[simp]
+theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
+    {tsupport_subset : tsupport f ⊆ Ω} :
+    TestFunction.mk f contDiff hasCompactSupport tsupport_subset = f :=
+  rfl
+
 section AddCommGroup
 
 @[simps -fullyApplied]
@@ -283,6 +289,7 @@ theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
 
 /-- For every compact `K ⊆ Ω`, the inclusion map `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
 continuous. It is in fact a topological embedding, though this fact is not in Mathlib yet. -/
+@[fun_prop]
 theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     Continuous (ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
   rw [continuous_iff_coinduced_le]
@@ -368,51 +375,31 @@ end ToBoundedContinuousFunctionCLM
 
 section postcomp
 
-variable [SMulCommClass ℝ 𝕜 F] [SMulCommClass ℝ 𝕜 F']
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 F']
+  [LinearMap.CompatibleSMul F F' ℝ 𝕜]
 
 -- Note: generalizing this to a semilinear setting would require a semilinear version of
 -- `CompatibleSMul`.
-/-- Given `T : F →L[𝕜] F'`, `postcompLM T` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)`
-to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`.
-
-This is subsumed by `postcompCLM T`, which also bundles the continuity. -/
-noncomputable def postcompLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
-    𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{n}(Ω, F') where
-  toFun f := ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
-    f.hasCompactSupport.comp_left (map_zero _),
-    (tsupport_comp_subset (map_zero _) f).trans f.tsupport_subset⟩
-  map_add' f g := by ext x; exact map_add T (f x) (g x)
-  map_smul' c f := by ext x; exact map_smul T c (f x)
-
-@[simp]
-lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
-    (f : 𝓓^{n}(Ω, F)) :
-    postcompLM T f = T ∘ f :=
-  rfl
-
-@[simp]
-lemma postcompLM_ofSupportedIn [LinearMap.CompatibleSMul F F' ℝ 𝕜] {T : F →L[𝕜] F'}
-    {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) {f : 𝓓^{n}_{K}(E, F)} :
-    postcompLM T (ofSupportedIn K_sub_Ω f) = ofSupportedIn K_sub_Ω
-      (ContDiffMapSupportedIn.postcompLM T f) :=
-  rfl
-
 /-- Given `T : F →L[𝕜] F'`, `postcompCLM T` is the continuous `𝕜`-linear-map sending
 `f : 𝓓^{n}(Ω, F)` to `T ∘ f` as an element of `𝓓^{n}(Ω, F')`.
 
 This is subsumed by `postcompCLM T`, which also bundles the continuity. -/
-noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
-    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F') where
-  toLinearMap := postcompLM T
-  cont := show Continuous (postcompLM (T.restrictScalars ℝ)) by
-    rw [TestFunction.continuous_iff_continuous_comp]
-    intro K K_sub_Ω
-    refine .congr ?_ fun f ↦ (postcompLM_ofSupportedIn K_sub_Ω).symm
-    exact (ofSupportedInCLM ℝ K_sub_Ω).comp
-      (ContDiffMapSupportedIn.postcompCLM (T.restrictScalars ℝ)) |>.continuous
+noncomputable def postcompCLM (T : F →L[𝕜] F') :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{n}(Ω, F') :=
+  letI Φ (f : 𝓓^{n}(Ω, F)) : 𝓓^{n}(Ω, F') :=
+    ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
+      f.hasCompactSupport.comp_left (map_zero _),
+      (tsupport_comp_subset (map_zero _) f).trans f.tsupport_subset⟩
+  haveI key (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.postcompCLM T f) =
+        Φ (ofSupportedIn K_sub_Ω f) := by
+    ext; simp [Φ]
+  TestFunction.mkCLM 𝕜 Φ
+    (fun f g ↦ by ext; simp [Φ]) (fun c f ↦ by ext; simp [Φ])
+    (fun K K_sub_Ω ↦ by refine .congr ?_ (key K K_sub_Ω); fun_prop)
 
 @[simp]
-lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+lemma postcompCLM_apply (T : F →L[𝕜] F')
     (f : 𝓓^{n}(Ω, F)) :
     postcompCLM T f = T ∘ f :=
   rfl
