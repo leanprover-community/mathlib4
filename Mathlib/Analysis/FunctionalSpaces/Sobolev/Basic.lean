@@ -125,14 +125,18 @@ lemma weakDeriv_of_not_locallyIntegrableOn {f : E → F} (hf : ¬LocallyIntegrab
     weakDeriv Ω f μ = 0 := by
   simp [weakDeriv, ofFun_of_not_locallyIntegrable hf]
 
--- should there be a lemma weakDeriv_of_locallyIntegrableOn
+-- should there be a lemma weakDeriv_of_locallyIntegrableOn?
 
 lemma weakDeriv_const (a : F) : weakDeriv Ω (fun _ : E ↦ a) μ = 0 := by
   by_cases hf : LocallyIntegrableOn (fun _ : E ↦ a) Ω μ; swap
   · exact weakDeriv_of_not_locallyIntegrableOn hf
-  simp [weakDeriv]
-  -- separate lemma?
-  -- simp_rw [ofFun_apply hf]
+  simp only [weakDeriv, Distribution.fderivCLM]
+  ext φ
+  dsimp
+  rw [ofFun_apply hf, TestFunction.lineDerivCLM, TestFunction.fderivCLM]
+  dsimp
+  -- lemma would go until here, or so
+  -- now integrate by parts...
   sorry
 
 -- /-- `g` represents distribution `f` and is in `L^p`. -/
@@ -284,7 +288,8 @@ lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
 @[simp]
 lemma zero : MemSobolev Ω (0 : E → F) k p μ := ⟨0, by simp⟩
 
-lemma const (a : F) : MemSobolev Ω (fun _ : E ↦ a) k p μ := by
+-- TODO: probably, the hypothesis can be weakened!
+lemma const (a : F) [IsFiniteMeasure μ] : MemSobolev Ω (fun _ : E ↦ a) k p μ := by
   -- TODO: better test for MemSobolev: e.g. from being Lp and the weakderiv being nice
   sorry
 
