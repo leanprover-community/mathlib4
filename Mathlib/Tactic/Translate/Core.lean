@@ -563,13 +563,12 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
       value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
-/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
+/-- Abstracts the nested proofs in the value of `decl` if it is a def.
+This follows the behaviour of `Elab.abstractNestedProofs`. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let decl := decl.updateType (← withExporting <| Meta.abstractNestedProofs decl.type)
-  if decl matches .defnInfo _ then
-    return decl.updateValue (← Meta.abstractNestedProofs decl.value!)
-  else
-    return decl
+  let .defnInfo info := decl | return decl
+  let value ← withDeclNameForAuxNaming decl.name do Meta.abstractNestedProofs info.value
+  return .defnInfo { info with value }
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
@@ -1161,7 +1160,7 @@ Make a new copy of a declaration, replacing fragments of the names of identifier
 the body using the `translations` dictionary.
 -/
 partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
-    (argInfo : ArgInfo := {}) : CoreM (Array Name) := withDeclNameForAuxNaming tgt do
+    (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
   transformDeclAux t argInfo.reorder cfg src tgt src
   copyMetaData t cfg src tgt argInfo
 
