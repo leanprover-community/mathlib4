@@ -78,6 +78,14 @@ lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
     rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
   · simpa using hr 1
 
+@[to_additive]
+theorem faithfulSMul_iff [Group G] [MulAction G α] :
+    FaithfulSMul G α ↔ (∀ g : G, (∀ a : α, g • a = a) → g = 1) := by
+  refine ⟨fun h a ha ↦ h.eq_of_smul_eq_smul ?_, fun h ↦ ⟨fun {a₁ a₂} h' ↦ ?_⟩⟩
+  · simpa only [one_smul]
+  · rw [← inv_inv a₂, eq_inv_of_mul_eq_one_left (h (a₂⁻¹ * a₁) ?_), inv_inv]
+    simpa only [mul_smul, inv_smul_eq_iff] using h'
+
 /--
 Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
 scalar towers, then `P / N / M` is also a scalar tower.
