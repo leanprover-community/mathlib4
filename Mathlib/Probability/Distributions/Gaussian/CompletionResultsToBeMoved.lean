@@ -41,41 +41,6 @@ lemma InnerProductSpace.norm_le_dual_bound {E : Type*} [NormedAddCommGroup E]
   · convert hM y
     simp [y]
 
-lemma InnerProductSpace.norm_le_dual_bound_of_norm_le_one {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] [CompleteSpace E]
-    (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ y : E, ‖y‖ ≤ 1 → ⟪x, y⟫_ℝ ≤ M) :
-    ‖x‖ ≤ M := by
-  refine InnerProductSpace.norm_le_dual_bound x hMp fun y ↦ ?_
-  by_cases h_zero : ‖y‖ = 0
-  · simp only [h_zero, mul_zero]
-    rw [inner_eq_zero_of_right _ h_zero]
-  specialize hM (‖y‖⁻¹ • y) ?_
-  · simp only [norm_smul, norm_inv, Real.norm_eq_abs, abs_norm]
-    exact inv_mul_le_one
-  · simp only [inner_smul_right] at hM
-    rwa [inv_mul_le_iff₀ (by positivity), mul_comm] at hM
-
-lemma InnerProductSpace.norm_eq_ciSup_inner {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] [CompleteSpace E] (x : E) :
-    ‖x‖ = ⨆ (y : E) (_ : ‖y‖ ≤ 1), ⟪x, y⟫_ℝ := by
-  have h_ciSup_le y : ⨆ (_ : ‖y‖ ≤ 1), ⟪x, y⟫_ℝ ≤ ‖x‖ := by
-    by_cases hy : ‖y‖ ≤ 1
-    · simp only [hy, ciSup_unique]
-      calc ⟪x, y⟫_ℝ
-      _ ≤ ‖x‖ * ‖y‖ := real_inner_le_norm _ _
-      _ ≤ ‖x‖ * 1 := by gcongr
-      _ = ‖x‖ := by rw [mul_one]
-    · simp [hy]
-  have h_bdd : BddAbove (Set.range fun y ↦ ⨆ (_ : ‖y‖ ≤ 1), ⟪x, y⟫_ℝ) := by
-    refine ⟨‖x‖, ?_⟩
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-    intro y
-    exact h_ciSup_le y
-  refine le_antisymm ?_ (ciSup_le h_ciSup_le)
-  · refine InnerProductSpace.norm_le_dual_bound_of_norm_le_one x ?_ fun y hy ↦ ?_
-    · exact le_ciSup_of_le h_bdd 0 (by simp)
-    · exact le_ciSup_of_le h_bdd y (by simp [hy])
-
 lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup G] [Module ℝ G] [NormSMulClass ℝ G]
     (f : StrongDual ℝ E →ₗ[ℝ] G) {y : E} (hy : ∃ M, ∀ L, ‖f L‖ ≤ 1 → L y ≤ M) (L : StrongDual ℝ E) :
@@ -129,9 +94,8 @@ section Extension
 variable {M R F : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
   [CompleteSpace M] [UniformContinuousConstSMul R M]
   [UniformSpace F] [AddCommGroup F] [Module R F] [T2Space F] [CompleteSpace F]
+  [IsUniformAddGroup F] [UniformContinuousConstSMul R F]
   {s : Submodule R M}
-
-variable [IsUniformAddGroup F] [UniformContinuousConstSMul R F]
 
 /-- Extension of a linear map `s →L[R] F` on a submodule to a linear map on the topological
 closure of the submodule. -/
