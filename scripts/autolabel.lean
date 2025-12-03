@@ -339,7 +339,7 @@ unsafe def main (args : List String): IO UInt32 := do
       let labelsPresent ← IO.Process.run {
         cmd := "gh"
         args := #["pr", "view", n, "--json", "labels", "--jq", ".labels .[] .name"]}
-      let labels := labelsPresent.split (· == '\n')
+      let labels := labelsPresent.splitToList (· == '\n')
       let autoLabels := mathlibLabels.map (·.label)
       match labels.filter autoLabels.contains with
       | [] => -- if the PR does not have a label that this script could add, then we add a label
