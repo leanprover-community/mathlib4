@@ -578,7 +578,6 @@ theorem parts_partition {σ : Perm α} :
     σ.partition.parts = σ.cycleType + Multiset.replicate (Fintype.card α - #σ.support) 1 :=
   rfl
 
-set_option linter.unusedFintypeInType false in -- False positive
 theorem filter_parts_partition_eq_cycleType {σ : Perm α} :
     ((partition σ).parts.filter fun n => 2 ≤ n) = σ.cycleType := by
   rw [parts_partition, filter_add, Multiset.filter_eq_self.2 fun _ => two_le_of_mem_cycleType,
@@ -606,8 +605,10 @@ theorem isSwap_iff_cycleType {σ : Perm α} : σ.IsSwap ↔ σ.cycleType = {2} :
   · intro h
     simp [← card_support_eq_two, ← sum_cycleType, h]
 
+omit [Fintype α] in variable [Finite α] in
 theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
     orderOf σ = 2 := by
+  have := Fintype.ofFinite α
   rw [← lcm_cycleType, isSwap_iff_cycleType.mp h, Multiset.lcm_singleton, normalize_eq]
 
 end IsSwap
