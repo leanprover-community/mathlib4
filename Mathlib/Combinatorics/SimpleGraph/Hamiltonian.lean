@@ -188,11 +188,8 @@ More precisely, let `G : SimpleGraph V` be a simple graph on a finite vertex typ
 If `Fintype.card V ≥ 3` and there exists an edge of `G` which is a bridge,
 then `G` does not admit a Hamiltonian cycle, i.e. `¬ G.IsHamiltonian`.
 -/
-theorem IsNotHamiltonian_if_IsBridge
-    (G : SimpleGraph V)
-    (h_order : Fintype.card V ≥ 3)
-    (h_bridge : ∃ e : Sym2 V, G.IsBridge e) :
-    ¬G.IsHamiltonian := by
+theorem card_le_two_of_isHamiltonian_of_isBridge {G : SimpleGraph V} (hG : G.IsHamiltonian)
+    {e : Sym2 V} (he : G.IsBridge e) : Fintype.card V ≤ 2 := by
   classical
   rcases h_bridge with ⟨e, he⟩
   refine Sym2.ind
