@@ -1000,7 +1000,7 @@ theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
   simp only [leftMulMatrix_apply, LinearMap.toMatrix_apply, mul_comm, Basis.smulTower_apply,
-    Basis.smulTower_repr, Finsupp.smul_apply, id.smul_eq_mul, map_smul, mul_smul_comm,
+    Basis.smulTower_repr, Finsupp.smul_apply, smul_eq_mul, map_smul, mul_smul_comm,
     coe_lmul_eq_mul, LinearMap.mul_apply']
 
 theorem smulTower_leftMulMatrix_algebraMap (x : S) :
