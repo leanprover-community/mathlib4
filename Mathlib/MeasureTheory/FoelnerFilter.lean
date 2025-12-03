@@ -86,6 +86,8 @@ theorem IsFoelner.mono {l' : Filter ι} (hfoel : IsFoelner G μ l F) (hle : l' �
   tendsto_meas_symmDiff (g : G) := Tendsto.mono_left (hfoel.tendsto_meas_symmDiff g) hle
 
 variable (μ u F) in
+/-- The limit along an ultrafilter of the density of a set
+with respect to a Følner sequence in `X`. -/
 noncomputable def IsFoelner.mean (s : Set X) :=
   limUnder u (fun i ↦ μ (s ∩ F i) / μ (F i))
 
