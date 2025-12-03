@@ -22,8 +22,6 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DirectSum`s
 
 @[expose] public section
 
-suppress_compilation
-
 namespace PiTensorProduct
 
 open PiTensorProduct DirectSum LinearMap
