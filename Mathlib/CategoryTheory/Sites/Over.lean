@@ -365,32 +365,12 @@ instance {X : C} (f : Over X) :
     f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) where
   cover_lift {g s} hs := by
     refine J.superset_covering ?_ hs
-    unfold Sieve.overEquiv
-    intro Y g₀ h₁
-    simp only [Equiv.coe_fn_mk,
-      Sieve.functorPushforward_apply, Presieve.functorPushforward, Over.forget_obj,
-      Sieve.functorPullback_apply, Presieve.functorPullback_mem, Over.forget_map, exists_and_left]
-    simp only [Equiv.coe_fn_mk, Sieve.functorPushforward_apply] at hs h₁ s
-    let Z : Over f.left := Over.mk (g₀ ≫ g.hom)
-    refine ⟨Z, Over.homMk g₀, ?_, 𝟙 _, by simp⟩
-    simp only [Over.iteratedSliceBackward] at h₁ ⊢
-    simp only [Presieve.functorPushforward, Over.forget_obj, Over.mk_left, Over.forget_map,
-      exists_and_left, ↓existsAndEq, and_true, Over.comp_left] at h₁
-    obtain ⟨g₂, g₃, g₄, hg₄, g₅, g₆, hg₅⟩ := h₁
-    simp_rw [hg₅, Over.homMk_left]
-    have wg₄ : g₄.left.left ≫ g.hom = g₃.hom.left := by
-      simpa using congrArg CommaMorphism.left g₄.w
-    have hlp : g₄.left.left ≫ g.hom ≫ f.hom = g₃.left.hom := by
-      rw [← assoc, wg₄]; simp
-    have h₁ := Over.homMk_comp (U := .mk (Z.hom ≫ f.hom)) (g₆ ≫ g₅.left) g₄.left.left
-      (by simp [Z, hlp, hg₅]) (by simp [← assoc, wg₄])
-    have h₂ := Over.homMk_comp (U := .mk (Over.homMk Z.hom (by simp) : _ ⟶ f))
-      (V := g₃) (W := .mk (Over.homMk g.hom (by simp)))
-      (Over.homMk (U := .mk (Z.hom ≫ f.hom)) (g₆ ≫ g₅.left) (by simp [Z, hg₅, hlp]))
-      (Over.homMk (V := .mk (g.hom ≫ f.hom)) g₄.left.left (by simp [hlp]))
-      (by ext1; simp [Z, wg₄, hg₅]) (by ext1; simpa)
-    simp_rw [← assoc, h₁, h₂]
-    exact s.downward_closed hg₄ _
+    dsimp [Sieve.overEquiv]
+    simp_rw [← Over.iteratedSliceBackward_forget_forget f, Sieve.functorPushforward_comp]
+    have : Sieve.functorPushforward f.iteratedSliceBackward (Sieve.functorPullback
+        f.iteratedSliceBackward s) = s :=
+      (Sieve.essSurjFullFunctorGaloisInsertion f.iteratedSliceEquiv.inverse _).l_u_eq s
+    rw [this]
 
 instance {X : C} (f : Over X) :
     f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) where
