@@ -16,7 +16,7 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
 that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
-as well as their interaction with MulActionHom.
+as well as their interaction with `MulActionHom`.
 
 ## Main theorems
 
