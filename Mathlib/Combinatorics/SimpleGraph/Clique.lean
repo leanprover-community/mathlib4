@@ -370,7 +370,7 @@ theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGr
   ⟨fun h ↦ ⟨topEmbeddingOfNotCliqueFree h⟩, fun ⟨f⟩ ↦ not_cliqueFree_of_top_embedding f⟩
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
-  rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
+  contrapose!; exact not_cliqueFree_iff n
 
 /-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
 theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
@@ -884,11 +884,11 @@ variable {n : ℕ}
 def IndepSetFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNIndepSet n t
 
-/-- An graph is `n`-independent set free iff its complement is `n`-clique free. -/
+/-- A graph is `n`-independent set free iff its complement is `n`-clique free. -/
 @[simp] theorem cliqueFree_compl : Gᶜ.CliqueFree n ↔ G.IndepSetFree n := by
   simp [IndepSetFree, CliqueFree]
 
-/-- An graph's complement is `n`-independent set free iff it is `n`-clique free. -/
+/-- A graph's complement is `n`-independent set free iff it is `n`-clique free. -/
 @[simp] theorem indepSetFree_compl : Gᶜ.IndepSetFree n ↔ G.CliqueFree n := by
   simp [IndepSetFree, CliqueFree]
 
