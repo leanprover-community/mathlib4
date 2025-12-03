@@ -105,16 +105,23 @@ Note that the topology on `𝓓'^{n}(Ω, F)` has no reason to be the subspace to
 
 ### Choice of topology
 
-Our choice of topology on `𝓓'^{n}(Ω, F)` follows
-[L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]. Note that,
-since `𝓓(Ω, ℝ)` is a Montel space, the topology on `𝓓'(Ω, F)` is also that of uniform convergence
-on `IsVonNBounded` subsets (the corresponding fact does not hold for `𝓓'^{n}(Ω, F)` though).
-Hence, our definition also agrees with [L. Schwartz, *Théorie des distributions*][schwartz1950].
+Our choice of the compact convergence topology on `𝓓'^{n}(Ω, F)` follows
+[L. Schwartz, *Théorie des distributions à valeurs vectorielles*, §2, p. 49][schwartz1957].
 
-If you have followed a typical course on distribution theory, you might have expected the topology
-on `𝓓'(Ω, F)` to be that of pointwise convergence. This misconception comes from the fact that,
-for **sequences**, convergence in `𝓓'(Ω, F)` corresponds to pointwise convergence, but this is no
-longer true for general filters.
+Note that, since `𝓓(Ω, ℝ)` is a Montel space, the topology on `𝓓'(Ω, F)` is also that of
+bounded convergence. Hence, our definition also agrees with
+[L. Schwartz, *Théorie des distributions*, Chapitre III, §3][schwartz1950].
+
+When `n` is finite however, `𝓓^{n}(Ω, ℝ)` is no longer a Montel space
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §2, p. 71][schwartz1950]), hence
+these two topologies have no reason to be the same. Schwartz uses compact convergence as a default
+(see [L. Schwartz, *Théorie des distributions à valeurs vectorielles*, §2, p. 50][schwartz1957]),
+which we follow here.
+
+Finally, if you have followed a typical course on distribution theory, you might have expected the
+topology on `𝓓'(Ω, F)` to be that of *pointwise convergence*. This misconception comes from the
+fact that, for **sequences**, convergence in `𝓓'(Ω, F)` corresponds to pointwise convergence, but
+this is no longer true for general filters.
 See [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950].
 
 ## References
