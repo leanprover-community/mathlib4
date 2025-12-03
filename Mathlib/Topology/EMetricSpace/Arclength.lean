@@ -20,6 +20,8 @@ This file is devoted to the definition of the `arclength` of a function `f` betw
 Topology, Metric space, Continuity
 -/
 
+@[expose] public section
+
 open ENNReal
 
 variable {α E : Type*} [LinearOrder α] [PseudoEMetricSpace E] (f : α → E) {a b c : α}
@@ -29,12 +31,10 @@ as the variation of `f` on the closed interval `[a, b]`. Equals zero when `b ≤
 noncomputable def arclength (a b : α) : ℝ≥0∞ :=
   eVariationOn f (Set.Icc a b)
 
-/--
-`arclength f a b` is the supremum of finite sums of `edist (f <| u i) (f <| u <| i+1)` for `u`
+/-- `arclength f a b` is the supremum of finite sums of `edist (f <| u i) (f <| u <| i+1)` for `u`
 satisfying the same conditions as for `evariation_on` with the addition of:
 * `u 0` is `a`.
-* `u 1` is **not** `a`.
--/
+* `u 1` is **not** `a`. -/
 theorem arclength_eq_iSup (hab : a ≤ b) : arclength f a b =
   ⨆ p : ℕ × { u : ℕ → α // Monotone u ∧ (∀ i, u i ∈ Set.Icc a b) ∧ u 0 = a ∧ a < u 1},
     ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
