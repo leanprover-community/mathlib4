@@ -6,7 +6,8 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
-public import Mathlib.Probability.Independence.InfinitePi
+
+import Mathlib.Probability.Independence.InfinitePi
 
 /-!
 # Results about identically distributed random variables and independence
