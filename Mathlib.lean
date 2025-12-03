@@ -5594,6 +5594,9 @@ public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gamma
 public import Mathlib.Probability.Distributions.Gaussian
 public import Mathlib.Probability.Distributions.Gaussian.Basic
+public import Mathlib.Probability.Distributions.Gaussian.CameronMartin
+public import Mathlib.Probability.Distributions.Gaussian.CameronMartinThm
+public import Mathlib.Probability.Distributions.Gaussian.CompletionResultsToBeMoved
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
