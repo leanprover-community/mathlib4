@@ -325,12 +325,12 @@ variable [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
 
 theorem cuspFunction_apply_zero (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     cuspFunction h f 0 = 0 :=
-  haveI : Fact (IsCusp OnePoint.infty Γ) := ⟨isCusp_of_mem_strictPeriods hh hΓ⟩
+  have : Fact (IsCusp OnePoint.infty Γ) := ⟨isCusp_of_mem_strictPeriods hh hΓ⟩
   (CuspFormClass.zero_at_infty f).cuspFunction_apply_zero hh
 
 theorem exp_decay_atImInfty (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) :=
-  haveI : Fact (IsCusp OnePoint.infty Γ) := ⟨isCusp_of_mem_strictPeriods hh hΓ⟩
+  have : Fact (IsCusp OnePoint.infty Γ) := ⟨isCusp_of_mem_strictPeriods hh hΓ⟩
   (CuspFormClass.zero_at_infty f).exp_decay_atImInfty hh hΓ
 
 theorem exp_decay_atImInfty' [Fact (IsCusp OnePoint.infty Γ)] :
