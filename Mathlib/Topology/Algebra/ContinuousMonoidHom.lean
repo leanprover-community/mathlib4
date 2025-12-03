@@ -359,7 +359,7 @@ theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
 
 /-- Makes a continuous multiplicative isomorphism from
 a homeomorphism which preserves multiplication. -/
-@[to_additive /-- Makes an continuous additive isomorphism from
+@[to_additive /-- Makes a continuous additive isomorphism from
 a homeomorphism which preserves addition. -/]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
