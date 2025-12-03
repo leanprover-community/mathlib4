@@ -253,8 +253,7 @@ theorem ofMultiset_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
   convert ofMultiset_nextCoeff (by assumption)
   rw [nextCoeff, if_neg]
   swap
-  · simp only [ofMultiset_apply]
-    rw [natDegree_multiset_prod_of_monic]
+  · rw [ofMultiset_apply, natDegree_multiset_prod_of_monic]
     swap
     · simp only [Multiset.mem_map]
       rintro _ ⟨_, _, rfl⟩
