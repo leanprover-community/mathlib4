@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Homology.Homotopy
 # The action of a bifunctor on homological complexes factors through homotopies
 
 Given a `TotalComplexShape c₁ c₂ c`, a functor `F : C₁ ⥤ C₂ ⥤ D`,
-we shall show in this file that up to homotopy the morphism
+we show in this file that up to homotopy the morphism
 `mapBifunctorMap f₁ f₂ F c` only depends on the homotopy classes of
 the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂`.
