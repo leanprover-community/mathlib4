@@ -153,11 +153,14 @@ def sobolevNorm (T : 𝓓'(Ω, F)) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) :
 end Distribution
 
 
-
-
-
-
 /-
-Maybe:
-package all the derivatives together in the arguments.
+To do:
+1. Basic lemmas (closure under `+`, `•`, ...)
+2. define Sobolev spaces
+3. [Adams, Th 3.3] prove Banach space
+4. monotonicity in `k` and (if `Ω` is bounded) in `p`.
+5. [Adams, Cor 3.4] C^k functions are contained in W^{k, p}
+6. [Adams, Th 3.6] separable, uniform convexity
+7. [Adams, Th 3.15-3.17] density of smooth functions in W^{k, p}
+8. [Adams, Ch 4] Sobolev embedding theorem
 -/
