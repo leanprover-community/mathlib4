@@ -278,6 +278,10 @@ theorem Splits.eq_prod_roots (hf : Splits f) :
     suffices hf : f.roots = m by rwa [hf]
     rw [hm, roots_C_mul _ hf0, roots_multiset_prod_X_sub_C]
 
+theorem Splits.eq_prod_roots_of_monic (hf : Splits f) (hm : f.Monic) :
+    f = (f.roots.map (X - C ·)).prod := by
+  conv_lhs => rw [hf.eq_prod_roots, hm.leadingCoeff, C_1, one_mul]
+
 theorem Splits.natDegree_eq_card_roots (hf : Splits f) :
     f.natDegree = f.roots.card := by
   by_cases hf0 : f.leadingCoeff = 0
@@ -403,7 +407,17 @@ end DivisionSemiring
 
 section Field
 
-variable [Field R]
+variable [Field R] {f g : R[X]}
+
+theorem Splits.dvd_of_roots_le_roots (hp : f.Splits) (hp0 : f ≠ 0) (hq : f.roots ≤ g.roots) :
+    f ∣ g := by
+  rw [hp.eq_prod_roots, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
+  exact (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq)).trans
+    (prod_multiset_X_sub_C_dvd _)
+
+theorem Splits.dvd_iff_roots_le_roots (hf : f.Splits) (hf0 : f ≠ 0) (hg0 : g ≠ 0) :
+    f ∣ g ↔ f.roots ≤ g.roots :=
+  ⟨roots.le_of_dvd hg0, hf.dvd_of_roots_le_roots hf0⟩
 
 theorem Splits.comp_of_natDegree_le_one {f g : R[X]} (hf : f.Splits) (hg : g.natDegree ≤ 1) :
     (f.comp g).Splits := by
