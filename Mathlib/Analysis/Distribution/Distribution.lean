@@ -21,8 +21,9 @@ distribution on `Ω`.
 
 We denote the space of `F`-valued distributions on `Ω` by `𝓓'(Ω, F)`. Topologically,
 it is defined as `𝓓(Ω, ℝ) →L_c[ℝ] F`, meaning that we endow it with topology of uniform
-convergence on compact subsets of `𝓓(Ω, ℝ)`. If this choice of topology is surprising,
-see the implementation notes below.
+convergence on compact subsets of `𝓓(Ω, ℝ)`. In this particular case, this happens to coincide
+with the topology of `𝓓(Ω, ℝ) →L[ℝ] F`, namely that of uniform convergence on bounded subsets.
+See the implementation notes below for more details.
 
 Right now, this file contains very few mathematical statements.
 The theory will be expanded very soon.
@@ -72,9 +73,9 @@ Let us give two examples of how we plan to use this level of generality:
 
 ### Choice of scalar field
 
-You might be surprised that complex-valued distributions `𝓓'(Ω, ℂ)` are defined
-as `𝓓(Ω, ℝ) →L[ℝ] ℂ` instead of `𝓓(Ω, ℂ) →L[ℂ] ℂ` (in other words, we only ever test
-against *real-valued* test functions).
+In the litterature, it is common to define complex-valued distributions as continuous `ℂ`-linear
+forms `T : 𝓓(Ω, ℂ) →L[ℂ] ℂ`. We use `𝓓(Ω, ℝ) →L[ℝ] ℂ` instead, that is, we only ever test
+against *real-valued* test functions.
 
 This makes no difference mathematically, since `𝓓(Ω, ℂ)` is the complexification of `𝓓(Ω, ℝ)`,
 hence there is a topological isomorphism between `𝓓(Ω, ℝ) →L[ℝ] F` and `𝓓(Ω, ℂ) →L[ℂ] F`
@@ -86,13 +87,15 @@ distribution is nothing more than a distribution taking values in the real vecto
 
 ### Order of distributions
 
-If you have followed a typical course on distribution theory, you might expect that the
-order of a distribution would be formalized by a predicate `Distribution.HasOrderAtMost` on
-the space of all distributions, rather than by using a separate space `𝓓'^{n}(Ω, F)`.
+Based on established practice in the litterature, a natural way to express the order of a
+distribution would be to introduce a predicate `Distribution.HasOrderAtMost` on the space of all
+distributions. Here though, we define a separate space `𝓓'^{n}(Ω, F)` whose elements are precisely
+distributions of order at most `n`.
 
-We do in fact plan on defining such a predicate as the primary interface for the order of a
-distribution. However, we believe that being able to talk about the space `𝓓'^{n}(Ω, F)` is also
-quite important, for the following reasons:
+This is not incompatible with the predicate approach: in fact, we think that such a predicate
+should eventually become the primary interface for the order of a distribution. However, we believe
+that being able to talk about the space `𝓓'^{n}(Ω, F)` is also quite important, for the following
+reasons:
 * if `T` is a distribution of order at most `n`, it is natural to test it against a `C^n` test
   function (especially if `n = 0`). This means that we naturally want to consider its extension
   `T'` as an element of `𝓓'^{n}(Ω, F)`.
@@ -118,11 +121,12 @@ these two topologies have no reason to be the same. Schwartz uses compact conver
 (see [L. Schwartz, *Théorie des distributions à valeurs vectorielles*, §2, p. 50][schwartz1957]),
 which we follow here.
 
-Finally, if you have followed a typical course on distribution theory, you might have expected the
-topology on `𝓓'(Ω, F)` to be that of *pointwise convergence*. This misconception comes from the
-fact that, for **sequences**, convergence in `𝓓'(Ω, F)` corresponds to pointwise convergence, but
-this is no longer true for general filters.
-See [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950].
+Finally, note that a **sequence** of distributions converges in `𝓓'(Ω, F)` if and only if it
+converges pointwise
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950]).
+Due to this fact, some texts endow `𝓓'(Ω, F)` with the pointwise convergence topology. While this
+gives the same converging sequences as the topology of bounded/compact convergence, this is no
+longer true for general filters.
 
 ## References
 
