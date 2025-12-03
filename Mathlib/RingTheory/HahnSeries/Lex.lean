@@ -117,6 +117,7 @@ end LinearOrder
 section OrderedMonoid
 variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
+set_option linter.flexible false in -- simp followed by gcongr
 instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
@@ -124,10 +125,8 @@ instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
       obtain ⟨i, hj, hi⟩ := hlt
-      refine ⟨i, ?_, ?_⟩
-      · intro j hji
-        simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
-      · simpa using add_lt_add_left hi ((ofLex c).coeff i)
+      refine ⟨i, fun j hji ↦ ?_, by simp; gcongr⟩
+      simpa using congr($(hj j hji) + (ofLex c).coeff j)
 
 end OrderedMonoid
 

@@ -177,7 +177,7 @@ noncomputable def homologyIsoPos (n : ℕ) [NeZero n] (m : ℤ) (hm : m = n)
       (by simp; cutsat) (by simp; cutsat) (by simp) (by simp)).symm ≪≫
     HomologicalComplex.homologyMapIso h.restrictionGEIso n
 
-/-- Given `h : ConnectData K L` and `n : ℕ`non-zero, the homology
+/-- Given `h : ConnectData K L` and `n : ℕ` non-zero, the homology
 of `h.cochainComplex` in degree `-(n + 1)` identifies to the homology of `K` in degree `n`. -/
 noncomputable def homologyIsoNeg (n : ℕ) [NeZero n] (m : ℤ) (hm : m = -(n + 1 : ℕ))
     [h.cochainComplex.HasHomology m] [K.HasHomology n] :

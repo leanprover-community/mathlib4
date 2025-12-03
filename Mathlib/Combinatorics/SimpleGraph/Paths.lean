@@ -6,7 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
-public import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 /-!
 
@@ -397,6 +398,16 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
       (by rwa [getVert_cons _ _ n.add_one_ne_zero, getVert_zero])
     omega
 
+theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+    (hmem : s(u, w) ∈ p.edges) : w = p.snd := by
+  rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
+  have : u ∉ p.tail.support := by induction p <;> simp_all
+  grind [fst_mem_support_of_mem_edges]
+
+theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
+    (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
+  simpa [hnil, hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
+
 /-! ### About cycles -/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
@@ -508,6 +519,18 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
     simp
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
+
+theorem IsCycle.count_support {c : G.Walk v v} (hc : c.IsCycle) : c.support.count v = 2 := by
+  have := List.count_eq_one_of_mem hc.support_nodup <| c.end_mem_tail_support hc.not_nil
+  have := c.head_support ▸ List.head?_eq_some_head c.support_ne_nil
+  grind
+
+theorem IsCycle.count_support_of_mem {c : G.Walk v v} (hc : c.IsCycle) (hu : u ∈ c.support)
+    (hv : u ≠ v) : c.support.count u = 1 := by
+  have := List.eq_or_mem_of_mem_cons <| List.cons_head_tail c.support_ne_nil ▸ hu
+  have := List.count_eq_one_of_mem hc.support_nodup <| this.resolve_left <| head_support _ ▸ hv
+  have := c.head_support ▸ List.head?_eq_some_head c.support_ne_nil
+  grind
 
 /-- Taking a strict initial segment of a path removes the end vertex from the support. -/
 lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
