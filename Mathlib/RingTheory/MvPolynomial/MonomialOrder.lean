@@ -796,7 +796,7 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
 
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
     m.sPolynomial f g = - m.sPolynomial g f :=
-  Eq.symm (neg_sub (_ * g) (_ * f))
+  (neg_sub (_ * g) (_ * f)).symm
 
 @[simp]
 lemma sPolynomial_left_zero (g : MvPolynomial σ R) :
