@@ -387,6 +387,10 @@ protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
 instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Over.forget_comp_forget_map {A B : P.Over Q X} (f : A ⟶ B) :
+    (MorphismProperty.Over.forget P Q X ⋙ CategoryTheory.Over.forget X).map f = f.left := rfl
+
 variable {P Q X}
 
 /-- Construct a morphism in `P.Over Q X` from a morphism in `Over.X`. -/
@@ -447,6 +451,10 @@ protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
 
 instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Under.forget_comp_forget_map {A B : P.Under Q X} (f : A ⟶ B) :
+    (MorphismProperty.Under.forget P Q X ⋙ CategoryTheory.Under.forget X).map f = f.right := rfl
 
 variable {P Q X}
 
