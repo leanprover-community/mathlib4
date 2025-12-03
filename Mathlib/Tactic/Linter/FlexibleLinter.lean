@@ -336,7 +336,7 @@ def flexible : Std.HashSet Name :=
     `cfcContTac,
     -- `continuity` and `measurability` also use `aesop` under the hood.
     `tacticContinuity,
-    `tacticMeasurability,
+    `Mathlib.Tactic.measurability,
     `finiteness,
     `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,

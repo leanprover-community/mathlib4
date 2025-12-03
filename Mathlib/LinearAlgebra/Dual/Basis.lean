@@ -216,6 +216,7 @@ open Lean.Elab.Tactic in
 meta def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 
+@[inherit_doc evalUseFiniteInstance]
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
