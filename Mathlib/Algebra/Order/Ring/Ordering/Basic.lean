@@ -189,10 +189,12 @@ theorem isOrdering_iff :
 ### Supports
 -/
 
+@[gcongr]
 theorem supportAddSubgroup_mono {Q : RingPreordering R} (h : P ≤ Q) :
     P.supportAddSubgroup ≤ Q.supportAddSubgroup :=
   fun _ ↦ by aesop (add simp mem_supportAddSubgroup)
 
+@[gcongr]
 theorem support_mono {Q : RingPreordering R} [P.HasIdealSupport] [Q.HasIdealSupport] (h : P ≤ Q) :
     P.support ≤ Q.support := fun _ ↦ by aesop (add simp mem_support)
 
