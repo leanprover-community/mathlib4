@@ -711,7 +711,7 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein
           Ideal.eq_top_of_isUnit_mem  _ (Ideal.mem_span_singleton_self a) uni
         absurd reg.2.symm
         simp [this]
-      let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} := let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} :=
+      let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} :=
         (Submodule.quotEquivOfEq _ (Ideal.span {a})
           (by simp [← Submodule.ideal_span_singleton_smul])).extendScalarsOfSurjective
             Ideal.Quotient.mk_surjective
