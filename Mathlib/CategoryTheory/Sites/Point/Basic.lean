@@ -38,8 +38,9 @@ of this functor with respect to the class of morphisms `J.W`.
 In particular, the fiber of a presheaf identifies to the fiber of
 its associated sheaf.
 
-We show that both `Φ.presheafFiber` and `Φ.sheafFiber`
-commute with finite limits and with arbitrary colimits.
+Under suitable assumptions on the target category `A`, we show that
+both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
+and with arbitrary colimits.
 
 -/
 
