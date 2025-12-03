@@ -377,12 +377,11 @@ lemma apply_cmCoe_eq_inner (x : cameronMartin μ) (L : StrongDual ℝ E) :
     L (cmCoe x) = ⟪cmOfDual μ L, x⟫_ℝ := by
   rw [cmOfDual_apply]
   unfold cameronMartin
-  simp only [cmCoe, closureExtensionCLM_apply]
+  rw [cmCoe]
   revert x
   rw [← funext_iff]
   refine funext_topologicalClosure (by fun_prop) (by fun_prop) fun x ↦ ?_
-  rw [closureExtension_coe]
-  swap; · exact ContinuousLinearMap.uniformContinuous _
+  rw [closureExtensionCLM_coe]
   simp only [LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
   rw [apply_toInit_eq_inner]
   rfl

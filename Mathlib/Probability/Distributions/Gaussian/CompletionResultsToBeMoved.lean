@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.Normed.Group.Completion
 public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.GDelta.MetrizableSpace
 /-!
@@ -135,85 +136,20 @@ variable [IsUniformAddGroup F] [UniformContinuousConstSMul R F]
 /-- Extension of a linear map `s →L[R] F` on a submodule to a linear map on the topological
 closure of the submodule. -/
 noncomputable
-def closureExtensionCLM (s : Submodule R M) (f : s →L[R] F) : s.topologicalClosure →L[R] F where
-  toFun := closureExtension s f
-  map_add' x₁ x₂ := by
-    refine induction_topologicalClosure₂ x₁ x₂ ?_ fun x₁' x₂' ↦ ?_
-    · exact isClosed_eq (by fun_prop) (by fun_prop)
-    · rw [closureExtension_coe, closureExtension_coe, ← map_add, ← closureExtension_coe (f := f)]
-      · congr
-      all_goals exact ContinuousLinearMap.uniformContinuous _
-  map_smul' r x := by
-    simp only [RingHom.id_apply]
-    induction x using induction_topologicalClosure with
-    | hp => exact isClosed_eq (by fun_prop) (by fun_prop)
-    | ih x =>
-      rw [closureExtension_coe, ← map_smul, ← closureExtension_coe (f := f)]
-      · rfl
-      all_goals exact ContinuousLinearMap.uniformContinuous _
+def closureExtensionCLM (s : Submodule R M) (f : s →L[R] F) : s.topologicalClosure →L[R] F :=
+  ContinuousLinearMap.extend f (toClosureCLM s)
 
-lemma closureExtensionCLM_apply (s : Submodule R M) (f : s →L[R] F) (x : s.topologicalClosure) :
-    closureExtensionCLM s f x = closureExtension s f x := by
-  simp [closureExtensionCLM]
+lemma denseRange_coeClosure (s : Submodule R M) :
+    DenseRange (coeClosure : s → s.topologicalClosure) := by
+  sorry
+
+lemma IsUniformInducing_toClosureCLM (s : Submodule R M) :
+    IsUniformInducing (toClosureCLM s) := by
+  sorry
 
 @[simp]
 lemma closureExtensionCLM_coe (s : Submodule R M) (f : s →L[R] F) (x : s) :
-    closureExtensionCLM s f x = f x := by
-  simp [closureExtensionCLM, closureExtension_coe f.uniformContinuous]
+    closureExtensionCLM s f x = f x :=
+  ContinuousLinearMap.extend_eq f (denseRange_coeClosure s) (IsUniformInducing_toClosureCLM s) _
 
 end Extension
-
-/-- Equivalence between the completion of a submodule and its topological closure, in a complete
-space. -/
-noncomputable
-def completionClosureEquiv {M R : Type*} [Ring R] [NormedAddCommGroup M] [CompleteSpace M]
-    [Module R M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
-    Completion s ≃ᵤ s.topologicalClosure :=
-  AbstractCompletion.compareEquiv (UniformSpace.Completion.cPkg (α := s))
-    (abstractCompletionClosure s.carrier)
-
-@[simp]
-lemma completionClosureEquiv_coe {M R : Type*} [Ring R] [NormedAddCommGroup M] [CompleteSpace M]
-    [Module R M] [UniformContinuousConstSMul R M] {s : Submodule R M} (L : s) :
-    completionClosureEquiv s L = L := by
-  simp only [completionClosureEquiv, AbstractCompletion.compareEquiv, Submodule.carrier_eq_coe]
-  exact AbstractCompletion.compare_coe _ _ _
-
-/-- Linear isometry between the completion of a submodule and its topological closure, in a complete
-space. -/
-noncomputable
-def completionClosureLinearIsometry {M R : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
-    [CompleteSpace M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
-    Completion s ≃ₗᵢ[R] s.topologicalClosure where
-  toEquiv := completionClosureEquiv s
-  map_add' x y := by
-    refine Completion.induction_on₂ x y ?_ fun x' y' ↦ ?_
-    · have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
-      exact isClosed_eq (by fun_prop) (by fun_prop)
-    · simp [← Completion.coe_add]
-  map_smul' r x := by
-    simp only [RingHom.id_apply]
-    induction x using Completion.induction_on with
-    | hp =>
-      have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
-      exact isClosed_eq (this.comp (continuous_const_smul _)) (by fun_prop)
-    | ih x =>
-      rw [← Completion.coe_smul]
-      simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, completionClosureEquiv_coe]
-      norm_cast
-  norm_map' x := by
-    simp only [LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, AddSubgroupClass.coe_norm]
-    induction x using Completion.induction_on with
-    | hp =>
-      have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
-      exact isClosed_eq (by fun_prop) (by fun_prop)
-    | ih a =>
-      simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, completionClosureEquiv_coe,
-        Completion.norm_coe, AddSubgroupClass.coe_norm]
-      norm_cast
-
-@[simp]
-lemma completionClosureLinearIsometry_coe {M R : Type*} [Ring R] [NormedAddCommGroup M]
-    [CompleteSpace M] [Module R M] [UniformContinuousConstSMul R M] {s : Submodule R M} (L : s) :
-    completionClosureLinearIsometry s L = L := by
-  simp [completionClosureLinearIsometry]

@@ -312,19 +312,6 @@ lemma funext_topologicalClosure {f g : s.topologicalClosure → F} (hf : Continu
     (hg : Continuous g) (h : ∀ a : s, f a = g a) : f = g :=
   funext fun a ↦ induction_topologicalClosure a (isClosed_eq hf hg) h
 
-noncomputable
-def closureExtension (s : Submodule R M) (f : s → F) : s.topologicalClosure → F :=
-  AbstractCompletion.extend (abstractCompletionClosure s.carrier) f
-
-@[simp]
-lemma closureExtension_coe {f : s → F} (hf : UniformContinuous f) (a : s) :
-  closureExtension s f a = f a := (abstractCompletionClosure s.carrier).extend_coe hf a
-
-omit [T0Space F] in
-@[fun_prop, continuity]
-lemma continuous_closureExtension [CompleteSpace F] (s : Submodule R M) (f : s → F) :
-    Continuous (closureExtension s f) := AbstractCompletion.continuous_extend _
-
 end Completion
 
 namespace Submodule
