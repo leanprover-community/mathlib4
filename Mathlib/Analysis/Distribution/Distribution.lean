@@ -125,6 +125,11 @@ lemma ofFun_add {f g : E → F} {μ : Measure E}
   congr with x
   simp
 
+lemma ofFun_neg {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) :
+    ofFun Ω (-f) μ = -ofFun Ω f μ := by
+  ext φ
+  simp [ofFun_apply hf, ofFun_apply hf.neg, integral_neg]
+
 lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
     (hf : ¬LocallyIntegrableOn f Ω μ) : ofFunWithOrder Ω n f μ = 0 := by
   ext φ

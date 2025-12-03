@@ -53,6 +53,32 @@ lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f'
   --   sorry
   -- sorry
 
+namespace IsRepresentedBy
+
+variable {T T' : 𝓓'(Ω, F)} {f f' : E →L[ℝ] F} {c : ℝ}
+
+lemma add (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
+    IsRepresentedBy (T + T') (f + f') μ where
+  locallyIntegrable := hT.locallyIntegrable.add hT'.locallyIntegrable
+  eq_ofFun := by
+    simp [hT.eq_ofFun, hT'.eq_ofFun, ofFun_add hT.locallyIntegrable hT'.locallyIntegrable]
+
+lemma neg (hT : IsRepresentedBy T f μ) : IsRepresentedBy (-T) (-f) μ where
+  locallyIntegrable := hT.locallyIntegrable.neg
+  eq_ofFun := by simp [hT.eq_ofFun, ofFun_neg hT.locallyIntegrable]
+
+lemma sub (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
+    IsRepresentedBy (T - T') (f - f') μ := by
+  rw [sub_eq_add_neg T T', sub_eq_add_neg]
+  norm_cast
+  exact hT.add hT'.neg
+
+lemma smul (hT : IsRepresentedBy T f μ) : IsRepresentedBy (c • T) (c • f) μ where
+  locallyIntegrable := sorry
+  eq_ofFun := sorry
+
+end IsRepresentedBy
+
 end Distribution
 open Distribution
 
@@ -92,6 +118,9 @@ variable {g g' : E → E →L[ℝ] F} {c : ℝ}
 
 lemma add (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ) :
     HasWeakDeriv Ω (f + f') (g + g') μ := by
+  simp only [HasWeakDeriv] at hf hg ⊢
+  -- rw weakDeriv f + f'
+  -- then use `hf.add hg`
   sorry
 
 lemma neg (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (-f) (-g) μ := by
