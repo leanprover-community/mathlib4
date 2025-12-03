@@ -199,7 +199,6 @@ lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' �
     l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 
--- TODO golf
 @[to_additive (attr := simp)]
 theorem prod_insertIdx {i} (hlen : i ≤ l.length) (hcomm : ∀ a' ∈ l.take i, Commute a a') :
     (l.insertIdx i a).prod = a * l.prod := by
@@ -207,34 +206,17 @@ theorem prod_insertIdx {i} (hlen : i ≤ l.length) (hcomm : ∀ a' ∈ l.take i,
   case zero => rfl
   case succ i ih =>
     obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt hlen)
-    have := ih (Nat.le_of_lt_succ hlen) (fun a' a'_mem => hcomm a' (mem_of_mem_tail a'_mem))
-    simp [this]
-    --have : hd * (a * tl.prod) = hd * a * tl.prod := (mul_assoc hd a tl.prod).symm
-    --rw [this]
-    /-
-    have : hd * a = a * hd := by
-      show Commute hd a
-    -/
-    have : Commute hd a := by
-      suffices hd ∈ (hd :: tl).take i.succ by
-        have := hcomm hd this
-        exact this.symm
-      exact mem_of_mem_head? rfl
-    exact Commute.left_comm this tl.prod
+    simp [ih (Nat.le_of_lt_succ hlen) (fun a' a'_mem => hcomm a' (mem_of_mem_tail a'_mem))]
+    exact Commute.left_comm (hcomm hd (mem_of_mem_head? rfl)).symm tl.prod
 
--- TODO golf
 @[to_additive (attr := simp)]
 theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i, Commute l[i] a') :
     l[i] * (l.eraseIdx i).prod = l.prod := by
-  have : ∀ (a' : M), a' ∈ take i (l.eraseIdx i) → Commute l[i] a' :=
-    fun a' a'_mem => hcomm a' (by
-      have : take i (l.eraseIdx i) = take i l :=
-        -- This is probably missing from Lean's library
-        have : ∀ i j, i ≤ j → (l.eraseIdx j).take i = l.take i := sorry
-        this i i (Nat.le_refl i)
-      rwa [this] at a'_mem
-      )
-  rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length) this, insertIdx_eraseIdx_getElem hlen]
+  -- This is probably missing from Lean's library
+  have take_eraseIdx_eq_take_of_le : ∀ i j, i ≤ j → (l.eraseIdx j).take i = l.take i := sorry
+  rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length) (fun a' a'_mem =>
+      hcomm a' (by rwa [take_eraseIdx_eq_take_of_le i i (Nat.le_refl i)] at a'_mem)),
+    insertIdx_eraseIdx_getElem hlen]
 
 end Monoid
 
