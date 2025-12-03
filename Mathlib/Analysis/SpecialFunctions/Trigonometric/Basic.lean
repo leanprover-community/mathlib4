@@ -1232,6 +1232,106 @@ theorem cos_sub_pi_div_two (x : ℂ) : cos (x - π / 2) = sin x := by simp [sub_
 theorem cos_pi_div_two_sub (x : ℂ) : cos (π / 2 - x) = sin x := by
   rw [← cos_neg, neg_sub, cos_sub_pi_div_two]
 
+@[simp]
+lemma cos_pi_div_twelve : cos (π / 12) = (√6 + √2) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_pi_div_twelve : sin (π / 12) = (√6 - √2) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_pi_div_six : cos (π / 6) = √3 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_pi_div_six : sin (π / 6) = 1 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_pi_div_four : cos (π / 4) = √2 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_pi_div_four : sin (π / 4) = √2 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_pi_div_three : cos (π / 3) = 1 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_pi_div_three : sin (π / 3) = √3 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_five_pi_div_twelve : cos (π * 5 / 12) = (√6 - √2) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_five_pi_div_twelve : sin (π * 5 / 12) = (√6 + √2) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_seven_pi_div_twelve : cos (π * 7 / 12) = (√2 - √6) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_seven_pi_div_twelve : sin (π * 7 / 12) = (√6 + √2) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_two_pi_div_three : cos (π * 2 / 3) = -1 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_two_pi_div_three : sin (π * 2 / 3) = √3 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_three_pi_div_four : cos (π * 3 / 4) = -√2 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_three_pi_div_four : sin (π * 3 / 4) = √2 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_five_pi_div_six : cos (π * 5 / 6) = -√3 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_five_pi_div_six : sin (π * 5 / 6) = 1 / 2 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_sin]
+  simp
+
+@[simp]
+lemma cos_eleven_pi_div_twelve : cos (π * 11 / 12) = (-√2 - √6) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_cos]
+  simp
+
+@[simp]
+lemma sin_eleven_pi_div_twelve : sin (π * 11 / 12) = (√6 - √2) / 4 := by
+  rw [← ofReal_ofNat, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_div, ← ofReal_sin]
+  simp
+
 theorem tan_periodic : Function.Periodic tan π := by
   simpa only [tan_eq_sin_div_cos] using sin_antiperiodic.div cos_antiperiodic
 
