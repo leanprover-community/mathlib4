@@ -54,18 +54,19 @@ instance Lp.instFourierTransform : FourierTransform (Lp (α := V) E 2) (Lp (α :
 instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourierInv := (fourierTransformLI V E).symm
 
-instance instFourierPair : FourierPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
+instance Lp.instFourierPair : FourierPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourierInv_fourier_eq := (Lp.fourierTransformLI V E).symm_apply_apply
 
-instance instFourierPairInv : FourierInvPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
+instance Lp.instFourierPairInv : FourierInvPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourier_fourierInv_eq := (Lp.fourierTransformLI V E).apply_symm_apply
 
+/-- Plancherel's theorem for `L^2` functions. -/
 @[simp]
-theorem norm_fourier_eq (f : Lp (α := V) E 2) : ‖𝓕 f‖ = ‖f‖ :=
+theorem Lp.norm_fourier_eq (f : Lp (α := V) E 2) : ‖𝓕 f‖ = ‖f‖ :=
   (Lp.fourierTransformLI V E).norm_map f
 
 @[simp]
-theorem inner_fourier_eq (f g : Lp (α := V) E 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
+theorem Lp.inner_fourier_eq (f g : Lp (α := V) E 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
   (Lp.fourierTransformLI V E).inner_map_map f g
 
 @[simp]
