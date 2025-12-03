@@ -273,7 +273,7 @@ end MulAction
 namespace MulActionHom
 
 /-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
-@[to_additive]
+@[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
 lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
     (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
     f a ∈ MulAction.fixedPoints H B := by
@@ -281,7 +281,7 @@ lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction 
   simp_all [← f.map_smul h a]
 
 /-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
-@[to_additive]
+@[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
 lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
     (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
     f a ∈ MulAction.fixedBy B g := by
