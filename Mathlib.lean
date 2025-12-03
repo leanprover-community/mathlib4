@@ -12812,6 +12812,7 @@ public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.HasLawExists
 public import Mathlib.Probability.IdentDistrib
+public import Mathlib.Probability.IdentDistribIndep
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Independence.BoundedContinuousFunction
 public import Mathlib.Probability.Independence.CharacteristicFunction
