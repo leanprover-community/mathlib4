@@ -711,13 +711,10 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein
           Ideal.eq_top_of_isUnit_mem  _ (Ideal.mem_span_singleton_self a) uni
         absurd reg.2.symm
         simp [this]
-      let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} := {
-        __ := Submodule.quotEquivOfEq _ (Ideal.span {a})
-          (by simp [← Submodule.ideal_span_singleton_smul])
-        map_smul' r x := by
-          rcases Ideal.Quotient.mk_surjective r with ⟨r', hr'⟩
-          rw [← hr']
-          exact map_smul (Submodule.quotEquivOfEq _ (Ideal.span {a}) _) r' _}
+      let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} := let e : QuotSMulTop a R ≃ₗ[R ⧸ Ideal.span {a}] R ⧸ Ideal.span {a} :=
+        (Submodule.quotEquivOfEq _ (Ideal.span {a})
+          (by simp [← Submodule.ideal_span_singleton_smul])).extendScalarsOfSurjective
+            Ideal.Quotient.mk_surjective
       simp only [isRegular_cons_iff', e.isRegular_congr] at reg
       let _ : Nontrivial (R ⧸ Ideal.span {a}) :=
         Ideal.Quotient.nontrivial_iff.mpr (by simpa using mem)
