@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
 /-!
 # The bicategory of pseudofunctors
