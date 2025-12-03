@@ -154,7 +154,7 @@ lemma externalCoveringNumber_le_coveringNumber (ε : ℝ≥0) (A : Set X) :
   simp only [externalCoveringNumber, coveringNumber, le_iInf_iff]
   exact fun C _ hC_cover ↦ iInf₂_le C hC_cover
 
-theorem packingNumber_two_le_externalCoveringNumber (A : Set X) :
+theorem packingNumber_two_le_externalCoveringNumber (ε : ℝ≥0) (A : Set X) :
     packingNumber (2 * ε) A ≤ externalCoveringNumber ε A := by
   simp only [packingNumber, ENNReal.coe_mul, ENNReal.coe_ofNat, externalCoveringNumber, le_iInf_iff,
     iSup_le_iff]
