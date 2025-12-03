@@ -958,6 +958,7 @@ theorem IsCompact.elim_finite_subfamily_isClosed_subtype
     (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
     (hst : s ∩ ⋂ i ∈ I, t i = ∅) :
     ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅  := by
+  suffices univ ∩ ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
     simpa [eq_empty_iff_forall_notMem] using
       (isCompact_iff_isCompact_univ.mp ks).elim_finite_subfamily_closed
       (fun i : I ↦ s ↓∩ t i) (fun i ↦ htc i.val i.prop) this
