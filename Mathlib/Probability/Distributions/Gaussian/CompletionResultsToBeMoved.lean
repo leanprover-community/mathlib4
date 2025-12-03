@@ -3,16 +3,19 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Normed.Group.Completion
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Topology.Algebra.Module.ClosedSubmodule
-import Mathlib.Topology.GDelta.MetrizableSpace
+module
 
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.GDelta.MetrizableSpace
 /-!
 # Completion Results To Be Moved
 
 -/
+
+@[expose] public section
 
 open NormedSpace UniformSpace
 open scoped InnerProductSpace
@@ -173,7 +176,7 @@ def completionClosureEquiv {M R : Type*} [Ring R] [NormedAddCommGroup M] [Comple
 lemma completionClosureEquiv_coe {M R : Type*} [Ring R] [NormedAddCommGroup M] [CompleteSpace M]
     [Module R M] [UniformContinuousConstSMul R M] {s : Submodule R M} (L : s) :
     completionClosureEquiv s L = L := by
-  simp [completionClosureEquiv, AbstractCompletion.compareEquiv]
+  simp only [completionClosureEquiv, AbstractCompletion.compareEquiv, Submodule.carrier_eq_coe]
   exact AbstractCompletion.compare_coe _ _ _
 
 /-- Linear isometry between the completion of a submodule and its topological closure, in a complete

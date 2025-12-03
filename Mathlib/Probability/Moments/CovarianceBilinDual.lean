@@ -415,8 +415,8 @@ variable [NormedSpace ℝ E] [BorelSpace E] [CompleteSpace E]
 
 lemma centeredToLp_two_inner [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     ⟪centeredToLp μ 2 L₁, centeredToLp μ 2 L₂⟫_ℝ
-      = covarianceBilin μ L₁ L₂ := by
-  rw [real_inner_comm, L2.inner_def, covarianceBilin_apply' hμ]
+      = covarianceBilinDual μ L₁ L₂ := by
+  rw [real_inner_comm, L2.inner_def, covarianceBilinDual_apply' hμ]
   refine integral_congr_ae ?_
   filter_upwards [centeredToLp_apply hμ L₁, centeredToLp_apply hμ L₂]
     with x hx₁ hx₂
@@ -425,11 +425,11 @@ lemma centeredToLp_two_inner [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L₁ L�
 lemma norm_centeredToLp_two [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L : StrongDual ℝ E) :
     ‖centeredToLp μ 2 L‖ = √Var[L; μ] := by
   rw [norm_eq_sqrt_real_inner, centeredToLp_two_inner hμ,
-    covarianceBilin_self_eq_variance hμ]
+    covarianceBilinDual_self_eq_variance hμ]
 
 lemma sq_norm_centeredToLp_two [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L : StrongDual ℝ E) :
     ‖centeredToLp μ 2 L‖ ^ 2 = Var[L; μ] := by
   rw [← real_inner_self_eq_norm_sq, centeredToLp_two_inner hμ,
-    covarianceBilin_self_eq_variance hμ]
+    covarianceBilinDual_self_eq_variance hμ]
 
 end StrongDual

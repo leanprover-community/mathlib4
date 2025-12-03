@@ -3,13 +3,14 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Completion
-import Mathlib.MeasureTheory.Measure.SeparableMeasure
-import Mathlib.Probability.Distributions.Gaussian.CompletionResultsToBeMoved
-import Mathlib.Probability.Distributions.Gaussian.Fernique
-import Mathlib.Probability.Moments.CovarianceBilin
-import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+module
 
+public import Mathlib.Analysis.InnerProductSpace.Completion
+public import Mathlib.MeasureTheory.Measure.SeparableMeasure
+public import Mathlib.Probability.Distributions.Gaussian.CompletionResultsToBeMoved
+public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Moments.CovarianceBilin
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 
 /-!
 # Cameron-Martin space
@@ -70,6 +71,8 @@ we are not aware of any use of the Cameron-Martin space for non-Gaussian measure
 * [F. Bar, *Quuxes*][bibkey]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory NormedSpace UniformSpace
 open scoped ENNReal InnerProductSpace
@@ -148,15 +151,16 @@ lemma cmOfDual_apply (L : StrongDual ℝ E) :
         LinearMap.range (StrongDual.centeredToLp μ 2)) := rfl
 
 lemma cmOfDual_inner (L₁ L₂ : StrongDual ℝ E) :
-    ⟪cmOfDual μ L₁, cmOfDual μ L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
+    ⟪cmOfDual μ L₁, cmOfDual μ L₂⟫_ℝ = covarianceBilinDual μ L₁ L₂ := by
   simp only [cmOfDual_apply]
   exact StrongDual.centeredToLp_two_inner memLp_two_id L₁ L₂
 
 lemma norm_cmOfDual (L : StrongDual ℝ E) : ‖cmOfDual μ L‖ = √Var[L; μ] := by
-  rw [norm_eq_sqrt_real_inner, cmOfDual_inner, covarianceBilin_self_eq_variance memLp_two_id]
+  rw [norm_eq_sqrt_real_inner, cmOfDual_inner, covarianceBilinDual_self_eq_variance memLp_two_id]
 
 lemma sq_norm_cmOfDual (L : StrongDual ℝ E) : ‖cmOfDual μ L‖ ^ 2 = Var[L; μ] := by
-  rw [← real_inner_self_eq_norm_sq, cmOfDual_inner, covarianceBilin_self_eq_variance memLp_two_id]
+  rw [← real_inner_self_eq_norm_sq, cmOfDual_inner,
+    covarianceBilinDual_self_eq_variance memLp_two_id]
 
 end CameronMartinSpace
 

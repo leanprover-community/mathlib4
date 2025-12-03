@@ -3,10 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.Probability.Distributions.Gaussian.CameronMartin
-import Mathlib.Probability.HasLaw
+module
+
+public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.Probability.Distributions.Gaussian.CameronMartin
+public import Mathlib.Probability.HasLaw
 
 /-!
 # Cameron-Martin Theorem
@@ -32,6 +34,8 @@ import Mathlib.Probability.HasLaw
 * [F. Bar, *Quuxes*][bibkey]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Complex
 open scoped ENNReal NNReal Topology InnerProductSpace
@@ -111,11 +115,10 @@ lemma hasLaw_cameronMartin (x : cameronMartin μ) : HasLaw x (gaussianReal 0 (�
     have hx_prob : IsProbabilityMeasure (μ.map (x : E → ℝ)) :=
       Measure.isProbabilityMeasure_map (by fun_prop)
     have hν_tendsto_2 : Tendsto ν atTop (𝓝 ⟨μ.map x, hx_prob⟩) :=
-      (tendstoInMeasure_of_tendsto_Lp hL'_tendsto).tendstoInDistribution
-        (fun _ ↦ by fun_prop) (by fun_prop)
+      ((tendstoInMeasure_of_tendsto_Lp hL'_tendsto).tendstoInDistribution
+        (fun _ ↦ by fun_prop)).tendsto
     have h_eq := tendsto_nhds_unique hν_tendsto_2 hν_tendsto_1
-    rw [Subtype.ext_iff] at h_eq
-    exact h_eq
+    rwa [Subtype.ext_iff] at h_eq
 
 /-- The variance of an element of the Cameron-Martin space is the square of its norm. -/
 lemma variance_cameronMartin (x : cameronMartin μ) :
@@ -441,7 +444,7 @@ theorem mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
   rw [integral_map (by fun_prop) (by fun_prop)]
   simp only [map_add]
   rw [integral_add (by fun_prop) (by fun_prop), variance_map (by fun_prop) (by fun_prop)]
-  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+  simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   have : L ∘ (fun z ↦ z + y) = fun z ↦ L z + L y := by ext; simp
   rw [this, variance_add_const (by fun_prop)]
   by_cases hL_var_zero : Var[L; μ] = 0
