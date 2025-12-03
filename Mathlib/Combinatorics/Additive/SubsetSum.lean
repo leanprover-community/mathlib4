@@ -48,23 +48,31 @@ lemma subsetSum_image_add_notMem_subset_subsetSum_insert {a : α} (a_notin_A : a
   rintro _ ⟨_, ⟨S, hS, rfl⟩, rfl⟩
   exact ⟨insert a S, by aesop, by rw [sum_insert (fun h => a_notin_A (hS h)), add_comm]; rfl⟩
 
-variable {β : Type*} [AddCancelCommMonoid β] [LinearOrder β]
-  [CanonicallyOrderedAdd β] {A : Finset β} {a : β}
+variable {β : Type*} [AddCommMonoid β] [LinearOrder β]
+  [IsOrderedCancelAddMonoid β] {A : Finset β} {a : β}
 
-lemma card_subsetSum_insert_max (A_lt_a : ∀ x ∈ A, x < a)
-    (zero_notin_A : 0 ∉ A) (a_ne_zero : a ≠ 0) :
+lemma subsetSum_nonneg_of_nonneg (A_nonneg : ∀ x ∈ A, 0 ≤ x) : ∀ x ∈ A.subsetSum, 0 ≤ x := by
+  intro _ hx
+  obtain ⟨S, hS, rfl⟩ := mem_subsetSum_iff.mp hx
+  exact sum_induction _ (0 ≤ ·) (fun _ _ => add_nonneg) (le_refl 0) fun a ha => A_nonneg a (hS ha)
+
+lemma subsetSum_nonneg_of_pos (A_pos : ∀ x ∈ A, 0 < x) : ∀ x ∈ A.subsetSum, 0 ≤ x :=
+  subsetSum_nonneg_of_nonneg fun x hx => (A_pos x hx).le
+
+lemma card_subsetSum_of_pos_insert_max (A_pos : ∀ x ∈ A, 0 < x) (A_lt_a : ∀ x ∈ A, x < a)
+    (zero_ls_a : 0 < a) :
     A.card + 1 + A.subsetSum.card ≤ (insert a A).subsetSum.card := by
   -- We show that (insert 0 A) and A.subsetSum.image (· + a) are disjoint subsets
   -- of (insert a A).subsetSum, and their combined cardinality gives the result.
-  have a_notin_A : a ∉ A := fun ha => (A_lt_a a ha).false
 
   -- The disjointness
-  have zero_not_in_image : 0 ∉ A.subsetSum.image (· + a) := by simp [a_ne_zero]
   have disjoint : Disjoint (insert 0 A) (A.subsetSum.image (· + a)) := by
-    rw [disjoint_insert_left, eq_true zero_not_in_image, true_and, disjoint_left]
-    simp only [mem_image]
-    rintro _ hxA ⟨b, _, rfl⟩
-    exact (A_lt_a _ hxA).not_ge (le_add_of_nonneg_left (zero_le b))
+    refine disjoint_insert_left.mpr ⟨?_, disjoint_left.mpr fun x hxA hy => ?_⟩
+    · simp
+      exact fun b hb => (add_pos_of_nonneg_of_pos (subsetSum_nonneg_of_pos A_pos b hb)
+        zero_ls_a).ne'
+    · obtain ⟨b, hb, rfl⟩ := mem_image.mp hy
+      exact (A_lt_a (b + a) hxA).not_ge (le_add_of_nonneg_left (subsetSum_nonneg_of_pos A_pos b hb))
 
   -- Both sets are subsets of (insert a A).subsetSum
   have insert_subset : insert 0 A ⊆ (insert a A).subsetSum :=
@@ -72,38 +80,40 @@ lemma card_subsetSum_insert_max (A_lt_a : ∀ x ∈ A, x < a)
       (subset_subsetSum.trans (subsetSum_mono (subset_insert a A)))
 
   have image_subset : A.subsetSum.image (· + a) ⊆ (insert a A).subsetSum :=
-    subsetSum_image_add_notMem_subset_subsetSum_insert a_notin_A
+    subsetSum_image_add_notMem_subset_subsetSum_insert fun ha => (A_lt_a a ha).false
 
   -- Count the sizes
   calc A.card + 1 + A.subsetSum.card
-    _ = (insert 0 A).card + A.subsetSum.card := by rw [card_insert_of_notMem zero_notin_A]
+    _ = (insert 0 A).card + A.subsetSum.card := by
+        rw [card_insert_of_notMem fun h => (A_pos 0 h).false]
     _ = (insert 0 A).card + (A.subsetSum.image (· + a)).card := by
         simp only [card_image_of_injOn fun _ _ _ _ hxy => add_right_cancel hxy]
     _ = ((insert 0 A) ∪ A.subsetSum.image (· + a)).card := by rw [card_union_of_disjoint disjoint]
     _ ≤ (insert a A).subsetSum.card := card_le_card (union_subset insert_subset image_subset)
 
 -- The proof follows Theorem 3 in [Nathanson1995].
-theorem card_succ_choose_two_succ_le_card_subsetSum_of_zero_notMem (hA : 0 ∉ A) :
+theorem card_succ_choose_two_succ_le_card_subsetSum_of_pos (A_pos : ∀ x ∈ A, 0 < x) :
     (A.card + 1).choose 2 + 1 ≤ A.subsetSum.card := by
   induction A using induction_on_max with
   | h0 => rfl
   | step a A A_lt_a ih =>
-    have zero_notin_A : 0 ∉ A := fun h => hA (by simp [h])
-    have a_notin_A : a ∉ A := fun ha => (A_lt_a a ha).false
-    rw [card_insert_of_notMem a_notin_A]
+    have A_pos' : ∀ x ∈ A, 0 < x := fun x hx => A_pos x (mem_insert_of_mem hx)
+    rw [card_insert_of_notMem fun ha => (A_lt_a a ha).false]
     calc ((A.card + 1) + 1).choose 2 + 1
       _ = (A.card + 1).choose 1 + (A.card + 1).choose 2 + 1 := by rw [Nat.choose_succ_left]; omega
       _ = A.card + 1 + (A.card + 1).choose 2 + 1 := by rw [Nat.choose_one_right]
-      _ ≤ A.card + 1 + A.subsetSum.card := Nat.add_le_add_left (ih zero_notin_A) _
+      _ ≤ A.card + 1 + A.subsetSum.card := Nat.add_le_add_left (ih A_pos') _
       _ ≤ (insert a A).subsetSum.card :=
-          card_subsetSum_insert_max A_lt_a zero_notin_A fun ha ↦ hA (by simp [ha])
+          card_subsetSum_of_pos_insert_max A_pos' A_lt_a (A_pos a (mem_insert_self a A))
 
-theorem card_choose_two_succ_le_card_subsetSum : A.card.choose 2 + 1 ≤ A.subsetSum.card := by
-  have h := pred_card_le_card_erase (s := A) (a := 0)
+theorem card_choose_two_succ_le_card_subsetSum_of_nonneg (A_pos : ∀ x ∈ A, 0 ≤ x) :
+    A.card.choose 2 + 1 ≤ A.subsetSum.card := by
+  have _ := pred_card_le_card_erase (s := A) (a := 0)
   calc A.card.choose 2 + 1
     _ ≤ ((A.erase 0).card + 1).choose 2 + 1 := Nat.add_le_add_right (Nat.choose_mono 2 (by omega)) 1
     _ ≤ (A.erase 0).subsetSum.card :=
-        card_succ_choose_two_succ_le_card_subsetSum_of_zero_notMem (by simp)
+        card_succ_choose_two_succ_le_card_subsetSum_of_pos fun x hx =>
+          (A_pos x (mem_of_mem_erase hx)).lt_of_ne (ne_of_mem_erase hx).symm
     _ = A.subsetSum.card := by rw [← sdiff_singleton_eq_erase, subsetSum_eq_subsetSum_erase_zero]
 
 end Finset
