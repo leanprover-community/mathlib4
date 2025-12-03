@@ -49,7 +49,7 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
 theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
     minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
   dsimp [minimalPeriod, periodicPts, sInf]
-  grind -- don't know why `rfl` doesn't work here
+  grind
 
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
