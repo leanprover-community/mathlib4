@@ -113,7 +113,7 @@ attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
 
 end Preorder
 
-variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
+variable [PartialOrder α] [OrderTop α] [Preorder β] {a b : α}
 
 @[to_dual (attr := simp)]
 theorem isMax_iff_eq_top : IsMax a ↔ a = ⊤ :=
@@ -182,8 +182,6 @@ theorem ne_top_of_le_ne_top (hb : b ≠ ⊤) (hab : a ≤ b) : a ≠ ⊤ :=
 lemma top_notMem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
   ⟨fun h x hx ↦ Ne.lt_top (fun hx' : x = ⊤ ↦ h (hx' ▸ hx)), fun h h₀ ↦ (h ⊤ h₀).false⟩
 
-@[deprecated (since := "2025-05-23")] alias top_not_mem_iff := top_notMem_iff
-
 variable [Nontrivial α]
 
 @[to_dual]
@@ -208,8 +206,6 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
   apply bot_unique
   exact @bot_le _ _ A _
 
-section OrderBot
-
 namespace OrderDual
 
 variable (α)
@@ -231,13 +227,13 @@ instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
 
 end OrderDual
 
-variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
+section OrderBot
+
+variable [PartialOrder α] [OrderBot α] [Preorder β] {a b : α}
 
 @[deprecated not_bot_lt_iff (since := "2025-12-03")]
 theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
   (eq_bot_or_bot_lt a).resolve_right (h ⊥)
-
-@[deprecated (since := "2025-05-23")] alias bot_not_mem_iff := bot_notMem_iff
 
 end OrderBot
 
