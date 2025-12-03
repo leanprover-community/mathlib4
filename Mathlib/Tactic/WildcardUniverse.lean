@@ -18,7 +18,7 @@ syntax "*" : wildcard_universe
 syntax ident noWs "*" : wildcard_universe
 syntax level : wildcard_universe
 
-syntax (name := wildcardUniverse)
+syntax (name := appWithWildcards)
     ident noWs ".!{" wildcard_universe,* "}" Parser.Term.argument* : term
 
 inductive LevelWildcardKind where
@@ -46,8 +46,8 @@ meta def Lean.Level.getParams (l : Level) : List Name :=
   | .max a b => a.getParams ++ b.getParams
   | .imax a b => a.getParams ++ b.getParams
 
-@[term_elab wildcardUniverse]
-meta def elabWildcardUniverseShort : TermElab := fun stx expectedType? => do
+@[term_elab appWithWildcards]
+meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
   match stx with
   | `($id:ident.!{$us,*} $args*) =>
     let constName ← Lean.resolveGlobalConstNoOverload id
