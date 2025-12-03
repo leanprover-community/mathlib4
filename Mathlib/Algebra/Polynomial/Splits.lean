@@ -195,17 +195,13 @@ theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0
     (hf.map_roots F.subtype ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
   exact x.2
 
-theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : (p.map (algebraMap R K)).Splits)
-    (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
-  classical
-    rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
-      ← h.map_roots, map_map, f.comp_algebraMap,
-      ← rootSet]
+@[deprecated (since := "2025-12-02")]
+alias image_rootSet := Splits.image_rootSet
 
 theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
     (h : (p.map (algebraMap R K)).Splits) (f : K →ₐ[R] L) :
     Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
-  rw [← image_rootSet h f, Algebra.adjoin_image, ← Algebra.map_top]
+  rw [← h.image_rootSet f, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
 
 @[deprecated (since := "2025-11-25")]
