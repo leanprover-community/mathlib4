@@ -16,14 +16,12 @@ namespace ComputeAsymptotics
 
 namespace PreMS
 
-open Stream'
-
 /-- Multiplies all coefficient of the multiseries to `c`. -/
-def mulConst {basis : Basis} (ms : PreMS basis) (c : ℝ) : PreMS basis :=
+def mulConst {basis : Basis} (c : ℝ) (ms : PreMS basis) : PreMS basis :=
   match basis with
-  | [] => ms * c
+  | [] => ms.toReal * c
   | List.cons _ _ =>
-    Seq.map (fun (exp, coef) => (exp, mulConst coef c)) ms
+    map (fun exp _ => exp) (fun _ coef => coef.mulConst c) ms
 
 /-- Negates all coefficient of the multiseries. -/
 def neg {basis : Basis} (ms : PreMS basis) : PreMS basis :=
@@ -44,20 +42,20 @@ open Filter Asymptotics
 
 @[simp]
 theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-    @mulConst (basis_hd :: basis_tl) Seq.nil c = Seq.nil := by
+  @mulConst (basis_hd :: basis_tl) c nil = nil := by
   simp [mulConst]
 
 @[simp]
 theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    mulConst (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl) c =
-    Seq.cons (exp, coef.mulConst c) (tl.mulConst c) := by
+    (cons exp coef tl).mulConst c =
+    cons exp (coef.mulConst c) (tl.mulConst c) := by
   simp [mulConst]
 
 @[simp]
 theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} {c : ℝ} :
-    (mulConst ms c).leadingExp = ms.leadingExp := by
+    (ms.mulConst c).leadingExp = ms.leadingExp := by
   cases ms <;> simp [mulConst]
 
 @[simp]
@@ -66,7 +64,7 @@ theorem const_mulConst {basis : Basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, const]
   | cons =>
-    simp only [mulConst, const, Seq.map_cons, Seq.map_nil]
+    simp only [mulConst, const, map_cons, map_nil]
     congr
     apply const_mulConst
 
@@ -76,8 +74,7 @@ theorem mulConst_one {basis : Basis} {ms : PreMS basis} : ms.mulConst 1 = ms := 
   | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
     simp only [mulConst]
-    convert Seq.map_id _
-    simp only [id_eq]
+    convert map_id _
     apply mulConst_one
 
 @[simp]
@@ -86,8 +83,7 @@ theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, mul_assoc]
   | cons =>
-    simp only [mulConst]
-    simp only [← Seq.map_comp]
+    simp only [mulConst, map, ← Stream'.Seq.map_comp]
     congr
     ext1
     simp [mulConst_mulConst]
@@ -144,7 +140,7 @@ theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f :
       | nil =>
         left
         apply Approximates_nil at hX_approx
-        simp only [mulConst, Seq.map_nil] at h_ms_eq
+        simp only [mulConst, map_nil] at h_ms_eq
         constructor
         · exact h_ms_eq
         trans
@@ -158,7 +154,7 @@ theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f :
       | cons X_exp X_coef X_tl =>
         obtain ⟨fXC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
-        simp only [mulConst, Seq.map_cons] at h_ms_eq
+        simp only [mulConst, map_cons] at h_ms_eq
         use ?_, ?_, ?_, fun t ↦ fXC t * c
         constructor
         · exact h_ms_eq
@@ -195,7 +191,7 @@ theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zer
   contrapose! h_ne_zero
   cases basis with
   | nil =>
-    simp only [mulConst, zero, mul_eq_zero] at h_ne_zero ⊢
+    simp only [mulConst, zero, mul_eq_zero (a := ms.toReal)] at h_ne_zero ⊢
     tauto
   | cons =>
     cases ms
@@ -228,14 +224,14 @@ theorem mulConst_leadingTerm {basis : Basis} {ms : PreMS basis} {c : ℝ} :
 
 @[simp]
 theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    neg (basis := basis_hd :: basis_tl) Seq.nil = Seq.nil := by
+    neg (basis := basis_hd :: basis_tl) nil = nil := by
   simp [neg]
 
 @[simp]
 theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    neg (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl) =
-    Seq.cons (exp, coef.neg) tl.neg := by
+    (cons exp coef tl).neg =
+    cons exp (coef.neg) (tl.neg) := by
   simp [neg]
 
 @[simp]

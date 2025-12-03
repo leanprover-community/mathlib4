@@ -34,31 +34,199 @@ open Filter Asymptotics Topology Stream' Seq
 abbrev Basis := List (ℝ → ℝ)
 
 /-- TODO -/
-abbrev PreMS (basis : Basis) : Type :=
+def PreMS (basis : Basis) : Type :=
   match basis with
   | [] => ℝ
   | .cons _ tl => Seq (ℝ × PreMS tl)
 
 namespace PreMS
 
-universe v in
+section Seq
+
+open Stream'.Seq
+
+abbrev toReal (ms : PreMS []) : ℝ := ms
+
+abbrev toSeq {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
+    Stream'.Seq (ℝ × PreMS basis_tl) :=
+  ms
+
+def nil {basis_hd basis_tl} : PreMS (basis_hd :: basis_tl) := Seq.nil
+
+def cons {basis_hd basis_tl} (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)) :
+    PreMS (basis_hd :: basis_tl) :=
+  Seq.cons (exp, coef) tl
+
 /-- Recursion principle for multiseries with non-empty basis. It is equivalent to
 `Stream'.Seq.recOn` but provides some convenience. For example one can write
 `cases' ms with exp coef tl` while cannot `cases' ms with (exp, coef) tl` (`cases` tactic does
 not support argument deconstruction). -/
 @[cases_eliminator]
-def recOn {basis_hd} {basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort v}
+def recOn {basis_hd} {basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort*}
     (ms : PreMS (basis_hd :: basis_tl)) (nil : motive nil)
-    (cons : ∀ exp coef (tl : PreMS (basis_hd :: basis_tl)), motive (cons (exp, coef) tl)) :
+    (cons : ∀ exp coef (tl : PreMS (basis_hd :: basis_tl)), motive (cons exp coef tl)) :
     motive ms := by
   cases ms using Stream'.Seq.recOn with
   | nil => exact nil
   | cons hd tl => exact cons hd.1 hd.2 tl
 
+def corec {β : Type*} {basis_hd} {basis_tl} (f : β → Option (ℝ × PreMS basis_tl × β)) (b : β) :
+    PreMS (basis_hd :: basis_tl) :=
+  Stream'.Seq.corec (fun a => (f a).map (fun (exp, coef, next) => ((exp, coef), next))) b
+
+def destruct {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
+    Option (ℝ × PreMS basis_tl × PreMS (basis_hd :: basis_tl)) :=
+  (Seq.destruct ms).map (fun ((exp, coef), tl) => (exp, coef, tl))
+
+def head {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) : Option (ℝ × PreMS basis_tl) :=
+  Seq.head ms
+
+def map {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → PreMS basis_tl → ℝ)
+    (g : ℝ → PreMS basis_tl → PreMS basis_tl')
+    (ms : PreMS (basis_hd :: basis_tl)) :
+    PreMS (basis_hd' :: basis_tl') :=
+  Seq.map (fun (exp, coef) ↦ (f exp coef, g exp coef)) ms
+
 instance (basis : Basis) : Inhabited (PreMS basis) where
   default := match basis with
-  | [] => default
-  | .cons _ _ => default
+  | [] => (default : ℝ)
+  | .cons _ _ => (default : Stream'.Seq _)
+
+instance {basis_hd basis_tl} : Membership (ℝ × PreMS basis_tl) (PreMS (basis_hd :: basis_tl)) where
+  mem ms x := x ∈ ms.toSeq
+
+theorem eq_of_bisim {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+    (base : motive x y)
+    (step : ∀ x y, motive x y → (x = .nil ∧ y = .nil) ∨ ∃ exp coef,
+      ∃ (x' y' : PreMS (basis_hd :: basis_tl)),
+      x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
+    x = y := Seq.eq_of_bisim' motive base (by grind [nil, cons])
+
+theorem eq_of_bisim_strong {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {x y : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+    (base : motive x y)
+    (step : ∀ x y, motive x y → (x = y) ∨ ∃ exp coef,
+      ∃ (x' y' : PreMS (basis_hd :: basis_tl)),
+      x = cons exp coef x' ∧ y = cons exp coef y' ∧ motive x' y') :
+    x = y := Seq.eq_of_bisim_strong motive base (by grind [nil, cons])
+
+section simp
+
+@[simp]
+theorem cons_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    cons exp coef tl ≠ .nil := by
+  intro h
+  simp [cons, nil] at h
+  apply Seq.cons_ne_nil h
+
+@[simp]
+theorem nil_ne_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    .nil ≠ cons exp coef tl := cons_ne_nil.symm
+
+@[simp]
+theorem cons_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp1 exp2 : ℝ}
+    {coef1 coef2 : PreMS basis_tl} {tl1 tl2 : PreMS (basis_hd :: basis_tl)} :
+    cons exp1 coef1 tl1 = cons exp2 coef2 tl2 ↔ exp1 = exp2 ∧ coef1 = coef2 ∧ tl1 = tl2 := by
+  rw [cons, cons, Seq.cons_eq_cons]
+  grind
+
+#check Stream'.Seq.corec_nil
+
+#check Stream'.Seq.corec_cons
+
+theorem corec_nil {β : Type*} {basis_hd} {basis_tl}
+    {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β} (h : f b = none) :
+    corec f b = (nil : PreMS (basis_hd :: basis_tl)) := by
+  simp [corec, nil]
+  rw [Seq.corec_nil]
+  simpa
+
+theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl} {next : β}
+    {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β}
+    (h : f b = some (exp, coef, next)) :
+    (corec f b : PreMS (basis_hd :: basis_tl)) = cons exp coef (corec f next) := by
+  simp [corec, cons]
+  rw [Seq.corec_cons]
+  simpa
+
+@[simp]
+theorem destruct_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    destruct (nil : PreMS (basis_hd :: basis_tl)) = none := by
+  simp [destruct, nil]
+
+@[simp]
+theorem destruct_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    destruct (cons exp coef tl) = some (exp, coef, tl) := by
+  simp [destruct, cons]
+
+@[simp]
+theorem head_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    head (nil : PreMS (basis_hd :: basis_tl)) = none := by
+  simp [head, nil]
+
+@[simp]
+theorem head_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
+    head (cons exp coef tl) = some (exp, coef) := by
+  simp [head, cons]
+
+@[simp]
+theorem map_nil {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → PreMS basis_tl → ℝ)
+    (g : ℝ → PreMS basis_tl → PreMS basis_tl') :
+    map f g (nil : PreMS (basis_hd :: basis_tl)) = (nil : PreMS (basis_hd' :: basis_tl')) := by
+  simp [map, nil]
+
+@[simp]
+theorem map_cons {basis_hd basis_tl basis_hd' basis_tl'} (f : ℝ → PreMS basis_tl → ℝ)
+    (g : ℝ → PreMS basis_tl → PreMS basis_tl') {exp : ℝ}
+    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+    map f g (cons exp coef tl) = cons (basis_hd := basis_hd')
+      (f exp coef) (g exp coef) (map f g tl) := by
+  simp [map, cons]
+
+@[simp]
+theorem map_id {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
+    ms.map (fun exp _ => exp) (fun _ coef => coef) = ms :=
+  Stream'.Seq.map_id ms
+
+-- #check Stream'.Seq.map_comp
+
+-- @[simp]
+-- theorem map_comp {b₁ b₂ b₃ bs₁ bs₂ bs₃} (f₁ : ℝ → PreMS b₁ → ℝ)
+--     (g₁ : ℝ → PreMS b₁ → PreMS b₂) (f₂ : ℝ → PreMS b₂ → ℝ) (g₂ : ℝ → PreMS b₂ → PreMS b₃)
+--     (ms : PreMS (b₁ :: bs₁)) :
+--     ms.map () := by
+--   simp [map, Stream'.Seq.map_comp]
+
+@[simp]
+theorem notMem_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x : ℝ × PreMS basis_tl} :
+    x ∉ (nil : PreMS (basis_hd :: basis_tl)) :=
+  Seq.notMem_nil _
+
+@[simp]
+theorem mem_cons_iff {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} {x : ℝ × PreMS basis_tl} :
+    x ∈ cons exp coef tl ↔ x = (exp, coef) ∨ x ∈ tl :=
+  Seq.mem_cons_iff
+
+@[simp]
+theorem Pairwise_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {R} :
+    Seq.Pairwise R (nil : PreMS (basis_hd :: basis_tl)) := by
+  simp [nil]
+
+@[simp]
+theorem Pairwise_cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {R exp coef} :
+    Seq.Pairwise R (cons exp coef (nil : PreMS (basis_hd :: basis_tl))) := by
+  simp [cons, nil]
+
+end simp
+
+end Seq
 
 section leadingExp
 
@@ -75,8 +243,8 @@ theorem leadingExp_nil : @leadingExp basis_hd basis_tl .nil = ⊥ := by
   simp [leadingExp]
 
 @[simp]
-theorem leadingExp_cons {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
-    @leadingExp basis_hd basis_tl (Seq.cons hd tl) = hd.1 := by
+theorem leadingExp_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+    @leadingExp basis_hd basis_tl (cons exp coef tl) = exp := by
   simp [leadingExp]
 
 theorem leadingExp_of_head :
@@ -91,13 +259,13 @@ theorem leadingExp_eq_bot :
 /-- If `ms.leadingExp` is real number `exp` then `ms = cons (exp, coef) tl` for some `coef` and
 `tl`. -/
 theorem leadingExp_eq_coe {exp : ℝ} (h : ms.leadingExp = ↑exp) :
-    ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)), ms = .cons (exp, a.1) a.2 := by
+    ∃ coef tl, ms = cons exp coef tl := by
   cases ms with
   | nil => simp at h
   | cons exp coef tl =>
     simp only [leadingExp_cons, WithBot.coe_inj] at h
     subst h
-    use (coef, tl)
+    use coef, tl
 
 end leadingExp
 
@@ -126,7 +294,7 @@ theorem WellOrdered.nil : @WellOrdered (basis_hd :: basis_tl) .nil := by
 
 /-- `[(exp, coef)]` is `WellOrdered` when `coef` is `WellOrdered`. -/
 theorem WellOrdered.cons_nil {exp : ℝ} {coef : PreMS basis_tl} (h_coef : coef.WellOrdered) :
-    @WellOrdered (basis_hd :: basis_tl) (.cons (exp, coef) .nil) := by
+    @WellOrdered (basis_hd :: basis_tl) (cons exp coef .nil) := by
   constructor
   · simpa
   · simp
@@ -137,7 +305,7 @@ theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
     (h_coef : coef.WellOrdered)
     (h_comp : tl.leadingExp < exp)
     (h_tl : tl.WellOrdered) :
-    @WellOrdered (basis_hd :: basis_tl) (.cons (exp, coef) tl) := by
+    @WellOrdered (basis_hd :: basis_tl) (cons exp coef tl) := by
   cases h_tl with | seq _ h_tl_coef h_tl_tl =>
   constructor
   · grind [mem_cons_iff]
@@ -149,7 +317,7 @@ theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
 /-- The fact `WellOrdered (cons (exp, coef) tl)` implies that `coef` and `tl` are `WellOrdered`, and
 leading exponent of `tl` is less than `exp`. -/
 theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : @WellOrdered (basis_hd :: basis_tl) (.cons (exp, coef) tl)) :
+    (h : @WellOrdered (basis_hd :: basis_tl) (cons exp coef tl)) :
     coef.WellOrdered ∧ tl.leadingExp < exp ∧ tl.WellOrdered := by
   cases h with | seq _ h_coef h_Pairwise =>
   constructor
@@ -161,7 +329,7 @@ theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_
   obtain ⟨h_all, h_Pairwise⟩ := Pairwise.cons_elim h_Pairwise
   constructor
   · simp
-    exact h_all (tl_exp, tl_coef) (by simp)
+    apply h_all (tl_exp, tl_coef) (by simp [cons])
   constructor
   · intro x hx
     apply h_coef
@@ -175,7 +343,7 @@ if `motive ms` (base case) and the predicate "survives" destruction of its argum
 theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
     (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
     (h_base : motive ms)
-    (h_step : ∀ exp coef, ∀ (tl : PreMS (basis_hd :: basis_tl)), motive (.cons (exp, coef) tl) →
+    (h_step : ∀ exp coef tl, motive (PreMS.cons exp coef tl) →
         coef.WellOrdered ∧
         tl.leadingExp < exp ∧
         motive tl) :
@@ -183,7 +351,9 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
   constructor
   · apply all_coind
     · exact h_base
-    · grind
+    · intro (exp, coef) tl h
+      specialize h_step exp coef tl h
+      grind
   · apply Pairwise.coind_trans
     · exact h_base
     · intro (exp, coef) tl h
@@ -192,8 +362,9 @@ theorem WellOrdered.coind {ms : PreMS (basis_hd :: basis_tl)}
         simp
         change tl_exp < exp
         replace h_step := (h_step exp coef tl h).right.left
-        cases tl <;> simp at h_tl h_step; grind
-      · grind
+        cases tl <;> simp [leadingExp, head] at h_tl h_step; grind
+      · specialize h_step exp coef tl h
+        grind
 
 end WellOrdered
 
@@ -322,7 +493,7 @@ mutual
       toFun := fun P ms f =>
         (ms = .nil ∧ f =ᶠ[atTop] 0) ∨
         (∃ (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)) (fC : ℝ → ℝ),
-          ms = .cons (exp, coef) tl ∧ coef.Approximates fC ∧
+          ms = cons exp coef tl ∧ coef.Approximates fC ∧
           majorated f basis_hd exp ∧ P tl (fun t ↦ f t - (basis_hd t)^exp * fC t))
       monotone' := by
         intro P Q hPQ ms f hP
@@ -359,7 +530,7 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
     (fC : ℝ → ℝ) (h_coef : coef.Approximates fC)
     (h_maj : majorated f basis_hd exp)
     (h_tl : tl.Approximates (fun t ↦ f t - (basis_hd t) ^ exp * (fC t))) :
-    @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) f := by
+    @Approximates (basis_hd :: basis_tl) (cons exp coef tl) f := by
   rw [Approximates.step]
   simp [T]
   grind
@@ -369,7 +540,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
     (h_base : motive ms f)
     (h_step : ∀ ms f, motive ms f →
       (ms = .nil ∧ f =ᶠ[atTop] 0) ∨
-      (∃ exp coef tl fC, ms = .cons (exp, coef) tl ∧
+      (∃ exp coef tl fC, ms = PreMS.cons exp coef tl ∧
         (coef.Approximates fC) ∧
         majorated f basis_hd exp ∧
         (motive tl (fun t ↦ f t - (basis_hd t) ^ exp * (fC t))))) :
@@ -391,7 +562,7 @@ theorem Approximates_const_iff {ms : PreMS []} {f : ℝ → ℝ} :
   mpr h := Approximates.const h
 
 /-- If `[]` approximates `f`, then `f = 0` eventually. -/
-theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) Seq.nil f) :
+theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) nil f) :
     f =ᶠ[atTop] 0 := by
   rw [Approximates.step] at h
   simpa [Approximates.T] using h
@@ -401,7 +572,7 @@ there exists function `fC` such that `coef` approximates `fC` and `tl` approxima
 `f - fC * basis_hd ^ exp`. -/
 theorem Approximates_cons {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) f) :
+    (h : @Approximates (basis_hd :: basis_tl) (cons exp coef tl) f) :
     ∃ fC,
       coef.Approximates fC ∧
       majorated f basis_hd exp ∧

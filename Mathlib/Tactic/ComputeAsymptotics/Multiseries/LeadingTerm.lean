@@ -17,8 +17,6 @@ namespace ComputeAsymptotics
 
 namespace PreMS
 
-open Stream' Seq
-
 /-- `ms.leadingTerm` is its leading monomial. -/
 def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
   match basis with
@@ -33,7 +31,7 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
 /-- `Term.coef ms.coef.leadingTerm` is equal to `Term.coef ms.leadingTerm`. -/
 theorem leadingTerm_cons_coef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)} :
-    (@leadingTerm (basis_hd :: basis_tl) (cons (exp, coef) tl)).coef = coef.leadingTerm.coef := by
+    (@leadingTerm (basis_hd :: basis_tl) (cons exp coef tl)).coef = coef.leadingTerm.coef := by
   conv_lhs => simp [leadingTerm]
 
 theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
@@ -50,10 +48,10 @@ theorem leadingTerm_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} (t : ℝ) :
-    (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)).toFun
+    (leadingTerm (basis := basis_hd :: basis_tl) (cons exp coef tl)).toFun
       (basis_hd :: basis_tl) t =
     (basis_hd t)^exp * (leadingTerm coef).toFun basis_tl t := by
-  simp only [Term.toFun, leadingTerm, Seq.head_cons, List.zip_cons_cons, List.foldl_cons]
+  simp only [Term.toFun, leadingTerm, head_cons, List.zip_cons_cons, List.foldl_cons]
   conv =>
     congr <;> rw [Term.fold_eq_mul]
     lhs
@@ -68,7 +66,7 @@ theorem zero_of_leadingTerm_zero_coef {basis : Basis} {ms : PreMS basis} (h_trim
     cases ms with
     | nil => rfl
     | cons exp coef tl =>
-    simp only [leadingTerm, Seq.head_cons] at h
+    simp only [leadingTerm, head_cons] at h
     replace h_trimmed := Trimmed_cons h_trimmed
     have : coef = zero _ := zero_of_leadingTerm_zero_coef h_trimmed.left h
     simp [this] at h_trimmed
@@ -97,7 +95,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
         (h_basis.tail)
       apply (coef_ih.and (basis_head_eventually_pos h_basis)).mono
       rintro t ⟨coef_ih, h_basis_hd_pos⟩
-      simp only [Term.toFun, leadingTerm, Seq.head_cons, List.zip_cons_cons, List.foldl_cons]
+      simp only [Term.toFun, leadingTerm, head_cons, List.zip_cons_cons, List.foldl_cons]
       simp only [Term.toFun] at coef_ih
       conv =>
         rw [Term.fold_eq_mul]
@@ -600,7 +598,7 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
   | cons exp coef tl =>
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     obtain ⟨fC, h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
-    simp only [leadingTerm, Seq.head_cons, Term.mk.injEq] at h_eq
+    simp only [leadingTerm, head_cons, Term.mk.injEq] at h_eq
     simp only [← h_eq.right, Term.FirstIsNeg] at h_exps
     obtain h_neg | h_zero := h_exps
     · exact majorated_tendsto_zero_of_neg h_neg h_maj
@@ -658,13 +656,13 @@ lemma extendBasisEnd_zero_last_exp_cons {basis_hd : ℝ → ℝ} {basis_tl : Bas
   obtain _ | ⟨basis_tl_hd, basis_tl_tl⟩ := basis_tl
   · simp [extendBasisEnd, leadingTerm, PreMS.const]
   have ih := extendBasisEnd_zero_last_exp_cons (ms := coef) (b := b)
-  simp only [leadingTerm, List.append_eq, List.cons_append, extendBasisEnd, Seq.map_cons,
-    Seq.head_cons, List.length_cons, List.length_append]
+  simp only [leadingTerm, List.append_eq, List.cons_append, extendBasisEnd, map_cons,
+    head_cons, List.length_cons, List.length_append]
   cases coef with
   | nil => simp
   | cons coef_exp coef_coef coef_tl =>
-  simp only [Seq.map_cons, Seq.head_cons, ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons]
-  simp only [leadingTerm, List.append_eq, extendBasisEnd, Seq.map_cons, Seq.head_cons] at ih
+  simp only [map_cons, head_cons, ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons]
+  simp only [leadingTerm, List.append_eq, extendBasisEnd, map_cons, head_cons] at ih
   exact ih
 
 theorem extendBasisEnd_zero_last_exp {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
