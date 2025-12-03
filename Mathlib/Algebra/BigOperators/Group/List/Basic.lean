@@ -199,22 +199,54 @@ lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' �
     l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 
+-- TODO golf
+@[to_additive (attr := simp)]
+theorem prod_insertIdx {i} (hlen : i ≤ l.length) (hcomm : ∀ a' ∈ l.take i, Commute a a') :
+    (l.insertIdx i a).prod = a * l.prod := by
+  induction i generalizing l
+  case zero => rfl
+  case succ i ih =>
+    obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt hlen)
+    have := ih (Nat.le_of_lt_succ hlen) (fun a' a'_mem => hcomm a' (mem_of_mem_tail a'_mem))
+    simp [this]
+    --have : hd * (a * tl.prod) = hd * a * tl.prod := (mul_assoc hd a tl.prod).symm
+    --rw [this]
+    /-
+    have : hd * a = a * hd := by
+      show Commute hd a
+    -/
+    have : Commute hd a := by
+      suffices hd ∈ (hd :: tl).take i.succ by
+        have := hcomm hd this
+        exact this.symm
+      exact mem_of_mem_head? rfl
+    exact Commute.left_comm this tl.prod
+
+-- TODO golf
+@[to_additive (attr := simp)]
+theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i, Commute l[i] a') :
+    l[i] * (l.eraseIdx i).prod = l.prod := by
+  have : ∀ (a' : M), a' ∈ take i (l.eraseIdx i) → Commute l[i] a' :=
+    fun a' a'_mem => hcomm a' (by
+      have : take i (l.eraseIdx i) = take i l := by
+        sorry
+      rwa [this] at a'_mem
+      )
+  rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length) this, insertIdx_eraseIdx_getElem hlen]
+
 end Monoid
 
 section CommMonoid
 variable [CommMonoid M] {a : M} {l l₁ l₂ : List M}
 
 @[to_additive (attr := simp)]
-theorem prod_insertIdx {i} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod := by
-  induction i generalizing l
-  case zero => rfl
-  case succ i ih =>
-    obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt h)
-    simp [ih (Nat.le_of_lt_succ h), mul_left_comm]
+theorem CommMonoid.prod_insertIdx {i} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod :=
+  List.prod_insertIdx h (fun a' _ ↦ Commute.all a a')
 
 @[to_additive (attr := simp)]
-theorem mul_prod_eraseIdx {i} (h : i < l.length) : l[i] * (l.eraseIdx i).prod = l.prod := by
-  rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length), insertIdx_eraseIdx_getElem h]
+theorem CommMonoid.mul_prod_eraseIdx {i} (h : i < l.length) :
+    l[i] * (l.eraseIdx i).prod = l.prod :=
+  List.mul_prod_eraseIdx h (fun a' _ ↦ Commute.all l[i] a')
 
 @[to_additive (attr := simp)]
 lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
