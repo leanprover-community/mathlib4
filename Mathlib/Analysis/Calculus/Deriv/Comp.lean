@@ -26,7 +26,7 @@ of definitional equality of the different points used in the composition. These 
 often more flexible to use.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## Keywords
 
