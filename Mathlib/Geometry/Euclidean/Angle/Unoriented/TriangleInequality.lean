@@ -266,8 +266,7 @@ public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
       simp; grind
     have h₁ := angle_expression_of_angle_eq_angle_sum (norm_normalize_eq_one_iff.mpr hx)
         (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
-    rw [angle_normalize_right, angle_normalize_right, angle_normalize_right] at h₁
-    rw [angle_normalize_left, angle_normalize_left, angle_normalize_left] at h₁
+    simp only [angle_normalize_right, angle_normalize_left] at h₁
     have h₂ := h₁ hxz₁ h
     have h₃ : (⟨_, hnneg₃⟩ : ℝ≥0) • y = (⟨_, hnneg₁⟩ : ℝ≥0) • x + (⟨_, hnneg₂⟩ : ℝ≥0) • z := by
       simp only [NormedSpace.normalize, ← smul_assoc, smul_eq_mul, Nonneg.mk_smul] at h₂ ⊢
