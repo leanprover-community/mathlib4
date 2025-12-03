@@ -275,9 +275,8 @@ local infixl:50 " ~ᵤ " => Associated
 
 open UniqueFactorizationMonoid Associates
 
-theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
-    (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits (f.map i) :=
-  splits_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
+@[deprecated (since := "2025-12-02")]
+alias splits_of_exists_multiset := splits_iff_exists_multiset
 
 @[deprecated (since := "2025-11-30")]
 alias splits_of_splits_id := Splits.map

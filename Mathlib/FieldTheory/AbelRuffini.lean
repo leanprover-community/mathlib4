@@ -156,7 +156,8 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   rw [leadingCoeff_map, leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
   have hs' : Multiset.card s = n := by
     rw [← h.natDegree_eq_card_roots, natDegree_map, natDegree_X_pow_sub_C]
-  apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
+  rw [splits_iff_exists_multiset, leadingCoeff_map]
+  use (s.map fun c ↦ c / b)
   rw [leadingCoeff_X_pow_sub_one hn', map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
     rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
