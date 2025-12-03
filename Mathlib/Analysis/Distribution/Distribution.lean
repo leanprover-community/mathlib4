@@ -146,7 +146,7 @@ lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) �
   by_cases! hc : c = 0
   · simp [hc]
   by_cases hf: LocallyIntegrableOn f Ω μ; swap
-  · have : ¬ LocallyIntegrableOn (c • f) Ω μ := sorry -- using hc and hf
+  · have : ¬ LocallyIntegrableOn (c • f) Ω μ := by simp [hc, hf]
     simp [ofFun_of_not_locallyIntegrable this, ofFun_of_not_locallyIntegrable hf]
   ext φ
   rw [ofFun_apply (hf.smul c)]

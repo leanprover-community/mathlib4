@@ -120,6 +120,21 @@ lemma weakDeriv_smul (c : ℝ) : weakDeriv Ω (c • f) μ = c • weakDeriv Ω 
 
 lemma weakDeriv_zero : weakDeriv Ω (0 : E → F) μ = 0 := by simp [weakDeriv]
 
+-- useful on its own?
+lemma weakDeriv_of_not_locallyIntegrableOn {f : E → F} (hf : ¬LocallyIntegrableOn f Ω μ) :
+    weakDeriv Ω f μ = 0 := by
+  simp [weakDeriv, ofFun_of_not_locallyIntegrable hf]
+
+-- should there be a lemma weakDeriv_of_locallyIntegrableOn
+
+lemma weakDeriv_const (a : F) : weakDeriv Ω (fun _ : E ↦ a) μ = 0 := by
+  by_cases hf : LocallyIntegrableOn (fun _ : E ↦ a) Ω μ; swap
+  · exact weakDeriv_of_not_locallyIntegrableOn hf
+  simp [weakDeriv]
+  -- separate lemma?
+  -- simp_rw [ofFun_apply hf]
+  sorry
+
 -- /-- `g` represents distribution `f` and is in `L^p`. -/
 -- structure Distribution.MemLpWith (f : 𝓓'(Ω, F)) (g : E → F) (p : ℝ≥0∞) (μ : Measure E) :
 --     Prop where
@@ -175,6 +190,10 @@ lemma smul (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (c • f) (c • g) �
 lemma zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
   simp [HasWeakDeriv, weakDeriv_zero, isRepresentedBy_zero]
 
+@[simp]
+lemma const {a : F} : HasWeakDeriv Ω (fun _ : E ↦ a) 0 μ := by
+  simp [HasWeakDeriv, weakDeriv_const, isRepresentedBy_zero]
+
 end HasWeakDeriv
 
 variable (Ω) in
@@ -198,7 +217,7 @@ variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
 lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
     HasWTaylorSeriesUpTo Ω (f + f') (g + g') k p μ where
   zero_eq x := by simp [← hf.zero_eq, ← hf'.zero_eq]
-  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm)
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm) sorry sorry
   memLp m hm := (hf.memLp m hm).add (hf'.memLp m hm)
 
 lemma neg (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
@@ -264,6 +283,10 @@ lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
 
 @[simp]
 lemma zero : MemSobolev Ω (0 : E → F) k p μ := ⟨0, by simp⟩
+
+lemma const (a : F) : MemSobolev Ω (fun _ : E ↦ a) k p μ := by
+  -- TODO: better test for MemSobolev: e.g. from being Lp and the weakderiv being nice
+  sorry
 
 end MemSobolev
 
