@@ -98,7 +98,7 @@ noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ 
   colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
 
 @[ext]
-lemma toPresheafFiber_hom_ext
+lemma presheafFiber_hom_ext
     {P : Cᵒᵖ ⥤ A} {T : A} {f g : Φ.presheafFiber.obj P ⟶ T}
     (h : ∀ (X : C) (x : Φ.fiber.obj X), Φ.toPresheafFiber X x P ≫ f =
       Φ.toPresheafFiber X x P ≫ g) : f = g :=
