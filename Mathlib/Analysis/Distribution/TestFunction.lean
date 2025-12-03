@@ -390,10 +390,9 @@ theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTow
   fun f g ↦ by simp [toBoundedContinuousFunctionCLM, toBoundedContinuousFunctionLM]
 
 instance : T3Space 𝓓^{n}(Ω, F) :=
-  have : T2Space 𝓓^{n}(Ω, F) := .of_injective_continuous
-    (injective_toBoundedContinuousFunctionCLM ℝ)
-    (toBoundedContinuousFunctionCLM ℝ).continuous
-  inferInstance
+  suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
+  .of_injective_continuous (injective_toBoundedContinuousFunctionCLM ℝ)
+    (ContinuousLinearMap.continuous _)
 
 end ToBoundedContinuousFunctionCLM
 
