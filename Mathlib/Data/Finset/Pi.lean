@@ -188,11 +188,17 @@ theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
   (s : Set ι).dependsOn_restrict
 
-lemma restrict_preimage [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
+lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
       Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by
   ext
   simp_all
+
+lemma restrict_preimage [DecidableEq ι] {I : Set ι}
+    [DecidablePred (· ∈ I)] (s : Finset I) (u : (i : I) → Set (π i)) :
+    I.restrict ⁻¹' Set.pi s u =
+      Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
+  grind
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
