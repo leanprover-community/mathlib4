@@ -192,8 +192,7 @@ theorem card_le_two_of_isHamiltonian_of_isBridge {G : SimpleGraph V} (hG : G.IsH
     {e : Sym2 V} (he : G.IsBridge e) : Fintype.card V ≤ 2 := by
   classical
   rcases h_bridge with ⟨e, he⟩
-  refine Sym2.ind
-    (fun x y hbr => ?_) e he
+  refine e.ind (fun x y hbr => ?_) he
   intro hHam
   have hAdj : G.Adj x y :=
     (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).1
