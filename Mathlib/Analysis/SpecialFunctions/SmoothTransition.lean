@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Infinitely smooth transition function
@@ -65,6 +66,39 @@ protected theorem monotone : Monotone expNegInvGlue := by
   · simp [zero_of_nonpos hx, nonneg]
   simp [expNegInvGlue, not_le.2 hx, not_le.2 (hx.trans_le hxy),
     inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
+
+/-- The function `expNegInvGlue` is not analytic at `0`. -/
+theorem expNegInvGlue_not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
+  intro h
+  -- Analytic functions are either always zero or have isolated zeros
+  obtain h_zero | h_nonzero := h.eventually_eq_zero_or_eventually_ne_zero
+  · -- Case 1: Always zero contradicts expNegInvGlue x > 0 for x > 0
+    obtain ⟨U, hU_mem, hU⟩ := h_zero.exists_mem
+    obtain ⟨t, ht_sub, ht_open, ht_mem⟩ := mem_nhds_iff.mp hU_mem
+    obtain ⟨ε, hε_pos, hε_ball⟩ := Metric.isOpen_iff.mp ht_open 0 ht_mem
+    have : expNegInvGlue (ε / 2) = 0 := by
+      apply hU
+      apply ht_sub
+      apply hε_ball
+      simp [abs_of_pos hε_pos]
+      linarith
+    rw [expNegInvGlue.zero_iff_nonpos] at this
+    linarith
+  · -- Case 2: Isolated zero contradicts expNegInvGlue x = 0 for x < 0
+    obtain ⟨U, hU_mem, hU⟩ := h_nonzero.exists_mem
+    obtain ⟨t, ht_open, ht_mem, ht_sub⟩ := mem_nhdsWithin.mp hU_mem
+    obtain ⟨ε, hε_pos, hε_ball⟩ := Metric.isOpen_iff.mp ht_open 0 ht_mem
+    have : expNegInvGlue (-ε / 2) ≠ 0 := by
+      apply hU
+      apply ht_sub
+      constructor
+      · apply hε_ball
+        simp [abs_of_pos hε_pos]
+        linarith
+      · simp
+        linarith
+    simp [expNegInvGlue.zero_iff_nonpos] at this
+    linarith
 
 /-!
 ### Smoothness of `expNegInvGlue`
