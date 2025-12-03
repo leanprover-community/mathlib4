@@ -19,9 +19,11 @@ If `i : X ⟶ Y` is a monomorphism, we define
 `skeletonOfMono i : ℕ →o Y.Subcomplex` so that
 `skeletonOfMono i n = Subcomplex.range i ⊔ Y.skeleton n`.
 
-## TODO (@joelriou)
+## TODO
 * show that `X.skeleton (n + 1)` is obtained from `X.skeleton n` by
-attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds for `skeletonOfMono i`).
+attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds
+for `skeletonOfMono i`) (@joelriou).
+* relate `SSet.skeleton` so `SSet.sk`.
 
 -/
 
