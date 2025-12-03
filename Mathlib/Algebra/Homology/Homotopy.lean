@@ -160,8 +160,7 @@ def symm {f g : C ⟶ D} (h : Homotopy f g) : Homotopy g f where
   hom := -h.hom
   zero i j w := by rw [Pi.neg_apply, Pi.neg_apply, h.zero i j w, neg_zero]
   comm i := by
-    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel,
-      zero_add]
+    rw [map_neg, map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel, zero_add]
 
 /-- homotopy is a transitive relation. -/
 @[simps!, trans]
@@ -178,7 +177,7 @@ def add {f₁ g₁ f₂ g₂ : C ⟶ D} (h₁ : Homotopy f₁ g₁) (h₂ : Homo
   zero i j hij := by rw [Pi.add_apply, Pi.add_apply, h₁.zero i j hij, h₂.zero i j hij, add_zero]
   comm i := by grind [HomologicalComplex.add_f_apply, Homotopy.comm]
 
-/-- the scalar multiplication of an homotopy -/
+/-- the scalar multiplication of a homotopy -/
 @[simps!]
 def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
     Homotopy (a • f) (a • g) where
@@ -810,7 +809,7 @@ lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.
     homologyMap f i = homologyMap g i :=
   open scoped Classical in ShortComplex.Homotopy.homologyMap_congr (ho.toShortComplex i)
 
-/-- The isomorphism in homology induced by an homotopy equivalence. -/
+/-- The isomorphism in homology induced by a homotopy equivalence. -/
 noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] : K.homology i ≅ L.homology i where
   hom := homologyMap h.hom i

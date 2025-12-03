@@ -106,6 +106,8 @@ theorem rpow_def_of_neg {x : ℝ} (hx : x < 0) (y : ℝ) : x ^ y = exp (log x * 
   · rw [Complex.ofReal_eq_zero]
     exact ne_of_lt hx
 
+-- simp is called on three goals at once (leaving one), with different simp sets
+set_option linter.flexible false in
 theorem rpow_def_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℝ) :
     x ^ y = if x = 0 then if y = 0 then 1 else 0 else exp (log x * y) * cos (y * π) := by
   split_ifs with h <;> simp [rpow_def, *]; exact rpow_def_of_neg (lt_of_le_of_ne hx h) _
@@ -462,6 +464,8 @@ theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
   rw [rpow_neg_eq_inv_rpow, rpow_one]
 
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets, leaving two)
+set_option linter.flexible false in
 theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := by
   iterate 2 rw [Real.rpow_def_of_nonneg]; split_ifs with h_ifs <;> simp_all
   · rw [log_mul ‹_› ‹_›, add_mul, exp_add, rpow_def_of_pos (hy.lt_of_ne' ‹_›)]
