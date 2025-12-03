@@ -283,9 +283,8 @@ lemma natDegree_ofMultiset_eq_card (s : Multiset R) :
 
 @[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
-  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map]
-  change (ofMultiset (Multiset.map f s.val)).natDegree = #s
-  rw [natDegree_ofMultiset_eq_card, Multiset.card_map, Finset.card]
+  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
+    natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
 
 end CommRing
 
