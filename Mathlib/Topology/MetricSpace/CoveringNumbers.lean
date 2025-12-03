@@ -3,11 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Markus Himmel, Lorenzo Luccioli, Alessio Rondelli, Etienne Marion
 -/
+module
 
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Topology.EMetricSpace.Diam
-import Mathlib.Topology.MetricSpace.MetricSeparated
-import Mathlib.Topology.MetricSpace.Cover
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.EMetricSpace.Diam
+public import Mathlib.Topology.MetricSpace.MetricSeparated
+public import Mathlib.Topology.MetricSpace.Cover
 
 /-!
 # Covering numbers
@@ -40,6 +42,8 @@ We prove inequalities between these covering and packing numbers.
 
 -/
 
+@[expose] public section
+
 open EMetric Set
 open scoped ENNReal NNReal
 
@@ -53,19 +57,19 @@ section Definitions
 an `ε`cover by points in `X` (not necessarily in `A`). -/
 noncomputable
 def externalCoveringNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
-  ⨅ (C : Finset X) (_ : IsCover ε A C), C.card
+  ⨅ (C : Set X) (_ : IsCover ε A C), C.encard
 
 /-- The covering number(or internal covering number) of a set `A` for radius `ε` is
 the minimal cardinal of an `ε`cover contained in `A`. -/
 noncomputable
 def coveringNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
-  ⨅ (C : Finset X) (_ : ↑C ⊆ A) (_ : IsCover ε A C), C.card
+  ⨅ (C : Set X) (_ : ↑C ⊆ A) (_ : IsCover ε A C), C.encard
 
 /-- The packing number of a set `A` for radius `ε` is the maximal cardinal of an `ε`-separated set
 in `A`. -/
 noncomputable
 def packingNumber (ε : ℝ≥0) (A : Set X) : ℕ∞ :=
-  ⨆ (C : Finset X) (_ : ↑C ⊆ A) (_ : IsSeparated ε (C : Set X)), C.card
+  ⨆ (C : Set X) (_ : ↑C ⊆ A) (_ : IsSeparated ε C), C.encard
 
 end Definitions
 
@@ -83,11 +87,11 @@ lemma externalCoveringNumber_eq_zero :
 @[simp]
 lemma coveringNumber_eq_zero : coveringNumber ε A = 0 ↔ A = ∅ := by simp [coveringNumber]
 
-lemma externalCoveringNumber_le_card {C : Finset X} (hC : IsCover ε A C) :
-    externalCoveringNumber ε A ≤ C.card := iInf₂_le C hC
+lemma externalCoveringNumber_le_encard {C : Set X} (hC : IsCover ε A C) :
+    externalCoveringNumber ε A ≤ C.encard := iInf₂_le C hC
 
-lemma coveringNumber_le_card {C : Finset X} (h_subset : ↑C ⊆ A) (hC : IsCover ε A C) :
-    coveringNumber ε A ≤ C.card := (iInf₂_le C h_subset).trans (iInf_le _ hC)
+lemma coveringNumber_le_encard {C : Set X} (h_subset : ↑C ⊆ A) (hC : IsCover ε A C) :
+    coveringNumber ε A ≤ C.encard := (iInf₂_le C h_subset).trans (iInf_le _ hC)
 
 lemma externalCoveringNumber_anti (h : ε ≤ δ) :
     externalCoveringNumber δ A ≤ externalCoveringNumber ε A := by
@@ -110,8 +114,8 @@ lemma coveringNumber_eq_one_of_diam_le (h_nonempty : A.Nonempty) (hA : EMetric.d
   refine le_antisymm ?_ ?_
   · have ⟨a, ha⟩ := h_nonempty
     calc coveringNumber ε A
-      _ ≤ ({a} : Finset X).card :=
-        coveringNumber_le_card (by simp [ha]) (isCover_singleton_finset_of_ediam_le hA ha)
+      _ ≤ ({a} : Set X).encard :=
+        coveringNumber_le_encard (by simp [ha]) (.singleton_of_ediam_le hA ha)
       _ ≤ 1 := by simp
   · by_contra! h
     rw [ENat.lt_one_iff_eq_zero] at h
@@ -122,8 +126,8 @@ lemma externalCoveringNumber_eq_one_of_diam_le (h_nonempty : A.Nonempty) (hA : E
   refine le_antisymm ?_ ?_
   · have ⟨a, ha⟩ := h_nonempty
     calc externalCoveringNumber ε A
-      _ ≤ ({a} : Finset X).card :=
-        externalCoveringNumber_le_card (isCover_singleton_finset_of_ediam_le hA ha)
+      _ ≤ ({a} : Set X).encard :=
+        externalCoveringNumber_le_encard (.singleton_of_ediam_le hA ha)
       _ ≤ 1 := by simp
   · by_contra! h
     rw [ENat.lt_one_iff_eq_zero] at h
@@ -151,43 +155,54 @@ lemma externalCoveringNumber_le_coveringNumber (ε : ℝ≥0) (A : Set X) :
 
 theorem packingNumber_two_le_externalCoveringNumber (A : Set X) :
     packingNumber (2 * ε) A ≤ externalCoveringNumber ε A := by
-  simp only [packingNumber, externalCoveringNumber, le_iInf_iff, iSup_le_iff, Nat.cast_le]
+  simp only [packingNumber, ENNReal.coe_mul, ENNReal.coe_ofNat, externalCoveringNumber, le_iInf_iff,
+    iSup_le_iff]
   intro C hC_cover D hD_subset hD_separated
+  -- For each point in D, choose a point in C which is ε-close to it
   let f : D → C := fun x ↦
     ⟨(hC_cover (hD_subset x.2)).choose, (hC_cover (hD_subset x.2)).choose_spec.1⟩
   have hf' (x : D) : edist x.1 (f x) ≤ ε := (hC_cover (hD_subset x.2)).choose_spec.2
-  suffices Function.Injective f from Finset.card_le_card_of_injective this
-  intro x y hfxy
+  -- `⊢ D.encard ≤ C.encard`
+  -- It suffices to prove that `f` is injective
+  rcases isEmpty_or_nonempty X with hX_empty | hX_nonempty
+  · simp [Set.eq_empty_of_isEmpty D]
+  let x₀ : X := hX_nonempty.some
+  classical
+  refine Set.encard_le_encard_of_injOn (f := fun x ↦ if hx : x ∈ D then f ⟨x, hx⟩ else x₀) ?_ ?_
+  · intro x hx
+    simp [hx]
+  -- We now prove injectivity
+  intro x hxD y hyD hfxy
+  simp only [hxD, ↓reduceDIte, hyD] at hfxy
+  replace hfxy : f ⟨x, hxD⟩ = f ⟨y, hyD⟩ := by ext; exact hfxy
   by_contra hxy
-  specialize hD_separated x.2 y.2 ?_
-  · rwa [Subtype.ext_iff] at hxy
-  suffices 0 < edist (f x) (f y) by simp [hfxy] at this
-  have hx_ne_top : edist x.1 (f x) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' x)
-  have hy_ne_top : edist y.1 (f y) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' y)
+  specialize hD_separated hxD hyD hxy
+  suffices 0 < edist (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) by simp [hfxy] at this
+  have hx_ne_top : edist x (f ⟨x, hxD⟩) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' ⟨x, hxD⟩)
+  have hy_ne_top : edist y (f ⟨y, hyD⟩) ≠ ∞ := ne_top_of_le_ne_top (by simp : ε ≠ ∞) (hf' ⟨y, hyD⟩)
   calc 0
-  _ ≤ 2 * ε - edist x.1 (f x) - edist y.1 (f y) := zero_le'
-  _ < edist x y - edist x.1 (f x) - edist y.1 (f y) := by
+  _ ≤ 2 * ε - edist x (f ⟨x, hxD⟩) - edist y (f ⟨y, hyD⟩) := zero_le'
+  _ < edist x y - edist x (f ⟨x, hxD⟩) - edist y (f ⟨y, hyD⟩) := by
     rw [lt_tsub_iff_left, lt_tsub_iff_left]
     refine lt_of_eq_of_lt ?_ hD_separated
-    rw [add_comm (edist y.1 _), ENNReal.sub_add_eq_add_sub _ hy_ne_top,
+    rw [add_comm (edist y _), ENNReal.sub_add_eq_add_sub _ hy_ne_top,
       ENNReal.add_sub_cancel_right hy_ne_top, add_comm,
       ENNReal.sub_add_eq_add_sub _ hx_ne_top, ENNReal.add_sub_cancel_right hx_ne_top]
-    · norm_cast
-    · refine (hf' x).trans ?_
+    · refine (hf' ⟨x, hxD⟩).trans ?_
       rw [two_mul]
       exact le_self_add
     · refine ENNReal.le_sub_of_add_le_left hx_ne_top ?_
       rw [two_mul]
       gcongr
-      · exact hf' x
-      · exact hf' y
-  _ ≤ (edist x.1 (f x) + edist (f x) (f y) + edist (f y : X) y.1)
-      - edist x.1 (f x) - edist y.1 (f y) := by
+      · exact hf' ⟨x, hxD⟩
+      · exact hf' ⟨y, hyD⟩
+  _ ≤ (edist x (f ⟨x, hxD⟩) + edist (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) + edist (f ⟨y, hyD⟩ : X) y)
+      - edist x (f ⟨x, hxD⟩) - edist y (f ⟨y, hyD⟩) := by
     gcongr
-    exact edist_triangle4 x.1 (f x) (f y) y.1
-  _ = edist (f x) (f y) := by
+    exact edist_triangle4 x (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) y
+  _ = edist (f ⟨x, hxD⟩) (f ⟨y, hyD⟩) := by
     simp only [hfxy, edist_self, add_zero]
-    rw [edist_comm (f y : X), add_comm, ENNReal.add_sub_cancel_right, tsub_self]
+    rw [edist_comm (f ⟨y, hyD⟩ : X), add_comm, ENNReal.add_sub_cancel_right, tsub_self]
     rwa [← hfxy]
 
 end Comparisons
