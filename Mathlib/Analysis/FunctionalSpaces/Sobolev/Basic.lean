@@ -34,6 +34,10 @@ structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Pr
   locallyIntegrable : LocallyIntegrableOn f Ω μ
   eq_ofFun : T = ofFun Ω f μ
 
+lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') :
+    IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ := by
+  sorry
+
 end Distribution
 open Distribution
 
@@ -61,6 +65,10 @@ variable (Ω) in
 /-- `f` has weak derivative represented by `g`. -/
 def HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop :=
   IsRepresentedBy (weakDeriv Ω f μ) g μ
+
+lemma hasWeakDeriv_congr_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F) (μ : Measure E) :
+    HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g μ := by
+  sorry
 
 namespace HasWeakDeriv
 
@@ -94,6 +102,12 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
   zero_eq : ∀ x, (g x 0).curry0 = f x
   hasWeakDeriv : ∀ m : ℕ, m < k → HasWeakDeriv Ω (g · m) (g · m.succ |>.curryLeft) μ
   memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p (μ.restrict Ω)
+
+
+lemma hasWTaylorSeriesUpTo_congr_ae (h : f =ᵐ[μ.restrict Ω] f')
+  (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (μ : Measure E) :
+    HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g k p μ := by
+  sorry
 
 namespace HasWTaylorSeriesUpTo
 
@@ -213,6 +227,8 @@ end Distribution
 
 variable [FiniteDimensional ℝ E]
 
+
+/- Add analogous lemmas for RepresentedBy and HasWeakDeriv-/
 lemma memSobolev_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
     MemSobolev Ω f k p μ ↔ MemSobolev Ω f' k p μ := by
   sorry
