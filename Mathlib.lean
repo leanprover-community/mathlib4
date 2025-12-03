@@ -2082,7 +2082,6 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Pos
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
 public import Mathlib.Analysis.SpecialFunctions.Elliptic.Weierstrass
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
@@ -4469,7 +4468,6 @@ public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.DFinsupp.PiTensorProduct
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.Basic
 public import Mathlib.LinearAlgebra.Dimension.Constructions
@@ -4489,7 +4487,6 @@ public import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
 public import Mathlib.LinearAlgebra.DirectSum.Basis
 public import Mathlib.LinearAlgebra.DirectSum.Finite
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.LinearAlgebra.DirectSum.PiTensorProduct
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Basis
@@ -4618,9 +4615,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
-public import Mathlib.LinearAlgebra.Multilinear.DirectSum
 public import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
-public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 public import Mathlib.LinearAlgebra.Multilinear.Pi
 public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 public import Mathlib.LinearAlgebra.Orientation
