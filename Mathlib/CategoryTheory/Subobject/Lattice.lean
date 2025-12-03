@@ -158,7 +158,7 @@ def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf
   intro k₁ k₂
   refine homMk (pullback.lift k₂.left k₁.left ?_) ?_
   · rw [w k₁, w k₂]
-  · erw [pullback.lift_snd_assoc, w k₁]
+  · simp [w k₁]
 
 end Inf
 

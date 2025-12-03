@@ -203,12 +203,12 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 theorem norm_coe (r : R) : norm (r : QuadraticAlgebra R a b) = r ^ 2 := by simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
-  by simp [norm_def, pow_two]
+theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
+  simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
-  by simp [norm_def, pow_two]
+theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
+  simp [norm_def, pow_two]
 
 theorem coe_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
     ((norm z : R) : QuadraticAlgebra R a b) = z * star z := by
@@ -231,7 +231,7 @@ theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
   · simp only [isUnit_iff_exists]
     rintro ⟨r, hr, hr'⟩
     rw [← coe_inj (R := R) (a := a) (b := b), coe_mul,
-      coe_norm_eq_mul_star , mul_assoc, coe_one] at hr
+      coe_norm_eq_mul_star, mul_assoc, coe_one] at hr
     refine ⟨_, hr, ?_⟩
     rw [mul_comm, hr]
 

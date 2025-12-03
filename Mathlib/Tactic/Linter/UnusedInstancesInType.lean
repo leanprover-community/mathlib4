@@ -5,11 +5,14 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public import Mathlib.Init
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Lean.Linter.Basic
 import Lean.Elab.Command
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # Linters for Unused Instances in Types
@@ -43,12 +46,14 @@ unused in the remainder of the type.
 `parameter #{param.idx + 1}` as a failsafe if `type?` is `none`. (We always expect `type?` to be
 `some _`, but would like a fallback if there are unexpected issues in telescoping.)
 -/
-private structure Parameter where
+structure Parameter where
   /- TODO: include syntax references to the binders here, and use the "real" fvars created during
   elaboration if possible -/
-  /-- The free variable of the parameter created in a telescope for logging. -/
+  /-- The free variable of the parameter created in a telescope for logging.
+  We always expect this to be `some _` normally, but allow `none` as a failsafe. -/
   fvar? : Option Expr
-  /-- The type of the parameter created in a telescope for logging. -/
+  /-- The type of the parameter created in a telescope for logging.
+  We always expect this to be `some _` normally, but allow `none` as a failsafe. -/
   type? : Option Expr
   /-- The index of the parameter among the `forall` binders in the type (starting at 0). -/
   idx : Nat
@@ -63,20 +68,16 @@ instance : ToMessageData Parameter where
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
-> \`{foo}\` has the hypothes(is/es):
->
->   {p₁}
->
->   {p₂}
->
->    ⋮
->
->   {pₙ}
->
-> which (is/are) not used in the
-  remainder of the type.
+```null
+`{foo}` has the hypothes(is/es):
+  • {p₁}
+  • {p₂}
+  ⋮
+  • {pₙ}
+which (is/are) not used in the remainder of the type.
+```
 -/
-private def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
+def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
     (unusedInstanceBinders : Array Parameter) : MessageData :=
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
   m!"`{.ofConstName declName}` has the \
@@ -95,7 +96,7 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
-private def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
+def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) : CommandElabM Unit := do
   let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then liftTermElabM do
@@ -127,18 +128,22 @@ A simple pattern is therefore
 ```
 fun _ thm unusedParams => do
   logLint linter.fooLinter (← getRef) m!"\
-    {thm.name.unusedInstancesMsg unusedParams}\n\
+    {thm.name.unusedInstancesMsg unusedParams}\n\n\
     <extra caption>"
 ```
 which logs
+```null
+`{foo}` has the hypothes(is/es):
+  • {p₁}
+  • {p₂}
+  ⋮
+  • {pₙ}
+which (is/are) not used in the remainder of the type.
 
-> \`{foo}\` has the hypothes[is/es] {p₁}, {p₂}, ..., and {pₙ} which [is/are] not used in the
-  remainder of the type.
->
-> \<extra caption\>
->
-> This linter can be disabled with \`set_option {linter.fooLinter.name} false\`
+<extra caption>
 
+Note: This linter can be disabled with `set_option {linter.fooLinter.name} false`
+```
 pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
@@ -150,7 +155,7 @@ def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
       thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
-        -- TODO: restore in order to log on type signature
+        -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
         -- t.withDeclSigRef cmd thm.name do
         log t thm unusedParams
 
@@ -183,8 +188,11 @@ which are not used in the remainder of the type. If so, it suggests removing the
 `classical` or `open scoped Classical in`, as appropriate, in the theorem's proof instead.
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
+
+Note: `set_option linter.unusedDecidableInType _ in <command>` currently only works at the
+outermost level of a command due to working around [lean4#11313](https://github.com/leanprover/lean4/pull/11313).
 -/
-register_option linter.unusedDecidableInType : Bool := {
+public register_option linter.unusedDecidableInType : Bool := {
   defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
@@ -197,13 +205,19 @@ remainder of the type, and suggests replacing them with a use of `classical` in 
 def unusedDecidableInType : Linter where
   run := /- withSetOptionIn -/ fun cmd => do
     /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
-    until this is fixed: [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/bug.3A.20withSetOptionIn.20creates.20context-free.20info.20nodes/with/556896993) -/
-    if let `(command| set_option $opt:ident false in $_:command) := cmd then
+    until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313) -/
+    let mut override := false
+    if let `(command| set_option $opt:ident $val in $_:command) := cmd then
       if opt.getId == `linter.unusedDecidableInType then
-        return
-    unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
+        match val.raw with
+        | Syntax.atom _ "true" => override := true
+        | Syntax.atom _ "false" => return -- exit early
+        | _ => pure () -- invalid option value, should be caught during elaboration
+    unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
+      /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
+      on decidable instances without using them in the type. -/
       (declFilter := (!(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
       fun _ thm unusedParams => do
