@@ -859,6 +859,17 @@ lemma Ideal.irreducible_iff_bot_irreducible (J : Ideal R) :
     <;> simp only [map_eq_bot_iff_le_ker, mk_ker] at eq'
     <;> simp [le_antisymm eq' (by simp [← eq])]
 
+variable (R) in
+omit [IsNoetherianRing R] in
+lemma quotient_maximal_hom_nontrivial [IsArtinianRing R] :
+    Nontrivial (R ⧸ maximalIdeal R →ₗ[R] R) := by
+  have : maximalIdeal R ∈ associatedPrimes R R := by
+    apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
+    rw [annihilator_eq_bot.mpr inferInstance]
+    exact (maximalIdeal R).mem_minimalPrimes_of_krullDimLE_zero
+  rcases (isAssociatedPrime_iff_exists_injective_linearMap _ _).mp this with ⟨_, f, hf⟩
+  exact nontrivial_of_ne f 0 (LinearMap.ne_zero_of_injective hf)
+
 omit [IsNoetherianRing R] in
 lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
     (⊥ : Ideal R).isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal := by
@@ -993,7 +1004,25 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
   have leneq1' : Module.length R (R ⧸ maximalIdeal R) = 1 :=
     length_eq_one_iff.mpr (isSimpleModule_iff_isCoatom.mpr Ideal.IsMaximal.out)
   have leneq1 : Module.length R (R ⧸ maximalIdeal R →ₗ[R] R) = 1 := by
-    sorry
+    rcases h with ⟨f, hf⟩
+    have surj' : Function.Surjective (LinearMap.toSpanSingleton R _ f) := by
+      rw [← LinearMap.range_eq_top, LinearMap.range_toSpanSingleton, ← hf]
+    let e := LinearMap.quotKerEquivOfSurjective _ surj'
+    have Ker : LinearMap.ker (LinearMap.toSpanSingleton R _ f) = maximalIdeal R := by
+      apply le_antisymm
+      · apply IsLocalRing.le_maximalIdeal
+        simp only [ne_eq, LinearMap.ker_eq_top]
+        by_contra eq0
+        have : f = 0 := by rw [← LinearMap.toSpanSingleton_one R _ f, eq0, LinearMap.zero_apply]
+        let _ := quotient_maximal_hom_nontrivial R
+        absurd hf
+        simp [this]
+      · intro x hx
+        simp only [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply]
+        apply LinearMap.ext (fun y ↦ ?_)
+        rw [LinearMap.smul_apply, ← map_smul, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
+          LinearMap.zero_apply, Ideal.Quotient.eq_zero_iff_mem.mpr hx, zero_mul, map_zero]
+    rw [← e.length_eq, Ker, leneq1']
   have lenle (M : Type u) [AddCommGroup M] [Module R M] [fin : Module.Finite R M] :
     Module.length R (M →ₗ[R] R) ≤ Module.length R M := by
     induction fin using IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
