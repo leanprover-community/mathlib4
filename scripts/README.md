@@ -13,7 +13,7 @@ to learn about it as well!
   https://leanprover-community.github.io/install/debian.html
   https://leanprover-community.github.io/install/macos.html
   If these web pages are deprecated or removed, we should remove these scripts.
-
+Test-only change!
 **Repository analysis and reporting**
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
