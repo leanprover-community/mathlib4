@@ -805,9 +805,7 @@ lemma single_v_eq_zero' {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ
     (hq' : q' ≠ q) :
     (single f n).v p' q' hpq' = 0 := by
   dsimp [single]
-  rw [dif_neg]
-  intro h
-  exact hq' (by cutsat)
+  grind
 
 variable (K L) in
 @[simp]
