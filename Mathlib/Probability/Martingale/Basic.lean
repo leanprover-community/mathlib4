@@ -5,9 +5,9 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Notation
-public import Mathlib.Probability.Process.Stopping
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 public import Mathlib.Probability.Process.Predictable
+public import Mathlib.Probability.Process.Stopping
 
 /-!
 # Martingales
