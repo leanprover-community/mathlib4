@@ -9,6 +9,7 @@ public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.Analysis.Normed.Lp.ProdLp
+public import Mathlib.Data.Real.ENatENNReal
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -163,15 +164,17 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : EDist (PiLp p β) where
   edist f g :=
-    if p = 0 then {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card
+    if p = 0 then {i | edist (f i) (g i) ≠ 0}.encard
     else
       if p = ∞ then ⨆ i, edist (f i) (g i) else (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal)
 
 variable {β}
 
-theorem edist_eq_card (f g : PiLp 0 β) :
-    edist f g = {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
+theorem edist_eq_encard (f g : PiLp 0 β) :
+    edist f g = {i | edist (f i) (g i) ≠ 0}.encard :=
   if_pos rfl
+
+@[deprecated (since := "2025-12-03")] alias edist_eq_card := edist_eq_encard
 
 theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
     edist f g = (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal) :=
@@ -191,7 +194,7 @@ variable [∀ i, PseudoEMetricSpace (β i)]
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp [edist_eq_card]
+  · simp [edist_eq_encard]
   · simp [edist_eq_iSup]
   · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
 
@@ -199,7 +202,7 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [edist_eq_card, edist_comm]
+  · simp only [edist_eq_encard, edist_comm]
   · simp only [edist_eq_iSup, edist_comm]
   · simp only [edist_eq_sum h, edist_comm]
 
