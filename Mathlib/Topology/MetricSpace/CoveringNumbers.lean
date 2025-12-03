@@ -109,7 +109,7 @@ lemma externalCoveringNumber_mono_set (h : A ⊆ B) :
   simp only [externalCoveringNumber, le_iInf_iff]
   exact fun C hC ↦ iInf_le_of_le C <| iInf_le_of_le (hC.anti h) le_rfl
 
-lemma coveringNumber_eq_one_of_diam_le (h_nonempty : A.Nonempty) (hA : EMetric.diam A ≤ ε) :
+lemma coveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty) (hA : EMetric.diam A ≤ ε) :
     coveringNumber ε A = 1 := by
   refine le_antisymm ?_ ?_
   · have ⟨a, ha⟩ := h_nonempty
@@ -121,7 +121,8 @@ lemma coveringNumber_eq_one_of_diam_le (h_nonempty : A.Nonempty) (hA : EMetric.d
     rw [ENat.lt_one_iff_eq_zero] at h
     refine h_nonempty.ne_empty (by simpa using h)
 
-lemma externalCoveringNumber_eq_one_of_diam_le (h_nonempty : A.Nonempty) (hA : EMetric.diam A ≤ ε) :
+lemma externalCoveringNumber_eq_one_of_ediam_le (h_nonempty : A.Nonempty)
+    (hA : EMetric.diam A ≤ ε) :
     externalCoveringNumber ε A = 1 := by
   refine le_antisymm ?_ ?_
   · have ⟨a, ha⟩ := h_nonempty
@@ -133,18 +134,18 @@ lemma externalCoveringNumber_eq_one_of_diam_le (h_nonempty : A.Nonempty) (hA : E
     rw [ENat.lt_one_iff_eq_zero] at h
     refine h_nonempty.ne_empty (by simpa using h)
 
-lemma externalCoveringNumber_le_one_of_diam_le (hA : EMetric.diam A ≤ ε) :
+lemma externalCoveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) :
     externalCoveringNumber ε A ≤ 1 := by
   rcases eq_empty_or_nonempty A with h_eq_empty | h_nonempty
   · rw [← externalCoveringNumber_eq_zero (ε := ε)] at h_eq_empty
     simp [h_eq_empty]
-  · exact (externalCoveringNumber_eq_one_of_diam_le h_nonempty hA).le
+  · exact (externalCoveringNumber_eq_one_of_ediam_le h_nonempty hA).le
 
-lemma coveringNumber_le_one_of_diam_le (hA : EMetric.diam A ≤ ε) : coveringNumber ε A ≤ 1 := by
+lemma coveringNumber_le_one_of_ediam_le (hA : EMetric.diam A ≤ ε) : coveringNumber ε A ≤ 1 := by
   rcases eq_empty_or_nonempty A with h_eq_empty | h_nonempty
   · rw [← coveringNumber_eq_zero (ε := ε)] at h_eq_empty
     simp [h_eq_empty]
-  · exact (coveringNumber_eq_one_of_diam_le h_nonempty hA).le
+  · exact (coveringNumber_eq_one_of_ediam_le h_nonempty hA).le
 
 section Comparisons
 
