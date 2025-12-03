@@ -38,8 +38,9 @@ of this functor with respect to the class of morphisms `J.W`.
 In particular, the fiber of a presheaf identifies to the fiber of
 its associated sheaf.
 
-We show that both `Φ.presheafFiber` and `Φ.sheafFiber`
-commute to finite limits and to arbitrary colimits.
+Under suitable assumptions on the target category `A`, we show that
+both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
+and with arbitrary colimits.
 
 -/
 
@@ -105,7 +106,8 @@ lemma toPresheafFiber_hom_ext
 
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
-as natural transformation. -/
+as a natural transformation. -/
+@[simps]
 noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
     (evaluation Cᵒᵖ A).obj (op X) ⟶ Φ.presheafFiber where
   app := Φ.toPresheafFiber X x
@@ -118,7 +120,7 @@ lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒ�
   colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
       (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
@@ -150,14 +152,6 @@ variable {FC : A → A → Type*} {CC : A → Type w'}
 section
 
 variable {P Q : Cᵒᵖ ⥤ A}
-
-@[simp]
-lemma toPresheafFiber_naturality_apply (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X)
-    (p : ToType (P.obj (op X))) :
-    Φ.presheafFiber.map g (Φ.toPresheafFiber X x P p)  =
-      Φ.toPresheafFiber X x Q (g.app (op X) p) := by
-  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
-  exact congr_fun ((forget A).congr_map (Φ.toPresheafFiber_naturality g X x)) p
 
 variable [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
 
@@ -214,8 +208,7 @@ lemma toPresheafFiber_map_injective [Presheaf.IsLocallyInjective J f] :
     simpa using this _ y _ _ h
   intro X x p₁ p₂ h
   obtain ⟨Y, g, hg, y, rfl⟩ := Φ.jointly_surjective _ (Presheaf.equalizerSieve_mem J f _ _ h) x
-  simp only [Presheaf.equalizerSieve_apply] at hg
-  simp only [← toPresheafFiber_w_apply, hg]
+  simp_all [← toPresheafFiber_w_apply]
 
 lemma toPresheafFiber_map_bijective
     [Presheaf.IsLocallyInjective J f] [Presheaf.IsLocallySurjective J f] :

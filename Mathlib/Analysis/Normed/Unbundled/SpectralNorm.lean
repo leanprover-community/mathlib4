@@ -602,7 +602,7 @@ theorem spectralNorm_neg {y : L} (hy : IsAlgebraic K y) :
   set g := IntermediateField.AdjoinSimple.gen K y
   have hy : -y = (algebraMap K⟮y⟯ L) (-g) := rfl
   rw [← spectralNorm.eq_of_normalClosure g (IntermediateField.AdjoinSimple.algebraMap_gen K y), hy,
-    ← spectralNorm.eq_of_normalClosure (-g) hy, RingHom.map_neg,
+    ← spectralNorm.eq_of_normalClosure (-g) hy, map_neg,
     ← spectralAlgNorm_of_finiteDimensional_normal_def]
   exact map_neg_eq_map _ _
 
