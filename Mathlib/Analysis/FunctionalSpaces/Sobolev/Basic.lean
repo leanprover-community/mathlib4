@@ -36,10 +36,20 @@ structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Pr
 
 lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') :
     IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ := by
-  sorry
-  -- refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨h1, h2⟩ ↦ ?_⟩
-  -- constructor
-  -- · have := @MeasureTheory.IntegrableOn.congr_set_ae (f := f)
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨h1, h2⟩ ↦ ?_⟩
+  · constructor
+    · intro x hx
+      obtain ⟨s, hs, hsf⟩ := h1 x hx
+      refine ⟨s, hs, hsf.congr_fun_ae <| h.filter_mono ?_⟩
+      sorry -- see `MeasureTheory.Measure.restrict_mono_set`
+    rwa [h2, ofFun_ae_congr]
+  · sorry
+
+
+
+
+    --IntegrableOn.congr_fun_ae
+  -- have := @MeasureTheory.IntegrableOn.congr_set_ae (f := f) _
   --   sorry
   -- sorry
 
@@ -61,6 +71,7 @@ def weakDeriv (f : E → F) (μ : Measure E) : 𝓓'(Ω, E →L[ℝ] F) :=
 --   memLp : MeasureTheory.MemLp g p μ
 
 -- variable (Ω) in
+
 -- /-- `f` is in `W^{1, p}` and has weak derivative represented by `g`. -/
 -- structure MemSobolev1With (f : E → F) (g : E → E →L[ℝ] F) (p : ℝ≥0∞) (μ : Measure E) : Prop where
 --   memLp : MemLp f p (μ.restrict Ω)

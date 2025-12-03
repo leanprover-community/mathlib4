@@ -93,6 +93,12 @@ lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω 
     ofFun Ω f μ φ = ∫ x, φ x • f x ∂μ :=
   ofFunWithOrder_apply hf
 
+lemma ofFunWithOrder_ae_congr {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+  ofFunWithOrder Ω n f μ = ofFunWithOrder Ω n f' μ := sorry
+
+lemma ofFun_ae_congr {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
+    ofFun Ω f μ = ofFun Ω f' μ := ofFunWithOrder_ae_congr h
+
 @[simp]
 lemma ofFunWithOrder_zero {μ : Measure E} : ofFunWithOrder Ω n (0 : E → F) μ = 0 := by
   ext φ
