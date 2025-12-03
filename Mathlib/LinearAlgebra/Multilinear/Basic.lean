@@ -101,9 +101,8 @@ namespace MultilinearMap
 section Semiring
 
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂]
-  [AddCommMonoid M₃] [AddCommMonoid M₄] [AddCommMonoid M']
-  [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)]
-  [Module R M₂] [Module R M₃] [Module R M₄] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
+  [AddCommMonoid M₃] [AddCommMonoid M'] [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂]
+  [Module R M₃] [Module R M'] (f f' : MultilinearMap R M₁ M₂)
 
 instance : FunLike (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
@@ -764,8 +763,9 @@ end MultilinearMap
 
 namespace LinearMap
 
-variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₁' i)]
-variable [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄] [AddCommMonoid M']
+variable [Semiring R]
+variable [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₁' i)]
+  [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄] [AddCommMonoid M']
 variable [∀ i, Module R (M₁ i)] [∀ i, Module R (M₁' i)]
   [Module R M₂] [Module R M₃] [Module R M₄] [Module R M']
 
