@@ -7755,6 +7755,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
@@ -7792,6 +7793,7 @@ public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
