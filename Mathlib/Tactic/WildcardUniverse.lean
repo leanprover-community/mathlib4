@@ -42,7 +42,8 @@ variable (X : Type*) (y : ULift.!{0} X)
 
 ## Implementation Notes
 
-The elaborator automatically reorganizes universe parameters to ensure the ordering matches what is indicated by the syntax.
+The elaborator automatically reorganizes universe parameters to ensure the ordering
+matches what is indicated by the syntax.
 -/
 
 open Lean Elab Term
