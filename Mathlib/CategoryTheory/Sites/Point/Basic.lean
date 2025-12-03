@@ -182,8 +182,7 @@ lemma toPresheafFiber_map_injective [Presheaf.IsLocallyInjective J f] :
     simpa using this _ y _ _ h
   intro X x p₁ p₂ h
   obtain ⟨Y, g, hg, y, rfl⟩ := Φ.jointly_surjective _ (Presheaf.equalizerSieve_mem J f _ _ h) x
-  simp only [Presheaf.equalizerSieve_apply] at hg
-  simp only [← toPresheafFiber_w_apply, hg]
+  simp_all [← toPresheafFiber_w_apply]
 
 lemma toPresheafFiber_map_bijective
     [Presheaf.IsLocallyInjective J f] [Presheaf.IsLocallySurjective J f] :
