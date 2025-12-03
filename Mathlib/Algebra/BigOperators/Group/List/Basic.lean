@@ -212,10 +212,8 @@ theorem prod_insertIdx {i} (hlen : i ≤ l.length) (hcomm : ∀ a' ∈ l.take i,
 @[to_additive (attr := simp)]
 theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i, Commute l[i] a') :
     l[i] * (l.eraseIdx i).prod = l.prod := by
-  -- This is probably missing from Lean's library
-  have take_eraseIdx_eq_take_of_le : ∀ i j, i ≤ j → (l.eraseIdx j).take i = l.take i := sorry
   rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length) (fun a' a'_mem =>
-      hcomm a' (by rwa [take_eraseIdx_eq_take_of_le i i (Nat.le_refl i)] at a'_mem)),
+      hcomm a' (by rwa [take_eraseIdx_eq_take_of_le l i i (Nat.le_refl i)] at a'_mem)),
     insertIdx_eraseIdx_getElem hlen]
 
 end Monoid

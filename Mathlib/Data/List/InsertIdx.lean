@@ -121,6 +121,14 @@ theorem insertIdx_injective (n : ℕ) (x : α) :
   | zero => simp
   | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
 
+theorem take_insertIdx_eq_take_of_le (l : List α) x i j (h : i ≤ j) :
+    (l.insertIdx j x).take i = l.take i :=
+  sorry
+
+theorem take_eraseIdx_eq_take_of_le (l : List α) i j (h : i ≤ j) :
+    (l.eraseIdx j).take i = l.take i :=
+  sorry
+
 end InsertIdx
 
 end List
