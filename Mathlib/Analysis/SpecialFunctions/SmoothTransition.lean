@@ -89,7 +89,7 @@ theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
       constructor
       · apply hε_ball
         simp_all [abs_of_pos hε_pos]
-      · simp
+      · apply ne_of_lt
         linarith
     simp_all [expNegInvGlue.zero_iff_nonpos]
     linarith
