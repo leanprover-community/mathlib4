@@ -139,7 +139,7 @@ variable
 variable (Ω F n) in
 /-- `𝓓'^{n}(Ω, F) = Distribution Ω F n` is the space of `F`-valued distributions on `Ω` with
 order at most `n`. In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/
-abbrev Distribution := 𝓓^{n}(Ω, ℝ) →SL_c[RingHom.id ℝ] F
+abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 
 /-- We denote `𝓓'^{n}(Ω, F)` the space of `F`-valued distributions on `Ω` with order at most
 `n : ℕ∞`. Note that using `𝓓'` is a bit abusive since this is no longer a dual space unless
@@ -163,7 +163,7 @@ section mapCLM
 `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
 pointwise. -/
 def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
-  ContinuousLinearMap.postcomp_uniformConvergenceCLM (_ : Set <| Set <| 𝓓^{n}(Ω, ℝ)) A
+  A.postcomp_uniformConvergenceCLM _
 
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
