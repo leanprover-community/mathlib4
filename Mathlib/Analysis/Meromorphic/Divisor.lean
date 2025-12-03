@@ -171,9 +171,8 @@ respectively.
 theorem min_divisor_le_divisor_add {f₁ f₂ : 𝕜 → E} {z : 𝕜} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
     (hf₂ : MeromorphicOn f₂ U) (h₁z : z ∈ U) (h₃ : meromorphicOrderAt (f₁ + f₂) z ≠ ⊤) :
     min (divisor f₁ U z) (divisor f₂ U z) ≤ divisor (f₁ + f₂) U z := by
-  by_cases hz : z ∉ U
+  by_cases! hz : z ∉ U
   · simp_all
-  rw [not_not] at hz
   rw [divisor_apply hf₁ hz, divisor_apply hf₂ hz, divisor_apply (hf₁.add hf₂) hz]
   by_cases h₁ : meromorphicOrderAt f₁ z = ⊤
   · simp_all
@@ -191,9 +190,8 @@ theorem negPart_divisor_add_le_max {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf�
     (hf₂ : MeromorphicOn f₂ U) :
     (divisor (f₁ + f₂) U)⁻ ≤ max (divisor f₁ U)⁻ (divisor f₂ U)⁻ := by
   intro z
-  by_cases hz : z ∉ U
+  by_cases! hz : z ∉ U
   · simp [hz]
-  rw [not_not] at hz
   simp only [Function.locallyFinsuppWithin.negPart_apply, Function.locallyFinsuppWithin.max_apply]
   by_cases hf₁₂ : meromorphicOrderAt (f₁ + f₂) z = ⊤
   · simp [divisor_apply (hf₁.add hf₂) hz, hf₁₂, negPart_nonneg]
