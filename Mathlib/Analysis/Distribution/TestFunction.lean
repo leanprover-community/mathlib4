@@ -220,21 +220,6 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
     𝓓^{n}(Ω, F) :=
   ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
 
-variable (𝕜) in
-/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map.
-
-This is subsumed by `ofSupportedInCLM`, which also bundles the continuity. -/
-def ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
-    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
-  toFun f := ofSupportedIn K_sub_Ω f
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-@[simp] theorem coe_ofSupportedInLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
-    (K_sub_Ω : (K : Set E) ⊆ Ω) :
-    (ofSupportedInLM 𝕜 K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) = ofSupportedIn K_sub_Ω :=
-  rfl
-
 section Topology
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
@@ -307,7 +292,9 @@ variable (𝕜) in
 linear map. -/
 def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}(Ω, F) where
-  toLinearMap := ofSupportedInLM 𝕜 K_sub_Ω
+  toFun f := ofSupportedIn K_sub_Ω f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   cont := continuous_ofSupportedIn K_sub_Ω
 
 @[simp] theorem coe_ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
@@ -322,8 +309,8 @@ continuous for every compact `K ⊆ Ω`. -/
 protected theorem continuous_iff_continuous_comp [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
     [Module 𝕜 V] [IsScalarTower ℝ 𝕜 V] (f : 𝓓^{n}(Ω, F) →ₗ[𝕜] V) :
     Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
-      Continuous (f ∘ₗ ofSupportedInLM 𝕜 K_sub_Ω) := by
-  simp_rw [LinearMap.coe_comp, ← f.coe_restrictScalars ℝ, coe_ofSupportedInLM]
+      Continuous (f ∘ ofSupportedIn K_sub_Ω) := by
+  simp_rw [← f.coe_restrictScalars ℝ]
   rw [continuous_iff_le_induced]
   have : @IsTopologicalAddGroup _ (induced (f.restrictScalars ℝ) t) _ :=
     topologicalAddGroup_induced _
