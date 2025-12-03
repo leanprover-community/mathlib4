@@ -37,10 +37,7 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f ((N * n : ℝ) +ᵥ z) = f z := by
   apply vAdd_apply_of_mem_strictPeriods
-  simp only [Subgroup.mem_strictPeriods_iff, Subgroup.mem_map]
-  refine ⟨⟨!![1, N * n; 0, 1], by simp⟩, by simp, ?_⟩
-  ext i j
-  fin_cases i <;> fin_cases j <;> simp
+  simp [strictPeriods_Gamma, AddSubgroup.mem_zmultiples_iff, mul_comm]
 
 theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((ModularGroup.T ^ (N * n))) • z) = f z := by
