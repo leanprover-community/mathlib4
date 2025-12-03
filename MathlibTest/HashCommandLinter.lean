@@ -1,4 +1,5 @@
 import Lean.Elab.GuardMsgs
+import Lean.Elab.CheckTactic -- to be removed when possible
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.HashCommandLinter
 
