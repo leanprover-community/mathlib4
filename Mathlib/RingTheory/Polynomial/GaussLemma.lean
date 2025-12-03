@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
 # Gauss's Lemma

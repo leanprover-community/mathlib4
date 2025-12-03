@@ -5,7 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Tactic.Linter.DeprecatedModule
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Util.CompileInductive
 
 deprecated_module (since := "2025-04-13")

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 
 /-!
 # Functors

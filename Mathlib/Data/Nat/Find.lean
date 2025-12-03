@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Push
 public import Batteries.WF
+public import Batteries.Tactic.Init
 
 /-!
 # `Nat.find` and `Nat.findGreatest`

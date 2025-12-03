@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Factors
 public import Mathlib.Algebra.Polynomial.Lifts
-public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Split polynomials

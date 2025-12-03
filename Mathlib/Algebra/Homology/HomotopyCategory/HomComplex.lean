@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Tactic.Linarith
 
 /-! The cochain complex of homomorphisms between cochain complexes
 

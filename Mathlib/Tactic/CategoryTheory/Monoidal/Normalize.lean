@@ -7,6 +7,8 @@ module
 
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
 /-!
 # Normalization of morphisms in monoidal categories

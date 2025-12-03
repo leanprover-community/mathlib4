@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Simp.Attr
+public import Lean.Meta.Tactic.Simp.SimpTheorems
 
 /-!
 # `@[reduce_mod_char]` attribute

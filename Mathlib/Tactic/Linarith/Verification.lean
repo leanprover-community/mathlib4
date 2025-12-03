@@ -5,8 +5,8 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith.Parsing
 public meta import Mathlib.Util.Qq
+public import Mathlib.Tactic.Linarith.Parsing
 
 /-!
 # Deriving a proof of false

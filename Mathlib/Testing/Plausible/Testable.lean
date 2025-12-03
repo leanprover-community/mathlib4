@@ -6,7 +6,9 @@ Authors: Henrik Böving, Simon Hudon
 module
 
 public import Plausible.Testable
-public import Mathlib.Logic.Basic
+public meta import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Basic
+public meta import Plausible.Testable
 
 /-!
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.

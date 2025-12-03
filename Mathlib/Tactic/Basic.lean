@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Batteries.Util.LibraryNote
 
 /-!
 # Basic tactics and utilities for tactic writing

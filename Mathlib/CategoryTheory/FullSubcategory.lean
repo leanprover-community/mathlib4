@@ -5,6 +5,8 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 deprecated_module "Auto-generated deprecation" (since := "2025-04-23")

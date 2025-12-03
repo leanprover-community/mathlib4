@@ -9,8 +9,8 @@ public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Logic.Basic
 public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
 
 /-!
 # Relation closures

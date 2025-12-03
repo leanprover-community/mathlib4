@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-public import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 
 /-!

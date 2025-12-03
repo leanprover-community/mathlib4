@@ -1,6 +1,8 @@
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Util.CompileInductive
 
 deprecated_module (since := "2025-05-11")

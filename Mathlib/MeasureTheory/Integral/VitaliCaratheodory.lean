@@ -5,6 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 deprecated_module (since := "2025-04-06")

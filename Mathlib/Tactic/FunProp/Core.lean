@@ -9,7 +9,9 @@ public meta import Mathlib.Tactic.FunProp.Theorems
 public meta import Mathlib.Tactic.FunProp.ToBatteries
 public meta import Mathlib.Tactic.FunProp.Types
 public meta import Mathlib.Lean.Expr.Basic
-public meta import Batteries.Tactic.Exact
+public import Batteries.Tactic.Exact
+public import Mathlib.Tactic.FunProp.Theorems
+public import Qq
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

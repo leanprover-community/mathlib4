@@ -10,6 +10,8 @@ public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.Lemma
 public meta import Mathlib.Tactic.Linarith.Frontend
 public meta import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 ## The `bound` tactic

@@ -7,6 +7,8 @@ module
 
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
 /-!
 # Coherence tactic for monoidal categories

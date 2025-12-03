@@ -5,7 +5,8 @@ Authors: Alex J. Best, Xavier Roblot
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Tactic.Positivity
 
 deprecated_module (since := "2025-04-30")

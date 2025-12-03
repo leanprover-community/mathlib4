@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas about powers in ordered fields.

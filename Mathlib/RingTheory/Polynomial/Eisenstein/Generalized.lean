@@ -5,8 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum
 
 deprecated_module "Auto-generated deprecation" (since := "2025-04-11")

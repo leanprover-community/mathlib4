@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas about linear ordered (semi)fields

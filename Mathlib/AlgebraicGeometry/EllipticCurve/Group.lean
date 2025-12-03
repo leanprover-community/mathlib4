@@ -5,8 +5,9 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 deprecated_module (since := "2025-05-07")

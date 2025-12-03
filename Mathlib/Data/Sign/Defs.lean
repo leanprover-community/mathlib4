@@ -12,6 +12,7 @@ public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers no
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sign type

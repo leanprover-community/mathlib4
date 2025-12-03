@@ -5,6 +5,10 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 deprecated_module (since := "2025-06-14")

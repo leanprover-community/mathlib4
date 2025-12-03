@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.Order.Ring.Finset
-public import Mathlib.Data.Set.Subset
 public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex

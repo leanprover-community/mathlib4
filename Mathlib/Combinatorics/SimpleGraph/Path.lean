@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Init
+public import Mathlib.Data.Sym.Sym2
 
 
 deprecated_module (since := "2025-06-13")

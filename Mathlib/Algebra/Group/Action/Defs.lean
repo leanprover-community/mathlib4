@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Tactic.Spread
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Definitions of group actions

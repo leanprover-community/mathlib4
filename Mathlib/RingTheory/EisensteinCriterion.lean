@@ -5,9 +5,7 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.RingTheory.Ideal.Quotient.Basic
-public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.Prime
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum
 
 deprecated_module "Auto-generated deprecation" (since := "2025-04-11")

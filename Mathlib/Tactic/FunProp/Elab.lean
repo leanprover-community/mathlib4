@@ -5,7 +5,7 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public meta import Mathlib.Tactic.FunProp.Core
+public import Mathlib.Tactic.FunProp.Core
 
 /-!
 ## `funProp` tactic syntax

@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 
 module
 
-import Mathlib.Init
 import Std.Internal.Parsec.String
 
 /-!

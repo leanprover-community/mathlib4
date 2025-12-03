@@ -7,13 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.Polynomial.DegreeLT
 
 /-!
 # Resultant of two polynomials
