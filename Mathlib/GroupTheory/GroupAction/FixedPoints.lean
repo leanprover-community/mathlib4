@@ -274,22 +274,16 @@ namespace MulActionHom
 
 /-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
 @[to_additive]
-lemma map_mem_fixedPoints
-    {G : Type*} [Monoid G]
-    {A : Type*} [MulAction G A] {B : Type*} [MulAction G B]
-    (f : A →[G] B) {H : Submonoid G}
-    {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
+lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
+    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
     f a ∈ MulAction.fixedPoints H B := by
   intro ⟨h, _⟩
   simp_all [← f.map_smul h a]
 
 /-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
 @[to_additive]
-lemma map_mem_fixedBy
-    {G : Type*} [Monoid G]
-    {A : Type*} [MulAction G A] {B : Type*} [MulAction G B]
-    (f : A →[G] B) {g : G}
-    {a : A} (ha : a ∈ MulAction.fixedBy A g) :
+lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
+    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
     f a ∈ MulAction.fixedBy B g := by
   simpa using congr_arg f ha
 
