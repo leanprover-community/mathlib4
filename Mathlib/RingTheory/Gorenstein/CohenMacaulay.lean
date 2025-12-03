@@ -21,6 +21,7 @@ public import Mathlib.RingTheory.CohenMacaulay.Catenary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Noetherian.Basic
@@ -835,15 +836,14 @@ variable {R}
 class Ideal.isIrreducible (I : Ideal R) : Prop where
   irr : ∀ {J₁ J₂ : Ideal R}, J₁ ⊓ J₂ = I → (J₁ = I ∨ J₂ = I)
 
---need some map/comap lemma
-
---interaction with minimal ideal
-
-/-
-lemma irreducible_iff_isPrincipal (J : Ideal R) (h : maximalIdeal R ∈ J.minimalPrimes) :
-    J.isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R ⧸ J)).IsPrincipal := by
+lemma Ideal.irreducible_iff_bot_irreducible (J : Ideal R) :
+    J.isIrreducible ↔ (⊥ : Ideal (R ⧸ J)).isIrreducible := by
   sorry
--/
+
+omit [IsNoetherianRing R] in
+lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
+    (⊥ : Ideal R).isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal := by
+  sorry
 
 end
 
@@ -891,15 +891,54 @@ lemma hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero
     let _ : Ring.KrullDimLE 0 R := ringKrullDimZero_iff_ringKrullDim_eq_zero.mpr h2
     exact Ideal.mem_minimalPrimes_of_krullDimLE_zero (maximalIdeal R)
   rcases (isAssociatedPrime_iff_exists_injective_linearMap _ _).mp maxass with ⟨_, f, hf⟩
-  use (f.lcomp R R) LinearMap.id
-  apply le_antisymm _ le_top
-  intro g _
+  use f
+  apply ((Submodule.span_singleton_eq_top_iff _ _).mpr fun g ↦ ?_).symm
   rcases inj.out f hf g with ⟨h, hh⟩
-  have : g = h 1 • ((LinearMap.lcomp R R f) LinearMap.id) := by
-    ext
-    simp [hh]
-  rw [this]
-  exact Submodule.smul_mem _ (h 1) (Submodule.mem_span_singleton_self _)
+  use h 1
+  ext
+  simp [hh]
+
+variable {R} in
+omit [IsNoetherianRing R] in
+lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
+    letI : IsLocalRing (R ⧸ J) :=
+      have : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
+      have : IsLocalHom (Ideal.Quotient.mk J) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
+    (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R ⧸ J)).IsPrincipal ↔
+    (⊤ : Submodule (R ⧸ J) ((R ⧸ J) ⧸ maximalIdeal (R ⧸ J) →ₗ[R ⧸ J] R ⧸ J)).IsPrincipal := by
+  let _ : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
+  let _ : IsLocalHom (Ideal.Quotient.mk J) :=
+    IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+  let _ : IsLocalRing (R ⧸ J) :=
+    IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
+  let e : (R ⧸ maximalIdeal R) ≃ₗ[R] (R ⧸ J) ⧸ maximalIdeal (R ⧸ J) :=
+    LinearEquiv.ofBijective
+    { __ := ResidueField.map (Ideal.Quotient.mk J)
+      map_smul' r x := by
+        simp [Algebra.smul_def, IsLocalRing.ResidueField.map_residue,
+          IsScalarTower.algebraMap_eq R (R ⧸ J) (ResidueField (R ⧸ J))] }
+    (ResidueField.map_bijective_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective)
+  refine ⟨fun ⟨f, hf⟩ ↦ ?_, fun ⟨f, hf⟩ ↦ ?_⟩
+  · use (f.comp e.symm.toLinearMap).extendScalarsOfSurjective Ideal.Quotient.mk_surjective
+    apply ((Submodule.span_singleton_eq_top_iff _ _).mpr fun g ↦ ?_).symm
+    have : (g.restrictScalars R).comp e.toLinearMap ∈ Submodule.span R {f} := by simp [← hf]
+    rcases Submodule.mem_span_singleton.mp this with ⟨r, hr⟩
+    use Ideal.Quotient.mk J r
+    apply LinearMap.ext (fun x ↦ ?_)
+    change (r • f) (e.symm x) = _
+    simp [hr]
+  · use (f.restrictScalars R).comp e.toLinearMap
+    apply ((Submodule.span_singleton_eq_top_iff _ _).mpr fun g ↦ ?_).symm
+    have : (g.comp e.symm.toLinearMap).extendScalarsOfSurjective (S := R ⧸ J)
+      Ideal.Quotient.mk_surjective ∈ Submodule.span (R ⧸ J) {f} := by simp [← hf]
+    rcases Submodule.mem_span_singleton.mp this with ⟨r, hr⟩
+    rcases Ideal.Quotient.mk_surjective r with ⟨r', hr'⟩
+    use r'
+    apply LinearMap.ext (fun x ↦ ?_)
+    change ((Ideal.Quotient.mk J) r' • f) (e x) = _
+    simp [hr', hr]
 
 lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
     (h1 : injectiveDimension (ModuleCat.of R R) = n) (h2 : ringKrullDim R = n) :
@@ -917,15 +956,40 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
     (by use 0, []; simpa using IsRegular.nil _ _)
     (lt_of_eq_of_lt deptheq (ENat.coe_lt_top n))) with ⟨rs, reg, mem, len⟩
   let _ := (quotient_regular_isGorenstein_iff_isGorenstein R rs reg).mp ‹_›
+  have netop : Ideal.ofList rs ≠ ⊤ :=
+    (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') (Ideal.span_le.mpr mem))
+  rw [← Nat.cast_inj.mp len, ext_isPrincipal_iff R rs reg mem, linearMap_isPrincipal_iff _ netop]
   have h2' : ringKrullDim (R ⧸ Ideal.ofList rs) = 0 := by
     apply (WithBot.add_natCast_cancel _ _ rs.length).mp
     rw [ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg]
     simp [Nat.cast_inj.mp len, h2]
   have h1' : injectiveDimension (ModuleCat.of (R ⧸ Ideal.ofList rs) (R ⧸ Ideal.ofList rs)) = 0 := by
     rw [injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing, h2']
-  rw [← Nat.cast_inj.mp len, ext_isPrincipal_iff R rs reg mem]
-  have prin' := hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero _ h1' h2'
+  exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero _ h1' h2'
 
+omit [IsNoetherianRing R] in
+lemma injective_of_isPrincipal [IsArtinianRing R]
+    (h : (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal) :
+    Injective (ModuleCat.of R R) := by
+  have leneq1 : Module.length R (R ⧸ maximalIdeal R →ₗ[R] R) = 1 := by
+    sorry
+  have lenle (M : Type u) [AddCommGroup M] [Module R M] [fin : Module.Finite R M] :
+    Module.length R (M →ₗ[R] R) ≤ Module.length R M := by
+    induction fin using IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
+    · rename_i N _ _ _ sub
+      simp
+    · rename_i N _ _ _ p e
+      have : p.1 = maximalIdeal R := Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1
+
+      sorry
+    · rename_i N1 _ _ _ N2 _ _ _ N3 _ _ _ f g inj surj exac len1 len2
+
+      sorry
+  --have := lenle (maximalIdeal R)
+  -- apply to `maximalIdeal R`, consider `0 → maximalIdeal R → R → k → 0`
+  -- `0 → Hom(k, R) → Hom(R, R) → Hom(maximalIdeal R, R) →(δ) Ext¹(k, R)`
+  -- obtaining `δ = 0` implying `Ext¹(k, R) → Ext¹(R, R) = 0` is injective
+  -- since `k` is the only quotient by prime, `R` is injective.
   sorry
 
 lemma isGorensteinLocalRing_iff_exists :
@@ -1002,14 +1066,23 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
     exact ltsub i (Nat.cast_lt.mp hi)
   tfae_have 6 → 7 := by
     refine fun ⟨CM, prin⟩ ↦ ⟨CM, fun {J} maxmin spanrank ↦ ?_⟩
+    let _ : Nontrivial (R ⧸ J) :=
+      Ideal.Quotient.nontrivial_iff.mpr (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') maxmin.1.2)
+    let _ : IsLocalHom (Ideal.Quotient.mk J) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    let _ : IsLocalRing (R ⧸ J) :=
+      IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
+    let _ : IsArtinianRing (R ⧸ J) :=
+      quotient_artinian_of_mem_minimalPrimes_of_isLocalRing J maxmin
     rcases generators_toList_isRegular_of_spanFinrank_eq J maxmin (by simp [spanrank, h]) with
       ⟨rs, len, gen, reg⟩
     have len' : rs.length = n := Nat.cast_inj.mp (len.trans h)
     have mem : ∀ x ∈ rs, x ∈ maximalIdeal R := fun x hx ↦
       le_of_eq_of_le gen maxmin.1.2 ((Ideal.mem_span x).mpr fun p a ↦ a hx)
-
-    -- prin would imply irreducible
-    sorry
+    rw [← len', ext_isPrincipal_iff R rs reg mem, gen,
+      linearMap_isPrincipal_iff J (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') maxmin.1.2)] at prin
+    rw [Ideal.irreducible_iff_bot_irreducible, Ideal.bot_isIrreducible_iff_isPrincipal]
+    exact prin
   tfae_have 7 → 8 := by
     refine fun ⟨CM, irr⟩ ↦ ⟨CM, ?_⟩
     --existence of parameter ideal
@@ -1029,17 +1102,21 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
     exact ⟨min, this, irr min this⟩
   tfae_have 8 → 1 := by
     refine fun ⟨CM, ⟨J, maxmin, spanrank, irr⟩⟩ ↦ ?_
+    let _ : Nontrivial (R ⧸ J) :=
+      Ideal.Quotient.nontrivial_iff.mpr (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') maxmin.1.2)
+    let _ : IsLocalHom (Ideal.Quotient.mk J) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    let _ : IsLocalRing (R ⧸ J) :=
+      IsLocalRing.of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
+    let _ : IsArtinianRing (R ⧸ J) :=
+      quotient_artinian_of_mem_minimalPrimes_of_isLocalRing J maxmin
     rcases generators_toList_isRegular_of_spanFinrank_eq J maxmin (by simp [spanrank, h]) with
       ⟨rs, len, gen, reg⟩
-    rw [quotient_regular_isGorenstein_iff_isGorenstein R rs reg, gen]
-    -- it is artinian with `Hom(k, R⧸J) = k`
-    -- proof `l(Hom(M, R⧸J)) ≤ l(M)` for all fg module `M`
-    -- by induction using `IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime`
-    -- apply to `maximalIdeal (R⧸J)`, consider `0 → maximalIdeal (R⧸J) → R⧸J → k → 0`
-    -- `0 → Hom(k, R⧸J) → Hom(R⧸J, R⧸J) → Hom(maximalIdeal (R⧸J), R ⧸ J) →(δ) Ext¹(k, R⧸J)`
-    -- obtaining `δ = 0` implying `Ext¹(k, R⧸J) → Ext¹(R⧸J, R⧸J) = 0` is injective
-    -- since `k` is the only quotient by prime, `R⧸J` is injective.
-    sorry
+    rw [Ideal.irreducible_iff_bot_irreducible, Ideal.bot_isIrreducible_iff_isPrincipal] at irr
+    have inj := injective_of_isPrincipal (R ⧸ J) irr
+    rw [quotient_regular_isGorenstein_iff_isGorenstein R rs reg, gen, isGorensteinLocalRing_def]
+    apply ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top 0))
+    exact (injectiveDimension_le_iff _ _).mpr inferInstance
   tfae_finish
 
 end
