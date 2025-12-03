@@ -47,6 +47,11 @@ variable (𝕜 E F V) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
 a normed space, equipped with the topology of pointwise convergence. -/
 abbrev TemperedDistribution := 𝓢(E, F) →Lₚₜ[𝕜] V
+/- Since mathlib is missing quite a few results that show that continuity of linear maps and
+convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we
+use the pointwise topology for now and not the strong topology. The pointwise topology is
+conventially used in PDE texts, but has the downside that it is not barrelled, hence the uniform
+boundedness principle does not hold. -/
 
 @[inherit_doc]
 scoped[SchwartzMap] notation "𝓢'(" 𝕜 ", " E ", " F ", " V ")" => TemperedDistribution 𝕜 E F V
