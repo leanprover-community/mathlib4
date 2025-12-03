@@ -245,7 +245,7 @@ The logarithmic counting function of a constant function is zero.
 /--
 The logarithmic counting function of the constant function zero is zero.
 -/
-@[simp] theorem logCounting_const_zero {e : WithTop E} :
+@[simp] theorem logCounting_zero {e : WithTop E} :
     logCounting (0 : 𝕜 → E) e = 0 := logCounting_const
 
 
