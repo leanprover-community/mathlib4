@@ -979,16 +979,35 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
     · rename_i N _ _ _ sub
       simp
     · rename_i N _ _ _ p e
-      have : p.1 = maximalIdeal R := Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1
+      rw [Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1] at e
 
       sorry
     · rename_i N1 _ _ _ N2 _ _ _ N3 _ _ _ f g inj surj exac len1 len2
 
       sorry
-  --have := lenle (maximalIdeal R)
-  -- apply to `maximalIdeal R`, consider `0 → maximalIdeal R → R → k → 0`
-  -- `0 → Hom(k, R) → Hom(R, R) → Hom(maximalIdeal R, R) →(δ) Ext¹(k, R)`
-  -- obtaining `δ = 0` implying `Ext¹(k, R) → Ext¹(R, R) = 0` is injective
+  have surj : Function.Surjective ((maximalIdeal R).subtype.lcomp R R) := by
+    --have := lenle (maximalIdeal R)
+    --Submodule.length_lt
+    --LinearMap.rangeRestrict
+    sorry
+  have exac := (LinearMap.exact_subtype_mkQ (maximalIdeal R))
+  let S : ShortComplex (ModuleCat.{u} R) :=
+    ShortComplex.mk (ModuleCat.ofHom (maximalIdeal R).subtype)
+      (ModuleCat.ofHom (maximalIdeal R).mkQ) (by
+      rw [← ModuleCat.ofHom_comp, exac.linearMap_comp_eq_zero]
+      rfl )
+  have S_exact : S.ShortExact := {
+    exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
+    mono_f := (ModuleCat.mono_iff_injective S.f).mpr (maximalIdeal R).subtype_injective
+    epi_g := (ModuleCat.epi_iff_surjective S.g).mpr (maximalIdeal R).mkQ_surjective }
+  have exac1 := Ext.contravariant_sequence_exact₁' S_exact (ModuleCat.of R R) 0 1 (add_zero 1)
+  have exac2 := Ext.contravariant_sequence_exact₃' S_exact (ModuleCat.of R R) 0 1 (add_zero 1)
+  have inj : Function.Injective ((Ext.mk₀ S.g).precomp (ModuleCat.of R R) (zero_add 1)) := by
+    apply (AddCommGrpCat.mono_iff_injective _).mp (exac2.mono_g (exac1.epi_f_iff.mp ?_))
+    simp only [AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom, S]
+    --use `surj`
+    sorry
+  -- obtain `Ext¹(k, R) = 0` from `inj`
   -- since `k` is the only quotient by prime, `R` is injective.
   sorry
 
