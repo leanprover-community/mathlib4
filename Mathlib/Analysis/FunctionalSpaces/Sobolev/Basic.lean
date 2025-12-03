@@ -36,7 +36,9 @@ structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Pr
 
 lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') :
     IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ := by
-  sorry
+  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨h1, h2⟩ ↦ ?_⟩
+  constructor
+  · have := @MeasureTheory.IntegrableOn.congr_set_ae (f := f)
 
 end Distribution
 open Distribution
@@ -236,6 +238,15 @@ lemma memSobolev_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
 lemma MemSobolev.ae_eq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
     MemSobolev Ω f' k p μ :=
   memSobolev_congr_ae h |>.mp hf
+
+lemma MemSobolev.AEStronglyMeasurable (hf : MemSobolev Ω f k p μ) :
+  AEStronglyMeasurable f (μ.restrict Ω) := sorry
+
+lemma MemSobolev.restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
+  MemSobolev Ω (s.indicator f) k p μ := sorry
+
+lemma MemSobolev.restrict' {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
+  MemSobolev Ω f k p (μ.restrict s) := sorry
 
 variable (Ω F) in
 def SobolevSpace (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) :
