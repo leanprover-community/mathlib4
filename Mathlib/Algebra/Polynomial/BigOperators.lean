@@ -261,8 +261,7 @@ theorem ofMultiset_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
     exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
-  congr; simp only [ofMultiset_apply]
-  rw [natDegree_multiset_prod_of_monic] <;> · simp [monic_X_sub_C]
+  congr; rw [ofMultiset_apply, natDegree_multiset_prod_of_monic] <;> · simp [monic_X_sub_C]
 
 theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s) :
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
