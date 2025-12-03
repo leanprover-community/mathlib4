@@ -506,12 +506,26 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! -isSimp]
-noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
-  invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
+noncomputable def toType.mk {α : Ordinal} : Set.Iio α ≃o α.toType where
+  toFun x := enum (α := α.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
+  invFun x := ⟨typein (α := α.toType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
+
+noncomputable
+abbrev toType.get {α : Ordinal} (β : α.toType) : Set.Iio α := toType.mk.symm β
+
+noncomputable
+instance (α : Ordinal) : Coe (Ordinal.toType α) (Set.Iio α) where
+  coe := toType.get
+noncomputable
+instance (α : Ordinal) : CoeOut (Ordinal.toType α) Ordinal where
+  coe x := x.get
+
+ -- TODO: replace in Mathlib & add deprecation warning
+noncomputable
+abbrev enumIsoToType (α : Ordinal) : Set.Iio α ≃o α.toType := toType.mk
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
   ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
