@@ -848,8 +848,7 @@ variable (G) in
 convergence. -/
 @[simps! apply]
 def ContinuousLinearMap.precomp_compactConvergenceCLM [IsTopologicalAddGroup G]
-    [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ] [RingHomIsometric σ]
-    (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
+    [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
   L.precomp_uniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
 
 variable (E) in
