@@ -990,6 +990,8 @@ omit [IsNoetherianRing R] in
 lemma injective_of_isPrincipal [IsArtinianRing R]
     (h : (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal) :
     Injective (ModuleCat.of R R) := by
+  have leneq1' : Module.length R (R ⧸ maximalIdeal R) = 1 :=
+    length_eq_one_iff.mpr (isSimpleModule_iff_isCoatom.mpr Ideal.IsMaximal.out)
   have leneq1 : Module.length R (R ⧸ maximalIdeal R →ₗ[R] R) = 1 := by
     sorry
   have lenle (M : Type u) [AddCommGroup M] [Module R M] [fin : Module.Finite R M] :
@@ -999,17 +1001,35 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
       simp
     · rename_i N _ _ _ p e
       rw [Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1] at e
-
-      sorry
-    · rename_i N1 _ _ _ N2 _ _ _ N3 _ _ _ f g inj surj exac len1 len2
-
-      sorry
-  have surj : Function.Surjective ((maximalIdeal R).subtype.lcomp R R) := by
-    --have := lenle (maximalIdeal R)
-    --Submodule.length_lt
-    --LinearMap.rangeRestrict
-    sorry
+      rw [(e.congrLeft R R).length_eq, e.length_eq, leneq1, leneq1']
+    · rename_i N1 _ _ _ N2 _ _ _ N3 _ _ _ f g inj surj exac len1 len3
+      rw [Module.length_eq_add_of_exact f g inj surj exac]
+      apply le_trans _ (add_le_add len1 len3)
+      let f' := (f.lcomp R R).rangeRestrict
+      let g' := g.lcomp R R
+      have : Function.Exact g' f' := by
+        simp only [LinearMap.exact_iff, LinearMap.ker_rangeRestrict, f', g']
+        rw [← LinearMap.exact_iff]
+        exact LinearMap.exact_lcomp_of_exact_of_surjective R exac surj
+      rw [Module.length_eq_add_of_exact g' f' (LinearMap.lcomp_injective_of_surjective _ surj)
+        (LinearMap.surjective_rangeRestrict _) this, add_comm (Module.length R (N3 →ₗ[R] R))]
+      exact add_le_add_left (Module.length_le_of_injective _ (Submodule.subtype_injective _)) _
   have exac := (LinearMap.exact_subtype_mkQ (maximalIdeal R))
+  have surj : Function.Surjective ((maximalIdeal R).subtype.lcomp R R) := by
+    rw [← LinearMap.range_eq_top]
+    by_contra ne
+    let f := (maximalIdeal R).mkQ.lcomp R R
+    let g := ((maximalIdeal R).subtype.lcomp R R).rangeRestrict
+    have : Function.Exact f g := by
+      simp only [LinearMap.exact_iff, LinearMap.ker_rangeRestrict, f, g]
+      rw [← LinearMap.exact_iff]
+      exact LinearMap.exact_lcomp_of_exact_of_surjective R exac (Submodule.mkQ_surjective _)
+    have leneq := Module.length_eq_add_of_exact f g (LinearMap.lcomp_injective_of_surjective _
+      (Submodule.mkQ_surjective _)) (LinearMap.surjective_rangeRestrict _) this
+    rw [(LinearMap.ringLmapEquivSelf R R R).length_eq, Module.length_eq_add_of_exact _ _
+      (maximalIdeal R).subtype_injective (maximalIdeal R).mkQ_surjective exac,
+      leneq1, leneq1', add_comm 1, WithTop.add_right_inj WithTop.one_ne_top] at leneq
+    exact (lt_of_lt_of_le (Submodule.length_lt ne) (lenle (maximalIdeal R))).ne leneq.symm
   let S : ShortComplex (ModuleCat.{u} R) :=
     ShortComplex.mk (ModuleCat.ofHom (maximalIdeal R).subtype)
       (ModuleCat.ofHom (maximalIdeal R).mkQ) (by
