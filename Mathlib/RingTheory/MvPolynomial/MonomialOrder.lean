@@ -728,13 +728,11 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
     m.sPolynomial f g =
       monomial (m.degree f ⊔ m.degree g - m.degree f) (m.leadingCoeff g) * f -
       monomial (m.degree f ⊔ m.degree g - m.degree g) (m.leadingCoeff f) * g := by
-  unfold sPolynomial
-  congr 4
-  all_goals
-    ext a
-    by_cases h : (m.degree f) a ≤ (m.degree g) a
-    ·simp [h]
-    ·simp [le_of_lt (not_le.mp h)]
+  suffices ∀ f g, m.degree g - m.degree f = m.degree f ⊔ m.degree g - m.degree f by
+    rw [sPolynomial, this, this, sup_comm]
+  intro f g
+  ext a
+  obtain (h|h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
