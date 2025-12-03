@@ -4,9 +4,41 @@ import all Mathlib.Tactic.WildcardUniverse
 import Mathlib.Tactic.TypeStar
 import Mathlib.CategoryTheory.Functor.Basic
 
-set_option linter.style.setOption false
-set_option linter.style.commandStart false
 set_option pp.universes true
+
+section Foo
+
+universe u v w
+axiom Foo : Type u → Type v → Type w
+
+/-- info: Foo.{u, u_1, u_2} : Type u → Type u_1 → Type u_2 -/
+#guard_msgs in #check Foo.!{u}
+
+/-- info: Foo.{v, u_1, u_2} : Type v → Type u_1 → Type u_2 -/
+#guard_msgs in #check Foo.!{v}
+
+/-- info: Foo.{w, u_1, u_2} : Type w → Type u_1 → Type u_2 -/
+#guard_msgs in #check Foo.!{w}
+
+/-- info: Foo.{u_1, u, u_2} : Type u_1 → Type u → Type u_2 -/
+#guard_msgs in #check Foo.!{*,u}
+
+/-- info: Foo.{u_1, v, u_2} : Type u_1 → Type v → Type u_2 -/
+#guard_msgs in #check Foo.!{*,v}
+
+/-- info: Foo.{q_1, v, u_1} : Type q_1 → Type v → Type u_1 -/
+#guard_msgs in #check Foo.!{q*,v}
+
+/-- info: Foo.{q_1, r_1, u_1} : Type q_1 → Type r_1 → Type u_1 -/
+#guard_msgs in #check Foo.!{q*,r*}
+
+/-- info: Foo.{q_1, u, r_1} : Type q_1 → Type u → Type r_1 -/
+#guard_msgs in #check Foo.!{q*,u,r*}
+
+/-- info: Foo.{u, q_1, r_1} : Type u → Type q_1 → Type r_1 -/
+#guard_msgs in #check Foo.!{u,q*,r*}
+
+end Foo
 
 section ULiftTests
 
@@ -205,17 +237,6 @@ def testFullyInferred := y
 #guard_msgs in #check testFullyInferred
 
 end InferredLevelTests
-
-section EmptyUniverseArgs
-
-variable (X : Type*) (y : ULift.!{} X)
-
-def testEmptyArgs := y
-
-/-- info: testEmptyArgs.{u_1, u_2} (X : Type u_1) (y : ULift.{u_2, u_1} X) : ULift.{u_2, u_1} X -/
-#guard_msgs in #check testEmptyArgs
-
-end EmptyUniverseArgs
 
 section PartialUniverseArgs
 

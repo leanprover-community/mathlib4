@@ -65,7 +65,7 @@ This elaborator handles syntax of the form `ident.!{wildcard_universe,*} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
 syntax (name := appWithWildcards)
-    ident noWs ".!{" wildcard_universe,* "}" Parser.Term.argument* : term
+    ident noWs ".!{" wildcard_universe,+ "}" Parser.Term.argument* : term
 
 /--
 Represents the kind of wildcard universe parameter.
@@ -128,7 +128,7 @@ meta def reorganizeUniverseParams
   return result
 
 @[term_elab appWithWildcards, inherit_doc appWithWildcards]
-meta def elabAppWithWildcards : TermElab := fun stx expectedType? => do
+meta def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
   | `($id:ident.!{$us,*} $args*) =>
     let constName ← Lean.resolveGlobalConstNoOverload id
