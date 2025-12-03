@@ -61,6 +61,10 @@ lemma IsZeroAtImInfty.valueAtInfty_eq_zero {f : ℍ → ℂ} (hf : IsZeroAtImInf
     valueAtInfty f = 0 :=
   hf.limUnder_eq
 
+lemma qParam_tendsto_atImInfty {h : ℝ} (hh : 0 < h) :
+    Tendsto (fun τ : ℍ ↦ 𝕢 h τ) atImInfty (nhds 0) :=
+  ((Periodic.qParam_tendsto hh).mono_right nhdsWithin_le_nhds).comp tendsto_coe_atImInfty
+
 end UpperHalfPlane
 
 namespace SlashInvariantFormClass
@@ -134,7 +138,7 @@ lemma cuspFunction_apply_zero [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
   refine (Tendsto.limUnder_eq ?_).symm
   nth_rw 1 [← funext fun τ ↦ eq_cuspFunction f τ hΓ hh.ne']
   refine (analyticAt_cuspFunction_zero f hh hΓ).continuousAt.tendsto.comp ?_
-  exact ((Periodic.qParam_tendsto hh).mono_right nhdsWithin_le_nhds).comp tendsto_coe_atImInfty
+  exact qParam_tendsto_atImInfty hh
 
 variable (h) in
 /-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
