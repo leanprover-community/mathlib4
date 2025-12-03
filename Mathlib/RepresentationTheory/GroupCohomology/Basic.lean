@@ -5,6 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum
 
 deprecated_module (since := "2025-06-14")

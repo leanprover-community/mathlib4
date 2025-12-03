@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Constructions
 public import Mathlib.Tactic.TFAE
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Locally closed sets

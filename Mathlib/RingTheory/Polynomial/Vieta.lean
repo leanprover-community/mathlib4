@@ -5,8 +5,8 @@ Authors: Hanting Zhang
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+public import Mathlib.Algebra.Polynomial.Factors
 
 /-!
 # Vieta's Formula

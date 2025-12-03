@@ -9,8 +9,7 @@ public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
-meta import Mathlib.Algebra.Group.Nat.Even
-meta import Mathlib.Algebra.Group.Int.Even
+public meta import Mathlib.Algebra.Group.Int.Even
 
 /-! # Lemmas for the field_simp tactic
 

@@ -6,20 +6,21 @@ Jovan Gerbscheid
 -/
 module
 
-public meta import Batteries.Tactic.Trans
 public meta import Lean.Compiler.NoncomputableAttr
 public meta import Lean.Elab.Tactic.Ext
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Data.Array.Defs
-public meta import Mathlib.Data.Nat.Notation
-public meta import Mathlib.Lean.Expr.ReplaceRec
 public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Name
-public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
 public meta import Mathlib.Tactic.Simps.Basic
-public meta import Mathlib.Tactic.Translate.GuessName
 public meta import Lean.Meta.CoeAttr
+public import Batteries.Lean.NameMapAttribute
+public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.Eqns
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Translate.GuessName
+public meta import Mathlib.Util.MemoFix
 
 /-!
 # The translation attribute.

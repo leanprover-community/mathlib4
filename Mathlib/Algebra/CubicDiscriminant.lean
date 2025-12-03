@@ -5,8 +5,8 @@ Authors: David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Algebra.Polynomial.Factors
 
 /-!
 # Cubics and discriminants

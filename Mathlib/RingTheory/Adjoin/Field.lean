@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.AdjoinRoot
 

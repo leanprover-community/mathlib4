@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Data.Int.Notation
 /-!
 # Equivalence of categories
 
