@@ -96,7 +96,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory
 def eval (b : B) : StrictPseudofunctor (B ⥤ᵖ C) C := .mk' {
   obj P := P.obj b
   map θ := θ.app b
-  map₂ Γ := Γ.app b
+  map₂ Γ := Γ.as.app b
   map₂_id P := rfl
   map₂_comp f g := rfl }
 
@@ -104,13 +104,14 @@ def eval (b : B) : StrictPseudofunctor (B ⥤ᵖ C) C := .mk' {
 pseudofunctorial in both `X` and `F`. -/
 @[simps!]
 def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
-  obj b := eval C b
+  obj b := (eval C b).toPseudofunctor
   map f := {
     app P := P.map f
     naturality θ := (θ.naturality f).symm }
   map₂ η :=
-    { app P := P.map₂ η
-      naturality θ := by simp [map₂_whiskerRight_app] }
+    { as :=
+      { app P := P.map₂ η
+        naturality θ := by simp [map₂_whiskerRight_app] }}
   mapId b := isoMk (fun P ↦ P.mapId b) (fun θ ↦ by simp [naturality_id_inv])
   mapComp f g := isoMk (fun P ↦ P.mapComp f g) (fun θ ↦ by simp [naturality_comp_inv])
 
