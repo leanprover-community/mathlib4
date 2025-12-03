@@ -812,38 +812,18 @@ lemma sPolynomial_self (f : MvPolynomial σ R) : m.sPolynomial f f = 0 := sub_se
 lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
     ((m.degree <| m.sPolynomial f g) ≼[m] m.degree f ⊔ m.degree g) := by
   classical
-  by_cases hf_zero: f = 0
-  · simp [hf_zero]
-  by_cases hg_zero: g = 0
-  · simp [hg_zero]
-  rw [sPolynomial_def]
-  calc
-    _ ≤ _ ⊔ _ := degree_sub_le
-    _ ≤ m.toSyn (m.degree _ + m.degree _) ⊔ m.toSyn (m.degree _ + m.degree _) :=
-      sup_le_sup degree_mul_le degree_mul_le
-    _ ≤ (m.toSyn <| m.degree f ⊔ m.degree g - m.degree f + m.degree f) ⊔
-          (m.toSyn <| m.degree f ⊔ m.degree g - m.degree g + m.degree g) := by
-      simp_rw [degree_monomial]
-      simp [hg_zero, hf_zero]
-    _ ≤ m.toSyn (m.degree f ⊔ m.degree g) := by
-      simp only [map_add, sup_le_iff]
-      constructor
-      all_goals
-        apply le_of_eq
-        simp_rw [← AddEquiv.map_add, (AddEquiv.injective m.toSyn).eq_iff, Finsupp.ext_iff]
-        exact fun _ ↦ Nat.sub_add_cancel <| by simp
+  wlog h0 : f ≠ 0 ∧ g ≠ 0
+  · (obtain rfl|rfl : f = 0 ∨ g = 0 := by tauto) <;> simp
+  simp only [sPolynomial_def]
+  apply degree_sub_le.trans
+  apply (sup_le_sup degree_mul_le degree_mul_le).trans
+  simp [degree_monomial, h0.1, h0.2, tsub_add_cancel_of_le, le_sup_left, le_sup_right]
 
 lemma coeff_sPolynomial_sup_eq_zero (f g : MvPolynomial σ R) :
     (m.sPolynomial f g).coeff (m.degree f ⊔ m.degree g) = 0 := by
   rw [sPolynomial_def, coeff_sub]
-  have : m.degree f ⊔ m.degree g = m.degree f ⊔ m.degree g - m.degree f + m.degree f := by
-    ext
-    exact (Nat.sub_add_cancel <| by simp).symm
-  nth_rewrite 1 [this, coeff_monomial_mul]
-  have : m.degree f ⊔ m.degree g = m.degree f ⊔ m.degree g - m.degree g + m.degree g := by
-    ext
-    exact (Nat.sub_add_cancel <| by simp).symm
-  nth_rewrite 1 [this, coeff_monomial_mul]
+  nth_rewrite 1 [← tsub_add_cancel_of_le le_sup_left, coeff_monomial_mul]
+  nth_rewrite 1 [← tsub_add_cancel_of_le le_sup_right, coeff_monomial_mul]
   unfold leadingCoeff
   ring
 
@@ -852,20 +832,16 @@ lemma degree_sPolynomial (f g : MvPolynomial σ R) :
   by_cases hf : m.degree f = 0 ∧ m.degree g = 0
   · rcases hf with ⟨h₁, h₂⟩
     right
-    -- simp [sPolynomial_def, h₁, h₂]
-    simp only [sPolynomial_def, h₁, h₂, le_refl, sup_of_le_left, tsub_self, monomial_zero']
+    suffices C (m.leadingCoeff g) * f - C (m.leadingCoeff f) * g = 0 by simp_all [sPolynomial_def]
     nth_rewrite 1 [degree_eq_zero_iff.mp h₁]
     nth_rewrite 2 [degree_eq_zero_iff.mp h₂]
     ring
-  · by_cases hs: m.sPolynomial f g = 0
-    · simp [hs]
-    left
-    apply lt_of_le_of_ne (m.degree_sPolynomial_le f g)
-    simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq]
-    have : coeff (m.degree (m.sPolynomial f g)) (m.sPolynomial f g) ≠ 0 :=
-      coeff_degree_ne_zero_iff.mpr hs
-    contrapose! this
-    simp [this, m.coeff_sPolynomial_sup_eq_zero]
+  · rw [or_iff_not_imp_right]
+    intro hs
+    apply (m.degree_sPolynomial_le f g).lt_of_ne
+    apply m.toSyn.injective.ne
+    contrapose! hs
+    rw [← m.coeff_degree_eq_zero_iff, hs, m.coeff_sPolynomial_sup_eq_zero]
 
 lemma degree_sPolynomial_lt_sup_degree {f g : MvPolynomial σ R} (h : m.sPolynomial f g ≠ 0) :
     (m.degree <| m.sPolynomial f g) ≺[m] m.degree f ⊔ m.degree g :=
@@ -874,8 +850,7 @@ lemma degree_sPolynomial_lt_sup_degree {f g : MvPolynomial σ R} (h : m.sPolynom
 lemma sPolynomial_lt_of_degree_ne_zero_of_degree_eq {f g : MvPolynomial σ R}
     (h : m.degree f = m.degree g) (hs : m.sPolynomial f g ≠ 0) :
     m.degree (m.sPolynomial f g) ≺[m] m.degree f := by
-  convert m.degree_sPolynomial f g
-  simp [h, hs]
+  simpa [h] using m.degree_sPolynomial_lt_sup_degree hs
 
 lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
     (c₁ c₂ : R) :
@@ -884,16 +859,11 @@ lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ 
       m.sPolynomial p₁ p₂ := by
   classical
   simp only [sPolynomial_def]
-  by_cases hc1 : c₁ = 0
-  · by_cases hc2 : c₂ = 0 <;> simp [hc1, hc2]
-  by_cases hc2 : c₂ = 0
-  · simp [hc2]
-  by_cases hp1 : p₁ = 0
-  · simp [hp1]
-  by_cases hp2 : p₂ = 0
-  · simp [hp2]
-  have hm1 := (monomial_eq_zero (s:=d₁)).not.mpr hc1
-  have hm2 := (monomial_eq_zero (s:=d₂)).not.mpr hc2
+  by_cases! H : c₁ = 0 ∨ c₂ = 0 ∨ p₁ = 0 ∨ p₂ = 0
+  · (obtain rfl | rfl | rfl | rfl := H) <;> simp
+  rcases H with ⟨hc1, hc2, hp1, hp2⟩
+  have hm1 := (monomial_eq_zero (s := d₁)).not.mpr hc1
+  have hm2 := (monomial_eq_zero (s := d₂)).not.mpr hc2
   simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
     mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
     m.leadingCoeff_mul hm1 hp1, m.leadingCoeff_mul hm2 hp2, m.leadingCoeff_monomial,
