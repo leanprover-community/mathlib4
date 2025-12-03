@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
@@ -362,5 +363,73 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
     exact Coverage.Saturate.of _ _ hR
 
 end
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) where
+  cover_lift {g s} hs := by
+    refine J.superset_covering ?_ hs
+    unfold Sieve.overEquiv
+    intro Y g₀ h₁
+    simp only [Equiv.coe_fn_mk,
+      Sieve.functorPushforward_apply, Presieve.functorPushforward, Over.forget_obj,
+      Sieve.functorPullback_apply, Presieve.functorPullback_mem, Over.forget_map, exists_and_left]
+    simp only [Equiv.coe_fn_mk, Sieve.functorPushforward_apply] at hs h₁ s
+    let Z : Over f.left := Over.mk (g₀ ≫ g.hom)
+    refine ⟨Z, Over.homMk g₀, ?_, 𝟙 _, by simp⟩
+    simp only [Over.iteratedSliceBackward] at h₁ ⊢
+    simp only [Presieve.functorPushforward, Over.forget_obj, Over.mk_left, Over.forget_map,
+      exists_and_left, ↓existsAndEq, and_true, Over.comp_left] at h₁
+    obtain ⟨g₂, g₃, g₄, hg₄, g₅, g₆, hg₅⟩ := h₁
+    simp_rw [hg₅, Over.homMk_left]
+    have wg₄ : g₄.left.left ≫ g.hom = g₃.hom.left := by
+      simpa using congrArg CommaMorphism.left g₄.w
+    have hlp : g₄.left.left ≫ g.hom ≫ f.hom = g₃.left.hom := by
+      rw [← assoc, wg₄]; simp
+    have h₁ := Over.homMk_comp (U := .mk (Z.hom ≫ f.hom)) (g₆ ≫ g₅.left) g₄.left.left
+      (by simp [Z, hlp, hg₅]) (by simp [← assoc, wg₄])
+    have h₂ := Over.homMk_comp (U := .mk (Over.homMk Z.hom (by simp) : _ ⟶ f))
+      (V := g₃) (W := .mk (Over.homMk g.hom (by simp)))
+      (Over.homMk (U := .mk (Z.hom ≫ f.hom)) (g₆ ≫ g₅.left) (by simp [Z, hg₅, hlp]))
+      (Over.homMk (V := .mk (g.hom ≫ f.hom)) g₄.left.left (by simp [hlp]))
+      (by ext1; simp [Z, wg₄, hg₅]) (by ext1; simpa)
+    simp_rw [← assoc, h₁, h₂]
+    exact s.downward_closed hg₄ _
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) where
+  cover_lift {g s} hs := by
+    refine J.superset_covering ?_ hs
+    simp only [GrothendieckTopology.mem_over_iff, Sieve.overEquiv] at hs ⊢
+    intro Y g₀ h₁
+    suffices ∃ (Z : _) (Z_1 : Over f) (g_1 : _), s.arrows (f.iteratedSliceForward.map g_1) ∧
+        ∃ (x : Z ⟶ Z_1.left) (x_1 : _), g₀ = x_1 ≫ x.left ≫ g_1.left.left by
+      simpa [Presieve.functorPushforward]
+    let Z : Over X := Over.mk ((g₀ ≫ g.hom.left) ≫ f.hom)
+    let Z₁ : Over f := Over.mk (Over.homMk (g₀ ≫ g.hom.left) : Z ⟶ f)
+    refine ⟨Z, Z₁, Over.homMk (Over.homMk g₀), ?_, 𝟙 _, 𝟙 _, by simp⟩
+    simp only [Over.iteratedSliceForward, Over.homMk_left]
+    simp only [Sieve.functorPushforward, Over.forget_obj, Equiv.coe_fn_mk,
+      Presieve.functorPushforward, Over.forget_map, exists_and_left] at h₁
+    obtain ⟨W, g₂, hg, x, hx⟩ := h₁
+    simp_rw [hx]
+    have h : g₂.left ≫ g.hom.left = W.hom := by simpa using g₂.w
+    rw [Over.homMk_comp _ _ (by simp [Z₁, hx, h]) (by simpa)]
+    exact s.downward_closed hg _
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceEquiv.functor.IsCocontinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceForward.IsCocontinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceEquiv.inverse.IsCocontinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceBackward.IsCocontinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsContinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.functor.IsContinuous _ _)
+
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsContinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsContinuous _ _)
 
 end CategoryTheory
