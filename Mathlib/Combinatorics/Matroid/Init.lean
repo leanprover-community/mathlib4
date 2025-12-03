@@ -17,5 +17,3 @@ they're declared is imported, so we must put this declaration into its own file.
 -/
 
 @[expose] public section
-
-register_simp_attr ground_simps
