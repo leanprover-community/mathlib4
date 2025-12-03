@@ -332,26 +332,6 @@ variable {X Y : Set α} {e : α}
 
 attribute [ground_simps] union_subset_iff insert_subset_iff iUnion_subset_iff
 
-@[grind ←]
-theorem inter_right_subset_ground (hX : X ⊆ M.E) :
-    X ∩ Y ⊆ M.E := inter_subset_left.trans hX
-
-@[grind .]
-theorem inter_left_subset_ground (hX : X ⊆ M.E) :
-    Y ∩ X ⊆ M.E := inter_subset_right.trans hX
-
-@[grind .]
-theorem diff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
-  diff_subset.trans hX
-
-@[grind .]
-theorem ground_diff_subset_ground : M.E \ X ⊆ M.E :=
-  diff_subset_ground rfl.subset
-
-@[grind .]
-theorem singleton_subset_ground (he : e ∈ M.E) : {e} ⊆ M.E :=
-  singleton_subset_iff.mpr he
-
 @[grind .]
 theorem subset_ground_of_subset (hXY : X ⊆ Y) (hY : Y ⊆ M.E) : X ⊆ M.E :=
   hXY.trans hY
