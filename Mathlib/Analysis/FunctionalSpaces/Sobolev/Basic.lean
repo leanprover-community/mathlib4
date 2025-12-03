@@ -80,6 +80,10 @@ lemma sub (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ) :
 lemma smul (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (c • f) (c • g) μ := by
   sorry
 
+@[simp]
+lemma zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
+  sorry
+
 end HasWeakDeriv
 
 variable (Ω) in
@@ -90,6 +94,16 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
   zero_eq : ∀ x, (g x 0).curry0 = f x
   hasWeakDeriv : ∀ m : ℕ, m < k → HasWeakDeriv Ω (g · m) (g · m.succ |>.curryLeft) μ
   memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p μ
+
+namespace HasWTaylorSeriesUpTo
+
+-- add basic lemmas: add, neg, sub and smul
+
+@[simp]
+lemma zero : HasWTaylorSeriesUpTo Ω 0 (0 : E → FormalMultilinearSeries ℝ E F) k p μ := by
+  sorry
+
+end HasWTaylorSeriesUpTo
 
 variable (Ω) in
 def MemSobolev (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
@@ -110,6 +124,11 @@ lemma sub (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) : MemSobol
 
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
   sorry
+
+@[simp]
+lemma zero : MemSobolev Ω (0 : E → F) k p μ := by
+  use 0
+  simp
 
 end MemSobolev
 
