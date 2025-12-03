@@ -165,14 +165,16 @@ structure TranslateData : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
   /-- `argInfoAttr` stores the declarations that need some extra information to be translated. -/
   argInfoAttr : NameMapExtension ArgInfo
-  /-- The global `dont_translate` attribute specifies that operations on the given type
-  should not be translated. This can be either for types that are translated,
+  /-- The global `do_translate`/`dont_translate` attributes specify whether operations on
+  a given type should be translated. `dont_translate` can be used for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
+  `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
+  can be translated.
 
-  Note: The name generation is not aware that the operations on this type should not be translated,
-    so you generally have to specify a name manually, if some part should not be translated.
+  Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
+    translated thanks to this, you generally have to specify the translated name manually.
   -/
-  dontTranslateAttr : NameMapExtension Unit
+  doTranslateAttr : NameMapExtension Bool
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension Name
@@ -328,11 +330,10 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
-      if (t.dontTranslateAttr.find? env e.constName).isNone &&
-        (inApp || (findTranslation? env t e.constName).isSome) then
-        failure
-      else
-        return .inl e.constName
+      let doTranslate :=
+        (t.doTranslateAttr.find? env e.constName!).getD <|
+          inApp || (findTranslation? env t e.constName).isSome
+      if doTranslate then failure else return .inl e.constName
     if (← get).contains e then
       failure
     modify fun s => s.insert e
