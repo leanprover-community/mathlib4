@@ -34,7 +34,10 @@ syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 @[inherit_doc relevantArgOption]
 syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
 
-@[inherit_doc TranslateData.dontTranslateAttr]
+@[inherit_doc TranslateData.doTranslateAttr]
+syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
+
+@[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems
@@ -103,15 +106,20 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
-@[inherit_doc to_dual_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
+@[inherit_doc TranslateData.doTranslateAttr]
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+
+initialize
+  registerBuiltinAttribute {
+    name := `to_dual_do_translate
+    descr := "Auxiliary attribute for `to_dual` stating \
+      that the operations on this type should be translated."
+    add name _ _ := doTranslateAttr.add name true }
+  registerBuiltinAttribute {
     name := `to_dual_dont_translate
     descr := "Auxiliary attribute for `to_dual` stating \
       that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_dual_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
+    add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps names to their dual counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
@@ -128,7 +136,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("unbot", ["Untop"]),
 
   ("epi", ["Mono"]),
-  ("mono", ["Epi"]),
+  /- `mono` can also refer to monotone, so we don't translate it. -/
+  -- ("mono", ["Epi"]),
   ("terminal", ["Initial"]),
   ("initial", ["Terminal"]),
   ("precompose", ["Postcompose"]),
@@ -165,11 +174,14 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"])]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]
-def abbreviationDict : Std.HashMap String String := .ofList []
+def abbreviationDict : Std.HashMap String String := .ofList [
+  ("wellFoundedLT", "WellFoundedGT"),
+  ("wellFoundedGT", "WellFoundedLT")
+]
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true

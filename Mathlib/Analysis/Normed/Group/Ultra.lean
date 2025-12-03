@@ -86,10 +86,7 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
 
 lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
-  intro x y
-  convert dist_triangle_max 0 x (x + y) using 1
-  · simp
-  · congr <;> simp [SeminormedAddGroup.dist_eq]
+  simpa using isNonarchimedean_norm
 
 lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
