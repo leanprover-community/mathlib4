@@ -1,10 +1,11 @@
 
 ---
-<!-- The text above the `---` will become the commit description when your
-PR is merged. Please leave a blank newline before the `---`, otherwise
-GitHub will format the text above it as a title.
+<!-- Your PR title will become the first line of the commit message.
 
-The title of your PR will become the commit title.
+In this box, the text above the `---` (if not empty) will be appended
+afterwards, and can be used to give additional context or details. 
+Please leave a blank newline before the `---`, otherwise GitHub will 
+format the text above it as a title.
 
 For details on the "pull request lifecycle" in mathlib, please see:
 https://leanprover-community.github.io/contribute/index.html
