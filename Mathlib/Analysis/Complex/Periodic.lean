@@ -226,8 +226,8 @@ theorem exp_decay_sub_of_bounded_at_inf (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
     (fun z ↦ f z - cuspFunction h f 0) =O[I∞] (fun z ↦ Real.exp (-2 * π * im z / h)) := by
   simpa [comp_def, eq_cuspFunction hh.ne' hf, norm_qParam] using
-    (((differentiableAt_cuspFunction_zero hh hf h_hol h_bd).isBigO_sub.mono
-      nhdsWithin_le_nhds).comp_tendsto <| qParam_tendsto hh).norm_right
+    differentiableAt_cuspFunction_zero hh hf h_hol h_bd |>.isBigO_sub.mono
+      nhdsWithin_le_nhds |>.comp_tendsto (qParam_tendsto hh) |>.norm_right
 
 /--
 If `f` is periodic, holomorphic near `I∞`, and tends to zero at `I∞`, then in fact it tends to zero
