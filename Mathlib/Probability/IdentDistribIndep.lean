@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.IdentDistrib
-import Mathlib.Probability.Independence.InfinitePi
+module
+
+public import Mathlib.Probability.IdentDistrib
+public import Mathlib.Probability.Independence.InfinitePi
 
 /-!
 # Results about identically distributed random variables and independence
@@ -21,6 +23,8 @@ import Mathlib.Probability.Independence.InfinitePi
 
 -/
 
+@[expose] public section
+
 open MeasureTheory
 
 namespace ProbabilityTheory
@@ -32,7 +36,7 @@ variable {Ω Ω' ι E F : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSp
 /-- If `X` and `Y` are independent random variables on `Ω`, `Z` and `W` are independent random
 variables on `Ω'`, such that `X` and `Z` are identically distributed and `Y` and `W` are identically
 distributed, then the pairs `(X, Y)`  and `(Z, W)` are identically distributed. -/
-lemma IdentDistrib.prod [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+lemma IdentDistrib.prod [IsFiniteMeasure μ]
     {X : Ω → E} {Y : Ω → F} {Z : Ω' → E} {W : Ω' → F}
     (hXZ : IdentDistrib X Z μ ν) (hYW : IdentDistrib Y W μ ν)
     (hXY : IndepFun X Y μ) (hZW : IndepFun Z W ν) :
@@ -40,6 +44,9 @@ lemma IdentDistrib.prod [IsFiniteMeasure μ] [IsFiniteMeasure ν]
   aemeasurable_fst := hXZ.aemeasurable_fst.prodMk hYW.aemeasurable_fst
   aemeasurable_snd := hXZ.aemeasurable_snd.prodMk hYW.aemeasurable_snd
   map_eq := by
+    have : IsFiniteMeasure ν := by
+      have : IsFiniteMeasure (ν.map Z) := by rw [← hXZ.map_eq]; infer_instance
+      exact Measure.isFiniteMeasure_of_map hXZ.aemeasurable_snd
     rw [(indepFun_iff_map_prod_eq_prod_map_map hXZ.aemeasurable_fst hYW.aemeasurable_fst).mp hXY,
       (indepFun_iff_map_prod_eq_prod_map_map hXZ.aemeasurable_snd hYW.aemeasurable_snd).mp hZW,
       hXZ.map_eq, hYW.map_eq]
@@ -51,12 +58,8 @@ lemma IdentDistrib.pi [Countable ι] {E : ι → Type*} {mE : ∀ i, MeasurableS
     {X : (i : ι) → Ω → E i} {Y : (i : ι) → Ω' → E i}
     (h : ∀ i, IdentDistrib (X i) (Y i) μ ν) (hX_ind : iIndepFun X μ) (hY_ind : iIndepFun Y ν) :
     IdentDistrib (fun ω ↦ (X · ω)) (fun ω ↦ (Y · ω)) μ ν where
-  aemeasurable_fst := by
-    rw [aemeasurable_pi_iff]
-    exact fun i ↦ (h i).aemeasurable_fst
-  aemeasurable_snd := by
-    rw [aemeasurable_pi_iff]
-    exact fun i ↦ (h i).aemeasurable_snd
+  aemeasurable_fst := aemeasurable_pi_lambda _ fun i ↦ (h i).aemeasurable_fst
+  aemeasurable_snd := aemeasurable_pi_lambda _ fun i ↦ (h i).aemeasurable_snd
   map_eq := by
     have : IsProbabilityMeasure μ := hX_ind.isProbabilityMeasure
     have : IsProbabilityMeasure ν := hY_ind.isProbabilityMeasure
