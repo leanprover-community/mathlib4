@@ -82,18 +82,18 @@ lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
   exact hL_zero_of_L2 hL_zero
 
 /-- Coercion from a submodule to its topological closure as a continuous linear map. -/
-def toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+def coeClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
     [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
     s →L[R] s.topologicalClosure where
   toFun := coeClosure
   map_add' := coeClosure_add
   map_smul' := coeClosure_smul
 
-lemma IsUniformInducing_toClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+lemma IsUniformInducing_coeClosureCLM {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [UniformSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) :
-    IsUniformInducing (toClosureCLM s) := by
+    IsUniformInducing (coeClosureCLM s) := by
   constructor
-  simp only [toClosureCLM, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
+  simp only [coeClosureCLM, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
     uniformity_subtype, Filter.comap_comap]
   congr
 
@@ -109,11 +109,11 @@ variable {M R F : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
 closure of the submodule. -/
 noncomputable
 def closureExtensionCLM (s : Submodule R M) (f : s →L[R] F) : s.topologicalClosure →L[R] F :=
-  ContinuousLinearMap.extend f (toClosureCLM s)
+  ContinuousLinearMap.extend f (coeClosureCLM s)
 
 @[simp]
 lemma closureExtensionCLM_coe (s : Submodule R M) (f : s →L[R] F) (x : s) :
     closureExtensionCLM s f x = f x :=
-  ContinuousLinearMap.extend_eq f (denseRange_coeClosure s) (IsUniformInducing_toClosureCLM s) _
+  ContinuousLinearMap.extend_eq f (denseRange_coeClosure s) (IsUniformInducing_coeClosureCLM s) _
 
 end Extension

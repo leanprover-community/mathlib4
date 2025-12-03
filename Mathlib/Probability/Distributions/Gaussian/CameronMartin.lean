@@ -140,7 +140,7 @@ instance [SecondCountableTopology E] (μ : Measure E) [HasTwoMoments μ] :
 /-- Inclusion from the StrongDual into the Cameron-Martin space, as a linear map. -/
 noncomputable
 def cmOfDual (μ : Measure E) [HasTwoMoments μ] : StrongDual ℝ E →ₗ[ℝ] cameronMartin μ :=
-  (toClosureCLM _).toLinearMap.comp ((StrongDual.centeredToLp μ 2).toLinearMap.rangeRestrict)
+  (coeClosureCLM _).toLinearMap.comp ((StrongDual.centeredToLp μ 2).toLinearMap.rangeRestrict)
 
 noncomputable
 instance : Coe (StrongDual ℝ E) (cameronMartin μ) := ⟨cmOfDual μ⟩
