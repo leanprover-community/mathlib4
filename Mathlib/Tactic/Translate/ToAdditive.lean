@@ -26,7 +26,10 @@ syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)
 @[inherit_doc relevantArgOption]
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
 
-@[inherit_doc TranslateData.dontTranslateAttr]
+@[inherit_doc TranslateData.doTranslateAttr]
+syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
+
+@[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
@@ -265,15 +268,20 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
-@[inherit_doc to_additive_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
+@[inherit_doc TranslateData.doTranslateAttr]
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
+
+initialize
+  registerBuiltinAttribute {
+    name := `to_additive_do_translate
+    descr := "Auxiliary attribute for `to_additive` stating \
+      that the operations on this type should be translated."
+    add name _ _ := doTranslateAttr.add name true }
+  registerBuiltinAttribute {
     name := `to_additive_dont_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_additive_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
+    add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
@@ -369,7 +377,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
