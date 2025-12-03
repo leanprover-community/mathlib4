@@ -836,9 +836,28 @@ variable {R}
 class Ideal.isIrreducible (I : Ideal R) : Prop where
   irr : ∀ {J₁ J₂ : Ideal R}, J₁ ⊓ J₂ = I → (J₁ = I ∨ J₂ = I)
 
+omit [IsLocalRing R] [IsNoetherianRing R] in
 lemma Ideal.irreducible_iff_bot_irreducible (J : Ideal R) :
     J.isIrreducible ↔ (⊥ : Ideal (R ⧸ J)).isIrreducible := by
-  sorry
+  refine ⟨fun h ↦ ⟨fun {I₁ I₂} eq ↦ ?_⟩, fun h ↦ ⟨fun {I₁ I₂} eq ↦ ?_⟩⟩
+  · have : I₁.comap (Ideal.Quotient.mk J) ⊓ I₂.comap (Ideal.Quotient.mk J) = J := by
+      rw [← Ideal.comap_inf, eq, ← RingHom.ker_eq_comap_bot, mk_ker]
+    rcases h.irr this with eq1|eq2
+    · left
+      rw [← Ideal.map_comap_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective I₁,
+        eq1, map_quotient_self]
+    · right
+      rw [← Ideal.map_comap_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective I₂,
+        eq2, map_quotient_self]
+  · have : I₁.map (Ideal.Quotient.mk J) ⊓ I₂.map (Ideal.Quotient.mk J) = ⊥ := by
+      apply Ideal.comap_injective_of_surjective (Ideal.Quotient.mk J) Ideal.Quotient.mk_surjective
+      rw [Ideal.comap_inf, Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective,
+        Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, ← RingHom.ker_eq_comap_bot,
+        mk_ker]
+      simp [← eq]
+    rcases h.irr this with eq'|eq'
+    <;> simp only [map_eq_bot_iff_le_ker, mk_ker] at eq'
+    <;> simp [le_antisymm eq' (by simp [← eq])]
 
 omit [IsNoetherianRing R] in
 lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
@@ -1005,11 +1024,22 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
   have inj : Function.Injective ((Ext.mk₀ S.g).precomp (ModuleCat.of R R) (zero_add 1)) := by
     apply (AddCommGrpCat.mono_iff_injective _).mp (exac2.mono_g (exac1.epi_f_iff.mp ?_))
     simp only [AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom, S]
-    --use `surj`
-    sorry
-  -- obtain `Ext¹(k, R) = 0` from `inj`
-  -- since `k` is the only quotient by prime, `R` is injective.
-  sorry
+    intro e
+    rcases (Ext.mk₀_bijective _ _).2 e with ⟨e', he'⟩
+    rcases surj e'.hom with ⟨f', hf'⟩
+    rw [LinearMap.lcomp_apply'] at hf'
+    use Ext.mk₀ (ModuleCat.ofHom f')
+    simp [← he', ← ModuleCat.ofHom_comp, hf']
+  apply injective_of_subsingleton_ext_quotient_one.{u, u, u} _ (fun I ↦ ?_)
+  let _ : Module.Finite R (Shrink.{u} (R ⧸ I)) := Module.Finite.equiv (Shrink.linearEquiv R _).symm
+  apply ext_subsingleton_of_support_subset
+  intro p _
+  rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
+  apply (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
+    (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr.mpr
+  let _ : Subsingleton (Ext.{u} (ModuleCat.of R R) (ModuleCat.of R R) 1) :=
+    HasProjectiveDimensionLT.subsingleton (ModuleCat.of R R) 1 1 (le_refl 1) (ModuleCat.of R R)
+  exact inj.subsingleton
 
 lemma isGorensteinLocalRing_iff_exists :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
