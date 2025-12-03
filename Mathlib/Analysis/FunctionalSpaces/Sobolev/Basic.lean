@@ -93,7 +93,7 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
     (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Prop where
   zero_eq : ∀ x, (g x 0).curry0 = f x
   hasWeakDeriv : ∀ m : ℕ, m < k → HasWeakDeriv Ω (g · m) (g · m.succ |>.curryLeft) μ
-  memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p μ
+  memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p (μ.restrict Ω)
 
 namespace HasWTaylorSeriesUpTo
 
@@ -221,7 +221,7 @@ lemma MemSobolev.ae_eq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p
     MemSobolev Ω f' k p μ :=
   memSobolev_congr_ae h |>.mp hf
 
-variable (Ω) in
+variable (Ω F) in
 def SobolevSpace (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) :
     AddSubgroup (E →ₘ[μ] F) where
   carrier := { f | MemSobolev Ω f k p μ }
