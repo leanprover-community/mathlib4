@@ -90,28 +90,25 @@ lemma bernoulliOn_ae_subset : ∀ᵐ s ∂Ber(u, p), s ⊆ u := by
       simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder _ (.singleton _), ha]
 
-end Countable
-
 variable (u p) in
--- TODO: Generalise to countable `ι` and finite `u`. See the TODO on `infinitePi_pi`.
-@[simp] lemma bernoulliOn_singleton [Finite ι] (hsu : s ⊆ u) :
+@[simp] lemma bernoulliOn_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     Ber(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
   classical
-  cases nonempty_fintype ι
-  lift u to Finset ι using Set.toFinite _
+  lift u to Finset ι using hu
   calc
     Ber(u, p) {s}
-    _ = ∏ i, ((if i ∈ u ↔ i ∈ s then (toNNReal p : ENNReal) else 0) +
+    _ = ∏' i, ((if i ∈ u ↔ i ∈ s then (toNNReal p : ENNReal) else 0) +
           if i ∈ s then 0 else (toNNReal (σ p) : ENNReal)) := by
       simp [bernoulliOn_apply, Set.image_singleton, Set.indicator]
       simp [ENNReal.smul_def]
     _ = ∏ i ∈ u, (if i ∈ s then (toNNReal p : ENNReal) else (toNNReal (σ p) : ENNReal)) := by
-      rw [← Finset.prod_subset u.subset_univ (by
-        simpa +contextual [ite_add_ite, ← ENNReal.coe_add] using fun _ ↦ mt (@hsu _))]
-      simp +contextual [ite_add_ite]
+      rw [tprod_eq_prod, Finset.prod_congr rfl] <;>
+        simp +contextual [ite_add_ite, mt (@hsu _), ← ENNReal.coe_add]
     _ = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (↑u \ s).ncard := by
       simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
         Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.diff_eq_compl_inter, Set.inter_comm]
+
+end Countable
 
 /-! ### Bernoulli random variables -/
 
