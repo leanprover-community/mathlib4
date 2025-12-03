@@ -228,8 +228,10 @@ theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i
     l[i] * (l.eraseIdx i).prod = l.prod := by
   have : ∀ (a' : M), a' ∈ take i (l.eraseIdx i) → Commute l[i] a' :=
     fun a' a'_mem => hcomm a' (by
-      have : take i (l.eraseIdx i) = take i l := by
-        sorry
+      have : take i (l.eraseIdx i) = take i l :=
+        -- This is probably missing from Lean's library
+        have : ∀ i j, i ≤ j → (l.eraseIdx j).take i = l.take i := sorry
+        this i i (Nat.le_refl i)
       rwa [this] at a'_mem
       )
   rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length) this, insertIdx_eraseIdx_getElem hlen]
