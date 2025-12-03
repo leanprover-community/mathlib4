@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-import Mathlib.CategoryTheory.Generator.HomologicalComplex
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Generator.HomologicalComplex
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Homological complexes in a Grothendieck abelian category
@@ -16,6 +18,8 @@ category (with `IsGrothendieckAbelian.{w} C`), the category
 `HomologicalComplex C c` is Grothendieck abelian.
 
 -/
+
+@[expose] public section
 
 universe w w' t v u
 

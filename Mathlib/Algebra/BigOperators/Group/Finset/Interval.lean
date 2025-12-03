@@ -3,11 +3,12 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Data.Int.Interval
-import Mathlib.Tactic.Zify
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Tactic.Zify
 
 /-!
 # Sums/products over integer intervals
@@ -15,6 +16,8 @@ import Mathlib.Tactic.Zify
 This file contains some lemmas about sums and products over integer intervals `Ixx`.
 
 -/
+
+@[expose] public section
 
 namespace Finset
 

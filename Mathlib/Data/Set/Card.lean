@@ -3,8 +3,10 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Set.Finite.Powerset
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Set.Finite.Powerset
 
 /-!
 # Noncomputable Set Cardinality
@@ -38,11 +40,11 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 
 ## Implementation Notes
 
-The theorems in this file are very similar to those in `Data.Finset.Card`, but with `Set` operations
-instead of `Finset`. We first prove all the theorems for `Set.encard`, and then derive most of the
-`Set.ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API
-for theorems about infinite sets, and to allow for a refactor that removes or modifies `Set.ncard`
-in the future.
+The theorems in this file are very similar to those in `Mathlib/Data/Finset/Card.lean`, but with
+`Set` operations instead of `Finset`. We first prove all the theorems for `Set.encard`, and then
+derive most of the `Set.ncard` results as a consequence. Things are done this way to avoid reliance
+on the `Finset` API for theorems about infinite sets, and to allow for a refactor that removes or
+modifies `Set.ncard` in the future.
 
 Nearly all the theorems for `Set.ncard` require finiteness of one or more of their arguments. We
 provide this assumption with a default argument of the form `(hs : s.Finite := by toFinite_tac)`,
@@ -54,6 +56,8 @@ in the context of the theorem, in which case we only include the ones that are n
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
 finiteness arguments; they are true by coincidence due to junk values.
 -/
+
+@[expose] public section
 
 namespace Set
 
@@ -153,7 +157,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
+  contrapose!
+  rw [← lt_top_iff_ne_top, encard_lt_top_iff]
 
 alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
 
@@ -348,10 +353,10 @@ theorem encard_le_one_iff_subsingleton : s.encard ≤ 1 ↔ s.Subsingleton := by
   tauto
 
 theorem one_lt_encard_iff_nontrivial : 1 < s.encard ↔ s.Nontrivial := by
-  rw [← not_iff_not, not_lt, Set.not_nontrivial_iff, ← encard_le_one_iff_subsingleton]
+  contrapose!; exact encard_le_one_iff_subsingleton
 
 theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
-  rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
+  contrapose!; exact encard_le_one_iff
 
 theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b ≠ a := by
   by_contra! h'

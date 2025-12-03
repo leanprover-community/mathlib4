@@ -3,9 +3,11 @@ Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.GaussLemma
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -25,6 +27,8 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
+
+@[expose] public section
 
 open Polynomial Set Function minpoly
 
@@ -107,6 +111,18 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} {p : R[X]}
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
+
+/-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral
+iff the leading coefficient of `p` is a unit. -/
+theorem IsIntegrallyClosed.isIntegral_iff_isUnit_leadingCoeff {x : S} {p : R[X]}
+    (hirr : Irreducible p) (hp : p.aeval x = 0) :
+    IsIntegral R x ↔ IsUnit p.leadingCoeff where
+  mp int_x := by
+    obtain ⟨p, rfl⟩ := isIntegrallyClosed_dvd int_x hp
+    rw [leadingCoeff_mul, monic int_x, one_mul]
+    exact ((of_irreducible_mul hirr).resolve_left (not_isUnit R x)).map leadingCoeffHom
+  mpr isUnit := by
+    simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial

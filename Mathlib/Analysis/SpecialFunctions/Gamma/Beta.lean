@@ -3,12 +3,14 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Convolution
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
+module
+
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # The Beta function, and further properties of the Gamma function
@@ -36,6 +38,8 @@ refined properties of the Gamma function using these relations.
 * `Real.Gamma_ne_zero`, `Real.GammaSeq_tendsto_Gamma`,
   `Real.Gamma_mul_Gamma_one_sub`, `Real.Gamma_mul_Gamma_add_half`: real versions of the above.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -405,7 +409,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
       neg_eq_iff_eq_neg] at hk
     rw [hk]
     cases k
-    · rw [Int.ofNat_eq_coe, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
+    · rw [Int.ofNat_eq_natCast, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel_left,
         Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) ?_

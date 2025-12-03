@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Shift.ShiftSequence
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.Algebra.Homology.ExactSequence
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+public import Mathlib.Algebra.Homology.ExactSequence
 
 /-! # Homological functors
 
@@ -44,6 +46,8 @@ for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
@@ -73,7 +77,7 @@ section Pretriangulated
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
   [Pretriangulated C] [Abelian A]
 
-/-- A functor from a pretriangulated category to an abelian category is an homological functor
+/-- A functor from a pretriangulated category to an abelian category is a homological functor
 if it sends distinguished triangles to exact sequences. -/
 class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
@@ -163,7 +167,7 @@ end Pretriangulated
 
 section
 
-/-- The connecting homomorphism in the long exact sequence attached to an homological
+/-- The connecting homomorphism in the long exact sequence attached to a homological
 functor and a distinguished triangle. -/
 noncomputable def homologySequenceδ
     [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :

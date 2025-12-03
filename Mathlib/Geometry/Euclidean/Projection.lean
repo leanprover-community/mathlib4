@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in Euclidean affine spaces
@@ -23,6 +25,8 @@ and reflection of a point in an affine subspace.
   affine subspace.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -607,6 +611,16 @@ variable [NormedAddTorsor V P]
 def orthogonalProjectionSpan {n : ℕ} (s : Simplex ℝ P n) :
     P →ᴬ[ℝ] affineSpan ℝ (Set.range s.points) :=
   orthogonalProjection (affineSpan ℝ (Set.range s.points))
+
+lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex ℝ P m} {s₂ : Simplex ℝ P n}
+    {p₁ p₂ : P} (h : Set.range s₁.points = Set.range s₂.points) (hp : p₁ = p₂) :
+    (s₁.orthogonalProjectionSpan p₁ : P) = s₂.orthogonalProjectionSpan p₂ :=
+  orthogonalProjection_congr (by rw [h]) hp
+
+@[simp] lemma orthogonalProjectionSpan_reindex {m n : ℕ} (s : Simplex ℝ P m)
+    (e : Fin (m + 1) ≃ Fin (n + 1)) (p : P) :
+    ((s.reindex e).orthogonalProjectionSpan p : P) = s.orthogonalProjectionSpan p :=
+  orthogonalProjectionSpan_congr (s.reindex_range_points e) rfl
 
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector is a

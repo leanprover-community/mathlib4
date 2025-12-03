@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Infix
-import Mathlib.Data.Quot
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Quot
 
 /-!
 # List rotation
@@ -21,6 +23,8 @@ This file proves basic results about `List.rotate`, the list rotation.
 
 rotated, rotation, permutation, cycle
 -/
+
+@[expose] public section
 
 
 universe u
@@ -244,11 +248,7 @@ from right to left. -/
 theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
     l.get k = (l.rotate n).get ⟨(l.length - n % l.length + k) % l.length,
       (Nat.mod_lt _ (k.1.zero_le.trans_lt k.2)).trans_eq (length_rotate _ _).symm⟩ := by
-  rw [get_rotate]
-  refine congr_arg l.get (Fin.eq_of_val_eq ?_)
-  simp only [mod_add_mod]
-  rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
-  exacts [k.2, (mod_lt _ (k.1.zero_le.trans_lt k.2)).le]
+  simpa using getElem_eq_getElem_rotate _ _ _ _
 
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
@@ -536,7 +536,7 @@ theorem head_cyclicPermutations (l : List α) :
 
 @[simp]
 theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
-  rw [head?_eq_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
+  rw [head?_eq_some_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
   simpa using congr_arg head? h

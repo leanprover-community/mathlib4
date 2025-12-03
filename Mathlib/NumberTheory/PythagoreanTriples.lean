@@ -3,10 +3,12 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
-import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Data.Int.NatPrime
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.Field
 
 /-!
 # Pythagorean Triples
@@ -21,6 +23,8 @@ that these are coprime. This is easy except for the prime 2. In order to deal wi
 analyze the parity of `x`, `y`, `m` and `n` and eliminate all the impossible cases. This takes up
 the bulk of the proof below.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -243,6 +247,8 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 
 variable {K : Type*} [Field K]
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.

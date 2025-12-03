@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise monoid structures on SubMulAction
@@ -15,6 +17,8 @@ inherit the same pointwise multiplications as sets.
 To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
 
 -/
+
+@[expose] public section
 
 
 open Pointwise

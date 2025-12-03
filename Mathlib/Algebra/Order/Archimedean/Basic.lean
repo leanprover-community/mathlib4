@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Algebra.Order.Monoid.Units
-import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Data.Int.LeastGreatest
-import Mathlib.Data.Rat.Floor
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Monoid.Units
+public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Data.Int.LeastGreatest
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # Archimedean groups and fields.
@@ -29,6 +31,8 @@ number `n` such that `x ≤ n • y`.
 
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -183,7 +187,7 @@ theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y 
       _ = n * y := nsmul_eq_mul _ _
       _ < 1 + n * y := lt_one_add _
       _ ≤ (1 + y) ^ n :=
-        one_add_mul_le_pow' (mul_nonneg hy.le hy.le) (mul_nonneg this this)
+        one_add_mul_le_pow_of_sq_nonneg (pow_nonneg hy.le _) (pow_nonneg this _)
           (add_nonneg zero_le_two hy.le) _
       _ = (y + 1) ^ n := by rw [add_comm]
 
@@ -505,7 +509,7 @@ instance : Archimedean ℤ :=
     ⟨n.toNat,
       le_trans (Int.self_le_toNat _) <| by
         simpa only [nsmul_eq_mul, zero_add, mul_one] using
-          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
+          mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.natCast_nonneg n.toNat)⟩⟩
 
 instance Nonneg.instArchimedean [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [Archimedean M] :

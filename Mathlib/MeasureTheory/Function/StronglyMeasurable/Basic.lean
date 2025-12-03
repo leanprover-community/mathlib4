@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.MeasureTheory.Function.SimpleFuncDense
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -37,6 +39,8 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists InnerProductSpace
@@ -691,10 +695,10 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
 /-- A continuous function whose support is contained in a compact set is strongly measurable. -/
 @[to_additive]
 theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
-    [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [One β] {f : α → β}
-    (hf : Continuous f) {k : Set α} (hk : IsCompact k)
-    (h'f : mulSupport f ⊆ k) : StronglyMeasurable f := by
+    [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
+    [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f) {k : Set α}
+    (hk : IsCompact k) (h'f : mulSupport f ⊆ k) : StronglyMeasurable f := by
+  borelize β
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
   rw [stronglyMeasurable_iff_measurable_separable]
   exact ⟨hf.measurable, (isCompact_range_of_mulSupport_subset_isCompact hf hk h'f).isSeparable⟩
@@ -702,9 +706,9 @@ theorem _root_.Continuous.stronglyMeasurable_of_mulSupport_subset_isCompact
 /-- A continuous function with compact support is strongly measurable. -/
 @[to_additive]
 theorem _root_.Continuous.stronglyMeasurable_of_hasCompactMulSupport
-    [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
-    [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [One β] {f : α → β}
-    (hf : Continuous f) (h'f : HasCompactMulSupport f) : StronglyMeasurable f :=
+    [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
+    [PseudoMetrizableSpace β] [One β] {f : α → β} (hf : Continuous f)
+    (h'f : HasCompactMulSupport f) : StronglyMeasurable f :=
   hf.stronglyMeasurable_of_mulSupport_subset_isCompact h'f (subset_mulTSupport f)
 
 /-- A continuous function with compact support on a product space is strongly measurable for the

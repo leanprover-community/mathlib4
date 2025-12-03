@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # Compositions
@@ -85,6 +87,8 @@ Composition, partition
 
 <https://en.wikipedia.org/wiki/Composition_(combinatorics)>
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -554,8 +558,7 @@ theorem eq_single_iff_length {n : ℕ} (h : 0 < n) {c : Composition n} :
 
 theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
     c ≠ single n hn ↔ ∀ i, c.blocksFun i < n := by
-  rw [← not_iff_not]
-  push_neg
+  contrapose!
   constructor
   · rintro rfl
     exact ⟨⟨0, by simp⟩, by simp⟩

@@ -3,12 +3,14 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Finsupp
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Homogeneous Localization
@@ -68,6 +70,8 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -685,7 +689,7 @@ lemma awayMapAux_mk (n a i hi) :
     (Localization.mk g ⟨f * g, (Submonoid.mem_powers_iff _ _).mpr ⟨1, by simp [hx]⟩⟩) = 1 := by
     rw [← Algebra.smul_def, Localization.smul_mk]
     exact Localization.mk_self ⟨f*g, _⟩
-  simp [awayMapAux]
+  simp only [awayMapAux, RingHom.coe_comp, Function.comp_apply, algebraMap_apply, val_mk]
   rw [Localization.awayLift_mk (hv := this), ← Algebra.smul_def,
     Localization.mk_pow, Localization.smul_mk]
   subst hx
@@ -1020,7 +1024,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   apply (Set.finite_range F).subset
   rintro _ ⟨a, ai, hai, hai', rfl⟩
   refine ⟨⟨⟨⟨a, ?_⟩, fun i ↦ ⟨ai i, (hai' i).trans_lt d.lt_succ_self⟩⟩, hai⟩, rfl⟩
-  rw [Nat.lt_succ, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
+  rw [Nat.lt_succ_iff, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
   simp_rw [smul_eq_mul, mul_comm _ d]
   gcongr
   exact hai' _
