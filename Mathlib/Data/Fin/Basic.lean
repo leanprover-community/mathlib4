@@ -3,10 +3,12 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Int.DivMod
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Common
-import Batteries.Data.Fin.Basic
+module
+
+public import Mathlib.Data.Int.DivMod
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Common
+public import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements
@@ -22,12 +24,22 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 -/
 
+@[expose] public section
+
 
 assert_not_exists Monoid Finset
 
 open Fin Nat Function
 
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
+
+theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∀ k hk, p k hk) ↔ ∀ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.forall_iff
+
+theorem Nat.exists_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∃ k hk, p k hk) ↔ ∃ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.exists_iff
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
@@ -196,7 +208,7 @@ lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
-  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  rw [lt_def, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
   exact NeZero.ne n
 
 end Order
@@ -378,7 +390,7 @@ lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤
   simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
-  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_def, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
   (natCast_le_natCast (hab.trans hbn) hbn).2 hab

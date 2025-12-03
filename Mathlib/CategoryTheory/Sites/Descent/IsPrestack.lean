@@ -3,16 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Cat
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Over
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Prestacks: descent of morphisms
 
-Let `C` be a category and `F : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ Cat`.
+Let `C` be a category and `F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat`.
 Given `S : C`, and objects `M` and `N` in `F.obj (.mk (op S))`,
 we define a presheaf of types `F.presheafHom M N` on the category `Over S`:
 its sections on an object `T : Over S` corresponding to a morphism `p : X ⟶ S`
@@ -45,6 +47,8 @@ by saying that the functors mentioned above are essentially surjective.
 
 -/
 
+@[expose] public section
+
 universe v' v u' u
 
 namespace CategoryTheory
@@ -53,7 +57,7 @@ open Opposite Bicategory
 
 namespace Pseudofunctor
 
-variable {C : Type u} [Category.{v} C] {F : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ Cat.{v', u'}}
+variable {C : Type u} [Category.{v} C] {F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'}}
 
 namespace LocallyDiscreteOpToCat
 
@@ -145,7 +149,7 @@ end
 
 variable (F)
 
-/-- The property that a pseudofunctor `F : (LocallyDiscrete Cᵒᵖ) ⥤ᵖ Cat`
+/-- The property that a pseudofunctor `F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat`
 satisfies the descent property for morphisms, i.e. is a prestack.
 (See the terminological note in the introduction of the file `Sites.Descent.IsPrestack`.) -/
 @[stacks 026F "(2)"]

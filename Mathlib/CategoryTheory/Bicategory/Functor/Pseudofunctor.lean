@@ -3,9 +3,11 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
-import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-import Mathlib.Tactic.CategoryTheory.ToApp
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors
@@ -25,10 +27,13 @@ We provide several constructors for pseudofunctors:
 
 ## Main definitions
 
-* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
+* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`, which we
+  denote by `B ⥤ᵖ C`.
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -77,12 +82,9 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
       map₂ (ρ_ f).hom = (mapComp f (𝟙 b)).hom ≫ map f ◁ (mapId b).hom ≫ (ρ_ (map f)).hom := by
     cat_disch
 
-
 /-- Notation for a pseudofunctor between bicategories. -/
 -- Given similar precedence as ⥤ (26).
--- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵖ " => Pseudofunctor -- type as \func
-
+scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵖ " => Pseudofunctor -- type as \func\^p
 
 initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
@@ -111,17 +113,17 @@ variable (F : B ⥤ᵖ C)
 
 /-- The oplax functor associated with a pseudofunctor. -/
 @[simps]
-def toOplax : OplaxFunctor B C where
+def toOplax : B ⥤ᵒᵖᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
   mapComp := fun f g => (F.mapComp f g).hom
 
-instance hasCoeToOplax : Coe (B ⥤ᵖ C) (OplaxFunctor B C) :=
+instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
   ⟨toOplax⟩
 
 /-- The Lax functor associated with a pseudofunctor. -/
 @[simps]
-def toLax : LaxFunctor B C where
+def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).inv
   mapComp := fun f g => (F.mapComp f g).inv
@@ -132,7 +134,7 @@ def toLax : LaxFunctor B C where
     rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
 
-instance hasCoeToLax : Coe (B ⥤ᵖ C) (LaxFunctor B C) :=
+instance hasCoeToLax : Coe (B ⥤ᵖ C) (B ⥤ᴸ C) :=
   ⟨toLax⟩
 
 /-- The identity pseudofunctor. -/
@@ -293,7 +295,7 @@ end
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
+def mkOfOplax (F : B ⥤ᵒᵖᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
@@ -310,7 +312,7 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
-noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
+noncomputable def mkOfOplax' (F : B ⥤ᵒᵖᴸ C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => asIso (F.mapId a)
@@ -329,7 +331,7 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
+def mkOfLax (F : B ⥤ᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
@@ -347,7 +349,7 @@ def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : B ⥤ᵖ C where
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
-noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
+noncomputable def mkOfLax' (F : B ⥤ᴸ C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C :=
   mkOfLax F
   { mapIdIso := fun a => (asIso (F.mapId a)).symm

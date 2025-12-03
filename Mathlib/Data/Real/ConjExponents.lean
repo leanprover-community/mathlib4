@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Holder
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.ENNReal.Holder
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real conjugate exponents
@@ -32,6 +34,8 @@ to take the values `0` and `∞`.
 
 * Eradicate the `1 / p` spelling in lemmas.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -145,7 +149,7 @@ theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
 theorem conjugate_eq : q = p / (p - 1) := by
   convert inv_inv q ▸ congr($(h.symm.inv_sub_inv_eq_inv.symm)⁻¹) using 1
-  field_simp [h.ne_zero]
+  field [h.ne_zero]
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
 

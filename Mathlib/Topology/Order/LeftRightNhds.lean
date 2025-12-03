@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Algebra.Ring.Pointwise.Set
+public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
@@ -14,6 +16,8 @@ import Mathlib.Topology.Order.Basic
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 

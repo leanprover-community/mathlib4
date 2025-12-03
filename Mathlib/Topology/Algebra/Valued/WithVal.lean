@@ -3,10 +3,12 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
-import Mathlib.NumberTheory.NumberField.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
 # Ring topologised by a valuation
@@ -28,6 +30,8 @@ fractions of a Dedekind domain with respect to a height-one prime ideal of the d
 - `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
 -/
+
+@[expose] public section
 
 noncomputable section
 

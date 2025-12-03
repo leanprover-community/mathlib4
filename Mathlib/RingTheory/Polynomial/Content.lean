@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.Polynomial.CancelLeads
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.Polynomial.CancelLeads
+public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # GCD structures on polynomials
@@ -29,6 +31,8 @@ This has nothing to do with minimal polynomials of primitive elements in finite 
 
 -/
 
+@[expose] public section
+
 
 namespace Polynomial
 
@@ -50,7 +54,7 @@ theorem isPrimitive_one : IsPrimitive (1 : R[X]) := fun _ h =>
 
 theorem Monic.isPrimitive {p : R[X]} (hp : p.Monic) : p.IsPrimitive := by
   rintro r ⟨q, h⟩
-  exact isUnit_of_mul_eq_one r (q.coeff p.natDegree) (by rwa [← coeff_C_mul, ← h])
+  exact .of_mul_eq_one (q.coeff p.natDegree) (by rwa [← coeff_C_mul, ← h])
 
 theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p ≠ 0 := by
   rintro rfl
@@ -260,14 +264,14 @@ theorem isUnit_primPart_C (r : R) : IsUnit (C r).primPart := by
   · simp [h0]
   unfold IsUnit
   refine
-    ⟨⟨C ↑(normUnit r)⁻¹, C ↑(normUnit r), by rw [← RingHom.map_mul, Units.inv_mul, C_1], by
-        rw [← RingHom.map_mul, Units.mul_inv, C_1]⟩,
+    ⟨⟨C ↑(normUnit r)⁻¹, C ↑(normUnit r), by rw [← map_mul, Units.inv_mul, C_1], by
+        rw [← map_mul, Units.mul_inv, C_1]⟩,
       ?_⟩
   rw [← normalize_eq_zero, ← C_eq_zero] at h0
   apply mul_left_cancel₀ h0
   conv_rhs => rw [← content_C, ← (C r).eq_C_content_mul_primPart]
-  simp only [normalize_apply, RingHom.map_mul]
-  rw [mul_assoc, ← RingHom.map_mul, Units.mul_inv, C_1, mul_one]
+  simp only [normalize_apply, map_mul]
+  rw [mul_assoc, ← map_mul, Units.mul_inv, C_1, mul_one]
 
 theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
   Dvd.intro_left (C p.content) p.eq_C_content_mul_primPart.symm
@@ -306,7 +310,7 @@ theorem content_mul_aux {p q : R[X]} :
   rw [gcd_comm (content _) _, gcd_comm (content _) _]
   apply gcd_content_eq_of_dvd_sub
   rw [← self_sub_C_mul_X_pow, ← self_sub_C_mul_X_pow, sub_mul, sub_sub, add_comm, sub_add,
-    sub_sub_cancel, leadingCoeff_mul, RingHom.map_mul, mul_assoc, mul_assoc]
+    sub_sub_cancel, leadingCoeff_mul, map_mul, mul_assoc, mul_assoc]
   apply dvd_sub (Dvd.intro _ rfl) (Dvd.intro _ rfl)
 
 @[simp]
@@ -366,7 +370,7 @@ theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
   conv_lhs =>
     rw [← (p * q).eq_C_content_mul_primPart, p.eq_C_content_mul_primPart,
       q.eq_C_content_mul_primPart]
-  rw [content_mul, RingHom.map_mul]
+  rw [content_mul, map_mul]
   ring
 
 theorem IsPrimitive.dvd_primPart_iff_dvd {p q : R[X]} (hp : p.IsPrimitive) (hq : q ≠ 0) :
@@ -396,12 +400,12 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
         ⟨_, s.natDegree_primPart, s.isPrimitive_primPart, (hp.dvd_primPart_iff_dvd s0).2 ps,
           (hq.dvd_primPart_iff_dvd s0).2 qs⟩
     rw [← rdeg] at hs
-    by_cases sC : s.natDegree ≤ 0
+    by_cases! sC : s.natDegree ≤ 0
     · rw [eq_C_of_natDegree_le_zero (le_trans hs sC), isPrimitive_iff_content_eq_one, content_C,
         normalize_eq_one] at rprim
       rw [eq_C_of_natDegree_le_zero (le_trans hs sC), ← dvd_content_iff_C_dvd] at rs
       apply rs rprim.dvd
-    have hcancel := natDegree_cancelLeads_lt_of_natDegree_le_natDegree hs (lt_of_not_ge sC)
+    have hcancel := natDegree_cancelLeads_lt_of_natDegree_le_natDegree hs sC
     rw [sdeg] at hcancel
     apply Nat.find_min con hcancel
     refine

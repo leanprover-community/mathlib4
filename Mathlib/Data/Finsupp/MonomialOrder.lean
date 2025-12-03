@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
 
 /-! # Monomial orders
 
@@ -52,6 +54,8 @@ In algebraic geometry, when the finitely many variables are indexed by integers,
 it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
 
 -/
+
+@[expose] public section
 
 /-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where
@@ -158,10 +162,10 @@ theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 
 theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ c default < d default := by
-  simp only [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff_of_unique, ofLex_toLex]
+  simp only [MonomialOrder.lex_lt_iff, Finsupp.Lex.lt_iff_of_unique, ofLex_toLex]
 
 theorem MonomialOrder.lex_le_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
     c ≼[lex] d ↔ c default ≤ d default := by
-  simp only [MonomialOrder.lex_le_iff, Finsupp.lex_le_iff_of_unique, ofLex_toLex]
+  simp only [MonomialOrder.lex_le_iff, Finsupp.Lex.le_iff_of_unique, ofLex_toLex]
 
 end Lex

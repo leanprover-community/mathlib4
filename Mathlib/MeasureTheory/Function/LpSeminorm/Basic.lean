@@ -3,17 +3,21 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.Indicator
-import Mathlib.Data.Fintype.Order
-import Mathlib.MeasureTheory.Function.AEEqFun
-import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+module
+
+public import Mathlib.Analysis.Normed.Group.Indicator
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.MeasureTheory.Function.AEEqFun
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # Basic theorems about ℒp space
 -/
+
+@[expose] public section
 noncomputable section
 
 open TopologicalSpace MeasureTheory Filter
@@ -189,7 +193,7 @@ theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
 theorem eLpNorm'_const' [IsFiniteMeasure μ] (c : F) (hc_ne_zero : c ≠ 0) (hq_ne_zero : q ≠ 0) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
   rw [eLpNorm'_eq_lintegral_enorm, lintegral_const,
-    ENNReal.mul_rpow_of_ne_top _ (measure_ne_top μ Set.univ)]
+    ENNReal.mul_rpow_of_ne_top _ (by finiteness)]
   · congr
     rw [← ENNReal.rpow_mul]
     suffices hp_cancel : q * (1 / q) = 1 by rw [hp_cancel, ENNReal.rpow_one]
@@ -394,7 +398,7 @@ theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ESeminormedAddM
   · simp
   by_cases hp : p = 0
   · simp [hp]
-  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := hfC.mono fun x hx ↦ hx.trans (Preorder.le_refl C)
+  have : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖C‖ₑ := hfC.mono fun x hx ↦ hx.trans (le_refl C)
   refine (eLpNorm_mono_enorm_ae this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, enorm_eq_self, smul_eq_mul]
 
@@ -686,7 +690,7 @@ variable (c) in
 lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   obtain rfl | hp := eq_or_ne p 0
-  · simp only [eLpNorm_exponent_zero, zero_le']
+  · simp
   obtain rfl | h'p := eq_or_ne p ∞
   · simp only [eLpNorm_exponent_top, ENNReal.toReal_top, _root_.div_zero, ENNReal.rpow_zero,
       mul_one]
@@ -1106,7 +1110,8 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
   by_cases hc : c = ⊤
   · by_cases hg' : eLpNorm' g p μ = 0
     · have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by
-        simp [eLpNorm'_eq_lintegral_enorm, hp', hp] at hg'
+        simp only [eLpNorm'_eq_lintegral_enorm, one_div, ENNReal.rpow_eq_zero_iff, inv_pos, hp,
+          and_true, inv_neg'', hp', and_false, or_false] at hg'
         rw [MeasureTheory.lintegral_eq_zero_iff' (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
       have : ∀ᵐ (x : α) ∂μ, ‖f x‖ₑ = 0 := (this.and h).mono fun x ⟨h, h'⟩ ↦ by simp_all

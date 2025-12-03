@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # Monoid algebras
@@ -40,6 +42,8 @@ When the domain is multiplicative, e.g. a group, this will be used to define the
 We introduce the notation `R[A]` for `AddMonoidAlgebra R A`.
 -/
 
+@[expose] public section
+
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
 noncomputable section
@@ -70,7 +74,7 @@ macro_rules | `($R[$M]) => `(AddMonoidAlgebra $R $M)
 
 /-- Unexpander for `AddMonoidAlgebra`. -/
 @[scoped app_unexpander AddMonoidAlgebra]
-def unexpander : Lean.PrettyPrinter.Unexpander
+meta def unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $k $g) => `($k[$g])
   | _ => throw ()
 

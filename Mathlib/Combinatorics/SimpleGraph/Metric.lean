@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Graph metric
@@ -31,6 +33,8 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 graph metric, distance
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

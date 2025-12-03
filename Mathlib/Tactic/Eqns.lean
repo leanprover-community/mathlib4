@@ -3,11 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Init
-import Lean.Meta.Eqns
-import Batteries.Lean.NameMapAttribute
-import Lean.Elab.Exception
-import Lean.Elab.InfoTree.Main
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Eqns
+public meta import Batteries.Lean.NameMapAttribute
+public meta import Lean.Elab.Exception
+public meta import Lean.Elab.InfoTree.Main
 
 /-! # The `@[eqns]` attribute
 
@@ -29,6 +31,8 @@ theorem transpose_const {m n} (c : ℕ) :
   rw [transpose]
 ```
 -/
+
+public meta section
 open Lean Elab
 
 syntax (name := eqns) "eqns" (ppSpace ident)* : attr

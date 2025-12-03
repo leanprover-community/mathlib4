@@ -1,8 +1,6 @@
-/-
-Copyright (c) 2025 Calle Sönne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Calle Sönne
--/
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
 
 import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Topology.VectorBundle.Constructions
-import Mathlib.Topology.VectorBundle.Hom
+module
+
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
@@ -35,6 +37,8 @@ to the `Bundle` namespace.
 ## Keywords
 Vector bundle, Riemannian metric
 -/
+
+@[expose] public section
 
 open Bundle ContinuousLinearMap Filter
 open scoped Topology
@@ -204,8 +208,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
       grw [← le_opNorm]
       simp
     _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by simp [← hg]
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
   have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
@@ -309,8 +312,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
       grw [← le_opNorm]
       simp
     _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr
       rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
@@ -378,7 +380,7 @@ structure RiemannianMetric where
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
-/-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
+/-- `Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds.
 

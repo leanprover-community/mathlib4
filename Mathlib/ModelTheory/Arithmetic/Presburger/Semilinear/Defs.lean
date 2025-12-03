@@ -3,8 +3,10 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Linear and semilinear sets
@@ -41,6 +43,8 @@ of sets in form `{ x | ∃ y, p x y }`.
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
+
+@[expose] public section
 
 variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
   [FunLike F M N] [AddMonoidHomClass F M N] {a : M} {s s₁ s₂ : Set M}
@@ -139,7 +143,7 @@ theorem IsSemilinearSet.sUnion {S : Set (Set M)} (hS : S.Finite)
     (hS' : ∀ s ∈ S, IsSemilinearSet s) : IsSemilinearSet (⋃₀ S) := by
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa using hS'.1.union (ih hS'.2)
 
@@ -178,6 +182,7 @@ theorem IsSemilinearSet.add (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinear
   exact biUnion hS₁ fun s₁ hs₁ => biUnion hS₂ fun s₂ hs₂ =>
     ((hS₁' s₁ hs₁).add (hS₂' s₂ hs₂)).isSemilinearSet
 
+/-- The image of a semilinear set under an homomorphism is semilinear. -/
 theorem IsSemilinearSet.image (hs : IsSemilinearSet s) (f : F) : IsSemilinearSet (f '' s) := by
   rcases hs with ⟨S, hS, hS', rfl⟩
   simp_rw [sUnion_eq_biUnion, image_iUnion]
@@ -203,7 +208,7 @@ theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s
     refine ⟨y ∘ Sum.inr, ?_⟩
     simpa [LinearMap.funLeft]
 
-/-- A variant of `Semilinear.proj` for backward reasoning. -/
+/-- A variant of `IsSemilinearSet.proj` for backward reasoning. -/
 theorem IsSemilinearSet.proj' {p : (ι → M) → (κ → M) → Prop} :
     IsSemilinearSet { x | p (x ∘ Sum.inl) (x ∘ Sum.inr) } → IsSemilinearSet { x | ∃ y, p x y } :=
   proj
@@ -243,7 +248,7 @@ protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
   rcases hs with ⟨S, hS, hS', rfl⟩
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa [closure_union, coe_sup] using hS'.1.closure.add (ih hS'.2)
 
@@ -295,7 +300,7 @@ theorem IsProperSemilinearSet.sUnion {S : Set (Set M)} (hS : S.Finite)
     (hS' : ∀ s ∈ S, IsProperSemilinearSet s) : IsProperSemilinearSet (⋃₀ S) := by
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa using hS'.1.union (ih hS'.2)
 
@@ -331,7 +336,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
       rcases hy with ⟨g, -, rfl⟩
       induction hn : g i using Nat.strong_induction_on generalizing g with | _ n ih'
       subst hn
-      by_cases hfg : ∀ j ∈ t', f j ≤ g j
+      by_cases! hfg : ∀ j ∈ t', f j ≤ g j
       · convert ih' (g i - f i) (Nat.sub_lt_self hfi (hfg i hi))
           (fun j => if j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
         conv_lhs => rw [← Finset.union_sdiff_of_subset ht']
@@ -341,8 +346,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
           add_right_comm, ← Finset.sum_add_distrib]
         congr! 2 with j hj
         rw [← add_smul, tsub_add_cancel_of_le (hfg j hj)]
-      · push_neg at hfg
-        rcases hfg with ⟨j, hj, hgj⟩
+      · rcases hfg with ⟨j, hj, hgj⟩
         simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
         refine ⟨j, hj, g j, hgj, ∑ k ∈ t.erase j, g k • k,
           sum_mem fun x hx => (nsmul_mem (mem_closure_of_mem hx) _), ?_⟩

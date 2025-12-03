@@ -3,13 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Expand
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
@@ -55,6 +57,8 @@ In this file we use the following notation
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 open MvPolynomial
@@ -110,7 +114,7 @@ variable {R} {S : Type*} [CommRing S]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
   rw [wittPolynomial, map_sum, wittPolynomial]
   refine sum_congr rfl fun i _ => ?_
-  rw [map_monomial, RingHom.map_pow, map_natCast]
+  rw [map_monomial, map_pow, map_natCast]
 
 variable (R)
 
@@ -201,11 +205,11 @@ theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
     constantCoeff (xInTermsOfW p R n) = 0 := by
   induction n using Nat.strongRecOn with | ind n IH => ?_
-  rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
+  rw [xInTermsOfW_eq, mul_comm, map_mul, map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero, sum_eq_zero, mul_zero]
   intro m H
   rw [mem_range] at H
-  simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
+  simp only [map_mul, map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
   exact pow_ne_zero _ hp.1.ne_zero
 

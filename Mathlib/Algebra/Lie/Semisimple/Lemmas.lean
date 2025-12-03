@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.LieTheorem
-import Mathlib.Algebra.Lie.Semisimple.Basic
+module
+
+public import Mathlib.Algebra.Lie.LieTheorem
+public import Mathlib.Algebra.Lie.Semisimple.Basic
 
 /-!
 # Lemmas about semisimple Lie algebras
@@ -25,6 +27,8 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
   `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful` using `LieModule.IsTracefree`.
 
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 

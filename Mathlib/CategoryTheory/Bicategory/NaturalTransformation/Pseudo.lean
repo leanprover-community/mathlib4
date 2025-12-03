@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
 
@@ -33,6 +34,8 @@ See `Pseudofunctor.StrongTrans.categoryStruct`.
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
 
@@ -79,7 +82,8 @@ namespace StrongTrans
 
 variable {F G : B ⥤ᵖ C}
 
-/-- The strong transformation between underlying pseudofunctors. -/
+/-- The strong transformation of oplax functors induced by a strong transformation of
+pseudofunctors. -/
 @[simps]
 def toOplax (η : StrongTrans F G) : Oplax.StrongTrans F.toOplax G.toOplax where
   app := η.app

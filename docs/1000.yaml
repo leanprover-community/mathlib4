@@ -81,8 +81,8 @@ Q179208:
 Q179467:
   title: Fourier theorem
   decls:
-    - MeasureTheory.Integrable.fourier_inversion
-    - Continuous.fourier_inversion
+    - MeasureTheory.Integrable.fourierInv_fourier_eq
+    - Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouezel
   date: 2024
   comment: "The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results."
@@ -521,7 +521,10 @@ Q535366:
 
 Q536640:
   title: Hall's marriage theorem
-  decl: Finset.all_card_le_biUnion_card_iff_exists_injective
+  decls:
+    - Finset.all_card_le_biUnion_card_iff_exists_injective
+    - SimpleGraph.exists_isPerfectMatching_of_forall_ncard_le
+  authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 
 Q537618:
   title: Banach–Alaoglu theorem
@@ -636,6 +639,9 @@ Q643513:
 
 Q643826:
   title: Slutsky's theorem
+  decl: MeasureTheory.TendstoInDistribution.continuous_comp_prodMk_of_tendstoInMeasure_const
+  authors: Rémy Degenne
+  date: 2025
 
 Q646523:
   title: Pick's theorem
@@ -962,6 +968,9 @@ Q858978:
 
 Q859122:
   title: Cauchy–Hadamard theorem
+  decl: FormalMultilinearSeries.radius_inv_eq_limsup
+  authors: Yury Kudryashov
+  date: 2020
 
 Q865665:
   title: Birkhoff's theorem (relativity)
@@ -1698,6 +1707,9 @@ Q1547975:
 
 Q1551745:
   title: Binomial inverse theorem
+  decl: Matrix.invOf_add_mul_mul'
+  authors: Antoine Chambert-Loir
+  date: 2025-11-11
 
 Q1555342:
   title: Reeh–Schlieder theorem
@@ -1994,6 +2006,13 @@ Q2226650:
 
 Q2226677:
   title: Gelfand–Mazur theorem
+  decls:
+    - NormedRing.algEquivComplexOfComplete
+    - NormedAlgebra.Complex.algEquivOfNormMul
+    - NormedAlgebra.Real.nonempty_algEquiv_or
+  authors: Jireh Loreaux, Michael Stoll
+  date: 2021, 2025
+  comment: "The first two are over the complex numbers (with different assumptions), the third is over the real numbers."
 
 Q2226682:
   title: Gelfand–Naimark theorem
@@ -2548,7 +2567,7 @@ Q3984052:
 
 Q3984053:
   title: Fourier inversion theorem
-  decl: Continuous.fourier_inversion
+  decl: Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouëzel
   date: 2024
 
@@ -2839,6 +2858,9 @@ Q4949984:
 
 Q4950096:
   title: Bourbaki–Witt theorem
+  decl: ChainCompletePartialOrder.nonempty_fixedPoints_of_inflationary
+  authors: Finn Mortimore
+  date: 2025
 
 Q4956438:
   title: Branching theorem

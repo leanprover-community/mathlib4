@@ -3,10 +3,12 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+module
+
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -79,6 +81,8 @@ weak convergence of measures, convergence in distribution, convergence in law, f
 probability measure
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -400,9 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
   have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
-  rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
-  refine ⟨r, r_in_Ioo, ?_⟩
-  simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
+  simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
 
 theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) :
     ∃ rs : ℕ → ℝ,

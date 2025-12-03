@@ -3,9 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Properties of the module `α →₀ M`
@@ -26,6 +29,8 @@ In this file we define `LinearMap` versions of various maps:
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 assert_not_exists Submodule
 
@@ -145,6 +150,9 @@ def lmapDomain (f : α → α') : (α →₀ M) →ₗ[R] α' →₀ M where
 @[simp]
 theorem lmapDomain_apply (f : α → α') (l : α →₀ M) :
     (lmapDomain M R f : (α →₀ M) →ₗ[R] α' →₀ M) l = mapDomain f l :=
+  rfl
+
+lemma coe_lmapDomain (f : α → α') : ⇑(lmapDomain M R f) = Finsupp.mapDomain f :=
   rfl
 
 @[simp]
@@ -306,3 +314,49 @@ def Module.subsingletonEquiv (R M ι : Type*) [Semiring R] [Subsingleton R] [Add
   map_smul' r _ := (smul_zero r).symm
 
 end
+
+namespace Module.End
+
+variable (ι : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-- If `M` is an `R`-module and `ι` is a type, then an additive endomorphism of `M` that
+commutes with all `R`-endomorphisms of `M` gives rise to an additive endomorphism of `ι →₀ M`
+that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
+@[simps] noncomputable def ringHomEndFinsupp :
+    End (End R M) M →+* End (End R (ι →₀ M)) (ι →₀ M) where
+  toFun f :=
+  { toFun := Finsupp.mapRange.addMonoidHom f
+    map_add' := map_add _
+    map_smul' g x := x.induction_linear (by simp)
+      (fun _ _ h h' ↦ by rw [smul_add, map_add, h, h', map_add, smul_add]) fun i m ↦ by
+        ext j
+        change f (Finsupp.lapply j ∘ₗ g ∘ₗ Finsupp.lsingle i • m) = _
+        rw [map_smul]
+        simp }
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+  map_zero' := by ext; simp
+  map_add' _ _ := by ext; simp
+
+variable {ι}
+
+/-- If `M` is an `R`-module and `ι` is an nonempty type, then every additive endomorphism
+of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
+endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
+See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
+@[simps!] noncomputable def ringEquivEndFinsupp (i : ι) :
+    End (End R M) M ≃+* End (End R (ι →₀ M)) (ι →₀ M) where
+  __ := ringHomEndFinsupp ι
+  invFun f :=
+  { toFun m := f (Finsupp.single i m) i
+    map_add' _ _ := by simp
+    map_smul' g m := let g := Finsupp.mapRange.linearMap g
+      show _ = g _ i by rw [← End.smul_def g, ← map_smul]; simp [g] }
+  left_inv _ := by ext; simp
+  right_inv f := by
+    ext x j
+    change f (Finsupp.lsingle (R := R) (M := M) i ∘ₗ Finsupp.lapply j • x) i = _
+    rw [map_smul]
+    simp
+
+end Module.End

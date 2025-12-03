@@ -3,8 +3,10 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # Bases for direct sum of modules
@@ -16,6 +18,8 @@ This file defines a `Module.Free` instance for the direct sum of modules.
 Currently, to get a basis on `⨁ i, M i` from a basis on each `M i`, use `DFinsupp.basis`
 (using that the types are defeq).
 -/
+
+@[expose] public section
 
 open DirectSum
 

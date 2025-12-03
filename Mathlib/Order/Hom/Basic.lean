@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Disjoint
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Order.Disjoint
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Order homomorphisms
@@ -65,6 +67,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 
 monotone map, bundled morphism
 -/
+
+@[expose] public section
 
 -- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
 assert_not_imported Mathlib.Data.Set.Basic
@@ -769,6 +773,9 @@ theorem refl_toEquiv : (refl α).toEquiv = Equiv.refl α :=
 /-- Inverse of an order isomorphism. -/
 def symm (e : α ≃o β) : β ≃o α := RelIso.symm e
 
+@[simp] lemma symm_mk (e : α ≃ β) (map_rel_iff') :
+    symm (.mk e map_rel_iff') = .mk e.symm (by simp [← map_rel_iff']) := rfl
+
 @[simp]
 theorem apply_symm_apply (e : α ≃o β) (x : β) : e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply x
@@ -1100,6 +1107,17 @@ end StrictMono
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
 protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
   ⟨f.toEquiv, f.map_rel_iff⟩
+
+section
+variable [LE α] [LE β] (f : α ≃o β)
+
+@[simp] lemma OrderIso.dual_apply (x) : f.dual x = .toDual (f x.ofDual) := rfl
+
+@[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
+
+@[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+
+end
 
 section LatticeIsos
 
