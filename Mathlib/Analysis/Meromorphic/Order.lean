@@ -513,6 +513,26 @@ theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
 alias MeromorphicAt.order_inv := meromorphicOrderAt_inv
 
 /--
+Adding a locally vanishing function does not change the order.
+-/
+@[simp]
+theorem meromorphicOrderAt_add_of_top_left
+    {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : meromorphicOrderAt f₁ x = ⊤) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₂ x := by
+  rw [meromorphicOrderAt_congr]
+  filter_upwards [meromorphicOrderAt_eq_top_iff.1 hf₁] with z hz
+  simp_all
+
+/--
+Adding a locally vanishing function does not change the order.
+-/
+@[simp]
+theorem meromorphicOrderAt_add_of_top_right
+    {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₂ : meromorphicOrderAt f₂ x = ⊤) :
+    meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
+  rw [add_comm, meromorphicOrderAt_add_of_top_left hf₂]
+
+/--
 The order of a sum is at least the minimum of the orders of the summands.
 -/
 theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
