@@ -116,6 +116,7 @@ doubleDeprecs="$(git grep -A2 -- "set_option linter.deprecated false" -- ":^Math
 printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
+printf '%s|%s\n' "$(grep -c 'tacticDocs' scripts/nolints.json)" "undocumented tactics"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 
@@ -125,11 +126,6 @@ deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ 
 
 printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
 printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
-
-# Number of undocumented tactics. For a list of undocumented tactics, run:
-#   lake env lean scripts/undocumented_tactics.lean
-# keeping `COUNT_ONLY` unset.
-COUNT_ONLY=1 lake env lean scripts/undocumented_tactics.lean
 }
 
 report () {
