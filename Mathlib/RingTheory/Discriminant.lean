@@ -3,9 +3,11 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.RingTheory.Trace.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Discriminant of a family of vectors
@@ -44,6 +46,8 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 -/
+
+@[expose] public section
 
 
 universe u v w z
@@ -92,7 +96,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
       intro j
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
-      this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
+      this j, ← map_sum, ← sum_mul, hg, zero_mul, map_zero]
   by_contra h
   rw [discr_def] at h
   simp [Matrix.eq_zero_of_mulVec_eq_zero h this] at hi
@@ -191,7 +195,6 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
     rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, Module.finrank_pos_iff]
     infer_instance
   rw [hn, Nat.cast_div h₂ hne, Nat.cast_mul, Nat.cast_sub hle]
-  field_simp
   ring
 
 /-- Formula for the discriminant of a power basis using the norm of the field extension. -/
@@ -212,8 +215,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (Algebra.IsSeparable.isIntegral K pb.gen)]
   apply (algebraMap K E).injective
-  rw [RingHom.map_mul, RingHom.map_pow, RingHom.map_neg, RingHom.map_one,
-    discr_powerBasis_eq_prod'' _ _ _ e]
+  rw [map_mul, map_pow, map_neg, map_one, discr_powerBasis_eq_prod'' _ _ _ e]
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>

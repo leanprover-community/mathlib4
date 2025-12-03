@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.NoetherianSpace
+module
+
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.NoetherianSpace
 
 /-!
 # Quasi-separated spaces
@@ -25,6 +27,8 @@ of compact open subsets are still compact.
 - `QuasiSeparatedSpace.of_isOpenEmbedding`: If `f : α → β` is an open embedding, and `β` is
   a quasi-separated space, then so is `α`.
 -/
+
+@[expose] public section
 
 open Set TopologicalSpace Topology
 

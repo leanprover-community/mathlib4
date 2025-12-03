@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Topological (sub)algebras
@@ -20,12 +22,15 @@ The topological closure of a subalgebra is still a subalgebra, which as an algeb
 topological algebra.
 
 In this file we define continuous algebra homomorphisms, as algebra homomorphisms between
-topological (semi-)rings which are continuous. The set of continuous algebra homomorphisms between
-the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
+topological (semi-)rings which are continuous. The type `ContinuousAlgHom R A B` of continuous
+algebra homomorphisms between the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
 
-TODO: add continuous algebra isomorphisms.
+See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
+the topological `R`-algebras `A` and `B`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
@@ -106,6 +111,8 @@ structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
 notation:25 A " →A[" R "] " B => ContinuousAlgHom R A B
 
 namespace ContinuousAlgHom
+
+open Subalgebra
 
 section Semiring
 
@@ -232,10 +239,20 @@ def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A w
 
 /-- Under a continuous algebra map, the image of the `TopologicalClosure` of a subalgebra is
 contained in the `TopologicalClosure` of its image. -/
-theorem _root_.Subalgebra.topologicalClosure_map
+theorem _root_.Subalgebra.map_topologicalClosure_le
     [IsTopologicalSemiring B] (f : A →A[R] B) (s : Subalgebra R A) :
-    s.topologicalClosure.map f ≤ (s.map f.toAlgHom).topologicalClosure :=
+    map f s.topologicalClosure ≤ (map f.toAlgHom s).topologicalClosure :=
   image_closure_subset_closure_image f.continuous
+
+lemma _root_.Subalgebra.topologicalClosure_map_le [IsTopologicalSemiring B]
+    (f : A →ₐ[R] B) (hf : IsClosedMap f) (s : Subalgebra R A) :
+    (map f s).topologicalClosure ≤ map f s.topologicalClosure :=
+  hf.closure_image_subset _
+
+lemma _root_.Subalgebra.topologicalClosure_map [IsTopologicalSemiring B]
+    (f : A →A[R] B) (hf : IsClosedMap f) (s : Subalgebra R A) :
+    (map f.toAlgHom s).topologicalClosure = map f.toAlgHom s.topologicalClosure :=
+  SetLike.coe_injective <| hf.closure_image_eq_of_continuous f.continuous _
 
 @[simp]
 theorem _root_.Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
@@ -350,7 +367,7 @@ variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
   {C : Type*} [Semiring C] [Algebra R C] [TopologicalSpace C]
 
-/-- The cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
+/-- The Cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
 protected def prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
     A →A[R] B × C :=
   ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prodMk f₂.2⟩
@@ -553,9 +570,15 @@ theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologi
 theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
     IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A _ s
 
-theorem Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgebra R A} (h : s ≤ t)
+theorem Subalgebra.topologicalClosure_minimal {s t : Subalgebra R A} (h : s ≤ t)
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+variable (R) in
+open Algebra in
+lemma Subalgebra.topologicalClosure_adjoin_le_centralizer_centralizer [T2Space A] (s : Set A) :
+    (adjoin R s).topologicalClosure ≤ centralizer R (centralizer R s) :=
+  topologicalClosure_minimal (adjoin_le_centralizer_centralizer R s) (Set.isClosed_centralizer _)
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
@@ -595,7 +618,7 @@ theorem self_mem (x : A) : x ∈ elemental R x :=
 variable {R} in
 theorem le_of_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) (hx : x ∈ s) :
     elemental R x ≤ s :=
-  topologicalClosure_minimal _ (adjoin_le <| by simpa using hx) hs
+  topologicalClosure_minimal (adjoin_le <| by simpa using hx) hs
 
 variable {R} in
 theorem le_iff_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) :
@@ -623,6 +646,10 @@ theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x
   eq_induced := rfl
   injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
+
+lemma le_centralizer_centralizer [T2Space A] (x : A) :
+    elemental R x ≤ centralizer R (centralizer R {x}) :=
+  topologicalClosure_adjoin_le_centralizer_centralizer ..
 
 end Algebra.elemental
 

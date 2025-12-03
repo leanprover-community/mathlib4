@@ -3,11 +3,12 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # The span of a single vector
@@ -23,6 +24,8 @@ isometry.
   linear isometry equivalence.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 E : Type*}
 
@@ -60,7 +63,8 @@ section Normed
 variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
-continuous linear equivalence from `E₁` to the span of `x`. -/
+continuous linear equivalence from `𝕜` to the span of `x`. -/
+@[simps!]
 noncomputable def toSpanNonzeroSingleton (x : E) (h : x ≠ 0) : 𝕜 ≃L[𝕜] 𝕜 ∙ x :=
   ofHomothety (LinearEquiv.toSpanNonzeroSingleton 𝕜 E x h) ‖x‖ (norm_pos_iff.mpr h)
     (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h)
@@ -99,7 +103,7 @@ namespace LinearIsometryEquiv
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 /-- Given a unit element `x` of a normed space `E` over a field `𝕜`, the natural
-linear isometry equivalence from `E` to the span of `x`. -/
+linear isometry equivalence from `𝕜` to the span of `x`. -/
 noncomputable def toSpanUnitSingleton (x : E) (hx : ‖x‖ = 1) :
     𝕜 ≃ₗᵢ[𝕜] 𝕜 ∙ x where
   toLinearEquiv := LinearEquiv.toSpanNonzeroSingleton 𝕜 E x (by aesop)

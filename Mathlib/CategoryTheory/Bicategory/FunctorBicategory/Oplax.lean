@@ -3,16 +3,20 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
 /-!
 # The bicategory of oplax functors between two bicategories
 
-Given bicategories `B` and `C`, we give a bicategory structure on `OplaxFunctor B C` whose
+Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖᴸ C` whose
 * objects are oplax functors,
 * 1-morphisms are oplax natural transformations, and
 * 2-morphisms are modifications.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Oplax
@@ -24,7 +28,7 @@ open scoped Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-variable {F G H I : OplaxFunctor B C}
+variable {F G H I : B ⥤ᵒᵖᴸ C}
 
 namespace OplaxTrans
 
@@ -49,23 +53,23 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 /-- Associator for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by simp)
+  isoMk (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by simp)
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
-  ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by simp)
+  isoMk (fun a => λ_ (η.app a)) (by simp)
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
-  ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by simp)
+  isoMk (fun a => ρ_ (η.app a)) (by simp)
 
 variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]
-scoped instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
+scoped instance OplaxFunctor.bicategory : Bicategory (B ⥤ᵒᵖᴸ C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ η := whiskerRight Γ η
   associator {_ _ _} _ := associator

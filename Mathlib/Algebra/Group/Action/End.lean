@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.End
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Hom
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Interaction between actions and endomorphisms/automorphisms
@@ -19,6 +21,8 @@ This file provides two things:
 
 monoid action, group action
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -171,7 +175,7 @@ variable [AddMonoid M]
 
 When `M` is a group, see `AddAction.toPermHom`. -/
 def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
-  MonoidHom.toAdditive'' MulAction.toEndHom
+  MulAction.toEndHom.toAdditiveRight
 
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
@@ -198,8 +202,7 @@ variable (G α) [AddGroup G] [AddAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) :=
-  MonoidHom.toAdditive'' <| MulAction.toPermHom ..
+def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
 
 end AddGroup
 

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings
@@ -19,6 +21,8 @@ import Mathlib.Order.Lattice
   exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
   prime characteristic `p`)
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset OrderHom
 
@@ -44,10 +48,6 @@ class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : outParam ℕ) : Prop wh
 
 variable [CharP R p] {a b : ℕ}
 
-@[deprecated CharP.cast_eq_zero_iff (since := "2025-04-03")]
-lemma cast_eq_zero_iff' (R : Type*) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (a : ℕ) :
-    (a : R) = 0 ↔ p ∣ a := cast_eq_zero_iff R p a
-
 lemma _root_.CharP.ofNat_eq_zero' (p : ℕ) [CharP R p]
     (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) :
     (ofNat(a) : R) = 0 := by
@@ -66,7 +66,7 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
     _ = ↑(k % p) := by simp [this]
 
-lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
   wlog hle : a ≤ b
   · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
@@ -181,6 +181,13 @@ lemma eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
+
+@[simp]
+lemma ringChar_eq_one : ringChar R = 1 ↔ Subsingleton R := by
+  rw [← Nat.dvd_one, ← spec, eq_comm, Nat.cast_one, subsingleton_iff_zero_eq_one]
+
+@[nontriviality]
+lemma ringChar_subsingleton [Subsingleton R] : ringChar R = 1 := by simpa
 
 end ringChar
 

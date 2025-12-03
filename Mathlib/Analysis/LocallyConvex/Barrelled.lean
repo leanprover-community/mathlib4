@@ -3,16 +3,18 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.Baire.Lemmas
+module
+
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
 
-This files defines barrelled spaces over a `NontriviallyNormedField`, and proves the
+This file defines barrelled spaces over a `NontriviallyNormedField`, and proves the
 Banach-Steinhaus theorem for maps from a barrelled space to a space equipped with a family
-of seminorms generating the topology (i.e `WithSeminorms q` for some family of seminorms `q`).
+of seminorms generating the topology (i.e. `WithSeminorms q` for some family of seminorms `q`).
 
 The more standard Banach-Steinhaus theorem for normed spaces is then deduced from that in
 `Mathlib/Analysis/Normed/Operator/BanachSteinhaus.lean`.
@@ -70,6 +72,8 @@ with the seminorm characterization!
 
 banach-steinhaus, uniform boundedness, equicontinuity
 -/
+
+@[expose] public section
 
 open Filter Topology Set ContinuousLinearMap
 

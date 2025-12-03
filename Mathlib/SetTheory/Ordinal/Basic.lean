@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.IsNormal
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.PPWithUniv
+module
+
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.IsNormal
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -50,10 +52,12 @@ A conditionally complete linear order with bot structure is registered on ordina
 `0`, the ordinal corresponding to the empty type, and `Inf` is the minimum for nonempty sets and `0`
 for the empty set by convention.
 
-## Notations
+## Notation
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module Field
 
@@ -273,7 +277,7 @@ For `Ordinal`:
   a function embedding `r` as a *principal* segment of `s`.
 
 Note that most of the relevant results on initial and principal segments are proved in the
-`Order.InitialSeg` file.
+`Mathlib/Order/InitialSeg.lean` file.
 -/
 instance partialOrder : PartialOrder Ordinal where
   le a b :=
@@ -315,12 +319,12 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
   ⟨h⟩
 
-protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
+private protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
 instance : OrderBot Ordinal where
   bot := 0
-  bot_le := Ordinal.zero_le
+  bot_le := zero_le
 
 @[simp]
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
@@ -329,21 +333,21 @@ theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
 instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
   simp [← bot_eq_zero]
 
+@[deprecated nonpos_iff_eq_zero (since := "2025-11-21")]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
 
-protected theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 :=
-  bot_lt_iff_ne_bot
+private theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 := bot_lt_iff_ne_bot
 
-@[simp]
+@[deprecated not_neg (since := "2025-11-21")]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 
-theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
-  eq_bot_or_bot_lt
+@[deprecated eq_zero_or_pos (since := "2025-11-21")]
+protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
 
 instance : ZeroLEOneClass Ordinal :=
-  ⟨Ordinal.zero_le _⟩
+  ⟨zero_le _⟩
 
 instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
@@ -482,7 +486,7 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (t
 theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
     ¬r a (enum r ⟨0, h0⟩) := by
   rw [← enum_typein r a, enum_le_enum r]
-  apply Ordinal.zero_le
+  apply zero_le
 
 theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
     enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
@@ -505,7 +509,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv _ := Subtype.ext_val (typein_enum _ _)
+  left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
@@ -524,13 +528,7 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 /-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
   bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
-
-/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
-@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
-def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' ho
+  bot_le := enum_zero_le' (by rwa [pos_iff_ne_zero])
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
@@ -590,13 +588,12 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 /-! ### Lifting ordinals to a higher universe -/
 
--- Porting note: Needed to add universe hint .{u} below
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
   see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
-  Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
+  Quotient.liftOn o (fun w => type <| ULift.down ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
@@ -768,9 +765,6 @@ instance add : Add Ordinal.{u} :=
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinal_type_eq⟩
 
 instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
-  add := (· + ·)
-  zero := 0
-  one := 1
   zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinal_type_eq
   add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinal_type_eq
   add_assoc o₁ o₂ o₃ :=
@@ -813,11 +807,21 @@ instance instAddRightMono : AddRightMono Ordinal.{u} where
       (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) ?_).ordinal_type_le
     simp [f.map_rel_iff]
 
-theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
-  simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
+instance existsAddOfLE : ExistsAddOfLE Ordinal where
+  exists_add_of_le {a b} := by
+    refine inductionOn₂ a b fun α r _ β s _ ⟨f⟩ ↦ ?_
+    obtain ⟨γ, t, _, ⟨g⟩⟩ := f.exists_sum_relIso
+    exact ⟨type t, g.ordinal_type_eq.symm⟩
 
-theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
-  simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
+instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
+  le_add_self a b := by simpa using add_le_add_left (zero_le b) a
+  le_self_add a b := by simpa using add_le_add_right (zero_le b) a
+
+@[deprecated le_self_add (since := "2025-11-21")]
+protected theorem le_add_right (a b : Ordinal) : a ≤ a + b := le_self_add
+
+@[deprecated le_add_self (since := "2025-11-21")]
+protected theorem le_add_left (a b : Ordinal) : a ≤ b + a := le_add_self
 
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left
@@ -858,7 +862,6 @@ theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
--- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 
@@ -866,7 +869,7 @@ theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :
   (add_assoc _ _ _).symm
 
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
+  rw [Order.one_le_iff_pos, pos_iff_ne_zero]
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o
@@ -959,10 +962,8 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
-      revert hf
-      -- Porting note: apply inductionOn does not work, refine does
-      refine inductionOn a ?_
-      intro α r _ hf
+      induction a using inductionOn with
+      | H a r =>
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
@@ -1093,7 +1094,7 @@ theorem ord_zero : ord 0 = 0 :=
 theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
-  | zero => exact Ordinal.zero_le _
+  | zero => exact _root_.zero_le _
   | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
 
 @[simp]
@@ -1262,7 +1263,7 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
-/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+/-- If a cardinal `c` is nonzero, then `c.ord.toType` has a least element. -/
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.toType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))

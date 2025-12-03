@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
-import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
+public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 
 /-!
 # Integral representations of `rpow`
@@ -47,6 +48,8 @@ relevant in applications, and would needlessly complicate the proof.
   (see Lemma 2.8)
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter
 open scoped NNReal Topology
 
@@ -82,7 +85,7 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
     calc _ = (t : ℝ) ^ p * (t⁻¹ - (t + x)⁻¹) := rfl
       _ = (t : ℝ) ^ p * ((t + x - t) / (t * (t + x))) := by
           simp only [inv_eq_one_div]
-          rw [div_sub_div _ _ (by omega) (by omega)]
+          rw [div_sub_div _ _ (by lia) (by lia)]
           simp
       _ = t ^ p / t * x / (t + x) := by simp [field]
       _ = t ^ (p - 1) * x / (t + x) := by congr; exact (Real.rpow_sub_one ht' p).symm
@@ -123,6 +126,8 @@ lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x)
       (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
+-- TODO: non-terminal simp_all followed by positivity
+set_option linter.flexible false in
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
@@ -205,7 +210,7 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
   calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by simp [field, rpowIntegrand₀₁]
     _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
           rw [Real.rpow_sub_one ht.ne']
-          field_simp
+          ring
     _ = _ := by simp [mul_comm, smul_eq_mul, rpowIntegrand₀₁]
 
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/
@@ -334,14 +339,12 @@ lemma exists_measure_rpow_eq_integral (hp : p ∈ Ioo 0 1) :
       property := by
         rw [inv_nonneg]
         exact le_of_lt <| integral_rpowIntegrand₀₁_one_pos hp }
-  let μ : Measure ℝ := C • volume
-  refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
-  · unfold μ IntegrableOn
+  refine ⟨C • volume, fun x hx => ⟨?_, ?_⟩⟩
+  · unfold IntegrableOn
     rw [Measure.restrict_smul]
     exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₀₁_Ioi hp hx
-  · unfold μ
-    rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx]
-    rfl
+  · simp_rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx,
+      NNReal.smul_def, C, NNReal.coe_mk, smul_eq_mul]
 
 end Real
 
@@ -451,7 +454,7 @@ private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
       (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
     fun a ha => (hμ a ha).2
   refine MonotoneOn.congr ?_ h₃'.symm
-  refine MeasureTheory.integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
+  refine integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
   exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
 

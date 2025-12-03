@@ -3,10 +3,12 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.SmoothNumbers
+module
+
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
 # Euler Products
@@ -41,6 +43,8 @@ for `s : Finset ℕ`.
 
 Euler product, multiplicative function
 -/
+
+@[expose] public section
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/
@@ -170,10 +174,9 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   let F : ℕ → R := fun n ↦ ∑' e, f (n ^ e)
-  change HasProd (F ∘ Subtype.val) _
-  rw [hasProd_subtype_iff_mulIndicator,
-    show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) = {p | Nat.Prime p}.mulIndicator from rfl,
-    HasProd, Metric.tendsto_atTop]
+  change HasProd (F ∘ Subtype.val (p := (· ∈ {x | Nat.Prime x}))) _
+  rw [hasProd_subtype_iff_mulIndicator, HasProd, SummationFilter.unconditional,
+    Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩

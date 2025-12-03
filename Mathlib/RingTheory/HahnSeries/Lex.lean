@@ -3,10 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.PiLex
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.PiLex
+public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 
@@ -22,6 +24,8 @@ it is an ordered group when `R` is.
   can be decomposed by `Γ`.
 
 -/
+
+@[expose] public section
 
 namespace HahnSeries
 
@@ -54,7 +58,7 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
         intro i h
         rw [Set.mem_union, Set.mem_setOf_eq, Set.mem_setOf_eq]
         contrapose! h
-        rw [Set.notMem_setOf_iff, Mathlib.Tactic.PushNeg.not_ne_eq, h.1, h.2]
+        rw [Set.notMem_setOf_iff, not_not, h.1, h.2]
       have hv : v.IsWF :=
         ((ofLex a).isPWO_support'.isWF.union (ofLex b).isPWO_support'.isWF).subset hvu
       let i := hv.min hab
@@ -113,6 +117,7 @@ end LinearOrder
 section OrderedMonoid
 variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
+set_option linter.flexible false in -- simp followed by gcongr
 instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
@@ -120,10 +125,8 @@ instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
       obtain ⟨i, hj, hi⟩ := hlt
-      refine ⟨i, ?_, ?_⟩
-      · intro j hji
-        simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
-      · simpa using add_lt_add_left hi ((ofLex c).coeff i)
+      refine ⟨i, fun j hji ↦ ?_, by simp; gcongr⟩
+      simpa using congr($(hj j hji) + (ofLex c).coeff j)
 
 end OrderedMonoid
 
@@ -283,7 +286,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
-      simp [ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
+      simp only [ne_eq, ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       exact .inl (by simpa [ha, hb] using h)
     · exact OrderHom.monotone _ hle
@@ -352,5 +355,48 @@ theorem archimedeanClassOrderIsoWithTop_apply (x : Lex (HahnSeries Γ R)) :
 end Archimedean
 
 end OrderedGroup
+
+section EmbDomain
+variable [PartialOrder R] {Γ' : Type*} [LinearOrder Γ'] (f : Γ ↪o Γ')
+
+/-- `HahnSeries.embDomain` as an `OrderEmbedding`. -/
+@[simps]
+noncomputable
+def embDomainOrderEmbedding [Zero R] : Lex (HahnSeries Γ R) ↪o Lex (HahnSeries Γ' R) where
+  toFun a := toLex (embDomain f (ofLex a))
+  inj' := toLex.injective.comp (embDomain_injective.comp (ofLex.injective))
+  map_rel_iff' {a b} := by
+    simp_rw [le_iff_lt_or_eq, lt_iff]
+    simp only [Function.Embedding.coeFn_mk, ofLex_toLex, EmbeddingLike.apply_eq_iff_eq]
+    constructor
+    · rintro (⟨i, hj, hi⟩ | heq)
+      · have himem : i ∈ Set.range f := by
+          contrapose! hi
+          simp [embDomain_notin_range hi]
+        obtain ⟨k, rfl⟩ := himem
+        refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩
+        simpa using hj (f j) (f.lt_iff_lt.mpr hjk)
+      · exact Or.inr <| embDomain_injective.comp (ofLex.injective) heq
+    · rintro (⟨i, hj, hi⟩ | rfl)
+      · refine Or.inl ⟨f i, fun k hki ↦ ?_, by simpa using hi⟩
+        by_cases hkmem : k ∈ Set.range f
+        · obtain ⟨j', rfl⟩ := hkmem
+          simpa using hj _ <| f.lt_iff_lt.mp hki
+        · simp_rw [embDomain_notin_range hkmem]
+      · simp
+
+/-- `HahnSeries.embDomain` as an `OrderAddMonoidHom`. -/
+@[simps]
+noncomputable
+def embDomainOrderAddMonoidHom [AddMonoid R] : Lex (HahnSeries Γ R) →+o Lex (HahnSeries Γ' R) where
+  __ := (embDomainOrderEmbedding f).toOrderHom
+  map_zero' := by simp
+  map_add' := by simp [embDomainOrderEmbedding, embDomain_add]
+
+theorem embDomainOrderAddMonoidHom_injective [AddMonoid R] :
+    Function.Injective (embDomainOrderAddMonoidHom f (R := R)) :=
+  (embDomainOrderEmbedding f).injective
+
+end EmbDomain
 
 end HahnSeries

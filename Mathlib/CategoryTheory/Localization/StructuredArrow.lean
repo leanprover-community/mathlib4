@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HomEquiv
-import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+module
+
+public import Mathlib.CategoryTheory.Localization.HomEquiv
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Induction principles for structured and costructured arrows
@@ -21,6 +23,8 @@ We obtain a similar lemma `Localization.induction_costructuredArrow` for
 costructured arrows.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

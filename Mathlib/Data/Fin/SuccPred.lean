@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Successors and predecessor operations of `Fin n`
@@ -19,6 +21,8 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -108,7 +112,7 @@ theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fi
 @[simp]
 theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
     ((Equiv.ofInjective _ (castLE_injective h)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castLE h]
+  rw [← val_castLE h]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
@@ -172,10 +176,10 @@ theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ 
 
 theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
     (hl : castSucc i < a) (hu : b < succ i) : b < a := by
-  simp [Fin.lt_def, -val_fin_lt] at *; omega
+  simp [Fin.lt_def, -val_fin_lt] at *; lia
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
-  simpa [Fin.lt_def, -val_fin_lt] using by omega
+  simpa [Fin.lt_def, -val_fin_lt] using by lia
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -183,9 +187,6 @@ theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ 
 
 theorem eq_castSucc_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
     ∃ y, Fin.castSucc y = x := exists_castSucc_eq.mpr h
-
-@[deprecated (since := "2025-02-06")]
-alias exists_castSucc_eq_of_ne_last := eq_castSucc_of_ne_last
 
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
@@ -247,7 +248,7 @@ open Fin.NatCast in
 @[norm_cast, simp]
 theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := by
   ext
-  exact val_cast_of_lt (Nat.lt.step a.is_lt)
+  exact val_cast_of_lt (Nat.lt_succ_of_lt a.is_lt)
 
 open Fin.NatCast in
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by
@@ -255,12 +256,12 @@ theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
-    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by omega)
+    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by lia)
 
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castSucc]
+  rw [← val_castSucc]
   exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
@@ -283,7 +284,7 @@ section Pred
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
     Fin.pred (1 : Fin (n + 1)) h = 0 := by
-  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
+  simp_rw [Fin.ext_iff, val_pred, val_one', val_zero, Nat.sub_eq_zero_iff_le, Nat.mod_le]
 
 theorem pred_last (h := Fin.ext_iff.not.2 last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
@@ -911,7 +912,7 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   we give a direct proof by case analysis to avoid extra dependencies. -/
   ext
   simp? [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val] says
-    simp only [succAbove, predAbove, lt_def, coe_castSucc, apply_dite Fin.val, coe_pred,
+    simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, val_pred,
       coe_castPred, dite_eq_ite, apply_ite Fin.val, val_succ]
   split_ifs <;> omega
 

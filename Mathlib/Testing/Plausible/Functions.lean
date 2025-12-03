@@ -3,11 +3,13 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Int.Range
-import Mathlib.Data.List.Sigma
-import Plausible.Functions
+module
+
+public meta import Mathlib.Data.Finsupp.ToDFinsupp
+public meta import Mathlib.Algebra.Order.Group.Nat
+public meta import Mathlib.Data.Int.Range
+public meta import Mathlib.Data.List.Sigma
+public meta import Plausible.Functions
 
 /-!
 ## `Plausible`: generators for functions
@@ -39,6 +41,8 @@ Some care must be taken for shrinking such functions to make sure
 their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
+
+@[expose] public meta section
 
 universe u v
 
@@ -357,10 +361,8 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
   · rwa [← h₀, hxs, hperm.nodup_iff]
   · rwa [← hxs, h₀, h₁] at hperm
 
-instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
-  proxy := InjectiveFunction ℤ
-  interp f := ⟨apply f, f.injective⟩
-  sample := do
+instance : Arbitrary (InjectiveFunction ℤ) where
+  arbitrary := do
     let ⟨sz⟩ ← Gen.up Gen.getSize
     let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
     let ys ← Gen.permutationOf xs'
@@ -369,6 +371,10 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     let r : InjectiveFunction ℤ :=
       InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
+
+instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
+  proxy := InjectiveFunction ℤ
+  interp f := ⟨apply f, f.injective⟩
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 
 end InjectiveFunction

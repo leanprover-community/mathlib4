@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.IsAdjoinRoot
+module
+
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Kummer-Dedekind theorem
@@ -14,7 +16,7 @@ This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in
 the ring of integers. This states the following: assume we are given
   - A prime ideal `I` of Dedekind domain `R`
   - An `R`-algebra `S` that is a Dedekind Domain
-  - An `α : S` such that that is integral over `R` with minimal polynomial `f`
+  - An `α : S` that is integral over `R` with minimal polynomial `f`
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
 prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
@@ -52,6 +54,8 @@ with a formula).
 
 kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S} {I : Ideal R}
@@ -197,11 +201,6 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   rw [Multiset.attach_map_val, Multiset.map_singleton, Subtype.coe_mk]
   exact normalizedFactors_irreducible hf
 
-#adaptation_note
-/--
-`grind` panics here, so we disable the tactic analysis linter in the meantime.
--/
-set_option linter.tacticAnalysis.ringToGrind true in
 open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via

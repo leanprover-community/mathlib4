@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Compactness.LocallyFinite
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Compactness.LocallyFinite
 
 /-!
 # Sigma-compactness in topological spaces
@@ -16,6 +18,8 @@ import Mathlib.Topology.Compactness.LocallyFinite
   of a countable collection of compact subspaces.
 
 -/
+
+@[expose] public section
 
 open Set Filter Topology TopologicalSpace
 

@@ -3,9 +3,11 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Combinatorics.Matroid.Basic
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Matroid Independence and Basis axioms
@@ -84,6 +86,8 @@ for the inverse of `e`).
 
 * `Matroid.ofIsBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -224,7 +228,7 @@ provided independence is determined by its behaviour on finite sets. -/
     (indep_aug := by
       have htofin : ∀ I e, Indep I → ¬ Indep (insert e I) →
         ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
-        by_contra h; push_neg at h
+        by_contra! h
         obtain ⟨I, e, -, hIe, h⟩ := h
         refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
         exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
@@ -232,7 +236,7 @@ provided independence is determined by its behaviour on finite sets. -/
       obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
       by_cases heB : e ∈ B
       · exact ⟨e, ⟨heB, heI⟩, hins⟩
-      by_contra hcon; push_neg at hcon
+      by_contra! hcon
       have heBdep := hBmax.not_prop_of_ssuperset (ssubset_insert heB)
       -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
       obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep

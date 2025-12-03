@@ -3,9 +3,11 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.Ring.Subring.Defs
+module
+
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 
@@ -20,6 +22,8 @@ We study subrings of ordered rings and prove their basic properties.
 
 -/
 
+@[expose] public section
+
 namespace Subring
 
 variable {R : Type*}
@@ -27,14 +31,13 @@ variable {R : Type*}
 /-- A subring of an ordered ring is an ordered ring. -/
 instance toIsOrderedRing [Ring R] [PartialOrder R] [IsOrderedRing R] (s : Subring R) :
     IsOrderedRing s :=
-  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) .rfl
 
 /-- A subring of a strict ordered ring is a strict ordered ring. -/
 instance toIsStrictOrderedRing [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     (s : Subring R) : IsStrictOrderedRing s :=
-  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isStrictOrderedRing Subtype.val
+    rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) .rfl .rfl
 
 /-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
 def orderedSubtype {R : Type*} [Ring R] [PartialOrder R] (s : Subring R) :

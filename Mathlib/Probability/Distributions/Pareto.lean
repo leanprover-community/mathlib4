@@ -3,9 +3,11 @@ Copyright (c) 2024 Alvan Caleb Arulandu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alvan Caleb Arulandu
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-! # Pareto distributions over ℝ
 
@@ -20,6 +22,8 @@ Define the Pareto measure over the reals.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -85,8 +89,7 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
       rw [← ht0] at h
       positivity
     | inr htp =>
-      have := lt_of_lt_of_le htp h
-      positivity
+      positivity [lt_of_lt_of_le htp h]
   · positivity
 
 open Measure
@@ -105,9 +108,7 @@ lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :
     · simp [field, ← rpow_add ht]
     linarith
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
-    refine ae_of_all _ fun x (hx : t ≤ x) ↦ ?_
-    have := lt_of_lt_of_le ht hx
-    positivity
+    filter_upwards with x hx using by positivity [lt_of_lt_of_le ht hx]
   · apply (measurable_paretoPDFReal t r).aestronglyMeasurable.congr
     refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : t ≤ x) ↦ ?_
     simp_rw [paretoPDFReal, eq_true_intro hx, ite_true]

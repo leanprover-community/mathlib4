@@ -3,11 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.LogDeriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.LogDeriv
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative and series expansion of real logarithm
@@ -20,6 +23,8 @@ that the series `∑' n : ℕ, x ^ (n + 1) / (n + 1)` converges to `(-Real.log (
 
 logarithm, derivative
 -/
+
+@[expose] public section
 
 
 open Filter Finset Set
@@ -41,7 +46,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
   rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
-    · field_simp
+    · ring
   · exact hasStrictDerivAt_log_of_pos hx
 
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
@@ -76,7 +81,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
   rcases hx.lt_or_gt with hx | hx
   · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
       apply ContDiffAt.comp
-      apply A _ (Left.neg_pos_iff.mpr hx)
+      · apply A _ (Left.neg_pos_iff.mpr hx)
       apply contDiffAt_id.neg
     convert this
     ext x
@@ -248,6 +253,100 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     · simp [le_abs_self x, neg_le.mp (neg_le_abs x)]
   -- fourth step: conclude by massaging the inequality of the third step
   simpa [F, div_mul_eq_mul_div, pow_succ] using C
+
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
+/--
+Compute the derivative of the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
+Taylor series at `0` up to order `n`. This is an auxiliary lemma for
+`sum_range_sub_log_div_le` and `sum_range_le_log_div`.
+Note that thanks to the geometric series, the derivative has a particularly simple form, and means
+that it is more convenient to avoid Taylor's theorem.
+-/
+lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
+    {y : ℝ} (n : ℕ) (hy₁ : -1 < y) (hy₂ : y < 1) :
+    HasDerivAt
+      (fun x ↦ 1 / 2 * log ((1 + x) / (1 - x)) - (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)))
+      ((y ^ 2) ^ n / (1 - y ^ 2)) y := by
+  refine ((((((hasDerivAt_id _).const_add _).div ((hasDerivAt_id _).const_sub _) (by grind)).log
+          ?_).const_mul _).sub (HasDerivAt.fun_sum fun i hi ↦ (hasDerivAt_pow _ _).div_const _))
+        |>.congr_deriv ?_
+  · simp only [id_eq, div_ne_zero_iff, Pi.div_apply]; grind
+  have : (∑ i ∈ range n, (2*i+1) * y ^ (2*i) / (2*i+1)) = (∑ i ∈ range n, (y^2) ^ i) := by
+    congr with i
+    simp [field, mul_comm, ← pow_mul]
+  have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
+  have hy₄ : (1 - y) * (1 + y) = 1 - y ^ 2 := by ring
+  simp [this, field, geom_sum_eq hy₃, hy₄, sub_ne_zero_of_ne, hy₃.symm]
+  ring
+
+/-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
+Taylor series at `0`, where the bound tends to `0`. This bound is particularly useful for explicit
+estimates of logarithms.
+
+Note that thanks to the geometric series, the derivative has a particularly simple form, and means
+that it is more convenient to avoid Taylor's theorem for this proof.
+-/
+lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
+    |1 / 2 * log ((1 + x) / (1 - x)) - ∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)| ≤
+      |x| ^ (2 * n + 1) / (1 - x ^ 2) := by
+  let F (x : ℝ) : ℝ :=
+    1 / 2 * log ((1 + x) / (1 - x)) - (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1))
+  let F' (y : ℝ) : ℝ := (y ^ 2) ^ n / (1 - y ^ 2)
+  have hI : Icc (-|x|) |x| ⊆ Ioo (-1 : ℝ) 1 := Icc_subset_Ioo (by simp [h]) h
+  -- First step: compute the derivative of `F`
+  have A : ∀ y ∈ Ioo (-1 : ℝ) 1, HasDerivAt F (F' y) y := by
+    intro y hy
+    exact hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range _ (by grind) (by grind)
+  -- second step: show that the derivative of `F` is small
+  have B : ∀ y ∈ Set.Icc (-|x|) |x|, ‖F' y‖ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := fun y hy ↦ by
+    have : y ^ 2 ≤ x ^ 2 := sq_le_sq.2 (abs_le.2 hy)
+    calc
+      ‖F' y‖ = (y ^ 2) ^ n / |1 - y ^ 2| := by simp [F']
+      _ = (y ^ 2) ^ n / (1 - y ^ 2) := by rw [abs_of_pos (by simpa [abs_lt] using hI hy)]
+      _ ≤ (x ^ 2) ^ n / (1 - x ^ 2) := by gcongr ?_ ^ n / (1 - ?_); simpa [abs_lt] using h
+      _ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := by simp [pow_mul]
+  -- third step: apply the mean value inequality
+  have C : ‖F x - F 0‖ ≤ |x| ^ (2 * n) / (1 - x^2) * ‖x - 0‖ :=
+    (convex_Icc (-|x|) |x|).norm_image_sub_le_of_norm_hasDerivWithin_le
+      (fun y hy ↦ (A _ (hI hy)).hasDerivWithinAt) B
+      (by simp) (by simp [le_abs_self, neg_le, neg_le_abs x])
+  -- fourth step: conclude by massaging the inequality of the third step
+  simpa [F, pow_succ, div_mul_eq_mul_div] using C
+
+/--
+For `0 ≤ x < 1`, the partial sums of the series expansion of $\frac{1}{2} * \log(\frac{1+x}{1-x})$
+at `0` form a lower bound for it. This shows that the absolute value in `sum_range_sub_log_div_le`
+can be dropped, and gives explicit lower bounds for logarithms.
+-/
+lemma sum_range_le_log_div {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
+    ∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1) ≤ 1 / 2 * log ((1 + x) / (1 - x)) := by
+  let F (x : ℝ) : ℝ :=
+    1 / 2 * log ((1 + x) / (1 - x)) - (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1))
+  let F' (y : ℝ) : ℝ := (y ^ 2) ^ n / (1 - y ^ 2)
+  -- First step: compute the derivative of `F`
+  have A : ∀ y ∈ Icc 0 x, HasDerivAt F (F' y) y := by
+    intro y hy
+    exact hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range _ (by grind) (by grind)
+  -- It suffices to show that `F` is monotone on `[0, x]`
+  suffices MonotoneOn F (Icc 0 x) by simpa [F] using this ⟨le_rfl, h₀⟩ ⟨h₀, le_rfl⟩ h₀
+  -- Second step: show that the derivative of `F` is nonnegative; it has been computed already.
+  refine monotoneOn_of_hasDerivWithinAt_nonneg (convex_Icc 0 x)
+    (fun y hy ↦ (A y hy).continuousAt.continuousWithinAt)
+    (fun y hy ↦ (A y (interior_subset hy)).hasDerivWithinAt) ?_
+  intro y hy
+  simp only [interior_Icc, Set.mem_Ioo] at hy
+  have : 0 ≤ 1 - y ^ 2 := by calc
+    0 ≤ 1 - x ^ 2 := by simp [abs_of_nonneg h₀, h.le]
+    _ ≤ 1 - y ^ 2 := sub_le_sub_left (pow_le_pow_left₀ hy.1.le hy.2.le 2) 1
+  positivity
+
+lemma log_div_le_sum_range_add {x : ℝ} (h₀ : 0 ≤ x) (h : x < 1) (n : ℕ) :
+    1 / 2 * log ((1 + x) / (1 - x)) ≤
+      (∑ i ∈ range n, x ^ (2 * i + 1) / (2 * i + 1)) + x ^ (2 * n + 1) / (1 - x ^ 2) := by
+  have h₁ := sum_range_sub_log_div_le (by rwa [abs_of_nonneg h₀]) n
+  rwa [abs_of_nonneg (sub_nonneg_of_le (sum_range_le_log_div h₀ h n)), abs_of_nonneg h₀,
+    sub_le_iff_le_add'] at h₁
 
 /-- Power series expansion of the logarithm around `1`. -/
 theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :

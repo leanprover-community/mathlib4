@@ -3,18 +3,22 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Prod.Basic
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Logic.Unique
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Tactic.Attr.Register
+module
+
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Unique
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nontrivial types
 
 Results about `Nontrivial`.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*}
 

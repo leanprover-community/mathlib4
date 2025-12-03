@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relator
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.SimpRw
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures
@@ -34,14 +36,16 @@ the bundled version, see `Rel`.
 * `Relation.EqvGen`: Equivalence closure. `EqvGen r` relates everything `ReflTransGen r` relates,
   plus for all related pairs it relates them in the opposite order.
 * `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
-  `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
-  both.
+  `s : β → γ → Prop`, `r ∘r s` relates `a : α` and `c : γ` iff there exists `b : β` that's related
+  to both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,
   `g : β → δ`, `Map r f g` is the relation `γ → δ → Prop` relating `f a` and `g b` for all `a`, `b`
   related by `r`.
 * `Relation.Join`: Join of a relation. For `r : α → α → Prop`, `Join r a b ↔ ∃ c, r a c ∧ r b c`. In
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -57,10 +61,7 @@ theorem IsRefl.reflexive [IsRefl α r] : Reflexive r := fun x ↦ IsRefl.refl x
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
 theorem Reflexive.rel_of_ne_imp (h : Reflexive r) {x y : α} (hr : x ≠ y → r x y) : r x y := by
-  by_cases hxy : x = y
-  · exact hxy ▸ h x
-  · exact hr hxy
-
+  grind [Reflexive]
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 then it holds whether or not `x ≠ y`. -/
@@ -71,6 +72,12 @@ theorem Reflexive.ne_imp_iff (h : Reflexive r) {x y : α} : x ≠ y → r x y �
 then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[IsRefl α r]`. -/
 theorem reflexive_ne_imp_iff [IsRefl α r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   IsRefl.reflexive.ne_imp_iff
+
+theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
+  grind [Reflexive, Subrelation]
+
+theorem irreflexive_iff_subrelation_ne : Irreflexive r ↔ Subrelation r Ne := by
+  grind [Irreflexive, Subrelation]
 
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩
@@ -139,13 +146,11 @@ theorem eq_comp : (· = ·) ∘r r = r := fun_eq_comp ..
 
 @[simp]
 theorem iff_comp {r : Prop → α → Prop} : (· ↔ ·) ∘r r = r := by
-  have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
-  rw [this, eq_comp]
+  grind [eq_comp]
 
 @[simp]
 theorem comp_iff {r : α → Prop → Prop} : r ∘r (· ↔ ·) = r := by
-  have : (· ↔ ·) = (· = ·) := by funext a b; exact iff_eq_eq
-  rw [this, comp_eq]
+  grind [comp_eq]
 
 theorem comp_assoc : (r ∘r p) ∘r q = r ∘r p ∘r q := by
   funext a d
@@ -206,11 +211,7 @@ lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b 
 
 @[simp] lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → ζ) :
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
-  ext a b
-  simp_rw [Relation.Map, Function.comp_apply, ← exists_and_right, @exists_comm γ, @exists_comm δ]
-  refine exists₂_congr fun a b ↦ ⟨?_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
-  rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
-  exact ⟨hab, h⟩
+  grind [Relation.Map]
 
 @[simp]
 lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :

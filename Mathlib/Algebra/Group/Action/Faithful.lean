@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
 
 /-!
 # Faithful group actions
@@ -24,6 +26,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -58,8 +62,11 @@ instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
 @[to_additive /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
-instance LefttCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
+instance LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
+
+@[deprecated (since := "2025-09-15")]
+alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
 
 instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
@@ -79,3 +86,7 @@ scalar towers, then `P / N / M` is also a scalar tower.
     [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [SMul P Q] [FaithfulSMul P Q]
     [IsScalarTower M N Q] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N P where
   smul_assoc m n p := by simp_rw [← (smul_left_injective' (α := Q)).eq_iff, smul_assoc]
+
+open MulOpposite in
+instance [SMul α M] [FaithfulSMul α M] : FaithfulSMul α Mᵐᵒᵖ where
+  eq_of_smul_eq_smul h := FaithfulSMul.eq_of_smul_eq_smul fun m ↦ op_inj.mp <| h (op m)

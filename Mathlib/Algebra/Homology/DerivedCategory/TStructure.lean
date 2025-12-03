@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Fractions
-import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
+public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 /-!
 # The canonical t-structure on the derived category
@@ -15,6 +17,8 @@ In this file, we introduce the canonical t-structure on the
 derived category of an abelian category.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Pretriangulated Triangulated Limits Preadditive
 
@@ -52,20 +56,20 @@ def TStructure.t : TStructure (DerivedCategory C) where
     apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE K L 0 1 (by simp)).elim
   le_zero_le := by
     rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by omega)⟩
+    exact ⟨K, e, K.isStrictlyLE_of_le 0 1 (by lia)⟩
   ge_one_le := by
     rintro X ⟨K, e, _⟩
-    exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by omega)⟩
+    exact ⟨K, e, K.isStrictlyGE_of_ge 0 1 (by lia)⟩
   exists_triangle_zero_one X := by
     obtain ⟨K, ⟨e₂⟩⟩ : ∃ K, Nonempty (Q.obj K ≅ X) := ⟨_, ⟨Q.objObjPreimageIso X⟩⟩
     have h := K.shortComplexTruncLE_shortExact 0
     refine ⟨Q.obj (K.truncLE 0), Q.obj (K.truncGE 1),
       ⟨_, Iso.refl _, inferInstance⟩, ⟨_, Iso.refl _, inferInstance⟩,
       Q.map (K.ιTruncLE 0) ≫ e₂.hom, e₂.inv ≫ Q.map (K.πTruncGE 1),
-      inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega))) ≫ (triangleOfSES h).mor₃,
+      inv (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by lia))) ≫ (triangleOfSES h).mor₃,
       isomorphic_distinguished _ (triangleOfSES_distinguished h) _ (Iso.symm ?_)⟩
     refine Triangle.isoMk _ _ (Iso.refl _) e₂
-      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by omega)))) ?_ ?_ (by simp)
+      (asIso (Q.map (K.shortComplexTruncLEX₃ToTruncGE 0 1 (by lia)))) ?_ ?_ (by simp)
     · dsimp
       rw [id_comp]
       rfl

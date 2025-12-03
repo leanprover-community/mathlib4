@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+module
+
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Simplices in torsors over normed spaces.
@@ -18,6 +20,8 @@ This file defines properties of simplices in a `NormedAddTorsor`.
 * `Affine.Simplex.Regular`
 
 -/
+
+@[expose] public section
 
 
 namespace Affine
@@ -128,7 +132,7 @@ lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral :
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [comp_apply, Equiv.swap_apply_left]
     convert rfl
-    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by omega)]
+    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by lia)]
   · rcases hr ((Equiv.swap 0 i).trans (Equiv.swap 1 j)) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]

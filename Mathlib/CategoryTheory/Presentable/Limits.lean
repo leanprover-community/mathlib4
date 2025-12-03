@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Presentable.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Colimits of presentable objects
@@ -17,6 +19,8 @@ In particular, `κ`-presentable objects are stable by colimits indexed
 by a category `K` such that `HasCardinalLT (Arrow K) κ`.
 
 -/
+
+@[expose] public section
 
 universe w w' v' v u' u
 
@@ -48,7 +52,7 @@ include hc hF hK
 
 lemma surjective (x : c.pt.obj cX.pt) :
     ∃ (j : J) (x' : c.pt.obj (X.obj j)), x = (c.pt.mapCocone cX).ι.app j x' := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨y, hy⟩ := (Types.isLimitEquivSections (hc cX.pt)).symm.surjective x
   obtain ⟨j₀, z, hz⟩ : ∃ (j₀ : J) (z : (k : K) → (F.obj k).obj (X.obj j₀)),
       ∀ (k : K), y.1 k = (F.obj k).map (cX.ι.app j₀) (z k) := by
@@ -103,7 +107,7 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
     ∃ (j' : J) (α : j ⟶ j'),
     c.pt.map (X.map α) x₁ = c.pt.map (X.map α) x₂ := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   let y₁ := Types.isLimitEquivSections (hc (X.obj j)) x₁
   let y₂ := Types.isLimitEquivSections (hc (X.obj j)) x₂
   have hy₁ : (Types.isLimitEquivSections (hc (X.obj j))).symm y₁ = x₁ := by simp [y₁]
@@ -136,7 +140,7 @@ end isColimitMapCocone
 
 /-- Auxiliary definition for `isCardinalAccessible_of_isLimit`. -/
 noncomputable def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   apply Types.FilteredColimit.isColimitOf'
   · exact isColimitMapCocone.surjective c hc κ hK cX hF
   · exact isColimitMapCocone.injective c hc κ hK cX hF

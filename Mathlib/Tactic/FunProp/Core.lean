@@ -3,15 +3,19 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Theorems
-import Mathlib.Tactic.FunProp.ToBatteries
-import Mathlib.Tactic.FunProp.Types
-import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.Exact
+module
+
+public meta import Mathlib.Tactic.FunProp.Theorems
+public meta import Mathlib.Tactic.FunProp.ToBatteries
+public meta import Mathlib.Tactic.FunProp.Types
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Tactic.Exact
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta Qq
@@ -53,7 +57,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       if (← isClass? type).isSome then
         if (← synthesizeInstance thmId x type) then
           continue
-      else if (← isFunProp type.getForallBody) then
+      else if (← isFunPropGoal type) then
         -- try function property
         if let some ⟨proof⟩ ← funProp type then
           if (← isDefEq x proof) then
@@ -161,7 +165,7 @@ def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Op
 
 
 /--
-Try to prove `e` using using *identity lambda theorem*.
+Try to prove `e` using the *identity lambda theorem*.
 
 For example, `e = q(Continuous fun x => x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -181,7 +185,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using using *constant lambda theorem*.
+Try to prove `e` using the *constant lambda theorem*.
 
 For example, `e = q(Continuous fun x => y)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -201,7 +205,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using using *apply lambda theorem*.
+Try to prove `e` using the *apply lambda theorem*.
 
 For example, `e = q(Continuous fun f => f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/

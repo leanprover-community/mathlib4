@@ -3,12 +3,14 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
-import Mathlib.Tactic.Group
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
+public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.Tactic.Group
 /-!
 # SubMulActions on complements of invariant subsets
 
@@ -23,7 +25,7 @@ and permit to manipulate them in a relatively smooth way:
   the identity map, when the set is the empty set.
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
-  multiplicative equivalence between `fixingSubgroup M (insert a s)``
+  multiplicative equivalence between `fixingSubgroup M (insert a s)`
   and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
@@ -59,6 +61,8 @@ and permit to manipulate them in a relatively smooth way:
   of an enumeration of `s`, as an equivariant map.
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -130,8 +134,8 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
 
 @[to_additive]
 theorem of_fixingSubgroupEmpty_mapScalars_surjective :
-    Surjective (fixingSubgroup M (∅ : Set α)).subtype := fun g ↦ by
-  simp [mem_fixingSubgroup_iff]
+    Surjective (fixingSubgroup M (∅ : Set α)).subtype :=
+  fun g ↦ ⟨⟨g, by simp⟩, rfl⟩
 
 end Empty
 
@@ -217,7 +221,7 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
 
 @[to_additive]
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
-    (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s :=  by
+    (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s := by
   ext k
   simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.coe_coe]
   constructor
@@ -278,7 +282,7 @@ theorem conjMap_ofFixingSubgroup_coe_apply {hg : g • t = s} (x : ofFixingSubgr
 theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} {hst : g • s = t} :
     Bijective (conjMap_ofFixingSubgroup hst) := by
   constructor
-  · rintro  x y hxy
+  · rintro x y hxy
     simpa [← SetLike.coe_eq_coe] using hxy
   · rintro ⟨x, hx⟩
     rw [eq_comm, ← inv_smul_eq_iff] at hst
@@ -294,7 +298,7 @@ lemma mem_fixingSubgroup_union_iff {g : M} :
     g ∈ fixingSubgroup M (s ∪ t) ↔ g ∈ fixingSubgroup M s ∧ g ∈ fixingSubgroup M t := by
   simp [fixingSubgroup_union, Subgroup.mem_inf]
 
-/-- The group  morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
+/-- The group morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
 @[to_additive
 /-- The additive group morphism from `fixingAddSubgroup` of a union
 to the iterated `fixingAddSubgroup`. -/]
@@ -456,4 +460,71 @@ theorem ofFixingSubgroup.append_right {n : ℕ} [Finite s]
 
 end Construction
 
+section TwoCriteria
+
+open MulAction
+
+/-- A pretransitivity criterion. -/
+theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
+    (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))
+    {g : M} (ha : s ∪ g • s ≠ ⊤) :
+    IsPretransitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
+  rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, ← Set.nonempty_iff_ne_empty] at ha
+  obtain ⟨a, ha⟩ := ha
+  rw [Set.compl_union] at ha
+  have ha' : a ∈ (s ∩ g • s)ᶜ := by
+    rw [Set.compl_inter]
+    exact Set.mem_union_left _ ha.1
+  rw [MulAction.isPretransitive_iff_base (⟨a, ha'⟩ : ofFixingSubgroup M (s ∩ g • s))]
+  rintro ⟨x, hx⟩
+  rw [mem_ofFixingSubgroup_iff, Set.mem_inter_iff, not_and_or] at hx
+  rcases hx with hx | hx
+  · obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨a, ha.1⟩ ⟨x, hx⟩
+    use ⟨k, fun ⟨y, hy⟩ ↦ hk ⟨y, hy.1⟩⟩
+    rwa [Subtype.ext_iff] at hkax ⊢
+  · have hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr hx
+    have hg'a : g⁻¹ • a ∈ ofFixingSubgroup M s := mt Set.mem_smul_set_iff_inv_smul_mem.mpr ha.2
+    obtain ⟨⟨k, hk⟩, hkax⟩ := hs.exists_smul_eq ⟨g⁻¹ • a, hg'a⟩ ⟨g⁻¹ • x, hg'x⟩
+    use ⟨g * k * g⁻¹, ?_⟩
+    · simp only [← SetLike.coe_eq_coe] at hkax ⊢
+      rwa [SetLike.val_smul, Subgroup.mk_smul, eq_inv_smul_iff, smul_smul, smul_smul] at hkax
+    · rw [mem_fixingSubgroup_iff] at hk ⊢
+      intro y hy
+      rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
+      exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
+
+/-- A primitivity criterion -/
+theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
+    [Finite α]
+    (hs : IsPreprimitive (fixingSubgroup M s) (ofFixingSubgroup M s))
+    {g : M} (ha : s ∪ g • s ≠ ⊤) :
+    IsPreprimitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
+  have := IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs.toIsPretransitive ha
+  apply IsPreprimitive.of_card_lt (f := ofFixingSubgroup_of_inclusion M Set.inter_subset_left)
+  rw [show Nat.card (ofFixingSubgroup M (s ∩ g • s)) = (s ∩ g • s)ᶜ.ncard from
+    Nat.card_coe_set_eq _, Set.ncard_range_of_injective ofFixingSubgroup_of_inclusion_injective,
+    show Nat.card (ofFixingSubgroup M s) = sᶜ.ncard from Nat.card_coe_set_eq _, Set.compl_inter]
+  refine (Set.ncard_union_lt sᶜ.toFinite (g • s)ᶜ.toFinite ?_).trans_le ?_
+  · rwa [Set.disjoint_compl_right_iff_subset, Set.compl_subset_iff_union]
+  · rw [← Set.smul_set_compl, Set.ncard_smul_set, two_mul]
+
+end TwoCriteria
+
 end SubMulAction
+
+section Pointwise
+
+open MulAction Set
+
+variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+
+@[to_additive]
+theorem MulAction.fixingSubgroup_le_stabilizer (s : Set α) :
+    fixingSubgroup G s ≤ stabilizer G s := by
+  intro k hk
+  rw [mem_stabilizer_iff]
+  conv_rhs => rw [← Set.image_id s]
+  apply Set.image_congr
+  simpa only [mem_fixingSubgroup_iff, id] using hk
+
+end Pointwise

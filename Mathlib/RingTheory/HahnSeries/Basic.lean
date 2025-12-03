@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Hahn Series
@@ -33,6 +35,8 @@ in the file `Mathlib/RingTheory/LaurentSeries.lean`.
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
+
+@[expose] public section
 
 
 open Finset Function
@@ -276,6 +280,10 @@ theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
   rw [← hg]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
+theorem orderTop_ne_of_coeff_eq_zero {x : HahnSeries Γ R} {i : Γ} (hx : x.coeff i = 0) :
+    x.orderTop ≠ i :=
+  fun h ↦ coeff_orderTop_ne h hx
+
 theorem orderTop_le_of_coeff_ne_zero {Γ} [LinearOrder Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.orderTop ≤ g := by
   rw [orderTop_of_ne_zero (ne_zero_of_coeff_ne_zero h), WithTop.coe_le_coe]
@@ -483,6 +491,21 @@ theorem embDomain_injective {f : Γ ↪o Γ'} :
   rw [HahnSeries.ext_iff, funext_iff] at xy
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
+
+@[simp]
+theorem orderTop_embDomain {Γ : Type*} [LinearOrder Γ] {f : Γ ↪o Γ'} {x : HahnSeries Γ R} :
+    (embDomain f x).orderTop = WithTop.map f x.orderTop := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  rw [← WithTop.coe_untop x.orderTop (by simpa using hx), WithTop.map_coe]
+  apply orderTop_eq_of_le
+  · simpa using coeff_orderTop_ne (by simp)
+  intro y hy
+  obtain ⟨z, hz, rfl⟩ :=
+    (Set.mem_image _ _ _).mp <| Set.mem_of_subset_of_mem support_embDomain_subset hy
+  rw [OrderEmbedding.le_iff_le, WithTop.untop_le_iff]
+  apply orderTop_le_of_coeff_ne_zero
+  simpa using hz
 
 end Domain
 

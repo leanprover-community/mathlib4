@@ -3,11 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # `#`-command linter
@@ -21,6 +22,8 @@ they provide useful information in development, but are not intended to be prese
 Most of them are noisy and get picked up anyway by CI, but even the quiet ones are not expected to
 outlive their in-development status.
 -/
+
+public meta section
 
 namespace Mathlib.Linter
 
@@ -70,7 +73,7 @@ def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   then
     if let some sa := stx.getHead? then
       let a := sa.getAtomVal
-      if (a.get ⟨0⟩ == '#' && ! allowed_commands.contains a) then
+      if (a.front == '#' && ! allowed_commands.contains a) then
         let msg := m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
         if warningAsError.get (← getOptions) then
           logInfoAt sa (msg ++ " [linter.hashCommand]")

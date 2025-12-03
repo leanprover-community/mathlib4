@@ -3,17 +3,21 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Lemmas about linear ordered (semi)fields
 -/
+
+@[expose] public section
 
 
 open Function OrderDual
@@ -134,7 +138,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
-  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+  rw [← add_div, ← add_div, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
@@ -638,6 +642,17 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
 
+lemma two_mul_le_add_mul_sq {ε : α} (hε : 0 < ε) :
+    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
+  calc 2 * a * b
+  _ = 2 * a * b * (ε * ε⁻¹) := by rw [mul_inv_cancel₀ hε.ne', mul_one]
+  _ = (2 * (ε * a) * b) * ε⁻¹ := by simp_rw [mul_assoc, mul_comm ε, mul_assoc]
+  _ ≤ ((ε * a) ^ 2 + b ^ 2) * ε⁻¹ := by gcongr; exact inv_nonneg.mpr hε.le
+  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+    rw [mul_comm _ ε⁻¹, mul_pow, mul_add, ← mul_assoc, pow_two, ← mul_assoc, inv_mul_cancel₀ hε.ne',
+      one_mul]
+
 end
 
 namespace Mathlib.Meta.Positivity
@@ -666,7 +681,7 @@ end LinearOrderedSemifield
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
+@[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
@@ -689,7 +704,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 /-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
 such that `positivity` successfully recognises `a`. -/
 @[positivity _⁻¹]
-def evalInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
   let _a ← synthInstanceQ q(Semifield $α)
@@ -706,7 +721,7 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
-def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)

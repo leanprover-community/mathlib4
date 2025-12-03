@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Categorical (co)products
@@ -30,6 +32,8 @@ As with the other special shapes in the limits library, all the definitions here
 `abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -93,16 +97,12 @@ abbrev HasCoproduct (f : β → C) :=
 
 lemma hasCoproduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasCoproduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasCoproduct g := by
-  have : HasColimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasColimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasColimit_of_iso α
 
 lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasProduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasProduct g := by
-  have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasLimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasLimit_of_iso α.symm
@@ -283,6 +283,8 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 lemma Cofan.isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
     IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
   refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
@@ -836,6 +838,22 @@ theorem Sigma.ι_reindex_inv (b : β) :
 end
 
 end Reindex
+
+section
+
+variable {J : Type u₂} [Category.{v₂} J] (F : J ⥤ C)
+
+instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
+  right_cancellation _ _ h := by
+    refine limit.hom_ext fun j => ?_
+    simpa using h =≫ Pi.π _ j
+
+instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
+  left_cancellation _ _ h := by
+    refine colimit.hom_ext fun j => ?_
+    simpa using  Sigma.ι _ j ≫= h
+
+end
 
 section Fubini
 

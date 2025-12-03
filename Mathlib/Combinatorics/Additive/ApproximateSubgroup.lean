@@ -3,10 +3,12 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Combinatorics.Additive.CovBySMul
-import Mathlib.Combinatorics.Additive.RuzsaCovering
-import Mathlib.Combinatorics.Additive.SmallTripling
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Combinatorics.Additive.CovBySMul
+public import Mathlib.Combinatorics.Additive.RuzsaCovering
+public import Mathlib.Combinatorics.Additive.SmallTripling
 
 /-!
 # Approximate subgroups
@@ -33,6 +35,8 @@ combinatorics:
 It can be readily confirmed that approximate subgroups are a weakening of subgroups:
 * `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
+
+@[expose] public section
 
 open scoped Finset Pointwise
 
@@ -86,7 +90,7 @@ lemma card_pow_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgroup K (
     obtain ⟨F, hF, hSF⟩ := hA.sq_covBySMul
     calc
       (#(A ^ (n + 2)) : ℝ) ≤ #(F ^ (n + 1) * A) := by
-        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by omega)
+        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by lia)
       _ ≤ #(F ^ (n + 1)) * #A := mod_cast Finset.card_mul_le
       _ ≤ #F ^ (n + 1) * #A := by gcongr; exact mod_cast Finset.card_pow_le
       _ ≤ K ^ (n + 1) * #A := by gcongr
@@ -126,7 +130,7 @@ lemma of_small_tripling [DecidableEq G] {A : Finset G} (hA₁ : 1 ∈ A) (hAsymm
   sq_covBySMul := by
     replace hA := calc (#(A ^ 4 * A) : ℝ)
       _ = #(A ^ 5) := by rw [← pow_succ]
-      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by omega) hA hAsymm
+      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by lia) hA hAsymm
     have hA₀ : A.Nonempty := ⟨1, hA₁⟩
     obtain ⟨F, -, hF, hAF⟩ := ruzsa_covering_mul hA₀ hA
     exact ⟨F, hF, by norm_cast; simpa [div_eq_mul_inv, pow_succ, mul_assoc, hAsymm] using hAF⟩
@@ -167,7 +171,7 @@ lemma pow_inter_pow (hA : IsApproximateSubgroup K A) (hB : IsApproximateSubgroup
   one_mem := ⟨Set.one_mem_pow hA.one_mem, Set.one_mem_pow hB.one_mem⟩
   inv_eq_self := by simp_rw [inter_inv, ← inv_pow, hA.inv_eq_self, hB.inv_eq_self]
   sq_covBySMul := by
-    refine (hA.pow_inter_pow_covBySMul_sq_inter_sq hB (by omega) (by omega)).subset ?_
+    refine (hA.pow_inter_pow_covBySMul_sq_inter_sq hB (by lia) (by lia)).subset ?_
       (by gcongr; exacts [hA.one_mem, hB.one_mem])
     calc
       (A ^ m ∩ B ^ n) ^ 2 ⊆ (A ^ m) ^ 2 ∩ (B ^ n) ^ 2 := Set.inter_pow_subset
