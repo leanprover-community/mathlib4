@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
-
 import Mathlib.Probability.Independence.InfinitePi
 
 /-!
@@ -40,7 +39,7 @@ distributed, then the pairs `(X, Y)`  and `(Z, W)` are identically distributed. 
 lemma IdentDistrib.prodMk [IsFiniteMeasure μ]
     {X : Ω → E} {Y : Ω → F} {Z : Ω' → E} {W : Ω' → F}
     (hXZ : IdentDistrib X Z μ ν) (hYW : IdentDistrib Y W μ ν)
-    (hXY : IndepFun X Y μ) (hZW : IndepFun Z W ν) :
+    (hXY : X ⟂ᵢ[μ] Y) (hZW : Z ⟂ᵢ[ν] W) :
     IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω' ↦ (Z ω', W ω')) μ ν where
   aemeasurable_fst := hXZ.aemeasurable_fst.prodMk hYW.aemeasurable_fst
   aemeasurable_snd := hXZ.aemeasurable_snd.prodMk hYW.aemeasurable_snd
