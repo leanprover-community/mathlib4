@@ -16,11 +16,11 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 @[expose] public section
 
-universe v v' u u'
+universe v u
 
 namespace CategoryTheory.ObjectProperty
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+variable {C : Type u} [Category.{v} C]
 
 example : CompleteLattice (ObjectProperty C) := inferInstance
 
