@@ -53,8 +53,8 @@ class IsLocallyArtinian : Prop where
 
 attribute [intsance] IsLocallyArtinian.component_artinian
 
-lemma IsLocallyArtinian_IsLocallyNoetherian :
-    IsLocallyArtinian X → IsLocallyNoetherian X := fun hA =>
+lemma IsLocallyArtinian_IsLocallyNoetherian [IsLocallyArtinian X] :
+    IsLocallyNoetherian X :=
   {component_noetherian := fun U =>
     by
       have _ := hA.1 U
