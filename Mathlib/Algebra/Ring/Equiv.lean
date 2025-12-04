@@ -876,7 +876,7 @@ section NonUnital
 variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
 
 /-- If a non-unital ring homomorphism has an inverse, it is a ring isomorphism. -/
-@[simps]
+@[simps -isSimp]
 def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
     (hom_inv_id : inv.comp hom = .id R) (inv_hom_id : hom.comp inv = .id S) :
     R ≃+* S where
@@ -887,6 +887,11 @@ def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
   map_mul' := map_mul hom
   map_add' := map_add hom
 
+attribute [simp] ofNonUnitalRingHom_apply
+
+@[deprecated (since := "2025-12-04")] alias ofHomInv' := ofNonUnitalRingHom
+
+@[simp]
 theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
     (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
   rfl
@@ -897,7 +902,7 @@ section Unital
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
 /-- If a ring homomorphism has an inverse, it is a ring isomorphism. -/
-@[simps]
+@[simps -isSimp]
 def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     (h₂ : g.comp f = RingHom.id R) : R ≃+* S :=
   { f with
@@ -906,6 +911,10 @@ def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
     left_inv := RingHom.ext_iff.1 h₂
     right_inv := RingHom.ext_iff.1 h₁ }
 
+attribute [simp] ofRingHom_apply
+
+@[deprecated (since := "2025-12-04")] alias ofHomInv := ofRingHom
+
 theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
   rfl
 
@@ -913,6 +922,7 @@ theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRi
 theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
   ext fun _ ↦ rfl
 
+@[simp]
 theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
     (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
   rfl
