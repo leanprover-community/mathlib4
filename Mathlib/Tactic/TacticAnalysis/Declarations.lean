@@ -6,7 +6,6 @@ Authors: Anne Baanen, Edward van de Meent
 module
 
 public meta import Mathlib.Tactic.TacticAnalysis
-public meta import Mathlib.Tactic.Lia
 public meta import Mathlib.Tactic.ExtractGoal
 public meta import Mathlib.Tactic.MinImports
 public meta import Lean.Elab.Command
@@ -16,6 +15,16 @@ public meta import Lean.Elab.Command
 
 This file defines passes to run from the tactic analysis framework.
 -/
+
+
+-- This is a temporary shim that can be replaced on `v4.27.0-rc1`.
+public meta section
+
+/-- `lia` is an alias for the `cutsat` tactic, which solves linear integer arithmetic goals. -/
+syntax (name := tacticLia) "lia" : tactic
+macro_rules | `(tactic| lia) => `(tactic| cutsat)
+
+end
 
 public meta section
 
