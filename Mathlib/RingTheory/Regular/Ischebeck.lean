@@ -26,9 +26,6 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
-local instance [Small.{v} R] : CategoryTheory.HasExt.{v} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{v} (ModuleCat.{v} R)
-
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
     Nontrivial (QuotSMulTop x L) := by
