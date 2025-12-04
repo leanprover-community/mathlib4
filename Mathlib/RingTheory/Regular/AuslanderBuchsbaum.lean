@@ -62,9 +62,6 @@ lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat
     [Module.Finite R M] [Projective M] : Module.Free R M :=
   Module.free_of_flat_of_isLocalRing
 
-local instance : CategoryTheory.HasExt.{v} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{v} (ModuleCat.{v} R)
-
 omit [Small.{v, u} R] in
 lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module R M]
     [ntr : Nontrivial M] : Nontrivial R := by
@@ -114,8 +111,8 @@ lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α →
   exact not_subsingleton_iff_nontrivial.mpr Function.nontrivial
 
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
-    [Nontrivial M] (i : ℕ) : Subsingleton (Ext.{v} N M i) ↔
-    Subsingleton (Ext.{v} N (ModuleCat.of R (Shrink.{v} R)) i) := by
+    [Nontrivial M] (i : ℕ) :
+    Subsingleton (Ext N M i) ↔ Subsingleton (Ext N (ModuleCat.of R (Shrink.{v} R)) i) := by
   classical
   have : Nontrivial R := nontrivial_ring_of_nontrivial_module M
   rcases Module.Free.exists_set R M with ⟨S, ⟨B⟩⟩
@@ -166,9 +163,6 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
-private noncomputable instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
-  Quotient.field (maximalIdeal R)
-
 instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
     [Module.Finite R M] : Module.Finite (R ⧸I) (M ⧸ I • (⊤ : Submodule R M)) :=
   let f : M →ₛₗ[Ideal.Quotient.mk I] (M ⧸ I • (⊤ : Submodule R M)) := {
@@ -193,14 +187,11 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
       AddCommGrpCat.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
     simpa [Ext.mk₀_add] using this
 
-lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
-  enat_to_nat
-  omega
-
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
     1 + IsLocalRing.depth M = IsLocalRing.depth.{v} (ModuleCat.of.{v} R (Shrink.{v} R)) := by
+  let _ := Quotient.field (maximalIdeal R)
   rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
     with ⟨ι, ⟨B⟩⟩
   let fin := FiniteDimensional.fintypeBasisIndex B
@@ -316,26 +307,21 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     · have eq : i - 1 + 1 = i := Nat.sub_one_add_one eq0
       have : i - 1 < n := by
         rw [add_comm, ← eq, ENat.coe_add, ENat.coe_sub, ENat.coe_one] at hi
-        exact ENat.add_one_lt_add_one_iff.mpr hi
+        exact (WithTop.add_lt_add_iff_right WithTop.one_ne_top).mp hi
       have := ((iff (i - 1)).mp (hn (i - 1) this)).2
       simpa only [eq] using this
   · apply sSup_le (fun n hn ↦ ?_)
     by_cases eq0 : n = 0
     · simp [eq0]
     · have : n - 1 + 1 = n := by
-        by_cases eqtop : n = ⊤
-        · simp [eqtop]
-        · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨m, hm⟩
-          simp only [← hm, ← ENat.coe_zero, ENat.coe_inj] at eq0
-          rw [← hm, ← ENat.coe_one, ← ENat.coe_sub, ← ENat.coe_add, ENat.coe_inj,
-            Nat.sub_one_add_one eq0]
+        enat_to_nat
+        omega
       rw [add_comm, ← this]
-      apply add_le_add_left
-      apply le_sSup
+      apply add_le_add_left (le_sSup _) _
       intro i hi
       have lt2 : i + 1 < n := by
         rw [← this]
-        exact ENat.add_one_lt_add_one_iff.mp hi
+        exact (WithTop.add_lt_add_iff_right WithTop.one_ne_top).mpr hi
       have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
@@ -368,7 +354,8 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
       · simpa [hn, eq0, zero_add, Nat.cast_one, ← WithBot.coe_one, ← WithBot.coe_add]
           using AuslanderBuchsbaum_one M ((projectiveDimension_le_iff M 1).mp (by simp [hn, eq0]))
           ((projectiveDimension_ge_iff M 1).mp (by simp [hn, eq0]))
-      · rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
+      · let _ := Quotient.field (maximalIdeal R)
+        rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
           with ⟨ι, ⟨B⟩⟩
         let fin := FiniteDimensional.fintypeBasisIndex B
         let f := Classical.choose (Module.projective_lifting_property
@@ -477,8 +464,8 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
                 rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                   (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
                 exact Nat.find_spec exist
-              · have := ext_iso i <|
-                  lt_trans (ENat.add_one_lt_add_one_iff.mp (ENat.coe_lt_coe.mpr hi)) lt
+              · have := ext_iso i (lt_trans ((WithTop.add_lt_add_iff_right WithTop.one_ne_top).mpr
+                  (ENat.coe_lt_coe.mpr hi)) lt)
                 rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
                   (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
                 exact not_nontrivial_iff_subsingleton.mp
