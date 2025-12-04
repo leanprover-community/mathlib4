@@ -210,18 +210,6 @@ alias eq_prod_roots_of_splits := Splits.eq_prod_roots
 @[deprecated (since := "2025-11-25")]
 alias eq_prod_roots_of_splits_id := Splits.eq_prod_roots
 
-theorem Splits.dvd_of_roots_le_roots {p q : K[X]} (hp : p.Splits) (hp0 : p ≠ 0)
-    (hq : p.roots ≤ q.roots) : p ∣ q := by
-  rw [Splits.eq_prod_roots hp, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
-  exact dvd_trans
-    (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq))
-    (ofMultiset_dvd _)
-
-theorem Splits.dvd_iff_roots_le_roots {p q : K[X]}
-    (hp : p.Splits) (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
-    p ∣ q ↔ p.roots ≤ q.roots :=
-  ⟨Polynomial.roots.le_of_dvd hq0, hp.dvd_of_roots_le_roots hp0⟩
-
 theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
     (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
     aeval v p = algebraMap K L p.leadingCoeff * ((p.aroots L).map fun a ↦ v - a).prod := by
@@ -352,7 +340,7 @@ theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
   replace hmo := hmo.map (algebraMap K L)
   rw [aeval_def, ← eval_map, ← derivative_map]
   nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
-  rw [eval_multiset_prod_X_sub_C_derivative hr]
+  rw [ofMultiset_apply, eval_multiset_prod_X_sub_C_derivative hr]
 
 theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
     (h : p.Splits) (hx : p.eval x ≠ 0) :

@@ -280,7 +280,7 @@ theorem Splits.eq_prod_roots (hf : Splits f) :
     apply roots_ofMultiset
 
 theorem Splits.eq_prod_roots_of_monic (hf : Splits f) (hm : f.Monic) :
-    f = (f.roots.map (X - C ·)).prod := by
+    f = ofMultiset f.roots := by
   conv_lhs => rw [hf.eq_prod_roots, hm.leadingCoeff, C_1, one_mul]
 
 theorem Splits.natDegree_eq_card_roots (hf : Splits f) :
@@ -417,7 +417,7 @@ theorem Splits.dvd_of_roots_le_roots (hp : f.Splits) (hp0 : f ≠ 0) (hq : f.roo
     f ∣ g := by
   rw [hp.eq_prod_roots, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
   exact (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq)).trans
-    (prod_multiset_X_sub_C_dvd _)
+    (ofMultiset_dvd _)
 
 theorem Splits.dvd_iff_roots_le_roots (hf : f.Splits) (hf0 : f ≠ 0) (hg0 : g ≠ 0) :
     f ∣ g ↔ f.roots ≤ g.roots :=
