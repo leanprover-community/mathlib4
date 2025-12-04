@@ -272,8 +272,13 @@ def unusedFactInType : Linter where
       fun _ thm unusedParams => do
         logLint linter.unusedFactInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\n\
-          Consider removing \
-          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"}."
+          Consider replacing \
+          {
+          if unusedParams.size = 1 then
+            "this hypothesis with an ordinary, non-{.ofConstName `Fact} version of the assumption."
+          else
+            "these hypotheses with ordinary, non-{.ofConstName `Fact} versions of the assumptions."
+          }"
 
 initialize addLinter unusedFactInType
 
