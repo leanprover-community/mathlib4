@@ -6,7 +6,7 @@ Authors: Alastair Irving, Ruben Van de Velde
 module
 
 public import Mathlib.NumberTheory.Primorial
-public import Mathlib.NumberTheory.VonMangoldt
+public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!
 # Chebyshev functions
