@@ -134,6 +134,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("max", ["Min"]),
   ("untop", ["Unbot"]),
   ("unbot", ["Untop"]),
+  ("minimal", ["Maximal"]),
+  ("maximal", ["Minimal"]),
+  ("lower", ["Upper"]),
+  ("upper", ["Lower"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
