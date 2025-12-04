@@ -317,4 +317,13 @@ theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
   _ = _ := by
     rw [sq_sqrt (by linarith)]
 
+/-- `ψ - θ` is the sum of `Λ` over non-primes. -/
+theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
+    ψ x - θ x = ∑ n ∈ Ioc 0 ⌊x⌋₊ with ¬n.Prime, vonMangoldt n := by
+  rw [psi, theta, sum_filter, sum_filter, ← sum_sub_distrib]
+  refine sum_congr rfl fun n hn ↦ ?_
+  split_ifs with h
+  · simp [h, vonMangoldt_apply_prime]
+  · simp
+
 end Chebyshev
