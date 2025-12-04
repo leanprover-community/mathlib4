@@ -822,34 +822,6 @@ theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   simp
 
-/-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.
--/
-@[simps]
-abbrev ofHomInv' {R S : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-    (hom : R →ₙ+* S) (inv : S →ₙ+* R) (hom_inv_id : inv.comp hom = .id R)
-    (inv_hom_id : hom.comp inv = .id S) :
-    R ≃+* S where
-  toFun := hom
-  invFun := inv
-  left_inv := DFunLike.congr_fun hom_inv_id
-  right_inv := DFunLike.congr_fun inv_hom_id
-  map_mul' := map_mul hom
-  map_add' := map_add hom
-
-/--
-Construct an equivalence of rings from unital homomorphisms in both directions, which are inverses.
--/
-@[simps]
-abbrev ofHomInv (hom : R →+* S) (inv : S →+* R)
-    (hom_inv_id : inv.comp hom = .id R) (inv_hom_id : hom.comp inv = .id S) :
-    R ≃+* S where
-  toFun := hom
-  invFun := inv
-  left_inv := DFunLike.congr_fun hom_inv_id
-  right_inv := DFunLike.congr_fun inv_hom_id
-  map_mul' := map_mul hom
-  map_add' := map_add hom
-
 end SemiringHom
 
 variable [Semiring R] [Semiring S]
@@ -899,6 +871,29 @@ end RingEquiv
 
 namespace RingEquiv
 
+section NonUnital
+
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+
+/-- If a non-unital ring homomorphism has an inverse, it is a ring isomorphism. -/
+@[simps]
+def ofNonUnitalRingHom (hom : R →ₙ+* S) (inv : S →ₙ+* R)
+    (hom_inv_id : inv.comp hom = .id R) (inv_hom_id : hom.comp inv = .id S) :
+    R ≃+* S where
+  toFun := hom
+  invFun := inv
+  left_inv := DFunLike.congr_fun hom_inv_id
+  right_inv := DFunLike.congr_fun inv_hom_id
+  map_mul' := map_mul hom
+  map_add' := map_add hom
+
+theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂) :
+    (ofNonUnitalRingHom f g h₁ h₂).symm = ofNonUnitalRingHom g f h₂ h₁ :=
+  rfl
+
+end NonUnital
+section Unital
+
 variable [NonAssocSemiring R] [NonAssocSemiring S]
 
 /-- If a ring homomorphism has an inverse, it is a ring isomorphism. -/
@@ -938,6 +933,8 @@ lemma sumArrowEquivProdArrow_apply (x) :
 @[simp low]
 lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
     (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
+
+end Unital
 
 end RingEquiv
 
