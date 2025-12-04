@@ -42,7 +42,7 @@ end Foo
 
 section ULiftTests
 
-/-- info: ULift.{u_1, u_2} : Type u_2 → Type (max u_2 u_1) -/
+/-- info: ULift.{r_1, s_1} : Type s_1 → Type (max s_1 r_1) -/
 #guard_msgs in #check (ULift.!{*, *} : Type _ → Type _)
 
 variable (X : Type*) (z : ULift.!{_} X)
@@ -52,7 +52,7 @@ def testInferred := z
 
 variable (y : ULift.!{*} X)
 def testStarFirst := y
-/-- info: testStarFirst.{u_2, u_1} (X : Type u_1) (y : ULift.{u_2, u_1} X) : ULift.{u_2, u_1} X -/
+/-- info: testStarFirst.{r_1, u_1} (X : Type u_1) (y : ULift.{r_1, u_1} X) : ULift.{r_1, u_1} X -/
 #guard_msgs in #check testStarFirst
 
 universe v
@@ -61,7 +61,7 @@ def testExplicit := e
 /-- info: testExplicit.{v, u_1} (X : Type u_1) (e : ULift.{v, u_1} X) : ULift.{v, u_1} X -/
 #guard_msgs in #check testExplicit
 
-/-- info: ULift.{u_3, u_4} : Type u_4 → Type (max u_4 u_3) -/
+/-- info: ULift.{r_2, s_1} : Type s_1 → Type (max s_1 r_2) -/
 #guard_msgs in #check ULift.!{*, *}
 
 end ULiftTests
@@ -81,13 +81,13 @@ def fooC := C ⥤ C
 def fooD := D ⥤ D
 def fooE := E ⥤ E
 
-/-- info: fooC.{u_2, u_1} (C : Type u_1) [Category.{u_2, u_1} C] : Type (max u_2 u_1) -/
+/-- info: fooC.{v_1, u_1} (C : Type u_1) [Category.{v_1, u_1} C] : Type (max v_1 u_1) -/
 #guard_msgs in #check fooC
 
-/-- info: fooD.{u_3, u} (D : Type u) [Category.{u_3, u} D] : Type (max u_3 u) -/
+/-- info: fooD.{v_2, u} (D : Type u) [Category.{v_2, u} D] : Type (max v_2 u) -/
 #guard_msgs in #check fooD
 
-/-- info: fooE.{u_4} (E : Type 3) [Category.{u_4, 3} E] : Type (max u_4 3) -/
+/-- info: fooE.{v_3} (E : Type 3) [Category.{v_3, 3} E] : Type (max v_3 3) -/
 #guard_msgs in #check fooE
 
 end CategoryTests
@@ -101,8 +101,8 @@ variable (C D : Type*) [Category.!{*} (C × D)]
 def fooProd := (C × D) ⥤ (C × D)
 
 /--
-info: fooProd.{u_3, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{u_3, max u_2 u_1} (Prod.{u_1, u_2} C D)] :
-  Type (max u_3 u_2 u_1)
+info: fooProd.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_2 u_1} (Prod.{u_1, u_2} C D)] :
+  Type (max v_1 u_2 u_1)
 -/
 #guard_msgs in #check fooProd
 
@@ -120,7 +120,7 @@ variable [Category.!{*} TypeWithParam.{w}]
 
 def ff := TypeWithParam.{w} ⥤ TypeWithParam.{w}
 
-/-- info: ff.{w, u_1} [Category.{u_1, 0} TypeWithParam.{w}] : Type u_1 -/
+/-- info: ff.{w, v_1} [Category.{v_1, 0} TypeWithParam.{w}] : Type v_1 -/
 #guard_msgs in #check ff
 
 end CategoryExplicitUniverseTest
@@ -178,8 +178,8 @@ variable (B : Type*) [Category.!{w*} B]
 def fooMixed := A ⥤ B
 
 /--
-info: fooMixed.{u_2, u_1, w_1, u_3} (A : Type u_1) [Category.{u_2, u_1} A] (B : Type u_3) [Category.{w_1, u_3} B] :
-  Type (max u_2 w_1 u_1 u_3)
+info: fooMixed.{v_1, u_1, w_1, u_2} (A : Type u_1) [Category.{v_1, u_1} A] (B : Type u_2) [Category.{w_1, u_2} B] :
+  Type (max v_1 w_1 u_1 u_2)
 -/
 #guard_msgs in #check fooMixed
 
@@ -244,7 +244,7 @@ variable (X : Type*) (y : ULift.!{*} X)
 
 def testPartialArgs := y
 
-/-- info: testPartialArgs.{u_2, u_1} (X : Type u_1) (y : ULift.{u_2, u_1} X) : ULift.{u_2, u_1} X -/
+/-- info: testPartialArgs.{r_1, u_1} (X : Type u_1) (y : ULift.{r_1, u_1} X) : ULift.{r_1, u_1} X -/
 #guard_msgs in #check testPartialArgs
 
 end PartialUniverseArgs
@@ -366,3 +366,35 @@ run_cmd
   testReorganize #[some .param, none] #[.param `u_new, mkMVar 1] [`u_1, `u_2] [`u_new, `u_1, `u_2]
 
 end ReorganizeUniverseParamsTests
+
+section BaseNameExtractionTests
+
+/-!
+This section tests that `*` wildcards use the constant's actual universe parameter names
+as base names, with numeric suffixes stripped.
+-/
+
+-- Test that ULift.!{*} uses `r` as base name (ULift's first param is `r`)
+variable (X : Type*) (ulift_test : ULift.!{*} X)
+def testULiftBaseName := ulift_test
+/-- info: testULiftBaseName.{r_1, u_1} (X : Type u_1) (ulift_test : ULift.{r_1, u_1} X) : ULift.{r_1, u_1} X -/
+#guard_msgs in #check testULiftBaseName
+
+-- Test that Category.!{*} uses `v` as base name (Category's first param is `v`)
+open CategoryTheory
+variable (C : Type*) [cat_test : Category.!{*} C]
+def testCategoryBaseName := cat_test
+/-- info: testCategoryBaseName.{v_1, u_2} (C : Type u_2) [cat_test : Category.{v_1, u_2} C] : Category.{v_1, u_2} C -/
+#guard_msgs in #check testCategoryBaseName
+
+-- Test with Foo (which has params u, v, w) - first `*` should use `u`
+universe u v w
+axiom Foo2 : Type u → Type v → Type w
+
+/-- info: Foo2.{u_3, v_2, w_1} : Type u_3 → Type v_2 → Type w_1 -/
+#guard_msgs in #check Foo2.!{*, *, *}
+
+/-- info: Foo2.{u_3, v, w_1} : Type u_3 → Type v → Type w_1 -/
+#guard_msgs in #check Foo2.!{*, v, *}
+
+end BaseNameExtractionTests

@@ -75,14 +75,26 @@ inductive LevelWildcardKind where
   | explicit (l : TSyntax `level)
 
 /--
+Extracts the base name from a universe parameter name.
+For example, `u_1` becomes `u`, `v_2` becomes `v`, and `w` stays `w`.
+-/
+meta def getBaseName (n : Name) : Name :=
+  let s := n.toString
+  let basePart := s.takeWhile (· != '_')
+  basePart.toName
+
+/--
 Parses an array of wildcard universe syntax into `LevelWildcardKind` values.
+Takes the constant's level parameter names to use as defaults for `*` wildcards.
 -/
 meta def elabWildcardUniverses {m : Type → Type}
-    [Monad m] [MonadExceptOf Exception m] (us : Array Syntax) :
+    [Monad m] [MonadExceptOf Exception m] (us : Array Syntax) (constLevelParams : List Name) :
     m (Array LevelWildcardKind) :=
-  us.mapM fun u =>
+  us.mapIdxM fun idx u =>
     match u with
-    | `(wildcard_level|*) => return .param
+    | `(wildcard_level|*) =>
+        let baseName := (constLevelParams[idx]?.map getBaseName).getD `u
+        return .param baseName
     | `(wildcard_level|$n:ident*) => return .param n.getId
     | `(wildcard_level|$l:level) => return .explicit l
     | _ => throwUnsupportedSyntax
@@ -132,7 +144,8 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrT
     let constInfo ← Lean.getConstInfo constName
     let numLevels := constInfo.levelParams.length
 
-    let mut levels : Array (Option LevelWildcardKind) := (← elabWildcardUniverses us).map some
+    let mut levels : Array (Option LevelWildcardKind) :=
+      (← elabWildcardUniverses us constInfo.levelParams).map some
     while levels.size < numLevels do
       levels := levels.push none
 
