@@ -26,7 +26,7 @@ variable {α : Type u}
 
 namespace SignType
 
-noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder SignType
+noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder _
 
 /-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
 @[simp, norm_cast]
