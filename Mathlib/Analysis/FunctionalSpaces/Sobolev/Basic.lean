@@ -87,8 +87,23 @@ variable [FiniteDimensional ℝ E]
 
 /- maybe inline this definition when used -/
 variable (Ω) in
+/-- The weak or distributional derivative of a function:
+this is 0 if the function is not locally integrable -/
 def weakDeriv (f : E → F) (μ : Measure E) : 𝓓'(Ω, E →L[ℝ] F) :=
   fderivCLM (ofFun Ω f μ)
+
+-- useful on its own?
+lemma weakDeriv_of_not_locallyIntegrableOn {f : E → F} (hf : ¬LocallyIntegrableOn f Ω μ) :
+    weakDeriv Ω f μ = 0 := by
+  simp [weakDeriv, ofFun_of_not_locallyIntegrable hf]
+
+-- XXX: where should the minus sign go?
+lemma weakDeriv_apply {f : E → F} (hf : LocallyIntegrableOn f Ω μ) (φ : 𝓓(Ω, ℝ)) (x : E) :
+    weakDeriv Ω f μ φ x = ∫ (y : E), -(fderiv ℝ φ y) x • f y ∂μ := by
+  simp only [weakDeriv, Distribution.fderivCLM]
+  -- XXX: why do I need the dsimp step?
+  dsimp
+  simp [ofFun_apply hf, TestFunction.lineDerivCLM, TestFunction.fderivCLM]
 
 @[simp]
 lemma weakDeriv_add (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ) :
@@ -116,22 +131,11 @@ lemma weakDeriv_smul (c : ℝ) : weakDeriv Ω (c • f) μ = c • weakDeriv Ω 
 
 lemma weakDeriv_zero : weakDeriv Ω (0 : E → F) μ = 0 := by simp [weakDeriv]
 
--- useful on its own?
-lemma weakDeriv_of_not_locallyIntegrableOn {f : E → F} (hf : ¬LocallyIntegrableOn f Ω μ) :
-    weakDeriv Ω f μ = 0 := by
-  simp [weakDeriv, ofFun_of_not_locallyIntegrable hf]
-
--- should there be a lemma weakDeriv_of_locallyIntegrableOn?
-
 lemma weakDeriv_const (a : F) : weakDeriv Ω (fun _ : E ↦ a) μ = 0 := by
   by_cases hf : LocallyIntegrableOn (fun _ : E ↦ a) Ω μ; swap
   · exact weakDeriv_of_not_locallyIntegrableOn hf
-  simp only [weakDeriv, Distribution.fderivCLM]
   ext φ
-  dsimp
-  rw [ofFun_apply hf, TestFunction.lineDerivCLM, TestFunction.fderivCLM]
-  dsimp
-  -- lemma would go until here, or so
+  rw [weakDeriv_apply hf]
   -- now integrate by parts...
   sorry
 
@@ -263,6 +267,7 @@ lemma add (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
   exact ⟨g + g', hg.add hg' sorry sorry⟩ -- TODO: think if these are required!
+  -- they should hold in our context, though!
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
   obtain ⟨g, hg⟩ := hf
