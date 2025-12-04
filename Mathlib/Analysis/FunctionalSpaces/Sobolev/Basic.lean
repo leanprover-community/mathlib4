@@ -69,7 +69,7 @@ lemma add (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
 
 lemma neg (hT : IsRepresentedBy T f μ) : IsRepresentedBy (-T) (-f) μ where
   locallyIntegrable := hT.locallyIntegrable.neg
-  eq_ofFun := by simp [hT.eq_ofFun, ofFun_neg hT.locallyIntegrable]
+  eq_ofFun := by simp [hT.eq_ofFun, ofFun_neg]
 
 lemma sub (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
     IsRepresentedBy (T - T') (f - f') μ := by
@@ -104,8 +104,8 @@ lemma weakDeriv_neg : weakDeriv Ω (-f) μ = -weakDeriv Ω f μ := by
   ext φ
   by_cases hf : LocallyIntegrableOn f Ω μ; swap
   · have hf' : ¬LocallyIntegrableOn (-f) Ω μ := by rwa [locallyIntegrableOn_neg_iff]
-    simp [weakDeriv, ofFun_of_not_locallyIntegrable hf, ofFun_of_not_locallyIntegrable hf']
-  simp [weakDeriv, ofFun_neg hf]
+    simp [weakDeriv, *, ofFun_of_not_locallyIntegrable]
+  simp [weakDeriv, ofFun_neg]
 
 @[simp]
 lemma weakDeriv_sub (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableOn f' Ω μ) :

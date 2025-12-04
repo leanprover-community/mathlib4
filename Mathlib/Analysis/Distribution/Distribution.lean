@@ -71,11 +71,14 @@ section ofFun
 variable [MeasurableSpace E] [OpensMeasurableSpace E]
 
 variable (Ω n) in
+/-- The distribution of given order induced by a function:
+0 if that function is not locally integrable. -/
 noncomputable def ofFunWithOrder (f : E → F) (μ : Measure E := by volume_tac) :
     𝓓'^{n}(Ω, F) :=
   TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f
 
 variable (Ω) in
+/-- The smooth distribution induced by a function: 0 if that function is not locally integrable. -/
 noncomputable def ofFun (f : E → F) (μ : Measure E := by volume_tac) : 𝓓'(Ω, F) :=
   ofFunWithOrder Ω ⊤ f μ
 
@@ -92,6 +95,18 @@ lemma ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω 
     {φ : 𝓓(Ω, ℝ)} :
     ofFun Ω f μ φ = ∫ x, φ x • f x ∂μ :=
   ofFunWithOrder_apply hf
+
+lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
+    (hf : ¬LocallyIntegrableOn f Ω μ) : ofFunWithOrder Ω n f μ = 0 := by
+  ext φ
+  simp_rw [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
+    TestFunction.integralAgainstBilinLM, hf]
+  dsimp
+
+lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
+    ofFun Ω f μ = 0 := by
+  ext φ
+  simp [ofFun, ofFunWithOrder_of_not_locallyIntegrable hf]
 
 lemma ofFunWithOrder_ae_congr {f f' : E → F} {μ : Measure E} (h : f =ᵐ[μ.restrict Ω] f') :
   ofFunWithOrder Ω n f μ = ofFunWithOrder Ω n f' μ := sorry
@@ -125,21 +140,12 @@ lemma ofFun_add {f g : E → F} {μ : Measure E}
   congr with x
   simp
 
-lemma ofFun_neg {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ) :
-    ofFun Ω (-f) μ = -ofFun Ω f μ := by
+lemma ofFun_neg {f : E → F} {μ : Measure E} : ofFun Ω (-f) μ = -ofFun Ω f μ := by
   ext φ
-  simp [ofFun_apply hf, ofFun_apply hf.neg, integral_neg]
-
-lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
-    (hf : ¬LocallyIntegrableOn f Ω μ) : ofFunWithOrder Ω n f μ = 0 := by
-  ext φ
-  simp [ofFunWithOrder, TestFunction.integralAgainstBilinCLM,
-    TestFunction.integralAgainstBilinLM, hf]
-
-lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
-    ofFun Ω f μ = 0 := by
-  ext φ
-  simp [ofFun, ofFunWithOrder_of_not_locallyIntegrable hf]
+  by_cases hf: LocallyIntegrableOn f Ω μ
+  · simp [ofFun_apply hf, ofFun_apply hf.neg, integral_neg]
+  · have : ¬ LocallyIntegrableOn (-f) Ω μ := by rwa [locallyIntegrableOn_neg_iff]
+    simp [*, ofFun_of_not_locallyIntegrable]
 
 @[simp]
 lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) μ = c • ofFun Ω f μ := by
