@@ -51,7 +51,7 @@ class IsLocallyArtinian : Prop where
   component_artinian : ∀ (U : X.affineOpens),
     IsArtinianRing Γ(X, U) := by infer_instance
 
-attribute [intsance] IsLocallyArtinian.component_artinian
+attribute [instance] IsLocallyArtinian.component_artinian
 
 lemma IsLocallyArtinian.IsLocallyNoetherian [h : IsLocallyArtinian X] :
     IsLocallyNoetherian X :=
@@ -88,7 +88,6 @@ instance IsLocallyArtinian_Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U 
 
 instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
-  intro hA
   apply discreteTopology_iff_isOpen_singleton.mpr
   intro x
   have : x ∈ (⊤ : X.Opens) := trivial
@@ -102,10 +101,6 @@ instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian
   have : Subtype.val '' {⟨x, hW2⟩} = {x} := Set.image_singleton
   rw[← this]
   assumption
-
-instance inst_IsLocallyArtinian_DiscreteTopology [h : IsLocallyArtinian X] :
-    DiscreteTopology X :=
-  IsLocallyArtinian_DiscreteTopology X h
 
 theorem IsNoetherianRing_DiscreteTopololgy_IsArtinianRing
 (R : Type*) [CommRing R] [IsNoetherianRing R] [DiscreteTopology (PrimeSpectrum R)] :
@@ -132,7 +127,7 @@ lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
 
 theorem IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
-  ⟨fun h => ⟨IsLocallyArtinian.IsLocallyNoetherian X, IsLocallyArtinian_DiscreteTopology X h⟩,
+  ⟨fun _ => ⟨IsLocallyArtinian.IsLocallyNoetherian X, inferInstance⟩,
   fun ⟨_,_⟩ => IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian X⟩
 
 instance inst_IsLocallyArtinian_IsLocallyNoetherian [IsLocallyArtinian X] :
