@@ -9,7 +9,17 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 /-!
-# Morphisms between bounded objects are small
+# Morphisms between bounded complexes are small
+
+Let `C` be an abelian category. Assuming `HasExt.{w} C`, we show that
+if two cochain complexes `K` and `L` are cohomologically in a single degree,
+then the type of morphisms from `K` to `L⟦n⟧` in the derived category if `w`-small
+for any `n : ℤ`, which we phrase here by saying that
+`HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso _ _) ℤ K L` hold.
+
+## TODO
+* When more definitions are introduced for t-structures (e.g. the heart),
+show that the conclusion hold when `K` and `L` are cohomologically bounded.
 
 -/
 
@@ -17,7 +27,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 assert_not_exists TwoSidedIdeal
 
-universe w'' w' w v u
+universe w v u
 
 namespace CategoryTheory
 
