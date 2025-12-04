@@ -305,6 +305,7 @@ lemma comp_mk₀_id {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     α.comp (mk₀ W m₀ hm₀ (𝟙 Y)) (by aesop) = α :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
+variable {W} in
 @[simp]
 lemma mk₀_id_comp {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M X X]
