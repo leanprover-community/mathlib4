@@ -149,8 +149,7 @@ lemma subsingleton_of_disjoint_isClopen
     Subsingleton ι := by
   replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
   rw [← not_nontrivial_iff_subsingleton]
-  by_contra contra
-  obtain ⟨i, j, h_ne⟩ := contra
+  by_contra ⟨i, j, h_ne⟩
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
   rcases isClopen_iff.mp (h_clopen i) with hi | hi
@@ -543,8 +542,7 @@ continuous on a set `s`, is constant on s, then s is preconnected -/
 theorem isPreconnected_of_forall_constant {s : Set α}
     (hs : ∀ f : α → Bool, ContinuousOn f s → ∀ x ∈ s, ∀ y ∈ s, f x = f y) : IsPreconnected s := by
   unfold IsPreconnected
-  by_contra!
-  rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
+  by_contra! ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
