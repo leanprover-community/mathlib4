@@ -8,9 +8,9 @@ module
 public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
-# The yoneda functor for locally small categories
+# The Yoneda functor for locally small categories
 
-Let `C` be a locally `w`-small category. We define the yoneda
+Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`.
 
 -/
@@ -55,7 +55,7 @@ variable [LocallySmall.{w} C]
 instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
-/-- The yoneda embedding `C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`. -/
+/-- The Yoneda embedding `C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`. -/
 @[simps -isSimp obj map]
 noncomputable def shrinkYoneda :
     C ⥤ Cᵒᵖ ⥤ Type w where
