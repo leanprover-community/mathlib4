@@ -3,9 +3,10 @@ Copyright (c) 2025 Brian Nugent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brian Nugent
 -/
+module
 
-import Mathlib.AlgebraicGeometry.Noetherian
-import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
 # Artinian and Locally Artinian Schemes
@@ -39,6 +40,8 @@ We define and prove basic properties about Artinian and Locally Artinian Schemes
 TODO: Show that all Artinian schemes are affine.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
