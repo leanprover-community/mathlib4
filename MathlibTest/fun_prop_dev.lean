@@ -645,10 +645,7 @@ theorem con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4 := silentSorry
 
 example : Con foo4 := by fun_prop
 
-
-
-
-/-
+/-!
   Some tests to ensure state changes made by the discharger (to their goals' contexts) are not
   reverted by `fun_prop`, which is necessary for correct functionality of `disch := grind`.
 -/
