@@ -291,7 +291,6 @@ register_option linter.tacticAnalysis.tryAtEachStep.fraction : Nat := {
 /-- Run a tactic at each proof step, with timing.
 
 Reports elapsed time in milliseconds for each successful replacement.
-To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
 -/
 def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
   run seq := do
