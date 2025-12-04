@@ -28,7 +28,7 @@ We define and prove basic properties about Artinian and Locally Artinian Schemes
 * `AlgebraicGeometry.IsArtinianScheme_iff_IsNoetherian_and_Finite`: A scheme is Artinian if and
   only if it is Noetherian and has the discrete topology.
 
-* `IsLocallyArtinian_Opens_IsLocallyArtinian`: An open subset of a Locally Artinian scheme is
+* `IsLocallyArtinian.Opens_IsLocallyArtinian`: An open subset of a Locally Artinian scheme is
   locally Artinian (when considered as a scheme in the natural way)
 
 * `inst_IsArtinianScheme_Finite`: An Artinian scheme is finite.
@@ -77,7 +77,7 @@ lemma IsLocallyArtinian_IsAffine_DiscreteTopology [IsLocallyArtinian X] [IsAffin
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
   exact IsArtinianRing_DiscreteTopology Γ(X,⊤)
 
-instance IsLocallyArtinian_Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U : X.Opens} :
+instance IsLocallyArtinian.Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U := by
   refine { component_artinian := ?_ }
   intro W
@@ -102,7 +102,7 @@ instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian
   rw[← this]
   assumption
 
-theorem IsNoetherianRing_DiscreteTopololgy_IsArtinianRing
+theorem IsNoetherianRing.DiscreteTopololgy_IsArtinianRing
 (R : Type*) [CommRing R] [IsNoetherianRing R] [h : DiscreteTopology (PrimeSpectrum R)] :
     IsArtinianRing R := by
   apply isArtinianRing_iff_krullDimLE_zero.mpr
@@ -119,7 +119,7 @@ lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
     have F := AlgebraicGeometry.IsAffineOpen.isoSpec U.2
     apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mp
     exact instDiscreteTopologySubtype
-  exact IsNoetherianRing_DiscreteTopololgy_IsArtinianRing Γ(X, U)
+  exact IsNoetherianRing.DiscreteTopololgy_IsArtinianRing Γ(X, U)
 
 theorem IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
