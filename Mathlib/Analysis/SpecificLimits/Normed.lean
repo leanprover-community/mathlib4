@@ -444,7 +444,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
         simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
         norm_cast
         calc (n + k).choose k
-          _ ≤ (2 * n).choose k := choose_le_choose k (by cutsat)
+          _ ≤ (2 * n).choose k := choose_le_choose k (by lia)
           _ ≤ (2 * n) ^ k := Nat.choose_le_pow _ _
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
       convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
@@ -453,7 +453,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
             ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
           apply Finset.sum_congr rfl (fun i hi ↦ ?_)
           simp only [Finset.mem_range] at hi
-          rw [mul_assoc, ← pow_add, show i + (n - i) = n by cutsat]
+          rw [mul_assoc, ← pow_add, show i + (n - i) = n by lia]
         simp [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose n k, add_assoc]
       · rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
 
@@ -796,8 +796,8 @@ theorem Monotone.tendsto_le_alternating_series
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
       ← sub_eq_add_neg, sub_le_iff_le_add]
     gcongr
-    exact hfm (by cutsat)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
+    exact hfm (by lia)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 /-- Partial sums of an alternating monotone series with an odd number of terms provide
 lower bounds on the limit. -/
@@ -811,8 +811,8 @@ theorem Monotone.alternating_series_le_tendsto
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
       ← sub_eq_add_neg, sub_add_eq_add_sub, le_sub_iff_add_le]
     gcongr
-    exact hfm (by cutsat)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
+    exact hfm (by lia)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an even number of terms provide
 lower bounds on the limit. -/
@@ -825,8 +825,8 @@ theorem Antitone.alternating_series_le_tendsto
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
       ← sub_eq_add_neg, le_sub_iff_add_le]
     gcongr
-    exact hfa (by cutsat)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
+    exact hfa (by lia)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an odd number of terms provide
 upper bounds on the limit. -/
@@ -839,8 +839,8 @@ theorem Antitone.tendsto_le_alternating_series
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
       ← sub_eq_add_neg, sub_add_eq_add_sub, sub_le_iff_le_add]
     gcongr
-    exact hfa (by cutsat)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
+    exact hfa (by lia)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; lia) tendsto_id)) _
 
 theorem Summable.tendsto_alternating_series_tsum
     {E} [Ring E] [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E]

@@ -267,7 +267,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
-        cutsat
+        lia
       · simp only [isPath_copy]
         exact (hf _).tail
   case surj =>
@@ -344,9 +344,9 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
       gcongr
       exact le_trans q (G.minDegree_le_degree _)
     rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
-    cutsat
+    lia
   · have := h.isConnected.preconnected.minDegree_pos_of_nontrivial
-    cutsat
+    lia
 
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
@@ -384,7 +384,7 @@ lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v
   simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
   have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
   rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
-  cutsat
+  lia
 
 /-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
 removed. -/

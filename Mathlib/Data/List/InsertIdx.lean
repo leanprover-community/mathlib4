@@ -102,13 +102,13 @@ theorem get_insertIdx_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
 
 theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
-      rwa [length_insertIdx_of_le_length (by cutsat), Nat.succ_lt_succ_iff])) :
+      rwa [length_insertIdx_of_le_length (by lia), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x)[n + k + 1] = l[n + k] := by
   grind
 
 theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
-      rwa [length_insertIdx_of_le_length (by cutsat), Nat.succ_lt_succ_iff])) :
+      rwa [length_insertIdx_of_le_length (by lia), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   simp [getElem_insertIdx_add_succ, hk']
 

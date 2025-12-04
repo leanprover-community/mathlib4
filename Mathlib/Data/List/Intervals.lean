@@ -60,7 +60,7 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
-  cutsat
+  lia
 
 theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, Nat.sub_eq_zero_iff_le.mpr h]
@@ -85,7 +85,7 @@ theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
   dsimp only [Ico]
   convert range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
-  · cutsat
+  · lia
 
 @[simp]
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by

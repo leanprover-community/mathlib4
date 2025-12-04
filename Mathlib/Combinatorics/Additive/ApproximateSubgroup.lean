@@ -90,7 +90,7 @@ lemma card_pow_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgroup K (
     obtain ⟨F, hF, hSF⟩ := hA.sq_covBySMul
     calc
       (#(A ^ (n + 2)) : ℝ) ≤ #(F ^ (n + 1) * A) := by
-        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by cutsat)
+        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by lia)
       _ ≤ #(F ^ (n + 1)) * #A := mod_cast Finset.card_mul_le
       _ ≤ #F ^ (n + 1) * #A := by gcongr; exact mod_cast Finset.card_pow_le
       _ ≤ K ^ (n + 1) * #A := by gcongr

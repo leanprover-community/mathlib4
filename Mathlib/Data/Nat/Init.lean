@@ -119,7 +119,7 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  cutsat
+  lia
 
 /-! ### `pow` -/
 
@@ -411,7 +411,7 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
 
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
-  cutsat
+  lia
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
@@ -459,12 +459,12 @@ cases where it is most structurally obvious from the syntactic form of `n` that 
 required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than
 global instances and then made into instances locally where needed. If implicit arguments,
 appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
-Lean, such an `autoParam` that is proved `by cutsat` might be a more general replacement for the
+Lean, such an `autoParam` that is proved `by lia` might be a more general replacement for the
 use of typeclass inference for this purpose. -/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
-instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; cutsat⟩
+instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; lia⟩
 
 namespace AtLeastTwo
 
@@ -477,7 +477,7 @@ instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
   ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
 
 variable (n) in
-lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); cutsat⟩
+lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); lia⟩
 
 end AtLeastTwo
 

@@ -188,7 +188,7 @@ private theorem Polynomial.flt_catalan_aux
         have hch2 : 2 ≤ ch := by omega
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
         grw [← hch2]
-        cutsat
+        lia
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
