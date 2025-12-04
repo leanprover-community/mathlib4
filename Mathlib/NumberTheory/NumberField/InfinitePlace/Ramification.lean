@@ -437,7 +437,7 @@ lemma isUnramified_smul_iff :
     ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
 
 variable (K) in
-/-- A infinite place of the base field is unramified in a field extension if every
+/-- An infinite place of the base field is unramified in a field extension if every
 infinite place over it is unramified. -/
 def IsUnramifiedIn (w : InfinitePlace k) : Prop :=
   ∀ v, comap v (algebraMap k K) = w → IsUnramified k v
