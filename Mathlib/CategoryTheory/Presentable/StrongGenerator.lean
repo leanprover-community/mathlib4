@@ -17,7 +17,7 @@ In this file, we show that a category is locally `κ`-presentable iff
 it is cocomplete and has a strong generator consisting of `κ`-presentable objects.
 This is theorem 1.20 in the book by Adámek and Rosický.
 
-In particular, if a category if locally `κ`-presentable, if it also
+In particular, if a category is locally `κ`-presentable, it is also
 locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 ## References
