@@ -175,10 +175,10 @@ variable (hab : a < b) (hrect : arclength f a b ≠ ∞) /- f is rectifiable on 
 include hab hrect
 
 theorem continuous_right_self_arclength
-    (hcont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
+    (cont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
     ContinuousWithinAt (arclength f a) (Set.Ici a) a := by
-  replace hcont : ContinuousWithinAt f (Set.Ici a) a :=
-    hcont.mono_of_mem_nhdsWithin (mem_nhdsWithin.mpr ⟨_, isOpen_Iio, hab, fun _ ↦ .symm⟩)
+  replace cont : ContinuousWithinAt f (Set.Ici a) a :=
+    cont.mono_of_mem_nhdsWithin (mem_nhdsWithin.mpr ⟨_, isOpen_Iio, hab, fun _ ↦ .symm⟩)
   rw [ContinuousWithinAt, arclength_self, ENNReal.tendsto_nhds_zero]
   intro ε hε
   by_cases hlab : arclength f a b = 0
@@ -191,7 +191,7 @@ theorem continuous_right_self_arclength
       lt_iSup_iff.1 (ENNReal.sub_lt_self hrect hlab hε2.ne')
     simp_rw [← arclength_eq_iSup f hab.le, edist_comm] at hl
     obtain ⟨c, hc, hcb⟩ := (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hab).1
-      ((EMetric.nhds_basis_eball.tendsto_right_iff).1 hcont _ hε2)
+      ((EMetric.nhds_basis_eball.tendsto_right_iff).1 cont _ hε2)
     apply (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hab).2
     by_cases h : ∀ x, ¬ x ∈ Set.Ioo a c
     · refine ⟨c, hc, fun x hx ↦ ?_⟩
@@ -236,11 +236,11 @@ theorem continuous_right_self_arclength
       _ ≤ arclength f a b := hea ▸ arclength_mono f a (hmem _).2
 
 theorem continuous_right_arclength
-    (hcont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
+    (cont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
     ContinuousWithinAt (arclength f c) (Set.Ici a) a := by
   by_cases hca : c ≤ a
   · refine ((continuous_add_left _).continuousAt.comp_continuousWithinAt <|
-      continuous_right_self_arclength f hab hrect hcont).congr
+      continuous_right_self_arclength f hab hrect cont).congr
         (fun x hx ↦ ((arclength_add f hca hx).symm)) (arclength_add f hca le_rfl).symm
   apply ContinuousAt.continuousWithinAt
   exact ContinuousAt.congr_of_eventuallyEq (continuous_const.continuousAt) <|
@@ -248,7 +248,7 @@ theorem continuous_right_arclength
       fun x hx ↦ arclength_eq_zero f hx.le
 
 theorem continuous_left_arclength'
-    (hcont : ContinuousWithinAt f (Set.Ioc a b) b) /- f is left continuous at b -/ :
+    (cont : ContinuousWithinAt f (Set.Ioc a b) b) /- f is left continuous at b -/ :
     ContinuousWithinAt (fun x ↦ arclength f x c) (Set.Iic b) b := by
   rw [← arclength_comp_ofDual] at hrect; rw [arclength'_eq]
   refine ContinuousWithinAt.comp (t := Set.Ici (toDual b)) ?_ ?_ fun x hx ↦ ?_
@@ -259,39 +259,39 @@ theorem continuous_left_arclength'
 omit hab
 
 theorem continuous_left_arclength
-    (hcont : ContinuousWithinAt f (Set.Ioc a b) b) /- f is left continuous at b -/ :
+    (cont : ContinuousWithinAt f (Set.Ioc a b) b) /- f is left continuous at b -/ :
     ContinuousWithinAt (arclength f a) (Set.Iic b) b := by
   obtain hba | hab := le_or_gt b a
   · apply (Continuous.continuousWithinAt continuous_const).congr (fun x hx ↦ _)
     · exact arclength_eq_zero f hba
     · intro x hx; exact arclength_eq_zero f <| trans hx hba
   · refine (((ENNReal.continuousOn_sub_left _).continuousAt ?_).comp_continuousWithinAt <|
-      continuous_left_arclength' f hab hrect hcont).congr (fun x hx ↦ arclength_sub f hx hrect)
+      continuous_left_arclength' f hab hrect cont).congr (fun x hx ↦ arclength_sub f hx hrect)
         (arclength_sub f le_rfl hrect)
     rw [arclength_self]; exact isOpen_ne.mem_nhds ENNReal.top_ne_zero.symm
 
 theorem continuous_right_arclength'
-    (hcont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
+    (cont : ContinuousWithinAt f (Set.Ico a b) a) /- f is right continuous at a -/ :
     ContinuousWithinAt (arclength f · b) (Set.Ici a) a := by
   rw [← arclength_comp_ofDual] at hrect; rw [arclength'_eq]
   exact (continuous_left_arclength (f ∘ ofDual) hrect <| by simpa).comp
     continuous_toDual.continuousWithinAt fun x ↦ id
 
-theorem continuousOn_Iic_arclength (hcont : ContinuousOn f (Set.Icc a b)) :
+theorem continuousOn_Iic_arclength (cont : ContinuousOn f (Set.Icc a b)) :
     ContinuousOn (arclength f a) (Set.Iic b) := by
   intro x hx; obtain hba | hab := le_or_gt b a
   · exact continuousOn_Iic_arclength_of_ge _ hba _ hx
   obtain rfl | hxb := eq_or_lt_of_le hx
-  · exact continuous_left_arclength f hrect ((hcont x ⟨hab.le, hx⟩).mono fun y h ↦ ⟨h.1.le, h.2⟩)
+  · exact continuous_left_arclength f hrect ((cont x ⟨hab.le, hx⟩).mono fun y h ↦ ⟨h.1.le, h.2⟩)
   refine (lt_or_ge x a).elim (fun hxa ↦ ((continuousOn_Iic_arclength_of_ge f le_rfl).continuousAt
     <| Iic_mem_nhds hxa).continuousWithinAt)
     fun hax ↦ (continuousAt_iff_continuous_left_right.2 ⟨?_, ?_⟩).continuousWithinAt
   · apply continuous_left_arclength f (ne_top_of_le_ne_top hrect <| arclength_mono f a hx)
-    exact (hcont x ⟨hax, hx⟩).mono fun y hy ↦ ⟨hy.1.le, hy.2.trans hx⟩
+    exact (cont x ⟨hax, hx⟩).mono fun y hy ↦ ⟨hy.1.le, hy.2.trans hx⟩
   · apply continuous_right_arclength f hxb (ne_top_of_le_ne_top hrect <| arclength_anti f b hax)
-    exact (hcont x ⟨hax, hx⟩).mono fun y hy ↦ ⟨hax.trans hy.1, hy.2.le⟩
+    exact (cont x ⟨hax, hx⟩).mono fun y hy ↦ ⟨hax.trans hy.1, hy.2.le⟩
 
-theorem continuousOn_Ici_arclength' (hcont : ContinuousOn f (Set.Icc a b)) :
+theorem continuousOn_Ici_arclength' (cont : ContinuousOn f (Set.Icc a b)) :
     ContinuousOn (arclength f · b) (Set.Ici a) := by
   rw [← arclength_comp_ofDual] at hrect; rw [arclength'_eq]
   refine (continuousOn_Iic_arclength _ hrect ?_).comp continuous_toDual.continuousOn fun x ↦ id
@@ -313,20 +313,20 @@ theorem locallyBoundedVariationOn_iff_arclength_ne_top :
 alias ⟨LocallyBoundedVariationOn.arclength_ne_top, _⟩ :=
   locallyBoundedVariationOn_iff_arclength_ne_top
 
-variable [TopologicalSpace α] [OrderTopology α] (hbdd : LocallyBoundedVariationOn f s)
-         (hcont : ContinuousOn f s)
+variable [TopologicalSpace α] [OrderTopology α] (bdd : LocallyBoundedVariationOn f s)
+         (cont : ContinuousOn f s)
 
-include hbdd hcont
+include bdd cont
 
 theorem continuousOn_arclength_of_mem (ha : a ∈ s) : ContinuousOn (arclength f a) s := by
   by_cases h : ∃ x ∈ s, ∀ y ∈ s, y ≤ x
   · obtain ⟨x, hxs, hx⟩ := h
     exact (continuousOn_Iic_arclength f
-      (hbdd.arclength_ne_top f hconn ha hxs) <| hcont.mono <| hconn.out ha hxs).mono hx
+      (bdd.arclength_ne_top f hconn ha hxs) <| cont.mono <| hconn.out ha hxs).mono hx
   push_neg at h
   intro x hx; obtain ⟨y, hy, hxy⟩ := h x hx
-  exact ((continuousOn_Iic_arclength f (hbdd.arclength_ne_top f hconn ha hy) <|
-    hcont.mono <| hconn.out ha hy).continuousAt <| Iic_mem_nhds hxy).continuousWithinAt
+  exact ((continuousOn_Iic_arclength f (bdd.arclength_ne_top f hconn ha hy) <|
+    cont.mono <| hconn.out ha hy).continuousAt <| Iic_mem_nhds hxy).continuousWithinAt
 
 variable (a b)
 
@@ -335,19 +335,19 @@ theorem continuousOn_arclength : ContinuousOn (arclength f a) s := by
   · exact (continuousAt_arclength_of_gt f hxa).continuousWithinAt
   by_cases h : ∀ y ∈ s, x ≤ y
   · exact ((continuous_add_left _).comp_continuousOn <| continuousOn_arclength_of_mem
-      f hconn hbdd hcont hxs).congr (fun y hy ↦ (arclength_add f hax <| h y hy).symm) x hxs
+      f hconn bdd cont hxs).congr (fun y hy ↦ (arclength_add f hax <| h y hy).symm) x hxs
   push_neg at h; obtain ⟨y, hys, hyx⟩ := h
   obtain hay | hya := le_total a y
   · apply ((continuous_add_left _).continuousAt.comp_continuousWithinAt <|
-      continuousOn_arclength_of_mem f hconn hbdd hcont hys x hxs).congr_of_eventuallyEq
+      continuousOn_arclength_of_mem f hconn bdd cont hys x hxs).congr_of_eventuallyEq
       (Set.EqOn.eventuallyEq_of_mem _ <| inter_mem_nhdsWithin s <| Ici_mem_nhds hyx)
     exacts [(arclength_add f hay hyx.le).symm, fun z hz ↦ (arclength_add f hay hz.2).symm]
-  exact continuousOn_arclength_of_mem f hconn hbdd hcont (hconn.out hys hxs ⟨hya, hax⟩) x hxs
+  exact continuousOn_arclength_of_mem f hconn bdd cont (hconn.out hys hxs ⟨hya, hax⟩) x hxs
 
 theorem continuousOn_arclength' : ContinuousOn (arclength f · b) s := by
   rw [arclength'_eq]
-  apply continuousOn_arclength _ _ hconn.dual _ hcont
-  exact hbdd.comp_ofDual
+  apply continuousOn_arclength _ _ hconn.dual _ cont
+  exact bdd.comp_ofDual
 
 end
 
@@ -355,16 +355,16 @@ section
 
 /-! ### Continuity -/
 
-variable [TopologicalSpace α] [OrderTopology α] (a b) (hbdd : LocallyBoundedVariationOn f Set.univ)
-         (hcont : Continuous f)
-include hbdd hcont
+variable [TopologicalSpace α] [OrderTopology α] (a b) (bdd : LocallyBoundedVariationOn f Set.univ)
+         (cont : Continuous f)
+include bdd cont
 
 theorem continuous_arlclength : Continuous (arclength f a) := by
   rw [← continuousOn_univ] at *
-  exact continuousOn_arclength f _ Set.ordConnected_univ hbdd hcont
+  exact continuousOn_arclength f _ Set.ordConnected_univ bdd cont
 
 theorem continuous_arclenght' : Continuous (arclength f · b) := by
   rw [← continuousOn_univ] at *
-  exact continuousOn_arclength' f _ Set.ordConnected_univ hbdd hcont
+  exact continuousOn_arclength' f _ Set.ordConnected_univ bdd cont
 
 end
