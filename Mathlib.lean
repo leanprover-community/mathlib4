@@ -3951,6 +3951,7 @@ public import Mathlib.Data.Sigma.Order
 public import Mathlib.Data.Sign
 public import Mathlib.Data.Sign.Basic
 public import Mathlib.Data.Sign.Defs
+public import Mathlib.Data.Sign.SuccPred
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Data.String.Basic
