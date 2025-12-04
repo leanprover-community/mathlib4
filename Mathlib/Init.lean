@@ -28,6 +28,7 @@ public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 -- This is a redundant import, but it is needed so that
 -- the linter doesn't complain about `ParseCommand` not importing `Header`.
+-- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
 public import Mathlib.Util.ParseCommand
 
 /-!
