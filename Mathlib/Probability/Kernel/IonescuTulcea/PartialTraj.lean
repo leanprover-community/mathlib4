@@ -62,8 +62,8 @@ against `partialTraj κ a b`, taking inspiration from `MeasureTheory.lmarginal`.
 
 * `partialTraj_comp_partialTraj`: if `a ≤ b` and `b ≤ c` then
   `partialTraj κ b c ∘ₖ partialTraj κ a b = partialTraj κ a c`.
-* `map_partialTraj_succ_self a`: the pushforward of `partialTraj κ a (a + 1)` along the
-  point at time `a + 1` is the kernel `κ a`.
+* `map_partialTraj_succ_self a`: the pushforward of `partialTraj κ a (a + 1)` along the point at
+  time `a + 1` is the kernel `κ a`.
 * `lmarginalPartialTraj_self` : if `a ≤ b` and `b ≤ c` then
   `lmarginalPartialTraj κ b c (lmarginalPartialTraj κ a b f) = lmarginalPartialTraj κ a c`.
 

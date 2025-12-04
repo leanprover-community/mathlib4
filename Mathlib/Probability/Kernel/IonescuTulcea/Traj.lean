@@ -48,8 +48,8 @@ expectation.
 
 ## Main statements
 
-* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1`
-  is the kernel `κ a`.
+* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1` is the
+  kernel `κ a`.
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
