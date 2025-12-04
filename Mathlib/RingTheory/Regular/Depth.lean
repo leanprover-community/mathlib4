@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yi Song
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
@@ -133,11 +134,7 @@ universe w v u
 open IsLocalRing LinearMap
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
-variable {R : Type u} [CommRing R] [Small.{v} R] [UnivLE.{v, w}]
-
-local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  --CategoryTheory.HasExt.standard (ModuleCat.{v} R)
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
+variable {R : Type u} [CommRing R] [Small.{v} R]
 
 open Pointwise ModuleCat IsSMulRegular
 
