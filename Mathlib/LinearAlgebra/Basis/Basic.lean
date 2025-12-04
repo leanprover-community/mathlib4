@@ -256,8 +256,7 @@ protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
-        ← map_zero (linearCombination R b)] at hcx
+      rw [← b.linearCombination_repr x, ← map_smul, ← map_zero (linearCombination R b)] at hcx
       have := b.linearIndependent hcx
       rw [smul_eq_zero] at this
       exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩

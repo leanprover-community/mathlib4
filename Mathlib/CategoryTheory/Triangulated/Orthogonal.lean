@@ -85,8 +85,8 @@ lemma isLocal_trW [P.IsTriangulated] :
 
 variable {P} in
 lemma rightOrthogonal.map_bijective_of_isTriangulated
-    [P.IsTriangulated] {Y : C} (hY : P.rightOrthogonal Y)
-    [IsTriangulated C] (L : C ⥤ D) [L.IsLocalization P.trW] (X : C) :
+    [P.IsTriangulated] [IsTriangulated C] {Y : C} (hY : P.rightOrthogonal Y)
+    (L : C ⥤ D) [L.IsLocalization P.trW] (X : C) :
     Function.Bijective (L.map : (X ⟶ Y) → _) := by
   rw [← isLocal_trW] at hY
   refine ⟨fun f₁ f₂ hf ↦ ?_, fun g ↦ ?_⟩

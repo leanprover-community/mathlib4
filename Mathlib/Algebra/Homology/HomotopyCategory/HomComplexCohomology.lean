@@ -14,13 +14,15 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 Given `ℤ`-indexed cochain complexes `K` and `L`, and `n : ℤ`, we introduce
 a type `HomComplex.CohomologyClass K L n` which is the quotient
 of `HomComplex.Cocycle K L n` which identifies cohomologous cocycles.
-The reason for not applying the homology API to this complex is that
-`Cochain K L` can be considered both as a complex of abelian groups
-or as a complex of `R`-modules when the category is `R`-linear.
+We construct this type of cohomology classes instead of using
+the homology API because `Cochain K L` can be considered both
+as a complex of abelian groups or as a complex of `R`-modules
+when the category is `R`-linear. This also complements the API
+around `HomComplex` which is centered on terms in types
+`Cochain` or `Cocycle` which are suitable for computations.
 
 We also show that `HomComplex.CohomologyClass K L n` identifies to
 the type of morphisms between `K` and `L⟦n⟧` in the homotopy category.
-
 -/
 
 @[expose] public section
@@ -45,7 +47,7 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
   zero_mem' := ⟨n - 1, by simp, 0, by simp⟩
   add_mem' := by
     rintro α₁ α₂ ⟨m, hm, β₁, hβ₁⟩ ⟨m', hm', β₂, hβ₂⟩
-    obtain rfl : m = m' := by cutsat
+    obtain rfl : m = m' := by lia
     exact ⟨m, hm, β₁ + β₂, by aesop⟩
   neg_mem' := by
     rintro α ⟨m, hm, β, hβ⟩
@@ -166,7 +168,7 @@ lemma toHom_bijective : Function.Bijective (toHom : CohomologyClass K L n → _)
   · obtain ⟨f, rfl⟩ := Functor.map_surjective _ f
     exact ⟨mk (Cocycle.equivHomShift f), by simp [toHom_mk]⟩
 
-/-- Cohomology classes identifies to morphisms in the homotopy category. -/
+/-- Cohomology classes identify to morphisms in the homotopy category. -/
 @[simps! apply]
 noncomputable def homAddEquiv :
     CohomologyClass K L n ≃+
@@ -196,7 +198,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
       (fun s ↦ AddCommGrpCat.ofHom (CohomologyClass.descAddMonoidHom s.π.hom
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
-          obtain rfl : n = q := by cutsat
+          obtain rfl : n = q := by lia
           simpa only [zero_comp] using ConcreteCategory.congr_hom s.condition y)))
       (fun s ↦ rfl)
       (fun s l hl ↦ by

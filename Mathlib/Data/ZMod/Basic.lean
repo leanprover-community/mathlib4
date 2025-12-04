@@ -908,8 +908,8 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
   { toFun := to_fun,
     invFun := inv_fun,
-    map_mul' := RingHom.map_mul _
-    map_add' := RingHom.map_add _
+    map_mul' := map_mul _
+    map_add' := map_add _
     left_inv := inv.1
     right_inv := inv.2 }
 
@@ -1228,7 +1228,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  cutsat
+  lia
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by

@@ -33,7 +33,7 @@ theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsRed
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
   let hx' := congr_arg (· ^ n.succ) hx
-  simp only [mul_pow, e, zero_mul, ← RingHom.map_pow] at hx'
+  simp only [mul_pow, e, zero_mul, ← map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
   apply_fun (· * (m' : R) ^ n) at hm'

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -16,7 +16,7 @@ situation. Assume that `X n : Set (Cochain K L d)` is a sequence of subsets
 of `Cochain K L d`, and `φ n : X n → X (n + 1)` is a sequence of maps such
 that for a certain `p₀ : ℕ` and any `x : X n`, `φ n x` and `x` coincide
 up to the degree `p₀ + n`, then we construct a cochain
-`InductionUp.limitSequence` in `Cochain K L d` which coincide with the
+`InductionUp.limitSequence` in `Cochain K L d` which coincides with the
 `n`th-iteration of `φ` evaluated on `x₀` up to the degree `p₀ + n` for any `n : ℕ`.
 
 -/
@@ -32,7 +32,7 @@ namespace CochainComplex.HomComplex.Cochain
 variable {C : Type u} [Category.{v} C] [Preadditive C]
   {K L : CochainComplex C ℤ}
 
-/-- Given `p₀ : ℤ`, this is condition on two cochains `α` and `β` in `Cochain K L N`
+/-- Given `p₀ : ℤ`, this is the condition on two cochains `α` and `β` in `Cochain K L N`
 saying that `α.v p q _ = β.v p q _` when `p ≤ p₀`. -/
 def EqUpTo {n : ℤ} (α β : Cochain K L n) (p₀ : ℤ) : Prop :=
   ∀ (p q : ℤ) (hpq : p + n = q), p ≤ p₀ → α.v p q hpq = β.v p q hpq
@@ -59,8 +59,8 @@ lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
   | zero => intro _ _ _ _; simp
   | succ k hk =>
     intro p q hpq hp
-    rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by cutsat)]
-    rfl
+    rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by lia)]
+    dsimp [sequence]
 
 /-- Assuming we have a sequence of subsets `X n : Set (Cochain K L d)` for all `n : ℕ`,
 a sequence of maps `φ n : X n → X (n + 1)` for `n : ℕ`, and an element `x₀ : X 0`,
@@ -76,7 +76,7 @@ def limitSequence (_ : ∀ (n : ℕ) (x : X n), (φ n x).val.EqUpTo x.val (p₀ 
 lemma limitSequence_eqUpTo (n : ℕ) :
     (limitSequence φ hφ x₀).EqUpTo (sequence φ x₀ n).1 (p₀ + n) := by
   intro p q hpq hp
-  exact sequence_eqUpTo φ hφ _ _ _ (by cutsat) _ _ _ (by cutsat)
+  exact sequence_eqUpTo φ hφ _ _ _ (by lia) _ _ _ (by lia)
 
 end InductionUp
 

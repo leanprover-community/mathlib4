@@ -6,9 +6,11 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -60,15 +62,15 @@ def intrinsicStarAddMonoid : StarAddMonoid (E →ₗ[R] F) where
 scoped[IntrinsicStar] attribute [instance] LinearMap.intrinsicStarAddMonoid
 
 /-- A linear map is self-adjoint (with respect to the intrinsic star) iff it is star-preserving. -/
-theorem isSelfAdjoint_iff_map_star (f : E →ₗ[R] F) :
+theorem IntrinsicStar.isSelfAdjoint_iff_map_star (f : E →ₗ[R] F) :
     IsSelfAdjoint f ↔ ∀ x, f (star x) = star (f x) := by
   simp_rw [IsSelfAdjoint, LinearMap.ext_iff, intrinsicStar_apply, star_eq_iff_star_eq, eq_comm]
 
 /-- A star-preserving linear map is self-adjoint (with respect to the intrinsic star). -/
 @[simp]
-protected theorem _root_.StarHomClass.isSelfAdjoint {S : Type*} [FunLike S E F]
+protected theorem _root_.IntrinsicStar.StarHomClass.isSelfAdjoint {S : Type*} [FunLike S E F]
     [LinearMapClass S R E F] [StarHomClass S E F] {f : S} : IsSelfAdjoint (f : E →ₗ[R] F) :=
-  isSelfAdjoint_iff_map_star _ |>.mpr (map_star f)
+  IntrinsicStar.isSelfAdjoint_iff_map_star _ |>.mpr (map_star f)
 
 variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]
 
@@ -121,6 +123,40 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 end TensorProduct
 
 end LinearMap
+
+section matrix
+variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
+
+open scoped IntrinsicStar
+
+namespace LinearMap
+
+theorem toMatrix'_intrinsicStar (f : (m → R) →ₗ[R] (n → R)) :
+    (star f).toMatrix' = f.toMatrix'.map star := by
+  ext; simp [Pi.star_def, apply_ite]
+
+/-- A linear map `f : (m → R) →ₗ (n → R)` is self-adjoint (with respect to the intrinsic star)
+iff its corresponding matrix `f.toMatrix'` has all self-adjoint elements.
+So star-preserving maps correspond to their matrices containing only self-adjoint elements. -/
+theorem IntrinsicStar.isSelfAdjoint_iff_toMatrix' (f : (m → R) →ₗ[R] (n → R)) :
+    IsSelfAdjoint f ↔ ∀ i j, IsSelfAdjoint (f.toMatrix' i j) := by
+  simp [IsSelfAdjoint, ← toMatrix'.injective.eq_iff, toMatrix'_intrinsicStar, ← Matrix.ext_iff]
+
+end LinearMap
+
+namespace Matrix
+
+theorem intrinsicStar_toLin' (A : Matrix n m R) : star A.toLin' = (A.map star).toLin' := by
+  simp [← LinearMap.toMatrix'.injective.eq_iff, LinearMap.toMatrix'_intrinsicStar]
+
+/-- Given a matrix `A`, `A.toLin'` is self-adjoint (with respect to the intrinsic star)
+iff all its elements are self-adjoint. -/
+theorem IntrinsicStar.isSelfAdjoint_toLin'_iff (A : Matrix n m R) :
+    IsSelfAdjoint A.toLin' ↔ ∀ i j, IsSelfAdjoint (A i j) := by
+  simp [IsSelfAdjoint, intrinsicStar_toLin', ← ext_iff]
+
+end Matrix
+end matrix
 
 namespace Module.End
 
