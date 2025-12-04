@@ -362,7 +362,7 @@ end ExistsSeqTendstoAe
 is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by `C`. -/
 lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [SeminormedAddGroup E]
     {u : Filter ι} [NeBot u] [IsCountablyGenerated u] {f : ι → α → E} {g : α → E} {C : ℝ≥0∞}
-    (p : ℝ≥0∞) (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
+    {p : ℝ≥0∞} (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
   obtain ⟨l, hl⟩ := h_tendsto.exists_seq_tendsto_ae'
   exact Lp.eLpNorm_le_of_ae_tendsto (hl.1.eventually bound) (fun n => hf (l n)) hl.2
