@@ -48,23 +48,23 @@ is indicated by the syntax.
 
 open Lean Elab Term
 
-declare_syntax_cat wildcard_universe
+declare_syntax_cat wildcard_level
 
 /-- Syntax for level params. -/
-syntax "*" : wildcard_universe
+syntax "*" : wildcard_level
 /-- Syntax for level params with a specified base name. -/
-syntax ident noWs "*" : wildcard_universe
+syntax ident noWs "*" : wildcard_level
 /-- Syntax for an existing level. -/
-syntax level : wildcard_universe
+syntax level : wildcard_level
 
 /--
 Term elaborator for the wildcard universe syntax `Foo.!{u₁, u₂, ...}`.
 
-This elaborator handles syntax of the form `ident.!{wildcard_universe,*} args*`,
+This elaborator handles syntax of the form `ident.!{wildcard_level,*} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
 syntax (name := appWithWildcards)
-    ident noWs ".!{" wildcard_universe,+ "}" Parser.Term.argument* : term
+    ident noWs ".!{" wildcard_level,+ "}" Parser.Term.argument* : term
 
 /--
 Represents the kind of wildcard universe parameter.
@@ -84,9 +84,9 @@ meta def elabWildcardUniverses {m : Type → Type}
     m (Array LevelWildcardKind) :=
   us.mapM fun u =>
     match u with
-    | `(wildcard_universe|*) => return .param
-    | `(wildcard_universe|$n:ident*) => return .param n.getId
-    | `(wildcard_universe|$l:level) => return .explicit l
+    | `(wildcard_level|*) => return .param
+    | `(wildcard_level|$n:ident*) => return .param n.getId
+    | `(wildcard_level|$l:level) => return .explicit l
     | _ => throwUnsupportedSyntax
 
 /--
