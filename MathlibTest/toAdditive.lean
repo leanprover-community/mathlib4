@@ -298,6 +298,14 @@ def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
 
+@[to_additive (dont_translate := R)]
+def mulMatchAux {R A} [Mul A] (_ : R) (_ : A) : Nat := 5
+
+@[to_additive (dont_translate := R)]
+theorem mulMatchThm {R A} (r : R) (a : A) [Mul A] : True := by
+  have ⟨_, _⟩ : mulMatchAux r a = mulMatchAux r a ∧ True := ⟨rfl, trivial⟩
+  exact trivial
+
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
 original declaration name as prefix. -/
 @[to_additive]
@@ -786,3 +794,16 @@ in the application
 @[to_additive]
 instance : Mul (MonoidAlgebra' Nat G) where
   mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩
+
+-- Proofs in types aren't abstracted:
+@[to_additive]
+def abstractMul : Function.const _ True (id Nat.zero_lt_one) := trivial
+
+set_option pp.proofs true in
+/-- info: abstractMul : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
+#guard_msgs in
+#check abstractMul
+set_option pp.proofs true in
+/-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
+#guard_msgs in
+#check abstractAdd

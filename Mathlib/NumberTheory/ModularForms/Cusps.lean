@@ -384,6 +384,14 @@ lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
     using ⟨_, OnePoint.map_infty _⟩
 
 variable {𝒢} in
+lemma isCusp_of_mem_strictPeriods {h : ℝ} (hh : 0 < h) (h𝒢 : h ∈ 𝒢.strictPeriods)
+    [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
+    IsCusp OnePoint.infty 𝒢 := by
+  rw [Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty] at h𝒢
+  refine 𝒢.strictWidthInfty_pos_iff.mp <| 𝒢.strictWidthInfty_nonneg.lt_of_ne' fun h0 ↦ hh.ne' ?_
+  simp_all
+
+variable {𝒢} in
 lemma widthInfty_pos_iff [DiscreteTopology 𝒢.periods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.widthInfty ↔ IsCusp ∞ 𝒢 := by
   have : DiscreteTopology 𝒢.adjoinNegOne.strictPeriods := ‹_›
