@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.ObjectProperty.Local
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Presheaves of types which preserves a limit
@@ -24,93 +25,6 @@ universe w w' v v' u u'
 namespace CategoryTheory
 
 open Limits Opposite
-
-section
-
-variable {C : Type u} [Category.{v} C]
-
-namespace FunctorToTypes
-
-protected abbrev Small (F : C ⥤ Type w') := ∀ (X : C), _root_.Small.{w} (F.obj X)
-
-@[simps]
-noncomputable def shrink (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] :
-    C ⥤ Type w where
-  obj X := Shrink.{w} (F.obj X)
-  map {X Y} f := equivShrink.{w} _ ∘ F.map f ∘ (equivShrink.{w} _).symm
-
-attribute [local simp] FunctorToTypes.naturality in
-@[simps]
-noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes.Small.{w} F]
-    [FunctorToTypes.Small.{w} G] :
-    shrink.{w} F ⟶ shrink.{w} G where
-  app X := equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm
-
-end FunctorToTypes
-
-section
-
-variable [LocallySmall.{w} C]
-
-instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
-  fun _ ↦ by dsimp; infer_instance
-
--- to be moved
-@[simps -isSimp obj map]
-noncomputable def shrinkYoneda :
-    C ⥤ Cᵒᵖ ⥤ Type w where
-  obj X := FunctorToTypes.shrink (yoneda.obj X)
-  map f := FunctorToTypes.shrinkMap (yoneda.map f)
-
-noncomputable def shrinkYonedaObjObjEquiv {X : C} {Y : Cᵒᵖ} :
-    ((shrinkYoneda.{w}.obj X).obj Y) ≃ (Y.unop ⟶ X) :=
-  (equivShrink _).symm
-
-noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
-    (shrinkYoneda.{w}.obj X ⟶ P) ≃ P.obj (op X) where
-  toFun τ := τ.app _ (equivShrink.{w} _ (𝟙 X))
-  invFun x :=
-    { app Y f := P.map ((equivShrink.{w} _).symm f).op x
-      naturality Y Z g := by ext; simp [shrinkYoneda] }
-  left_inv τ := by
-    ext Y f
-    obtain ⟨f, rfl⟩ := (equivShrink _).surjective f
-    simpa [shrinkYoneda] using congr_fun (τ.naturality f.op).symm (equivShrink _ (𝟙 X))
-  right_inv x := by simp
-
-lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
-    (g : Y ⟶ X) : P.map g.op (shrinkYonedaEquiv f) =
-      f.app (op Y) (shrinkYonedaObjObjEquiv.symm g) := by
-  simp [shrinkYonedaObjObjEquiv, shrinkYonedaEquiv, shrinkYoneda,
-    ← FunctorToTypes.naturality]
-
-lemma shrinkYonedaEquiv_shrinkYoneda_map {X Y : C} (f : X ⟶ Y) :
-    shrinkYonedaEquiv (shrinkYoneda.{w}.map f) = shrinkYonedaObjObjEquiv.symm f := by
-  simp [shrinkYonedaEquiv, shrinkYoneda, shrinkYonedaObjObjEquiv]
-
-lemma shrinkYonedaEquiv_comp {X : C} {P Q : Cᵒᵖ ⥤ Type w} (α : shrinkYoneda.obj X ⟶ P)
-    (β : P ⟶ Q) :
-    shrinkYonedaEquiv (α ≫ β) = β.app _ (shrinkYonedaEquiv α) := by
-  simp [shrinkYonedaEquiv]
-
-lemma shrinkYonedaEquiv_naturality {X Y : C} {P : Cᵒᵖ ⥤ Type w}
-    (f : shrinkYoneda.obj X ⟶ P) (g : Y ⟶ X) :
-    P.map g.op (shrinkYonedaEquiv f) = shrinkYonedaEquiv (shrinkYoneda.map g ≫ f) := by
-  simpa [shrinkYonedaEquiv, shrinkYoneda]
-    using congr_fun (f.naturality g.op).symm ((equivShrink _) (𝟙 _))
-
-@[reassoc]
-lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ Type w} (t : P.obj X) :
-    shrinkYonedaEquiv.symm (P.map f t) =
-      shrinkYoneda.map f.unop ≫ shrinkYonedaEquiv.symm t :=
-  shrinkYonedaEquiv.injective (by
-    obtain ⟨t, rfl⟩ := shrinkYonedaEquiv.surjective t
-    rw [← shrinkYonedaEquiv_naturality]
-    simp)
-
-end
-
-end
 
 namespace Presheaf
 
