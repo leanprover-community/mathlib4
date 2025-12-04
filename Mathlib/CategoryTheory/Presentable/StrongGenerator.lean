@@ -90,7 +90,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
     (hS₂ : P ≤ isCardinalPresentable C κ) :
     (P.colimitsCardinalClosure κ).ι.IsDense where
   isDenseAt X := by
-    let E := (Functor.LeftExtension.mk _ (P.colimitsCardinalClosure κ).ι.rightUnitor.inv)
+    let E := Functor.LeftExtension.mk _ (P.colimitsCardinalClosure κ).ι.rightUnitor.inv
     have : HasColimitsOfShape (CostructuredArrow (P.colimitsCardinalClosure κ).ι X) C :=
       hasColimitsOfShape_of_equivalence
         (equivSmallModel.{w} (CostructuredArrow (P.colimitsCardinalClosure κ).ι X)).symm
@@ -169,14 +169,11 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
     have : HasCardinalFilteredGenerator C κ :=
       { exists_generator := ⟨(P.colimitsCardinalClosure κ), inferInstance,
             IsCardinalFilteredGenerator.of_isDense_ι _ _
-              (P.colimitsCardinalClosure_le_isCardinalPresentable hS₂)⟩
-          }
+              (P.colimitsCardinalClosure_le_isCardinalPresentable hS₂)⟩ }
     constructor
 
-variable [IsCardinalLocallyPresentable C κ]
-
 variable (C) in
-lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
+lemma of_le [IsCardinalLocallyPresentable C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
     (h : κ ≤ κ') :
     IsCardinalLocallyPresentable C κ' := by
   rw [iff_exists_isStrongGenerator]
