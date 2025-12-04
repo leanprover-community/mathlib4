@@ -53,11 +53,11 @@ class IsLocallyArtinian : Prop where
 
 attribute [intsance] IsLocallyArtinian.component_artinian
 
-lemma IsLocallyArtinian_IsLocallyNoetherian [IsLocallyArtinian X] :
+lemma IsLocallyArtinian.IsLocallyNoetherian [h : IsLocallyArtinian X] :
     IsLocallyNoetherian X :=
   {component_noetherian := fun U =>
     by
-      have _ := hA.1 U
+      have _ := h.1 U
       infer_instance}
 
 lemma IsArtinianRing_DiscreteTopology (R : Type*) [CommRing R] [IsArtinianRing R] :
@@ -132,11 +132,11 @@ lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
 
 theorem IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
-  ⟨fun h => ⟨IsLocallyArtinian_IsLocallyNoetherian X h, IsLocallyArtinian_DiscreteTopology X h⟩,
+  ⟨fun h => ⟨IsLocallyArtinian.IsLocallyNoetherian X, IsLocallyArtinian_DiscreteTopology X h⟩,
   fun ⟨_,_⟩ => IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian X⟩
 
 instance inst_IsLocallyArtinian_IsLocallyNoetherian [IsLocallyArtinian X] :
-    IsLocallyNoetherian X := IsLocallyArtinian_IsLocallyNoetherian X inferInstance
+    IsLocallyNoetherian X := IsLocallyArtinian.IsLocallyNoetherian X
 
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
