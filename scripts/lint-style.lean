@@ -91,6 +91,30 @@ def getLakefileLeanOptions : IO Lean.Options := do
       #[]
   return toLeanOptions (rootOpts.appendArray defaultOpts)
 
+/-- Compute the transitive closure of imports starting from a given file.
+Returns a `NameSet` of all modules that are (transitively) imported by the given file. -/
+def findTransitiveImports (startPath : System.FilePath) : IO Lean.NameSet := do
+  let mut visited : Lean.NameSet := {}
+  let mut queue := #[]
+  -- Initialize with direct imports
+  for imp in ← findImports startPath do
+    if imp.getRoot == `Mathlib then
+      queue := queue.push imp
+  -- Process queue
+  while h : queue.size > 0 do
+    let module := queue[0]
+    queue := queue.eraseIdx 0
+    if visited.contains module then
+      continue
+    visited := visited.insert module
+    -- Add this module's imports to the queue
+    let path := System.mkFilePath (module.components.map fun n ↦ n.toString) |>.addExtension "lean"
+    if ← path.pathExists then
+      for imp in ← findImports path do
+        if imp.getRoot == `Mathlib && !visited.contains imp then
+          queue := queue.push imp
+  return visited
+
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
 register_option linter.checkInitImports : Bool := { defValue := false }
 
@@ -116,25 +140,18 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     if imports.contains `Mathlib.Tactic.Linter.Header then
       importsHeaderLinter := importsHeaderLinter.push module
 
-  -- Every file importing the `header` linter should be imported in `Mathlib/Init.lean` itself.
+  -- Every file importing the `header` linter should be (transitively) imported by `Mathlib.Init`.
   -- (Downstream files should import `Mathlib.Init` and not the header linter.)
-  -- The only exception are auto-generated import-only files.
-  let initImports ← findImports ("Mathlib" / "Init.lean")
+  -- The only exceptions are auto-generated import-only files.
+  let initTransitiveImports ← findTransitiveImports ("Mathlib" / "Init.lean")
   let mismatch := importsHeaderLinter.filter (fun mod ↦
-    ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
-    -- These files are transitively imported by `Mathlib.Init`.
-    |>.erase `Mathlib.Tactic.DeclarationNames
-    |>.erase `Mathlib.Lean.Elab.Tactic.Meta
-    |>.erase `Mathlib.Lean.ContextInfo
-    |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
-    |>.erase `Mathlib.Lean.Elab.InfoTree
-    |>.erase `Mathlib.Lean.Environment
-    |>.erase `Mathlib.Lean.Expr.Basic
+    ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initTransitiveImports.contains mod)
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
-      directly, but should import Mathlib.Init instead: {mismatch}\n\
-      The `header` linter is included in Mathlib.Init, and every file in Mathlib \
-      should import Mathlib.Init.\nPlease adjust the imports accordingly."
+      directly, but should import Mathlib.Init instead: {mismatch}\n"
+    for mod in mismatch do
+      IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
+        → Replace `import Mathlib.Tactic.Linter.Header` with `import Mathlib.Init`."
     return mismatch.size
 
   -- Now, it only remains to check that every module (except for the Header linter itself)
@@ -144,7 +161,15 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
-      {missing}"
+      {missing}\n"
+    for mod in missing do
+      if initTransitiveImports.contains mod then
+        -- Transitively imported by Init: just needs to import the Header linter
+        IO.eprintln s!"  • `{mod}` is transitively imported by `Mathlib.Init`.\n    \
+          → Add `import Mathlib.Tactic.Linter.Header` to `{mod}`."
+      else
+        IO.eprintln s!"  • `{mod}` is NOT imported by `Mathlib.Init`.\n    \
+          → Add `import Mathlib.Init` to `{mod}`."
     return missing.size
   return 0
 
