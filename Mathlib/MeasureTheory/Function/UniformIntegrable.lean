@@ -672,6 +672,35 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
   grw [← le_max_left]
 
+/-- If `fn` is `UnifIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {fn : ι → α → β} (p : ℝ≥0∞)
+    (hUI : UnifIntegrable fn p μ) (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : ℕ → ι,
+      TendstoInMeasure μ (fn ∘ ni) atTop g}) ↦ f.1) p μ := by
+  refine fun ε hε => ?_
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  refine eLpNorm_le_of_tendstoInMeasure p
+    (Eventually.of_forall fun n => hδ' (s n) t ht ht') (hs.indicator t) ?_
+  exact fun n => (hfn (s n)).indicator ht
+
+/-- If `fn` is `UnifIntegrable`, then the family of a.e. limits of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_tendsto_ae {fn : ι → α → β} (p : ℝ≥0∞)
+    (hUI : UnifIntegrable fn p μ) (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : ℕ → ι,
+      ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) atTop (nhds (g x))}) ↦ f.1) p μ := by
+  refine fun ε hε => ?_
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  refine seq_tendsto_ae_bounded p (fun n => hδ' (s n) t ht ht') ?_ ?_
+  · filter_upwards [hs] with a ha
+    by_cases memt : a ∈ t
+    · simpa [memt]
+    · simp [memt]
+  · exact fun n => (hfn (s n)).indicator ht
+
 end UnifIntegrable
 
 section UniformIntegrable
@@ -888,51 +917,6 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
   ext x
   simp [div_eq_inv_mul]
 
-end UniformIntegrable
-
-section TendstoInMeasure
-
-/-- If a uniformly `p`-integrable collection of functions converges in measure, then its limit is
-a member of `Lp`. -/
-lemma UniformIntegrable.memLp_of_tendstoInMeasure
-    {α β : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
-    {fn : ℕ → α → β} {f : α → β} (p : ℝ≥0∞) (hUI : UniformIntegrable fn p μ)
-    (htends : TendstoInMeasure μ fn atTop f) :
-    MemLp f p μ := by
-  refine ⟨htends.aestronglyMeasurable hUI.1, ?_⟩
-  obtain ⟨C, hC⟩ := hUI.2.2
-  exact lt_of_le_of_lt (tendstoInMeasure_bounded p (fun i => hC i) htends (fun i => hUI.1 i))
-    ENNReal.coe_lt_top
-
-/-- If a uniformly integrable collection of functions converges in measure, then its limit is
-integrable. -/
-lemma UniformIntegrable.integrable_of_tendstoInMeasure
-    {α β : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
-    {fn : ℕ → α → β} {f : α → β} (hUI : UniformIntegrable fn 1 μ)
-    (htends : TendstoInMeasure μ fn atTop f) :
-    Integrable f μ := by
-  rw [← memLp_one_iff_integrable]
-  exact hUI.memLp_of_tendstoInMeasure 1 htends
-
-/-- If `fn` is `UnifIntegrable`, then the family of limits in probability of sequences of `fn` is
-`UnifIntegrable`. -/
-lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure
-    {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
-    {fn : ι → α → β} (p : ℝ≥0∞) (hUI : UnifIntegrable fn p μ)
-    (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
-    UnifIntegrable (fun (f : {g : α → β | ∃ ni : ℕ → ι,
-      TendstoInMeasure μ (fn ∘ ni) atTop g}) ↦ f.1) p μ := by
-  refine fun ε hε => ?_
-  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
-  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
-  obtain ⟨u, hu⟩ := hs.exists_seq_tendsto_ae
-  refine Lp.seq_tendsto_ae_bounded p (fun n => hδ' (s (u n)) t ht ht') ?_ ?_
-  · exact fun n => (hfn (s (u n))).indicator ht
-  · filter_upwards [hu.2] with a ha
-    by_cases memt : a ∈ t
-    · simpa [memt]
-    · simp [memt]
-
 /-- If `fn` is `UniformIntegrable`, then the family of limits in probability of sequences of `fn` is
 `UniformIntegrable`. -/
 lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure
@@ -946,6 +930,6 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure
     refine ⟨C, fun ⟨f, s, hs⟩ => ?_⟩
     exact tendstoInMeasure_bounded p (fun n => hC (s n)) hs (fun n => hUI.1 (s n))
 
-end TendstoInMeasure
+end UniformIntegrable
 
 end MeasureTheory
