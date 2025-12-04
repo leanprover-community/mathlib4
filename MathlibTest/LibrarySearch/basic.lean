@@ -295,7 +295,7 @@ lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
-  exact? says exact fun a ↦ h' (h a)
+  exact? says exact Not.imp h' h
 
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
