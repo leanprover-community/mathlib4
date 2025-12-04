@@ -150,9 +150,9 @@ pluralizing as appropriate.
 def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
-    (declFilter : ConstantVal → Bool := fun _ => true) : CommandElabM Unit := do
+    (declFilter : ConstantVal → CommandElabM Bool := fun _ => pure true) : CommandElabM Unit := do
   for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter declFilter
+    let thms ← t.getTheorems (← getEnv) |>.filterM declFilter
     for thm in thms do
       thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
         -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
@@ -218,7 +218,7 @@ def unusedDecidableInType : Linter where
     cmd.logUnusedInstancesInTheoremsWhere
       /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
       on decidable instances without using them in the type. -/
-      (declFilter := (!(`Decidable).isPrefixOf ·.name))
+      (declFilter := (return !(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
       fun _ thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
@@ -268,6 +268,7 @@ def unusedFactInType : Linter where
     unless override || getLinterValue linter.unusedFactInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere (·.isAppOrForallOfConst `Fact)
+      (declFilter := fun c => liftCoreM <| notM <| isInstance c.name)
       fun _ thm unusedParams => do
         logLint linter.unusedFactInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\n\
