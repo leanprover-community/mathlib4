@@ -222,8 +222,13 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
     contrapose! hn
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
+  exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
+
+/-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
+`min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
 for having insufficiently many vertices. -/
 theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := by
+  set fp := h.finpartition
   apply le_antisymm (le_min fp.card_parts_le_card h.card_parts_le)
   by_contra! l
   rw [lt_min_iff] at l
