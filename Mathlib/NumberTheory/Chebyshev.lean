@@ -6,9 +6,10 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
+
+import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # Chebyshev functions
