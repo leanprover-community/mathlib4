@@ -190,7 +190,7 @@ lemma _root_.locallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
 
 /--
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the logarithmic
-counting function associated with the zero-divisor of the meromorphic function `f - a₀`.
+counting function for the zeros of `f - a₀`.
 -/
 lemma logCounting_coe :
     logCounting f a₀ = (divisor (fun z ↦ f z - a₀) univ)⁺.logCounting := by
@@ -198,7 +198,7 @@ lemma logCounting_coe :
 
 /--
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` equals the logarithmic
-counting function for the value zero of the shifted function `f - a₀`.
+counting function for the zeros of `f - a₀`.
 -/
 lemma logCounting_coe_eq_logCounting_sub_const_zero :
     logCounting f a₀ = logCounting (f - fun _ ↦ a₀) 0 := by
@@ -254,7 +254,7 @@ The logarithmic counting function of the constant function zero is zero.
 -/
 
 /--
-Relation between the logarithmic counting function of `f` and of `f⁻¹`.
+Relation between the logarithmic counting functions of `f` and of `f⁻¹`.
 -/
 @[simp] theorem logCounting_inv {f : 𝕜 → 𝕜} :
      logCounting f⁻¹ ⊤ = logCounting f 0 := by
@@ -289,8 +289,8 @@ counting function for the poles.
 -/
 
 /--
-For `1 ≤ r`, the logarithmic counting function of `f + g` at `⊤` is less than or equal to
-the sum of the logarithmic counting functions of `f` and `g`, respectively.
+For `1 ≤ r`, the logarithmic counting function for the poles of `f + g` is less than or equal to the
+sum of the logarithmic counting functions for the poles of `f` and `g`, respectively.
 -/
 theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) (hr : 1 ≤ r) :
@@ -300,8 +300,8 @@ theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : Me
   exact Function.locallyFinsuppWithin.logCounting_le (negPart_divisor_add_le_add h₁f₁ h₁f₂) hr
 
 /--
-Asymptotically, the logarithmic counting function of `f + g` at `⊤` is less than or equal to the sum
-of the logarithmic counting functions of `f` and `g`, respectively.
+Asymptotically, the logarithmic counting function for the poles of `f + g` is less than or equal to
+the sum of the logarithmic counting functions for the poles of `f` and `g`, respectively.
 -/
 theorem logCounting_add_top_eventuallyLE {f₁ f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
@@ -310,8 +310,8 @@ theorem logCounting_add_top_eventuallyLE {f₁ f₂ : 𝕜 → E} (h₁f₁ : Me
   exact fun _ hr ↦ logCounting_add_top_le h₁f₁ h₁f₂ hr
 
 /--
-For `1 ≤ r`, the logarithmic counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or equal
-to the sum of the logarithmic counting functions of `f ·`.
+For `1 ≤ r`, the logarithmic counting function for the poles of a sum `∑ a ∈ s, f a` is less than or
+equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E) {r : ℝ}
     (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) (hr : 1 ≤ r) :
@@ -329,8 +329,8 @@ theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 →
         add_le_add (by trivial) hs
 
 /--
-Asymptotically, the logarithmic counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or
-equal to the sum of the logarithmic counting functions of `f ·`.
+Asymptotically, the logarithmic counting function for the poles of a sum `∑ a ∈ s, f a` is less than
+or equal to the sum of the logarithmic counting functions for the poles of the `f ·`.
 -/
 theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
     (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) :
@@ -339,8 +339,8 @@ theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α �
   exact fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
 /--
-For `1 ≤ r`, the counting function counting zeros of `f * g` is less than or equal to the sum of the
-counting functions counting zeros of `f` and `g`, respectively.
+For `1 ≤ r`, the logarithmis counting function for the zeros of `f * g` is less than or equal to the
+sum of the logarithmic counting functions for the zeros of `f` and `g`, respectively.
 
 Note: The statement proven here is found at the top of page 169 of [Lang: Introduction to Complex
 Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) where it is written as
@@ -376,8 +376,8 @@ theorem logCounting_zero_mul_eventually_le {f₁ f₂ : 𝕜 → 𝕜}
   exact fun _ hr ↦ logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
 
 /--
-For `1 ≤ r`, the logarithmic counting function for the of `f * g` is less than or equal to the sum
-of the logarithmic counting functions for the of `f` and `g`, respectively.
+For `1 ≤ r`, the logarithmic counting function for the poles of `f * g` is less than or equal to the
+sum of the logarithmic counting functions for the poles of `f` and `g`, respectively.
 -/
 theorem logCounting_top_mul_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤ r)
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)

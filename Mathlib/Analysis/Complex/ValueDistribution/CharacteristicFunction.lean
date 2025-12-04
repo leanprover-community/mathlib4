@@ -57,8 +57,8 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 -/
 
 /--
-The difference between the characteristic functions of `f` and `f - const` simplifies to the
-difference between the proximity functions.
+The difference between the characteristic functions for the poles of `f` and `f - const` simplifies
+to the difference between the proximity functions.
 -/
 @[simp]
 lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : MeromorphicOn f Set.univ)
@@ -71,8 +71,8 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
 -/
 
 /--
-For `1 ≤ r`, the characteristic function of `f * g` at zero is less than or
-equal to the sum of the characteristic functions of `f` and `g`, respectively.
+For `1 ≤ r`, the characteristic function for the zeros of `f * g` is less than or equal to the sum
+of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
 theorem characteristic_zero_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
@@ -84,8 +84,8 @@ theorem characteristic_zero_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
     (logCounting_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
 /--
-Asymptotically, the characteristic function of `f * g` at zero is less than or
-equal to the sum of the characteristic functions of `f` and `g`, respectively.
+Asymptotically, the characteristic function for the zeros of `f * g` is less than or equal to the
+sum of the characteristic functions for the zeros of `f` and `g`, respectively.
 -/
 theorem characteristic_zero_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
@@ -95,8 +95,8 @@ theorem characteristic_zero_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
   exact fun _ hr ↦ characteristic_zero_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂
 
 /--
-For `1 ≤ r`, the characteristic function of `f * g` at `⊤` is less than or equal
-to the sum of the characteristic functions of `f` and `g`, respectively.
+For `1 ≤ r`, the characteristic function for the poles of `f * g` is less than or equal to the sum
+of the characteristic functions for the poles of `f` and `g`, respectively.
 -/
 theorem characteristic_top_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 ≤ r)
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
@@ -108,8 +108,8 @@ theorem characteristic_top_mul_le {f₁ f₂ : ℂ → ℂ} {r : ℝ} (hr : 1 �
     (logCounting_top_mul_le hr h₁f₁ h₂f₁ h₁f₂ h₂f₂)
 
 /--
-Asymptotically, the characteristic function of `f * g` at `⊤` is less than or
-equal to the sum of the characteristic functions of `f` and `g`, respectively.
+Asymptotically, the characteristic function for the poles of `f * g` is less than or equal to the
+sum of the characteristic functions for the poles of `f` and `g`, respectively.
 -/
 theorem characteristic_top_mul_eventually_le {f₁ f₂ : ℂ → ℂ}
     (h₁f₁ : MeromorphicOn f₁ Set.univ) (h₂f₁ : ∀ z, meromorphicOrderAt f₁ z ≠ ⊤)
