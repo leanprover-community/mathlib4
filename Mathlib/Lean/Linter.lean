@@ -23,6 +23,9 @@ variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadEnv m]
 /--
 Runs a `CommandElabM` action when the provided linter option is `true`.
 
+This function assumes you have already called `withSetOptionIn`: use `whenLinterActivated`
+to do this automatically.
+
 Note: this definition is marked as `@[macro_inline]`, so it is okay to supply it with a linter option which has been registered in the same module.
 -/
 @[expose, macro_inline]
