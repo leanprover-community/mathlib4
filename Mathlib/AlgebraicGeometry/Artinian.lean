@@ -63,9 +63,6 @@ lemma IsLocallyArtinian.IsLocallyNoetherian [h : IsLocallyArtinian X] :
       have _ := h.1 U
       infer_instance}
 
-lemma IsArtinianRing_DiscreteTopology (R : Type*) [CommRing R] [IsArtinianRing R] :
-    DiscreteTopology (PrimeSpectrum R) := inferInstance
-
 instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
     IsArtinianRing Γ(X, ⊤) :=
   h.1 ⟨⊤, isAffineOpen_top X⟩
@@ -74,7 +71,7 @@ lemma IsLocallyArtinian_IsAffine_DiscreteTopology [IsLocallyArtinian X] [IsAffin
     DiscreteTopology X := by
   have F := AlgebraicGeometry.Scheme.isoSpec X
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
-  exact IsArtinianRing_DiscreteTopology Γ(X,⊤)
+  exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
 
 instance IsLocallyArtinian.Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U := by
