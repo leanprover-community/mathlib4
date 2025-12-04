@@ -108,7 +108,13 @@ def Ordinal : Type (u + 1) :=
 /-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. This is
 defined through the axiom of choice.
 
-Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`. -/
+Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`,
+and convert using
+```
+Ordinal.toType.mk : Iio o → o.toType
+Ordinal.toType.toOrd : o.toType → Iio o
+```
+-/
 def Ordinal.toType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
