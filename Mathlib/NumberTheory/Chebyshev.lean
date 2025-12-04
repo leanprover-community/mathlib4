@@ -73,7 +73,7 @@ theorem psi_eq_sum_Icc (x : ℝ) :
   rw [psi, ← add_sum_Ioc_eq_sum_Icc] <;> simp
 
 theorem theta_eq_sum_Icc (x : ℝ) :
-    θ x = ∑ p ∈ Icc 0 ⌊x⌋₊ with p.Prime, log p:= by
+    θ x = ∑ p ∈ Icc 0 ⌊x⌋₊ with p.Prime, log p := by
   rw [theta, sum_filter, sum_filter, ← add_sum_Ioc_eq_sum_Icc] <;> simp
 
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
