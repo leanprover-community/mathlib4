@@ -112,8 +112,7 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
   have H (x : P.primeCompl) : x.1 ≠ 0 := by aesop
   have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
-    simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,
-      Algebra.algebraMap_ofSubsemiring_apply, IsUnit.coe_liftRight] using congr($e * s.1.1)
+    simpa [IsLocalization.lift_mk', H, IsUnit.coe_liftRight] using congr($e * s.1.1)
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext

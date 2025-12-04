@@ -780,8 +780,7 @@ theorem algebraBase_injective [IsFractionRing A K] :
     Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   FaithfulSMul.algebraMap_injective _ _
 
-instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
-  (adjoin A _).toAlgebra
+instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) := .ofClass (adjoin A _)
 
 omit [NeZero n] in
 theorem adjoin_algebra_injective :

@@ -123,9 +123,7 @@ section CommSemiring
 @[simp]
 lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
-    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
-  ext
-  simp [algebraMap_eq]
+    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by ext; simp
 
 end CommSemiring
 

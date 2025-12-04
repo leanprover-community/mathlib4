@@ -826,40 +826,33 @@ instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWith
 instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
   inferInstanceAs (Module S.toSubsemiring α)
 
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
-    [Algebra A α] (S : Subalgebra R A) : Algebra S α :=
-  Algebra.ofSubsemiring S.toSubsemiring
-
+@[deprecated algebraMap_ofClass_def (since := "2025-12-04")]
 theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
 
+@[deprecated algebraMap_ofClass_def (since := "2025-12-04")]
 theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
     [Algebra R A] [Algebra A α] {S : Subalgebra R A} (s : S) :
   algebraMap S α s = algebraMap A α (s : A) := rfl
 
-@[simp]
+@[deprecated algebraMap_ofClass_apply (since := "2025-12-04")]
 theorem algebraMap_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
     [Algebra R A] [Algebra A α] {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
   algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
 
-@[simp]
+@[deprecated algebraMap_ofClass_apply (since := "2025-12-04")]
 lemma algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) (x : S) : algebraMap S A x = x :=
   rfl
 
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
-  rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubsemiring_subtype,
-    Subsemiring.rangeS_subtype]
+    (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by ext; simp
 
 @[simp]
 theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by
-  rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubring_subtype,
-    Subring.range_subtype]
+    (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by ext; simp
 
 @[simp]
 lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
