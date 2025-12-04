@@ -88,9 +88,7 @@ theorem coe_finRotate (i : Fin n.succ) :
 
 theorem lt_finRotate_iff_ne_last (i : Fin (n + 1)) :
     i < finRotate _ i ↔ i ≠ Fin.last n := by
-  refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
-  · simp only [hc, finRotate_succ_apply, Fin.last_add_one, Fin.not_lt_zero] at hi
-  · rw [Fin.lt_def, coe_finRotate_of_ne_last hi, Nat.lt_add_one_iff]
+  simpa using Fin.lt_last_iff_ne_last
 
 theorem lt_finRotate_iff_ne_neg_one [NeZero n] (i : Fin n) :
     i < finRotate _ i ↔ i ≠ -1 := by
