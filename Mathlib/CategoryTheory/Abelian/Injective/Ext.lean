@@ -201,7 +201,7 @@ lemma extEquivCohomologyClass_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : �
         m (by cutsat) (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]))) := by
   simp [extMk]
 
-noncomputable def add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) (hg : g ≫ R.cocomplex.d n m = 0) :
     R.extMk f m hm hf + R.extMk g m hm hg =
       R.extMk (f + g) m hm (by simp [hf, hg]) := by
@@ -211,7 +211,7 @@ noncomputable def add_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (h
     (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hg])]
   simp
 
-noncomputable def sub_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma sub_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) (hg : g ≫ R.cocomplex.d n m = 0) :
     R.extMk f m hm hf - R.extMk g m hm hg =
       R.extMk (f - g) m hm (by simp [hf, hg]) := by
@@ -222,7 +222,7 @@ noncomputable def sub_extMk {n : ℕ} (f g : X ⟶ R.cocomplex.X n) (m : ℕ) (h
     (by simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hg])]
   simp
 
-noncomputable def neg_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+lemma neg_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
     (hf : f ≫ R.cocomplex.d n m = 0) :
     -R.extMk f m hm hf = R.extMk (-f) m hm (by simp [hf]) := by
   dsimp [extMk]
@@ -232,7 +232,7 @@ noncomputable def neg_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm 
   simp
 
 @[simp]
-noncomputable def extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
+lemma extMk_zero {n : ℕ} (m : ℕ) (hm : n + 1 = m) :
     R.extMk (0 : X ⟶ R.cocomplex.X n) m hm (by simp) = 0 := by
   simp [extMk]
 
