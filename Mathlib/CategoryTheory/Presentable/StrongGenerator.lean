@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Locally presentable categories and strong generators
@@ -30,14 +31,6 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 universe w v' v u' u
 
 namespace CategoryTheory
-
--- to be moved
-instance CostructuredArrow.essentiallySmall {C : Type u} {D : Type u'} [Category.{v} C]
-    [Category.{v'} D] (F : C ⥤ D) (Y : D) [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
-    EssentiallySmall.{w} (CostructuredArrow F Y) := by
-  rw [← essentiallySmall_congr
-    (CostructuredArrow.pre (equivSmallModel.{w} C).inverse F Y).asEquivalence]
-  exact essentiallySmall_of_small_of_locallySmall _
 
 open Limits
 
