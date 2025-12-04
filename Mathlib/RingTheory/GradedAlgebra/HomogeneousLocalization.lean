@@ -689,7 +689,7 @@ lemma awayMapAux_mk (n a i hi) :
     (Localization.mk g ⟨f * g, (Submonoid.mem_powers_iff _ _).mpr ⟨1, by simp [hx]⟩⟩) = 1 := by
     rw [← Algebra.smul_def, Localization.smul_mk]
     exact Localization.mk_self ⟨f*g, _⟩
-  simp [awayMapAux]
+  simp only [awayMapAux, RingHom.coe_comp, Function.comp_apply, algebraMap_apply, val_mk]
   rw [Localization.awayLift_mk (hv := this), ← Algebra.smul_def,
     Localization.mk_pow, Localization.smul_mk]
   subst hx

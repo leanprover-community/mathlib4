@@ -356,6 +356,11 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
     (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
       prod_const_one.trans (h₁ this).symm
 
+@[to_additive (attr := simp)]
+lemma prod_ite_mem_eq [Fintype ι] (s : Finset ι) (f : ι → M) [DecidablePred (· ∈ s)] :
+    (∏ i, if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
+  rw [← Finset.prod_filter]; congr; aesop
+
 @[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
@@ -487,7 +492,8 @@ theorem prod_extend_by_one [DecidableEq ι] (s : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i :=
   (prod_congr rfl) fun _i hi => if_pos hi
 
-@[to_additive]
+/-- Also see `Finset.prod_ite_mem_eq` -/
+@[to_additive /-- Also see `Finset.sum_ite_mem_eq` -/]
 theorem prod_eq_prod_extend (f : s → M) : ∏ x, f x = ∏ x ∈ s, Subtype.val.extend f 1 x := by
   rw [univ_eq_attach, ← Finset.prod_attach s]
   congr with ⟨x, hx⟩

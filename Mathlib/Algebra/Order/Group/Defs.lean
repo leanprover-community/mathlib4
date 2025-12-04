@@ -35,9 +35,11 @@ universe u
 
 variable {α : Type u}
 
-alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
+@[deprecated (since := "2025-10-31")]
+alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
 
-attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
+@[deprecated (since := "2025-10-31")]
+alias OrderedAddCommGroup.add_lt_add_left' := add_lt_add_right
 
 alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 
@@ -51,8 +53,8 @@ attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
     [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
-  le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
-  le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
+  le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
+  le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
 
 /-!
@@ -69,9 +71,11 @@ section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
-@[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
-theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
-  _root_.mul_lt_mul_left' h c
+@[deprecated (since := "2025-10-06")]
+alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
+
+@[deprecated (since := "2025-10-06")]
+alias LinearOrderedCommGroup.mul_lt_mul_right' := mul_lt_mul_left
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
@@ -112,10 +116,10 @@ theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le
 theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
 
 @[to_additive (attr := simp)]
-theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by contrapose!; exact inv_lt_self_iff
 
 @[to_additive (attr := simp)]
-theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by contrapose!; exact inv_le_self_iff
 
 end LinearOrderedCommGroup
 

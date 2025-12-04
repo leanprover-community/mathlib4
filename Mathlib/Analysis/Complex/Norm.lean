@@ -327,7 +327,7 @@ theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    simp_rw [← RingHom.map_sub, norm_conj]; exact hi j hj⟩
+    simp_rw [← map_sub, norm_conj]; exact hi j hj⟩
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
 noncomputable def cauSeqConj (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖) :=

@@ -420,7 +420,7 @@ section FinitePi
 variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
 @[to_additive]
-theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
+theorem noncommProd_mulSingle [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
@@ -443,12 +443,15 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       intro h
       simp [*] at *
 
+@[deprecated noncommProd_mulSingle (since := "2025-11-25")]
+alias noncommProd_mul_single := noncommProd_mulSingle
+
 @[to_additive]
 theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by
   cases nonempty_fintype ι
   ext x
-  rw [← noncommProd_mul_single x, univ.map_noncommProd, univ.map_noncommProd]
+  rw [← noncommProd_mulSingle x, univ.map_noncommProd, univ.map_noncommProd]
   congr 1 with i; exact h i (x i)
 
 end FinitePi

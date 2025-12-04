@@ -47,7 +47,7 @@ This file contains basic results on dual vector spaces.
     `Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator`
   * `Submodule.quotDualCoannihilatorToDual` is the nondegenerate pairing
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
-    It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
+    It is a perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
   * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
@@ -202,8 +202,7 @@ theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=
 
 @[simp]
 theorem nontrivial_dual_iff : Nontrivial (Dual K V) ↔ Nontrivial V := by
-  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
-    subsingleton_dual_iff]
+  contrapose!; exact subsingleton_dual_iff K
 
 instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance
@@ -365,7 +364,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   rw [← p.liftQ_mkQ K h]
   ext x
   convert LinearMap.congr_fun hK' (p.mkQ x)
-  simp only [L',coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
+  simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
 end Submodule
@@ -422,14 +421,13 @@ theorem dualAnnihilator_inj {W W' : Subspace K V} :
 an arbitrary extension of `φ` to an element of the dual of `V`.
 That is, `dualLift W φ` sends `w ∈ W` to `φ x` and `x` in a chosen complement of `W` to `0`. -/
 noncomputable def dualLift (W : Subspace K V) : Module.Dual K W →ₗ[K] Module.Dual K V :=
-  (Classical.choose <| W.subtype.exists_leftInverse_of_injective W.ker_subtype).dualMap
+  W.subtype.leftInverse.dualMap
 
 variable {W : Subspace K V}
 
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
-  congr_arg φ <| DFunLike.congr_fun
-    (Classical.choose_spec <| W.subtype.exists_leftInverse_of_injective W.ker_subtype) w
+  congr_arg φ <| LinearMap.leftInverse_apply_of_inj W.ker_subtype _
 
 theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLift φ w = φ ⟨w, hw⟩ :=
   dualLift_of_subtype ⟨w, hw⟩
@@ -631,7 +629,7 @@ lemma dualAnnihilator_eq_bot_iff' {W : Submodule R M} :
 
 @[simp] lemma dualAnnihilator_eq_bot_iff {W : Submodule R M} [Projective R (M ⧸ W)] :
     W.dualAnnihilator = ⊥ ↔ W = ⊤ := by
-  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, subsingleton_quotient_iff_eq_top]
+  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, Quotient.subsingleton_iff]
 
 @[simp] lemma dualAnnihilator_eq_top_iff {W : Submodule R M} [Projective R M] :
     W.dualAnnihilator = ⊤ ↔ W = ⊥ := by
@@ -1085,7 +1083,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
     Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
-    Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
+    Basis.tensorProduct_apply, LinearMap.coe_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
   · simpa using mul_comm _ _

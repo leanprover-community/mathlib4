@@ -11,7 +11,7 @@ public import Mathlib.Data.Rel
 /-!
 # Uniform separation
 
-This file defines a notion of separation of a set relative to an relation.
+This file defines a notion of separation of a set relative to a relation.
 
 For a relation `R`, a `R`-separated set `s` is a set such that every pair of elements of `s` is
 `R`-unrelated.

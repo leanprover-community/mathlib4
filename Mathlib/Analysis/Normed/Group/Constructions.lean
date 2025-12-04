@@ -253,7 +253,7 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
-Earlier, this names was used for the additive version. -/
+Earlier, this name was used for the additive version. -/
 @[to_additive Prod.nnnorm_def]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 

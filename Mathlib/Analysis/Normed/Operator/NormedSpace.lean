@@ -377,3 +377,49 @@ lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, 
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
 
 end single
+
+section inl_inr
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E F : Type*)
+
+/-- The injection `x ↦ LinearMap.inl E F x` as a linear isometry. -/
+protected def LinearIsometry.inl [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
+  (LinearMap.inl 𝕜 E F).toLinearIsometry .inl
+
+@[simp]
+lemma LinearIsometry.inl_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (x : E) :
+    LinearIsometry.inl 𝕜 E F x = (x, 0) := rfl
+
+/-- The injection `x ↦ LinearMap.inr E F x` as a linear isometry. -/
+protected def LinearIsometry.inr [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
+  (LinearMap.inr 𝕜 E F).toLinearIsometry .inr
+
+@[simp]
+lemma LinearIsometry.inr_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (y : F) :
+    LinearIsometry.inr 𝕜 E F y = (0, y) := rfl
+
+lemma ContinuousLinearMap.norm_inl_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+    ‖ContinuousLinearMap.inl 𝕜 E F‖ ≤ 1 :=
+  (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap_le
+
+lemma ContinuousLinearMap.norm_inr_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+    ‖ContinuousLinearMap.inr 𝕜 E F‖ ≤ 1 :=
+  (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap_le
+
+lemma ContinuousLinearMap.norm_inl [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
+    ‖ContinuousLinearMap.inl 𝕜 E F‖ = 1 :=
+  (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap
+
+lemma ContinuousLinearMap.norm_inr [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
+    ‖ContinuousLinearMap.inr 𝕜 E F‖ = 1 :=
+  (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap
+
+end inl_inr

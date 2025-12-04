@@ -76,7 +76,7 @@ section NegOneSquare
 theorem ZMod.isSquare_neg_one_of_dvd {m n : ℕ} (hd : m ∣ n) (hs : IsSquare (-1 : ZMod n)) :
     IsSquare (-1 : ZMod m) := by
   let f : ZMod n →+* ZMod m := ZMod.castHom hd _
-  rw [← RingHom.map_one f, ← RingHom.map_neg]
+  rw [← map_one f, ← map_neg]
   exact hs.map f
 
 /-- If `-1` is a square modulo coprime natural numbers `m` and `n`, then `-1` is also

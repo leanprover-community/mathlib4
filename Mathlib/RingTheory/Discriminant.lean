@@ -96,7 +96,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
       intro j
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
-      this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
+      this j, ← map_sum, ← sum_mul, hg, zero_mul, map_zero]
   by_contra h
   rw [discr_def] at h
   simp [Matrix.eq_zero_of_mulVec_eq_zero h this] at hi
@@ -215,8 +215,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (Algebra.IsSeparable.isIntegral K pb.gen)]
   apply (algebraMap K E).injective
-  rw [RingHom.map_mul, RingHom.map_pow, RingHom.map_neg, RingHom.map_one,
-    discr_powerBasis_eq_prod'' _ _ _ e]
+  rw [map_mul, map_pow, map_neg, map_one, discr_powerBasis_eq_prod'' _ _ _ e]
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>

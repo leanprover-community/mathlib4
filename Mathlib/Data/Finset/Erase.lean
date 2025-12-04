@@ -70,7 +70,7 @@ theorem mem_of_mem_erase : b ∈ erase s a → b ∈ s :=
 theorem mem_erase_of_ne_of_mem : a ≠ b → a ∈ s → a ∈ erase s b := by
   simp only [mem_erase]; exact And.intro
 
-/-- An element of `s` that is not an element of `erase s a` must be`a`. -/
+/-- An element of `s` that is not an element of `erase s a` must be `a`. -/
 theorem eq_of_mem_of_notMem_erase (hs : b ∈ s) (hsa : b ∉ s.erase a) : b = a := by grind
 
 @[deprecated (since := "2025-05-23")] alias eq_of_mem_of_not_mem_erase := eq_of_mem_of_notMem_erase

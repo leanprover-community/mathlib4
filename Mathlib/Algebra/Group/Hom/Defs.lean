@@ -997,7 +997,7 @@ theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
 @[to_additive (attr := simp)]
 theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
   ext
-  simp only [OneHom.map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
+  simp only [map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩

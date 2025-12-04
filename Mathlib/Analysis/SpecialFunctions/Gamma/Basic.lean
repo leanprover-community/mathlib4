@@ -116,9 +116,9 @@ theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaInteg
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
   dsimp only
-  rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
-    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
-    ofReal_log (le_of_lt hx), conj_ofReal, RingHom.map_sub, RingHom.map_one]
+  rw [map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
+    cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, map_mul,
+    ← ofReal_log (le_of_lt hx), conj_ofReal, map_sub, map_one]
 
 theorem GammaIntegral_ofReal (s : ℝ) :
     GammaIntegral ↑s = ↑(∫ x : ℝ in Ioi 0, Real.exp (-x) * x ^ (s - 1)) := by
@@ -365,9 +365,9 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     intro s
     rw [GammaAux]
     dsimp only
-    rw [div_eq_mul_inv _ s, RingHom.map_mul, conj_inv, ← div_eq_mul_inv]
+    rw [div_eq_mul_inv _ s, map_mul, conj_inv, ← div_eq_mul_inv]
     suffices conj s + 1 = conj (s + 1) by rw [this, IH]
-    rw [RingHom.map_add, RingHom.map_one]
+    rw [map_add, map_one]
 
 /-- Expresses the integral over `Ioi 0` of `t ^ (a - 1) * exp (-(r * t))` in terms of the Gamma
 function, for complex `a`. -/

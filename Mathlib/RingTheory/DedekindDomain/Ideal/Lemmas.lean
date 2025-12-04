@@ -91,6 +91,10 @@ theorem Ideal.prime_of_isPrime {P : Ideal A} (hP : P ≠ ⊥) (h : IsPrime P) : 
   refine ⟨hP, mt Ideal.isUnit_iff.mp h.ne_top, fun I J hIJ => ?_⟩
   simpa only [Ideal.dvd_iff_le] using h.mul_le.mp (Ideal.le_of_dvd hIJ)
 
+theorem Ideal.prime_of_mem_primesOver {R : Type*} [CommRing R] [Algebra R A] {p : Ideal R}
+    [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} (hP : P ∈ primesOver p A) : Prime P :=
+  prime_of_isPrime (ne_bot_of_mem_primesOver hp hP) hP.1
+
 /-- In a Dedekind domain, the (nonzero) prime elements of the monoid with zero `Ideal A`
 are exactly the prime ideals. -/
 theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsPrime P :=

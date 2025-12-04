@@ -162,7 +162,7 @@ lemma orthogonal_top_eq_bot (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊓ B.orthogonal (K ∙ x) = ⊥ := by
+    K ∙ x ⊓ B.orthogonal (K ∙ x) = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h => ?_
   obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
@@ -187,7 +187,7 @@ theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
     exact Or.intro_right _ h
 
 theorem span_singleton_sup_orthogonal_eq_top {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
-    (K ∙ x) ⊔ B.orthogonal (K ∙ x) = ⊤ := by
+    K ∙ x ⊔ B.orthogonal (K ∙ x) = ⊤ := by
   rw [orthogonal_span_singleton_eq_toLin_ker]
   exact LinearMap.span_singleton_sup_ker_eq_top _ hx
 
@@ -405,7 +405,7 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
     (b₂ : B.IsRefl) {x : V} (hx : ¬B.IsOrtho x x) :
     Nondegenerate <| B.restrict <| B.orthogonal (K ∙ x) := by
   refine fun m hm => Submodule.coe_eq_zero.1 (b₁ m.1 fun n => ?_)
-  have : n ∈ (K ∙ x) ⊔ B.orthogonal (K ∙ x) :=
+  have : n ∈ K ∙ x ⊔ B.orthogonal (K ∙ x) :=
     (span_singleton_sup_orthogonal_eq_top hx).symm ▸ Submodule.mem_top
   rcases Submodule.mem_sup.1 this with ⟨y, hy, z, hz, rfl⟩
   specialize hm ⟨z, hz⟩

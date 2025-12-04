@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.Embedding.IsSupported
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
-# Homology of the extension of an homological complex
+# Homology of the extension of a homological complex
 
 Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we shall
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,
@@ -428,5 +428,9 @@ lemma quasiIso_extendMap_iff [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] :
     · rw [quasiIsoAt_iff_exactAt]
       all_goals
         exact extend_exactAt _ _ _ (by simpa using hj')
+
+instance [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] [QuasiIso φ] :
+    QuasiIso (extendMap φ e) := by
+  rwa [quasiIso_extendMap_iff]
 
 end HomologicalComplex

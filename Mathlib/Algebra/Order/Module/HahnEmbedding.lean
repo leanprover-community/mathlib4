@@ -568,8 +568,7 @@ theorem evalCoeff_eq_zero {x : M} {c : FiniteArchimedeanClass M}
 theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
     (evalCoeff f x).support.IsWF := by
   rw [Set.isWF_iff_no_descending_seq]
-  by_contra!
-  obtain ⟨seq, ⟨hanti, hmem⟩⟩ := this
+  by_contra! ⟨seq, ⟨hanti, hmem⟩⟩
   have hnonempty : ∃ y : f.val.domain, y.val - x ∈ ball K (seq 0) := by
     specialize hmem 0
     contrapose hmem with hempty

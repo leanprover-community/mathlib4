@@ -858,7 +858,8 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
   simp only [eq_iff_iff, mem_setOf_eq]
   change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
   by_cases hIz : z ∈ range I
-  · simp [-extChartAt, hIz] at hz ⊢
+  · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
+      or_false, and_true] at hz ⊢
     rw [← eq_iff_iff]
     apply hu ⟨hz.1, ?_⟩
     simp only [mem_compl_iff, mem_singleton_iff, ne_comm, ne_eq] at h'z ⊢

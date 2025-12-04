@@ -62,7 +62,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     rw [intervalIntegrable_iff] at m ⊢
     refine m.congr_fun ?_ measurableSet_Ioc; intro x hx
     rw [uIoc_of_le (by linarith : 0 ≤ -c)] at hx
-    simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, log_neg_eq_log, mul_comm,
+    simp only [Pi.smul_apply, smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 
 /-- The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. -/

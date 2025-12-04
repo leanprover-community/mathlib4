@@ -92,8 +92,7 @@ lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint 
 
 theorem result (h : Condition G B) : ∃ p, Easy G p ∧ Easy B p := by
   obtain ⟨G_le_6, B_le_6, G_inter_B⟩ := h
-  have B_inter_G : ∀ i j, ¬Disjoint (B i) (G j) := fun i j ↦ by
-    rw [disjoint_comm]; exact G_inter_B j i
+  have B_inter_G : ∀ i j, ¬Disjoint (B i) (G j) := by grind
   have cB := card_not_easy_le_210 G_le_6 G_inter_B
   have cG := card_not_easy_le_210 B_le_6 B_inter_G
   rw [← card_map ⟨_, Prod.swap_injective⟩] at cG

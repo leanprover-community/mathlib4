@@ -304,54 +304,25 @@ instance Pi.measurableDiv₂ {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableDiv₂ (α i)] : MeasurableDiv₂ (∀ i, α i) :=
   ⟨measurable_pi_iff.mpr fun _ => measurable_fst.eval.div measurable_snd.eval⟩
 
-@[measurability]
-theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [AddGroup E]
-    [MeasurableSingletonClass E] [MeasurableSub₂ E] {f g : α → E} (hf : Measurable f)
-    (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
-  suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) } by
-    rw [h_set_eq]
-    exact (hf.sub hg) measurableSet_eq
-  ext
-  simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
+instance {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [MeasurableSub₂ E] :
+    MeasurableEq E := by
+  constructor
+  simp_rw +singlePass [Set.diagonal, ← sub_eq_zero]
+  measurability
 
-@[measurability]
-lemma measurableSet_eq_fun' {β : Type*} [AddCommMonoid β] [PartialOrder β]
+instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
     [CanonicallyOrderedAdd β] [Sub β] [OrderedSub β]
-    {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β]
-    {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
-    MeasurableSet {x | f x = g x} := by
-  have : {a | f a = g a} = {a | (f - g) a = 0} ∩ {a | (g - f) a = 0} := by
-    ext
-    simp only [Set.mem_setOf_eq, Pi.sub_apply, tsub_eq_zero_iff_le, Set.mem_inter_iff]
-    exact ⟨fun h ↦ ⟨h.le, h.symm.le⟩, fun h ↦ le_antisymm h.1 h.2⟩
-  rw [this]
-  exact ((hf.sub hg) (measurableSet_singleton 0)).inter ((hg.sub hf) (measurableSet_singleton 0))
+    {_ : MeasurableSpace β} [MeasurableSub₂ β] [MeasurableSingletonClass β] :
+    MeasurableEq β := by
+  constructor
+  simp_rw [Set.diagonal, le_antisymm_iff, ← tsub_eq_zero_iff_le]
+  measurability
 
-theorem nullMeasurableSet_eq_fun {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E]
-    [MeasurableSub₂ E] {f g : α → E} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    NullMeasurableSet { x | f x = g x } μ := by
-  apply (measurableSet_eq_fun hf.measurable_mk hg.measurable_mk).nullMeasurableSet.congr
-  filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (hf.mk f x = hg.mk g x) = (f x = g x)
-  simp only [hfx, hgx]
+@[deprecated (since := "2025-11-11")]
+alias measurableSet_eq_fun' := measurableSet_eq_fun
 
-theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [MeasurableSpace E]
-    [MeasurableSingletonClass E] [Countable E] {f g : α → E} (hf : Measurable f)
-    (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
-  have : { x | f x = g x } = ⋃ j, { x | f x = j } ∩ { x | g x = j } := by
-    ext1 x
-    simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
-  rw [this]
-  refine MeasurableSet.iUnion fun j => MeasurableSet.inter ?_ ?_
-  · exact hf (measurableSet_singleton j)
-  · exact hg (measurableSet_singleton j)
-
-theorem ae_eq_trim_of_measurable {α E} {m m0 : MeasurableSpace α} {μ : Measure α}
-    [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [MeasurableSub₂ E]
-    (hm : m ≤ m0) {f g : α → E} (hf : Measurable[m] f) (hg : Measurable[m] g) (hfg : f =ᵐ[μ] g) :
-    f =ᵐ[μ.trim hm] g := by
-  rwa [Filter.EventuallyEq, ae_iff, trim_measurableSet_eq hm _]
-  exact @MeasurableSet.compl α _ m (@measurableSet_eq_fun α m E _ _ _ _ _ _ hf hg)
+@[deprecated (since := "2025-11-11")]
+alias measurableSet_eq_fun_of_countable := measurableSet_eq_fun
 
 end Div
 

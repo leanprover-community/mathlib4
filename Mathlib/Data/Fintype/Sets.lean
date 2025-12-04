@@ -47,7 +47,7 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
     toFinset s = toFinset t := by subst h; congr!
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 

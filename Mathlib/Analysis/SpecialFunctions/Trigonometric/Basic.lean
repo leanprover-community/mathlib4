@@ -370,8 +370,14 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
 theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (-1) ^ n * cos x :=
   n.cast_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
 
+theorem cos_int_mul_pi (n : ℤ) : cos (n * π) = (-1) ^ n := by
+  simpa using cos_add_int_mul_pi 0 n
+
 theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.add_nat_mul_eq n
+
+theorem cos_nat_mul_pi (n : ℕ) : cos (n * π) = (-1) ^ n := by
+  simpa using cos_add_nat_mul_pi 0 n
 
 theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = (-1) ^ n * cos x :=
   n.cast_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
@@ -421,6 +427,12 @@ theorem sin_nonpos_of_nonpos_of_neg_pi_le {x : ℝ} (hx0 : x ≤ 0) (hpx : -π �
 
 @[deprecated (since := "2025-07-27")]
 alias sin_nonpos_of_nonnpos_of_neg_pi_le := sin_nonpos_of_nonpos_of_neg_pi_le
+
+lemma abs_sin_eq_sin_abs_of_abs_le_pi {x : ℝ} (hx : |x| ≤ π) : |sin x| = sin |x| := by
+  rcases lt_or_ge x 0 with h | h
+  · rw [abs_of_neg h, sin_neg,
+      abs_of_nonpos (sin_nonpos_of_nonpos_of_neg_pi_le h.le (abs_le.1 hx).1)]
+  · rw [abs_of_nonneg h, abs_of_nonneg (sin_nonneg_of_nonneg_of_le_pi h (abs_le.1 hx).2)]
 
 @[simp]
 theorem sin_pi_div_two : sin (π / 2) = 1 :=
@@ -505,7 +517,7 @@ theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ ∃ n : ℤ, (n : ℝ) * π = 
     fun ⟨_, hn⟩ => hn ▸ sin_int_mul_pi _⟩
 
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
-  rw [← not_exists, not_iff_not, sin_eq_zero_iff]
+  contrapose!; exact sin_eq_zero_iff
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq, sq, sq, right_eq_add, mul_eq_zero, or_self]

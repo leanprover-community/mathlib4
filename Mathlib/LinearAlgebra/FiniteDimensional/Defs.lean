@@ -155,6 +155,9 @@ theorem of_fact_finrank_eq_succ (n : ℕ) [hn : Fact (finrank K V = n + 1)] :
     FiniteDimensional K V :=
   of_finrank_eq_succ hn.out
 
+lemma of_fact_finrank_eq_two [Fact (finrank K V = 2)] : FiniteDimensional K V :=
+  of_fact_finrank_eq_succ 1
+
 end FiniteDimensional
 
 namespace Module

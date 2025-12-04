@@ -487,4 +487,54 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
     · simp [h, succ_div_of_dvd, ih]
     · simp [h, succ_div_of_not_dvd, ih]
 
+theorem exists_eq_pow_of_exponent_coprime_of_pow_eq_pow
+    {a b m n : ℕ} (hmn : m.Coprime n) (h : a ^ m = b ^ n) :
+    ∃ c, a = c ^ n ∧ b = c ^ m := by
+  by_cases ha0 : a = 0
+  · symm at h
+    by_cases hm0 : m = 0
+    · simp_all
+    · use 0
+      simp_all
+  by_cases hn0 : n = 0
+  · use b
+    simp_all
+  let factors := a.factorization.mapRange (· / n) (Nat.zero_div n)
+  set c := factors.prod (· ^ ·) with hc
+  use c
+  suffices ha : a = c ^ n by
+    refine ⟨ha, ?_⟩
+    apply Nat.pow_left_injective hn0
+    simp [← h, ha, Nat.pow_right_comm]
+  apply eq_of_factorization_eq ha0 (by simp [c, factors])
+  intro p
+  have foo (p) (hp : p ∈ factors.support) : Prime p :=
+    prime_of_mem_primeFactors (Finsupp.support_mapRange hp)
+  rw [factorization_pow, hc, prod_pow_factorization_eq_self foo]
+  suffices n ∣ a.factorization p by
+    simp [factors, Nat.mul_div_cancel' this]
+  refine hmn.symm.dvd_of_dvd_mul_left ⟨b.factorization p, ?_⟩
+  simpa using congr(factorization $h p)
+
+theorem exists_eq_pow_of_pow_eq_pow
+    {a b m n : ℕ} (hmn : m ≠ 0 ∨ n ≠ 0) (h : a ^ m = b ^ n) :
+    letI g := gcd m n; ∃ c, a = c ^ (n / g) ∧ b = c ^ (m / g) := by
+  set g := gcd m n
+  let m' := m / gcd m n
+  let n' := n / gcd m n
+  have coprime : m'.Coprime n' := by
+    rcases hmn with hm | hn
+    · exact gcd_div_gcd_div_gcd_of_pos_left (zero_lt_of_ne_zero hm)
+    · exact gcd_div_gcd_div_gcd_of_pos_right (zero_lt_of_ne_zero hn)
+  have pow_eq : a ^ m' = b ^ n' := by
+    conv_lhs at h => rw [show m = m' * g from (Nat.div_mul_cancel (gcd_dvd_left m n)).symm]
+    conv_rhs at h => rw [show n = n' * g from (Nat.div_mul_cancel (gcd_dvd_right m n)).symm]
+    rw [pow_mul, pow_mul] at h
+    have : g ≠ 0 := by
+      rcases hmn with hm | hn
+      · exact gcd_ne_zero_left hm
+      · exact gcd_ne_zero_right hn
+    exact Nat.pow_left_injective this h
+  exact exists_eq_pow_of_exponent_coprime_of_pow_eq_pow coprime pow_eq
+
 end Nat

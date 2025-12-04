@@ -128,7 +128,7 @@ theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L
   apply Submodule.span_eq_span
   · rintro _ ⟨y, hy, rfl⟩
     obtain ⟨i, hi, j, hj, rfl⟩ := (mem_add I J y).mp <| SetLike.mem_coe.mp hy
-    rw [RingHom.map_add]
+    rw [map_add]
     exact add_mem (Submodule.subset_span ⟨i, Set.mem_union_left _ hi, by simp⟩)
       (Submodule.subset_span ⟨j, Set.mem_union_right _ hj, by simp⟩)
   · rintro _ ⟨y, hy, rfl⟩

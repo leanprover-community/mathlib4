@@ -89,7 +89,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
       logInfo m!"{n}: {cTy}"
 
 open Lean.Elab.Command in
-/-
+/--
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
 ```lean
 #find _ + _ = _ + _
@@ -118,7 +118,7 @@ but they will work fine in a new file!) -/
 -- #find ?n ≤ ?m → ?n + _ ≤ ?m + _
 
 open Lean.Elab.Tactic
-/-
+/--
 Display theorems (and definitions) whose result type matches the current goal,
 i.e. which should be `apply`able.
 ```lean

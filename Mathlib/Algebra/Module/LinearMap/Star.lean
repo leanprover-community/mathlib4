@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Star.Basic
 /-!
 # Notation for star-linear maps
 
-This is in a separate file as a it is not needed until much later,
+This is in a separate file as it is not needed until much later,
 and avoids importing the theory of star operations unnecessarily early.
 -/
 

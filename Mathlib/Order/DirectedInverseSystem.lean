@@ -250,7 +250,7 @@ end DirectedSystem
 
 variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i ≤ j)
 
-/-- A inverse system indexed by a preorder is a contravariant functor from the preorder
+/-- An inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
   map_self ⦃i : ι⦄ (x : F i) : f le_rfl x = x
@@ -264,7 +264,7 @@ section proj
 def limit (i : ι) : Set (∀ l : Iio i, F l) :=
   {F | ∀ ⦃j k⦄ (h : j.1 ≤ k.1), f h (F k) = F j}
 
-/-- For a family of types `X` indexed by an preorder `ι` and an element `i : ι`,
+/-- For a family of types `X` indexed by a preorder `ι` and an element `i : ι`,
 `piLT X i` is the product of all the types indexed by elements below `i`. -/
 abbrev piLT (X : ι → Type*) (i : ι) := ∀ l : Iio i, X l
 

@@ -127,7 +127,7 @@ section cfcₙHom
 
 variable {a : A} (ha : p a)
 
-/-- The non-unital star algebra homomorphism underlying a instance of the continuous functional
+/-- The non-unital star algebra homomorphism underlying an instance of the continuous functional
 calculus for non-unital algebras; a version for continuous functions on the quasispectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`.

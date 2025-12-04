@@ -1104,10 +1104,7 @@ alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_ex
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by
-  ext y
-  rcases em (y ∈ range f) with (⟨x, rfl⟩ | hx)
-  · simp [hf.eq_iff]
-  · grind
+  grind
 
 theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
     g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]

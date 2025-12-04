@@ -121,6 +121,9 @@ private lemma small_neg_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * 
   rw [← card_inv]
   simpa [mul_assoc] using small_pos_neg_pos_mul (A := A) (K := K) (by simpa)
 
+-- TODO: find a good way to fix this non-terminal simp;
+-- simp is called on 8 goals, with different simp sets
+set_option linter.flexible false in
 /-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|A^±1 * ... * A^±1|` is at most `|A|` times a constant exponential in the number of
 terms in the product.

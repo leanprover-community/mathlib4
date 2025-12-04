@@ -441,7 +441,8 @@ theorem rescale_zero :
     (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = C.comp constantCoeff := by
   classical
   ext x n
-  simp [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk, coeff_C]
+  simp only [rescale, Pi.zero_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+    RingHom.coe_comp, Function.comp_apply, coeff_C]
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
@@ -477,7 +478,7 @@ lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
   simp only [MvPowerSeries.coeff_rescale, map_smul, Finsupp.prod, Function.const_apply,
     Finset.prod_pow_eq_pow_sum, smul_eq_mul]
   by_cases he : e ∈ f.support
-  · rw [← hf e he, Finsupp.degree]
+  · rw [← hf e he, Finsupp.degree_apply]
   · simp only [Function.mem_support, ne_eq, not_not] at he
     simp [he, mul_zero, coeff_apply]
 

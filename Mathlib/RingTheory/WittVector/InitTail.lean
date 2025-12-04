@@ -89,7 +89,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
     IsPoly₂.diag (hf := IsPoly₂.comp)
   ghost_calc x
   intro n
-  simp only [RingHom.map_add]
+  simp only [map_add]
   suffices
     (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
         (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =

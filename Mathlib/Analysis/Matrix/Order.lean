@@ -69,7 +69,7 @@ abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
 scoped[MatrixOrder] attribute [instance] Matrix.instPartialOrder
 
 lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
-  add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_left_eq_sub]
+  add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_right_eq_sub]
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
@@ -86,7 +86,7 @@ lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
 scoped[MatrixOrder] attribute [instance] instNonnegSpectrumClass
 
 lemma instStarOrderedRing : StarOrderedRing (Matrix n n 𝕜) :=
-  .of_nonneg_iff' add_le_add_left fun A ↦
+  .of_nonneg_iff' add_le_add_right fun A ↦
     ⟨fun hA ↦ by
       classical
       obtain ⟨X, hX, -, rfl⟩ :=

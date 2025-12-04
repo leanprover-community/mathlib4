@@ -78,8 +78,7 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLoca
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine ⟨h2, ?_⟩
   intro a b hab
-  by_contra! h
-  obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
+  by_contra! ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩
   rw [h, mem_span_singleton'] at ha hb
   rcases ha with ⟨a, rfl⟩
   rcases hb with ⟨b, rfl⟩

@@ -6,6 +6,8 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Azumaya.Defs
+public import Mathlib.Algebra.Central.End
+public import Mathlib.Algebra.Central.TensorProduct
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.GroupTheory.GroupAction.Hom
@@ -82,3 +84,9 @@ theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
     simp [AlgHom.mulLeftRight_bij]⟩
 
 end IsAzumaya
+
+/-- An Azumaya algebra is a central algebra. -/
+instance Algebra.IsCentral.instIsAzumaya {R A : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] [Module.Free R A] [IsAzumaya R A] : IsCentral R A :=
+  have := of_algEquiv R _ _ (AlgEquiv.ofBijective (.mulLeftRight R A) IsAzumaya.bij).symm
+  left_of_tensor R A Aᵐᵒᵖ <| FaithfulSMul.algebraMap_injective _ _

@@ -78,7 +78,7 @@ example (x : ℝ) :
 
 The relationship between the derivative of a function and its definition from a standard
 undergraduate course as the limit of the slope `(f y - f x) / (y - x)` as `y` tends to `𝓝[≠] x`
-is developed in the file `Slope.lean`.
+is developed in the file `Mathlib/Analysis/Calculus/Deriv/Slope.lean`.
 
 ## Implementation notes
 
@@ -87,7 +87,7 @@ for Fréchet derivatives.
 
 The strategy to construct simp lemmas that give the simplifier the possibility to compute
 derivatives is the same as the one for differentiability statements, as explained in
-`FDeriv/Basic.lean`. See the explanations there.
+`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. See the explanations there.
 -/
 
 @[expose] public section
@@ -433,7 +433,7 @@ theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
 
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
-  rw [← fderiv_deriv, ← ContinuousLinearMap.map_smul]
+  rw [← fderiv_deriv, ← map_smul]
   simp only [smul_eq_mul, mul_one]
 
 theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by

@@ -743,6 +743,7 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_iteratedFDeriv := fourier_iteratedFDeriv
 
+set_option linter.flexible false in -- simp followed by positivity
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourier_le
@@ -793,7 +794,7 @@ lemma hasDerivAt_fourier
       E).symm.toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with _ v
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
-      ContinuousLinearMap.mul_apply', one_mul, ContinuousLinearMap.map_smul]
+      ContinuousLinearMap.mul_apply', one_mul, map_smul]
     exact congr_arg (fun x ↦ v • x) (one_smul ℝ (f v)).symm
   rw [← VectorFourier.fourierIntegral_convergent_iff continuous_fourierChar L.continuous₂ w]
     at h_int

@@ -152,8 +152,8 @@ induces a functor `SingleObj M ⥤ C`. -/
 def functor {X : C} (f : M →* End X) : SingleObj M ⥤ C where
   obj _ := X
   map a := f a
-  map_id _ := MonoidHom.map_one f
-  map_comp a b := MonoidHom.map_mul f b a
+  map_id _ := map_one f
+  map_comp a b := map_mul f b a
 
 /-- Construct a natural transformation between functors `SingleObj M ⥤ C` by
 giving a compatible morphism `SingleObj.star M`. -/

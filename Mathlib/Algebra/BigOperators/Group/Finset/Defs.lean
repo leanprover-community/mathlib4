@@ -622,22 +622,30 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
 
 end CommMonoid
 
-section Opposite
+section MulOpposite
+variable [AddCommMonoid M] (s : Finset ι)
 
 open MulOpposite
 
 /-- Moving to the opposite additive commutative monoid commutes with summing. -/
-@[simp]
-theorem op_sum [AddCommMonoid M] {s : Finset ι} (f : ι → M) :
-    op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ) _ _
+@[simp] lemma op_sum (f : ι → M) : op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) := map_sum opAddEquiv ..
 
-@[simp]
-theorem unop_sum [AddCommMonoid M] {s : Finset ι} (f : ι → Mᵐᵒᵖ) :
-    unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ).symm _ _
+@[simp] lemma unop_sum (f : ι → Mᵐᵒᵖ) : unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
+  map_sum opAddEquiv.symm ..
 
-end Opposite
+end MulOpposite
+
+section AddOpposite
+variable [CommMonoid M] (s : Finset ι)
+
+open AddOpposite
+
+@[simp] lemma op_prod (f : ι → M) : op (∏ i ∈ s, f i) = ∏ i ∈ s, op (f i) := map_prod opMulEquiv ..
+
+@[simp] lemma unop_prod (f : ι → Mᵐᵒᵖ) : unop (∏ i ∈ s, f i) = ∏ i ∈ s, unop (f i) :=
+  map_prod opMulEquiv.symm ..
+
+end AddOpposite
 
 section DivisionCommMonoid
 

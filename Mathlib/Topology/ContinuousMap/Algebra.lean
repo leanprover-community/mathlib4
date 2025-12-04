@@ -782,7 +782,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
-        simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
+        simp only [mul_one, smul_eq_mul, algebraMap_apply]
         congr
         simp [eq_iff_true_of_subsingleton]
       rw [h]

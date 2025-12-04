@@ -572,6 +572,30 @@ end Compact
 
 end EMetric
 
+namespace Subtype
+
+@[simp]
+theorem preimage_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+  rfl
+
+@[simp]
+theorem preimage_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+  rfl
+
+@[simp]
+theorem image_emetricBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+  rw [← preimage_emetricBall, image_preimage_eq_inter_range, range_val_subtype]
+
+@[simp]
+theorem image_emetricClosedBall {p : α → Prop} (a : {a // p a}) (r : ℝ≥0∞) :
+    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_emetricClosedBall, image_preimage_eq_inter_range, range_val_subtype]
+
+end Subtype
+
 /-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
 `edist x z ≤ edist x y + edist y z`.

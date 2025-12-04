@@ -183,8 +183,9 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
 
 theorem Disjoint.cycleOf_mul_distrib [DecidableRel f.SameCycle] [DecidableRel g.SameCycle]
-    [DecidableRel (f * g).SameCycle] [DecidableRel (g * f).SameCycle] (h : f.Disjoint g) (x : α) :
+    [DecidableRel (f * g).SameCycle] (h : f.Disjoint g) (x : α) :
     (f * g).cycleOf x = f.cycleOf x * g.cycleOf x := by
+  classical
   rcases (disjoint_iff_eq_or_eq.mp h) x with hfx | hgx
   · simp [h.commute.eq, cycleOf_mul_of_apply_right_eq_self h.symm.commute, hfx]
   · simp [cycleOf_mul_of_apply_right_eq_self h.commute, hgx]
@@ -404,8 +405,7 @@ where
         refine ⟨?_, fun g' hg' ↦ ?_, fun g' hg' y ↦ ?_, hm₃⟩
         · simp [List.prod_cons, hm₁]
         · exact ((List.mem_cons).1 hg').elim (fun hg' => hg'.symm ▸ isCycle_cycleOf _ hx) (hm₂ g')
-        by_contra!
-        obtain ⟨hgy, hg'y⟩ := this
+        by_contra! ⟨hgy, hg'y⟩
         have hxy : SameCycle g x y := not_imp_comm.1 cycleOf_apply_of_not_sameCycle hgy
         have hg'm : g' :: m.erase g' ~ m := List.cons_perm_iff_perm_erase.2 ⟨hg', .refl _⟩
         have : ∀ h ∈ m.erase g', Disjoint g' h :=

@@ -930,3 +930,28 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 b) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
+
+lemma ContinuousOn.preimage_mem_nhdsSetWithin {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) {t u t' : Set β} (h : u ∈ 𝓝ˢ[t'] t) :
+    f ⁻¹' u ∈ 𝓝ˢ[s ∩ f ⁻¹' t'] (s ∩ f ⁻¹' t) := by
+  have ⟨v, hv⟩ := mem_nhdsSetWithin.1 h
+  have ⟨w, hw⟩ := continuousOn_iff'.1 hf v hv.1
+  refine mem_nhdsSetWithin.2 ⟨w, hw.1, ?_, ?_⟩
+  · exact (inter_comm _ _).trans_subset <| (inter_subset_inter_left _ <| preimage_mono hv.2.1).trans
+      (hw.2.trans_subset inter_subset_left)
+  · rw [← inter_assoc, ← hw.2, inter_comm _ s, inter_assoc, ← preimage_inter]
+    exact inter_subset_right.trans <| preimage_mono hv.2.2
+
+/-- If `f` is continuous on `s` and `u` is a neighbourhood of `t`, then `f ⁻¹' u` is a neighbourhood
+of `s ∩ f ⁻¹' t` within `s`. -/
+lemma ContinuousOn.preimage_mem_nhdsSetWithin_of_mem_nhdsSet {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) {t u : Set β} (h : u ∈ 𝓝ˢ t) : f ⁻¹' u ∈ 𝓝ˢ[s] (s ∩ f ⁻¹' t) := by
+  simpa [h] using ContinuousOn.preimage_mem_nhdsSetWithin hf (t := t) (u := u) (t' := univ)
+
+lemma Continuous.preimage_mem_nhdsSetWithin {f : α → β} (hf : Continuous f) {s u s' : Set β}
+    (h : u ∈ 𝓝ˢ[s'] s) : f ⁻¹' u ∈ 𝓝ˢ[f ⁻¹' s'] (f ⁻¹' s) := by
+  simpa using (hf.continuousOn (s := univ)).preimage_mem_nhdsSetWithin h
+
+lemma Continuous.preimage_mem_nhdsSet {f : α → β} (hf : Continuous f) {s u : Set β}
+    (h : u ∈ 𝓝ˢ s) : f ⁻¹' u ∈ 𝓝ˢ (f ⁻¹' s) := by
+  simpa [h] using hf.preimage_mem_nhdsSetWithin (s := s) (u := u) (s' := univ)

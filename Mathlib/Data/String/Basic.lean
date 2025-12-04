@@ -68,7 +68,7 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
   | case1 s₁ s₂ h₁ h₂ h ih =>
     rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
-    · simp [Legacy.Iterator.next, String.Pos.Raw.next, get_cons_addChar]
+    · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
     · simpa [Legacy.Iterator.curr, get_cons_addChar] using h
   | case2 s₁ s₂ h₁ h₂ h =>

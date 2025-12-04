@@ -205,6 +205,13 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
   exact IntervalIntegrable.sum s h
 
+/-- Sums of circle integrable functions are circle integrable. -/
+theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
+  convert CircleIntegrable.sum s h
+  simp
+
 /-- `finsum`s of circle integrable functions are circle integrable. -/
 protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :
     CircleIntegrable (∑ᶠ i, f i) c R := by
@@ -305,7 +312,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     refine IsBigO.of_bound |R|⁻¹ (this.mono fun θ' hθ' => ?_)
     set x := ‖f θ'‖
     suffices x⁻¹ ≤ x ^ n by
-      simp only [Algebra.id.smul_eq_mul, norm_mul,
+      simp only [smul_eq_mul, norm_mul,
         norm_inv, norm_I, mul_one]
       simpa only [norm_circleMap_zero, norm_zpow, Ne, abs_eq_zero.not.2 hR, not_false_iff,
         inv_mul_cancel_left₀] using this

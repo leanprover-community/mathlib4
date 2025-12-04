@@ -179,7 +179,7 @@ theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b �
         (subset_cons_self _ _) hc) _ (cons_subset_cons _ (subset_cons_self _ _) hd),
         map_destutter fun c hc d hd ↦ hl _ (subset_cons_self _ _ hc) _ (subset_cons_self _ _ hd)]
 
-/-- For a injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
+/-- For an injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
 theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [DecidableEq β] :
     (l.destutter (· ≠ ·)).map f = (l.map f).destutter (· ≠ ·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm

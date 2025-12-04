@@ -639,8 +639,8 @@ open Metric in
 the `slitPlane` if it does not contain `-r`. -/
 lemma subset_slitPlane_iff_of_subset_sphere {r : ℝ} {s : Set ℂ} (hs : s ⊆ sphere 0 r) :
     s ⊆ slitPlane ↔ (-r : ℂ) ∉ s := by
-  simp_rw +singlePass [← not_iff_not, Set.subset_def, mem_slitPlane_iff_not_le_zero]
-  push ¬ _
+  simp_rw [Set.subset_def, mem_slitPlane_iff_not_le_zero]
+  contrapose!
   refine ⟨?_, fun hr ↦ ⟨_, hr, by simpa using hs hr⟩⟩
   rintro ⟨z, hzs, hz⟩
   have : ‖z‖ = r := by simpa using hs hzs

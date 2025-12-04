@@ -38,8 +38,16 @@ section Fintype
 
 open Module
 
-variable (K : Type*) [Field K] [NumberField K]
+variable (K : Type*) [Field K]
 variable (A : Type*) [Field A] [CharZero A]
+
+instance [CharZero K] [Algebra.IsAlgebraic ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
+  obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
+      apply IntermediateField.nonempty_algHom_of_splits
+      exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits_codomain _⟩
+  exact ⟨f.toRingHom⟩
+
+variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
@@ -176,6 +184,11 @@ abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
     (conjugate φ).comp σ = conjugate (φ.comp σ) :=
   rfl
+
+variable (K) in
+theorem involutive_conjugate :
+    Function.Involutive (conjugate : (K →+* ℂ) → (K →+* ℂ)) := by
+  intro; simp
 
 @[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl

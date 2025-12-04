@@ -243,6 +243,28 @@ theorem two_zsmul_oangle_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P}
   rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq] at h₁₂₄₅ h₃₂₆₅
   exact two_zsmul_oangle_of_vectorSpan_eq h₁₂₄₅ h₃₂₆₅
 
+/-- Consider two angles `∡ p₁ p₂ p₃` and `∡ p₄ p₅ p₆` defined by triples of points. Each is the
+angle between two lines; if the pair `p₁ p₂` and `p₄ p₅` of corresponding lines is parallel, and
+also the pair `p₃ p₂` and `p₆ p₅` of corresponding lines is parallel, and also (roughly) the third
+pair of lines `p₁ p₃` and `p₄ p₆` are the same line, then the two angles are equal.  This is a
+stronger version of `two_zsmul_oangle_of_parallel`, which shows that the two angles are equal mod
+`π` in the absence of the condition on the third pair of lines. -/
+theorem oangle_eq_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ ∉ line[ℝ, p₁, p₃])
+    (h₄ : p₄ ∈ line[ℝ, p₁, p₃]) (h₆ : p₆ ∈ line[ℝ, p₁, p₃])
+    (h₁₂₄₅ : line[ℝ, p₁, p₂] ∥ line[ℝ, p₄, p₅]) (h₃₂₆₅ : line[ℝ, p₃, p₂] ∥ line[ℝ, p₆, p₅]) :
+    ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆ := by
+  rw [oangle, oangle]
+  have hd : line[ℝ, p₆, p₄].direction ≤ line[ℝ, p₃, p₁].direction := by
+    rw [Set.pair_comm p₃]
+    exact AffineSubspace.direction_le (affineSpan_pair_le_of_mem_of_mem h₆ h₄)
+  obtain ⟨r, hr, h₅₄, h₆₅, -⟩ := exists_eq_smul_of_parallel h₂ h₁₂₄₅
+    (Set.pair_comm p₃ p₂ ▸ Set.pair_comm p₆ p₅ ▸ h₃₂₆₅).direction_eq.symm.le hd
+  rw [← neg_inj, neg_vsub_eq_vsub_rev, ← smul_neg, neg_vsub_eq_vsub_rev] at h₅₄
+  rw [h₅₄, h₆₅]
+  rcases hr.lt_or_gt with hlt | hlt
+  · simp [-neg_vsub_eq_vsub_rev, hlt]
+  · simp [hlt]
+
 /-- Given three points not equal to `p`, the angle between the first and the second at `p` plus
 the angle between the second and the third equals the angle between the first and the third. -/
 @[simp]

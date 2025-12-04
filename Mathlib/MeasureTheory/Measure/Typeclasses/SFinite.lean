@@ -207,8 +207,8 @@ theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Mea
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (s : Set α) : (∃ n, 0 < μ (s ∩ spanningSets μ n)) ↔ 0 < μ s := by
-  rw [← not_iff_not]
-  simp only [not_exists, not_lt, nonpos_iff_eq_zero]
+  contrapose!
+  simp only [nonpos_iff_eq_zero]
   exact forall_measure_inter_spanningSets_eq_zero s
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only

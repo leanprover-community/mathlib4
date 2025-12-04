@@ -106,6 +106,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
 theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   WithTop.sInf_empty (α := αᵒᵈ)
 
+theorem WithBot.sInf_empty (α : Type*) [CompleteLattice α] : (sInf ∅ : WithBot α) = ⊤ := by
+  rw [WithBot.sInf_eq (by simp) (OrderBot.bddBelow _), Set.preimage_empty, _root_.sInf_empty,
+    WithBot.coe_top]
+
 @[norm_cast]
 theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
@@ -944,6 +948,14 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     csSup_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csInf
     csInf_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csSup
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
+
+noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
+  le_sSup s a has := le_csSup (OrderTop.bddAbove _) has
+  sSup_le s a hsa := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sSup_empty]; exact bot_le)
+    (csSup_le · hsa)
+  sInf_le s a hsa := csInf_le (OrderBot.bddBelow _) hsa
+  le_sInf s a has := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sInf_empty]; exact le_top)
+    (le_csInf · has)
 
 open Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}

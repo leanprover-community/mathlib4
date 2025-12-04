@@ -30,7 +30,7 @@ jobs:
     steps:
       # Checkout repository, so that we can fetch tags to decide which branch we want.
       - name: Checkout branch or tag
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
 
       # this step needs to be run here while we have `mathlib4` checked out,
       # or else `gh run view` will try to look for runs in `mathlib4-nightly-testing`
@@ -71,7 +71,7 @@ jobs:
 
       # Checkout the branch or tag we want to test.
       - name: Checkout branch or tag
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           repository: ${{ matrix.branch_type == 'nightly' && 'leanprover-community/mathlib4-nightly-testing' || github.repository }}
           ref: ${{ env.BRANCH_REF }}

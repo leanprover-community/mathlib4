@@ -147,7 +147,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     erw [adj₁.unit.naturality f]
     dsimp only [Functor.comp_map]
     rw [whiskerRight_comp, (W _).precomp_iff _ _ (h P₁)]
-    apply Localization.LeftBousfield.W_of_isIso
+    apply ObjectProperty.isLocal_of_isIso
 
 section HasSheafCompose
 

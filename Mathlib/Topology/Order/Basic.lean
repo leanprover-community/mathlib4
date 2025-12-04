@@ -82,6 +82,15 @@ section Preorder
 
 variable [ts : TopologicalSpace α] [Preorder α]
 
+/-- A countable preordered set equipped with the order topology is second countable. -/
+instance (priority := 100) [OrderTopology α] [Countable α] :
+    SecondCountableTopology α := by
+  refine ⟨{ s : Set α | ∃ a, s = Ioi a ∨ s = Iio a }, ?_, ?_⟩
+  · let f1 : α → Set α := fun a => Ioi a
+    let f2 : α → Set α := fun a => Iio a
+    exact Countable.mono (fun s hs => by grind) ((countable_range f1).union (countable_range f2))
+  · simp [OrderTopology.topology_eq_generate_intervals]
+
 instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
   ⟨by
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6

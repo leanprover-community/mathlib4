@@ -452,13 +452,7 @@ variable {R}
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
     e.toOpenPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
-  have h : (b, z) ∈ e.target := by
-    rw [e.target_eq]
-    exact ⟨hb, mem_univ _⟩
-  apply e.injOn (e.map_target h)
-  · simpa only [e.source_eq, mem_preimage]
-  · simp_rw [e.right_inv h, coe_coe, e.apply_eq_prod_continuousLinearEquivAt R b hb,
-      ContinuousLinearEquiv.apply_symm_apply]
+  simpa using (mk_symm _ hb _).symm
 
 theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (π F E))
     [e.IsLinear R] [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) :

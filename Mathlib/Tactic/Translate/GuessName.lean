@@ -51,8 +51,9 @@ Todo: automate the translation from `String` to an element in this `TreeMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
 def endCapitalNames : TreeMap String (List String) compare :=
   -- todo: we want something like
-  -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
-  .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
+  -- endCapitalNamesOfList ["LE", "LT", "GE", "GT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
+  .ofList [("LE", [""]), ("LT", [""]), ("GE", [""]), ("GT", [""]), ("WF", [""]),
+    ("Coe", ["TC", "T", "HTCT"])]
 
 open String in
 /-- This function takes a String and splits it into separate parts based on the following

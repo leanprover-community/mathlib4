@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 
 /-!
 # The Selberg Sieve

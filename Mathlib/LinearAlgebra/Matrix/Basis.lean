@@ -127,13 +127,13 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   toFun := e.toMatrix
   map_add' v w := by
     ext i j
-    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
+    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, map_add]
     rfl
   map_smul' := by
     intro c v
     ext i j
     dsimp only []
-    rw [e.toMatrix_apply, Pi.smul_apply, LinearEquiv.map_smul]
+    rw [e.toMatrix_apply, Pi.smul_apply, map_smul]
     rfl
   invFun m j := ∑ i, m i j • e i
   left_inv := by

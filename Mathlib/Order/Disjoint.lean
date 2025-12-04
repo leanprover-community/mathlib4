@@ -48,6 +48,7 @@ def Disjoint (a b : α) : Prop :=
 theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
   fun x _ _ ↦ le_of_eq (Subsingleton.elim x ⊥)
 
+@[grind =]
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 
@@ -58,7 +59,7 @@ theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
 theorem symmetric_disjoint : Symmetric (Disjoint : α → α → Prop) :=
   Disjoint.symm
 
-@[simp]
+@[simp, grind ←]
 theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
 
 @[simp]
@@ -70,10 +71,19 @@ theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
   Disjoint.mono h le_rfl
 
+grind_pattern Disjoint.mono_left => a ≤ b, Disjoint b c
+grind_pattern Disjoint.mono_left => a ≤ b, Disjoint a c
+
 theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
   Disjoint.mono le_rfl h
 
-@[simp]
+-- Note: we don't need separate `grind` patterns for `Disjoint.mono_right` because `grind`
+-- will use `disjoint_comm`.
+
+theorem Disjoint.out (h : Disjoint a b) (x : α) : x ≤ a → x ≤ b → x = ⊥ :=
+  fun h₁ h₂ => by simpa using h h₁ h₂
+
+@[simp, grind =]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
   ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
 
@@ -87,16 +97,18 @@ theorem Disjoint.ne (ha : a ≠ ⊥) (hab : Disjoint a b) : a ≠ b :=
 theorem Disjoint.eq_bot_of_le (hab : Disjoint a b) (h : a ≤ b) : a = ⊥ :=
   eq_bot_iff.2 <| hab le_rfl h
 
+grind_pattern Disjoint.eq_bot_of_le => Disjoint a b, a ≤ b
+
 theorem Disjoint.eq_bot_of_ge (hab : Disjoint a b) : b ≤ a → b = ⊥ :=
   hab.symm.eq_bot_of_le
 
-lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by aesop
-lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ :=
-  hab.eq_iff.not.trans not_and_or
+grind_pattern Disjoint.eq_bot_of_le => Disjoint a b, b ≤ a
+
+lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by grind
+lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ := by grind
 
 theorem disjoint_of_le_iff_left_eq_bot (h : a ≤ b) :
-    Disjoint a b ↔ a = ⊥ :=
-  ⟨fun hd ↦ hd.eq_bot_of_le h, fun h ↦ h ▸ disjoint_bot_left⟩
+    Disjoint a b ↔ a = ⊥ := by grind
 
 end PartialOrderBot
 
@@ -104,11 +116,11 @@ section PartialBoundedOrder
 
 variable [PartialOrder α] [BoundedOrder α] {a : α}
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_top : Disjoint a ⊤ ↔ a = ⊥ :=
   ⟨fun h ↦ bot_unique <| h le_rfl le_top, fun h _ ha _ ↦ ha.trans_eq h⟩
 
-@[simp]
+@[simp, grind =]
 theorem top_disjoint : Disjoint ⊤ a ↔ a = ⊥ :=
   ⟨fun h ↦ bot_unique <| h le_top le_rfl, fun h _ _ ha ↦ ha.trans_eq h⟩
 
@@ -118,6 +130,7 @@ section SemilatticeInfBot
 
 variable [SemilatticeInf α] [OrderBot α] {a b c : α}
 
+-- I would like to mark this as `@[grind =]`, but it results in excessive case splitting.
 theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
   ⟨fun hd ↦ hd inf_le_left inf_le_right, fun h _ ha hb ↦ (le_inf ha hb).trans h⟩
 
@@ -131,13 +144,13 @@ theorem Disjoint.eq_bot : Disjoint a b → a ⊓ b = ⊥ :=
   bot_unique ∘ Disjoint.le_bot
 
 theorem disjoint_assoc : Disjoint (a ⊓ b) c ↔ Disjoint a (b ⊓ c) := by
-  rw [disjoint_iff_inf_le, disjoint_iff_inf_le, inf_assoc]
+  grind [disjoint_iff_inf_le]
 
 theorem disjoint_left_comm : Disjoint a (b ⊓ c) ↔ Disjoint b (a ⊓ c) := by
-  simp_rw [disjoint_iff_inf_le, inf_left_comm]
+  grind [disjoint_iff_inf_le]
 
 theorem disjoint_right_comm : Disjoint (a ⊓ b) c ↔ Disjoint (a ⊓ c) b := by
-  simp_rw [disjoint_iff_inf_le, inf_right_comm]
+  grind [disjoint_iff_inf_le]
 
 variable (c)
 
@@ -209,6 +222,7 @@ arguments. -/
 def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x
 
+@[grind =]
 theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 
@@ -219,7 +233,7 @@ theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
 theorem symmetric_codisjoint : Symmetric (Codisjoint : α → α → Prop) :=
   Codisjoint.symm
 
-@[simp]
+@[simp, grind ←]
 theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
 
 @[simp]
@@ -231,10 +245,16 @@ theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
 theorem Codisjoint.mono_left (h : a ≤ b) : Codisjoint a c → Codisjoint b c :=
   Codisjoint.mono h le_rfl
 
+grind_pattern Codisjoint.mono_left => a ≤ b, Codisjoint a c
+grind_pattern Codisjoint.mono_left => a ≤ b, Codisjoint b c
+
 theorem Codisjoint.mono_right : b ≤ c → Codisjoint a b → Codisjoint a c :=
   Codisjoint.mono le_rfl
 
-@[simp]
+theorem Codisjoint.out (h : Codisjoint a b) (x : α) : a ≤ x → b ≤ x → ⊤ ≤ x :=
+  fun h₁ h₂ => by simpa using h h₁ h₂
+
+@[simp, grind =]
 theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
   ⟨fun hd ↦ top_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ h.symm.trans_le ha⟩
 
@@ -248,12 +268,15 @@ theorem Codisjoint.ne (ha : a ≠ ⊤) (hab : Codisjoint a b) : a ≠ b :=
 theorem Codisjoint.eq_top_of_le (hab : Codisjoint a b) (h : b ≤ a) : a = ⊤ :=
   eq_top_iff.2 <| hab le_rfl h
 
+grind_pattern Codisjoint.eq_top_of_le => Codisjoint a b, b ≤ a
+
 theorem Codisjoint.eq_top_of_ge (hab : Codisjoint a b) : a ≤ b → b = ⊤ :=
   hab.symm.eq_top_of_le
 
-lemma Codisjoint.eq_iff (hab : Codisjoint a b) : a = b ↔ a = ⊤ ∧ b = ⊤ := by aesop
-lemma Codisjoint.ne_iff (hab : Codisjoint a b) : a ≠ b ↔ a ≠ ⊤ ∨ b ≠ ⊤ :=
-  hab.eq_iff.not.trans not_and_or
+grind_pattern Codisjoint.eq_top_of_ge => Codisjoint a b, a ≤ b
+
+lemma Codisjoint.eq_iff (hab : Codisjoint a b) : a = b ↔ a = ⊤ ∧ b = ⊤ := by grind
+lemma Codisjoint.ne_iff (hab : Codisjoint a b) : a ≠ b ↔ a ≠ ⊤ ∨ b ≠ ⊤ := by grind
 
 end PartialOrderTop
 
@@ -261,11 +284,11 @@ section PartialBoundedOrder
 
 variable [PartialOrder α] [BoundedOrder α] {a b : α}
 
-@[simp]
+@[simp, grind =]
 theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
   ⟨fun h ↦ top_unique <| h le_rfl bot_le, fun h _ ha _ ↦ h.symm.trans_le ha⟩
 
-@[simp]
+@[simp, grind =]
 theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
   ⟨fun h ↦ top_unique <| h bot_le le_rfl, fun h _ _ ha ↦ h.symm.trans_le ha⟩
 
@@ -282,6 +305,7 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α] {a b c : α}
 
+-- I would like to mark this as `@[grind =]`, but it results in excessive case splitting.
 theorem codisjoint_iff_le_sup : Codisjoint a b ↔ ⊤ ≤ a ⊔ b :=
   @disjoint_iff_inf_le αᵒᵈ _ _ _ _
 
@@ -294,14 +318,14 @@ theorem Codisjoint.top_le : Codisjoint a b → ⊤ ≤ a ⊔ b :=
 theorem Codisjoint.eq_top : Codisjoint a b → a ⊔ b = ⊤ :=
   @Disjoint.eq_bot αᵒᵈ _ _ _ _
 
-theorem codisjoint_assoc : Codisjoint (a ⊔ b) c ↔ Codisjoint a (b ⊔ c) :=
-  @disjoint_assoc αᵒᵈ _ _ _ _ _
+theorem codisjoint_assoc : Codisjoint (a ⊔ b) c ↔ Codisjoint a (b ⊔ c) := by
+  grind [codisjoint_iff_le_sup]
 
-theorem codisjoint_left_comm : Codisjoint a (b ⊔ c) ↔ Codisjoint b (a ⊔ c) :=
-  @disjoint_left_comm αᵒᵈ _ _ _ _ _
+theorem codisjoint_left_comm : Codisjoint a (b ⊔ c) ↔ Codisjoint b (a ⊔ c) := by
+  grind [codisjoint_iff_le_sup]
 
-theorem codisjoint_right_comm : Codisjoint (a ⊔ b) c ↔ Codisjoint (a ⊔ c) b :=
-  @disjoint_right_comm αᵒᵈ _ _ _ _ _
+theorem codisjoint_right_comm : Codisjoint (a ⊔ b) c ↔ Codisjoint (a ⊔ c) b := by
+  grind [codisjoint_iff_le_sup]
 
 variable (c)
 
@@ -367,22 +391,22 @@ theorem Codisjoint.dual [PartialOrder α] [OrderTop α] {a b : α} :
     Codisjoint a b → Disjoint (toDual a) (toDual b) :=
   id
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_toDual_iff [PartialOrder α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_ofDual_iff [PartialOrder α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem codisjoint_toDual_iff [PartialOrder α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem codisjoint_ofDual_iff [PartialOrder α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
@@ -420,6 +444,7 @@ variable [PartialOrder α] [BoundedOrder α] {x y : α}
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
   ⟨h.1.symm, h.2.symm⟩
 
+@[grind =]
 lemma _root_.isCompl_comm : IsCompl x y ↔ IsCompl y x := ⟨IsCompl.symm, IsCompl.symm⟩
 
 theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
@@ -435,7 +460,7 @@ section BoundedLattice
 variable [Lattice α] [BoundedOrder α] {x y : α}
 
 theorem of_le (h₁ : x ⊓ y ≤ ⊥) (h₂ : ⊤ ≤ x ⊔ y) : IsCompl x y :=
-  ⟨disjoint_iff_inf_le.mpr h₁, codisjoint_iff_le_sup.mpr h₂⟩
+  ⟨by grind [disjoint_iff_inf_le], by grind [codisjoint_iff_le_sup]⟩
 
 theorem of_eq (h₁ : x ⊓ y = ⊥) (h₂ : x ⊔ y = ⊤) : IsCompl x y :=
   ⟨disjoint_iff.mpr h₁, codisjoint_iff.mpr h₂⟩
@@ -510,6 +535,7 @@ namespace Prod
 
 variable {β : Type*} [PartialOrder α] [PartialOrder β]
 
+@[grind =]
 protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
@@ -520,10 +546,12 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
   · rintro ⟨ha, hb⟩ z hza hzb
     exact ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
 
+@[grind =]
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
     Codisjoint x y ↔ Codisjoint x.1 y.1 ∧ Codisjoint x.2 y.2 :=
   @Prod.disjoint_iff αᵒᵈ βᵒᵈ _ _ _ _ _ _
 
+@[grind =]
 protected theorem isCompl_iff [BoundedOrder α] [BoundedOrder β] {x y : α × β} :
     IsCompl x y ↔ IsCompl x.1 y.1 ∧ IsCompl x.2 y.2 := by
   simp_rw [isCompl_iff, Prod.disjoint_iff, Prod.codisjoint_iff, and_and_and_comm]
@@ -534,11 +562,11 @@ section
 
 variable [Lattice α] [BoundedOrder α] {a b x : α}
 
-@[simp]
+@[simp, grind =]
 theorem isCompl_toDual_iff : IsCompl (toDual a) (toDual b) ↔ IsCompl a b :=
   ⟨IsCompl.ofDual, IsCompl.dual⟩
 
-@[simp]
+@[simp, grind =]
 theorem isCompl_ofDual_iff {a b : αᵒᵈ} : IsCompl (ofDual a) (ofDual b) ↔ IsCompl a b :=
   ⟨IsCompl.dual, IsCompl.ofDual⟩
 

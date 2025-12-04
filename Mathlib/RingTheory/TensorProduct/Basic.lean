@@ -615,16 +615,16 @@ protected def module : Module (A ⊗[R] B) M where
     · intro z w hz hw a b
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
-      simp only [moduleAux_apply, mul_add, LinearMap.map_add,
+      simp only [moduleAux_apply, mul_add, map_add,
         LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp only [map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
+      simp only [add_mul, map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
 
 attribute [local instance] TensorProduct.Algebra.module
 

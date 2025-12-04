@@ -247,7 +247,7 @@ lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finr
   obtain ⟨v, rfl⟩ := N.mkQ_surjective v
   refine ⟨v, fun r hr ↦ mt ?_ hr⟩
   have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)
-  rwa [Finsupp.linearCombination_single, Finsupp.single_eq_zero, ← LinearMap.map_smul,
+  rwa [Finsupp.linearCombination_single, Finsupp.single_eq_zero, ← map_smul,
     Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at this
 
 end

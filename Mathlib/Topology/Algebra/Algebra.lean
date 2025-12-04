@@ -22,10 +22,11 @@ The topological closure of a subalgebra is still a subalgebra, which as an algeb
 topological algebra.
 
 In this file we define continuous algebra homomorphisms, as algebra homomorphisms between
-topological (semi-)rings which are continuous. The set of continuous algebra homomorphisms between
-the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
+topological (semi-)rings which are continuous. The type `ContinuousAlgHom R A B` of continuous
+algebra homomorphisms between the topological `R`-algebras `A` and `B` is denoted by `A →A[R] B`.
 
-TODO: add continuous algebra isomorphisms.
+See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
+the topological `R`-algebras `A` and `B`.
 
 -/
 

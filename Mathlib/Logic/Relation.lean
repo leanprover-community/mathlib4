@@ -36,8 +36,8 @@ the bundled version, see `Rel`.
 * `Relation.EqvGen`: Equivalence closure. `EqvGen r` relates everything `ReflTransGen r` relates,
   plus for all related pairs it relates them in the opposite order.
 * `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
-  `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
-  both.
+  `s : β → γ → Prop`, `r ∘r s` relates `a : α` and `c : γ` iff there exists `b : β` that's related
+  to both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,
   `g : β → δ`, `Map r f g` is the relation `γ → δ → Prop` relating `f a` and `g b` for all `a`, `b`
   related by `r`.
@@ -249,6 +249,38 @@ lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → 
 lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
     ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
+
+lemma le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) := by
+  intro
+  grind [Relation.Map]
+
+lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
+    (Relation.Map r f f on f) = r := by
+  ext x y
+  exact ⟨fun ⟨x', y', hr, hx, hy⟩ ↦ hinj hx ▸ hinj hy ▸ hr, fun h ↦ ⟨x, y, h, rfl, rfl⟩⟩
+
+lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Subrelation (Relation.Map (r on f) f f) r := by
+  intro
+  grind [Relation.Map]
+
+lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
+    Relation.Map (r on f) f f = r := by
+  ext x y
+  have _ := hsurj x
+  have _ := hsurj y
+  grind [Relation.Map]
+
+lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
+    Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
+  grind [Relation.Map]
+
+lemma onFun_map_onFun_eq_onFun {r : β → β → Prop} (f : α → β) :
+    (Relation.Map (r on f) f f on f) = (r on f) := by
+  grind [Relation.Map]
+
+lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
+    Relation.Map (r on f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
+  grind [Relation.Map]
 
 end Map
 

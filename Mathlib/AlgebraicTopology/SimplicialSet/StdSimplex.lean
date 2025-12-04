@@ -14,7 +14,7 @@ public import Mathlib.Order.Fin.SuccAboveOrderIso
 
 We define the standard simplices `Δ[n]` as simplicial sets.
 See files `SimplicialSet.Boundary` and `SimplicialSet.Horn`
-for their boundaries`∂Δ[n]` and horns `Λ[n, i]`.
+for their boundaries `∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
 
 -/

@@ -536,7 +536,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
   | monomial j r =>
     simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
       Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
-      Fin.cases_succ, ← map_prod, ← RingHom.map_pow, Function.comp_apply]
+      Fin.cases_succ, ← map_prod, ← map_pow, Function.comp_apply]
     rw [← mul_boole, mul_comm (Polynomial.X ^ j 0), Polynomial.coeff_C_mul_X_pow]; congr 1
     obtain rfl | hjmi := eq_or_ne j (m.cons i)
     · simpa only [cons_zero, cons_succ, if_pos rfl, monomial_eq, C_1, one_mul,

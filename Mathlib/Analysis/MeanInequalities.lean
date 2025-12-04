@@ -240,8 +240,7 @@ theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
   have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by apply left_ne_zero_of_mul
   have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by
-    by_contra!
-    obtain ⟨h1, h2⟩ := this
+    by_contra! ⟨h1, h2⟩
     simp only [h2, rpow_zero, ne_self_iff_false] at h1
   rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
   · simp
@@ -607,7 +606,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.HolderConjugate 
   · rintro _ ⟨g, hg, rfl⟩
     apply le_trans (inner_le_Lp_mul_Lq s f g hpq)
     simpa only [mul_one] using
-      mul_le_mul_left' (NNReal.rpow_le_one hg (le_of_lt hpq.symm.one_div_pos)) _
+      mul_le_mul_right (NNReal.rpow_le_one hg (le_of_lt hpq.symm.one_div_pos)) _
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `NNReal`-valued functions. -/
@@ -869,6 +868,8 @@ namespace ENNReal
 
 variable (f g : ι → ℝ≥0∞) {p q : ℝ}
 
+-- TODO: fix the non-terminal simp on the last line
+set_option linter.flexible false in
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. Version for sums over finite sets,
 with `ℝ≥0∞`-valued functions. -/
@@ -913,7 +914,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   rw [coe_mul] at this
   simp_rw [coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, coe_finset_sum, ← ENNReal.toNNReal_rpow,
     ← ENNReal.toNNReal_mul, sum_congr rfl fun i hi ↦ coe_toNNReal (H'.2 i hi)] at this
-  simp [ENNReal.coe_rpow_of_nonneg, hp₁.le] at this
+  simp only [toNNReal_mul, coe_mul, sub_nonneg, hp₁.le, coe_rpow_of_nonneg, coe_finset_sum] at this
   convert this using 2 with i hi
   · obtain hw | hw := eq_or_ne (w i) 0
     · simp [hw]

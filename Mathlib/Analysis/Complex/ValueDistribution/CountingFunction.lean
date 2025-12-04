@@ -61,7 +61,7 @@ noncomputable def toClosedBall (r : ℝ) :
 
 @[simp]
 lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ : Set E) ℤ)
-  (ha : z ∈ closedBall 0 |r|) :
+    (ha : z ∈ closedBall 0 |r|) :
     toClosedBall r f z = f z := by
   unfold toClosedBall
   simp_all [restrict_apply]
@@ -126,7 +126,7 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     {f : locallyFinsuppWithin (univ : Set E) ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
     0 ≤ logCounting f r := by
   have h₃r : 0 < r := by linarith
-  suffices ∀ z, 0 ≤ (((toClosedBall r) f) z) * log (r * ‖z‖⁻¹) from
+  suffices ∀ z, 0 ≤ toClosedBall r f z * log (r * ‖z‖⁻¹) from
     add_nonneg (finsum_nonneg this) <| mul_nonneg (by simpa using h 0) (log_nonneg hr)
   intro a
   by_cases h₁a : a = 0
@@ -235,6 +235,20 @@ theorem log_counting_zero_sub_logCounting_top {f : 𝕜 → E} :
     (divisor f univ).logCounting = logCounting f 0 - logCounting f ⊤ := by
   rw [← posPart_sub_negPart (divisor f univ), logCounting_zero, logCounting_top, map_sub]
 
+/--
+The logarithmic counting function of a constant function is zero.
+-/
+@[simp] theorem logCounting_const {c : E} {e : WithTop E} :
+    logCounting (fun _ ↦ c : 𝕜 → E) e = 0 := by
+  simp [logCounting]
+
+/--
+The logarithmic counting function of the constant function zero is zero.
+-/
+@[simp] theorem logCounting_const_zero {e : WithTop E} :
+    logCounting (0 : 𝕜 → E) e = 0 := logCounting_const
+
+
 /-!
 ## Elementary Properties of the Counting Function
 -/
@@ -273,6 +287,56 @@ function counting poles.
 /-!
 ## Behaviour under Arithmetic Operations
 -/
+
+/--
+For `1 ≤ r`, the logarithmic counting function of `f + g` at `⊤` is less than or equal to
+the sum of the logarithmic counting functions of `f` and `g`, respectively.
+-/
+theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (hr : 1 ≤ r) :
+    logCounting (f₁ + f₂) ⊤ r ≤ ((logCounting f₁ ⊤) + (logCounting f₂ ⊤)) r := by
+  simp only [logCounting, ↓reduceDIte]
+  rw [← Function.locallyFinsuppWithin.logCounting.map_add]
+  exact Function.locallyFinsuppWithin.logCounting_le (negPart_divisor_add_le_add h₁f₁ h₁f₂) hr
+
+/--
+Asymptotically, the logarithmic counting function of `f + g` at `⊤` is less than or equal to the sum
+of the logarithmic counting functions of `f` and `g`, respectively.
+-/
+theorem logCounting_add_top_eventuallyLE {f₁ f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) :
+    logCounting (f₁ + f₂) ⊤ ≤ᶠ[Filter.atTop] (logCounting f₁ ⊤) + (logCounting f₂ ⊤) := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_add_top_le h₁f₁ h₁f₂ hr
+
+/--
+For `1 ≤ r`, the logarithmic counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or equal
+to the sum of the logarithmic counting functions of `f ·`.
+-/
+theorem logCounting_sum_top_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E) {r : ℝ}
+    (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) (hr : 1 ≤ r) :
+    logCounting (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (logCounting (f a) ⊤)) r := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    simp
+  | insert a s ha hs =>
+    rw [Finset.sum_insert ha, Finset.sum_insert ha]
+    calc logCounting (f a + ∑ x ∈ s, f x) ⊤ r
+      _ ≤ (logCounting (f a) ⊤ + logCounting (∑ x ∈ s, f x) ⊤) r :=
+        logCounting_add_top_le (h₁f a) (MeromorphicOn.sum h₁f) hr
+      _ ≤ (logCounting (f a) ⊤ + ∑ x ∈ s, logCounting (f x) ⊤) r :=
+        add_le_add (by trivial) hs
+
+/--
+Asymptotically, the logarithmic counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or
+equal to the sum of the logarithmic counting functions of `f ·`.
+-/
+theorem logCounting_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → 𝕜 → E)
+    (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) :
+    logCounting (∑ a ∈ s, f a) ⊤ ≤ᶠ[Filter.atTop] ∑ a ∈ s, (logCounting (f a) ⊤) := by
+  filter_upwards [Filter.eventually_ge_atTop 1]
+  exact fun _ hr ↦ logCounting_sum_top_le s f h₁f hr
 
 /--
 For `1 ≤ r`, the counting function counting zeros of `f * g` is less than or equal to the sum of the

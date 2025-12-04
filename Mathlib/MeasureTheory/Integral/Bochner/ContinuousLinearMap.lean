@@ -53,7 +53,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
+      map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
       ← integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
