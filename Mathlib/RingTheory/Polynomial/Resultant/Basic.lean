@@ -458,7 +458,7 @@ lemma resultant_eq_prod_roots_sub
   · apply (algebraMap K L).injective
     rw [map_mul, map_mul, map_mul, this, map_sub_roots_sprod_eq_prod_map_eval _ _ hf hf',
       map_sub_sprod_roots_eq_prod_map_eval _ _ (hr.map _) (SplittingField.splits _), map_mul,
-        roots_map _ (by simpa only [Splits, map_id])]
+      hg'.map_roots]
     have : (g.roots.map (eval · f)).prod =
         (f %ₘ g).leadingCoeff ^ g.natDegree * (g.roots.map (eval · r)).prod := by
       trans (g.roots.map ((f %ₘ g).leadingCoeff * eval · r)).prod
@@ -525,7 +525,7 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   rw [← resultant_map_map, ← Nat.add_sub_cancel' hg, resultant_add_right_deg _ _ _ _ _ (by simp),
     this, coeff_map, coeff_natDegree, hfm.leadingCoeff, map_one, one_pow, one_mul,
     map_sub_sprod_roots_eq_prod_map_eval _ _ (hgm.map _) (SplittingField.splits _),
-    roots_map _ (by simp [hf]), map_multiset_prod, Multiset.map_map]
+    hf.map_roots, map_multiset_prod, Multiset.map_map]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
