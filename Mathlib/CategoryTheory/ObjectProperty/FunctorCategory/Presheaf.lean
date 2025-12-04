@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Limits
+import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 import Mathlib.CategoryTheory.ObjectProperty.Local
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types.Colimits
@@ -178,7 +178,7 @@ variable {c}
 
 include hc in
 lemma preservesLimit_eq_isLocal_single :
-    Functor.preservesLimit (Type w) F =
+    ObjectProperty.preservesLimit F =
       (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal := by
   ext P
   rw [← nonempty_isLimit_mapCone_iff c hc' P]
@@ -195,14 +195,13 @@ noncomputable def preservesLimitHomFamilyTgt (h : PLift (HasLimit F)) :=
   letI := h.down
   shrinkYoneda.obj (limit F).unop
 
---coconePtToShrinkYoneda (limit.cone F) (colimit.isColimit _)
 noncomputable def preservesLimitHomFamily (h : PLift (HasLimit F)) :
     preservesLimitHomFamilySrc F ⟶ preservesLimitHomFamilyTgt F h :=
   letI := h.down
   coconePtToShrinkYoneda (limit.cone F) (colimit.isColimit _)
 
 lemma preservesLimit_eq_isLocal :
-    Functor.preservesLimit (Type w) F =
+    ObjectProperty.preservesLimit F =
       (MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
   ext G
   by_cases hF : HasLimit F
@@ -214,9 +213,9 @@ lemma preservesLimit_eq_isLocal :
       fun _ ↦ ⟨fun hc ↦ (hF ⟨_, hc⟩).elim⟩⟩
 
 lemma preservesLimitsOfShape_eq_isLocal :
-    Functor.preservesLimitsOfShape Cᵒᵖ (Type w) J =
+    ObjectProperty.preservesLimitsOfShape J =
       (⨆ (F : J ⥤ Cᵒᵖ), MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
-  simp only [Functor.preservesLimitsOfShape,
+  simp only [ObjectProperty.preservesLimitsOfShape_eq_iSup,
     MorphismProperty.isLocal_iSup, preservesLimit_eq_isLocal]
 
 end

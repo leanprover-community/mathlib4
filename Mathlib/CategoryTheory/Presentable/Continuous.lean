@@ -43,7 +43,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 variable (C D) in
 def isCardinalContinuous : ObjectProperty (C ⥤ D) :=
   ⨅ (J : Type w) (_ : Category.{w} J) (_ : HasCardinalLT (Arrow J) κ),
-    preservesLimitsOfShape C D J
+    ObjectProperty.preservesLimitsOfShape J
 
 lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     isCardinalContinuous C D κ F ↔
@@ -80,7 +80,7 @@ lemma isCardinalContinuous_eq_isLocal :
     isCardinalContinuous Cᵒᵖ (Type w) κ =
       (isCardinalContinuousMorphismProperty.{w} C κ).isLocal := by
   trans ⨅ (J : SmallCategoryCardinalLT κ),
-    preservesLimitsOfShape Cᵒᵖ (Type w) (SmallCategoryCardinalLT.categoryFamily κ J)
+    ObjectProperty.preservesLimitsOfShape (SmallCategoryCardinalLT.categoryFamily κ J)
   · refine le_antisymm ?_ ?_
     · simp only [le_iInf_iff]
       intro J P hP
@@ -89,7 +89,7 @@ lemma isCardinalContinuous_eq_isLocal :
       simp only [le_iInf_iff]
       intro J _ hJ
       obtain ⟨J', ⟨e⟩⟩ := SmallCategoryCardinalLT.exists_equivalence κ J hJ
-      rw [← congr_preservesLimitsOfShape _ _ e]
+      rw [← ObjectProperty.congr_preservesLimitsOfShape _ _ e]
       apply iInf_le
   · simp [preservesLimitsOfShape_eq_isLocal]
 
