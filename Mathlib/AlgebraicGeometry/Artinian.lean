@@ -103,14 +103,10 @@ instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian
   assumption
 
 theorem IsNoetherianRing_DiscreteTopololgy_IsArtinianRing
-(R : Type*) [CommRing R] [IsNoetherianRing R] [DiscreteTopology (PrimeSpectrum R)] :
+(R : Type*) [CommRing R] [IsNoetherianRing R] [h : DiscreteTopology (PrimeSpectrum R)] :
     IsArtinianRing R := by
   apply isArtinianRing_iff_krullDimLE_zero.mpr
-  apply Ring.krullDimLE_zero_iff.mpr
-  intro I hI
-  let p : PrimeSpectrum R := ⟨I, hI⟩
-  apply (PrimeSpectrum.isClosed_singleton_iff_isMaximal p).mp
-  exact isClosed_singleton
+  exact (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp h).2
 
 lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
     [IsLocallyNoetherian X] [DiscreteTopology X] :
