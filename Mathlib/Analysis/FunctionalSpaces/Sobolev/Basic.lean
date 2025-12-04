@@ -59,7 +59,7 @@ lemma isRepresentedBy_zero : IsRepresentedBy (0 : 𝓓'(Ω, F)) (0 : E → F) μ
 
 namespace IsRepresentedBy
 
-variable {T T' : 𝓓'(Ω, F)} {f f' : E →L[ℝ] F} {c : ℝ}
+variable {T T' : 𝓓'(Ω, F)} {f f' : E → F} {c : ℝ}
 
 lemma add (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
     IsRepresentedBy (T + T') (f + f') μ where
@@ -74,7 +74,6 @@ lemma neg (hT : IsRepresentedBy T f μ) : IsRepresentedBy (-T) (-f) μ where
 lemma sub (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
     IsRepresentedBy (T - T') (f - f') μ := by
   rw [sub_eq_add_neg T T', sub_eq_add_neg]
-  norm_cast
   exact hT.add hT'.neg
 
 lemma smul (hT : IsRepresentedBy T f μ) : IsRepresentedBy (c • T) (c • f) μ where
@@ -161,42 +160,36 @@ lemma hasWeakDeriv_congr_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[�
     HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g μ := by
   sorry
 
+@[simp]
+lemma hasWeakDeriv_zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
+  simp [HasWeakDeriv, weakDeriv_zero, isRepresentedBy_zero]
+
+@[simp]
+lemma hasWeakderiv_const {a : F} : HasWeakDeriv Ω (fun _ : E ↦ a) 0 μ := by
+  simp [HasWeakDeriv, weakDeriv_const, isRepresentedBy_zero]
+
 namespace HasWeakDeriv
 
 variable {g g' : E → E →L[ℝ] F} {c : ℝ}
 
 lemma add (hf : HasWeakDeriv Ω f g μ) (hf' : HasWeakDeriv Ω f' g' μ)
-    (hf'' : LocallyIntegrableOn f Ω μ) (hf''' : LocallyIntegrableOn f' Ω μ) :
+    (hfint : LocallyIntegrableOn f Ω μ) (hfint' : LocallyIntegrableOn f' Ω μ) :
     HasWeakDeriv Ω (f + f') (g + g') μ := by
   simp only [HasWeakDeriv] at hf hf' ⊢
-  -- TODO: are hf'' and hf''' required? if so, find better names for them!
-  rw [weakDeriv_add hf'' hf''']
-  -- this should work: `apply hf.add hf'`
-  sorry
+  simp [weakDeriv_add hfint hfint', hf.add hf']
 
 lemma neg (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (-f) (-g) μ := by
   simp only [HasWeakDeriv] at hf ⊢
-  -- apply IsRepresentedBy.neg hf
-  sorry
+  simpa [weakDeriv_neg] using hf.neg
 
-lemma sub (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ) :
+lemma sub (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ)
+    (hfint : LocallyIntegrableOn f Ω μ) (hfint' : LocallyIntegrableOn f' Ω μ) :
     HasWeakDeriv Ω (f - f') (g - g') μ := by
-  sorry
+  simpa [sub_eq_add_neg] using hf.add hg.neg hfint hfint'.neg
 
 lemma smul (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (c • f) (c • g) μ := by
   simp only [HasWeakDeriv] at hf ⊢
-  rw [weakDeriv_smul]
-  -- apply IsRepresentedBy.smul hf (c := c) (T := weakDeriv Ω f μ) (f := g)
-  -- types don't match: smul wants a ContinuousLinearMap, but g is E → CLM(...)
-  sorry
-
-@[simp]
-lemma zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
-  simp [HasWeakDeriv, weakDeriv_zero, isRepresentedBy_zero]
-
-@[simp]
-lemma const {a : F} : HasWeakDeriv Ω (fun _ : E ↦ a) 0 μ := by
-  simp [HasWeakDeriv, weakDeriv_const, isRepresentedBy_zero]
+  simpa [weakDeriv_smul] using hf.smul
 
 end HasWeakDeriv
 
@@ -249,10 +242,7 @@ lemma smul (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
 @[simp]
 lemma zero : HasWTaylorSeriesUpTo Ω 0 (0 : E → FormalMultilinearSeries ℝ E F) k p μ where
   zero_eq := by simp
-  hasWeakDeriv m hm := by
-    simp
-    -- HasWeakDeriv.zero morally proves this...
-    sorry
+  hasWeakDeriv m hm := by simpa using hasWeakDeriv_zero
   memLp m hm := by simp
 
 end HasWTaylorSeriesUpTo
