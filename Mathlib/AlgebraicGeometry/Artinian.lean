@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.HopkinsLevitzki
 /-!
 # Artinian and Locally Artinian Schemes
 
-We define and prove basic properties about Artinian and Locally Artinian Schemes.
+We define and prove basic properties about Artinian and locally Artinian Schemes.
 
 ## Main definitions
 
@@ -29,7 +29,7 @@ We define and prove basic properties about Artinian and Locally Artinian Schemes
 * `AlgebraicGeometry.IsArtinianScheme_iff_IsNoetherian_and_Finite`: A scheme is Artinian if and
   only if it is Noetherian and has the discrete topology.
 
-* `IsLocallyArtinian.Opens_IsLocallyArtinian`: An open subset of a Locally Artinian scheme is
+* `IsLocallyArtinian.Opens_IsLocallyArtinian`: An open subset of a locally Artinian scheme is
   locally Artinian (when considered as a scheme in the natural way)
 
 * `inst_IsArtinianScheme_Finite`: An Artinian scheme is finite.
@@ -118,7 +118,7 @@ theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
   ⟨fun _ => ⟨inferInstance, inferInstance⟩,
   fun ⟨_,_⟩ => IsLocallyNoetherian.isLocallyArtinian_discreteTopology X⟩
 
-/-- A scheme is Artinian if it is Locally Artinian and quasi-compact -/
+/-- A scheme is Artinian if it is locally Artinian and quasi-compact -/
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
@@ -137,7 +137,7 @@ theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
     {toIsLocallyArtinian := IsLocallyNoetherian.isLocallyArtinian_discreteTopology X,
       toCompactSpace := inferInstance}⟩
 
-/-- A commutative ring R is Artinian if and only if Spec R is and Artinian scheme -/
+/-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem IsArtinianRing.iff_isArtinianScheme (R : Type*) [CommRing R] :
     IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := by
   constructor
