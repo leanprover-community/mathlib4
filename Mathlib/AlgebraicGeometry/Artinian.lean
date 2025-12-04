@@ -118,7 +118,7 @@ theorem IsNoetherianRing_DiscreteTopololgy_IsArtinianRing
   exact isClosed_singleton
 
 lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
-[IsLocallyNoetherian X] [DiscreteTopology X] :
+    [IsLocallyNoetherian X] [DiscreteTopology X] :
     IsLocallyArtinian X := by
   refine { component_artinian := ?_ }
   intro U
