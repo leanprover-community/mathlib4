@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Mathlib.Tactic.ExtractGoal
 public meta import Mathlib.Tactic.MinImports
+public meta import Mathlib.Util.ParseCommand
 public meta import Lean.Elab.Command
 
 /-!
@@ -308,26 +309,11 @@ def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandEla
           if goalsAfter.isEmpty then
             logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}` ({elapsedMs}ms)"
 
-/-- Parse a string into tactic syntax.
-
-Returns an error message if parsing fails.
--/
-def Mathlib.TacticAnalysis.parseTacticString (env : Environment) (tacticStr : String) :
-    Except String (TSyntax `tactic) := do
-  let ictx := Parser.mkInputContext tacticStr "<tactic>"
-  let s := (Parser.categoryParser `tactic 0).fn.run ictx { env, options := {} }
-    (Parser.getTokenTable env) (Parser.mkParserState tacticStr)
-  if s.hasError then
-    .error (s.toErrorMsg ictx)
-  else if s.pos.atEnd tacticStr then
-    .ok ⟨s.stxStack.back⟩
-  else
-    .error ((s.mkError "end of input").toErrorMsg ictx)
-
 /-- Run a tactic (given as a string) at each proof step, with timing.
 
 `label` is the human-readable name shown in output (e.g., "grind").
 `tacticStr` is the tactic syntax as a string (e.g., "grind +suggestions").
+Tactic sequences like "simp; grind" are also supported.
 
 Reports elapsed time in milliseconds for each successful replacement.
 To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
@@ -335,10 +321,11 @@ To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
 def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
     (label : String) (tacticStr : String) : TacticAnalysis.Config where
   run seq := do
-    let env ← getEnv
-    let tac ← match parseTacticString env tacticStr with
-      | .ok tac => pure tac
-      | .error msg => throwError msg
+    -- Parse using `tacticSeq.fn` directly since `tacticSeq` is not a parser category.
+    -- See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/piggy.20back.20off.20of.20the.20lean4.20parser
+    let tacSeq ← ofExcept <|
+      Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
+    let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
     let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
     for i in seq do
       if let [goal] := i.tacI.goalsBefore then
@@ -360,10 +347,14 @@ Reads from environment variables:
 
 If `TRY_AT_EACH_STEP_TACTIC` is missing, this linter does nothing.
 
-Example usage:
+To enable, add to the `mathlibOnlyLinters` array in `lakefile.lean`:
+```lean
+⟨`linter.tacticAnalysis.tryAtEachStepFromEnv, true⟩,
+```
+
+Then run with the environment variable:
 ```bash
-TRY_AT_EACH_STEP_TACTIC="grind +suggestions" \
-lake build Mathlib -Klinter.tacticAnalysis.tryAtEachStepFromEnv=true
+TRY_AT_EACH_STEP_TACTIC="grind +suggestions" lake build Mathlib
 ```
 
 This generic entry point is used by the hammer-bench benchmarking tool
