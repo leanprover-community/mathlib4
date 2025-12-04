@@ -98,7 +98,6 @@ prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
 The current implementation is a `NameMap` of `NameSet`s, testing each prefix of `n₁` and `n₂` in
 turn. This can probably be optimized.
 -/
---@[expose]
 def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
