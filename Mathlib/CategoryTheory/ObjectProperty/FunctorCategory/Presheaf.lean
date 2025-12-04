@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
-import Mathlib.CategoryTheory.ObjectProperty.Local
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.ShrinkYoneda
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
+public import Mathlib.CategoryTheory.ObjectProperty.Local
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Presheaves of types which preserves a limit
@@ -19,6 +21,8 @@ family of morphisms in `Cᵒᵖ ⥤ Type w` (this family contains `1` or `0` mor
 depending on whether the limit of `F` exists or not).
 
 -/
+
+@[expose] public section
 
 universe w w' v v' u u'
 

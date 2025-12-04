@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
-import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.CategoryTheory.SmallRepresentatives
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # `κ`-continuous functors
@@ -26,6 +28,8 @@ locally `κ`-presentable, and that any locally `κ`-presentable category
 is equivalent to a category of `κ`-continuous presheaves.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
