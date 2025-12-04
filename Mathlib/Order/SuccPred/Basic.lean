@@ -47,7 +47,6 @@ open Function OrderDual Set
 variable {α β : Type*}
 
 /-- Order equipped with a sensible successor function. -/
-@[ext]
 class SuccOrder (α : Type*) [Preorder α] where
   /-- Successor function -/
   succ : α → α
@@ -59,7 +58,7 @@ class SuccOrder (α : Type*) [Preorder α] where
   succ_le_of_lt {a b} : a < b → succ a ≤ b
 
 /-- Order equipped with a sensible predecessor function. -/
-@[ext]
+@[to_dual (attr := ext)]
 class PredOrder (α : Type*) [Preorder α] where
   /-- Predecessor function -/
   pred : α → α
@@ -70,23 +69,20 @@ class PredOrder (α : Type*) [Preorder α] where
   /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
 
-instance [Preorder α] [SuccOrder α] :
-    PredOrder αᵒᵈ where
-  pred := toDual ∘ SuccOrder.succ ∘ ofDual
-  pred_le := by
-    simp only [comp, OrderDual.forall, ofDual_toDual, toDual_le_toDual,
-     SuccOrder.le_succ, implies_true]
-  min_of_le_pred h := by apply SuccOrder.max_of_succ_le h
-  le_pred_of_lt := by intro a b h; exact SuccOrder.succ_le_of_lt h
+attribute [to_dual (reorder := a b)] PredOrder.le_pred_of_lt
 
-instance [Preorder α] [PredOrder α] :
-    SuccOrder αᵒᵈ where
+instance [Preorder α] [SuccOrder α] : PredOrder αᵒᵈ where
+  pred := toDual ∘ SuccOrder.succ ∘ ofDual
+  pred_le := by simp [SuccOrder.le_succ]
+  min_of_le_pred h := by apply SuccOrder.max_of_succ_le h
+  le_pred_of_lt {a b} h := SuccOrder.succ_le_of_lt h
+
+@[to_dual existing]
+instance [Preorder α] [PredOrder α] : SuccOrder αᵒᵈ where
   succ := toDual ∘ PredOrder.pred ∘ ofDual
-  le_succ := by
-    simp only [comp, OrderDual.forall, ofDual_toDual, toDual_le_toDual,
-     PredOrder.pred_le, implies_true]
+  le_succ := by simp [PredOrder.pred_le]
   max_of_succ_le h := by apply PredOrder.min_of_le_pred h
-  succ_le_of_lt := by intro a b h; exact PredOrder.le_pred_of_lt h
+  succ_le_of_lt {a b} h := PredOrder.le_pred_of_lt h
 
 section Preorder
 
@@ -94,19 +90,19 @@ variable [Preorder α]
 
 /-- A constructor for `SuccOrder α` usable when `α` has no maximal element. -/
 def SuccOrder.ofSuccLeIff (succ : α → α) (hsucc_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b) :
-    SuccOrder α :=
-  { succ
-    le_succ := fun _ => (hsucc_le_iff.1 le_rfl).le
-    max_of_succ_le := fun ha => (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
-    succ_le_of_lt := fun h => hsucc_le_iff.2 h }
+    SuccOrder α where
+  succ := succ
+  le_succ _ := (hsucc_le_iff.1 le_rfl).le
+  max_of_succ_le ha := (lt_irrefl _ <| hsucc_le_iff.1 ha).elim
+  succ_le_of_lt := hsucc_le_iff.2
 
 /-- A constructor for `PredOrder α` usable when `α` has no minimal element. -/
 def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pred b ↔ a < b) :
-    PredOrder α :=
-  { pred
-    pred_le := fun _ => (hle_pred_iff.1 le_rfl).le
-    min_of_le_pred := fun ha => (lt_irrefl _ <| hle_pred_iff.1 ha).elim
-    le_pred_of_lt := fun h => hle_pred_iff.2 h }
+    PredOrder α where
+  pred := pred
+  pred_le _ := (hle_pred_iff.1 le_rfl).le
+  min_of_le_pred ha := (lt_irrefl _ <| hle_pred_iff.1 ha).elim
+  le_pred_of_lt := hle_pred_iff.2
 
 end Preorder
 
@@ -117,25 +113,21 @@ variable [LinearOrder α]
 /-- A constructor for `SuccOrder α` for `α` a linear order. -/
 @[simps]
 def SuccOrder.ofCore (succ : α → α) (hn : ∀ {a}, ¬IsMax a → ∀ b, a < b ↔ succ a ≤ b)
-    (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α :=
-  { succ
-    succ_le_of_lt := fun {a b} =>
-      by_cases (fun h hab => (hm a h).symm ▸ hab.le) fun h => (hn h b).mp
-    le_succ := fun a =>
-      by_cases (fun h => (hm a h).symm.le) fun h => le_of_lt <| by simpa using (hn h a).not
-    max_of_succ_le := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
+    (hm : ∀ a, IsMax a → succ a = a) : SuccOrder α where
+  succ := succ
+  succ_le_of_lt {a b} := by_cases (fun h hab ↦ (hm a h).symm ▸ hab.le) fun h ↦ (hn h b).mp
+  le_succ a := by_cases (fun h ↦ (hm a h).symm.le) fun h ↦ le_of_lt <| by simpa using (hn h a).not
+  max_of_succ_le {a} := not_imp_not.mp fun h ↦ by simpa using (hn h a).not
 
 /-- A constructor for `PredOrder α` for `α` a linear order. -/
 @[simps]
 def PredOrder.ofCore (pred : α → α)
     (hn : ∀ {a}, ¬IsMin a → ∀ b, b ≤ pred a ↔ b < a) (hm : ∀ a, IsMin a → pred a = a) :
-    PredOrder α :=
-  { pred
-    le_pred_of_lt := fun {a b} =>
-      by_cases (fun h hab => (hm b h).symm ▸ hab.le) fun h => (hn h a).mpr
-    pred_le := fun a =>
-      by_cases (fun h => (hm a h).le) fun h => le_of_lt <| by simpa using (hn h a).not
-    min_of_le_pred := fun {a} => not_imp_not.mp fun h => by simpa using (hn h a).not }
+    PredOrder α where
+  pred := pred
+  le_pred_of_lt {a b} := by_cases (fun h hab ↦ (hm b h).symm ▸ hab.le) fun h ↦ (hn h a).mpr
+  pred_le a := by_cases (fun h ↦ (hm a h).le) fun h ↦ le_of_lt <| by simpa using (hn h a).not
+  min_of_le_pred {a} := not_imp_not.mp fun h ↦ by simpa using (hn h a).not
 
 variable (α)
 
@@ -150,6 +142,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
     fun _ ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
 
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
+@[to_dual existing]
 noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
     PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
 
@@ -166,48 +159,62 @@ variable [Preorder α] [SuccOrder α] {a b : α}
 
 /-- The successor of an element. If `a` is not maximal, then `succ a` is the least element greater
 than `a`. If `a` is maximal, then `succ a = a`. -/
+@[to_dual]
 def succ : α → α :=
   SuccOrder.succ
 
+@[to_dual pred_le]
 theorem le_succ : ∀ a : α, a ≤ succ a :=
   SuccOrder.le_succ
 
+@[to_dual min_of_le_pred]
 theorem max_of_succ_le {a : α} : succ a ≤ a → IsMax a :=
   SuccOrder.max_of_succ_le
 
+@[to_dual le_pred_of_lt]
 theorem succ_le_of_lt {a b : α} : a < b → succ a ≤ b :=
   SuccOrder.succ_le_of_lt
 
+@[to_dual le_pred]
 alias _root_.LT.lt.succ_le := succ_le_of_lt
 
-@[simp]
+@[to_dual (attr := simp) le_pred_iff_isMin]
 theorem succ_le_iff_isMax : succ a ≤ a ↔ IsMax a :=
   ⟨max_of_succ_le, fun h => h <| le_succ _⟩
 
 alias ⟨_root_.IsMax.of_succ_le, _root_.IsMax.succ_le⟩ := succ_le_iff_isMax
 
-@[simp]
+attribute [to_dual of_le_pred] IsMax.of_succ_le
+attribute [to_dual le_pred] IsMax.succ_le
+
+@[to_dual (attr := simp) pred_lt_iff_not_isMin]
 theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
   ⟨not_isMax_of_lt, fun ha => (le_succ a).lt_of_not_ge fun h => ha <| max_of_succ_le h⟩
 
+@[to_dual pred_lt_of_not_isMin]
 alias ⟨_, lt_succ_of_not_isMax⟩ := lt_succ_iff_not_isMax
 
+-- @[to_dual]
 theorem wcovBy_succ (a : α) : a ⩿ succ a :=
   ⟨le_succ a, fun _ hb => (succ_le_of_lt hb).not_gt⟩
 
+-- @[to_dual]
 theorem covBy_succ_of_not_isMax (h : ¬IsMax a) : a ⋖ succ a :=
   (wcovBy_succ a).covBy_of_lt <| lt_succ_of_not_isMax h
 
+@[to_dual pred_lt_of_le_of_not_isMin]
 theorem lt_succ_of_le_of_not_isMax (hab : b ≤ a) (ha : ¬IsMax a) : b < succ a :=
   hab.trans_lt <| lt_succ_of_not_isMax ha
 
+@[to_dual le_pred_iff_not_isMin]
 theorem succ_le_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ b ↔ a < b :=
   ⟨(lt_succ_of_not_isMax ha).trans_le, succ_le_of_lt⟩
 
+@[to_dual]
 lemma succ_lt_succ_of_not_isMax (h : a < b) (hb : ¬ IsMax b) : succ a < succ b :=
   lt_succ_of_le_of_not_isMax (succ_le_of_lt h) hb
 
-@[simp, mono, gcongr]
+@[to_dual (attr := simp), mono, gcongr]
 theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   by_cases hb : IsMax b
   · by_cases hba : b ≤ a
@@ -216,6 +223,7 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   · rw [succ_le_iff_of_not_isMax fun ha => hb <| ha.mono h]
     apply lt_succ_of_le_of_not_isMax h hb
 
+@[to_dual]
 theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 
 /-- See also `Order.succ_eq_of_covBy`. -/
@@ -224,7 +232,7 @@ lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
   · by_contra hba
     exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) <| hab.lt.succ_le.lt_of_not_ge hba
   · exact hba.trans (le_succ _)
-
+#exit
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
 
 theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x :=
