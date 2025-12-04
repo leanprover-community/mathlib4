@@ -5,7 +5,7 @@ Authors: Eric Wieser, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
@@ -34,6 +34,10 @@ protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
 @[to_additive (attr := simp)]
 theorem mem_op {x : Mᵐᵒᵖ} {S : Submonoid M} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
+@[to_additive (attr := simp)] lemma op_toSubsemigroup (H : Submonoid M) :
+    H.op.toSubsemigroup = H.toSubsemigroup.op :=
+  rfl
+
 /-- Pull an opposite submonoid back to a submonoid along `MulOpposite.op` -/
 @[to_additive (attr := simps) /-- Pull an opposite additive submonoid back to a submonoid along
 `AddOpposite.op` -/]
@@ -44,6 +48,10 @@ protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
 
 @[to_additive (attr := simp)]
 theorem mem_unop {x : M} {S : Submonoid Mᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
+
+@[to_additive (attr := simp)] lemma unop_toSubmonoid (H : Submonoid Mᵐᵒᵖ) :
+    H.unop.toSubsemigroup = H.toSubsemigroup.unop :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem unop_op (S : Submonoid M) : S.op.unop = S := rfl
