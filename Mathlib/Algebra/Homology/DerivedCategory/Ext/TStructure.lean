@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 
 Let `C` be an abelian category. Assuming `HasExt.{w} C`, we show that
 if two cochain complexes `K` and `L` are cohomologically in a single degree,
-then the type of morphisms from `K` to `L⟦n⟧` in the derived category if `w`-small
+then the type of morphisms from `K` to `L⟦n⟧` in the derived category is `w`-small
 for any `n : ℤ`, which we phrase here by saying that
 `HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso _ _) ℤ K L` hold.
 
