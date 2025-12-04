@@ -506,7 +506,6 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
 @[fun_prop, measurability]

@@ -6,6 +6,7 @@ Authors: Kyle Miller, Pim Otte, Daniel Weber, Rida Hamadani
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
+public import Mathlib.Data.List.Zip
 
 /-!
 # Operations on walks
@@ -636,20 +637,11 @@ lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
 
-lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
-    p = q := by
-  induction q with
-  | nil => exact nil_iff_eq_nil.mp (nil_iff_support_eq.mpr (support_nil ▸ h))
-  | cons ha q ih =>
-    cases p with
-    | nil => simp at h
-    | cons _ p =>
-      simp only [support_cons, List.cons.injEq, true_and] at h
-      apply List.getElem_of_eq at h
-      specialize h (i := 0) (by simp)
-      simp_rw [List.getElem_zero, p.head_support, q.head_support] at h
-      have : (p.copy h rfl).support = q.support := by simpa
-      simp [← ih this]
+lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
+  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
+  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+  grind [map_fst_darts, map_snd_darts]
 
 lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
   fun _ _ ↦ ext_support
