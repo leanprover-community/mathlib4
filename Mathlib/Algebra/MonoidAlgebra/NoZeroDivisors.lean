@@ -102,7 +102,8 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     | _ s ih =>
     obtain h | h := s.eq_empty_or_nonempty <;> subst s
     · simp_rw [Finset.union_eq_empty, support_eq_empty] at h; exact h.1.trans h.2.symm
-    have ⟨af, haf, ag, hag, uniq⟩ := UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
+    obtain ⟨af, haf, ag, hag, uniq⟩ :=
+      UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
     have h := mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_left)
     dsimp only at eq
     rw [eq, mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_right)] at h
