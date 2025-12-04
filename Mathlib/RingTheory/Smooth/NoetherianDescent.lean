@@ -81,14 +81,14 @@ lemma subset_range_algebraMap :
       (⋃ i, ⋃ x ∈ (A.p i).coeffs, x.coeffs) : Set R) ⊆ Set.range ⇑(algebraMap A.R₀ R) := by
   simp only [R₀, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
 
-lemma coeffs_h_subset (i) : ((A.h i).coeffs : Set R) ⊆ Set.range ⇑(algebraMap A.R₀ R) := by
+lemma coeffs_h_subset (i) : ↑(A.h i).coeffs ⊆ Set.range ⇑(algebraMap A.R₀ R) := by
   trans ⋃ i, ↑(A.h i).coeffs
   · exact Set.subset_iUnion_of_subset i subset_rfl
   · exact subset_trans (subset_trans Set.subset_union_left Set.subset_union_left)
       A.subset_range_algebraMap
 
 lemma coeffs_p_subset (i) :
-    ((A.p i).coeffs : Set _) ⊆ .range (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) := by
+    ↑(A.p i).coeffs ⊆ Set.range (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) := by
   intro p hp
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset]
   refine subset_trans ?_ A.subset_range_algebraMap
@@ -96,7 +96,7 @@ lemma coeffs_p_subset (i) :
   exact Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset p hp subset_rfl)
 
 lemma coeffs_q_subset (i) :
-    ((A.q i).coeffs : Set _) ⊆ .range (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) := by
+    ↑(A.q i).coeffs ⊆ Set.range (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) := by
   intro q hq
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset]
   refine subset_trans ?_ A.subset_range_algebraMap
@@ -104,43 +104,44 @@ lemma coeffs_q_subset (i) :
   refine subset_trans ?_ Set.subset_union_right
   exact Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset q hq subset_rfl)
 
-noncomputable def σ₀ :
-    A.P.ModelOfHasCoeffs A.R₀ →ₐ[A.R₀] MvPolynomial A.vars A.R₀ ⧸ (RingHom.ker f₀ ^ 2) :=
-  Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval fun i ↦
-      ((A.h i).preimageOfCoeffsSubsetRange (A.coeffs_h_subset i))) <| by
+lemma exists_kerSquareLift_comp_eq_id :
+    ∃ (σ₀ : A.P.ModelOfHasCoeffs A.R₀ →ₐ[A.R₀] MvPolynomial A.vars A.R₀ ⧸ (RingHom.ker f₀ ^ 2)),
+      (AlgHom.kerSquareLift f₀).comp σ₀ = .id A.R₀ (Presentation.ModelOfHasCoeffs A.R₀) := by
+  choose p hp using fun i ↦ (A.h i).mem_range_map_iff_coeffs_subset.mpr (A.coeffs_h_subset i)
+  refine ⟨?_, ?_⟩
+  · refine Ideal.Quotient.liftₐ _ ((Ideal.Quotient.mkₐ _ _).comp <| aeval p) ?_
     simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le, Set.range_subset_iff]
     intro i
-    simp only [← AlgHom.comap_ker, Ideal.coe_comap,
-      Set.mem_preimage, SetLike.mem_coe]
+    simp only [← AlgHom.comap_ker, Ideal.coe_comap, Set.mem_preimage, SetLike.mem_coe]
     rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker,
       ← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker]
     have hinj : Function.Injective (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) :=
       map_injective _ (FaithfulSMul.algebraMap_injective A.R₀ R)
-    rw [Ideal.mem_span_pow_iff]
-    refine ⟨(A.p i).preimageOfCoeffsSubsetRange (A.coeffs_p_subset i), .of_map hinj ?_, hinj ?_⟩
-    · rw [map_preimageOfCoeffsSubsetRange]
+    rw [Ideal.mem_span_pow_iff_exists_isHomogeneous]
+    obtain ⟨q, hq⟩ := (A.p i).mem_range_map_iff_coeffs_subset.mpr (A.coeffs_p_subset i)
+    refine ⟨q, .of_map hinj ?_, hinj ?_⟩
+    · rw [hq]
       exact A.hphom i
     · simp_rw [map_eval, Function.comp_def, Presentation.map_relationOfHasCoeffs,
-        map_preimageOfCoeffsSubsetRange, A.hp, MvPolynomial.map_aeval]
+        hq, A.hp, MvPolynomial.map_aeval, hp]
       simp [MvPolynomial.eval₂_map_comp_C, Presentation.map_relationOfHasCoeffs, aeval_def]
-
-lemma kerSquareLift_comp_σ₀ :
-    (AlgHom.kerSquareLift f₀).comp A.σ₀ = .id A.R₀ (Presentation.ModelOfHasCoeffs A.R₀) := by
-  have hf₀ : Function.Surjective f₀ := Ideal.Quotient.mk_surjective
-  rw [← AlgHom.cancel_right hf₀]
-  refine MvPolynomial.algHom_ext fun i ↦ ?_
-  suffices h : ∃ p, p.IsHomogeneous 1 ∧ (eval (A.P.relationOfHasCoeffs A.R₀)) p =
-      preimageOfCoeffsSubsetRange (A.coeffs_h_subset i) - X i by
-    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
-    apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
-    simpa [Ideal.mem_span_iff]
-  have hinj : Function.Injective (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) :=
-    map_injective _ (FaithfulSMul.algebraMap_injective A.R₀ R)
-  refine ⟨(A.q i).preimageOfCoeffsSubsetRange (A.coeffs_q_subset i), .of_map hinj ?_, hinj ?_⟩
-  · rw [map_preimageOfCoeffsSubsetRange]
-    exact A.hqhom i
-  · simp [MvPolynomial.map_eval, map_preimageOfCoeffsSubsetRange, Function.comp_def,
-      Presentation.map_relationOfHasCoeffs, hq]
+  · have hf₀ : Function.Surjective f₀ := Ideal.Quotient.mk_surjective
+    rw [← AlgHom.cancel_right hf₀]
+    refine MvPolynomial.algHom_ext fun i ↦ ?_
+    suffices h : ∃ p', p'.IsHomogeneous 1 ∧ (eval (A.P.relationOfHasCoeffs A.R₀)) p' =
+        p i - X i by
+      -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
+      -- Can be fixed after #25138.
+      apply (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr
+      simpa [Ideal.mem_span_iff_exists_isHomogeneous, hp]
+    have hinj : Function.Injective (MvPolynomial.map (σ := A.vars) (algebraMap A.R₀ R)) :=
+      map_injective _ (FaithfulSMul.algebraMap_injective A.R₀ R)
+    obtain ⟨t, ht⟩ := (A.q i).mem_range_map_iff_coeffs_subset.mpr (A.coeffs_q_subset i)
+    refine ⟨t, .of_map hinj ?_, hinj ?_⟩
+    · rw [ht]
+      exact A.hqhom i
+    · simp [MvPolynomial.map_eval, Function.comp_def,
+        Presentation.map_relationOfHasCoeffs, ht, hq, hp]
 
 end DescentAux
 
@@ -166,23 +167,25 @@ public theorem exists_finiteType [Smooth R S] :
       convert ho
       exact congr($hdiag _)
     simp
-  simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf, Ideal.mem_span_pow_iff] at this
+  simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,
+    Ideal.mem_span_pow_iff_exists_isHomogeneous] at this
   choose p homog hp using this
   have hsig (i : _) : f (h i) = P.val i := by
     rw [← AlgHom.kerSquareLift_mk]
     -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
+    -- Can be fixed after #25138.
     exact hh i ▸ congr($hsig (P.val i))
   have (i : Fin (Presentation.ofFinitePresentationVars R S)) :
       h i - X i ∈ Ideal.span (.range P.relation) := by
     simpa [P.span_range_relation_eq_ker, sub_eq_zero, f] using hsig i
-  simp_rw [Ideal.mem_span_iff] at this
+  simp_rw [Ideal.mem_span_iff_exists_isHomogeneous] at this
   choose q hqhom hq using this
   let A : DescentAux R S :=
     { vars := _, rels := _, P := P, σ := σ, p := p, h := h, hphom := homog, hp := hp,
       q := q, hqhom := hqhom, hq := hq }
   have : P.HasCoeffs A.R₀ := A.hasCoeffs
+  obtain ⟨σ₀, hσ₀⟩ := A.exists_kerSquareLift_comp_eq_id
   exact ⟨A.R₀, P.ModelOfHasCoeffs A.R₀, inferInstance, inferInstance, inferInstance, inferInstance,
-    inferInstance, ⟨.of_split _ A.σ₀ A.kerSquareLift_comp_σ₀, inferInstance⟩,
-    ⟨(P.tensorModelOfHasCoeffsEquiv A.R₀).symm⟩⟩
+    inferInstance, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A.R₀).symm⟩⟩
 
 end Algebra.Smooth

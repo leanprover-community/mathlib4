@@ -549,52 +549,122 @@ end GradedAlgebra
 
 end MvPolynomial
 
-/-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
-this. -/
-lemma Ideal.exists_isHomogeneous_of_mem_span {ι R : Type*} [CommSemiring R]
-    (x : ι → R) (y : R) (hy : y ∈ Ideal.span (.range x)) :
-    ∃ (p : MvPolynomial ι R), p.IsHomogeneous 1 ∧ p.eval x = y := by
-  induction hy using Submodule.span_induction with
-  | mem s hs =>
-    obtain ⟨i, rfl⟩ := hs
-    exact ⟨MvPolynomial.X i, MvPolynomial.isHomogeneous_X _ _, by simp⟩
-  | zero => exact ⟨0, MvPolynomial.isHomogeneous_zero _ _ _, by simp⟩
-  | add x y _ _ hx hy =>
-    obtain ⟨px, hpxhom, rfl⟩ := hx
-    obtain ⟨py, hpyhom, rfl⟩ := hy
-    exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
-  | smul a x _ hx =>
-    obtain ⟨px, hpxhom, rfl⟩ := hx
-    exact ⟨MvPolynomial.C a * px, MvPolynomial.IsHomogeneous.C_mul hpxhom a, by simp⟩
+lemma Finsupp.range_single_one {σ : Type*} :
+    Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
+  refine subset_antisymm ?_ ?_
+  · simp [Set.range_subset_iff]
+  · intro p (hp : p.sum (fun a k ↦ k) = 1)
+    obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
+    use a
+
+lemma MvPolynomial.homogeneousSubmodule_one_eq_span_X {ι R : Type*} [CommSemiring R] :
+    MvPolynomial.homogeneousSubmodule ι R 1 = .span R (.range X) := by
+  rw [MvPolynomial.homogeneousSubmodule_eq_finsupp_supported, Finsupp.supported_eq_span_single]
+  simp_rw [MvPolynomial.single_eq_monomial, ← Finsupp.range_single_one, ← Set.range_comp]
+  rfl
+
+lemma MvPolynomial.homogeneousSubmodule_zero {ι R : Type*} [CommSemiring R] :
+    MvPolynomial.homogeneousSubmodule ι R 0 = 1 := by
+  ext x
+  simp only [MvPolynomial.mem_homogeneousSubmodule,
+    ← MvPolynomial.totalDegree_zero_iff_isHomogeneous, Submodule.mem_one,
+    MvPolynomial.algebraMap_eq, MvPolynomial.totalDegree_eq_zero_iff_eq_C]
+  refine ⟨?_, ?_⟩
+  · intro h
+    exact ⟨_, h.symm⟩
+  · rintro ⟨h, rfl⟩
+    simp
+
+lemma MvPolynomial.IsWeightedHomogeneous.C_mul {ι R M : Type*} [CommSemiring R]
+    [AddCommMonoid M] {w : ι → M} {m : M} {p : MvPolynomial ι R}
+    (r : R) (hp : IsWeightedHomogeneous w p m) :
+    IsWeightedHomogeneous w (C r * p) m := by
+  rw [← zero_add m]
+  exact .mul (isWeightedHomogeneous_C w r) hp
+
+lemma MvPolynomial.IsWeightedHomogeneous.induction_on {ι R M : Type*} [CommSemiring R]
+    [AddCommMonoid M] {w : ι → M} {m : M}
+    {motive : (p : MvPolynomial ι R) → p.IsWeightedHomogeneous w m → Prop}
+    (zero : motive 0 (isWeightedHomogeneous_zero R w m))
+    (add : ∀ p q hp hq, motive p hp → motive q hq → motive (p + q) (hp.add hq))
+    (monomial : ∀ (d : ι →₀ ℕ) (r : R) (hr : Finsupp.weight w d = m),
+      motive ((monomial d) r) (isWeightedHomogeneous_monomial w d r hr))
+    {p : MvPolynomial ι R} (hp : p.IsWeightedHomogeneous w m) :
+    motive p hp := by
+  suffices h : ∀ a, motive (C a * p) (.C_mul _ hp) by simpa using h 1
+  let A : Submodule R (MvPolynomial ι R) :=
+    { carrier := { p | ∃ hp, ∀ a, motive (C a * p) (.C_mul _ hp) }
+      add_mem' := fun ⟨_, hx⟩ ⟨_, hy⟩ ↦
+        ⟨.add ‹_› ‹_›, fun a ↦ by simp [mul_add, add _ _ _ _ (hx a) (hy a)]⟩
+      zero_mem' := ⟨isWeightedHomogeneous_zero R w m, by simp [zero]⟩
+      smul_mem' := fun a x ⟨_, hx⟩ ↦ ⟨by simp [Algebra.smul_def, C_mul a ‹_›], fun a ↦ by
+        simp_rw [Algebra.smul_def, algebraMap_eq, ← mul_assoc, ← map_mul]
+        apply hx⟩ }
+  rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
+    Finsupp.supported_eq_span_single] at hp
+  refine (Submodule.span_le (p := A) |>.mpr ?_ hp).2
+  rw [Set.image_subset_iff]
+  intro d hd
+  simp only [single_eq_monomial, Set.mem_preimage, SetLike.mem_coe]
+  refine ⟨isWeightedHomogeneous_monomial w d 1 hd, fun a ↦ ?_⟩
+  simp [MvPolynomial.C_mul_monomial, monomial _ _ hd]
+
+lemma MvPolynomial.monomial_mem_homogeneousSubmodule_pow_degree {ι R : Type*} [CommSemiring R]
+    (r : R) (s : ι →₀ ℕ) :
+    monomial s r ∈ (MvPolynomial.homogeneousSubmodule ι R 1) ^ s.degree := by
+  induction s using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ h =>
+    rw [Finsupp.degree_add, Finsupp.degree_single, monomial_single_add, pow_add]
+    exact Submodule.mul_mem_mul (Submodule.pow_mem_pow _ (isHomogeneous_X R a) _) h
+
+lemma MvPolynomial.homogeneousSubmodule_one_pow {ι R : Type*} [CommSemiring R] (n : ℕ) :
+    (MvPolynomial.homogeneousSubmodule ι R 1) ^ n = MvPolynomial.homogeneousSubmodule ι R n := by
+  refine le_antisymm ?_ fun x hx ↦ ?_
+  · induction n with
+    | zero => simp [MvPolynomial.homogeneousSubmodule_zero]
+    | succ n ih =>
+      grw [pow_add, pow_one, ih]
+      apply MvPolynomial.homogeneousSubmodule_mul
+  · simp only [MvPolynomial.mem_homogeneousSubmodule] at hx
+    induction hx using MvPolynomial.IsWeightedHomogeneous.induction_on with
+    | zero => simp
+    | add p q _ _ hp hq => exact Submodule.add_mem _ hp hq
+    | monomial d r hr =>
+      convert MvPolynomial.monomial_mem_homogeneousSubmodule_pow_degree _ _
+      rw [Finsupp.degree_eq_weight_one, ← Pi.one_def, ← hr]
 
 /-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
 this. -/
-lemma Ideal.mem_span_pow_iff {ι R : Type*} [CommSemiring R] {n : ℕ} (x : ι → R) (y : R) :
+lemma Ideal.span_eq_map_homogeneousSubmodule {ι R : Type*} [CommSemiring R]
+    (x : ι → R) :
+    Ideal.span (Set.range x) =
+      Submodule.map (MvPolynomial.aeval x).toLinearMap
+        (MvPolynomial.homogeneousSubmodule ι R 1) := by
+  simp [MvPolynomial.homogeneousSubmodule_one_eq_span_X, Submodule.map_span, ← Set.range_comp,
+    Function.comp_def]
+
+/-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
+this. -/
+lemma Ideal.span_pow_eq_map_homogeneousSubmodule {ι R : Type*} [CommSemiring R]
+    (x : ι → R) (n : ℕ) :
+    Ideal.span (Set.range x) ^ n =
+      Submodule.map (MvPolynomial.aeval x).toLinearMap
+        (MvPolynomial.homogeneousSubmodule ι R n) := by
+  rw [← MvPolynomial.homogeneousSubmodule_one_pow, Submodule.map_pow,
+    Ideal.span_eq_map_homogeneousSubmodule]
+
+/-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
+this. -/
+lemma Ideal.mem_span_pow_iff_exists_isHomogeneous {ι R : Type*} [CommSemiring R] {n : ℕ} (x : ι → R)
+    (y : R) :
     y ∈ (Ideal.span <| Set.range x) ^ n ↔
       ∃ (p : MvPolynomial ι R), p.IsHomogeneous n ∧ p.eval x = y := by
-  refine ⟨?_, ?_⟩
-  · induction n using Nat.case_strong_induction_on generalizing y with
-    | hz => exact fun _ ↦ ⟨MvPolynomial.C y, MvPolynomial.isHomogeneous_C _ _, by simp⟩
-    | hi n ih =>
-      refine fun h ↦ Submodule.smul_induction_on h (fun r hr t ht ↦ ?_) ?_
-      · obtain ⟨pr, hprhom, rfl⟩ := ih n (by omega) r hr
-        obtain ⟨pt, hpthom, rfl⟩ := Ideal.exists_isHomogeneous_of_mem_span x t ht
-        exact ⟨pr * pt, MvPolynomial.IsHomogeneous.mul hprhom hpthom, by simp⟩
-      · rintro x y ⟨px, hpxhom, rfl⟩ ⟨py, hpyhom, rfl⟩
-        exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
-  · rintro ⟨p, hp, rfl⟩
-    rw [← p.sum_single, map_finsuppSum, Finsupp.sum]
-    refine Ideal.sum_mem _ fun c hc ↦ ?_
-    simp_rw [MvPolynomial.single_eq_monomial, MvPolynomial.eval_monomial]
-    apply Ideal.mul_mem_left
-    have : Finsupp.degree = Finsupp.weight 1 := Finsupp.degree_eq_weight_one (σ := ι) (R := ℕ)
-    rw [← @hp c (by simpa using hc), ← this, Finsupp.degree, ← Finset.prod_pow_eq_pow_sum,
-      Finsupp.prod]
-    exact Ideal.prod_mem_prod fun _ _ ↦ Ideal.pow_mem_pow (Ideal.subset_span (by simp)) _
+  simp [Ideal.span_pow_eq_map_homogeneousSubmodule]
 
 /-- Try to use the universal property of the span (e.g., `Submodule.span_induction`) instead of
 this. -/
-lemma Ideal.mem_span_iff {ι R : Type*} [CommSemiring R] (x : ι → R) (y : R) :
+lemma Ideal.mem_span_iff_exists_isHomogeneous {ι R : Type*} [CommSemiring R] (x : ι → R) (y : R) :
     y ∈ Ideal.span (.range x) ↔
       ∃ (p : MvPolynomial ι R), p.IsHomogeneous 1 ∧ p.eval x = y := by
-  rw [← pow_one (span <| .range x), mem_span_pow_iff]
+  simp [Ideal.span_eq_map_homogeneousSubmodule]

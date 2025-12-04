@@ -523,18 +523,6 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
       obtain ⟨u, hu⟩ := hp hx.2
       exact ⟨q + u, by simp [hq, hu]⟩
 
-/-- If the coefficients of `p` are in the range of `f`, this is a preimage of
-`p` under `MvPolynomial.map f`. -/
-noncomputable def preimageOfCoeffsSubsetRange {f : R →+* S₁} {p : MvPolynomial σ S₁}
-    (hp : (p.coeffs : Set S₁) ⊆ Set.range f) : MvPolynomial σ R :=
-  (MvPolynomial.mem_range_map_iff_coeffs_subset.mpr hp).choose
-
-@[simp]
-lemma map_preimageOfCoeffsSubsetRange {f : R →+* S₁} {p : MvPolynomial σ S₁}
-    (hp : (p.coeffs : Set S₁) ⊆ Set.range f) :
-    (p.preimageOfCoeffsSubsetRange hp).map f = p :=
-  (MvPolynomial.mem_range_map_iff_coeffs_subset.mpr hp).choose_spec
-
 /-- If `f : S₁ →ₐ[R] S₂` is a morphism of `R`-algebras, then so is `MvPolynomial.map f`. -/
 @[simps!]
 def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
