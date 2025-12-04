@@ -64,11 +64,7 @@ lemma IsLocallyArtinian.IsLocallyNoetherian [h : IsLocallyArtinian X] :
       infer_instance}
 
 lemma IsArtinianRing_DiscreteTopology (R : Type*) [CommRing R] [IsArtinianRing R] :
-    DiscreteTopology (PrimeSpectrum R) := by
-  apply DiscreteTopology.of_finite_of_isClosed_singleton
-  intro p
-  apply (PrimeSpectrum.isClosed_singleton_iff_isMaximal p).mpr
-  exact Ideal.isMaximal_of_isPrime p.asIdeal
+    DiscreteTopology (PrimeSpectrum R) := inferInstance
 
 instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
     IsArtinianRing Γ(X, ⊤) :=
