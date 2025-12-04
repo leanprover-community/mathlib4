@@ -62,7 +62,7 @@ against `partialTraj κ a b`, taking inspiration from `MeasureTheory.lmarginal`.
 
 * `partialTraj_comp_partialTraj`: if `a ≤ b` and `b ≤ c` then
   `partialTraj κ b c ∘ₖ partialTraj κ a b = partialTraj κ a c`.
-* `partialTraj_succ_self_map_eq_kernel a`: the pushforward of `partialTraj κ a (a + 1)` along the
+* `map_partialTraj_succ_self a`: the pushforward of `partialTraj κ a (a + 1)` along the
   point at time `a + 1` is the kernel `κ a`.
 * `lmarginalPartialTraj_self` : if `a ≤ b` and `b ≤ c` then
   `lmarginalPartialTraj κ b c (lmarginalPartialTraj κ a b f) = lmarginalPartialTraj κ a c`.
@@ -244,7 +244,7 @@ lemma partialTraj_eq_prod [∀ n, IsSFiniteKernel (κ n)] (a b : ℕ) :
 variable [∀ n, IsMarkovKernel (κ n)]
 
 /-- The pushforward of `partialTraj κ a (a + 1)` along the the point at time `a + 1` is `κ a`. -/
-lemma partialTraj_succ_self_map_eq_kernel (a : ℕ) :
+lemma map_partialTraj_succ_self (a : ℕ) :
     (partialTraj κ a (a + 1)).map (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) = κ a := by
   have hp : (fun x : Π n : Iic (a + 1), X n ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ IicProdIoc a (a + 1) =
       (piSingleton a).symm ∘ Prod.snd := by

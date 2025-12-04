@@ -48,17 +48,18 @@ expectation.
 
 ## Main statements
 
+* `map_traj_succ_self`: the pushforward of `traj κ a` along the the point at time `a + 1`
+  is the kernel `κ a`.
 * `eq_traj`: Uniqueness of `traj`: to check that `η = traj κ a` it is enough to show that
   the restriction of `η` to variables `≤ b` is `partialTraj κ a b`.
 * `traj_comp_partialTraj`: Given the distribution up to time `a`, `partialTraj κ a b`
   gives the distribution of the trajectory up to time `b`, and composing this with
   `traj κ b` gives the distribution of the whole trajectory.
-* `traj_map_succ_self_eq_kernel`: the pushforward of `traj κ a` along the the point at time `a + 1`
-  is the kernel `κ a`.
-* `condDistrib_trajMeasure_ae_eq_kernel`: a regular conditional probability distribution of the
-  point at time `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
 * `condExp_traj`: If `a ≤ b`, the conditional expectation of `f` with respect to `traj κ a`
   given the information up to time `b` is obtained by integrating `f` against `traj κ b`.
+* `condDistrib_trajMeasure_ae_eq_kernel`: a regular conditional probability distribution of the
+  point at time `a + 1` given the trajectory up to time `a` corresponds to the kernel `κ a`.
+
 
 ## Implementation notes
 
@@ -541,11 +542,11 @@ lemma traj_map_frestrictLe_of_le {a b : ℕ} (hab : a ≤ b) :
   rw [traj_map_frestrictLe, partialTraj_le]
 
 /-- The pushforward of `traj κ a` along the the point at time `a + 1` is the kernel `κ a`. -/
-lemma traj_map_succ_self_eq_kernel {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
+lemma map_traj_succ_self {a : ℕ} : (traj κ a).map (fun x ↦ x (a + 1)) = κ a := by
   have hf : (fun x : Π n, X n ↦ x (a + 1)) =
       (fun x ↦ x ⟨a + 1, mem_Iic.2 le_rfl⟩) ∘ frestrictLe (a + 1) := rfl
   rw [hf, map_comp_right _ (by fun_prop) (by fun_prop), traj_map_frestrictLe,
-    partialTraj_succ_self_map_eq_kernel]
+    map_partialTraj_succ_self]
 
 variable (κ)
 
@@ -665,12 +666,12 @@ lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
   any_goals exact ms.preimage (by fun_prop)
   fun_prop
 
-lemma partialTraj_compProd_kernel_eq_traj_map {a b : ℕ} (hab : a ≤ b) {x₀ : Π n : Iic a, X n} :
+lemma partialTraj_compProd_eq_map_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π n : Iic a, X n} :
     (partialTraj κ a b x₀) ⊗ₘ (κ b) = (traj κ a x₀).map (fun x ↦ (frestrictLe b x, x (b + 1))) := by
   have hf : (fun x : Π n, X n ↦ (frestrictLe b x, x (b + 1))) =
       (Prod.map id (fun x ↦ x (b + 1))) ∘ (fun x ↦ (frestrictLe b x, x)) := rfl
   rw [hf, ← Measure.map_map (by fun_prop) (by fun_prop), ← partialTraj_compProd_traj hab,
-    ← MeasureTheory.Measure.compProd_map (by fun_prop), traj_map_succ_self_eq_kernel]
+    ← Measure.compProd_map (by fun_prop), map_traj_succ_self]
 
 theorem integral_traj_partialTraj' {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π i : Iic b, X i) → (Π n : ℕ, X n) → E}
@@ -771,14 +772,14 @@ instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
     Measure.isProbabilityMeasure_map <| by fun_prop
   infer_instance
 
-lemma trajMeasure_map_frestrictLe_compProd_kernel_eq_trajMeasure_map {a : ℕ} :
+lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
     (trajMeasure μ₀ κ).map (frestrictLe a) ⊗ₘ κ a =
       (trajMeasure μ₀ κ).map (fun x ↦ (frestrictLe a x, x (a + 1))) := by
   rw [Measure.compProd_eq_comp_prod, trajMeasure, Measure.map_comp _ _ (by fun_prop),
     traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
-  congr with x₀
+  congr with x₀ : 1
   rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
-    partialTraj_compProd_kernel_eq_traj_map zero_le']
+    partialTraj_compProd_eq_map_traj zero_le']
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
 trajectory up to time `a` corresponds to the kernel `κ a`. -/
@@ -787,7 +788,7 @@ lemma condDistrib_trajMeasure_ae_eq_kernel {a : ℕ}
     condDistrib (fun x ↦ x (a + 1)) (frestrictLe a) (trajMeasure μ₀ κ)
       =ᵐ[(trajMeasure μ₀ κ).map (frestrictLe a)] κ a := by
   apply condDistrib_ae_eq_of_measure_eq_compProd_of_measurable (by fun_prop) (by fun_prop)
-  exact trajMeasure_map_frestrictLe_compProd_kernel_eq_trajMeasure_map.symm
+  exact map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure.symm
 
 end trajMeasure
 
