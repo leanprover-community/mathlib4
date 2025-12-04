@@ -518,10 +518,10 @@ noncomputable
 abbrev toType.toOrd {o : Ordinal} (α : o.toType) : Set.Iio o := toType.mk.symm α
 
 noncomputable
-instance (o : Ordinal) : Coe (Ordinal.toType o) (Set.Iio o) where
+instance (o : Ordinal) : Coe o.toType (Set.Iio o) where
   coe := toType.toOrd
 noncomputable
-instance (o : Ordinal) : CoeOut (Ordinal.toType o) Ordinal where
+instance (o : Ordinal) : CoeOut o.toType Ordinal where
   coe x := x.toOrd
 
 @[deprecated (since := "2025-12-04")] alias enumIsoToType := toType.mk
