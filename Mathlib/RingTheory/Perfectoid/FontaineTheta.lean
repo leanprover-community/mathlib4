@@ -22,8 +22,8 @@ We only need `R` to be `p`-adically complete.
 ## TODO
 Establish that our definition (explicit construction of `θ mod p ^ n`) agrees with the
 deformation-theoretic approach via the cotangent complex, as in
-[Bhatt, *Lecture notes for a class on perfectoid spaces*. Remark 6.1.7]
-(https://www.math.ias.edu/~bhatt/teaching/mat679w17/lectures.pdf).
+[Bhatt, *Lecture notes for a class on perfectoid spaces*.
+Remark 6.1.7](https://www.math.ias.edu/~bhatt/teaching/mat679w17/lectures.pdf).
 
 ## Tags
 Fontaine's theta map, perfectoid theory, p-adic Hodge theory
@@ -62,15 +62,15 @@ ring homomorphism `fontaineTheta : 𝕎 R♭ →+* R`.
 To prove this, we define `fontaineThetaModPPow` as a composition of the following ring
 homomorphisms.
 
-`𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/p) --gh_n-> R/p^(n+1)`
+`𝕎 R♭ --𝕎(Frob^-n)-> 𝕎 R♭ --𝕎(coeff 0)-> 𝕎(R/𝔭) --gh_n-> R/𝔭^(n+1)`
 
 Here, the ring map `gh_n` fits in the following diagram.
 
 ```
-𝕎(A)  --ghost_n->   A
+𝕎(R)  --ghost_n->   R
 |                   |
 v                   v
-𝕎(A/p) --gh_n-> A/p^(n+1)
+𝕎(R/𝔭) --gh_n-> R/𝔭^(n+1)
 ```
 -/
 
@@ -89,8 +89,8 @@ theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
   exact pow_dvd_ghostComponent_of_dvd_coeff (fun _ _ ↦ h _)
 
 /--
-The lift ring map `gh_n : 𝕎(A/p) →+* A/p^(n+1)` of the `n`-th ghost component
-`𝕎(A) →+* A` along the surjective ring map `𝕎(A) →+* 𝕎(A/p)`.
+The lift ring map `gh_n : 𝕎(R/𝔭) →+* R/𝔭^(n+1)` of the `n`-th ghost component
+`𝕎(R) →+* R` along the surjective ring map `𝕎(R) →+* 𝕎(R/𝔭)`.
 -/
 def ghostComponentModPPow (n : ℕ) : 𝕎 (R ⧸ 𝔭) →+* R ⧸ 𝔭 ^ (n + 1) :=
   RingHom.liftOfSurjective (WittVector.map (Ideal.Quotient.mk 𝔭))
