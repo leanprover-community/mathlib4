@@ -7,6 +7,7 @@ module
 
 meta import Lean.Elab.App
 public import Lean.Parser.Term
+public import Batteries.Tactic.Lint.Misc
 import Mathlib.Lean.Elab.Term
 
 /-!
@@ -50,12 +51,9 @@ open Lean Elab Term
 
 declare_syntax_cat wildcard_level
 
-/-- Syntax for level params. -/
-syntax "*" : wildcard_level
-/-- Syntax for level params with a specified base name. -/
-syntax ident noWs "*" : wildcard_level
-/-- Syntax for an existing level. -/
-syntax level : wildcard_level
+@[nolint docBlame] syntax "*" : wildcard_level
+@[nolint docBlame] syntax ident noWs "*" : wildcard_level
+@[nolint docBlame] syntax level : wildcard_level
 
 /--
 Term elaborator for the wildcard universe syntax `Foo.!{u₁, u₂, ...}`.
