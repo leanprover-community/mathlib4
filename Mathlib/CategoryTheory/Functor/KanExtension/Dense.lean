@@ -81,6 +81,19 @@ lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
     isoWhiskerRight (G.asEquivalence.counitIso) _ ≪≫ F.leftUnitor
   exact of_iso e
 
+instance (G : D ⥤ C') [F.IsDense] [G.IsEquivalence] :
+    (F ⋙ G).IsDense where
+  isDenseAt Y :=
+    ⟨ letI e : Y ≅ G.obj (G.inv.obj Y) := G.asEquivalence.counitIso.symm.app Y
+      DenseAt.ofIso (F.denseAt (G.inv.obj Y) |>.postcompEquivalence G) e.symm ⟩
+
+lemma IsDense.comp_right_iff_of_isEquivalence (G : D ⥤ C') [G.IsEquivalence] :
+    (F ⋙ G).IsDense ↔ F.IsDense := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  let e : (F ⋙ G) ⋙ G.inv ≅ F := associator .. ≪≫
+    isoWhiskerLeft _ G.asEquivalence.unitIso.symm ≪≫ F.rightUnitor
+  exact of_iso e
+
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
     (F.denseAt _).hom_ext' (fun X p ↦ by

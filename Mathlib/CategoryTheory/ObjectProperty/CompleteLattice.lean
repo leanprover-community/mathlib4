@@ -16,11 +16,11 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 @[expose] public section
 
-universe v v' u u'
+universe v u
 
 namespace CategoryTheory.ObjectProperty
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+variable {C : Type u} [Category.{v} C]
 
 example : CompleteLattice (ObjectProperty C) := inferInstance
 
@@ -48,6 +48,13 @@ lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := b
 instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
     (P ⊔ Q).IsClosedUnderIsomorphisms := by
   simp only [isClosedUnderIsomorphisms_iff_isoClosure_eq_self, isoClosure_sup, isoClosure_eq_self]
+
+instance [P.IsClosedUnderIsomorphisms] [Q.IsClosedUnderIsomorphisms] :
+    IsClosedUnderIsomorphisms (P ⊓ Q) where
+  of_iso e h := ⟨IsClosedUnderIsomorphisms.of_iso e h.1, IsClosedUnderIsomorphisms.of_iso e h.2⟩
+
+instance : IsClosedUnderIsomorphisms (⊤ : ObjectProperty C) where
+  of_iso := by simp
 
 end
 

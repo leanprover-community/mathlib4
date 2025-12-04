@@ -24,7 +24,7 @@ of two morphisms that are roughly described as follows:
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
 and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
 coproducts and a pushout in essentially the same way as it is done in
-the file `CategoryTheory.SmallObject.Construction` for the small object
+the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
 argument);
 * `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
 of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
@@ -45,11 +45,19 @@ define `succStruct W Z₀ : SuccStruct C` for any `Z₀ : C`. By applying
 a transfinite iteration to this `SuccStruct`, we obtain the following results
 under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
+<<<<<<< HEAD
 a regular cardinal) such that the domains and domains of the morphisms
 satisfying `W` are `κ`-presentable :
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
 of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the fullsubcategory
+=======
+a regular cardinal) such that the domains and codomains of the morphisms
+satisfying `W` are `κ`-presentable :
+* `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
+of the inclusion `W.isLocal ⥤ C`;
+* `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
+>>>>>>> origin/locally-presentable-strong-generators
 `W.isLocal` is locally presentable.
 
 This is essentially the implication (i) → (ii) in Theorem 1.39 (and the corollary 1.40)
@@ -452,7 +460,7 @@ lemma isRightAdjoint_ι_isLocal
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
     W.isLocal.ι.IsRightAdjoint := by
-  have : OrderBot κ.ord.toType :=
+  let : OrderBot κ.ord.toType :=
     Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W

@@ -253,7 +253,6 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 
 @[measurability]
@@ -507,7 +506,6 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
 @[fun_prop, measurability]

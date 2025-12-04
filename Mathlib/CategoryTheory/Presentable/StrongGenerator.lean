@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Locally presentable categories and strong generators
@@ -17,7 +18,7 @@ In this file, we show that a category is locally `κ`-presentable iff
 it is cocomplete and has a strong generator consisting of `κ`-presentable objects.
 This is theorem 1.20 in the book by Adámek and Rosický.
 
-In particular, if a category if locally `κ`-presentable, if it also
+In particular, if a category is locally `κ`-presentable, it is also
 locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 ## References
@@ -30,14 +31,6 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 universe w v' v u' u
 
 namespace CategoryTheory
-
--- to be moved
-instance CostructuredArrow.essentiallySmall {C : Type u} {D : Type u'} [Category.{v} C]
-    [Category.{v'} D] (F : C ⥤ D) (Y : D) [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
-    EssentiallySmall.{w} (CostructuredArrow F Y) := by
-  rw [← essentiallySmall_congr
-    (CostructuredArrow.pre (equivSmallModel.{w} C).inverse F Y).asEquivalence]
-  exact essentiallySmall_of_small_of_locallySmall _
 
 open Limits
 
@@ -97,7 +90,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
     (hS₂ : P ≤ isCardinalPresentable C κ) :
     (P.colimitsCardinalClosure κ).ι.IsDense where
   isDenseAt X := by
-    let E := (Functor.LeftExtension.mk _ (P.colimitsCardinalClosure κ).ι.rightUnitor.inv)
+    let E := Functor.LeftExtension.mk _ (P.colimitsCardinalClosure κ).ι.rightUnitor.inv
     have : HasColimitsOfShape (CostructuredArrow (P.colimitsCardinalClosure κ).ι X) C :=
       hasColimitsOfShape_of_equivalence
         (equivSmallModel.{w} (CostructuredArrow (P.colimitsCardinalClosure κ).ι X)).symm
@@ -176,14 +169,11 @@ lemma iff_exists_isStrongGenerator [HasColimitsOfSize.{w, w} C] [LocallySmall.{w
     have : HasCardinalFilteredGenerator C κ :=
       { exists_generator := ⟨(P.colimitsCardinalClosure κ), inferInstance,
             IsCardinalFilteredGenerator.of_isDense_ι _ _
-              (P.colimitsCardinalClosure_le_isCardinalPresentable hS₂)⟩
-          }
+              (P.colimitsCardinalClosure_le_isCardinalPresentable hS₂)⟩ }
     constructor
 
-variable [IsCardinalLocallyPresentable C κ]
-
 variable (C) in
-lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
+lemma of_le [IsCardinalLocallyPresentable C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
     (h : κ ≤ κ') :
     IsCardinalLocallyPresentable C κ' := by
   rw [iff_exists_isStrongGenerator]
