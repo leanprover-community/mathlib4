@@ -479,7 +479,7 @@ theorem convolution_mono_right {f g g' : G → ℝ} (hfg : ConvolutionExistsAt f
     (hfg' : ConvolutionExistsAt f g' x (lsmul ℝ ℝ) μ) (hf : ∀ x, 0 ≤ f x) (hg : ∀ x, g x ≤ g' x) :
     (f ⋆[lsmul ℝ ℝ, μ] g) x ≤ (f ⋆[lsmul ℝ ℝ, μ] g') x := by
   apply integral_mono hfg hfg'
-  simp only [lsmul_apply, Algebra.id.smul_eq_mul]
+  simp only [lsmul_apply, smul_eq_mul]
   intro t
   apply mul_le_mul_of_nonneg_left (hg _) (hf _)
 

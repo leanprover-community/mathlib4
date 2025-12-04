@@ -143,8 +143,10 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
         Algebra.smul_def, add_sub_cancel_right, minpoly.aeval]
     · rw [eval_map, ← aeval_def, minpoly.aeval]
-  have h_splits : Splits (h.map ιEE') :=
-    splits_of_splits_gcd_right ιEE' map_g_ne_zero (SplittingField.splits _)
+  have h_splits : Splits (h.map ιEE') := by
+    rw [← Polynomial.gcd_map]
+    exact (SplittingField.splits _).splits_of_dvd (map_ne_zero map_g_ne_zero)
+      (EuclideanDomain.gcd_dvd_right _ _)
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx
     rw [mem_roots_map h_ne_zero] at hx
