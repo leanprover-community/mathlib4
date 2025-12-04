@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Pointwise operations of sets
@@ -36,10 +38,10 @@ Appropriate definitions and results are also transported to the additive theory 
   `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
   `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
-* We put all instances in the locale `Pointwise`, so that these instances are not available by
+* We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the locale to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`.
+  since we expect the scope to be open whenever the instances are actually used (and making the
+  instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -47,9 +49,11 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
+@[expose] public section
 
-library_note "pointwise nat action"/--
+assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
+
+library_note2 «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
 nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
@@ -73,8 +77,8 @@ section One
 
 variable [One α] {s : Set α} {a : α}
 
-/-- The set `1 : Set α` is defined as `{1}` in locale `Pointwise`. -/
-@[to_additive /-- The set `0 : Set α` is defined as `{0}` in locale `Pointwise`. -/]
+/-- The set `1 : Set α` is defined as `{1}` in scope `Pointwise`. -/
+@[to_additive /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Set α) :=
   ⟨{1}⟩
 
@@ -130,9 +134,6 @@ theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
 @[to_additive (attr := simp) zero_prod_zero]
 lemma one_prod_one [One β] : (1 ×ˢ 1 : Set (α × β)) = 1 := by ext; simp [Prod.ext_iff]
 
-@[deprecated (since := "2025-03-11")]
-alias zero_sum_zero := zero_prod_zero
-
 end One
 
 /-! ### Set negation/inversion -/
@@ -140,10 +141,10 @@ end One
 
 section Inv
 
-/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
+/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
 @[to_additive
-      /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
+      /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in scope `Pointwise`.
       It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`. -/]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
@@ -155,6 +156,10 @@ open Pointwise
 section Inv
 
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
+
+@[to_additive (attr := simp)]
+theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
@@ -187,9 +192,6 @@ theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
 @[to_additive (attr := simp) neg_prod]
 lemma inv_prod [Inv β] (s : Set α) (t : Set β) : (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := rfl
 
-@[deprecated (since := "2025-03-11")]
-alias neg_sum := neg_prod
-
 end Inv
 
 section InvolutiveInv
@@ -217,7 +219,6 @@ theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
 
 @[to_additive (attr := simp)]
 instance involutiveInv : InvolutiveInv (Set α) where
-  inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
 @[to_additive (attr := simp)]
@@ -240,6 +241,26 @@ theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i =>
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 
+@[to_additive]
+theorem image_inv_of_apply_inv_eq {f g : α → β} (H : ∀ x ∈ s, f x⁻¹ = g x) :
+    f '' (s⁻¹) = g '' s := by
+  rw [← Set.image_inv_eq_inv, Set.image_image]; exact Set.image_congr H
+
+@[to_additive]
+theorem image_inv_of_apply_inv_eq_inv [InvolutiveInv β] {f g : α → β}
+    (H : ∀ x ∈ s, f x⁻¹ = (g x)⁻¹) : f '' s⁻¹ = (g '' s)⁻¹ := by
+  conv_rhs => rw [← image_inv_eq_inv, image_image, ← image_inv_of_apply_inv_eq H]
+
+@[to_additive (attr := simp)]
+theorem forall_inv_mem {p : α → Prop} : (∀ x, x⁻¹ ∈ s → p x) ↔ ∀ x ∈ s, p x⁻¹ := by
+  rw [← (Equiv.inv _).forall_congr_right]
+  simp
+
+@[to_additive (attr := simp)]
+theorem exists_inv_mem {p : α → Prop} : (∃ x, x⁻¹ ∈ s ∧ p x) ↔ ∃ x ∈ s, p x⁻¹ := by
+  rw [← (Equiv.inv _).exists_congr_right]
+  simp
+
 open MulOpposite
 
 @[to_additive]
@@ -260,7 +281,7 @@ section Mul
 variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
-locale `Pointwise`. -/
+scope `Pointwise`. -/
 @[to_additive
       /-- The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
@@ -391,9 +412,6 @@ theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
 @[to_additive (attr := simp) prod_add_prod_comm]
 lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
-
-@[deprecated (since := "2025-03-11")]
-alias sum_add_sum_comm := prod_add_prod_comm
 
 end Mul
 
@@ -693,8 +711,6 @@ protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
 lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
-
-@[deprecated (since := "2025-02-17")] alias sum_nsmul := nsmul_prod
 
 end Monoid
 

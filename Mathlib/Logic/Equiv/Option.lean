@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Control.EquivFunctor
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Control.EquivFunctor
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences for `Option α`
@@ -19,6 +21,8 @@ We define
   both sides.
 -/
 
+@[expose] public section
+
 universe u
 
 namespace Equiv
@@ -30,14 +34,12 @@ variable {α β γ : Type*}
 section OptionCongr
 
 /-- A universe-polymorphic version of `EquivFunctor.mapEquiv Option e`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   toFun := Option.map e
   invFun := Option.map e.symm
   left_inv x := (Option.map_map _ _ _).trans <| e.symm_comp_self.symm ▸ congr_fun Option.map_id x
   right_inv x := (Option.map_map _ _ _).trans <| e.self_comp_symm.symm ▸ congr_fun Option.map_id x
-
-attribute [grind =] optionCongr_apply
 
 @[simp]
 theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
@@ -248,7 +250,7 @@ lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = 
 open Sum
 
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
-def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v+1} :=
+def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v + 1} :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
     fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
@@ -278,7 +280,7 @@ theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (S
 def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
   toFun o := Option.get _ o.2
   invFun x := ⟨some x, rfl⟩
-  left_inv _ := Subtype.eq <| Option.some_get _
+  left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _
 
 end Equiv

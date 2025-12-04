@@ -3,7 +3,9 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Module.Pi
+module
+
+public import Mathlib.Algebra.Module.Pi
 
 /-!
 # Matrices
@@ -23,7 +25,7 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `ᵀ` for `Matrix.transpose`
 
@@ -38,6 +40,8 @@ to be accessed with `A i j`. However, it is not advisable to _construct_ matrice
 form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
 as having the right type. Instead, `Matrix.of` should be used.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra TrivialStar
 

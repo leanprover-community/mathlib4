@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Simp
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Simp
 
 /-!
 # Helper functions for using the simplifier.
 
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
+
+@[expose] public section
 
 open Lean Elab.Tactic
 
@@ -136,13 +140,13 @@ def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=
 /-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `false` is `simpAttr` is not a
 valid simp-attribute. -/
 def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return false
+  let some simpDecl ← getSimpExtension? simpAttr | return false
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
 Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return []
+  let some simpDecl ← getSimpExtension? simpAttr | return []
   let thms ← simpDecl.getTheorems
   return thms.toUnfold.toList ++ thms.lemmaNames.toList.filterMap fun
     | .decl decl => some decl

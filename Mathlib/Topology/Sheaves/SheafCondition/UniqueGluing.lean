@@ -3,9 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Topology.Sheaves.Forget
-import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.Topology.Sheaves.Forget
+public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
 # The sheaf condition in terms of unique gluings
@@ -14,7 +15,7 @@ We provide an alternative formulation of the sheaf condition in terms of unique 
 
 We work with sheaves valued in a concrete category `C` admitting all limits, whose forgetful
 functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categories of algebraic
-structures, such as `MonCat`, `AddCommGrp`, `RingCat`, `CommRingCat` etc. are all examples of
+structures, such as `MonCat`, `AddCommGrpCat`, `RingCat`, `CommRingCat` etc. are all examples of
 this kind of category.
 
 A presheaf `F : Presheaf C X` satisfies the sheaf condition if and only if, for every
@@ -32,6 +33,8 @@ isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 `Mathlib/Topology/Sheaves/Forget.lean`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

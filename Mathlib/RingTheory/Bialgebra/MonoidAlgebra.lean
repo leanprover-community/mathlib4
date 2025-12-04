@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 -/
-import Mathlib.RingTheory.Bialgebra.Hom
-import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+module
+
+public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
 /-!
 # The bialgebra structure on monoid algebras
@@ -21,6 +23,8 @@ coalgebra structure.
 * `LaurentPolynomial.instBialgebra`: the `R`-bialgebra structure on the Laurent polynomials
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -44,7 +48,7 @@ instance instBialgebra : Bialgebra R (MonoidAlgebra A M) where
       LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
       ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-      LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
+      LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
 -- TODO: Generalise to `MonoidAlgebra A M →ₐc[R] MonoidAlgebra A N` under `Bialgebra R A`
@@ -84,7 +88,7 @@ instance instBialgebra : Bialgebra R A[M] where
       LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
       ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-      LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
+      LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
 -- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`

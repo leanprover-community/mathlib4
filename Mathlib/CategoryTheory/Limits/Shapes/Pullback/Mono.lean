@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullbacks and monomorphisms
@@ -24,6 +25,8 @@ the dual statements between pushouts and epimorphisms.
 
 The dual notions for pushouts are also available.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -140,7 +143,7 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g)
       -- Porting note: following used to be _
-      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i from by
+      (show (pullback.fst f g) ≫ f ≫ i = (pullback.snd f g) ≫ g ≫ i by
         simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 

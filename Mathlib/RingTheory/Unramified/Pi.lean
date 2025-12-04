@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Unramified.Basic
+module
+
+public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -16,11 +18,11 @@ import Mathlib.RingTheory.Unramified.Basic
 
 -/
 
+@[expose] public section
+
 namespace Algebra.FormallyUnramified
 
-universe u v
-
-variable {R : Type max u v} {I : Type v} [Finite I] (f : I → Type max u v)
+variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
 variable [CommRing R] [∀ i, CommRing (f i)] [∀ i, Algebra R (f i)]
 
 theorem pi_iff :

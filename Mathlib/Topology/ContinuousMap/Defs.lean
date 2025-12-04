@@ -3,9 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.Lift
-import Mathlib.Topology.Defs.Basic
+module
+
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.Lift
+public import Mathlib.Topology.Defs.Basic
 
 /-!
 # Continuous bundled maps
@@ -15,6 +18,8 @@ In this file we define the type `ContinuousMap` of continuous bundled maps.
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass
 which is meant to be satisfied by itself and all stricter types.
 -/
+
+@[expose] public section
 
 open Function
 open scoped Topology
@@ -96,6 +101,14 @@ protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y]
 protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) (x : X) :
     (f : C(X, Y)) x = f x :=
   rfl
+
+/-- Coercion to a `ContinuousMap` is injective.
+
+The unprimed version `ContinuousMap.coe_injective`
+is used for the coercion from `C(X, Y)` to `X → Y`. -/
+protected theorem coe_injective' {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
+    Injective (toContinuousMap : F → C(X, Y)) :=
+  .of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 @[ext]
 theorem ext {f g : C(X, Y)} (h : ∀ a, f a = g a) : f = g :=

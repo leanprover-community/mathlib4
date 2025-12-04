@@ -3,9 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Action.Hom
-import Mathlib.Algebra.Group.Prod
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.Hom
+public import Mathlib.Algebra.Group.Prod
 
 /-!
 # Prod instances for additive and multiplicative actions
@@ -25,7 +27,7 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 
-# Porting notes
+## Porting notes
 
 The `to_additive` attribute can be used to generate both the `smul` and `vadd` lemmas
 from the corresponding `pow` lemmas, as explained on zulip here:
@@ -33,6 +35,8 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

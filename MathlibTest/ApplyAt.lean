@@ -106,14 +106,14 @@ example (a b : ℝ) (h : -a * b = 0) : a = 0 ∨ b = 0 := by
   simp at h
   assumption
 
-/-- `apply H at h` when type of `H h` depends on proof of `h` (#20623) -/
+/-- `apply H at h` when type of `H h` depends on proof of `h` (https://github.com/leanprover-community/mathlib4/issues/20623) -/
 example (h : True) : True := by
   have H (h : True) : h = h := rfl
   apply H at h
   simp at h
   exact h
 
-/-- `apply H at h` when type of `H h` depends on proof of `h` (#20623) -/
+/-- `apply H at h` when type of `H h` depends on proof of `h` (https://github.com/leanprover-community/mathlib4/issues/20623) -/
 example (a : List Nat) (k : Nat) (hk : k < a.length) : True := by
   have H (k : Nat) {xs ys : List Nat} (hk: k < xs.length)
     (h : xs = ys) : xs[k] = ys[k]'(h ▸ hk) := h ▸ rfl

@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Empty
-import Mathlib.Data.Multiset.Filter
+module
+
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Filtering a finite set
@@ -20,9 +22,11 @@ finite sets, finset
 
 -/
 
+@[expose] public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -55,7 +59,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
 
 /-- Return `true` if `expectedType?` is `some (Finset ?α)`, throws `throwUnsupportedSyntax` if it is
 `some (Set ?α)`, and returns `false` otherwise. -/
-def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
+meta def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
   -- As we want to reason about the expected type, we would like to wait for it to be available.
   -- However this means that if we fall back on `elabSetBuilder` we will have postponed.
   -- This is undesirable as we want set builder notation to quickly elaborate to a `Set` when no
@@ -88,7 +92,7 @@ See also
 TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderSep : TermElab
+meta def elabFinsetBuilderSep : TermElab
   | `({ $x:ident ∈ $s:term | $p }), expectedType? => do
     -- If the expected type is known to be `Set ?α`, give up. If it is not known to be `Set ?α` or
     -- `Finset ?α`, check the expected type of `s`.
@@ -189,8 +193,7 @@ theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_f
 
 @[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
-    (h : p ≤ q) : s.filter p ⊆ s.filter q :=
-  Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
+    (h : ∀ a ∈ s, p a → q a) : s.filter p ⊆ s.filter q := by simp +contextual [subset_iff, h]
 
 @[simp, norm_cast]
 theorem coe_filter (s : Finset α) : ↑(s.filter p) = ({ x ∈ ↑s | p x } : Set α) :=

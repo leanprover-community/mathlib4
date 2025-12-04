@@ -3,14 +3,17 @@ Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Richard Copley
 -/
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.GroupTheory.Complement
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
-of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
+of subgroups $C₁$, $C₂$, ..., $Cₙ$:
+$$ G = ⋃_{i = 1}^n C_i g_i. $$
 
 * `Subgroup.exists_finiteIndex_of_leftCoset_cover`
   at least one subgroup $C_i$ has finite index in $G$.
@@ -41,6 +44,8 @@ set of all minimal polynomials (not proved here).
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -258,7 +263,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       Finset.sum_sigma, Finset.sum_coe_sort_eq_attach]
     refine Finset.sum_congr rfl fun i _ => ?_
     by_cases hfi : (H i).FiniteIndex
-    · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
+    · rw [← relIndex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.index_ne_zero)]
       simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
@@ -369,21 +374,19 @@ section Subspace
 variable {k E : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
     {s : Finset (Subspace k E)}
 
-/- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) :
-    ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
+/-- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
+theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) : ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
   have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex
-  have : Nontrivial (E ⧸ p) :=
-    Submodule.Quotient.nontrivial_of_lt_top p (ne_of_mem_of_not_mem hp hs).lt_top
+  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_iff.mpr (ne_of_mem_of_not_mem hp hs)
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 
 @[deprecated (since := "2025-05-24")]
 alias Subspace.biUnion_ne_univ_of_top_nmem := Subspace.biUnion_ne_univ_of_top_notMem
 
-/- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
+/-- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ⊤ ∈ s := by
   contrapose! hcovers

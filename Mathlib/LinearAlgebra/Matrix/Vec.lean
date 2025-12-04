@@ -3,9 +3,11 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Hadamard
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-! # Vectorization of matrices
 
@@ -28,6 +30,8 @@ If you want this function, you can write `Matrix.vec Aᵀ` instead.
 
 * [Wikipedia](https://en.wikipedia.org/wiki/Vectorization_(mathematics))
 -/
+
+@[expose] public section
 namespace Matrix
 
 variable {ι l m n p R S}
@@ -55,6 +59,9 @@ theorem vec_map (A : Matrix m n R) (f : R → S) : vec (A.map f) = f ∘ vec A :
 @[simp]
 theorem vec_zero [Zero R] : vec (0 : Matrix m n R) = 0 :=
   rfl
+
+@[simp]
+theorem vec_eq_zero_iff [Zero R] {A : Matrix m n R} : vec A = 0 ↔ A = 0 := vec_inj (B := 0)
 
 @[simp]
 theorem vec_add [Add R] (A B : Matrix m n R) : vec (A + B) = vec A + vec B :=
@@ -92,6 +99,12 @@ theorem star_vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Star R] [Fintype m] [
   simp_rw [star_vec, vec_dotProduct_vec, ← conjTranspose_transpose, transpose_transpose]
 
 theorem vec_hadamard [Mul R] (A B : Matrix m n R) : vec (A ⊙ B) = vec A * vec B := rfl
+
+@[simp]
+theorem vec_single [DecidableEq m] [DecidableEq n] [Zero R] (i : m) (j : n) (r : R) :
+    vec (Matrix.single i j r) = Pi.single (j, i) r := by
+  rw [single_eq_of_single_single, vec_of, Function.uncurry_flip, Pi.uncurry_single_single]
+  exact Pi.single_comp_equiv (Equiv.prodComm _ _) _ _
 
 section Kronecker
 open scoped Kronecker

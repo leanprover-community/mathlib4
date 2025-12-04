@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
+module
+
+public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
@@ -37,6 +39,8 @@ Weyl group.
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Module hiding reflection
@@ -186,7 +190,7 @@ lemma PolarizationIn_apply (x : P.rootSpan S) :
 
 lemma PolarizationIn_eq (x : P.rootSpan S) :
     P.PolarizationIn S x = P.Polarization x := by
-  simp only [PolarizationIn, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
+  simp only [PolarizationIn, LinearMap.coe_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
     LinearMap.toSpanSingleton_apply, Polarization_apply]
   refine Finset.sum_congr rfl fun i hi ↦ ?_
   rw [algebra_compatible_smul R (P.coroot'In S i x) (P.coroot i), algebraMap_coroot'In_apply]
@@ -252,7 +256,7 @@ lemma rootFormIn_self_smul_coroot (i : ι) :
     pairingIn_reflectionPerm_self_left, ← reflectionPerm_coroot, neg_smul,
     smul_sub, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add, RootFormIn]
-  simp only [LinearMap.coeFn_sum, LinearMap.coe_smulRight, Finset.sum_apply,
+  simp only [LinearMap.coe_sum, LinearMap.coe_smulRight, Finset.sum_apply,
     coroot'In_rootSpanMem_eq_pairingIn, LinearMap.smul_apply, smul_eq_mul, Finset.sum_smul,
     root_coroot_eq_pairing, Finset.sum_neg_distrib, add_neg_cancel, sub_eq_zero]
   refine Finset.sum_congr rfl ?_

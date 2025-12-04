@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Lifting monoid algebras
@@ -15,6 +17,8 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
   function `g : G → R` to a homomorphism `MonoidAlgebra k G →+ R`.
 -/
+
+@[expose] public section
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
@@ -218,6 +222,14 @@ lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
 @[simp] lemma mapRangeRingHom_comp (f : S →+* T) (g : R →+* S) :
     mapRangeRingHom M (f.comp g) = (mapRangeRingHom M f).comp (mapRangeRingHom M g) := by
   ext <;> simp
+
+-- `MonoidAlgebra.of` doesn't translate with `to_additive`, so instead
+-- we have to tag these declarations with `to_additive existing`
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing]
+  MonoidAlgebra.mapRangeRingHom MonoidAlgebra.mapRangeRingHom_apply
+  MonoidAlgebra.mapRangeRingHom_single MonoidAlgebra.mapRangeRingHom_id
+  MonoidAlgebra.mapRangeRingHom_comp
 
 end Semiring
 

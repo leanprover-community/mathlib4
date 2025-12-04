@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Measure.AEDisjoint
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 /-!
 # Null measurable sets and complete measures
@@ -33,7 +35,7 @@ In other words, `f : α → β` is null measurable if it is measurable as a func
 ### Complete measures
 
 We say that a measure `μ` is complete w.r.t. the `MeasurableSpace α` σ-algebra (or the σ-algebra is
-complete w.r.t measure `μ`) if every set of measure zero is measurable. In this case all null
+complete w.r.t. measure `μ`) if every set of measure zero is measurable. In this case all null
 measurable sets and functions are measurable.
 
 For each measure `μ`, we define `MeasureTheory.Measure.completion μ` to be the same measure
@@ -54,6 +56,8 @@ the output type.
 
 measurable, measure, null measurable, completion
 -/
+
+@[expose] public section
 
 open Filter Set Encodable
 open scoped ENNReal

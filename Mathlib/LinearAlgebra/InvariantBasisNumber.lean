@@ -3,11 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.Noetherian.Orzech
-import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.LinearAlgebra.Finsupp.Pi
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.Noetherian.Orzech
+public import Mathlib.RingTheory.OrzechProperty
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -100,6 +102,8 @@ variants) should be formalized.
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -235,9 +239,8 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
-  by_contra h
+  by_contra! h
   refine zero_ne_one (eq_of_fin_equiv R ?_)
-  haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
     Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
@@ -287,7 +290,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_def] at hab
-      rw [← LinearMap.map_sub]
+      rw [← map_sub]
       exact Ideal.map_pi _ _ hab e h)
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules

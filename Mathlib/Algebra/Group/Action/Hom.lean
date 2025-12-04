@@ -3,12 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pretransitive
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pretransitive
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Homomorphisms and group actions
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -28,7 +32,6 @@ See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.mod
 abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
-  smul := (· • ·)
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
   mul_smul := hf.forall₂.mpr fun a b x ↦ by simp only [← f.map_mul, hsmul, mul_smul]
 

@@ -3,15 +3,16 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.BigOperators.Balance
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Ring.Finite
-import Mathlib.Data.Real.Sqrt
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.BigOperators.Balance
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Ring.Finite
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -43,6 +44,8 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.lean`.
 -/
 
+@[expose] public section
+
 open Fintype
 open scoped BigOperators ComplexConjugate
 
@@ -73,7 +76,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
-  /-- only an instance in the `ComplexOrder` locale -/
+  /-- only an instance in the `ComplexOrder` scope -/
   [toPartialOrder : PartialOrder K]
   le_iff_re_im {z w : K} : z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
@@ -164,10 +167,10 @@ theorem ofReal_injective : Function.Injective ((↑) : ℝ → K) :=
 
 @[norm_cast]
 theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
-  algebraMap.coe_inj
+  algebraMap.coe_inj _ _
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
-  algebraMap.lift_map_eq_zero_iff x
+  algebraMap.coe_eq_zero_iff _ _ _
 
 theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
   ofReal_eq_zero.not
@@ -212,8 +215,6 @@ theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α →
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
   map_finsuppProd _ f g
 
-@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
-
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
   real_smul_eq_coe_mul _ _
@@ -237,6 +238,14 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
 @[rclike_simps, norm_cast]
 theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
+
+@[simp]
+theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
+  rw [← ofReal_pow, @ofReal_re]
+
+@[simp]
+theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
+  rw [← @ofReal_pow, @ofReal_im_ax]
 
 /-! ### Characteristic zero -/
 
@@ -612,7 +621,7 @@ theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofRe
 theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
   (norm_ofReal _).trans (abs_of_nonneg h)
 
-@[simp, rclike_simps, norm_cast]
+@[simp 1100, rclike_simps, norm_cast]
 theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
@@ -751,7 +760,7 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
-  I_re_ax := by simp only [AddMonoidHom.map_zero]
+  I_re_ax := by simp only [map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
     simp only [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
@@ -761,7 +770,7 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
   conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
-  conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
+  conj_I_ax := by simp only [map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_I_ax _ := by simp only [mul_zero, AddMonoidHom.zero_apply]
@@ -923,26 +932,14 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
 
-theorem toOrderedSMul : OrderedSMul ℝ K :=
-  OrderedSMul.mk' fun a b r hab hr => by
-    replace hab := hab.le
-    rw [RCLike.le_iff_re_im] at hab
-    rw [RCLike.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
-    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
+theorem toIsStrictOrderedModule : IsStrictOrderedModule ℝ K where
+  smul_lt_smul_of_pos_left r hr a b hab := by
+    simpa [RCLike.lt_iff_re_im (K := K), smul_re, smul_im, hr, hr.ne'] using hab
+  smul_lt_smul_of_pos_right a ha r₁ r₂ hr := by
+    obtain ⟨hare, haim⟩ := RCLike.lt_iff_re_im.1 ha
+    simp_all [RCLike.lt_iff_re_im (K := K), smul_re, smul_im]
 
-scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
-
-/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
-lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
-    OrderedSMul K A := .mk' fun _a _b _zc hab hc ↦ (smul_lt_smul_of_pos_left hab hc).le
-
-instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
-    OrderedSMul ℝ A :=
-  StarModule.instOrderedSMul
-
-scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedModule
 
 theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
@@ -962,7 +959,7 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
-    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    #adaptation_note /-- 2025-03-29 need beta reduce for https://github.com/leanprover/lean4/issues/7717 -/
     beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
@@ -1143,14 +1140,14 @@ lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y
   simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
   calc ‖re x - re y‖ₑ
-  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ = ‖re (x - y)‖ₑ := by rw [map_sub re x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   intro x y
   simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
   calc ‖im x - im y‖ₑ
-  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
 end LinearMaps

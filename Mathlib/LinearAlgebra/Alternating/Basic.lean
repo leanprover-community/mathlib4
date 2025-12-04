@@ -3,9 +3,11 @@ Copyright (c) 2020 Zhangir Azerbayev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 -/
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.LinearAlgebra.Multilinear.Basis
+module
+
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 /-!
 # Alternating Maps
@@ -38,6 +40,8 @@ using `map_swap` as a definition, and does not require `Neg N`.
 * `AlternatingMap.coe_neg`
 * `AlternatingMap.coe_smul`
 -/
+
+@[expose] public section
 
 
 -- semiring / add_comm_monoid
@@ -226,7 +230,7 @@ instance instIsCentralScalar [DistribMulAction Sᵐᵒᵖ N] [IsCentralScalar S 
 
 end SMul
 
-/-- The cartesian product of two alternating maps, as an alternating map. -/
+/-- The Cartesian product of two alternating maps, as an alternating map. -/
 @[simps!]
 def prod (f : M [⋀^ι]→ₗ[R] N) (g : M [⋀^ι]→ₗ[R] P) : M [⋀^ι]→ₗ[R] (N × P) :=
   { f.toMultilinearMap.prod g.toMultilinearMap with

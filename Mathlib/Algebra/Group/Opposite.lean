@@ -3,14 +3,18 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Opposites
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Opposites
 
 /-!
 # Group structures on the multiplicative and additive opposites
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Units
 
@@ -71,6 +75,8 @@ instance instIsRightCancelMul [Mul α] [IsLeftCancelMul α] : IsRightCancelMul �
 @[to_additive]
 instance instIsLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ where
   mul_left_cancel _ _ _ h := unop_injective <| mul_right_cancel <| op_injective h
+
+@[to_additive] instance instIsCancelMul [Mul α] [IsCancelMul α] : IsCancelMul αᵐᵒᵖ where
 
 @[to_additive]
 instance instSemigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
@@ -275,5 +281,9 @@ instance instGroup [Group α] : Group αᵃᵒᵖ :=
 instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
+
+@[to_additive]
+instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
 
 end AddOpposite

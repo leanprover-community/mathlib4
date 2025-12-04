@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # The argument of a complex number.
@@ -13,6 +15,8 @@ We define `arg : ℂ → ℝ`, returning a real number in the range (-π, π],
 such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
 while `arg 0` defaults to `0`
 -/
+
+@[expose] public section
 
 open Filter Metric Set
 open scoped ComplexConjugate Real Topology
@@ -38,15 +42,15 @@ theorem cos_arg {x : ℂ} (hx : x ≠ 0) : Real.cos (arg x) = x.re / ‖x‖ := 
   · rw [Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_sq, (norm_pos_iff.mpr hx).le, *]
-    field_simp
+    field
   · rw [Real.cos_add_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
   · rw [Real.cos_sub_pi, Real.cos_arcsin]
     field_simp
     simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
-    field_simp
+    field
 
 @[simp]
 theorem norm_mul_exp_arg_mul_I (x : ℂ) : ‖x‖ * exp (arg x * I) = x := by
@@ -74,12 +78,6 @@ theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) =
       _ = z :=norm_mul_exp_arg_mul_I z
   · rintro ⟨θ, rfl⟩
     exact Complex.norm_exp_ofReal_mul_I θ
-
-@[deprecated (since := "2025-02-16")] alias abs_mul_exp_arg_mul_I := norm_mul_exp_arg_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_mul_cos_add_sin_mul_I := norm_mul_cos_add_sin_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_mul_cos_arg := norm_mul_cos_arg
-@[deprecated (since := "2025-02-16")] alias abs_mul_sin_arg := norm_mul_sin_arg
-@[deprecated (since := "2025-02-16")] alias abs_eq_one_iff := norm_eq_one_iff
 
 @[simp]
 theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere 0 1 := by
@@ -128,9 +126,6 @@ theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.ar
 
 theorem ext_norm_arg_iff {x y : ℂ} : x = y ↔ ‖x‖ = ‖y‖ ∧ arg x = arg y :=
   ⟨fun h => h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_norm_arg⟩
-
-@[deprecated (since := "2025-02-16")] alias ext_abs_arg := ext_norm_arg
-@[deprecated (since := "2025-02-16")] alias ext_abs_arg_iff := ext_norm_arg_iff
 
 theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have hπ : 0 < π := Real.pi_pos
@@ -332,8 +327,6 @@ lemma norm_eq_one_iff' : ‖x‖ = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * 
   · rintro ⟨θ, _, rfl⟩
     exact ⟨θ, rfl⟩
 
-@[deprecated (since := "2025-02-16")] alias abs_eq_one_iff' := norm_eq_one_iff'
-
 lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
   ext; simpa using norm_eq_one_iff'.symm
 
@@ -473,7 +466,7 @@ theorem arg_cos_add_sin_mul_I_sub (θ : ℝ) :
 
 theorem arg_mul_cos_add_sin_mul_I_coe_angle {r : ℝ} (hr : 0 < r) (θ : Real.Angle) :
     (arg (r * (Real.Angle.cos θ + Real.Angle.sin θ * I)) : Real.Angle) = θ := by
-  induction' θ using Real.Angle.induction_on with θ
+  induction θ using Real.Angle.induction_on with | _ θ
   rw [Real.Angle.cos_coe, Real.Angle.sin_coe, Real.Angle.angle_eq_iff_two_pi_dvd_sub]
   use ⌊(π - θ) / (2 * π)⌋
   exact mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ
@@ -584,6 +577,10 @@ theorem continuousAt_arg (h : x ∈ slitPlane) : ContinuousAt arg x := by
     (Real.continuous_arccos.continuousAt.comp
           (continuous_re.continuousAt.div continuous_norm.continuousAt h₀)).congr
       (arg_eq_nhds_of_im_pos hx_im).symm]
+
+@[fun_prop]
+theorem continuousOn_arg : ContinuousOn arg slitPlane :=
+  fun _ h ↦ continuousAt_arg h |>.continuousWithinAt
 
 theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) := by
