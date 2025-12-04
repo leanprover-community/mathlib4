@@ -136,7 +136,7 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrT
 
     let mut levels : Array (Option LevelWildcardKind) := (← elabWildcardUniverses us).map some
     while levels.size < numLevels do
-      levels := levels.push .none
+      levels := levels.push none
 
     let constLevels : Array Level ← levels.mapM fun k => do
       match k with
