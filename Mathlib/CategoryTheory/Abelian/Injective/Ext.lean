@@ -15,6 +15,18 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Extend
 /-!
 # Computing `Ext` using an injective resolution
 
+Given an injective resolution `R` of an object `Y` in an abelian category `C`,
+we provide an API in order to construct elements in `Ext X Y n` in terms
+of the complex `R.cocomplex` and to make computation in the `Ext`-group.
+
+## TODO
+* Functoriality in `X` for a given injective resolution `R`
+* Functoriality in `Y`: this would involve a morphism `Y ⟶ Y'`, injective
+resolutions `R` and `R'` of `Y` and `Y'`, a lift of `Y ⟶ Y'` as a morphism
+of cochain complexes `R.cocomplex ⟶ R'.cocomplex`; in this context,
+we should be able to compute the postcomposition of an element
+`R.extMk f m hm hf : Ext X Y n` by `Y ⟶ Y'`.
+
 -/
 
 @[expose] public section
@@ -23,48 +35,10 @@ universe w v u
 
 open CategoryTheory CochainComplex HomComplex Abelian Localization
 
--- to be moved...
-namespace CochainComplex.HomComplex
-
-variable {C : Type u} [Category.{v} C] [Abelian C]
-  {K L : CochainComplex C ℤ} {n : ℤ}
-  [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
-
-namespace CohomologyClass
-
-open DerivedCategory in
-lemma bijective_toSmallShiftedHom_of_isKInjective [L.IsKInjective] :
-    Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
-  letI := HasDerivedCategory.standard C
-  rw [← Function.Bijective.of_comp_iff'
-    (SmallShiftedHom.equiv _ DerivedCategory.Q).bijective,
-    ← Function.Bijective.of_comp_iff' (Iso.homCongr ((quotientCompQhIso C).symm.app K)
-      ((Q.commShiftIso n).symm.app L ≪≫ (quotientCompQhIso C).symm.app (L⟦n⟧))).bijective]
-  convert (CochainComplex.IsKInjective.Qh_map_bijective _ _).comp (toHom_bijective K L n)
-  ext x
-  obtain ⟨x, rfl⟩ := x.mk_surjective
-  simp [toHom_mk, ShiftedHom.map]
-
-/-- When `L` is a K-injective cochain complex, cohomology classes
-in `CohomologyClass K L n` identify to elements in a type `SmallShiftedHom` relatively
-to quasi-isomorphisms. -/
-@[simps! -isSimp]
-noncomputable def equivOfIsKInjective [L.IsKInjective] :
-    CohomologyClass K L n ≃
-      SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) K L n :=
-  Equiv.ofBijective _ bijective_toSmallShiftedHom_of_isKInjective
-
-end CohomologyClass
-
-end CochainComplex.HomComplex
-
-namespace CategoryTheory
+namespace CategoryTheory.InjectiveResolution
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
-
-namespace InjectiveResolution
-
-variable {X Y : C} (R : InjectiveResolution Y) {n : ℕ}
+  {X Y : C} (R : InjectiveResolution Y) {n : ℕ}
 
 instance : R.cochainComplex.IsKInjective := isKInjective_of_injective _ 0
 
@@ -234,6 +208,4 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
 
-end InjectiveResolution
-
-end CategoryTheory
+end CategoryTheory.InjectiveResolution
