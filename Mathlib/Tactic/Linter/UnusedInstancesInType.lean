@@ -96,9 +96,11 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
-def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
-    (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) : CommandElabM Unit := do
-  let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
+def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
+    (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) (ignoreProofs := true) :
+    CommandElabM Unit := do
+  let type ← if ignoreProofs then liftCoreM <| decl.type.eraseProofs.run' else pure decl.type
+  let unusedInstances := type.getUnusedForallInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then liftTermElabM do
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
@@ -147,17 +149,19 @@ Note: This linter can be disabled with `set_option {linter.fooLinter.name} false
 pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
-def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
+def _root_.Lean.Syntax.logUnusedInstancesInDeclsWhere (_cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
-    (declFilter : ConstantVal → Bool := fun _ => true) : CommandElabM Unit := do
+    (declFilter : ConstantVal → Bool := fun _ => true) (ignoreProofs := true) :
+    CommandElabM Unit := do
   for t in ← getInfoTrees do
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
-      thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
-        -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
-        -- t.withDeclSigRef cmd thm.name do
-        log t thm unusedParams
+      thm.onUnusedInstancesInTypeWhere instanceTypeFilter (ignoreProofs := ignoreProofs)
+        fun unusedParams =>
+          -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
+          -- t.withDeclSigRef cmd thm.name do
+          log t thm unusedParams
 
 section Decidable
 
@@ -215,7 +219,7 @@ def unusedDecidableInType : Linter where
         | _ => pure () -- invalid option value, should be caught during elaboration
     unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
-    cmd.logUnusedInstancesInTheoremsWhere
+    cmd.logUnusedInstancesInDeclsWhere
       /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
       on decidable instances without using them in the type. -/
       (declFilter := (!(`Decidable).isPrefixOf ·.name))
