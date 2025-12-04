@@ -12,16 +12,17 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 # HasExt instance for Module Category
 
-For `ModuleCat.{v} R`, if assuming `Small.{v} R`, it has enough projectives, thus for any universe
-level `w` with `UnivLE.{v, w}`, `HasExt.{w} (ModuleCat.{v} R)`.
+If we assume `Small.{v} R`, the category `ModuleCat.{v} R` has enough projectives, which allows to
+introduce the instance `HasExt.{v} (ModuleCat.{v} R)`. As a result, `Ext`-groups in this category
+of modules are defined and belong to `Type v`.
 
 -/
 
 @[expose] public section
 
-universe w v u
+universe v u
 
-variable (R : Type u) [CommRing R] [UnivLE.{v, w}]
+variable (R : Type u) [Ring R]
 
-instance [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
+instance [Small.{v} R] : CategoryTheory.HasExt.{v} (ModuleCat.{v} R) :=
+  CategoryTheory.hasExt_of_enoughProjectives.{v} (ModuleCat.{v} R)
