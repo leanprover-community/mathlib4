@@ -51,9 +51,10 @@ def sphericalCoord : OpenPartialHomeomorph (ℝ × ℝ × ℝ) (ℝ × ℝ × �
       · simp [sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2, h'θ]
   map_source' := by
     rintro ⟨x, y, z⟩ h
-    simp only [prodMk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
-      true_and, Complex.arg_lt_pi_iff]
-    simp
+    simp only [Complex.equivRealProd_symm_apply, mem_prod, mem_Ioi, sqrt_pos, mem_Ioo,
+      Complex.neg_pi_lt_arg, Complex.arg_lt_pi_iff, Complex.add_re, Complex.ofReal_re,
+      Complex.mul_re, Complex.I_re, mul_zero, Complex.ofReal_im, Complex.I_im, mul_one, sub_self,
+      add_zero, Complex.add_im, Complex.mul_im, zero_add, ne_eq, true_and]
     have hpos : 0 < x ^ 2 + y ^ 2 := by
       rcases h with h | h <;> dsimp at h <;> positivity
     and_intros
