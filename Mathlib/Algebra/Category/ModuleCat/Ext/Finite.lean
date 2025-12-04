@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Noetherian.Basic
 
-
 /-!
 
 # Ext Between Finitely Generated Module over Noetherian Ring is Finitely Generated
@@ -27,12 +26,8 @@ variable (R : Type u) [CommRing R]
 
 open CategoryTheory Abelian
 
-universe w
-
-variable [UnivLE.{v, w}]
-
 instance ModuleCat.finite_ext [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
-    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{w} N M i) := by
+    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext N M i) := by
   induction i generalizing N
   · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
   · rename_i n ih _
