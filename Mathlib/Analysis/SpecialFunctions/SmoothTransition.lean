@@ -70,28 +70,11 @@ protected theorem monotone : Monotone expNegInvGlue := by
 /-- The function `expNegInvGlue` is not analytic at `0`. -/
 theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
   intro h
-  -- Analytic functions are either always zero or have isolated zeros
-  obtain h_zero | h_nonzero := h.eventually_eq_zero_or_eventually_ne_zero
-  · -- Case 1: Always zero contradicts expNegInvGlue x > 0 for x > 0
-    obtain ⟨U, hU_mem, hU⟩ := h_zero.exists_mem
-    obtain ⟨t, ht_sub, ht_open, ht_mem⟩ := mem_nhds_iff.mp hU_mem
-    obtain ⟨ε, hε_pos, hε_ball⟩ := Metric.isOpen_iff.mp ht_open 0 ht_mem
-    have : expNegInvGlue (ε / 2) = 0 := by
-      refine hU _ (ht_sub (hε_ball ?_))
-      simp_all [abs_of_pos]
-    linarith [zero_iff_nonpos.mp this]
-  · -- Case 2: Isolated zero contradicts expNegInvGlue x = 0 for x < 0
-    obtain ⟨U, hU_mem, hU⟩ := h_nonzero.exists_mem
-    obtain ⟨t, ht_open, ht_mem, ht_sub⟩ := mem_nhdsWithin.mp hU_mem
-    obtain ⟨ε, hε_pos, hε_ball⟩ := Metric.isOpen_iff.mp ht_open 0 ht_mem
-    have : expNegInvGlue (-ε / 2) ≠ 0 := by
-      refine hU _ (ht_sub ?_)
-      constructor
-      · apply hε_ball
-        simp_all [abs_of_pos hε_pos]
-      · grind
-    rw [ne_eq, zero_iff_nonpos] at this
-    linarith
+  obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
+  suffices expNegInvGlue (r / 2) = 0 by simpa [hr, not_le_of_gt]
+  exact h.eqOn_zero_of_preconnected_of_mem_closure (z₀ := 0)
+    (Metric.isConnected_ball hr).isPreconnected
+    (by simp [hr]) (by simp [Set.Iic_def]) (by simp [abs_of_pos, hr])
 
 /-!
 ### Smoothness of `expNegInvGlue`
