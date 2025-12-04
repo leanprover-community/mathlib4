@@ -415,9 +415,9 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
-      _ ≤ (n + 1) ^ i := by gcongr; cutsat
+      _ ≤ (n + 1) ^ i := by gcongr; lia
       _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
-    · exact hv _ (by cutsat) _ (by cutsat)
+    · exact hv _ (by lia) _ (by lia)
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
       Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]
@@ -743,6 +743,7 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_iteratedFDeriv := fourier_iteratedFDeriv
 
+set_option linter.flexible false in -- simp followed by positivity
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourier_le

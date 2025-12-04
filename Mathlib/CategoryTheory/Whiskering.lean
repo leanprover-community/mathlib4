@@ -23,7 +23,7 @@ This operation is functorial in `F`, and we package this as `whiskeringLeft`. He
 
 We also provide analogues for composition on the right, and for these operations on isomorphisms.
 
-We show the associators an unitor natural isomorphisms satisfy the triangle and pentagon
+We show the associator and unitor natural isomorphisms satisfy the triangle and pentagon
 identities.
 -/
 
