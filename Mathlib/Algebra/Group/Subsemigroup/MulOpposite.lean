@@ -68,9 +68,9 @@ theorem op_le_op_iff {S₁ S₂ : Subsemigroup M} : S₁.op ≤ S₂.op ↔ S₁
 theorem unop_le_unop_iff {S₁ S₂ : Subsemigroup Mᵐᵒᵖ} : S₁.unop ≤ S₂.unop ↔ S₁ ≤ S₂ :=
   MulOpposite.unop_surjective.forall
 
-/-- A subsemigroup `H` of `G` determines a subsemigroup `H.op` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) /-- An additive subsemigroup `H` of `G` determines an additive
-  subsemigroup `H.op` of the opposite group `Gᵐᵒᵖ`. -/]
+/-- A subsemigroup `H` of `M` determines a subsemigroup `H.op` of the opposite semigroup `Mᵐᵒᵖ`. -/
+@[to_additive (attr := simps) /-- An additive subsemigroup `H` of `M` determines an additive
+  subsemigroup `H.op` of the opposite semigroup `Mᵐᵒᵖ`. -/]
 def opEquiv : Subsemigroup M ≃o Subsemigroup Mᵐᵒᵖ where
   toFun := Subsemigroup.op
   invFun := Subsemigroup.unop
