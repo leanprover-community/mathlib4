@@ -252,24 +252,8 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
   have hα : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
     simp [Nat.card_eq_zero_of_infinite] at hsn')
   induction n generalizing α hα G with
-  | zero => -- case n = 0
-    have : IsPretransitive G α := hG.toIsPretransitive
-    simp only [zero_add, Set.ncard_eq_one] at hsn
-    obtain ⟨a, rfl⟩ := hsn
-    constructor
-    · rw [ofStabilizer.isMultiplyPretransitive (a := a), is_one_pretransitive_iff]
-      apply IsPretransitive.of_surjective_map
-        ofFixingSubgroup_of_singleton_bijective.surjective hprim.toIsPretransitive
-    · intro t h
-      rw [zero_add, Nat.cast_ofNat, ← one_add_one_eq_two,
-        (ENat.add_left_injective_of_ne_top ENat.one_ne_top).eq_iff] at h
-      obtain ⟨b, htb⟩ := Set.encard_eq_one.mp h
-      obtain ⟨g, hg⟩ := exists_smul_eq G a b
-      have hst : g • ({a} : Set α) = ({b} : Set α) := by
-        rw [Set.smul_set_singleton, hg]
-      rw [htb]
-      refine IsPreprimitive.of_surjective
-        (conjMap_ofFixingSubgroup_bijective (hst := hst)).surjective
+  -- case n = 0
+  | zero => simpa using is_two_preprimitive hG hsn hsn' hprim
   -- Induction step
   | succ n hrec =>
     suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
