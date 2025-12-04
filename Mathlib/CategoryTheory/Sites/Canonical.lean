@@ -292,9 +292,11 @@ instance : (J.yoneda).Faithful := (J.yonedaFullyFaithful).faithful
 def uliftYonedaFullyFaithful : (GrothendieckTopology.uliftYoneda.{w} J).FullyFaithful :=
   J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
 
-instance : (J.uliftYoneda).Full := (J.uliftYonedaFullyFaithful).full
+instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
+    (J.uliftYonedaFullyFaithful).full
 
-instance : (J.uliftYoneda).Faithful := (J.uliftYonedaFullyFaithful).faithful
+instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
+    (J.uliftYonedaFullyFaithful).faithful
 
 end GrothendieckTopology
 
