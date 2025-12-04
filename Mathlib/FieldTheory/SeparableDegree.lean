@@ -563,8 +563,8 @@ theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
   have h2 := (natSepDegree_eq_of_splits f (hs.map <| .id F)).symm
   rw [h, aroots_def, Algebra.algebraMap_self, map_id, Multiset.toFinset_card_eq_one_iff] at h2
   obtain ⟨h2, y, h3⟩ := h2
-  exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
-    Multiset.prod_singleton] at h1⟩
+  exact ⟨_, y, h2, by rwa [ofMultiset_apply, h3, Multiset.map_nsmul, Multiset.map_singleton,
+    Multiset.prod_nsmul, Multiset.prod_singleton] at h1⟩
 
 /-- If a monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one, then it is of the form `X ^ (q ^ n) - C y` for some natural number `n`,
