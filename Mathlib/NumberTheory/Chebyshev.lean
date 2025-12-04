@@ -63,10 +63,8 @@ scoped notation "θ" => Chebyshev.theta
 theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x :=
   sum_nonneg fun _ _ ↦ (by simp)
 
-theorem theta_nonneg (x : ℝ) : 0 ≤ θ x := by
-  refine sum_nonneg fun n hn ↦ log_nonneg ?_
-  simp_all
-  linarith
+theorem theta_nonneg (x : ℝ) : 0 ≤ θ x :=
+  sum_nonneg fun n hn ↦ log_nonneg (by aesop)
 
 theorem psi_eq_sum_Icc (x : ℝ) :
     ψ x = ∑ n ∈ Icc 0 ⌊x⌋₊, Λ n := by
@@ -109,29 +107,16 @@ theorem psi_mono : Monotone ψ := by
 theorem theta_mono : Monotone θ := by
   intro x y hxy
   apply sum_le_sum_of_subset_of_nonneg
-  · intro p hp
-    simp_all only [mem_filter, mem_Ioc, true_and, and_true]
-    exact le_trans hp.1.2 <| floor_le_floor hxy
-  · intro p hp _
-    apply log_nonneg
-    norm_cast
-    simp only [mem_filter, mem_Ioc] at hp
-    exact hp.2.one_le
+  · exact filter_subset_filter _ <| Ioc_subset_Ioc_right <| floor_mono hxy
+  · simp only [mem_filter]
+    exact fun p hp _ ↦ log_nonneg (mod_cast hp.2.one_le)
 
 /-- `θ x` is the log of the product of the primes up to `x`. -/
 theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := by
   unfold theta primorial
-  push_cast
-  rw [log_prod]
-  · apply sum_congr
-    · ext p
-      simp_all [Nat.Prime.pos, Nat.lt_add_one_iff]
-    · intros; rfl
-  · intro p
-    simp_all only [mem_filter, mem_range, ne_eq, cast_eq_zero, and_imp]
-    intro hp1 hp2
-    push_neg
-    exact hp2.pos.ne.symm
+  rw [cast_prod, log_prod (fun p hp ↦ mod_cast (mem_filter.mp hp).2.pos.ne')]
+  congr 1 with p
+  simp_all [Nat.Prime.pos, Nat.lt_add_one_iff]
 
 /-- Chebyshev's upper bound: `θ x ≤ c x` with the constant `c = log 4`. -/
 theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
