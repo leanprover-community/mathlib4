@@ -29,7 +29,7 @@ open Function
 
 namespace Algebra
 
-variable {R : Type u} {A : Type w}
+variable {R S A : Type*}
 
 section Semiring
 
@@ -74,37 +74,45 @@ theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down =
 
 end ULift
 
-/-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
-instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
-  algebraMap := (algebraMap R A).comp S.subtype
-  commutes' r x := Algebra.commutes (r : R) x
-  smul_def' r x := Algebra.smul_def (r : R) x
+section SubsemiringClass
+variable [SetLike S R] [SubsemiringClass S R]
 
+instance ofSubsemiringClass {s : S} : Algebra s A := .compHom _ (SubsemiringClass.subtype s)
+
+lemma algebraMap_ofSubsemiringClass_def (s : S) :
+    algebraMap s A = (algebraMap R A).comp (SubsemiringClass.subtype s) := rfl
+
+@[simp] lemma coe_algebraMap_ofSubsemiringClass (s : S) :
+    ⇑(algebraMap s A) = algebraMap R A ∘ Subtype.val := rfl
+
+lemma algebraMap_ofSubsemiringClass_apply (s : S) (x : s) :
+    algebraMap s A x = algebraMap R A x := rfl
+
+end SubsemiringClass
+
+@[deprecated algebraMap_ofSubsemiringClass_def (since := "2025-12-04")]
 theorem algebraMap_ofSubsemiring (S : Subsemiring R) :
-    (algebraMap S R : S →+* R) = Subsemiring.subtype S :=
-  rfl
+    (algebraMap S R : S →+* R) = Subsemiring.subtype S := by ext; simp
 
+@[deprecated coe_algebraMap_ofSubsemiringClass (since := "2025-12-04")]
 theorem coe_algebraMap_ofSubsemiring (S : Subsemiring R) : (algebraMap S R : S → R) = Subtype.val :=
   rfl
 
+@[deprecated algebraMap_ofSubsemiringClass_apply (since := "2025-12-04")]
 theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap S R x = x :=
   rfl
 
-/-- Algebra over a subring. This builds upon `Subring.module`. -/
-instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
-    Algebra S A where
-  algebraMap := (algebraMap R A).comp S.subtype
-  commutes' r x := Algebra.commutes (r : R) x
-  smul_def' r x := Algebra.smul_def (r : R) x
-
+@[deprecated algebraMap_ofSubsemiringClass_def (since := "2025-12-04")]
 theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S →+* R) = Subring.subtype S :=
   rfl
 
+@[deprecated coe_algebraMap_ofSubsemiringClass (since := "2025-12-04")]
 theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
     (algebraMap S R : S → R) = Subtype.val :=
   rfl
 
+@[deprecated algebraMap_ofSubsemiringClass_apply (since := "2025-12-04")]
 theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
     algebraMap S R x = x :=
   rfl
