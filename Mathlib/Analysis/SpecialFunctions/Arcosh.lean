@@ -20,7 +20,8 @@ In this file we define an inverse of cosh as a function from [0, ∞) to [1, ∞
 - `Real.cosh'`, `Real.arcosh'`: Versions of `Real.cosh` and `Real.arcosh` restricted
   to the domains [0, ∞) and [1, ∞), respectively.
 
-- `Real.sinhEquiv`, `Real.sinhOrderIso`: `Real.sinh` as an `Equiv` and `OrderIso`, respectively.
+- `Real.cosh'Equiv`, `Real.cosh'OrderIso`, `Real.cosh'Homeomorph`: `Real.cosh'` as an `Equiv`,
+  `OrderIso`, and `Homeomorph`, respectively.
 
 ## Main Results
 
@@ -120,12 +121,16 @@ end Real
 
 /-- Real numbers which are at least 1. -/
 def AOReal := { r : ℝ // 1 ≤ r } deriving
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
+  Preorder, PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
+  TopologicalSpace, UniformSpace, PseudoMetricSpace,
   Nontrivial, Inhabited
 
 namespace AOReal
 
 @[inherit_doc] scoped notation "ℝ≥1" => AOReal
+
+instance : OrderTopology ℝ≥1 :=
+  orderTopology_of_ordConnected (t := Ici 1)
 
 /-- Coercion `ℝ≥1 → ℝ`. -/
 @[coe] def toReal : ℝ≥1 → ℝ := Subtype.val
@@ -216,6 +221,10 @@ theorem cosh'_le_cosh' (x y : ℝ≥0) : cosh' x ≤ cosh' y ↔ x ≤ y := by
 def cosh'OrderIso : ℝ≥0 ≃o ℝ≥1 where
   toEquiv := cosh'Equiv
   map_rel_iff' := @cosh'_le_cosh'
+
+/-- `Real.cosh'` as a `Homeomorph`. -/
+def cosh'Homeomorph : ℝ≥0 ≃ₜ ℝ≥1 :=
+  cosh'OrderIso.toHomeomorph
 
 theorem arcosh'_bijective : Bijective arcosh' :=
   cosh'Equiv.symm.bijective
