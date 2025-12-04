@@ -158,7 +158,7 @@ lemma schwartz_zippel_sup_sum :
           _ ≤ p.degreeOf 0 := by
             have :
               (ofLex (AddMonoidAlgebra.supDegree toLex p'.leadingCoeff)).cons k ∈ p.support := by
-              rwa [← support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
+              rwa [← mem_support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
                 ← Polynomial.leadingCoeff, ← hpₖ, ← leadingCoeff_toLex,
                 AddMonoidAlgebra.leadingCoeff_ne_zero toLex.injective]
             simpa using monomial_le_degreeOf 0 this

@@ -331,7 +331,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → WithTop ℕ} (hτ : Is
     simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
     cases τ ω with
     | top => simp
-    | coe a => simp only [ENat.some_eq_coe]; norm_cast; cutsat
+    | coe a => simp only [ENat.some_eq_coe]; norm_cast; lia
 
 -- generalize to certain countable type?
 theorem add {f : Filtration ℕ m} {τ π : Ω → WithTop ℕ}

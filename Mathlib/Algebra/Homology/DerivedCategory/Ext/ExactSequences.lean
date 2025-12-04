@@ -49,7 +49,7 @@ lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {X : C} {n₀ : ℕ} (x : Ext X S.X₃ n₀)
     {n₁ : ℕ} (h : n₀ + 1 = n₁) :
     (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequenceδ
-      hS.singleTriangle n₀ n₁ (by cutsat) x.hom =
+      hS.singleTriangle n₀ n₁ (by lia) x.hom =
         (x.comp hS.extClass h).hom := by
   rw [Pretriangulated.preadditiveCoyoneda_homologySequenceδ_apply,
     comp_hom, hS.extClass_hom, ShiftedHom.comp]
@@ -88,7 +88,7 @@ lemma covariant_sequence_exact₃' :
           comp_zero])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
-    (hS.singleTriangle_distinguished) n₀ n₁ (by cutsat)
+    (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
   apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
@@ -107,7 +107,7 @@ lemma covariant_sequence_exact₁' :
           comp_zero])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
-    (hS.singleTriangle_distinguished) n₀ n₁ (by cutsat)
+    (hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
   apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
@@ -175,7 +175,7 @@ lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
     [HasDerivedCategory.{w'} C] {Y : C} {n₀ : ℕ} (x : Ext S.X₁ Y n₀)
     {n₁ : ℕ} (h : 1 + n₀ = n₁) :
     (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequenceδ
-      ((triangleOpEquivalence _).functor.obj (op hS.singleTriangle)) n₀ n₁ (by cutsat) x.hom =
+      ((triangleOpEquivalence _).functor.obj (op hS.singleTriangle)) n₀ n₁ (by lia) x.hom =
       (hS.extClass.comp x h).hom := by
   rw [preadditiveYoneda_homologySequenceδ_apply,
     comp_hom, hS.extClass_hom, ShiftedHom.comp]
@@ -210,7 +210,7 @@ lemma contravariant_sequence_exact₁' :
         simp only [ShortComplex.ShortExact.extClass_comp_assoc])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₃ _
-    (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by cutsat)
+    (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
   apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
@@ -226,7 +226,7 @@ lemma contravariant_sequence_exact₃' :
         simp only [ShortComplex.ShortExact.comp_extClass_assoc])).Exact := by
   letI := HasDerivedCategory.standard C
   have := (preadditiveYoneda.obj ((singleFunctor C 0).obj Y)).homologySequence_exact₁ _
-    (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by cutsat)
+    (op_distinguished _ hS.singleTriangle_distinguished) n₀ n₁ (by lia)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
   apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)

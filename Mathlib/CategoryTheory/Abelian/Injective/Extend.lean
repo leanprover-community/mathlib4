@@ -60,7 +60,7 @@ instance (n : ℤ) : Injective (R.cochainComplex.X n) := by
   by_cases hn : 0 ≤ n
   · obtain ⟨k, rfl⟩ := Int.eq_ofNat_of_zero_le hn
     exact Injective.of_iso (R.cochainComplexXIso _ _ rfl).symm inferInstance
-  · exact IsZero.injective (CochainComplex.isZero_of_isStrictlyGE _ 0 _ (by cutsat))
+  · exact IsZero.injective (CochainComplex.isZero_of_isStrictlyGE _ 0 _ (by lia))
 
 /-- The quasi-isomorphism `(CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainComplex`
 in `CochainComplex C ℤ` when `R` is an injective resolution of `X`. -/

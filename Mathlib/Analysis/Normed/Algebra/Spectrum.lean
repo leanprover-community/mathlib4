@@ -274,7 +274,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
-  grw [hN (n + N + 1) (by cutsat)]
+  grw [hN (n + N + 1) (by lia)]
 
 end SpectrumCompact
 

@@ -48,7 +48,7 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   absurd h x
   rify
   rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀] <;> simp
-  · cutsat
+  · lia
   · assumption
 
 private theorem not_power_nat_pow {n p q : ℕ}
@@ -68,7 +68,7 @@ private theorem not_power_nat_pow {n p q : ℕ}
       rw [Nat.prod_pow_factorization_eq_self]
       intro z hz
       apply_fun Finsupp.support at hf
-      rw [Finsupp.support_smul_eq (by cutsat)] at hf
+      rw [Finsupp.support_smul_eq (by lia)] at hf
       rw [← hf] at hz
       exact Nat.prime_of_mem_primeFactors hz
     have hf0 : f 0 = 0 := by
@@ -76,7 +76,7 @@ private theorem not_power_nat_pow {n p q : ℕ}
       simp only [Nat.factorization_zero_right, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul,
         zero_eq_mul] at hf
       cases hf
-      · cutsat
+      · lia
       · assumption
     rw [this, ← Nat.factorization_pow] at hf
     apply Nat.factorization_inj at hf
@@ -100,7 +100,7 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
   rw [h] at h_left h_right
   have : k < m := lt_of_pow_lt_pow_left' d h_left
   have : m < k + 1 := lt_of_pow_lt_pow_left' d h_right
-  cutsat
+  lia
 
 private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
     (hq : 0 < q) (h_coprime : p.Coprime q) (h_left : k ^ q < n) (h_right : n < (k + 1) ^ q)

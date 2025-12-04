@@ -211,7 +211,7 @@ theorem periodicPts_subset_range : periodicPts f ⊆ range f := by
   rcases h with ⟨n, _, h⟩
   use f^[n - 1] x
   nth_rw 1 [← iterate_one f]
-  rw [← iterate_add_apply, Nat.add_sub_cancel' (by cutsat)]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by lia)]
   exact h
 
 @[deprecated (since := "2025-04-27")]

@@ -644,3 +644,30 @@ theorem aemeas_foo4 (μ : Bool) : AEMeas foo4 μ := silentSorry
 theorem con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4 := silentSorry
 
 example : Con foo4 := by fun_prop
+
+/-!
+  Some tests to ensure state changes made by the discharger (to their goals' contexts) are not
+  reverted by `fun_prop`, which is necessary for correct functionality of `disch := grind`.
+-/
+section StateReversionBug
+
+@[fun_prop] theorem div_Con' [Zero β] [Div β] (f g : α → β) (hf : Con f) (hg : Con g)
+    (h : ∀ x, g x ≠ 0) : Con (fun x => f x / g x) := silentSorry
+
+example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
+    Con (fun x => f x / g x) := by
+  fun_prop (disch := grind)
+
+-- In case the behaviour of `grind` changes, here's a more explicit test.
+open Lean Elab Tactic Meta in
+example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
+    Con (fun x => f x / g x) := by
+  have : ∀ x, g x ≠ 0 := by grind
+  fun_prop (disch := run_tac
+    let goal ← getMainGoal
+    let ty ← goal.getType
+    let mvar ← mkFreshExprSyntheticOpaqueMVar ty
+    let _ ← mvar.mvarId!.assumption
+    goal.assign <| ← mkAuxTheorem ty (← instantiateMVars mvar))
+
+end StateReversionBug

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.NumberTheory.ModularForms.Cusps
 
 /-!
 # Identities of ModularForms and SlashInvariantForms
@@ -22,14 +23,21 @@ open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGr
 
 namespace SlashInvariantForm
 
-/- TODO: Once we have cusps, do this more generally, same below. -/
+theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
+    {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
+    (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
+    f (h +ᵥ τ) = f τ := by
+  rw [← congr_fun (slash_action_eqn f _ <| Γ.mem_strictPeriods_iff.mp hH) τ]
+  suffices GeneralLinearGroup.upperRightHom h • τ = h +ᵥ τ  by
+    simp_rw [slash_def, this]
+    simp [σ, denom, GeneralLinearGroup.val_det_apply, denom]
+  ext
+  simp [σ, num, denom, coe_vadd, UpperHalfPlane.coe_smul, num, add_comm]
+
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
-    f (((N * n) : ℝ) +ᵥ z) = f z := by
-  norm_cast
-  rw [← modular_T_zpow_smul z (N * n), MulAction.compHom_smul_def, slash_action_eqn']
-  · simp [-map_zpow, ModularGroup.coe_T_zpow (N * n)]
-  · simpa using Subgroup.mem_map_of_mem (mapGL ℝ) <|
-      ModularGroup_T_pow_mem_Gamma _ _ (Int.dvd_mul_right N n)
+    f ((N * n : ℝ) +ᵥ z) = f z := by
+  apply vAdd_apply_of_mem_strictPeriods
+  simp [strictPeriods_Gamma, AddSubgroup.mem_zmultiples_iff, mul_comm]
 
 theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((ModularGroup.T ^ (N * n))) • z) = f z := by

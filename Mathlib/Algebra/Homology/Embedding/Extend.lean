@@ -341,4 +341,29 @@ instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
 
 instance [Preadditive C] : (e.extendFunctor C).Additive where
 
+/-- The extension functor attached to an embedding of complex shapes is fully faithful. -/
+noncomputable def fullyFaithfulExtendFunctor [HasZeroMorphisms C] :
+    (e.extendFunctor C).FullyFaithful where
+  preimage {K L} φ :=
+    { f i := (K.extendXIso e rfl).inv ≫ φ.f (e.f i) ≫ (L.extendXIso e rfl).hom
+      comm' i j h := by
+        have := φ.comm (e.f i) (e.f j)
+        simp only [extendFunctor_obj, K.extend_d_eq e rfl rfl, L.extend_d_eq e rfl rfl] at this
+        simp [← cancel_mono (L.extendXIso e rfl).inv, Category.assoc, this] }
+  map_preimage {K L} φ := by
+    ext i'
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      simp [HomologicalComplex.extendMap_f _ _ rfl]
+    · exact (K.isZero_extend_X _ _ (by tauto)).eq_of_src _ _
+  preimage_map {K L} f := by
+    ext i
+    simp [HomologicalComplex.extendMap_f _ _ rfl]
+
+instance [HasZeroMorphisms C] : (e.extendFunctor C).Faithful :=
+    (e.fullyFaithfulExtendFunctor C).faithful
+
+instance [HasZeroMorphisms C] : (e.extendFunctor C).Full :=
+    (e.fullyFaithfulExtendFunctor C).full
+
 end ComplexShape.Embedding

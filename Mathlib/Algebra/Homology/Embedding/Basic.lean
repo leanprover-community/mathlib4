@@ -206,7 +206,7 @@ end
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; cutsat)
+    (by dsimp; lia)
 
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
 
@@ -218,7 +218,7 @@ instance : embeddingUpNat.IsTruncGE where
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => -n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; cutsat)
+    (by dsimp; lia)
 
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
 
@@ -231,8 +231,8 @@ variable (p : ℤ)
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p + n)
-    (fun _ _ h => by dsimp at h; cutsat)
-    (by dsimp; cutsat)
+    (fun _ _ h => by dsimp at h; lia)
+    (by dsimp; lia)
 
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
 
@@ -243,8 +243,8 @@ instance : (embeddingUpIntGE p).IsTruncGE where
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p - n)
-    (fun _ _ h => by dsimp at h; cutsat)
-    (by dsimp; cutsat)
+    (fun _ _ h => by dsimp at h; lia)
+    (by dsimp; lia)
 
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
 
@@ -256,10 +256,10 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (p - n).natAbs (by simp; cutsat)
+    exact h (p - n).natAbs (by simp; lia)
   · intros
     dsimp
-    cutsat
+    lia
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
@@ -269,10 +269,10 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (n - p).natAbs (by simp; cutsat)
+    exact h (n - p).natAbs (by simp; lia)
   · intros
     dsimp
-    cutsat
+    lia
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff
