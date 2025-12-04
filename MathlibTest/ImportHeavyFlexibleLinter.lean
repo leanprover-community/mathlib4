@@ -39,7 +39,7 @@ example : (0 + 2 : Rat) + 1 = 3 := by
 /-! ## further flexible tactics -/
 
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -72,7 +72,7 @@ example (h : False) : False ∧ True := by
 -- Currently, `positivity` is not marked as flexible (as it only applies to goals in a very
 -- particular shape). We use this test to record the current behaviour.
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
@@ -112,7 +112,7 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
 -- shape of the goal, and e.g. changing the goal to a defeq one could break the proof).
 -- This test documents this behaviour.
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---

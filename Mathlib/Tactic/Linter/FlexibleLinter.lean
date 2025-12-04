@@ -457,7 +457,12 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
       stains := new
 
   for (s, stainStx, d) in msgs do
-    Linter.logLint linter.flexible stainStx m!"'{stainStx}' is a flexible tactic modifying '{d}'…"
+    let (tac, tacOnly) := if stainStx.getKind == ``Lean.Parser.Tactic.simpAll
+      then ("simp_all?", "simp_all only [...]")
+      else ("simp?", "simp only [...]")
+    Linter.logLint linter.flexible stainStx
+      m!"'{stainStx}' is a flexible tactic modifying '{d}'. \
+        Try '{tac}' and use the suggested '{tacOnly}'."
     logInfoAt s m!"… and '{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
