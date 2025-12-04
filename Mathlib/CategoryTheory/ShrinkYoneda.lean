@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.EssentiallySmall
+module
+
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # The yoneda functor for locally small categories
@@ -108,5 +110,20 @@ lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ 
     obtain ⟨t, rfl⟩ := shrinkYonedaEquiv.surjective t
     rw [← shrinkYonedaEquiv_naturality]
     simp)
+
+variable (C) in
+/-- The functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`
+is fully faithful. -/
+noncomputable def fullyFaithfulShrinkYoneda :
+    (shrinkYoneda.{w} (C := C)).FullyFaithful where
+  preimage f := shrinkYonedaObjObjEquiv (shrinkYonedaEquiv f)
+  map_preimage f := by
+    obtain ⟨f, rfl⟩ := shrinkYonedaEquiv.symm.surjective f
+    cat_disch
+  preimage_map f := by simp [shrinkYonedaEquiv_shrinkYoneda_map]
+
+instance : (shrinkYoneda.{w} (C := C)).Faithful := (fullyFaithfulShrinkYoneda C).faithful
+
+instance : (shrinkYoneda.{w} (C := C)).Full := (fullyFaithfulShrinkYoneda C).full
 
 end CategoryTheory
