@@ -102,7 +102,7 @@ instance [HasExt.{w} C] (X Y : C) (a b : ℤ) [HasDerivedCategory.{w'} C] :
       (X := (CochainComplex.singleFunctor C 0).obj X)
       (Y := (CochainComplex.singleFunctor C 0).obj Y) Q).1 inferInstance a b
   exact small_of_injective
-    (β := (((singleFunctor C 0).obj X)⟦-a⟧ ⟶ ((singleFunctor C 0).obj Y)⟦-b⟧))
+    (β := ((singleFunctor C 0).obj X)⟦-a⟧ ⟶ ((singleFunctor C 0).obj Y)⟦-b⟧)
     (f := fun φ ↦
       ((singleFunctors C).shiftIso (-a) a 0 (by simp)).hom.app X ≫ φ ≫
         ((singleFunctors C).shiftIso (-b) b 0 (by simp)).inv.app Y)
