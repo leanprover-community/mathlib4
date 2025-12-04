@@ -262,6 +262,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
+-- TODO: fix non-terminal simp (large simp set)
+set_option linter.flexible false in
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -408,13 +410,13 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · cutsat
+          · lia
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
-      · cutsat
+      · lia
 
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
