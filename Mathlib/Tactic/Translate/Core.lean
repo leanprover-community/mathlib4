@@ -563,6 +563,31 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
       value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
+/--
+Find the argument of `nm` that appears in the first translatable (type-class) argument.
+Returns 1 if there are no types with a translatable class as arguments.
+E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
+Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
+E.g. `[Pow A N]` is a translatable type-class on `A`, not on `N`.
+-/
+def findRelevantArg (t : TranslateData) (nm : Name) : CoreM Nat := MetaM.run' do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
+    let env ← getEnv
+    -- check if `tgt` has a translatable type argument, and if so,
+    -- find the index of a type from `xs` appearing in there
+    let relevantArg? (tgt : Expr) : Option Nat := do
+      let c ← tgt.getAppFn.constName?
+      guard (findTranslation? env t c).isSome
+      let relevantArg := (t.argInfoAttr.find? env c).elim 0 (·.relevantArg)
+      let arg ← tgt.getArg? relevantArg
+      xs.findIdx? (arg.containsFVar ·.fvarId!)
+    -- run the above check on all hypotheses and on the conclusion
+    let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
+        forallTelescope (← inferType x) fun _ys tgt ↦ return relevantArg? tgt
+    let arg := arg <|> relevantArg? ty
+    trace[translate_detail] "findRelevantArg: {arg}"
+    return arg.getD 0
+
 /-- Abstracts the nested proofs in the value of `decl` if it is a def.
 This follows the behaviour of `Elab.abstractNestedProofs`. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
@@ -650,13 +675,14 @@ partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cf
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
       transformDeclAux t reorder cfg pre tgt_pre n
-  -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
-  -- to the translation dictionary, since otherwise we cannot translate the name.
-  if !pre.isPrefixOf src then
-    insertTranslation t src tgt {}
-  -- now transform the source declaration
   -- expose target body when source body is exposed
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
+  -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
+  -- to the translation dictionary, since otherwise we cannot translate the name.
+  let relevantArg ← findRelevantArg t src
+  if !pre.isPrefixOf src || src != pre && relevantArg != 0 then
+    insertTranslation t src tgt { relevantArg }
+  -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
       updateDecl t tgt srcDecl reorder cfg.dontTranslate
@@ -764,31 +790,6 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation t srcLemma tgtLemma argInfo
-
-/--
-Find the argument of `nm` that appears in the first translatable (type-class) argument.
-Returns 1 if there are no types with a translatable class as arguments.
-E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
-E.g. `[Pow A N]` is a translatable type-class on `A`, not on `N`.
--/
-def findRelevantArg (t : TranslateData) (nm : Name) : MetaM Nat := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
-    let env ← getEnv
-    -- check if `tgt` has a translatable type argument, and if so,
-    -- find the index of a type from `xs` appearing in there
-    let relevantArg? (tgt : Expr) : Option Nat := do
-      let c ← tgt.getAppFn.constName?
-      guard (findTranslation? env t c).isSome
-      let relevantArg := (t.argInfoAttr.find? env c).elim 0 (·.relevantArg)
-      let arg ← tgt.getArg? relevantArg
-      xs.findIdx? (arg.containsFVar ·.fvarId!)
-    -- run the above check on all hypotheses and on the conclusion
-    let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
-        forallTelescope (← inferType x) fun _ys tgt ↦ return relevantArg? tgt
-    let arg := arg <|> relevantArg? ty
-    trace[translate_detail] "findRelevantArg: {arg}"
-    return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
@@ -1204,7 +1205,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       MetaM.run' <| checkExistingType t src tgt cfg
     else
       pure (cfg.reorder?.getD [])
-  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
+  let relevantArg ← cfg.relevantArg?.getDM <| findRelevantArg t src
   let argInfo := { reorder, relevantArg }
   insertTranslation t src tgt argInfo alreadyExists
   let nestedNames ←
