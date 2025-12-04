@@ -225,7 +225,7 @@ example : 1 + 1 = 2 := by
   rfl
 
 /--
-info: `skip` can be replaced with `grind`
+info: `skip` (+1 later steps) can be replaced with `grind`
 ---
 info: `rfl` can be replaced with `grind`
 ---
@@ -309,6 +309,31 @@ example : 1 + 1 = 2 := by
 end
 
 end selfReplacements
+
+section laterSteps
+
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+set_option linter.unusedTactic false
+
+-- Test that later steps are counted correctly
+/--
+info: `skip` (+3 later steps) can be replaced with `grind`
+---
+info: `skip` (+2 later steps) can be replaced with `grind`
+---
+info: `skip` (+1 later steps) can be replaced with `grind`
+---
+info: `rfl` can be replaced with `grind`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  skip
+  skip
+  skip
+  rfl
+
+end laterSteps
 
 section grindReplacement
 

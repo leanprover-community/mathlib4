@@ -328,7 +328,8 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
     let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
     let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
     let selfReplacements := linter.tacticAnalysis.tryAtEachStep.selfReplacements.get opts
-    for i in seq do
+    for h : idx in [:seq.size] do
+      let i := seq[idx]
       if let [goal] := i.tacI.goalsBefore then
         if (hash goal) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
@@ -345,10 +346,12 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
             -- Check if this is a self-replacement (tactic replacing itself)
             if !selfReplacements && oldTacticPP == newTacticPP then
               continue
+            let laterSteps := seq.size - 1 - idx
+            let laterMsg := if laterSteps > 0 then s!" (+{laterSteps} later steps)" else ""
             if showTiming then
-              logInfoAt i.tacI.stx m!"`{oldTacticPP}` can be replaced with `{newTacticPP}` ({elapsedMs}ms)"
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}`{laterMsg} can be replaced with `{newTacticPP}` ({elapsedMs}ms)"
             else
-              logInfoAt i.tacI.stx m!"`{oldTacticPP}` can be replaced with `{newTacticPP}`"
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}`{laterMsg} can be replaced with `{newTacticPP}`"
 
 /-- Run a tactic at each proof step. See `tryAtEachStepCore` for details. -/
 def Mathlib.TacticAnalysis.tryAtEachStep
