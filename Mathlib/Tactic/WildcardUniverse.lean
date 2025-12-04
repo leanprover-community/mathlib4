@@ -104,14 +104,8 @@ def elabWildcardUniverses {m : Type → Type}
 /--
 Extracts all universe parameter names appearing in a level expression.
 -/
-def Lean.Level.getParams (l : Level) : List Name :=
-  match l with
-  | .param n => [n]
-  | .mvar _ => []
-  | .zero => []
-  | .succ l' => l'.getParams
-  | .max a b => a.getParams ++ b.getParams
-  | .imax a b => a.getParams ++ b.getParams
+def Lean.Level.getParams (l : Level) : Array Name :=
+  (Lean.CollectLevelParams.visitLevel l {}).params
 
 /--
 Reorganizes universe parameter names to ensure proper dependency ordering.
@@ -127,8 +121,8 @@ def reorganizeUniverseParams
     unless wildcardKind matches some (.param _) do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
-    let laterLevels := constLevels.toList.drop (idx + 1)
-    let dependencies := laterLevels.flatMap Level.getParams |>.filter (· != newParamName)
+    let laterLevels := constLevels.extract (idx + 1) constLevels.size
+    let dependencies := laterLevels.flatMap (·.getParams) |>.filter (· != newParamName)
     -- Remove newParamName from list (if it already exists)
     let currentNames := result.filter (· != newParamName)
     -- Find position after last dependency
