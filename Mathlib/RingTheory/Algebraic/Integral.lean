@@ -237,7 +237,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     · have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
       simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
         q, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
-    rw [← eval_map_algebraMap, Algebra.algebraMap_ofSubsemiringClass_def, ← map_map]
+    rw [← eval_map_algebraMap, Algebra.algebraMap_ofClass_def, ← map_map]
     change eval _ (map _ <| map (integralClosure R S).toSubring.subtype _) = _
     rw [map_toSubring, eval_map_algebraMap, ← AlgHom.restrictScalars_apply R,
       map_smul, AlgHom.restrictScalars_apply, eval0, smul_zero]

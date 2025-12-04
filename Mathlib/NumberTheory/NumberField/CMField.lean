@@ -481,7 +481,7 @@ noncomputable def equivMaximalRealSubfield :
     have : IsQuadraticExtension (algebraMap F K).fieldRange K :=
     { finrank_eq_two' :=
         (IsQuadraticExtension.finrank_eq_two F K) ▸ Algebra.finrank_eq_of_equiv_equiv
-          (algebraMap F K).rangeRestrictFieldEquiv.symm (RingEquiv.refl K) (by ext; simp) }
+          (algebraMap F K).rangeRestrictFieldEquiv.symm (.refl K) (by ext; simp) }
     exact eq_maximalRealSubfield K (algebraMap F K).fieldRange))
 
 @[simp]

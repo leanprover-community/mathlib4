@@ -547,7 +547,7 @@ end Dvr
 
 section FractionRing
 
-instance algebra : Algebra ℤ_[p] ℚ_[p] := .ofSubsemiringClass (subring p)
+instance algebra : Algebra ℤ_[p] ℚ_[p] := .ofClass (subring p)
 
 @[simp]
 theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=

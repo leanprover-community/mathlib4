@@ -818,22 +818,22 @@ instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWith
 instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
   inferInstanceAs (Module S.toSubsemiring α)
 
-@[deprecated algebraMap_ofSubsemiringClass_def (since := "2025-12-04")]
+@[deprecated algebraMap_ofClass_def (since := "2025-12-04")]
 theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
 
-@[deprecated algebraMap_ofSubsemiringClass_def (since := "2025-12-04")]
+@[deprecated algebraMap_ofClass_def (since := "2025-12-04")]
 theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
     [Algebra R A] [Algebra A α] {S : Subalgebra R A} (s : S) :
   algebraMap S α s = algebraMap A α (s : A) := rfl
 
-@[deprecated algebraMap_ofSubsemiringClass_apply (since := "2025-12-04")]
+@[deprecated algebraMap_ofClass_apply (since := "2025-12-04")]
 theorem algebraMap_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
     [Algebra R A] [Algebra A α] {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
   algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
 
-@[deprecated algebraMap_ofSubsemiringClass_apply (since := "2025-12-04")]
+@[deprecated algebraMap_ofClass_apply (since := "2025-12-04")]
 lemma algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) (x : S) : algebraMap S A x = x :=
   rfl
