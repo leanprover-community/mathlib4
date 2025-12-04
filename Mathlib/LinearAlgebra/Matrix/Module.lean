@@ -38,7 +38,7 @@ scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
   smul N v i := ∑ j : ι, N i j • v j
   one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [one_apply]
   mul_smul N₁ N₂ v := funext fun i ↦ show ∑ _, _ = ∑ _, _ • (∑ _, _) by
-    simp_rw [mul_apply, Finset.smul_sum, Finset.sum_smul, MulAction.mul_smul]
+    simp_rw [mul_apply, Finset.smul_sum, Finset.sum_smul, SemigroupAction.mul_smul]
     rw [Finset.sum_comm]
   smul_zero v := funext fun i ↦ show ∑ _, _ = _ by simp
   smul_add N v₁ v₂ := funext fun i ↦ show ∑ j : ι, N i j • (v₁ + v₂) j = (∑ _, _) + (∑ _, _) by

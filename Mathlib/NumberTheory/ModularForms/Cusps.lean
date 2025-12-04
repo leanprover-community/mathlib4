@@ -64,7 +64,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
   obtain ⟨p, hp𝒢, hpp, hpc⟩ := hc
   refine ⟨_, 𝒢.smul_mem_pointwise_smul _ _ hp𝒢, ?_, ?_⟩
   · simpa [ConjAct.toConjAct_smul] using hpp
-  · simp [ConjAct.toConjAct_smul, MulAction.mul_smul, hpc]
+  · simp [ConjAct.toConjAct_smul, SemigroupAction.mul_smul, hpc]
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
@@ -110,7 +110,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
       simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
-      simp [OnePoint.map_smul, MulAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
+      simp [OnePoint.map_smul, SemigroupAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
 
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
@@ -162,7 +162,7 @@ noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAr
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
-      simp [MulAction.mul_smul])
+      simp [SemigroupAction.mul_smul])
 
 @[simp]
 lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.IsArithmetic] (g : SL(2, ℤ)) :

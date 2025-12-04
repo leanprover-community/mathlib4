@@ -298,7 +298,7 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
         rw [one_pow, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
         cases H hn
       | prime hprime =>
-        rw [hn, pow_succ', MulAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
+        rw [hn, pow_succ', SemigroupAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
           CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
   · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
     obtain ⟨g, hg₁, m, hg₂⟩ :=
