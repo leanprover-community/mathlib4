@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Strictly unitary lax functors and pseudofunctors
@@ -34,6 +36,8 @@ bicategories, strictly unitary pseudofunctors and icons.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Bicategory
@@ -52,7 +56,7 @@ variable (B C)
 lax functor `F` from `B` to `C` such that the structure 1-cell
 `𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 1-cell for every `X : B`. -/
 @[kerodon 008R]
-structure StrictlyUnitaryLaxFunctor extends LaxFunctor B C where
+structure StrictlyUnitaryLaxFunctor extends B ⥤ᴸ C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm := by cat_disch
 

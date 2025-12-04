@@ -3,8 +3,10 @@ Copyright (c) 2025 Daniel Figueroa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Figueroa
 -/
-import Mathlib.Dynamics.Minimal
-import Mathlib.Topology.Baire.Lemmas
+module
+
+public import Mathlib.Dynamics.Minimal
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Topologically transitive and point transitive actions of monoids
@@ -21,6 +23,8 @@ additive versions.
 
 group action, transitive points, point transitive, topologically transitive
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise

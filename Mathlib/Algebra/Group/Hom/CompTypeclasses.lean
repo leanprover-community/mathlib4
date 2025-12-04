@@ -3,10 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-
-import Mathlib.Logic.Function.CompTypeclasses
-import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Function.CompTypeclasses
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Propositional typeclasses on several monoid homs
@@ -33,6 +33,8 @@ TODO :
 * does one need AddHom.CompTriple ?
 
 -/
+
+@[expose] public section
 
 section MonoidHomCompTriple
 

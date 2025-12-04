@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
@@ -255,6 +259,11 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
 theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
   rfl
+
+@[simp] theorem tensorTensorTensorComm_trans_tensorTensorTensorComm :
+    tensorTensorTensorComm R M N P Q ≪≫ₗ tensorTensorTensorComm R M P N Q = .refl R _ := by
+  rw [← tensorTensorTensorComm_symm]
+  exact LinearEquiv.symm_trans_self _
 
 theorem tensorTensorTensorComm_comp_map {V W : Type*}
     [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]

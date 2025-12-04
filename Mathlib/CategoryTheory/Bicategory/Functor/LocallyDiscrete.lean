@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
 # Pseudofunctors from locally discrete bicategories
@@ -25,6 +27,8 @@ to a pseudofunctor (or oplax functor) (`Functor.toPseudofunctor`) with domain
 `LocallyDiscrete I`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -83,7 +87,7 @@ def oplaxFunctorOfIsLocallyDiscrete
     (map₂_right_unitor : ∀ {b₀ b₁ : B} (f : b₀ ⟶ b₁),
       mapComp f (𝟙 b₁) ≫ map f ◁ mapId b₁ ≫ (ρ_ (map f)).hom = eqToHom (by simp) := by
         cat_disch) :
-    OplaxFunctor B C where
+    B ⥤ᵒᵖᴸ C where
   obj := obj
   map := map
   map₂ φ := eqToHom (by
@@ -119,7 +123,7 @@ corresponding locally discrete bicategories.
 This is just an abbreviation of `Functor.toPseudoFunctor.toOplax`.
 -/
 @[simps! obj map mapId mapComp]
-abbrev Functor.toOplaxFunctor : OplaxFunctor (LocallyDiscrete C) (LocallyDiscrete D) :=
+abbrev Functor.toOplaxFunctor : LocallyDiscrete C ⥤ᵒᵖᴸ (LocallyDiscrete D) :=
   F.toPseudoFunctor.toOplax
 
 end
@@ -146,7 +150,7 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps! obj map mapId mapComp]
-abbrev Functor.toOplaxFunctor' : OplaxFunctor (LocallyDiscrete I) B :=
+abbrev Functor.toOplaxFunctor' : LocallyDiscrete I ⥤ᵒᵖᴸ B :=
   F.toPseudoFunctor'.toOplax
 
 end

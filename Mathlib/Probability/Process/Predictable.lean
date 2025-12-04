@@ -3,7 +3,9 @@ Copyright (c) 2025 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Process.Adapted
+module
+
+public import Mathlib.Probability.Process.Adapted
 
 /-!
 # Predictable σ-algebra
@@ -29,6 +31,8 @@ and adapted. We also give an equivalent characterization of predictability for d
 predictable, previsible
 
 -/
+
+@[expose] public section
 
 open Filter Order TopologicalSpace
 

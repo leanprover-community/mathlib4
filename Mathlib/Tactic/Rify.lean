@@ -3,9 +3,11 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
-import Mathlib.Data.Rat.Cast.Order
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Qify
+module
+
+public meta import Mathlib.Data.Rat.Cast.Order
+public meta import Mathlib.Data.Real.Basic
+public meta import Mathlib.Tactic.Qify
 
 /-!
 # `rify` tactic
@@ -30,6 +32,8 @@ example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
 
 TODO: Investigate whether we should generalize this to other fields.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Rify
 

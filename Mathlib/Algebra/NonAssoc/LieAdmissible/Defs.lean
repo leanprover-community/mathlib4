@@ -3,8 +3,10 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.NonAssoc.PreLie.Basic
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 /-!
 # Lie admissible rings and algebras
 
@@ -35,6 +37,8 @@ documentation of `Algebra`.
 [Munthe-Kaas, H.Z., Lundervold, A. **On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.**][munthe-kaas_lundervold_2013]
 -/
+
+@[expose] public section
 
 /-- A `LieAdmissibleRing` is a `NonUnitalNonAssocRing` such that the canonical bracket
 `⁅x, y⁆ := x * y - y * x` turns it into a `LieRing`. This is expressed by an associator identity. -/

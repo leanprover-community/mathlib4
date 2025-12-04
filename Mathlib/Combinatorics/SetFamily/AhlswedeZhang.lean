@@ -3,15 +3,18 @@ Copyright (c) 2023 Yaël Dillies, Vladimir Ivanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Sups
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
+import Mathlib.Data.Rat.Defs
 
 /-!
 # The Ahlswede-Zhang identity
@@ -42,6 +45,8 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 * [R. Ahlswede, Z. Zhang, *An identity in combinatorial extremal theory*](https://doi.org/10.1016/0001-8708(90)90023-G)
 * [D. T. Tru, *An AZ-style identity and Bollobás deficiency*](https://doi.org/10.1016/j.jcta.2007.03.005)
 -/
+
+@[expose] public section
 
 section
 variable (α : Type*) [Fintype α] [Nonempty α] {m n : ℕ}
