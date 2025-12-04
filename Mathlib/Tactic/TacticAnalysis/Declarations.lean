@@ -373,8 +373,12 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
   run seq := do
     -- Parse using `tacticSeq.fn` directly since `tacticSeq` is not a parser category.
     -- See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/piggy.20back.20off.20of.20the.20lean4.20parser
-    let tacSeq ← ofExcept <|
-      Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
+    let tacSeq ← try
+      ofExcept <|
+        Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
+    catch _ =>
+      -- Tactic not available (e.g., `aesop` before Aesop is imported) - skip silently
+      return
     let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
     (tryAtEachStepCore (fun _ _ => pure tac) label).run seq
 

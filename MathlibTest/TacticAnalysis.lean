@@ -346,3 +346,23 @@ example : x = y := by
   rfl
 
 end grindReplacement
+
+section unknownTactic
+
+-- Test that tryAtEachStepFromStrings gracefully handles unknown tactics
+-- (e.g., trying to run `aesop` before Aesop is imported)
+
+register_option linter.tacticAnalysis.unknownTacticTest : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.unknownTacticTest]
+def unknownTacticTest :=
+  Mathlib.TacticAnalysis.tryAtEachStepFromStrings "nonexistent" "nonexistent_tactic_xyz"
+
+-- This should not crash - the unknown tactic should be silently skipped
+set_option linter.tacticAnalysis.unknownTacticTest true in
+#guard_msgs in
+example : 1 + 1 = 2 := by rfl
+
+end unknownTactic
