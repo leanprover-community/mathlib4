@@ -870,10 +870,83 @@ lemma quotient_maximal_hom_nontrivial [IsArtinianRing R] :
   rcases (isAssociatedPrime_iff_exists_injective_linearMap _ _).mp this with ⟨_, f, hf⟩
   exact nontrivial_of_ne f 0 (LinearMap.ne_zero_of_injective hf)
 
+lemma exist_linearMap_range_le_of_ne_bot [IsArtinianRing R] {I : Ideal R} (ne : I ≠ ⊥) :
+    ∃ (f : (R ⧸ maximalIdeal R →ₗ[R] R)), Function.Injective f ∧ LinearMap.range f ≤ I := by
+  have : maximalIdeal R ∈ associatedPrimes R I := by
+    apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
+    apply Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime.mpr (IsLocalRing.le_maximalIdeal ?_)
+    simp [Module.annihilator_eq_top_iff, Submodule.subsingleton_iff_eq_bot, ne]
+  rcases (isAssociatedPrime_iff_exists_injective_linearMap _ _).mp this with ⟨_, f, hf⟩
+  use I.subtype.comp f
+  simpa [hf] using (le_of_le_of_eq (LinearMap.range_comp_le_range _ _) I.range_subtype)
+
 omit [IsNoetherianRing R] in
 lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
     (⊥ : Ideal R).isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal := by
-  sorry
+  let _ := quotient_maximal_hom_nontrivial R
+  let _ : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
+  refine ⟨fun irr ↦ ?_, fun ⟨f, hf⟩ ↦ ⟨fun {I₁ I₂} infI ↦ ?_⟩⟩
+  · obtain ⟨f, fne0⟩ : ∃ (f : (R ⧸ maximalIdeal R →ₗ[R] R)), f ≠ 0 := exists_ne 0
+    use f
+    apply le_antisymm _ le_top
+    intro g _
+    rw [Submodule.mem_span_singleton]
+    by_cases geq0 : g = 0
+    · use 0
+      simp [geq0]
+    · obtain ⟨x, hx, xne0⟩ : ∃ x ∈ LinearMap.range f ⊓ LinearMap.range g, x ≠ 0 := by
+        apply Submodule.exists_mem_ne_zero_of_ne_bot (irr.irr.mt ?_)
+        simp [LinearMap.range_eq_bot, fne0, geq0]
+      rcases Submodule.mem_inf.mp hx with ⟨⟨y, hy⟩, ⟨z, hz⟩⟩
+      have zne0 : z ≠ 0 := by
+        by_contra eq0
+        absurd xne0
+        simp [← hz, eq0]
+      rcases Ideal.Quotient.mk_surjective y  with ⟨y', hy'⟩
+      rcases Ideal.Quotient.mk_surjective z⁻¹ with ⟨z', hz'⟩
+      use z' * y'
+      ext
+      simp only [LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, Quotient.mk_eq_mk,
+        map_one, LinearMap.smul_apply, ← smul_smul]
+      rw [← map_smul, Algebra.smul_def y', Ideal.Quotient.algebraMap_eq, hy', mul_one, hy, ← hz,
+        ← map_smul, Algebra.smul_def z', Ideal.Quotient.algebraMap_eq, hz', inv_mul_cancel₀ zne0]
+  · by_contra! nebot
+    rcases exist_linearMap_range_le_of_ne_bot nebot.1 with ⟨f₁, inj1, hf₁⟩
+    rcases exist_linearMap_range_le_of_ne_bot nebot.2 with ⟨f₂, inj2, hf₂⟩
+    have mem1 : f₁ ∈ Submodule.span R {f} := by simp [← hf]
+    have mem2 : f₂ ∈ Submodule.span R {f} := by simp [← hf]
+    rcases Submodule.mem_span_singleton.mp mem1 with ⟨a₁, ha₁⟩
+    have ne01 : (Quotient.mk (maximalIdeal R)) a₁ ≠ 0 := by
+      by_contra eq0
+      absurd LinearMap.ne_zero_of_injective inj1
+      apply LinearMap.ext (fun z ↦ ?_)
+      rw [← ha₁, LinearMap.smul_apply, ← map_smul, Algebra.smul_def,
+        Ideal.Quotient.algebraMap_eq, eq0, zero_mul, map_zero, LinearMap.zero_apply]
+    rcases Submodule.mem_span_singleton.mp mem2 with ⟨a₂, ha₂⟩
+    have ne02 : (Quotient.mk (maximalIdeal R)) a₂ ≠ 0 := by
+      by_contra eq0
+      absurd LinearMap.ne_zero_of_injective inj2
+      apply LinearMap.ext (fun z ↦ ?_)
+      rw [← ha₂, LinearMap.smul_apply, ← map_smul, Algebra.smul_def,
+        Ideal.Quotient.algebraMap_eq, eq0, zero_mul, map_zero, LinearMap.zero_apply]
+    have le1 : LinearMap.range f ≤ I₁ := by
+      apply le_trans (fun x hx ↦ ?_) hf₁
+      rcases hx with ⟨y, hy⟩
+      have : x = f₁ ((Ideal.Quotient.mk (maximalIdeal R) a₁)⁻¹ * y) := by
+        rw [← ha₁, LinearMap.smul_apply, ← map_smul, Algebra.smul_def, Ideal.Quotient.algebraMap_eq]
+        simp [ne01, hy]
+      simp [this]
+    have le2 : LinearMap.range f ≤ I₂ := by
+      apply le_trans (fun x hx ↦ ?_) hf₂
+      rcases hx with ⟨y, hy⟩
+      have : x = f₂ ((Ideal.Quotient.mk (maximalIdeal R) a₂)⁻¹ * y) := by
+        rw [← ha₂, LinearMap.smul_apply, ← map_smul, Algebra.smul_def, Ideal.Quotient.algebraMap_eq]
+        simp [ne02, hy]
+      simp [this]
+    have := le_of_le_of_eq (le_inf le1 le2) infI
+    simp only [le_bot_iff, LinearMap.range_eq_bot] at this
+    absurd hf
+    simp [this]
 
 end
 
