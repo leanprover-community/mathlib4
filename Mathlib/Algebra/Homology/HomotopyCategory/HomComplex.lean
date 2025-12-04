@@ -822,6 +822,53 @@ lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ)
   intro h
   exact hp' (by cutsat)
 
+/-- Variant of `single_v_eq_zero` where the assumption is `q' ≠ q` rather than `p' ≠ p`. -/
+lemma single_v_eq_zero' {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ) (hpq' : p' + n = q')
+    (hq' : q' ≠ q) :
+    (single f n).v p' q' hpq' = 0 := by
+  dsimp [single]
+  grind
+
+variable (K L) in
+@[simp]
+lemma single_zero (p q n : ℤ) :
+    (single (p := p) (q := q) 0 n : Cochain K L n) = 0 := by
+  ext p' q' hpq'
+  by_cases hp : p' = p
+  · subst hp
+    by_cases hq : q' = q
+    · subst hq
+      simp
+    · simp [single_v_eq_zero' _ _ _ _ _ hq]
+  · simp [single_v_eq_zero _ _ _ _ _ hp]
+
+lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
+    (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
+    δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
+  ext p'' q'' hpq''
+  rw [δ_v n m hm (single f n) p'' q'' (by cutsat) (q'' - 1) (p'' + 1) rfl (by cutsat),
+    add_v, units_smul_v]
+  congr 1
+  · by_cases h : p'' = p
+    · subst h
+      by_cases h : q = q'' - 1
+      · subst h
+        obtain rfl : q' = q'' := by cutsat
+        simp only [single_v]
+      · rw [single_v_eq_zero', single_v_eq_zero', zero_comp]
+        all_goals cutsat
+    · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero _ _ _ _ _ h, zero_comp]
+  · subst hm
+    by_cases h : q'' = q
+    · subst h
+      by_cases h : p'' = p'
+      · subst h
+        obtain rfl : p = p'' + 1 := by cutsat
+        simp
+      · rw [single_v_eq_zero _ _ _ _ _ h, single_v_eq_zero, comp_zero, smul_zero]
+        cutsat
+    · simp [single_v_eq_zero' _ _ _ _ _ h]
+
 end Cochain
 
 section
