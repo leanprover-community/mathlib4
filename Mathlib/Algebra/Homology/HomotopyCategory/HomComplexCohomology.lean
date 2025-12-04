@@ -46,7 +46,7 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
   zero_mem' := ⟨n - 1, by simp, 0, by simp⟩
   add_mem' := by
     rintro α₁ α₂ ⟨m, hm, β₁, hβ₁⟩ ⟨m', hm', β₂, hβ₂⟩
-    obtain rfl : m = m' := by cutsat
+    obtain rfl : m = m' := by lia
     exact ⟨m, hm, β₁ + β₂, by aesop⟩
   neg_mem' := by
     rintro α ⟨m, hm, β, hβ⟩
@@ -138,7 +138,7 @@ def leftHomologyData' (hm : n + 1 = m) (hp : m + 1 = p) :
       (fun s ↦ AddCommGrpCat.ofHom (CohomologyClass.descAddMonoidHom s.π.hom
         (by
           rintro ⟨_, _⟩ ⟨q, hq, y, rfl⟩
-          obtain rfl : n = q := by cutsat
+          obtain rfl : n = q := by lia
           simpa only [zero_comp] using ConcreteCategory.congr_hom s.condition y)))
       (fun s ↦ rfl)
       (fun s l hl ↦ by
