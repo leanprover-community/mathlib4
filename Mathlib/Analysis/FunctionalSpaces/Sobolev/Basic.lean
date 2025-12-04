@@ -213,12 +213,11 @@ namespace HasWTaylorSeriesUpTo
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
 
 lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
-    -- XXX: are these hypotheses required?
-    (hg : ∀ m, LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
-    (hg' : ∀ m, LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
+    (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
+    (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
     HasWTaylorSeriesUpTo Ω (f + f') (g + g') k p μ where
   zero_eq x := by simp [← hf.zero_eq, ← hf'.zero_eq]
-  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm) (hg m) (hg' m)
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm) (hg hm) (hg' hm)
   memLp m hm := (hf.memLp m hm).add (hf'.memLp m hm)
 
 lemma neg (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
@@ -233,9 +232,8 @@ lemma _root_.hasWTaylorSeriesUpTo_neg :
   ⟨fun hf ↦ by simpa using hf.neg, fun hf ↦ hf.neg⟩
 
 lemma sub (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
-    -- XXX: are these hypotheses required?
-    (hg : ∀ m, LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
-    (hg' : ∀ m, LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
+    (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
+    (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
     HasWTaylorSeriesUpTo Ω (f - f') (g - g') k p μ := by
   rw [sub_eq_add_neg f f', sub_eq_add_neg g g']
   exact hf.add hf'.neg hg (fun m ↦ (hg' m).neg)
