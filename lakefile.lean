@@ -34,6 +34,8 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- Explicitly disable the flexible linter, as it gives non-actionable warnings.
+  ⟨`linter.flexible, false⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
@@ -138,7 +140,7 @@ lean_exe «check_title_labels» where
   srcDir := "scripts"
 
 /--
-`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+`lake exe pole` queries radar for build times for the current commit,
 and then calculates the longest pole
 (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
 -/
