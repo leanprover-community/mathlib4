@@ -885,27 +885,17 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
   | empty => simp
   | insert b B hb h =>
     by_cases hb0 : g b = 0
-    · -- simp? [Finset.sum_insert hb, hb0] at hd hfd ⊢
-      simp only [Finset.mem_insert, forall_eq_or_imp, hb0, degree_zero, map_zero,
-        leadingCoeff_zero, isUnit_zero_iff, or_true, true_and, Finset.sum_insert hb, zero_add,
-        sPolynomial_right_zero, smul_zero, sPolynomial_left_zero, Finset.sum_const_zero] at hd hfd ⊢
-      exact h hd hfd
-    -- simp? [Finset.sum_insert hb, hb0] at hfd hd
+    · simp_all
     simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
-    obtain ⟨⟨deg_gb_eq_d, isunit_gb⟩, hd⟩ := hd
+    obtain ⟨⟨rfl, isunit_gb⟩, hd⟩ := hd
     use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
-    -- simp? [Finset.sum_insert hb, hb]
     simp only [Finset.sum_insert hb, ite_smul, zero_smul, ↓reduceIte, Finset.sum_ite_eq', hb,
       add_zero, sPolynomial_self, smul_zero, zero_add]
-    simp only [← deg_gb_eq_d, EmbeddingLike.apply_eq_iff_eq] at *
-    clear d
+    simp only [m.toSyn.injective.eq_iff] at *
     trans ∑ b' ∈ B, (g b' - (m.leadingCoeff (g b') * ↑isunit_gb.unit⁻¹) • g b)
-    · rw [Finset.sum_sub_distrib, add_comm, sub_eq_add_neg,
-        ← Finset.sum_smul, ← Finset.sum_mul, ← neg_smul]
-      nth_rewrite 1 [← one_smul R <| g b]
-      congr
-      rw [← neg_mul, eq_comm]
-      convert isunit_gb.mul_val_inv
+    · suffices (-(∑ i ∈ B, m.leadingCoeff (g i))) = m.leadingCoeff (g b) by
+        rw [add_comm, Finset.sum_sub_distrib, sub_eq_add_neg, ← Finset.sum_smul, ← Finset.sum_mul,
+          ← neg_smul, ← neg_mul, this, isunit_gb.mul_val_inv, one_smul]
       rw [← add_eq_zero_iff_neg_eq']
       trans (g b).coeff (m.degree <| g b) + ∑ i ∈ B, (g i).coeff (m.degree <| g b)
       · unfold leadingCoeff
@@ -918,14 +908,8 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     · apply Finset.sum_congr rfl
       intro b' hb'
       rw [sPolynomial]
-      by_cases h : g b' = 0
-      · simp [h]
-      have := (hd b' hb').resolve_right h
-      -- simp [this, smul_eq_C_mul, mul_sub, ← mul_assoc _ _ (g b), ← mul_assoc _ _ (g b')]
-      simp only [smul_eq_C_mul, C_mul, this, tsub_self, monomial_zero', mul_sub,
-        ← mul_assoc _ _ (g b'), ← mul_assoc _ _ (g b)]
-      simp_rw [← C_mul]
-      simp [mul_comm]
+      obtain (⟨h, -⟩ | h) := hd b' hb' <;>
+        simp [h, ← smul_eq_C_mul, smul_sub, ← mul_smul, mul_comm (m.leadingCoeff (g b'))]
 
 end Ring
 
