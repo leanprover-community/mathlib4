@@ -64,8 +64,7 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
     exact isClosed_le continuous_const continuous_norm
   · -- show bounded
-    rw [Metric.isBounded_iff_subset_closedBall 0]
-    refine ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
+    refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
     simp only [mem_closedBall_zero_iff]
     refine le_of_sq_le_sq ?_ (by positivity)
     rw [Real.sq_sqrt (by positivity), Complex.norm_eq_sqrt_sq_add_sq, Real.sq_sqrt (by positivity)]
@@ -164,7 +163,7 @@ lemma exists_bound_of_subgroup_invariant_of_isBigO
       exact ⟨g⁻¹ * h, hgh, (mul_inv_cancel_left g h).symm⟩
     simp [-sl_moeb, hj', mul_smul, hf_inv j⁻¹ (inv_mem hj)]
   have hf'_cont (γ) : Continuous (f' · γ) := QuotientGroup.induction_on γ fun g ↦ by
-    simp [f']
+    simp only [sl_moeb, Quotient.lift_mk, f']
     fun_prop
   have hf'_inv (τ) (g : SL(2, ℤ)) (γ) : f' (g • τ) (g • γ) = f' τ γ := by
     induction γ using QuotientGroup.induction_on
@@ -341,20 +340,13 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     · exact norm_nonneg _
     · positivity
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
-  · apply Continuous.intervalIntegrable
-    apply Continuous.norm
-    apply continuous_const.mul
-    apply Continuous.mul
+  · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
     · simp_rw [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
       fun_prop
-    · have : Continuous f := (ModularFormClass.holo f).continuous
-      apply this.comp
-      rw [continuous_induced_rng]
-      simp [Function.comp_def]
-      fun_prop -- integrability
+    · refine (ModularFormClass.holo f).continuous.comp (by fun_prop)
   · apply continuous_const.intervalIntegrable
   · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
-    simp only [← mul_assoc, mul_one_div_cancel (NeZero.ne (h : ℝ)), one_mul,
+    simp [← mul_assoc, mul_inv_cancel₀ (NeZero.ne (h : ℝ)),
       Real.norm_of_nonneg (show 0 ≤ (n : ℝ) ^ e by positivity)]
 
 lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL (Fin 2) ℝ)}
