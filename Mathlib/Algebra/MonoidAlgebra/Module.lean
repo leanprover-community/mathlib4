@@ -59,6 +59,7 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
   Finsupp.module G k
 
+@[to_additive (dont_translate := R) (relevant_arg := G) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R (MonoidAlgebra k G) :=
   Finsupp.faithfulSMul
