@@ -128,6 +128,7 @@ theorem IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology :
 instance inst_IsLocallyArtinian_IsLocallyNoetherian [IsLocallyArtinian X] :
     IsLocallyNoetherian X := IsLocallyArtinian.IsLocallyNoetherian X
 
+/-- A scheme is Artinian if it is Locally Artinian and quasi-compact -/
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
