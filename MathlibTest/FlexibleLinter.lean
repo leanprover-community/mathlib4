@@ -1,8 +1,8 @@
 import Mathlib.Tactic.Linter.FlexibleLinter
-import Mathlib.Tactic.Lia
 import Mathlib.Tactic.Linter.UnusedTactic
 import Batteries.Linter.UnreachableTactic
 import Batteries.Tactic.PermuteGoals
+import Mathlib.Tactic.TacticAnalysis.Declarations -- only needed temporarily for the `lia` shim
 
 set_option linter.flexible true
 set_option linter.unusedVariables false

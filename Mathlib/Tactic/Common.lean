@@ -67,7 +67,6 @@ public meta import Mathlib.Tactic.Hint
 public meta import Mathlib.Tactic.InferParam
 public meta import Mathlib.Tactic.Inhabit
 public meta import Mathlib.Tactic.IrreducibleDef
-public meta import Mathlib.Tactic.Lia
 public meta import Mathlib.Tactic.Lift
 public meta import Mathlib.Tactic.Linter
 public meta import Mathlib.Tactic.MkIffOfInductiveProp
