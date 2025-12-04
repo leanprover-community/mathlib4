@@ -38,6 +38,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
 
+@[to_dual self]
 theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
 
@@ -46,20 +47,25 @@ theorem WCovBy.refl (a : α) : a ⩿ a :=
 
 @[simp] lemma WCovBy.rfl : a ⩿ a := WCovBy.refl a
 
+@[to_dual wcovBy']
 protected theorem Eq.wcovBy (h : a = b) : a ⩿ b :=
   h ▸ WCovBy.rfl
 
+@[to_dual self]
 theorem wcovBy_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
   ⟨h1, fun _ hac hcb => (hac.trans hcb).not_ge h2⟩
 
+@[to_dual self]
 alias LE.le.wcovBy_of_le := wcovBy_of_le_of_le
 
 theorem AntisymmRel.wcovBy (h : AntisymmRel (· ≤ ·) a b) : a ⩿ b :=
   wcovBy_of_le_of_le h.1 h.2
 
+@[to_dual self]
 theorem WCovBy.wcovBy_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
   ⟨fun h => h.le, fun h => h.wcovBy_of_le hab.le⟩
 
+@[to_dual wcovBy_of_eq_or_eq']
 theorem wcovBy_of_eq_or_eq (hab : a ≤ b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⩿ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 

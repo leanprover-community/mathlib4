@@ -142,29 +142,63 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 @[to_dual existing instTransLELT]
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
+namespace Mathlib.Tactic.UnfoldBoundary
+
+variable {α : Type*}
+
+@[to_dual_cast]
+def DecidableLE.identification [LE α] :
+  Identification (DecidableLE α) (DecidableRel fun x y : α ↦ x ≤ y) := .Id
+
+@[to_dual existing identification]
+def DecidableLE.dual_identification [LE α] :
+    Identification (DecidableLE α) (DecidableRel fun x y : α ↦ y ≤ x) where
+  toFun h x y := h y x
+  invFun h x y := h y x
+
+@[to_dual_cast]
+def DecidableLT.identification [LT α] :
+  Identification (DecidableLT α) (DecidableRel fun x y : α ↦ x < y) := .Id
+
+@[to_dual existing identification]
+def DecidableLT.dual_identification [LT α] :
+    Identification (DecidableLT α) (DecidableRel fun x y : α ↦ y < x) where
+  toFun h x y := h y x
+  invFun h x y := h y x
+
+end Mathlib.Tactic.UnfoldBoundary
+
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableLT'OfDecidableLE' /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
 -/
-@[to_dual self (reorder := 3 4)]
+@[to_dual self (reorder := 3 4), to_dual_dont_unfold]
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
 @[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
+@[to_dual existing eq_def]
+theorem WCovBy.eq_def_dual : (b ⩿ a) = (b ≤ a ∧ ∀ ⦃c : α⦄, c < a → ¬b < c) := by
+  simp [WCovBy, ← not_and, and_comm]
+
 /-- `CovBy a b` means that `b` covers `a`. This means that `a < b` and there is no element in
 between. This is denoted `a ⋖ b`. -/
-@[to_dual self (reorder := 3 4)]
+@[to_dual self (reorder := 3 4), to_dual_dont_unfold]
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy
+
+@[to_dual existing eq_def]
+theorem CovBy.eq_def_dual {α : Type*} [LT α] (a b : α) :
+    (b ⋖ a) = (b < a ∧ ∀ ⦃c : α⦄, c < a → ¬b < c) := by
+  simp [CovBy, ← not_and, and_comm]
 
 end Preorder
 

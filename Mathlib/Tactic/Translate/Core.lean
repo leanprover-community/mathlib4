@@ -19,6 +19,7 @@ public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.UnfoldBoundary
 public meta import Lean.Meta.CoeAttr
 
 /-!
@@ -175,6 +176,11 @@ structure TranslateData : Type where
     translated thanks to this, you generally have to specify the translated name manually.
   -/
   doTranslateAttr : NameMapExtension Bool
+  /-- The `dont_unfold` attribute is used to create an abstraction boundary for the tagged constant
+  when translating it. For example, `Set.Icc`, `Monotone`, `DecidableLT`, `WCovBy` are all
+  morally self-dual, but their definition is not self-dual. So, in order to allow these constants
+  to be self-dual, we need to not unfold their definition in the proof term that we translate. -/
+  unfoldBoundaries : Option UnfoldBoundary.UnfoldBoundaryExt := none
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension Name
@@ -392,6 +398,7 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
+  let e ← t.unfoldBoundaries.elim (pure e) (·.insertBoundaries e)
   let e' := aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
@@ -554,13 +561,16 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
+  let type := decl.type
   decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
-    renameBinderNames t decl.type
+    renameBinderNames t type
   if let some v := decl.value? then
+    let v ← t.unfoldBoundaries.elim (pure v) (·.cast v type)
     decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
-  else if let .opaqueInfo info := decl then -- not covered by `value?`
+  else if let .opaqueInfo info@{ value := v, .. } := decl then -- not covered by `value?`
+    let v ← t.unfoldBoundaries.elim (pure v) (·.cast v type)
     decl := .opaqueInfo { info with
-      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
+      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont v }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def.

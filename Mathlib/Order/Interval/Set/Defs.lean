@@ -32,10 +32,15 @@ namespace Set
 variable {α : Type*} [Preorder α] {a b x : α}
 
 /-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
+@[to_dual self (reorder := a b), to_dual_dont_unfold]
 def Ioo (a b : α) := { x | a < x ∧ x < b }
 
-@[simp, grind =] theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := Iff.rfl
-theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b := rfl
+@[to_dual existing Ioo.eq_def]
+theorem Ioo.eq_def_dual (a b : α) : Ioo b a = { x | x < a ∧ b < x } :=
+  Set.ext fun _ ↦ And.comm
+
+@[to_dual mem_Ioo', simp, grind =] theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := Iff.rfl
+@[to_dual Ioo_def'] theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b := rfl
 
 /-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
 def Ico (a b : α) := { x | a ≤ x ∧ x < b }

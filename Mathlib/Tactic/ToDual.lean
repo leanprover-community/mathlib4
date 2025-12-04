@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.ToDual
+public import Mathlib.Tactic.Translate.ToDual
 import all Init.Core  -- TODO: for accessing proofs
 
 
@@ -27,10 +27,6 @@ the dual of `e₂`. Hence, the translation of `DecidableLT` needs to be defEq to
 `DecidableLT'` is not definitionally the same as `DecidableLT`, but for type class search
 the two are identical. So although this is a bit annoying, it is not a big problem.
 -/
-attribute [to_dual DecidableLT' /-- `DecidableLT'` is equivalent to `DecidableLT`.
-It is used by `@[to_dual]` in order to deal with `DecidableLT`. -/] DecidableLT
-attribute [to_dual DecidableLE' /-- `DecidableLE'` is equivalent to `DecidableLE`.
-It is used by `@[to_dual]` in order to deal with `DecidableLE`. -/] DecidableLE
 
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
 

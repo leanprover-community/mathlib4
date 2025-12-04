@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -26,7 +26,7 @@ Known limitations:
 public meta section
 
 namespace Mathlib.Tactic.ToDual
-open Lean Meta Elab Command Std Translate
+open Lean Meta Elab Command Std Translate UnfoldBoundary
 
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
@@ -39,6 +39,12 @@ syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
 
 @[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
+
+@[inherit_doc UnfoldBoundaryExt.unfolds]
+syntax (name := to_dual_dont_unfold) "to_dual_dont_unfold" : attr
+
+@[inherit_doc UnfoldBoundaryExt.casts]
+syntax (name := to_dual_cast) "to_dual_cast" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) to their dual version.
@@ -102,6 +108,34 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | `(attr| to_dual_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
           | _ => throwUnsupportedSyntax
         return ids.toList }
+
+@[inherit_doc UnfoldBoundaryExt.unfolds]
+initialize unfolds : NameMapExtension SimpTheorem ← registerNameMapExtension _
+initialize
+  registerBuiltinAttribute {
+    name := `to_dual_dont_unfold
+    descr := "The `to_dual_dont_unfold` attribute"
+    applicationTime := .afterCompilation
+    add := fun declName _ _ ↦ MetaM.run' do
+      let name := mkEqLikeNameFor (← getEnv) declName unfoldThmSuffix
+      let some name ← mkSimpleEqThm declName name |
+        throwError "No unfold theorem could be generated for `{declName}`"
+      executeReservedNameAction name
+      unfolds.add declName { origin := .decl name, proof := mkConst name, rfl := true } }
+
+@[inherit_doc UnfoldBoundaryExt.casts]
+initialize casts : NameMapExtension Name ← registerNameMapExtension _
+initialize
+  registerBuiltinAttribute {
+    name := `to_dual_cast
+    descr := "The `to_dual_cast` attribute"
+    add := fun cast _ _ ↦ MetaM.run' do
+      let_expr Identification α _ := (← getConstInfo cast).type.getForallBody |
+        throwError "expected an `Identification`, not {cast}"
+      let .const declName _ := α.getAppFn | throwError "expected {α} to be a constant application"
+      casts.add declName cast }
+
+def unfoldBoundaries : UnfoldBoundaryExt := { unfolds, casts }
 
 @[inherit_doc TranslateData.argInfoAttr]
 initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
@@ -185,7 +219,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
+  ignoreArgsAttr; argInfoAttr; doTranslateAttr; unfoldBoundaries; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true
