@@ -45,6 +45,13 @@ def whenNotLinterOption (opt : Lean.Option Bool) (x : m Unit) : m Unit := do
 Processes `set_option ... in`s that wrap the input `stx`, then acts on the inner syntax with
 `x` after checking that the provided linter option is `true`.
 
+This is typically used to start off linter code:
+```
+def myLinter : Linter where
+  run := whenLinterActivated linter.myLinter fun stx ↦ do
+    ...
+```
+
 Note: this definition is marked as `@[macro_inline]`, so it is okay to supply it with a linter option which has been registered in the same module.
 -/
 @[expose, macro_inline]
