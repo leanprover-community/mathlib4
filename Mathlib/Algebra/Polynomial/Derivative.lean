@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Domain
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # The derivative map on polynomials
@@ -16,6 +18,8 @@ import Mathlib.GroupTheory.GroupAction.Ring
 * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,11 +47,10 @@ def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
     rw [sum_add_index] <;>
-      simp only [add_mul, forall_const, RingHom.map_add, zero_mul, RingHom.map_zero]
+      simp only [add_mul, forall_const, map_add, zero_mul, map_zero]
   map_smul' a p := by
     dsimp; rw [sum_smul_index] <;>
-      simp only [mul_sum, ← C_mul', mul_assoc, RingHom.map_mul, forall_const, zero_mul,
-        RingHom.map_zero, sum]
+      simp only [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
 
 theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
   rfl
@@ -220,7 +223,7 @@ theorem iterate_derivative_one {k} (h : 0 < k) : derivative^[k] (1 : R[X]) = 0 :
 theorem iterate_derivative_X {k} (h : 1 < k) : derivative^[k] (X : R[X]) = 0 :=
   iterate_derivative_eq_zero <| natDegree_X_le.trans_lt h
 
-theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]}
+theorem natDegree_eq_zero_of_derivative_eq_zero [IsAddTorsionFree R] {f : R[X]}
     (h : derivative f = 0) : f.natDegree = 0 := by
   rcases eq_or_ne f 0 with (rfl | hf)
   · exact natDegree_zero
@@ -236,7 +239,7 @@ theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : 
   rw [hm, ← leadingCoeff, leadingCoeff_eq_zero] at h2
   exact hf h2
 
-theorem eq_C_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]} (h : derivative f = 0) :
+theorem eq_C_of_derivative_eq_zero [IsAddTorsionFree R] {f : R[X]} (h : derivative f = 0) :
     f = C (f.coeff 0) :=
   eq_C_of_natDegree_eq_zero <| natDegree_eq_zero_of_derivative_eq_zero h
 
@@ -289,7 +292,7 @@ theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction k generalizing f <;> simp [*]
 
-theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
+theorem mem_support_derivative [IsAddTorsionFree R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
   suffices ¬p.coeff (n + 1) * (n + 1 : ℕ) = 0 ↔ coeff p (n + 1) ≠ 0 by
     simpa only [mem_support_iff, coeff_derivative, Ne, Nat.cast_succ]
@@ -297,7 +300,7 @@ theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
   simp only [Nat.succ_ne_zero, false_or]
 
 @[simp]
-theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < natDegree p) :
+theorem degree_derivative_eq [IsAddTorsionFree R] (p : R[X]) (hp : 0 < natDegree p) :
     degree (derivative p) = (natDegree p - 1 : ℕ) := by
   apply le_antisymm
   · rw [derivative_apply]
@@ -394,7 +397,7 @@ Iterated derivatives as a finite support function.
 @[simps! apply_toFun]
 noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
-    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le]
+    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le_iff]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -518,7 +521,7 @@ theorem derivative_comp (p q : R[X]) :
   induction p using Polynomial.induction_on'
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
-      zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]
+      zero_mul, C_eq_natCast, zero_add, map_mul]
     ring
 
 /-- Chain rule for formal derivative of polynomials. -/
@@ -555,14 +558,14 @@ variable [Ring R]
 
 @[simp]
 theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
-  LinearMap.map_neg derivative f
+  map_neg derivative f
 
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
   iterate_map_neg derivative k f
 
 @[simp]
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
-  LinearMap.map_sub derivative f g
+  map_sub derivative f g
 
 theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]

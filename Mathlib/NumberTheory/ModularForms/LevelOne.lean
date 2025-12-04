@@ -3,9 +3,11 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.NumberTheory.Modular
-import Mathlib.NumberTheory.ModularForms.QExpansion
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.NumberTheory.Modular
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
 # Level one modular forms
 
@@ -15,6 +17,8 @@ This file contains results specific to modular forms of level one, i.e. modular 
 TODO: Add finite-dimensionality of these spaces of modular forms.
 
 -/
+
+@[expose] public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
   CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic

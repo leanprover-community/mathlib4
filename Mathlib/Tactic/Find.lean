@@ -3,10 +3,12 @@ Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
-import Mathlib.Init
-import Batteries.Util.Cache
-import Lean.HeadIndex
-import Lean.Elab.Command
+module
+
+public import Mathlib.Init
+public meta import Batteries.Util.Cache
+public meta import Lean.HeadIndex
+public meta import Lean.Elab.Command
 
 /-!
 # The `#find` command and tactic.
@@ -22,6 +24,8 @@ Inside tactic proofs, there is a `#find` tactic with the same syntax,
 or the `find` tactic which looks for lemmas which are `apply`able against the current goal.
 
 -/
+
+public meta section
 
 open Lean Std
 open Lean.Meta
@@ -85,7 +89,7 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
       logInfo m!"{n}: {cTy}"
 
 open Lean.Elab.Command in
-/-
+/--
 The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
 ```lean
 #find _ + _ = _ + _
@@ -114,7 +118,7 @@ but they will work fine in a new file!) -/
 -- #find ?n ≤ ?m → ?n + _ ≤ ?m + _
 
 open Lean.Elab.Tactic
-/-
+/--
 Display theorems (and definitions) whose result type matches the current goal,
 i.e. which should be `apply`able.
 ```lean

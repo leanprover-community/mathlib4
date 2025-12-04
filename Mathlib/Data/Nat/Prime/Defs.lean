@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Order.Basic
 
 /-!
 # Prime numbers
@@ -24,6 +26,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
                                   only divisible by `1` iff it is prime
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

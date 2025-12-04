@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Lifting topological spaces to a higher universe
@@ -13,6 +15,8 @@ In this file, we construct the functor `uliftFunctor.{v, u} : TopCat.{u} ⥤ Top
 which sends a topological space `X : Type u` to a homeomorphic space in `Type (max u v)`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

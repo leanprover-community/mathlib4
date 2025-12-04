@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Pre-sets
@@ -23,6 +25,8 @@ quotient of pre-sets by extensional equality.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`: The von Neumann ordinal `ω` as a `PSet`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -182,6 +186,9 @@ protected def Mem (y x : PSet.{u}) : Prop :=
 
 instance : Membership PSet PSet :=
   ⟨PSet.Mem⟩
+
+theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
+  Iff.rfl
 
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩

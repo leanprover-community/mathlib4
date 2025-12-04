@@ -3,17 +3,20 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Edward van de Meent
 -/
-import Mathlib.Tactic.TacticAnalysis
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.MinImports
-import Lean.Elab.Tactic.Meta
-import Lean.Elab.Command
+module
+
+public meta import Mathlib.Tactic.TacticAnalysis
+public meta import Mathlib.Tactic.ExtractGoal
+public meta import Mathlib.Tactic.MinImports
+public meta import Lean.Elab.Command
 
 /-!
 # Tactic linters
 
 This file defines passes to run from the tactic analysis framework.
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -25,7 +28,7 @@ private inductive TerminalReplacementOutcome where
 | remainingGoals (stx : TSyntax `tactic) (goals : List MessageData)
 | error (stx : TSyntax `tactic) (msg : MessageData)
 
-open Elab.Command
+open Elab Command
 
 /--
 Define a pass that tries replacing one terminal tactic with another.
@@ -41,7 +44,7 @@ for example `Mathlib.Tactic.linarith`.
 in `stx` and the current `goal`.
 -/
 def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : SyntaxNodeKind)
-    (newTactic : Syntax → MVarId → MetaM (TSyntax `tactic))
+    (newTactic : ContextInfo → TacticInfo → Syntax → CommandElabM (TSyntax `tactic))
     (reportFailure : Bool := true) (reportSuccess : Bool := false)
     (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
     TacticAnalysis.Config := .ofComplex {
@@ -49,20 +52,20 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
   ctx := Syntax
   trigger _ stx := if stx.getKind == oldTacticKind
     then .accept stx else .skip
-  test stx goal := do
-    let tac ← newTactic stx goal
+  test ctxI i stx goal := do
+    let tac ← newTactic ctxI i stx
     try
-      let (goals, _) ← Lean.Elab.runTactic goal tac
-      match goals with
+      let goalTypes ← ctxI.runTacticCode i goal tac ⟨Expr, MVarId.getType'⟩
+      match goalTypes with
       | [] => return .success tac
       | _ => do
-        let goalsMessages ← goals.mapM fun g => do
-          let e ← instantiateMVars (← g.getType)
-          pure m!"⊢ {MessageData.ofExpr e}\n"
+        let goalsMessages := goalTypes.map fun e => m!"⊢ {MessageData.ofExpr e}\n"
         return .remainingGoals tac goalsMessages
     catch _e =>
       let name ← mkAuxDeclName `extracted
-      let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
+      -- Rerun in the original tactic context, since `omega` changes the state.
+      let ((sig, _, modules, _), _) ← ctxI.runTactic i goal (fun goal =>
+        (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run)
       let imports := modules.toList.map (s!"import {·}")
       return .error tac m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success {tac}\n  {stx}"
   tell stx old oldHeartbeats new newHeartbeats :=
@@ -118,7 +121,7 @@ def grindReplacementWith (tacticName : String) (tacticKind : SyntaxNodeKind)
     (reportFailure : Bool := true) (reportSuccess : Bool := false)
     (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
     TacticAnalysis.Config :=
-  terminalReplacement tacticName "grind" tacticKind (fun _ _ => `(tactic| grind))
+  terminalReplacement tacticName "grind" tacticKind (fun _ _ _ => `(tactic| grind))
     reportFailure reportSuccess reportSlowdown maxSlowdown
 
 end Mathlib.TacticAnalysis
@@ -148,7 +151,7 @@ register_option linter.tacticAnalysis.regressions.omegaToCutsat : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.regressions.omegaToCutsat,
   inherit_doc linter.tacticAnalysis.regressions.omegaToCutsat]
 def omegaToCutsatRegressions :=
-  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ => `(tactic| cutsat))
+  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| cutsat))
     (reportSuccess := false) (reportFailure := true)
 
 /-- Report places where `omega` can be replaced by `cutsat`. -/
@@ -158,7 +161,7 @@ register_option linter.tacticAnalysis.omegaToCutsat : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.omegaToCutsat,
   inherit_doc linter.tacticAnalysis.omegaToCutsat]
 def omegaToCutsat :=
-  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ => `(tactic| cutsat))
+  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| cutsat))
     (reportSuccess := true) (reportFailure := false)
 
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
@@ -174,14 +177,18 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
     match stx with
     | `(tactic| rw [$args,*]) => .continue ((ctx.getD #[]).push args)
     | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
-  test ctx goal := withOptions (fun opts => opts.set `grind.warning false) do
+  test ctxI i ctx goal := do
     let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
     let tac ← `(tactic| rw [$ctxT,*])
+    let oldMessages := (← get).messages
     try
-      let (goals, _) ← Lean.Elab.runTactic goal tac
+      let goals ← ctxI.runTacticCode i goal tac
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
+    finally
+      -- Drop any messages, since they will appear as if they are genuine errors.
+      modify fun s => { s with messages := oldMessages }
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if new.1.isEmpty then
       m!"Try this: rw {new.2}"
@@ -326,14 +333,23 @@ def tryAtEachStepAesop := tryAtEachStep
   fun _ _ => return ⟨TSyntax.raw <|
     mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
 
-/-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
-register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
+/-- Run `grind +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions : Bool := {
   defValue := false
 }
 
-@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
-   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
-def tryAtEachStepGrindPremises := tryAtEachStep fun _ _ => `(tactic| grind +premises)
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindSuggestions]
+def tryAtEachStepGrindSuggestions := tryAtEachStep fun _ _ => `(tactic| grind +suggestions)
+
+/-- Run `simp_all? +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
@@ -351,11 +367,11 @@ def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
       -- if `intro` is used without arguments, treat it as `intro _`
       <| if args.size = 0 then #[⟨mkHole x⟩] else args)
     | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
-  test ctx goal := do
+  test ctxI i ctx goal := do
     let ctxT := ctx.flatten
     let tac ← `(tactic| intro $ctxT*)
     try
-      let _ ← Lean.Elab.runTactic goal tac
+      let _ ← ctxI.runTacticCode i goal tac
       return some tac
     catch _e => -- if for whatever reason we can't run `intro` here.
       return none

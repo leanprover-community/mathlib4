@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`
@@ -24,6 +26,8 @@ fractional part operator.
 
 rounding, floor, ceil
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -46,7 +50,7 @@ private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊_⌋]
-def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
     match ← core q(inferInstance) q(inferInstance) a with
@@ -65,7 +69,7 @@ private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉₊]
-def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
     let _i ← synthInstanceQ q(LinearOrder $α')
@@ -83,7 +87,7 @@ private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} 
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈_⌉]
-def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
     match ← core q(inferInstance) q(inferInstance) a with
@@ -248,29 +252,41 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+section LinearOrderedRing
+variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
+
+theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
+  refine eq_of_forall_le_iff fun m ↦ ?_
+  rw [Int.le_ediv_iff_mul_le hn, le_floor, le_floor, cast_mul,
+    mul_le_mul_iff_of_pos_right (cast_pos.mpr hn)]
+
+theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
+  simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
+
+end LinearOrderedRing
+
+section LinearOrderedCommRing
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}
+
+theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊n * a⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, mul_cast_floor_div_cancel_of_pos hn]
+
+theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊n * a⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, mul_natCast_floor_div_cancel hn]
+
+end LinearOrderedCommRing
+
 section LinearOrderedField
 variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRing k] {a b : k}
 
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
   obtain rfl | hn := hn.eq_or_lt
   · simp
-  refine eq_of_forall_le_iff fun m ↦ ?_
-  rw [Int.le_ediv_iff_mul_le hn, le_floor, le_floor, le_div_iff₀ (by positivity), cast_mul]
+  nth_rw 2 [<-div_mul_cancel₀ (a := a) (ne_of_gt (Int.cast_pos.mpr hn))]
+  rw [mul_cast_floor_div_cancel_of_pos hn]
 
 theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
   simpa using floor_div_cast_of_nonneg n.cast_nonneg a
-
-theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa [hn.ne'] using (floor_div_cast_of_nonneg hn.le (↑n * a)).symm
-
-lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n⌋ / n = ⌊a⌋ := by
-  rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
-
-theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by cutsat) a
-
-theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
-  rw [mul_comm, natCast_mul_floor_div_cancel hn]
 
 end LinearOrderedField
 
@@ -727,8 +743,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
     ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
   convert ceil_lt_add_one (R := k) _ using 1
-  field_simp
-  abel
+  field
 
 lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
   obtain hab | hba := le_total a (b - 1)⁻¹
@@ -832,9 +847,9 @@ variable [Ring R] [LinearOrder R] [FloorRing R] [IsStrictOrderedRing R] {a : R}
 /-- a variant of `Nat.ceil_lt_add_one` with its condition `0 ≤ a` generalized to `-1 < a` -/
 @[bound]
 lemma ceil_lt_add_one_of_gt_neg_one (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
-  by_cases h : 0 ≤ a
+  by_cases! h : 0 ≤ a
   · exact ceil_lt_add_one h
-  · rw [ceil_eq_zero.mpr (le_of_not_ge h), cast_zero]
+  · rw [ceil_eq_zero.mpr h.le, cast_zero]
     exact neg_lt_iff_pos_add.mp ha
 
 end Nat

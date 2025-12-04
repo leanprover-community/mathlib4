@@ -3,9 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Process.Stopping
-import Mathlib.Probability.Process.Predictable
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.Probability.Process.Predictable
+public import Mathlib.Probability.Process.Stopping
 
 /-!
 # Martingales
@@ -35,6 +37,8 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
   martingale with respect to `ℱ` and `μ`.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter
@@ -489,11 +493,12 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
     (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
     Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k)) 𝒢 μ := by
-  have hξbdd : ∀ i, ∃ C, ∀ ω, |ξ i ω| ≤ C := fun i =>
+  have hξbdd : ∀ i, ∃ C, ∀ ω, ‖ξ i ω‖ ≤ C := fun i =>
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
+  choose C hξbdd using hξbdd
   have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k * (f (k + 1) - f k)) μ := fun m =>
     integrable_finset_sum' _ fun i _ => Integrable.bdd_mul ((hf.integrable _).sub (hf.integrable _))
-      hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _)
+      hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hξbdd i))
   have hadp : Adapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k) := by
     intro m
     refine Finset.stronglyMeasurable_sum _ fun i hi => ?_
@@ -507,7 +512,7 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
   exact EventuallyLE.trans (EventuallyLE.mul_nonneg (Eventually.of_forall (hnonneg _))
     (hf.condExp_sub_nonneg (Nat.le_succ _))) (condExp_mul_of_stronglyMeasurable_left (hξ _)
     (((hf.integrable _).sub (hf.integrable _)).bdd_mul
-      hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _))
+      hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hξbdd i)))
     ((hf.integrable _).sub (hf.integrable _))).symm.le
 
 /-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)
