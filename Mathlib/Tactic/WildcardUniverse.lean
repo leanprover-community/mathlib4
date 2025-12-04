@@ -18,7 +18,7 @@ automatically generate fresh universe parameters.
 
 ## Syntax
 
-The syntax `Foo.!{u₁, u₂, ...}` allows specifying universe parameters for a constant `Foo`,
+The syntax `Foo.{u₁, u₂, ...}` allows specifying universe parameters for a constant `Foo`,
 where each universe parameter can be:
 
 - `*` : A fresh universe parameter with base name `u`
@@ -62,7 +62,7 @@ This elaborator handles syntax of the form `ident.!{wildcard_level,*} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
 syntax (name := appWithWildcards)
-    ident noWs ".!{" wildcard_level,+ "}" Parser.Term.argument* : term
+    ("@" noWs)? ident noWs ".!{" wildcard_level,+ "}" Parser.Term.argument* : term
 
 /--
 Represents the kind of wildcard universe parameter.
@@ -135,7 +135,7 @@ def reorganizeUniverseParams
 @[term_elab appWithWildcards, inherit_doc appWithWildcards]
 def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
-  | `($id:ident.!{$us,*} $args*) =>
+  | `($[@%$expl]?$id:ident.!{$us,*} $args*) =>
     let constName ← Lean.resolveGlobalConstNoOverload id
     let constInfo ← Lean.getConstInfo constName
     let numLevels := constInfo.levelParams.length
@@ -155,7 +155,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
     let (namedArgs, args, ellipsis) ← expandArgs args
 
     let expr ← elabAppArgs fn namedArgs args expectedType?
-      (explicit := false) (ellipsis := ellipsis)
+      (explicit := expl.isSome) (ellipsis := ellipsis)
 
     let constLevels ← constLevels.mapM Lean.instantiateLevelMVars
 
@@ -164,7 +164,8 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
 
     setLevelNames newLevelNames
 
-    pure expr
+    checkDeprecated id expr
+    return expr
   | _ => throwUnsupportedSyntax
 
 end

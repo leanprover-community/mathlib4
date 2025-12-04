@@ -398,3 +398,71 @@ axiom Foo2 : Type u → Type v → Type w
 #guard_msgs in #check Foo2.!{*, v, *}
 
 end BaseNameExtractionTests
+
+section ExplicitAppTests
+
+/-!
+This section tests the `@` prefix for explicit application mode.
+-/
+
+-- Define a function with implicit arguments for testing
+universe eu ev
+axiom ExplicitTest : {α : Type eu} → {β : Type ev} → α → β → α × β
+
+/-- info: @ExplicitTest.{eu_1, ev_1} : {α : Type eu_1} → {β : Type ev_1} → α → β → Prod.{eu_1, ev_1} α β -/
+#guard_msgs in #check @ExplicitTest.!{*, *}
+
+/-- info: ExplicitTest.{eu_1, ev_1} : ?m.1 → ?m.2 → Prod.{eu_1, ev_1} ?m.1 ?m.2 -/
+#guard_msgs in #check ExplicitTest.!{*, *}
+
+-- Test applying with @ to provide implicit args explicitly
+variable (A : Type eu) (B : Type ev) (a : A) (b : B)
+
+/-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
+#guard_msgs in #check ExplicitTest.!{eu, ev} a b
+
+/-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
+#guard_msgs in #check @ExplicitTest.!{eu, ev} A B a b
+
+-- Test with named wildcards
+/-- info: @ExplicitTest.{x_1, y_1} : {α : Type x_1} → {β : Type y_1} → α → β → Prod.{x_1, y_1} α β -/
+#guard_msgs in #check @ExplicitTest.!{x*, y*}
+
+-- Test with named arguments using @
+/-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
+#guard_msgs in #check @ExplicitTest.!{eu, ev} (α := A) (β := B) a b
+
+/-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
+#guard_msgs in #check @ExplicitTest.!{eu, ev} (β := B) (α := A) a b
+
+-- Test mixing positional and named arguments
+/-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
+#guard_msgs in #check @ExplicitTest.!{eu, ev} A (β := B) a b
+
+-- Define another axiom with more arguments for thorough testing
+axiom ExplicitTest2 : {α : Type eu} → {β : Type ev} → {γ : Type eu} → α → β → γ → α × β × γ
+
+/--
+info: @ExplicitTest2.{eu_1,
+    ev_1} : {α : Type eu_1} →
+  {β : Type ev_1} → {γ : Type eu_1} → α → β → γ → Prod.{eu_1, max eu_1 ev_1} α (Prod.{ev_1, eu_1} β γ)
+-/
+#guard_msgs in #check @ExplicitTest2.!{*, *}
+
+/-- info: ExplicitTest2.{eu_1, ev_1} : ?m.1 → ?m.2 → ?m.3 → Prod.{eu_1, max eu_1 ev_1} ?m.1 (Prod.{ev_1, eu_1} ?m.2 ?m.3) -/
+#guard_msgs in #check ExplicitTest2.!{*, *}
+
+-- Test named arguments with ExplicitTest2
+variable (C : Type eu) (c : C)
+
+/-- info: ExplicitTest2.{eu, ev} a b c : Prod.{eu, max eu ev} A (Prod.{ev, eu} B C) -/
+#guard_msgs in #check @ExplicitTest2.!{eu, ev} (α := A) (β := B) (γ := C) a b c
+
+/--
+info: fun α =>
+  @ExplicitTest2.{eu_1, ev} α
+    B : (α : Type eu_1) → {γ : Type eu_1} → α → B → γ → Prod.{eu_1, max eu_1 ev} α (Prod.{ev, eu_1} B γ)
+-/
+#guard_msgs in #check @ExplicitTest2.!{*, ev} (β := B)
+
+end ExplicitAppTests
