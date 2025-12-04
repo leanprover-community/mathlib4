@@ -84,20 +84,13 @@ It is good practice to have those, regardless of the `ext` issue.
 section ExtLemmas
 variable [Semiring k]
 
-/-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G) singleDistribMulActionHom
-/-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
-def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) :
-    k →+[R] MonoidAlgebra k G where
-  __ := singleAddHom a
-  map_smul' k m := by simp
-
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
 @[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
     [DistribMulAction R k] {f g : MonoidAlgebra k G →+[R] N}
-    (h : ∀ a, f.comp (singleDistribMulActionHom a) = g.comp (singleDistribMulActionHom a)) :
+    (h : ∀ a : G,
+      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
     f = g :=
   Finsupp.distribMulActionHom_ext' h
 
