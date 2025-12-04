@@ -421,9 +421,10 @@ private lemma dist_secondInter_point_eq_dist_secondInter_excenter_aux [Fact (fin
     _ = (2 : ℤ) • ∡ B I X := by
         rw [collinear_AIX.two_zsmul_oangle_eq_right I_ne_A.symm X_ne_I]
 
-/-- Given a triangle ABC, suppose an angle bisector from A through the incenter or excenter I
-meets the circumcircle again at X (including the case of an external bisector at A tangent to the
-circle, in which case X = A). Then XB = XI (= XC, by applying this lemma again). -/
+/-- The **incenter-excenter lemma*, **trillium theorem** or **trident lemma**: given a triangle
+ABC, suppose an angle bisector from A through the incenter or excenter I meets the circumcircle
+again at X (including the case of an external bisector at A tangent to the circle, in which case
+X = A). Then XB = XI (= XC, by applying this lemma again). -/
 lemma dist_secondInter_point_eq_dist_secondInter_excenter (signs : Finset (Fin 3)) {i₁ i₂ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) :
     dist (t.circumsphere.secondInter (t.points i₁) (t.excenter signs -ᵥ t.points i₁))
@@ -448,8 +449,9 @@ lemma dist_secondInter_point_eq_dist_secondInter_excenter (signs : Finset (Fin 3
   obtain ⟨i₃, h₁₃, h₂₃⟩ : ∃ i₃, i₁ ≠ i₃ ∧ i₂ ≠ i₃ := by decide +revert
   exact t'.dist_secondInter_point_eq_dist_secondInter_excenter_aux signs h₁₂ h₁₃ h₂₃
 
-/-- Given a triangle ABC, suppose the angle bisector from A through the incenter I meets the
-circumcircle again at X. Then XB = XI (= XC, by applying this lemma again). -/
+/-- The **incenter-excenter lemma*, **trillium theorem** or **trident lemma**: given a triangle
+ABC, suppose the angle bisector from A through the incenter I meets the circumcircle again at X.
+Then XB = XI (= XC, by applying this lemma again). -/
 lemma dist_secondInter_point_eq_dist_secondInter_incenter {i₁ i₂ : Fin 3} (h₁₂ : i₁ ≠ i₂) :
     dist (t.circumsphere.secondInter (t.points i₁) (t.incenter -ᵥ t.points i₁)) (t.points i₂) =
       dist (t.circumsphere.secondInter (t.points i₁) (t.incenter -ᵥ t.points i₁))
