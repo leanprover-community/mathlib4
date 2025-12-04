@@ -69,7 +69,7 @@ noncomputable abbrev ModuleCat.projective_shortComplex [Small.{v} R] (M : Module
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
   (e.constr ℕ id).shortComplexG
 
-theorem ModuleCat.projective_shortComplex_shortEaxct [Small.{v} R] (M : ModuleCat.{v} R) :
+theorem ModuleCat.projective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
     M.projective_shortComplex.ShortExact := by
   apply LinearMap.shortExact_shortComplexG
   refine fun m ↦ ⟨Finsupp.single m 1, ?_⟩
@@ -84,7 +84,7 @@ noncomputable abbrev ModuleCat.injective_shortComplex [Small.{v} R] (M : ModuleC
   let IP := Classical.choice (EnoughInjectives.presentation M)
   ShortComplex.mk IP.3 (Limits.cokernel.π IP.3) (Limits.cokernel.condition IP.3)
 
-theorem ModuleCat.injective_shortComplex_shortEaxct [Small.{v} R] (M : ModuleCat.{v} R) :
+theorem ModuleCat.injective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
     M.injective_shortComplex.ShortExact :=
   let IP := Classical.choice (EnoughInjectives.presentation M)
   { exact := ShortComplex.exact_cokernel IP.3
