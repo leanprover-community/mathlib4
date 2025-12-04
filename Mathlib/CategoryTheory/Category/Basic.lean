@@ -3,19 +3,21 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Tactic.TryThis
+module
+
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
@@ -29,8 +31,10 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 
 -/
 
+@[expose] public section
 
-library_note "CategoryTheory universes"
+
+library_note2 «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -55,7 +59,7 @@ for which objects live in `Type u` and morphisms live in `Type v`.
 
 Because the universe parameter `u` for the objects can be inferred from `C`
 when we write `Category C`, while the universe parameter `v` for the morphisms
-can not be automatically inferred, through the category theory library
+cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
@@ -88,7 +92,7 @@ class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} 
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
-initialize_simps_projections CategoryStruct (-toQuiver_Hom)
+initialize_simps_projections CategoryStruct (-toQuiver_Hom, -Hom)
 
 /-- Notation for the identity morphism in a category. -/
 scoped notation "𝟙" => CategoryStruct.id  -- type as \b1
@@ -100,7 +104,7 @@ scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 syntax (name := sorryIfSorry) "sorry_if_sorry" : tactic
 
 open Lean Meta Elab.Tactic in
-@[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
+@[tactic sorryIfSorry, inherit_doc sorryIfSorry] meta def evalSorryIfSorry : Tactic := fun _ => do
   let goalType ← getMainTarget
   if goalType.hasSorry then
     closeMainGoal `sorry_if_sorry (← mkSorry goalType true)
@@ -165,7 +169,7 @@ open Lean Elab Tactic in
 Currently this defaults to the `aesop_cat` wrapper around `aesop`, but by setting
 the option `mathlib.tactic.category.grind` to `true`, it will use the `grind` tactic instead.
 -/
-def categoryTheoryDischarger : TacticM Unit := do
+meta def categoryTheoryDischarger : TacticM Unit := do
   if ← getBoolOption `mathlib.tactic.category.grind then
     if ← getBoolOption `mathlib.tactic.category.log_grind then
       logInfo "Category theory discharger using `grind`."
@@ -355,6 +359,18 @@ theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi
 theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
+
+/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
+is injective. -/
+lemma mono_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
+/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
+is injective. -/
+lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
 
 section
 

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 -/
-import Mathlib.Order.PartialSups
-import Mathlib.Order.Interval.Finset.Fin
+module
+
+public import Mathlib.Order.PartialSups
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 # Making a sequence disjoint
@@ -32,6 +34,8 @@ It is actually unique, as `disjointed_unique` shows.
 
 We also provide set notation variants of some lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists SuccAddOrder
 
@@ -196,6 +200,13 @@ theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
 
+omit [GeneralizedBooleanAlgebra α] in
+lemma Finset.disjiUnion_Iic_disjointed [DecidableEq α] (n : ι) (t : ι → Finset α) :
+    (Iic n).disjiUnion (disjointed t) ((disjoint_disjointed t).set_pairwise _) =
+      partialSups t n := by
+  rw [← partialSups_disjointed, partialSups_apply, Finset.sup'_eq_sup, Finset.sup_eq_biUnion,
+    disjiUnion_eq_biUnion]
+
 section SuccOrder
 
 variable [SuccOrder ι]
@@ -219,7 +230,7 @@ lemma Monotone.disjointed_succ_sup {f : ι → α} (hf : Monotone f) (i : ι) :
     have : Iio (succ i) = Iic i := by
       ext
       simp only [mem_Iio, lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq, Or.comm]
-    rw [this, ← sup'_eq_sup, ← partialSups_apply, hf.partialSups_eq,
+    rw [this, ← sup'_eq_sup nonempty_Iic, ← partialSups_apply, hf.partialSups_eq,
       sdiff_sup_cancel <| hf <| le_succ i]
 
 end SuccOrder
@@ -293,7 +304,7 @@ section Nat
 /-!
 ### Functions on `ℕ`
 
-(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requsisites.)
+(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requisites.)
 -/
 
 variable [GeneralizedBooleanAlgebra α]

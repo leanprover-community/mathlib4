@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.RightHomology
+public import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
 /-!
 # Homology of short complexes
@@ -30,6 +31,8 @@ After the category `ShortComplex C` was introduced by J. Riou, A. Topaz suggeste
 such a structure could be used as a basis for the *definition* of homology.
 
 -/
+
+@[expose] public section
 
 universe v u
 

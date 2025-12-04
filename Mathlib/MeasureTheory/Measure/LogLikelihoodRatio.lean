@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Tilted
+module
+
+public import Mathlib.MeasureTheory.Measure.Tilted
 
 /-!
 # Log-likelihood Ratio
@@ -20,6 +22,8 @@ This file contains a definition of the log-likelihood ratio (llr) and its proper
   `x ↦ log (μ.rnDeriv ν x).toReal`.
 
 -/
+
+@[expose] public section
 
 open Real
 
@@ -58,19 +62,19 @@ lemma exp_llr_of_ac' (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] (hμ
   rwa [if_neg hx_pos.ne'] at hx
 
 lemma neg_llr [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    - llr μ ν =ᵐ[μ] llr ν μ := by
+    -llr μ ν =ᵐ[μ] llr ν μ := by
   filter_upwards [Measure.inv_rnDeriv hμν] with x hx
   rw [Pi.neg_apply, llr, llr, ← log_inv, ← ENNReal.toReal_inv]
   congr
 
 lemma exp_neg_llr [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    (fun x ↦ exp (- llr μ ν x)) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x).toReal := by
+    (fun x ↦ exp (-llr μ ν x)) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x).toReal := by
   filter_upwards [neg_llr hμν, exp_llr_of_ac' ν μ hμν] with x hx hx_exp_log
   rw [Pi.neg_apply] at hx
   rw [hx, hx_exp_log]
 
 lemma exp_neg_llr' [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
-    (fun x ↦ exp (- llr μ ν x)) =ᵐ[ν] fun x ↦ (ν.rnDeriv μ x).toReal := by
+    (fun x ↦ exp (-llr μ ν x)) =ᵐ[ν] fun x ↦ (ν.rnDeriv μ x).toReal := by
   filter_upwards [neg_llr hμν, exp_llr_of_ac ν μ hμν] with x hx hx_exp_log
   rw [Pi.neg_apply, neg_eq_iff_eq_neg] at hx
   rw [← hx, hx_exp_log]
@@ -165,12 +169,12 @@ lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
         rw [integral_add ?_ h_int]
         swap; · exact hf.sub (integrable_const _)
         rw [integral_sub hf (integrable_const _)]
-        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+        simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) := by abel
 
 lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
     (hμν : μ ≪ ν) (hf : Integrable (fun x ↦ exp (f x)) ν) :
-    (llr μ (ν.tilted f)) =ᵐ[μ] fun x ↦ - f x + log (∫ z, exp (f z) ∂ν) + llr μ ν x := by
+    (llr μ (ν.tilted f)) =ᵐ[μ] fun x ↦ -f x + log (∫ z, exp (f z) ∂ν) + llr μ ν x := by
   cases eq_zero_or_neZero ν with
   | inl h =>
     have hμ : μ = 0 := by ext s _; exact hμν (by simp [h])
@@ -195,14 +199,14 @@ lemma integral_llr_tilted_right [IsProbabilityMeasure μ] [SigmaFinite ν]
     (h_int : Integrable (llr μ ν) μ) :
     ∫ x, llr μ (ν.tilted f) x ∂μ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by
   calc ∫ x, llr μ (ν.tilted f) x ∂μ
-    = ∫ x, - f x + log (∫ x, exp (f x) ∂ν) + llr μ ν x ∂μ :=
+    = ∫ x, -f x + log (∫ x, exp (f x) ∂ν) + llr μ ν x ∂μ :=
         integral_congr_ae (llr_tilted_right hμν hfν)
-  _ = - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) + ∫ x, llr μ ν x ∂μ := by
+  _ = -∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) + ∫ x, llr μ ν x ∂μ := by
         rw [← integral_neg, integral_add ?_ h_int]
         swap; · exact hfμ.neg.add (integrable_const _)
         rw [integral_add ?_ (integrable_const _)]
         swap; · exact hfμ.neg
-        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+        simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by abel
 
 end llr_tilted

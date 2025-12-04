@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Tangent
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -45,6 +47,8 @@ junk.
 
 integral curve, vector field
 -/
+
+@[expose] public section
 
 open scoped Manifold Topology
 
@@ -165,7 +169,7 @@ lemma IsMIntegralCurveOn.isMIntegralCurveAt (h : IsMIntegralCurveOn γ v s) (hs 
 /-- If `γ` is an integral curve at each `t ∈ s`, it is an integral curve on `s`. -/
 lemma IsMIntegralCurveAt.isMIntegralCurveOn (h : ∀ t ∈ s, IsMIntegralCurveAt γ v t) :
     IsMIntegralCurveOn γ v s := by
-  intros t ht
+  intro t ht
   apply HasMFDerivAt.hasMFDerivWithinAt
   obtain ⟨s', hs', h⟩ := Filter.eventually_iff_exists_mem.mp (h t ht)
   exact h _ (mem_of_mem_nhds hs')

@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
-import Mathlib.Analysis.InnerProductSpace.Symmetric
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
+public import Mathlib.Analysis.InnerProductSpace.Symmetric
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # The orthogonal projection
@@ -29,6 +31,8 @@ The orthogonal projection construction is adapted from
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -243,7 +247,7 @@ theorem starProjection_orthogonal_val (u : E) :
 theorem orthogonalProjection_orthogonal (u : E) :
     Kᗮ.orthogonalProjection u =
       ⟨u - K.starProjection u, sub_starProjection_mem_orthogonal _⟩ :=
-  Subtype.eq <| starProjection_orthogonal_val _
+  Subtype.ext <| starProjection_orthogonal_val _
 
 lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
@@ -314,7 +318,7 @@ lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
 
 @[simp]
 theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 ↔ v ∈ Kᗮ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_starProjection_of_mem_orthogonal
+  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.ext <| eq_starProjection_of_mem_orthogonal
     (zero_mem _) ?_⟩
   · rw [← sub_zero v, ← coe_zero (p := K), ← h]
     exact sub_starProjection_mem_orthogonal (K := K) v
@@ -444,10 +448,10 @@ theorem starProjection_singleton {v : E} (w : E) :
     simp [Submodule.span_zero_singleton 𝕜]
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
-    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
+    (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert key using 1 <;> field_simp [hv']
+  convert key using 1 <;> match_scalars <;> field_simp [hv']
 
 @[deprecated (since := "2025-07-07")] alias orthogonalProjection_singleton :=
   starProjection_singleton
@@ -473,9 +477,7 @@ theorem exists_add_mem_mem_orthogonal [K.HasOrthogonalProjection] (v : E) :
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
 theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrthogonalProjection]
-    {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjection v = 0 := by
-  ext
-  convert eq_starProjection_of_mem_orthogonal (K := K) _ _ <;> simp [hv]
+    {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjection v = 0 := orthogonalProjection_eq_zero_iff.mpr hv
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}
@@ -549,6 +551,14 @@ theorem _root_.ContinuousLinearMap.IsIdempotentElem.hasOrthogonalProjection_rang
   have := hp.isClosed_range.completeSpace_coe
   .ofCompleteSpace _
 
+open LinearMap in
+theorem _root_.LinearMap.IsSymmetricProjection.hasOrthogonalProjection_range
+    {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    (range p).HasOrthogonalProjection :=
+  ⟨fun v => ⟨p v, by
+    simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
+      ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
+
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjection_orthogonalComplement_singleton_eq_zero (v : E) :
     (𝕜 ∙ v)ᗮ.orthogonalProjection v = 0 :=
@@ -559,7 +569,6 @@ theorem starProjection_orthogonalComplement_singleton_eq_zero (v : E) :
     (𝕜 ∙ v)ᗮ.starProjection v = 0 := by
   rw [starProjection_apply, coe_eq_zero]
   exact orthogonalProjection_orthogonalComplement_singleton_eq_zero v
-
 
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
@@ -606,7 +615,7 @@ theorem id_eq_sum_starProjection_self_orthogonalComplement [K.HasOrthogonalProje
   id_eq_sum_orthogonalProjection_self_orthogonalComplement :=
   id_eq_sum_starProjection_self_orthogonalComplement
 
--- Porting note: The priority should be higher than `Submodule.coe_inner`.
+-- The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjection_eq_of_mem_right [K.HasOrthogonalProjection] (u : K) (v : E) :
     ⟪K.orthogonalProjection v, u⟫ = ⟪v, u⟫ :=
@@ -616,7 +625,7 @@ theorem inner_orthogonalProjection_eq_of_mem_right [K.HasOrthogonalProjection] (
       rw [starProjection_inner_eq_zero _ _ (Submodule.coe_mem _), add_zero]
     _ = ⟪v, u⟫ := by rw [← inner_add_left, add_sub_cancel]
 
--- Porting note: The priority should be higher than `Submodule.coe_inner`.
+-- The priority should be higher than `Submodule.coe_inner`.
 @[simp high]
 theorem inner_orthogonalProjection_eq_of_mem_left [K.HasOrthogonalProjection] (u : K) (v : E) :
     ⟪u, K.orthogonalProjection v⟫ = ⟪(u : E), v⟫ := by
@@ -640,6 +649,33 @@ theorem starProjection_isSymmetric [K.HasOrthogonalProjection] :
 
 @[deprecated (since := "2025-07-07")] alias
   orthogonalProjection_isSymmetric := starProjection_isSymmetric
+
+open ContinuousLinearMap in
+/-- `U.starProjection` is a symmetric projection. -/
+@[simp]
+theorem isSymmetricProjection_starProjection
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    U.starProjection.IsSymmetricProjection :=
+  ⟨U.isIdempotentElem_starProjection.toLinearMap, U.starProjection_isSymmetric⟩
+
+open LinearMap in
+/-- An operator is a symmetric projection if and only if it is an orthogonal projection. -/
+theorem _root_.LinearMap.isSymmetricProjection_iff_eq_coe_starProjection_range {p : E →ₗ[𝕜] E} :
+    p.IsSymmetricProjection ↔ ∃ (_ : (LinearMap.range p).HasOrthogonalProjection),
+    p = (LinearMap.range p).starProjection := by
+  refine ⟨fun hp ↦ ?_, fun ⟨h, hp⟩ ↦ hp ▸ isSymmetricProjection_starProjection _⟩
+  have : (LinearMap.range p).HasOrthogonalProjection := hp.hasOrthogonalProjection_range
+  refine ⟨this, Eq.symm ?_⟩
+  ext x
+  refine Submodule.eq_starProjection_of_mem_orthogonal (by simp) ?_
+  rw [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric]
+  simpa using congr($hp.isIdempotentElem.mul_one_sub_self x)
+
+lemma _root_.LinearMap.isSymmetricProjection_iff_eq_coe_starProjection {p : E →ₗ[𝕜] E} :
+    p.IsSymmetricProjection
+      ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
+  ⟨fun h ↦ ⟨LinearMap.range p, p.isSymmetricProjection_iff_eq_coe_starProjection_range.mp h⟩,
+    by rintro ⟨_, _, rfl⟩; exact isSymmetricProjection_starProjection _⟩
 
 theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
     K.starProjection v = 0 ↔ v ∈ Kᗮ := by

@@ -3,11 +3,11 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-import Mathlib.RingTheory.KrullDimension.PID
-import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.KrullDimension.PID
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 # Krull dimension of polynomial ring
@@ -20,11 +20,10 @@ This file proves properties of the krull dimension of the polynomial ring over a
   `R` is less than `2 * (ringKrullDim R) + 1`.
 -/
 
-variable {R : Type*} [CommRing R]
+@[expose] public section
 
-namespace Polynomial
-
-theorem ringKrullDim_le : ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
+theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
+    ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
   rw [ringKrullDim, ringKrullDim]
   apply Order.krullDim_le_of_krullDim_preimage_le' C.specComap ?_ (fun p ↦ ?_)
   · exact fun {a b} h ↦ Ideal.comap_mono h

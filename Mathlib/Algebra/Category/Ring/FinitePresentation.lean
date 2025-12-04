@@ -3,12 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.CategoryTheory.Limits.Preserves.Over
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
-import Mathlib.CategoryTheory.Presentable.Finite
-import Mathlib.RingTheory.EssentialFiniteness
-import Mathlib.RingTheory.FinitePresentation
+module
+
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Over
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
+public import Mathlib.CategoryTheory.Presentable.Finite
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.RingTheory.FinitePresentation
 
 /-!
 
@@ -18,6 +20,8 @@ In this file, we show that finitely presented algebras are finitely presentable 
 i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 
@@ -103,7 +107,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     · ext x
       simp [P, iP]
   have : ∀ r : s, ∃ (i' : J) (hi' : i ⟶ i'), F.map hi' (g' r) = 0 := by
-    intros r
+    intro r
     have := Types.FilteredColimit.isColimit_eq_iff _ hc' (xi := g' r) (j := i) (xj := (0 : F.obj i))
     suffices H : (g' ≫ c.ι.app i) r = 0 by
       obtain ⟨k, f, g, e⟩ := this.mp (by simpa using H)
@@ -144,7 +148,6 @@ lemma preservesColimit_coyoneda_of_finitePresentation
       (PreservesColimit.preserves hc).some hS f.right (by simp)
     exact ⟨i, Under.homMk g h₁, Under.UnderMorphism.ext h₂⟩
   · intro i j f₁ f₂ e
-    dsimp at *
     obtain ⟨k, hik, hjk, e⟩ := RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit
       R (F ⋙ Under.forget R) { app i := (F.obj i).hom } S.hom ((Under.forget R).mapCocone c)
       (PreservesColimit.preserves hc).some
@@ -162,4 +165,3 @@ lemma isFinitelyPresentable (S : Under R) (hS : S.hom.hom.FinitePresentation) :
     IsFinitelyPresentable.{u} S := by
   rw [isFinitelyPresentable_iff_preservesFilteredColimits]
   exact preservesFilteredColimits_coyoneda R S hS
-

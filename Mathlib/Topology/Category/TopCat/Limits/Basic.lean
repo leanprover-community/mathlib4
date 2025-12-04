@@ -3,11 +3,13 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Adjunction.Limits
+module
+
+public import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # The category of topological spaces has all limits and colimits
@@ -15,6 +17,8 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 Further, these limits and colimits are preserved by the forgetful functor --- that is, the
 underlying types are just the limits in the category of types.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
@@ -31,6 +35,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
+attribute [local fun_prop] continuous_subtype_val
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).
@@ -241,7 +246,7 @@ lemma isClosed_iff_of_isColimit (X : Set c.pt) :
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
     Functor.const_obj_obj, Set.preimage_compl]
 
-lemma continuous_iff_of_isColimit {X : Type w} [TopologicalSpace X] (f : c.pt → X) :
+lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt → X) :
     Continuous f ↔ ∀ (j : J), Continuous (f ∘ c.ι.app j) := by
   simp only [continuous_def, isOpen_iff_of_isColimit _ hc]
   tauto
@@ -265,9 +270,6 @@ lemma hasColimit_iff_small_colimitType :
   constructor <;> intro
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
-
-@[deprecated (since := "2025-04-01")] alias hasColimit_iff_small_quot :=
-  hasColimit_iff_small_colimitType
 
 instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where

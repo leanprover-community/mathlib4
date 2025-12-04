@@ -3,19 +3,23 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
 # Subspaces associated with orthogonal projections
 
 Here, the orthogonal projection is used to prove a series of more subtle lemmas about the
 orthogonal complement of subspaces of `E` (the orthogonal complement itself was
-defined in `Analysis.InnerProductSpace.Orthogonal`) such that they admit
+defined in `Mathlib/Analysis/InnerProductSpace/Orthogonal.lean`) such that they admit
 orthogonal projections; the lemma
 `Submodule.sup_orthogonal_of_hasOrthogonalProjection`,
 stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -178,12 +182,12 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
   · rw [← Submodule.triorthogonal_eq_orthogonal, h, Submodule.top_orthogonal_eq_bot]
   · rw [h, Submodule.bot_orthogonal_eq_top]
 
-
 theorem orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by
   have : IsCompl K Kᗮ := Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
-  conv_lhs => rw [← Submodule.linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self this x]
+  conv_lhs => rw [← IsCompl.projection_add_projection_eq_self this x]
+  simp_rw [IsCompl.projection_apply]
   rw [map_add, orthogonalProjection_mem_subspace_eq_self,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 

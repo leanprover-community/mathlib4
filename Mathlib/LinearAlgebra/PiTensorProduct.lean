@@ -3,9 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.LinearAlgebra.Multilinear.Curry
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -29,9 +31,9 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
 
-## Notations
+## Notation
 
-* `⨂[R] i, s i` is defined as localized notation in locale `TensorProduct`.
+* `⨂[R] i, s i` is defined as localized notation in scope `TensorProduct`.
 * `⨂ₜ[R] i, f i` with `f : ∀ i, s i` is defined globally as the tensor product of all the `f i`'s.
 
 ## Implementation notes
@@ -59,6 +61,8 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 
 multilinear, tensor, tensor product
 -/
+
+@[expose] public section
 
 open Function
 
@@ -181,7 +185,7 @@ def liftAddHom (φ : (R × Π i, s i) → F)
       | Eqv.of_smul inst z f i r' =>
         (AddCon.ker_rel _).2 <| by simp [FreeAddMonoid.lift_eval_of, @C_smul inst]
       | Eqv.add_comm x y =>
-        (AddCon.ker_rel _).2 <| by simp_rw [AddMonoidHom.map_add, add_comm]
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
 
 /-- Induct using `tprodCoeff` -/
 @[elab_as_elim]
@@ -219,18 +223,17 @@ theorem smul_tprodCoeff' (r : R₁) (z : R) (f : Π i, s i) :
     r • tprodCoeff R z f = tprodCoeff R (r • z) f := rfl
 
 protected theorem smul_add (r : R₁) (x y : ⨂[R] i, s i) : r • (x + y) = r • x + r • y :=
-  AddMonoidHom.map_add _ _ _
+  map_add _ _ _
 
 instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
-  smul := (· • ·)
-  smul_add _ _ _ := AddMonoidHom.map_add _ _ _
+  smul_add _ _ _ := map_add _ _ _
   mul_smul r r' x :=
     PiTensorProduct.induction_on' x (fun {r'' f} ↦ by simp [smul_tprodCoeff', smul_smul])
       fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy]
   one_smul x :=
     PiTensorProduct.induction_on' x (fun {r f} ↦ by rw [smul_tprodCoeff', one_smul])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]
-  smul_zero _ := AddMonoidHom.map_zero _
+  smul_zero _ := map_zero _
 
 instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
@@ -286,7 +289,7 @@ theorem tprod_eq_tprodCoeff_one :
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
-  have : z = z • (1 : R) := by simp only [mul_one, Algebra.id.smul_eq_mul]
+  have : z = z • (1 : R) := by simp only [mul_one, smul_eq_mul]
   conv_lhs => rw [this]
   rfl
 
@@ -327,7 +330,7 @@ lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
 lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
-  rw [mem_lifts_iff]; erw [List.map_nil]; rw [List.sum_nil]
+  rw [mem_lifts_iff, FreeAddMonoid.toList_zero, List.map_nil, List.sum_nil]
 
 /-- If elements `p,q` of `FreeAddMonoid (R × Π i, s i)` lift elements `x,y` of `⨂[R] i, s i`
 respectively, then `p + q` lifts `x + y`.
@@ -532,7 +535,7 @@ def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂
 
 @[simp]
 protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
-    map (f ^ n) = map f ^ n := MonoidHom.map_pow mapMonoidHom _ _
+    map (f ^ n) = map f ^ n := map_pow mapMonoidHom _ _
 
 open Function in
 private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
@@ -647,7 +650,7 @@ theorem piTensorHomMapFun₂_smul (r : R) (φ : ⨂[R] i, s i →ₗ[R] t i →�
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
-Then there is an linear map from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
+Then there is a linear map from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
@@ -785,9 +788,8 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
       intro x y hx hy
       rw [map_add, add_smul, hx, hy]
   right_inv t := by simp
-  map_add' := LinearMap.map_add _
-  map_smul' := fun r x => by
-    exact LinearMap.map_smul _ r x
+  map_add' := map_add _
+  map_smul' := map_smul _
 
 @[simp]
 theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : Π i, s i) :
@@ -810,15 +812,14 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
       rw [Subsingleton.elim i i₀, Function.update_self]
     refine x.induction_on ?_ ?_
     · intro r f
-      simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
+      simp only [map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
         this f, MultilinearMap.map_update_smul, update_eq_self]
     · intro x y hx hy
-      rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_update_add, ← this 0 (lift _ _), hx,
+      rw [map_add, this 0 (_ + _), MultilinearMap.map_update_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
-  map_add' := LinearMap.map_add _
-  map_smul' := fun r x => by
-    exact LinearMap.map_smul _ r x
+  map_add' := map_add _
+  map_smul' := map_smul _
 
 @[simp]
 theorem subsingletonEquiv_apply_tprod [Subsingleton ι] (i : ι) (f : ι → M) :
@@ -833,7 +834,7 @@ variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Modul
 
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type. If `N` is a constant family of
-modules, use the non-dependant version `PiTensorProduct.tmulEquiv` instead. -/
+modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/
 def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
   LinearEquiv.ofLinear

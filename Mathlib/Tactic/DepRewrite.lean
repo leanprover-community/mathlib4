@@ -3,12 +3,16 @@ Copyright (c) 2025 Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Wojciech Nawrocki
 -/
-import Lean.Elab.Tactic.Simp
-import Lean.Elab.Tactic.Conv.Basic
-import Lean.Elab.Tactic.Rewrite
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Elab.Tactic.Conv.Basic
+public meta import Lean.Elab.Tactic.Rewrite
+public import Mathlib.Init
 
 /-! ## Dependent rewrite tactic -/
+
+public meta section
 
 namespace Mathlib.Tactic.DepRewrite
 open Lean Meta
@@ -77,7 +81,7 @@ structure Config where
   /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
   /-- The cast mode specifies when `rw!` is permitted to insert casts
-  in order to correct subterms that become type-incorect
+  in order to correct subterms that become type-incorrect
   as a result of rewriting.
 
   For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,
@@ -527,7 +531,7 @@ def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config :=
 def depRewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
-  -- See issues #2711 and #2727.
+  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let rwResult ← Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
     let localDecl ← fvarId.getDecl
@@ -592,7 +596,7 @@ def depRwTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) 
 def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
     (config : DepRewrite.Config := {}) : TacticM Unit := withMainContext do
   -- Note: we cannot execute `replaceLocalDecl` inside `Term.withSynthesize`.
-  -- See issues #2711 and #2727.
+  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let rwResult ← Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true
     let localDecl ← fvarId.getDecl

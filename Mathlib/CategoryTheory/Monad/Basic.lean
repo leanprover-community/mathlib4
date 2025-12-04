@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Monads
@@ -14,11 +16,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 We construct the categories of monads and comonads, and their forgetful functors to endofunctors.
 
 (Note that these are the category theorist's monads, not the programmers monads.
-For the translation, see the file `CategoryTheory.Monad.Types`.)
+For the translation, see the file `Mathlib/CategoryTheory/Monad/Types.lean`.)
 
 For the fact that monads are "just" monoids in the category of endofunctors, see the file
 `CategoryTheory.Monad.EquivMon`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -27,7 +31,7 @@ open Category
 
 universe v₁ u₁
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable (C : Type u₁) [Category.{v₁} C]
 
 /-- The data of a monad on C consists of an endofunctor T together with natural transformations
@@ -90,20 +94,11 @@ instance coeMonad : Coe (Monad C) (C ⥤ C) :=
 instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
 
--- Porting note: these lemmas are syntactic tautologies
---@[simp]
---theorem monad_toFunctor_eq_coe : T.toFunctor = T :=
---  rfl
---
---@[simp]
---theorem comonad_toFunctor_eq_coe : G.toFunctor = G :=
---  rfl
-
 initialize_simps_projections CategoryTheory.Monad (toFunctor → coe)
 
 initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe)
 
--- Porting note: investigate whether `Monad.assoc` can be a `simp` lemma?
+-- TODO: investigate whether `Monad.assoc` can be a `simp` lemma?
 attribute [reassoc (attr := simp)] Monad.left_unit Monad.right_unit
 attribute [reassoc (attr := simp)] Comonad.coassoc Comonad.left_counit Comonad.right_counit
 
@@ -133,12 +128,10 @@ instance : Quiver (Monad C) where
 instance : Quiver (Comonad C) where
   Hom := ComonadHom
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext h
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext h
@@ -269,15 +262,13 @@ variable {C}
 
 /-- An isomorphism of monads gives a natural isomorphism of the underlying functors.
 -/
-/- Porting note: removed `@[simps (rhsMd := semireducible)]`
-and replaced with `@[simps]` in the two declarations below -/
-@[simps!]
+@[simps (rhsMd := .default)]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h
 
 /-- An isomorphism of comonads gives a natural isomorphism of the underlying functors.
 -/
-@[simps!]
+@[simps (rhsMd := .default)]
 def ComonadIso.toNatIso {M N : Comonad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (comonadToFunctor C).mapIso h
 

@@ -3,12 +3,14 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.Subcategory
-import Mathlib.LinearAlgebra.Coevaluation
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.Subcategory
+public import Mathlib.LinearAlgebra.Coevaluation
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The category of finitely generated modules over a ring
@@ -17,7 +19,7 @@ This introduces `FGModuleCat R`, the category of finitely generated modules over
 It is implemented as a full subcategory on a subtype of `ModuleCat R`.
 
 When `K` is a field,
-`FGModuleCat K` is the category of finite dimensional vector spaces over `K`.
+`FGModuleCat K` is the category of finite-dimensional vector spaces over `K`.
 
 We first create the instance as a preadditive category.
 When `R` is commutative we then give the structure as an `R`-linear monoidal category.
@@ -26,9 +28,11 @@ and then as a right-rigid monoidal category.
 
 ## Future work
 
-* Show that `FGModuleCat R` is abelian when `R` is (left)-noetherian.
+* Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

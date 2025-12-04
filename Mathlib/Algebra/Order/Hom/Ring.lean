@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Ordered ring homomorphisms
@@ -33,6 +35,8 @@ making some typeclasses and instances irrelevant.
 ordered ring homomorphism, order homomorphism
 -/
 
+@[expose] public section
+
 assert_not_exists FloorRing Archimedean
 
 open Function
@@ -57,13 +61,6 @@ add_decl_doc OrderRingHom.toRingHom
 @[inherit_doc]
 infixl:25 " →+*o " => OrderRingHom
 
-/- Porting note: Needed to reorder instance arguments below:
-`[Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β]`
-to
-`[Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β]`
-otherwise the [refl] attribute on `OrderRingIso.refl` complains.
-TODO: change back when `refl` attribute is fixed, github issue https://github.com/leanprover-community/mathlib4/issues/2505 -/
-
 /-- `OrderRingIso α β`, denoted as `α ≃+*o β`,
 is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
@@ -71,7 +68,7 @@ When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
 you should parametrize over `(F : Type*) [OrderRingIsoClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingIsoClass`. -/
-structure OrderRingIso (α β : Type*) [Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β] extends
+structure OrderRingIso (α β : Type*) [Mul α] [Add α] [Mul β] [Add β] [LE α] [LE β] extends
   α ≃+* β where
   /-- The proposition that the function preserves the order bijectively. -/
   map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
@@ -346,7 +343,6 @@ theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
 theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 
--- Porting note: needed to add DFunLike.coe on the lhs, bad Equiv coercion otherwise
 @[simp, norm_cast]
 theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe (f : α ≃o β) = f :=
   rfl

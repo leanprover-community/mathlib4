@@ -3,10 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Sym
-import Mathlib.Data.Finsupp.Pointwise
-import Mathlib.Data.Sym.Sym2.Finsupp
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Sym
+public import Mathlib.Data.Finsupp.Pointwise
+public import Mathlib.Data.Sym.Sym2.Finsupp
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
@@ -15,6 +17,8 @@ This file provides an alternative to `QuadraticMap.associated`; unlike that defi
 does not require `Invertible (2 : R)`. Unlike that definition, this only works in the presence of
 a basis.
 -/
+
+@[expose] public section
 
 open LinearMap (BilinMap)
 open Module

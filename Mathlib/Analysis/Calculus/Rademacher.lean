@@ -3,13 +3,15 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere
@@ -42,6 +44,8 @@ elementary but maybe the most elegant once necessary prerequisites are set up.
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
 
+@[expose] public section
+
 open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
 open scoped NNReal ENNReal Topology
@@ -65,9 +69,6 @@ theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     MemLp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_lineDeriv := memLp_lineDeriv
 
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
@@ -118,7 +119,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
       = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
     _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
       gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-    _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg ht.le]; ring
+    _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg ht.le]
   · exact hg.norm.const_mul _
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
     exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
@@ -145,7 +146,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, t_pos.le]
       _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
         gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-      _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg t_pos.le]; ring
+      _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg t_pos.le]
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
         rw [← Function.notMem_support]
@@ -233,7 +234,7 @@ theorem ae_lineDeriv_sum_eq
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
     simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_const_mul]
   intro i _hi
-  let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
+  let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
   · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
@@ -246,7 +247,7 @@ theorem ae_lineDeriv_sum_eq
 
 theorem ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
-    ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
+    ∀ᵐ x ∂μ, ∃ (L : StrongDual ℝ E), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
   have B := Basis.ofVectorSpace ℝ E
   have I1 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i, (B.repr v i) • B i) =
                                   ∑ i, B.repr v i • lineDeriv ℝ f x (B i) :=
@@ -254,7 +255,7 @@ theorem ae_exists_fderiv_of_countable
   have I2 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, LineDifferentiableAt ℝ f x v :=
     (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDifferentiableAt v)
   filter_upwards [I1, I2] with x hx h'x
-  let L : E →L[ℝ] ℝ :=
+  let L : StrongDual ℝ E :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]

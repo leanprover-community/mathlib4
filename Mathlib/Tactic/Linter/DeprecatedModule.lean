@@ -3,11 +3,13 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Std.Time.Format
-import Mathlib.Init
+module
+
+public meta import Std.Time.Format
+public import Mathlib.Init
 
 /-!
-#  The `deprecated.module` linter
+# The `deprecated.module` linter
 
 The `deprecated.module` linter emits a warning when a file that has been renamed or split
 is imported.
@@ -24,6 +26,8 @@ in module `A` with the expectation that `A` contains nothing else.
 This triggers the `deprecated.module` linter to notify every file with `import A`
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 
@@ -66,7 +70,7 @@ by all files.
 It also ignores the `Mathlib/Tactic/Linter/DeprecatedModule.lean` import (namely, the current file),
 since there is no need to import this module.
 -/
-def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m]
+def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m]
     (msg? : Option String) : m Unit := do
   let modName ← getMainModule
   modifyEnv (deprecatedModuleExt.addEntry ·
@@ -112,7 +116,7 @@ namespace DeprecatedModule
 
 /--
 `IsLaterCommand` is an `IO.Ref` that starts out being `false`.
-As soon as a (non-import) command in a file is processed, the `deprecated.module` linter`
+As soon as a (non-import) command in a file is processed, the `deprecated.module` linter
 sets it to `true`.
 If it is `false`, then the `deprecated.module` linter will check for deprecated modules.
 
@@ -143,7 +147,7 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
   let (importStx, _) ←
-    Parser.parseHeader { input := fm.source, fileName := ← getFileName, fileMap := fm }
+    Parser.parseHeader { inputString := fm.source, fileName := ← getFileName, fileMap := fm }
   let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
   for (i, preferred, msg?) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do

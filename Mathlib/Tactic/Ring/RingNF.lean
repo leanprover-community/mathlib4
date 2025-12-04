@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.TryThis
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.TryThis
+public meta import Mathlib.Tactic.Conv
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.Qq
 
 /-!
 # `ring_nf` tactic
@@ -18,6 +21,8 @@ prove some equations that `ring` cannot because they involve ring reasoning insi
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean
@@ -64,6 +69,9 @@ structure Config extends AtomM.Recurse.Config where
   /-- The normalization style. -/
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
 
 /-- Function elaborating `RingNF.Config`. -/
 declare_config_elab elabConfig Config
@@ -124,32 +132,6 @@ initialize ringCleanupRef.set fun e => do
   return (← cleanup {} { expr := e }).expr
 
 open Elab.Tactic Parser.Tactic
-/-- Use `ring_nf` to rewrite the main goal. -/
-def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let r ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
-  if r.expr.consumeMData.isConstOf ``True then
-    goal.assign (← mkOfEqTrue (← r.getProof))
-    replaceMainGoal []
-  else
-    let newGoal ← applySimpResultToTarget goal tgt r
-    if cfg.failIfUnchanged && goal == newGoal then
-      throwError "ring_nf made no progress"
-    replaceMainGoal [newGoal]
-
-/-- Use `ring_nf` to rewrite hypothesis `h`. -/
-def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let tgt ← instantiateMVars (← fvarId.getType)
-  let goal ← getMainGoal
-  let myres ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
-  match ← applySimpResultToLocalDecl goal fvarId myres false with
-  | none => replaceMainGoal []
-  | some (_, newGoal) =>
-    if cfg.failIfUnchanged && goal == newGoal then
-      throwError "ring_nf made no progress"
-    replaceMainGoal [newGoal]
 
 /--
 Simplification tactic for expressions in the language of commutative (semi)rings,
@@ -172,8 +154,8 @@ elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
-    fun _ ↦ throwError "ring_nf failed"
+  let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
+  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| ring_nf ! $cfg:optConfig $(loc)?)
@@ -260,3 +242,9 @@ macro (name := ringConv) "ring" : conv =>
 end RingNF
 
 end Mathlib.Tactic
+
+/-!
+We register `ring` with the `hint` tactic.
+-/
+
+register_hint 1000 ring

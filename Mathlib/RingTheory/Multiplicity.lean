@@ -3,12 +3,13 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
-import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.ENat.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiplicity of a divisor
@@ -25,6 +26,8 @@ several basic results on it.
   The reason for using `1` as a default value instead of `0` is to have `multiplicity_eq_zero_iff`.
 * `FiniteMultiplicity a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -63,7 +66,7 @@ theorem finiteMultiplicity_iff_emultiplicity_ne_top :
 
 theorem finiteMultiplicity_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     FiniteMultiplicity a b := by
-  by_contra! nh
+  by_contra nh
   rw [← emultiplicity_eq_top, h] at nh
   trivial
 
@@ -109,7 +112,7 @@ theorem multiplicity_le_emultiplicity :
   · simp [hf.emultiplicity_eq_multiplicity]
   · simp [hf, emultiplicity_eq_top.2]
 
--- Cannot be @[simp] because `β`, `c`, and `d` can not be inferred by `simp`.
+-- Cannot be @[simp] because `β`, `c`, and `d` cannot be inferred by `simp`.
 theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
     (h : emultiplicity a b = emultiplicity c d) : multiplicity a b = multiplicity c d := by
   unfold multiplicity
@@ -412,7 +415,7 @@ theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a �
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
-              | b+2 => by omega
+              | b+2 => by lia
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
@@ -597,8 +600,6 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α]
 
-/- Porting note:
-Pulled a b intro parameters since Lean parses that more easily -/
 theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
   | n, m => fun ha hb ⟨s, hs⟩ =>
@@ -655,7 +656,7 @@ theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
     nth_rw 1 [← mul_one a] at hv
     simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
     obtain hv | rfl := hv
-    · have : IsUnit a := isUnit_of_mul_eq_one a v hv.symm
+    · have : IsUnit a := .of_mul_eq_one v hv.symm
       simpa [this] using ha.not_unit
     · simpa using ha.ne_zero
   · simp [ha]
@@ -700,9 +701,9 @@ theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Fins
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by
-  induction' k with k hk
-  · simp [emultiplicity_of_one_right hp.not_unit]
-  · simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
+  induction k with
+  | zero => simp [emultiplicity_of_one_right hp.not_unit]
+  | succ k hk => simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
 
 protected theorem FiniteMultiplicity.multiplicity_pow {p a : α} (hp : Prime p)
     (ha : FiniteMultiplicity p a) {k : ℕ} : multiplicity p (a ^ k) = k * multiplicity p a := by

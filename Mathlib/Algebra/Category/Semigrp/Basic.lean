@@ -3,10 +3,12 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.Algebra.PEmptyInstances
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
@@ -27,6 +29,8 @@ This closely follows `Mathlib/Algebra/Category/MonCat/Basic.lean`.
 * free/forgetful adjunctions
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -46,7 +50,6 @@ structure MagmaCat : Type (u + 1) where
   [str : Mul carrier]
 
 attribute [instance] AddMagmaCat.str MagmaCat.str
-attribute [to_additive existing] MagmaCat.carrier MagmaCat.str
 
 initialize_simps_projections AddMagmaCat (carrier → coe, -str)
 initialize_simps_projections MagmaCat (carrier → coe, -str)
@@ -78,8 +81,6 @@ structure MagmaCat.Hom (A B : MagmaCat.{u}) where
   private mk ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
-
-attribute [to_additive existing AddMagmaCat.Hom.mk] MagmaCat.Hom.mk
 
 namespace MagmaCat
 
@@ -208,7 +209,6 @@ structure Semigrp : Type (u + 1) where
   [str : Semigroup carrier]
 
 attribute [instance] AddSemigrp.str Semigrp.str
-attribute [to_additive existing] Semigrp.carrier Semigrp.str
 
 initialize_simps_projections AddSemigrp (carrier → coe, -str)
 initialize_simps_projections Semigrp (carrier → coe, -str)
@@ -240,8 +240,6 @@ structure Semigrp.Hom (A B : Semigrp.{u}) where
   private mk ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
-
-attribute [to_additive existing AddSemigrp.Hom.mk] Semigrp.Hom.mk
 
 namespace Semigrp
 

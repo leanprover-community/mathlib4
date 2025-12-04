@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.SetAlgebra
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Separable measure
@@ -62,6 +64,8 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 
 separable measure, measure-dense, Lp space, second-countable
 -/
+
+@[expose] public section
 
 open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
@@ -138,7 +142,6 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     obtain ⟨t, ht, hμt⟩ := h𝒜.nonempty'
     refine ⟨t, ht, hμt, ?_⟩
     simp_rw [indicatorConstLp]
-    congr
     simp
   · have p_pos : 0 < p := lt_of_lt_of_le (by simp) one_le_p.elim
     rintro - ⟨s, ms, hμs, rfl⟩
@@ -151,10 +154,10 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     calc
       ‖c‖ * μ.real (s ∆ t) ^ (1 / p.toReal)
         < ‖c‖ * (ENNReal.ofReal ((ε / ‖c‖) ^ p.toReal)).toReal ^ (1 / p.toReal) := by
-          rw [_root_.mul_lt_mul_left (norm_pos_iff.2 hc)]
-          refine Real.rpow_lt_rpow (by simp) ?_
-            (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
-          rwa [measureReal_def, toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+          have := toReal_pos p_pos.ne.symm p_ne_top.elim
+          rw [measureReal_def]
+          gcongr
+          exact ofReal_ne_top
       _ = ε := by
         rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
           one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
@@ -422,7 +425,7 @@ section SecondCountableLp
 then the associated `Lᵖ` space is second-countable. -/
 instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.SeparableSpace E] :
     SecondCountableTopology (Lp E p μ) := by
-  -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
+  -- It is enough to show that the space is separable, i.e. admits a countable and dense subset.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
   -- measure while preserving the two properties. This family is denoted `𝒜₀`.
@@ -443,7 +446,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
-    -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
+    -- is the uncurried version of `key`, which is easier to manipulate as countability of the
     -- domain is automatically inferred.
     let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype

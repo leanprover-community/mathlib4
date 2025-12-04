@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Multivariate polynomials
@@ -38,6 +40,8 @@ In the definitions below, we use the following notation:
   of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -149,6 +153,11 @@ def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S�
   map_zero' := eval₂_zero f g
   map_add' _ _ := eval₂_add _ _
 
+@[gcongr]
+lemma eval₂_dvd (f : R →+* S₁) (g : σ → S₁) {p q : MvPolynomial σ R} (h : p ∣ q) :
+    p.eval₂ f g ∣ q.eval₂ f g :=
+  map_dvd (eval₂Hom f g) h
+
 @[simp]
 theorem coe_eval₂Hom (f : R →+* S₁) (g : σ → S₁) : ⇑(eval₂Hom f g) = eval₂ f g :=
   rfl
@@ -179,8 +188,7 @@ theorem map_eval₂Hom [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₁) 
 
 theorem eval₂Hom_monomial (f : R →+* S₁) (g : σ → S₁) (d : σ →₀ ℕ) (r : R) :
     eval₂Hom f g (monomial d r) = f r * d.prod fun i k => g i ^ k := by
-  simp only [monomial_eq, RingHom.map_mul, eval₂Hom_C, Finsupp.prod, map_prod,
-    RingHom.map_pow, eval₂Hom_X']
+  simp only [monomial_eq, map_mul, eval₂Hom_C, Finsupp.prod, map_prod, map_pow, eval₂Hom_X']
 
 section
 
@@ -392,7 +400,7 @@ theorem map_surjective (hf : Function.Surjective f) :
   | add a b ha hb =>
     obtain ⟨a, rfl⟩ := ha
     obtain ⟨b, rfl⟩ := hb
-    exact ⟨a + b, RingHom.map_add _ _ _⟩
+    exact ⟨a + b, map_add _ _ _⟩
 
 theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
   ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
@@ -440,7 +448,7 @@ theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.sup
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
   contrapose! hx
-  rw [coeff_map, hx, RingHom.map_zero]
+  rw [coeff_map, hx, map_zero]
 
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
     (map f p).support = p.support := by
@@ -476,9 +484,10 @@ lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
           disjoint_support_monomial ha hs
 
 @[simp]
-lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
-    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs :=
-  subset_trans (coeffs_map f p) (Finset.coe_image (f := f) ▸ .rfl)
+lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) :
+    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs := by
+  classical
+  exact mod_cast coeffs_map f p
 
 lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S₁} :
     x ∈ Set.range (MvPolynomial.map f) ↔ (x.coeffs : Set _) ⊆ .range f := by
@@ -552,11 +561,15 @@ theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (al
   rfl
 
 @[simp]
-lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPolynomial.eval f :=
+lemma coe_aeval_eq_eval :
+    RingHomClass.toRingHom (aeval f : MvPolynomial σ S₁ →ₐ[S₁] S₁) = eval f :=
   rfl
 
 @[simp]
-theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
+lemma aeval_eq_eval : (aeval f : MvPolynomial σ S₁ → S₁) = eval f := rfl
+
+@[simp]
+theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial σ R) = f s :=
   eval₂_X _ _ _
 
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
@@ -755,9 +768,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   | monomial_add a b f ha _ ih =>
     rw [eval₂_add, eval₂_monomial]
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
-    · have := hs a -- Porting note: was `simpa only [...]`
-      rwa [coeff_add, MvPolynomial.notMem_support_iff.1 ha, add_zero, coeff_monomial,
-        if_pos rfl] at this
+    · simpa [MvPolynomial.notMem_support_iff.1 ha] using hs a
     have := hs i
     rw [coeff_add, coeff_monomial] at this
     split_ifs at this with h
@@ -782,8 +793,6 @@ lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ →
   | C r => simp [← IsScalarTower.algebraMap_apply]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i h => cases i <;> simp [h]
-
-@[deprecated (since := "2025-02-21")] alias aeval_sum_elim := aeval_sumElim
 
 end CommSemiring
 

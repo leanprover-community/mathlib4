@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Data.Set.Finite.Range
+module
+
+public import Mathlib.Algebra.Module.Submodule.Ker
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Range of linear maps
@@ -18,7 +20,7 @@ ring homomorphism.
 
 Note that this also means that dot notation (i.e. `f.range` for a linear map `f`) does not work.
 
-## Notations
+## Notation
 
 * We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
@@ -26,6 +28,8 @@ Note that this also means that dot notation (i.e. `f.range` for a linear map `f`
 ## Tags
 linear algebra, vector space, module, range
 -/
+
+@[expose] public section
 
 open Function
 
@@ -56,8 +60,10 @@ See Note [range copy pattern]. -/
 def range [RingHomSurjective τ₁₂] (f : F) : Submodule R₂ M₂ :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 
-theorem range_coe [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = Set.range f :=
+theorem coe_range [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = Set.range f :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
 
 theorem range_toAddSubmonoid [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
     (range f).toAddSubmonoid = AddMonoidHom.mrange f :=
@@ -88,7 +94,7 @@ theorem range_comp_le_range [RingHomSurjective τ₂₃] [RingHomSurjective τ�
 
 theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
     range f = ⊤ ↔ Surjective f := by
-  rw [SetLike.ext'_iff, range_coe, top_coe, Set.range_eq_univ]
+  rw [SetLike.ext'_iff, coe_range, top_coe, Set.range_eq_univ]
 
 theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : F) (hf : Surjective f) :
     range f = ⊤ := range_eq_top.2 hf
@@ -232,13 +238,13 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
   constructor
   · intro h
     use 0
-    rw [← SetLike.mem_coe, range_coe]
+    rw [← SetLike.mem_coe, coe_range]
     exact ⟨⟨0, map_zero f⟩, h⟩
   · rintro ⟨y, h₁, h₂⟩
     rw [SetLike.le_def]
     intro z hz
     simp only [mem_ker] at hz
-    rw [← SetLike.mem_coe, range_coe, Set.mem_range] at h₁
+    rw [← SetLike.mem_coe, coe_range, Set.mem_range] at h₁
     obtain ⟨x, hx⟩ := h₁
     have hx' : x ∈ p := h₂ hx
     have hxz : z + x ∈ p := by
@@ -332,7 +338,7 @@ def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } 
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
   left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simp [map_comap_subtype p, inf_of_le_right hq]
+  right_inv := fun ⟨q, hq⟩ => Subtype.ext <| by simp [map_comap_subtype p, inf_of_le_right hq]
   map_rel_iff' {p₁ p₂} := Subtype.coe_le_coe.symm.trans <| by
     dsimp
     rw [map_le_iff_le_comap,
@@ -360,6 +366,11 @@ def mapIic (p : Submodule R M) :
     (p : Submodule R M) (q : Submodule R p) :
     (p.mapIic q : Submodule R M) = q.map p.subtype :=
   rfl
+
+lemma codisjoint_map [RingHomSurjective τ₁₂] {f : F} (hf : Function.Surjective f)
+    {p q : Submodule R M} (hpq : Codisjoint p q) : Codisjoint (p.map f) (q.map f) := by
+  rw [codisjoint_iff, ← Submodule.map_sup, codisjoint_iff.mp hpq, map_top,
+    LinearMap.range_eq_top_of_surjective f hf]
 
 end AddCommMonoid
 

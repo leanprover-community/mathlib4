@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Continuous maps sending zero to zero
@@ -17,6 +19,8 @@ overly burdensome on type class synthesis.
 Of course, one could generalize to maps between pointed topological spaces, but that goes beyond
 the purpose of this type.
 -/
+
+@[expose] public section
 
 assert_not_exists StarOrderedRing
 
@@ -124,12 +128,12 @@ lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
-protected def id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) : C(s, R)₀ :=
-  ⟨.restrict s (.id R), h0⟩
+protected def id (s : Set R) [Fact (0 ∈ s)] : C(s, R)₀ :=
+  ⟨.restrict s (.id R), rfl⟩
 
 @[simp]
-lemma toContinuousMap_id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) :
-    (ContinuousMapZero.id h0 : C(s, R)) = .restrict s (.id R) :=
+lemma toContinuousMap_id {s : Set R} [Fact (0 ∈ s)] :
+    (ContinuousMapZero.id s : C(s, R)) = .restrict s (.id R) :=
   rfl
 
 end Basic

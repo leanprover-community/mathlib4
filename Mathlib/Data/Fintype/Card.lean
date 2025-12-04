@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Cardinalities of finite types
@@ -19,6 +21,8 @@ We also include some elementary results on the values of `Fintype.card` on speci
   itself is also surjective.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -96,7 +100,7 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 
 end Set
 
-@[simp]
+@[simp, grind =]
 theorem Finset.card_univ [Fintype α] : #(univ : Finset α) = Fintype.card α := rfl
 
 theorem Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : #s = Fintype.card α) :
@@ -127,8 +131,7 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 
 theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
-    #(univ \ s) = Fintype.card α - #s :=
-  Finset.card_sdiff (subset_univ s)
+    #(univ \ s) = Fintype.card α - #s := by grind
 
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
   Finset.card_univ_diff s
@@ -468,7 +471,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
       (∀ (β) [Fintype β], Fintype.card β < Fintype.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
-  induction' n using Nat.strong_induction_on with n ih generalizing α
+  induction n using Nat.strong_induction_on generalizing α with | _ n ih
   rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep

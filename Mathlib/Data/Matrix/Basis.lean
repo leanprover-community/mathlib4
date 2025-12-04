@@ -3,7 +3,9 @@ Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
-import Mathlib.Data.Matrix.Basic
+module
+
+public import Mathlib.Data.Matrix.Basic
 
 /-!
 # Matrices with a single non-zero element.
@@ -11,6 +13,8 @@ import Mathlib.Data.Matrix.Basic
 This file provides `Matrix.single`. The matrix `Matrix.single i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
+
+@[expose] public section
 
 assert_not_exists Matrix.trace
 
@@ -101,7 +105,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     (i : n) (j : m) (c : α) (x : m → α) :
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
-  simp [single, mulVec, dotProduct]
+  simp only [mulVec, dotProduct, single, of_apply, ite_mul, zero_mul]
   rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
@@ -118,7 +122,6 @@ theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Mat
 
 theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     single i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
-  ext i' j'
   simp [-mul_ite, single, vecMulVec, ite_and, Pi.single_apply, eq_comm]
 
 @[deprecated (since := "2025-05-05")]
@@ -360,7 +363,7 @@ variable [Fintype n] [Semiring α]
 theorem row_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
   have := ext_iff.mpr hM i k
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
@@ -368,7 +371,7 @@ alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
 theorem col_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hki : k ≠ i) : M k i = 0 := by
   have := ext_iff.mpr hM k j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
@@ -376,7 +379,7 @@ alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
 theorem diag_eq_of_commute_single {i j : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) : M i i = M j j := by
   have := ext_iff.mpr hM i j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias diag_eq_of_commute_stdBasisMatrix := diag_eq_of_commute_single
@@ -422,6 +425,37 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 
 @[deprecated (since := "2025-05-05")]
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
+
+/-- The center of `Matrix n n α` is equal to the image of the center of `α` under `scalar n`. -/
+theorem center_eq_scalar_image :
+    Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x ↦ by
+  simp_rw [Set.mem_image, Semigroup.mem_center_iff]
+  refine ⟨fun hx ↦ ?_, fun ⟨x, hx, eq⟩ y ↦ eq ▸ scalar_commute x (hx · |>.symm) y |>.symm⟩
+  refine (isEmpty_or_nonempty n).elim (fun _ ↦ ⟨0, by simp [nontriviality]⟩) fun ⟨i⟩ ↦ ?_
+  obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
+  exact ⟨x, by simpa using fun r ↦ congr($(hx (single i i r)) i i)⟩
+
+theorem submonoidCenter_eq_scalar_map :
+    Submonoid.center (Matrix n n α) = (Submonoid.center α).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
+theorem subsemigroupCenter_eq_scalar_map :
+    Subsemigroup.center (Matrix n n α) = (Subsemigroup.center α).map (scalar n).toMulHom :=
+  SetLike.coe_injective center_eq_scalar_image
+
+theorem subsemiringCenter_eq_scalar_map :
+    Subsemiring.center (Matrix n n α) = (Subsemiring.center α).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
+theorem subringCenter_eq_scalar_map [Ring R] :
+    Subring.center (Matrix n n R) = (Subring.center R).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
+/-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
+(i.e., the span of `{1}`). -/
+@[simp] theorem center_eq_range [CommSemiring R] :
+    Set.center (Matrix n n R) = Set.range (scalar n) := by
+  rw [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ]
 
 end Commute
 
