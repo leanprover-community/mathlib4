@@ -74,11 +74,13 @@ inductive LevelWildcardKind where
   | param (baseName : Name := `u)
   | explicit (l : TSyntax `level)
 
+meta section
+
 /--
 Extracts the base name from a universe parameter name.
 For example, `u_1` becomes `u`, `v_2` becomes `v`, and `w` stays `w`.
 -/
-meta def getBaseName (n : Name) : Name :=
+def getBaseName (n : Name) : Name :=
   let s := n.toString
   let basePart := s.takeWhile (· != '_')
   basePart.toName
@@ -87,7 +89,7 @@ meta def getBaseName (n : Name) : Name :=
 Parses an array of wildcard universe syntax into `LevelWildcardKind` values.
 Takes the constant's level parameter names to use as defaults for `*` wildcards.
 -/
-meta def elabWildcardUniverses {m : Type → Type}
+def elabWildcardUniverses {m : Type → Type}
     [Monad m] [MonadExceptOf Exception m] (us : Array Syntax) (constLevelParams : List Name) :
     m (Array LevelWildcardKind) :=
   us.mapIdxM fun idx u =>
@@ -102,7 +104,7 @@ meta def elabWildcardUniverses {m : Type → Type}
 /--
 Extracts all universe parameter names appearing in a level expression.
 -/
-meta def Lean.Level.getParams (l : Level) : List Name :=
+def Lean.Level.getParams (l : Level) : List Name :=
   match l with
   | .param n => [n]
   | .mvar _ => []
@@ -115,7 +117,7 @@ meta def Lean.Level.getParams (l : Level) : List Name :=
 Reorganizes universe parameter names to ensure proper dependency ordering.
 This is used in the implementation of `elabAppWithWildcards`.
 -/
-meta def reorganizeUniverseParams
+def reorganizeUniverseParams
     (levels : Array (Option LevelWildcardKind))
     (constLevels : Array Level)
     (levelNames : List Name) : List Name := Id.run do
@@ -137,7 +139,7 @@ meta def reorganizeUniverseParams
   return result
 
 @[term_elab appWithWildcards, inherit_doc appWithWildcards]
-meta def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
+def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
   | `($id:ident.!{$us,*} $args*) =>
     let constName ← Lean.resolveGlobalConstNoOverload id
@@ -170,3 +172,5 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrT
 
     pure expr
   | _ => throwUnsupportedSyntax
+
+end
