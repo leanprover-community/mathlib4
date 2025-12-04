@@ -54,9 +54,6 @@ structure Integers : Prop where
   map_le_one : ∀ x, v (algebraMap O R x) ≤ 1
   exists_of_le_one : ∀ ⦃r⦄, v r ≤ 1 → ∃ x, algebraMap O R x = r
 
--- typeclass shortcut
-instance : Algebra v.integer R := inferInstance
-
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
     map_le_one := fun r => r.2
