@@ -23,9 +23,11 @@ variable {R M : Type*} [Semiring R] [Mul M]
 
 namespace MonoidAlgebra
 
-/-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
-the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
-@[to_additive (dont_translate := R) (attr := simps! +simpRhs apply symm_apply)]
+/-- The opposite of a monoid algebra is equivalent as a ring to the opposite monoid algebra over the
+opposite ring. -/
+@[to_additive (dont_translate := R) (attr := simps! +simpRhs apply symm_apply)
+/-- The opposite of a monoid algebra is equivalent as a ring to the opposite monoid algebra over the
+opposite ring. -/]
 protected noncomputable def opRingEquiv : (MonoidAlgebra R M)ᵐᵒᵖ ≃+* MonoidAlgebra Rᵐᵒᵖ Mᵐᵒᵖ where
   __ := opAddEquiv.symm.trans <|
       (Finsupp.mapRange.addEquiv (opAddEquiv : R ≃+ Rᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv
