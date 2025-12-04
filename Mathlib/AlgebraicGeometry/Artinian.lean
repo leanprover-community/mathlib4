@@ -86,8 +86,8 @@ instance IsLocallyArtinian_Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U 
     h.1 ⟨(U.ι ''ᵁ W), AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion W.2 U.ι⟩
   exact RingEquiv.isArtinianRing F
 
-lemma IsLocallyArtinian_DiscreteTopology :
-    IsLocallyArtinian X → DiscreteTopology X := by
+instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian X] :
+    DiscreteTopology X := by
   intro hA
   apply discreteTopology_iff_isOpen_singleton.mpr
   intro x
