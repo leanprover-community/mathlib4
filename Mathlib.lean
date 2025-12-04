@@ -157,6 +157,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.Algebra.Category.ModuleCat.Free
@@ -4624,6 +4625,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basis
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
+public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 public import Mathlib.LinearAlgebra.Multilinear.Pi
 public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 public import Mathlib.LinearAlgebra.Orientation
