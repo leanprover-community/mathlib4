@@ -105,7 +105,7 @@ theorem equivInfinitePlace_apply [NumberField K] (w : InfinitePlace K) :
 
 @[simp]
 theorem equivInfinitePlace_symm_apply [NumberField K] (w : InfinitePlace K⁺) (x : K⁺) :
-    (equivInfinitePlace K).symm w (algebraMap K⁺ K x) = w x := by
+    (equivInfinitePlace K).symm w x = w x := by
   rw [← comap_apply, ← equivInfinitePlace_apply, Equiv.apply_symm_apply]
 
 theorem units_rank_eq_units_rank [NumberField K] :
