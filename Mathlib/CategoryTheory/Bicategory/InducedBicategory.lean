@@ -107,7 +107,7 @@ instance bicategory : Bicategory (InducedBicategory C F) where
   associator x y z := isoMk (α_ x.hom y.hom z.hom)
   leftUnitor x := isoMk (λ_ x.hom)
   rightUnitor x := isoMk (ρ_ x.hom)
-  whisker_exchange {_ _ _ _ _ _ _} η θ := by ext; simp; exact whisker_exchange _ _
+  whisker_exchange {_ _ _ _ _ _ _} η θ := by ext; simpa using whisker_exchange _ _
 
 attribute [-simp] bicategory_comp_hom bicategory_Hom
 

@@ -27,22 +27,17 @@ theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : �
     {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :
     f (h +ᵥ τ) = f τ := by
-  rw [Subgroup.mem_strictPeriods_iff] at hH
-  have := congr_fun (slash_action_eqn f _ hH) τ
-  -- maybe we need a simp lemma for `slash_upperRightHom_apply`?
-  simp [slash_def, σ, denom] at this
-  rw [← this]
-  congr 1 with
-  simp [coe_vadd, UpperHalfPlane.coe_smul, σ, GeneralLinearGroup.val_det_apply,
-    num, denom, add_comm]
+  rw [← congr_fun (slash_action_eqn f _ <| Γ.mem_strictPeriods_iff.mp hH) τ]
+  suffices GeneralLinearGroup.upperRightHom h • τ = h +ᵥ τ  by
+    simp_rw [slash_def, this]
+    simp [σ, denom, GeneralLinearGroup.val_det_apply, denom]
+  ext
+  simp [σ, num, denom, coe_vadd, UpperHalfPlane.coe_smul, num, add_comm]
 
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
-    f (((N * n) : ℝ) +ᵥ z) = f z := by
+    f ((N * n : ℝ) +ᵥ z) = f z := by
   apply vAdd_apply_of_mem_strictPeriods
-  simp only [Subgroup.mem_strictPeriods_iff, Subgroup.mem_map]
-  refine ⟨⟨!![1, N * n; 0, 1], by simp⟩, by simp, ?_⟩
-  ext i j
-  fin_cases i <;> fin_cases j <;> simp
+  simp [strictPeriods_Gamma, AddSubgroup.mem_zmultiples_iff, mul_comm]
 
 theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((ModularGroup.T ^ (N * n))) • z) = f z := by
