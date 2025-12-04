@@ -460,8 +460,8 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   refine p.support_reverse ▸ p.support.nodup_tail_reverse ?_
-  rw [← getVert_eq_support_getElem? _ (by cutsat), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
+  rw [← getVert_eq_support_getElem? _ (by lia), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; lia)]
   simp
 
 @[simp]

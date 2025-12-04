@@ -485,11 +485,11 @@ theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
       rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
         Nat.size_bit]
       have := to_nat_pos n
-      dsimp [Nat.bit]; cutsat
+      dsimp [Nat.bit]; lia
   | bit1 n => by
       rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
         Nat.size_bit]
-      dsimp [Nat.bit]; cutsat
+      dsimp [Nat.bit]; lia
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
   | 1 => rfl
