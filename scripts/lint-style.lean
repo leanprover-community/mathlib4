@@ -126,6 +126,7 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     |>.erase `Mathlib.Tactic.DeclarationNames
     |>.erase `Mathlib.Lean.Elab.Tactic.Meta
     |>.erase `Mathlib.Lean.ContextInfo
+    |>.erase `Mathlib.Tactic.Lia
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
     |>.erase `Mathlib.Lean.Elab.InfoTree
     |>.erase `Mathlib.Lean.Environment

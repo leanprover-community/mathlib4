@@ -283,7 +283,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipa
   rintro v w hvw
   apply hc at hvw
   simp [Set.mem_setOf_eq] at hvw ⊢
-  cutsat
+  lia
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/
 lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) : G.IsBipartite := by

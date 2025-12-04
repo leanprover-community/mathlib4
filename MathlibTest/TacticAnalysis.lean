@@ -8,7 +8,7 @@ section omega
 
 set_option linter.tacticAnalysis.omegaToCutsat true
 
-/-- warning: `cutsat` can replace `omega` -/
+/-- warning: `lia` can replace `omega` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   omega

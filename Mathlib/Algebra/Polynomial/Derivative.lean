@@ -388,7 +388,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
       refine sum_congr rfl fun k hk => ?_
       rw [mem_range] at hk
       congr
-      cutsat
+      lia
     · rw [Nat.choose_zero_right, tsub_zero]
 
 /--

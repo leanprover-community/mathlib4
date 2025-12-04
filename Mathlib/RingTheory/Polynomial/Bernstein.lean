@@ -215,7 +215,7 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
   · simp
   · norm_cast
     congr
-    cutsat
+    lia
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by

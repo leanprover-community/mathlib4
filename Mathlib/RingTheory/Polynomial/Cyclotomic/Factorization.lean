@@ -165,7 +165,7 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
     by_cases hQ : Q = P
     · simp only [hQ, insert_eq_cons, count_cons_self, nodup_singleton, mem_singleton,
         count_eq_one_of_mem, reduceAdd]
-      cutsat
+      lia
     · simp [hQ]
   have := prod_dvd_prod_of_le this
   simp only [insert_eq_cons, prod_cons, prod_singleton] at this

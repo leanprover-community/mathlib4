@@ -466,7 +466,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_face {signs : Finset (Fin (n + 1
       have : m + 1 ≤ #fs := hfs.ge
       grw [fs.subset_univ] at this
       simp only [Finset.card_univ, Fintype.card_fin] at *
-      cutsat
+      lia
     obtain ⟨i, -, hi⟩ := Finset.exists_mem_notMem_of_card_lt_card hc
     exact ⟨i, hi⟩
   rw [excenter_eq_affineCombination] at hm
@@ -481,7 +481,7 @@ variable {s} in
 lemma ExcenterExists.excenter_notMem_affineSpan_faceOpposite {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
     s.excenter signs ∉ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
-  h.excenter_notMem_affineSpan_face _ (by have := NeZero.ne n; cutsat)
+  h.excenter_notMem_affineSpan_face _ (by have := NeZero.ne n; lia)
 
 lemma incenter_notMem_affineSpan_faceOpposite (i : Fin (n + 1)) :
     s.incenter ∉ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
@@ -571,7 +571,7 @@ lemma excenter_singleton_injective [Nat.AtLeastTwo n] :
   rcases hij with hij | hij
   · simpa using hij
   · have : 2 ≤ n := Nat.AtLeastTwo.prop
-    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
     rw [Finset.ext_iff] at hij
     replace hij := hij k
     simp_all
@@ -767,7 +767,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
         exact ⟨h', this⟩
       rw [← norm_eq_zero, ← dist_eq_norm_vsub, h.dist_excenter] at h0
       exact h.exradius_pos.ne' h0
-    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
     have hu : Set.range s.points =
         Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
       simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter]
@@ -955,7 +955,7 @@ lemma ExcenterExists.touchpoint_ne_point [Nat.AtLeastTwo n] {signs : Finset (Fin
     (Finset.mem_univ _), affineCombination_eq_touchpoint_iff
     (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
   have : 1 < n := Nat.AtLeastTwo.one_lt
-  obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
+  obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
   have he' : Finset.affineCombinationSingleWeights ℝ j k = s.touchpointWeights signs i k := by
     rw [he]
   simp only [ne_eq, hkj, not_false_eq_true,

@@ -95,7 +95,7 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · cutsat
+  · lia
 
 section IsIntegral
 variable (hx : IsIntegral R x)

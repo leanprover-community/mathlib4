@@ -239,7 +239,7 @@ theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
     rw [← sigma_zero_eq_one_iff]
     have zero_lt_sigma := sigma_pos 0 n hn0
     have sigma_zero_le_sigma := sigma_mono 0 k n k.zero_le
-    cutsat
+    lia
   · simp +contextual
 
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
@@ -379,7 +379,7 @@ section Sum
 
 theorem sum_Ioc_zeta (N : ℕ) : ∑ n ∈ Ioc 0 N, zeta n = N := by
   simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
-  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
+  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; lia]
   simp
 
 variable {R : Type*} [Semiring R]
