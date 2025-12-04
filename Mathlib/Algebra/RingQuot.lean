@@ -512,7 +512,7 @@ theorem idealQuotientToRingQuot_apply (r : B → B → Prop) (x : B) :
 /-- The ring equivalence between `RingQuot r` and `(Ideal.ofRel r).quotient`
 -/
 def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ Ideal.ofRel r :=
-  RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
+  RingEquiv.ofRingHom (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
       simp)
