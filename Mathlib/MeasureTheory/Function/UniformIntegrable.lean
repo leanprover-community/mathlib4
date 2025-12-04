@@ -930,9 +930,23 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {fn : ι → α �
     exact ⟨C, fun ⟨f, s, hs⟩ => eLpNorm_le_of_tendstoInMeasure
       (Eventually.of_forall fun n => hC (s n)) hs (fun n => hUI.1 (s n))⟩
 
+/-- Suppose `f` is a sequence of functions that converges in measure to `g`. If `f` is
+`UniformIntegrable`, then `g` is in `L1`. -/
+lemma UniformIntegrable.memLp_of_tendstoInMeasure {f : ℕ → α → β} {g : α → β}
+    (hUI : UniformIntegrable f p μ) (htends : TendstoInMeasure μ f atTop g) :
+    MemLp g p μ := by
+  simpa using hUI.uniformIntegrable_of_tendstoInMeasure.memLp ⟨g, ⟨fun n => n, htends⟩⟩
+
+/-- Suppose `f` is a sequence of functions that converges in measure to `g`. If `f` is
+`UniformIntegrable`, then `g` is integrable. -/
+lemma UniformIntegrable.integrable_of_tendstoInMeasure {f : ℕ → α → β} {g : α → β}
+    (hUI : UniformIntegrable f 1 μ) (htends : TendstoInMeasure μ f atTop g) :
+    Integrable g μ :=
+  memLp_one_iff_integrable.mp (hUI.memLp_of_tendstoInMeasure htends)
+
 /-- If `fn` is `UniformIntegrable`, then the family of a.e. limits of sequences of `fn` is
 `UniformIntegrable`. -/
-lemma UniformIntegrable.uniformIntegrable_of_tendsto_ae {fn : ι → α → β}
+lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {fn : ι → α → β}
     (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : ℕ → ι,
       ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) atTop (nhds (g x))}) ↦ f.1) p μ := by
@@ -941,6 +955,22 @@ lemma UniformIntegrable.uniformIntegrable_of_tendsto_ae {fn : ι → α → β}
   · obtain ⟨C, hC⟩ := hUI.2.2
     exact ⟨C, fun ⟨f, s, hs⟩ => Lp.eLpNorm_le_of_ae_tendsto
       (Eventually.of_forall fun n => hC (s n)) (fun n => hUI.1 (s n)) hs⟩
+
+/-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
+`UniformIntegrable`, then `g` is in `L1`. -/
+lemma UniformIntegrable.memLp_of_ae_tendsto {f : ℕ → α → β} {g : α → β}
+    (hUI : UniformIntegrable f p μ)
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) atTop (nhds (g x))) :
+    MemLp g p μ := by
+  simpa using hUI.uniformIntegrable_of_ae_tendsto.memLp ⟨g, ⟨fun n => n, htends⟩⟩
+
+/-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
+`UniformIntegrable`, then `g` is integrable. -/
+lemma UniformIntegrable.integrable_of_tendsto_ae {f : ℕ → α → β} {g : α → β}
+    (hUI : UniformIntegrable f 1 μ)
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) atTop (nhds (g x))) :
+    Integrable g μ :=
+  memLp_one_iff_integrable.mp (hUI.memLp_of_ae_tendsto htends)
 
 end UniformIntegrable
 
