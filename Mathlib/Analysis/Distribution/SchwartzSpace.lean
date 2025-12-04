@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
@@ -805,9 +806,10 @@ section Derivatives
 
 /-! ### Derivatives of Schwartz functions -/
 
-
 variable (𝕜)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
+open LineDeriv
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -844,64 +846,62 @@ theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
-def pderivCLM (m : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
-  (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)
+instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
+  lineDerivOp m f := (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) f
 
-@[simp]
-theorem pderivCLM_apply (m : E) (f : 𝓢(E, F)) (x : E) : pderivCLM 𝕜 m f x = fderiv ℝ f x m :=
-  rfl
+instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
+  lineDerivOp_add m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).map_add
 
-theorem pderivCLM_eq_lineDeriv (m : E) (f : 𝓢(E, F)) (x : E) :
-    pderivCLM 𝕜 m f x = lineDeriv ℝ f x m := by
-  simp only [pderivCLM_apply, f.differentiableAt.lineDeriv_eq_fderiv]
+instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
+  lineDerivOp_smul m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).map_smul
 
-/-- The iterated partial derivative (or directional derivative) as a continuous linear map on
-Schwartz space. -/
-def iteratedPDeriv {n : ℕ} : (Fin n → E) → 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
-  Nat.recOn n (fun _ => ContinuousLinearMap.id 𝕜 _) fun _ rec x =>
-    (pderivCLM 𝕜 (x 0)).comp (rec (Fin.tail x))
+instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
+  continuous_lineDerivOp m := ((SchwartzMap.evalCLM m).comp (fderivCLM 𝕜)).continuous
 
-@[simp]
-theorem iteratedPDeriv_zero (m : Fin 0 → E) (f : 𝓢(E, F)) : iteratedPDeriv 𝕜 m f = f :=
-  rfl
+open LineDeriv
 
-@[simp]
-theorem iteratedPDeriv_one (m : Fin 1 → E) (f : 𝓢(E, F)) :
-    iteratedPDeriv 𝕜 m f = pderivCLM 𝕜 (m 0) f :=
-  rfl
+theorem lineDerivOpCLM_eq (m : E) :
+    lineDerivOpCLM 𝕜 𝓢(E, F) m = (SchwartzMap.evalCLM m).comp (fderivCLM 𝕜) := rfl
 
-theorem iteratedPDeriv_succ_left {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, F)) :
-    iteratedPDeriv 𝕜 m f = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 (Fin.tail m) f) :=
-  rfl
+@[deprecated (since := "2025-11-25")]
+alias pderivCLM := lineDerivOpCLM
 
-theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E, F)) :
-    iteratedPDeriv 𝕜 m f = iteratedPDeriv 𝕜 (Fin.init m) (pderivCLM 𝕜 (m (Fin.last n)) f) := by
-  induction n with
-  | zero =>
-    rw [iteratedPDeriv_zero, iteratedPDeriv_one, Fin.last_zero]
-  -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
-  | succ n IH =>
-    have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
-    have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
-      simp only [Fin.tail_def, Fin.succ_last]
-    calc
-      _ = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 _ f) := iteratedPDeriv_succ_left _ _ _
-      _ = pderivCLM 𝕜 (m 0) ((iteratedPDeriv 𝕜 _) ((pderivCLM 𝕜 _) f)) := by
-        congr 1
-        exact IH _
-      _ = _ := by
-        simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
+@[deprecated (since := "2025-11-25")]
+alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
 
-theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
-    iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ n f x m := by
+theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
+  f.differentiableAt.lineDeriv_eq_fderiv.symm
+
+theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
+    ∂_{m} f x = fderiv ℝ f x m := rfl
+
+@[deprecated (since := "2025-11-25")]
+alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
+
+@[deprecated (since := "2025-11-25")]
+alias iteratedPDeriv_zero := LineDeriv.iteratedLineDerivOp_zero
+
+@[deprecated (since := "2025-11-25")]
+alias iteratedPDeriv_one := LineDeriv.iteratedLineDerivOp_one
+
+@[deprecated (since := "2025-11-25")]
+alias iteratedPDeriv_succ_left := LineDeriv.iteratedLineDerivOp_succ_left
+
+@[deprecated (since := "2025-11-25")]
+alias iteratedPDeriv_succ_right := LineDeriv.iteratedLineDerivOp_succ_right
+
+theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
+    ∂^{m} f x = iteratedFDeriv ℝ n f x m := by
   induction n generalizing x with
   | zero => simp
   | succ n ih =>
-    simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
-    rw [← fderiv_continuousMultilinear_apply_const_apply]
-    · simp [← ih]
+    rw [iteratedLineDerivOp_succ_left, iteratedFDeriv_succ_apply_left,
+      ← fderiv_continuousMultilinear_apply_const_apply]
+    · simp only [lineDerivOp_apply_eq_fderiv, ← ih]
     · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
 
+@[deprecated (since := "2025-11-25")]
+alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
 
 end Derivatives
 
