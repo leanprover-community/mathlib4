@@ -122,7 +122,7 @@ partial def RecurseM.run
     /-- The recursive context. -/
     rctx := { red := cfg.red, evalAtom },
     /-- The atom evaluator calls `AtomM.onSubexpressions` recursively. -/
-    evalAtom e := onSubexpressions eval e false cfg.wellBehavedDischarge nctx rctx s
+    evalAtom e := onSubexpressions eval e cfg.wellBehavedDischarge false nctx rctx s
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 /--

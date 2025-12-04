@@ -465,7 +465,7 @@ inductive AbelMode where
 structure AbelNF.Config extends AtomM.Recurse.Config where
   /-- The normalization style. -/
   mode := AbelMode.term
-  /-- Whether evalExpr makes use of hypotheses that are not available in the main local context. -/
+  /-- Whether evalExpr only makes use of hypotheses that are available in the main local context. -/
   wellBehavedDischarge := true
 
 

@@ -68,7 +68,7 @@ structure Config extends AtomM.Recurse.Config where
   failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP
-  /-- Whether `evalExpr` makes use of local hyptheses that are not available in
+  /-- Whether `evalExpr` only makes use of local hyptheses that are available in
     the main local context -/
   wellBehavedDischarge := true
   deriving Inhabited, BEq, Repr
@@ -176,6 +176,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
+  logInfo s!"{cfg.wellBehavedDischarge}"
   liftMetaMAtMain fun g ↦ AtomM.RecurseM.run s cfg.toConfig evalExpr (cleanup cfg) <| proveEq g
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:optConfig : tactic =>
