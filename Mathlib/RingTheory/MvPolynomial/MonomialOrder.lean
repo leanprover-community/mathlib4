@@ -867,19 +867,11 @@ lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ 
   simp_rw [m.degree_mul hm1 hp1, m.degree_mul hm2 hp2,
     mul_sub, ← mul_assoc _ _ p₁, ← mul_assoc _ _ p₂, monomial_mul,
     m.leadingCoeff_mul hm1 hp1, m.leadingCoeff_mul hm2 hp2, m.leadingCoeff_monomial,
-    degree_monomial, hc1, hc2, reduceIte]
-  congr 2
-  all_goals
-    congr 1
-    · congr 1
-      ext a
-      -- simp
-      simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply, Finsupp.sup_apply]
-      rw [Nat.sub_add_sub_cancel (by rw [Nat.max_le]; simp) (by simp)]
-      rw [← Nat.sub_add_comm (by simp)]
-      nth_rewrite 3 [add_comm _ <| (m.degree _) a]
-      rw [Nat.add_sub_add_right]
-    · ring
+    degree_monomial, hc1, hc2, reduceIte, mul_right_comm, mul_comm c₂ c₁]
+  rw [tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
+    tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
+    tsub_add_eq_add_tsub le_sup_left, tsub_add_eq_add_tsub le_sup_right,
+    add_comm d₁, add_comm d₂, add_tsub_add_eq_tsub_right, add_tsub_add_eq_tsub_right]
 
 lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
     {B : Finset ι} {g : ι → MvPolynomial σ R}
