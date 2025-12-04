@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Order
 public import Mathlib.Data.Sign.Defs
 
 /-!
@@ -24,6 +25,8 @@ universe u
 variable {α : Type u}
 
 namespace SignType
+
+noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder SignType
 
 /-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
 @[simp, norm_cast]
