@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexInduction
-public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.CategoryTheory.Triangulated.Orthogonal
 
 /-!
 # K-injective cochain complexes
@@ -16,11 +17,6 @@ We define the notion of K-injective cochain complex in an abelian category,
 and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
-* Show that a cochain complex is K-injective iff its image in the homotopy
-category belongs to the right orthogonal of the triangulated subcategory
-of acyclic complexes
-* Deduce that we can compute morphisms to a K-injective complex in the
-derived category as homotopy classes of morphisms
 * Provide an API for computing `Ext`-groups using an injective resolution
 * Dualize everything
 
@@ -47,6 +43,60 @@ with `K` acyclic is homotopic to zero. -/
 class IsKInjective (L : CochainComplex C ℤ) : Prop where
   nonempty_homotopy_zero {K : CochainComplex C ℤ} (f : K ⟶ L) :
     K.Acyclic → Nonempty (Homotopy f 0)
+
+/-- A choice of homotopy to zero for a morphism from an acyclic
+cochain complex to a K-injective cochain complex. -/
+noncomputable irreducible_def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
+    (hK : K.Acyclic) [L.IsKInjective] :
+    Homotopy f 0 :=
+  (IsKInjective.nonempty_homotopy_zero f hK).some
+
+lemma _root_.HomotopyEquiv.isKInjective {L₁ L₂ : CochainComplex C ℤ}
+    (e : HomotopyEquiv L₁ L₂)
+    [L₁.IsKInjective] : L₂.IsKInjective where
+  nonempty_homotopy_zero {K} f hK :=
+    ⟨Homotopy.trans (Homotopy.trans (.ofEq (by simp))
+      ((e.homotopyInvHomId.symm.compLeft f).trans (.ofEq (by simp))))
+        (((IsKInjective.homotopyZero (f ≫ e.inv) hK).compRight e.hom).trans (.ofEq (by simp)))⟩
+
+lemma isKInjective_of_iso {L₁ L₂ : CochainComplex C ℤ} (e : L₁ ≅ L₂)
+    [L₁.IsKInjective] :
+    L₂.IsKInjective :=
+  (HomotopyEquiv.ofIso e).isKInjective
+
+lemma isKInjective_iff_of_iso {L₁ L₂ : CochainComplex C ℤ} (e : L₁ ≅ L₂) :
+    L₁.IsKInjective ↔ L₂.IsKInjective :=
+  ⟨fun _ ↦ isKInjective_of_iso e, fun _ ↦ isKInjective_of_iso e.symm⟩
+
+lemma isKInjective_iff_rightOrthogonal (L : CochainComplex C ℤ) :
+    L.IsKInjective ↔
+      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
+        ((HomotopyCategory.quotient _ _).obj L) := by
+  refine ⟨fun _ K f hK ↦ ?_,
+      fun hL ↦ ⟨fun {K} f hK ↦ ⟨HomotopyCategory.homotopyOfEq _ _ ?_⟩⟩⟩
+  · obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
+    rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
+    rw [HomotopyCategory.eq_of_homotopy f 0 (IsKInjective.homotopyZero f hK), Functor.map_zero]
+  · rw [← HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
+    rw [hL ((HomotopyCategory.quotient _ _).map f) hK, Functor.map_zero]
+
+lemma IsKInjective.rightOrthogonal (L : CochainComplex C ℤ) [L.IsKInjective] :
+    (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
+        ((HomotopyCategory.quotient _ _).obj L) := by
+  rwa [← isKInjective_iff_rightOrthogonal]
+
+instance (L : CochainComplex C ℤ) [hL : L.IsKInjective] (n : ℤ) :
+    (L⟦n⟧).IsKInjective := by
+  rw [isKInjective_iff_rightOrthogonal] at hL ⊢
+  exact ObjectProperty.prop_of_iso _
+    (((HomotopyCategory.quotient C (.up ℤ)).commShiftIso n).symm.app L)
+    ((HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.le_shift n _ hL)
+
+lemma isKInjective_shift_iff (L : CochainComplex C ℤ) (n : ℤ) :
+    (L⟦n⟧).IsKInjective ↔ L.IsKInjective :=
+  ⟨fun _ ↦ isKInjective_of_iso (show L⟦n⟧⟦-n⟧ ≅ L from (shiftEquiv _ n).unitIso.symm.app L),
+    fun _ ↦ inferInstance⟩
 
 lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
     (f : K ⟶ L) (α : Cochain K L (-1)) (n m : ℤ) (hnm : n + 1 = m)
