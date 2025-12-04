@@ -288,7 +288,11 @@ register_option linter.tacticAnalysis.tryAtEachStep.fraction : Nat := {
   defValue := 1
 }
 
-/-- Run a tactic at each proof step. -/
+/-- Run a tactic at each proof step, with timing.
+
+Reports elapsed time in milliseconds for each successful replacement.
+To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
+-/
 def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
   run seq := do
     let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
@@ -296,12 +300,14 @@ def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandEla
       if let [goal] := i.tacI.goalsBefore then
         if (hash goal) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
+          let startTime ← IO.monoMsNow
           let goalsAfter ← try
             i.runTacticCode goal tac
           catch _e =>
             pure [goal]
+          let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
-            logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}`"
+            logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}` ({elapsedMs}ms)"
 
 /-- Run `grind` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
