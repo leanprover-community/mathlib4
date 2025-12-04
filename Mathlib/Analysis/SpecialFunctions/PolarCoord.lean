@@ -28,8 +28,8 @@ open Real Set MeasureTheory
 
 open scoped ENNReal Real Topology
 
-/-- The polar coordinates open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to
-`(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
+/-- The polar coordinates are an open partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)`
+to `(r, θ)`. It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
