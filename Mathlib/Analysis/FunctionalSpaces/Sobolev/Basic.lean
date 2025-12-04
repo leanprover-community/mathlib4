@@ -380,57 +380,49 @@ lemma Set.EqOn.ae_eq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure
     {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
   h.ae_eq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
 
--- todo: replace `AddSubgroup (E →ₘ[μ] F)` with `AddSubgroup (E →ₘ[μ.restrict Ω] F)`?
 variable (Ω F) in
 def SobolevSpace (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) :
-    AddSubgroup (E →ₘ[μ] F) where
-  carrier := { f | MemSobolev Ω f k p μ ∧ f =ᵐ[μ.restrict Ωᶜ] 0 }
-  zero_mem' := by
-    simp [memSobolev_congr_ae AEEqFun.coeFn_zero.restrict, AEEqFun.coeFn_zero.restrict,
-      MemSobolev.zero]
-  add_mem' {f g} hf hg := by
-    constructor
-    · simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g).restrict, hf.1.add hg.1]
-    exact (AEEqFun.coeFn_add f g).restrict.trans <| hf.2.add hg.2 |>.trans (add_zero 0).eventuallyEq
-  neg_mem' {f} hf := by
-    constructor
-    · simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f).restrict, hf.1.neg]
-    exact (AEEqFun.coeFn_neg f).restrict.trans <| hf.2.neg |>.trans neg_zero.eventuallyEq
+    AddSubgroup (E →ₘ[μ.restrict Ω] F) where
+  carrier := {f | MemSobolev Ω f k p μ}
+  zero_mem' := by simp [memSobolev_congr_ae AEEqFun.coeFn_zero, MemSobolev.zero]
+  add_mem' {f g} hf hg := by simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g), hf.add hg]
+  neg_mem' {f} hf := by simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f), hf.neg]
 
 open AEEqFun
 
+variable {g : E → F}
 namespace MemSobolev
 -- AEStronglyMeasurable f (μ.restrict Ω)
 /-- make an element of Lp from a function verifying `MemSobolev` -/
-def toSobolev (f : E → F) (h : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p μ :=
-  ⟨AEEqFun.mk (Ω.1.indicator f) sorry, sorry,
-  coeFn_mk _ _ |>.restrict.trans <| Set.eqOn_indicator'.ae_eq_restrict Ω.isOpen.measurableSet.compl⟩
+def toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p μ :=
+  ⟨AEEqFun.mk f hf.aestronglyMeasurable, hf.ae_eq (coeFn_mk f hf.aestronglyMeasurable).symm⟩
 
--- theorem toSobolev_val {f : E → F} (h : MemSobolev Ω f k p μ) :
---     (toSobolev f h).1 = AEEqFun.mk f h.1 := rfl
+theorem toSobolev_val {f : E → F} (hf : MemSobolev Ω f k p μ) :
+    (toSobolev f hf).1 = AEEqFun.mk f hf.aestronglyMeasurable := rfl
 
--- theorem coeFn_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) : hf.toSobolev f =ᵐ[μ] f :=
---   AEEqFun.coeFn_mk _ _
+theorem coeFn_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) :
+    hf.toSobolev f =ᵐ[μ.restrict Ω] f :=
+  coeFn_mk f hf.aestronglyMeasurable
 
--- theorem toSobolev_congr {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev g p μ) (hfg : f =ᵐ[μ] g) :
---     hf.toSobolev f = hg.toSobolev g := by simp [toSobolev, hfg]
+theorem toSobolev_congr (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ)
+    (hfg : f =ᵐ[μ.restrict Ω] g) : hf.toSobolev f = hg.toSobolev g := by simp [toSobolev, hfg]
 
--- @[simp]
--- theorem toSobolev_eq_toSobolev_iff {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev g p μ) :
---     hf.toSobolev f = hg.toSobolev g ↔ f =ᵐ[μ] g := by simp [toSobolev]
+@[simp]
+theorem toSobolev_eq_toSobolev_iff (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
+    hf.toSobolev f = hg.toSobolev g ↔ f =ᵐ[μ.restrict Ω] g := by simp [toSobolev]
 
--- @[simp]
--- theorem toSobolev_zero (h : MemSobolev (0 : E → F) p μ) : h.toSobolev 0 = 0 :=
---   rfl
+@[simp]
+theorem toSobolev_zero (h : MemSobolev Ω (0 : E → F) k p μ) : h.toSobolev 0 = 0 :=
+  rfl
 
--- theorem toSobolev_add {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev g p μ) :
---     (hf.add hg).toSobolev (f + g) = hf.toSobolev f + hg.toSobolev g :=
---   rfl
+theorem toSobolev_add {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
+    (hf.add hg).toSobolev (f + g) = hf.toSobolev f + hg.toSobolev g :=
+  rfl
 
--- theorem toSobolev_neg {f : E → F} (hf : MemSobolev Ω f k p μ) : hf.neg.toSobolev (-f) = -hf.toSobolev f :=
---   rfl
+theorem toSobolev_neg {f : E → F} (hf : MemSobolev Ω f k p μ) : hf.neg.toSobolev (-f) = -hf.toSobolev f :=
+  rfl
 
--- theorem toSobolev_sub {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev g p μ) :
+-- theorem toSobolev_sub {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
 --     (hf.sub hg).toSobolev (f - g) = hf.toSobolev f - hg.toSobolev g :=
 --   rfl
 
@@ -442,7 +434,7 @@ def toSobolev (f : E → F) (h : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p
 --   ⟨fun f => ((f : α →ₘ[μ] E) : E → F)⟩
 
 -- @[ext high]
--- theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
+-- theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ.restrict Ω] g) : f = g := by
 --   ext
 --   exact h
 
@@ -486,18 +478,18 @@ def toSobolev (f : E → F) (h : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p
 
 -- variable (E p μ)
 
--- theorem coeFn_zero : ⇑(0 : Lp E p μ) =ᵐ[μ] 0 :=
+-- theorem coeFn_zero : ⇑(0 : Lp E p μ) =ᵐ[μ.restrict Ω] 0 :=
 --   AEEqFun.coeFn_zero
 
 -- variable {E p μ}
 
--- theorem coeFn_neg (f : Lp E p μ) : ⇑(-f) =ᵐ[μ] -f :=
+-- theorem coeFn_neg (f : Lp E p μ) : ⇑(-f) =ᵐ[μ.restrict Ω] -f :=
 --   AEEqFun.coeFn_neg _
 
--- theorem coeFn_add (f g : Lp E p μ) : ⇑(f + g) =ᵐ[μ] f + g :=
+-- theorem coeFn_add (f g : Lp E p μ) : ⇑(f + g) =ᵐ[μ.restrict Ω] f + g :=
 --   AEEqFun.coeFn_add _ _
 
--- theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ] f - g :=
+-- theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ.restrict Ω] f - g :=
 --   AEEqFun.coeFn_sub _ _
 
 -- theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
@@ -558,7 +550,7 @@ def toSobolev (f : E → F) (h : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p
 -- theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖f - g‖ := rfl
 
 -- @[simp]
--- theorem edist_toSobolev_toSobolev (f g : E → F) (hf : MemSobolev Ω f k p μ) (hg : MemSobolev g p μ) :
+-- theorem edist_toSobolev_toSobolev (f g : E → F) (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
 --     edist (hf.toSobolev f) (hg.toSobolev g) = eLpNorm (f - g) p μ := by
 --   rw [edist_def]
 --   exact eLpNorm_congr_ae (hf.coeFn_toSobolev.sub hg.coeFn_toSobolev)
@@ -599,7 +591,7 @@ def toSobolev (f : E → F) (h : MemSobolev Ω f k p μ) : SobolevSpace Ω F k p
 -- theorem norm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖ = 0 ↔ f = 0 :=
 --   NNReal.coe_eq_zero.trans (nnnorm_eq_zero_iff hp)
 
--- theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ] 0 := by
+-- theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
 --   rw [← (Lp.memSobolev f).toSobolev_eq_toSobolev_iff MemSobolev.zero, MemSobolev.toSobolev_zero, toSobolev_coeFn]
 
 -- @[simp]
