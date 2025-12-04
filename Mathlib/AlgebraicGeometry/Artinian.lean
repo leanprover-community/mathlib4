@@ -67,7 +67,7 @@ lemma IsArtinianRing_DiscreteTopology (R : Type*) [CommRing R] [IsArtinianRing R
   apply (PrimeSpectrum.isClosed_singleton_iff_isMaximal p).mpr
   exact Ideal.isMaximal_of_isPrime p.asIdeal
 
-instance IsLocallyArtinian_IsAffine_IsArtinianRing [h : IsLocallyArtinian X] [IsAffine X] :
+instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
     IsArtinianRing Γ(X, ⊤) :=
   h.1 ⟨⊤, isAffineOpen_top X⟩
 
@@ -86,8 +86,8 @@ instance IsLocallyArtinian_Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U 
     h.1 ⟨(U.ι ''ᵁ W), AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion W.2 U.ι⟩
   exact RingEquiv.isArtinianRing F
 
-lemma IsLocallyArtinian_DiscreteTopology :
-    IsLocallyArtinian X → DiscreteTopology X := by
+instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian X] :
+    DiscreteTopology X := by
   intro hA
   apply discreteTopology_iff_isOpen_singleton.mpr
   intro x
@@ -118,7 +118,7 @@ theorem IsNoetherianRing_DiscreteTopololgy_IsArtinianRing
   exact isClosed_singleton
 
 lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
-[IsLocallyNoetherian X] [DiscreteTopology X] :
+    [IsLocallyNoetherian X] [DiscreteTopology X] :
     IsLocallyArtinian X := by
   refine { component_artinian := ?_ }
   intro U
