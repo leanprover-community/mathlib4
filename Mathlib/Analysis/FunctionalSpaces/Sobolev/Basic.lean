@@ -34,24 +34,21 @@ structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Pr
   locallyIntegrable : LocallyIntegrableOn f Ω μ
   eq_ofFun : T = ofFun Ω f μ
 
-lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') :
-    IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ := by
-  refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun ⟨h1, h2⟩ ↦ ?_⟩
-  · constructor
-    · intro x hx
-      obtain ⟨s, hs, hsf⟩ := h1 x hx
-      refine ⟨s, hs, hsf.congr_fun_ae <| h.filter_mono ?_⟩
-      sorry -- see `MeasureTheory.Measure.restrict_mono_set`
-    rwa [h2, ofFun_ae_congr]
-  · sorry
+lemma isRepresentedBy_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f') (hf : IsRepresentedBy T f μ) :
+    IsRepresentedBy T f' μ := by
+  rcases hf with ⟨h1, h2⟩
+  refine ⟨fun x hx ↦ ?_, by rwa [h2, ofFun_ae_congr]⟩
+  obtain ⟨s, hs, hsf⟩ := h1 x hx
+  refine ⟨s ∩ Ω, Filter.inter_mem hs self_mem_nhdsWithin, ?_⟩
+  apply (hsf.mono_set inter_subset_left).congr_fun_ae
+  have : ae (μ.restrict (s ∩ Ω)) ≤ ae (μ.restrict Ω) := by
+    rw [Measure.ae_le_iff_absolutelyContinuous]
+    exact (Measure.restrict_mono inter_subset_right (by rfl)).absolutelyContinuous
+  exact h.filter_mono this
 
-
-
-
-    --IntegrableOn.congr_fun_ae
-  -- have := @MeasureTheory.IntegrableOn.congr_set_ae (f := f) _
-  --   sorry
-  -- sorry
+lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (hf : f =ᵐ[μ.restrict Ω] f') :
+    IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ :=
+  ⟨isRepresentedBy_ae T hf, isRepresentedBy_ae T hf.symm⟩
 
 lemma isRepresentedBy_zero : IsRepresentedBy (0 : 𝓓'(Ω, F)) (0 : E → F) μ where
   locallyIntegrable := locallyIntegrable_zero.locallyIntegrableOn _
