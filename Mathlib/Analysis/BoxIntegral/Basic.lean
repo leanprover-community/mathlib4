@@ -646,7 +646,8 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   let μ' := μ.restrict (Box.Icc I)
   have μ'D : μ' D = 0 := by
     rcases eventually_iff_exists_mem.1 hc with ⟨V, ae, hV⟩
-    exact eq_of_le_of_not_lt (mem_ae_iff.1 ae ▸ (μ'.mono <| fun x h xV ↦ h.2 (hV x xV))) not_lt_zero
+    exact eq_of_le_of_not_lt (mem_ae_iff.1 ae ▸ (μ'.mono <| fun x h xV ↦ h.2 (hV x xV)))
+      _root_.not_lt_zero
   obtain ⟨U, UD, Uopen, hU⟩ := Set.exists_isOpen_lt_add D (show μ' D ≠ ⊤ by simp [μ'D]) ε₂0'
   rw [μ'D, zero_add] at hU
   /- Box.Icc I \ U is compact and avoids discontinuities of f, so there exists r > 0 such that for
