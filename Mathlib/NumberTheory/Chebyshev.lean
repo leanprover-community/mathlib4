@@ -26,7 +26,8 @@ These give logarithmically weighted sums of primes and prime powers.
 
 ## Notation
 
-We introduce the scoped notations `θ` and `ψ` for the Chebyshev functions.
+We introduce the scoped notations `θ` and `ψ` in the Chebyshev namespace for the Chebyshev
+functions.
 
 ## References
 
