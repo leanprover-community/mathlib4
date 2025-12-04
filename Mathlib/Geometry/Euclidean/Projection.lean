@@ -275,10 +275,7 @@ part of the orthogonal projection. -/
 theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
     s.direction.orthogonalProjection (p -ᵥ orthogonalProjection s p) = 0 := by
-  apply Submodule.orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
-  intro c hc
-  rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
-    orthogonalProjection_vsub_mem_direction_orthogonal s p c hc, neg_zero]
+  simpa using vsub_orthogonalProjection_mem_direction_orthogonal _ _
 
 /-- The characteristic property of the orthogonal projection, for a point given in the underlying
 space. This form is typically more convenient to use than
