@@ -68,7 +68,6 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
-  linter.flexible
   linter.hashCommand
   linter.oldObtain
   linter.privateModule
