@@ -289,7 +289,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     · rw [← h, lmarginalPartialTraj_le _ le_rfl (mf n)]
     · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_of_le _ (mf n),
         (hcte n).lmarginalPartialTraj_of_le _ (mf n)]
-      all_goals cutsat
+      all_goals lia
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
     simpa [F, lmarginalPartialTraj] using lintegral_le_const (ae_of_all _ fun z ↦ le_bound _ _)
@@ -327,7 +327,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   simp only [update, updateFinset, mem_Iic]
   split_ifs with h1 h2 <;> try rfl
   rw [mem_coe, mem_Iic] at hi
-  cutsat
+  lia
 
 /-- This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
@@ -423,9 +423,9 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       ext i
       simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
-      any_goals cutsat
+      any_goals lia
       cases h2
-      rw [iterateInduction, dif_neg (by cutsat)]
+      rw [iterateInduction, dif_neg (by lia)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
   have aux x n :

@@ -30,13 +30,13 @@ We also provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 abbrev Ideal.ResidueField : Type _ :=
   IsLocalRing.ResidueField (Localization.AtPrime I)
 
-/-- If `I = f⁻¹(J)`, then there is an canonical embedding `κ(I) ↪ κ(J)`. -/
+/-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 abbrev Ideal.ResidueField.map (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
     (f : R →+* A) (hf : I = J.comap f) : I.ResidueField →+* J.ResidueField :=
   IsLocalRing.ResidueField.map (Localization.localRingHom I J f hf)
 
-/-- If `I = f⁻¹(J)`, then there is an canonical embedding `κ(I) ↪ κ(J)`. -/
+/-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime]
     (hf : I = J.comap (algebraMap R A)) : I.ResidueField →ₐ[R] J.ResidueField where
@@ -109,27 +109,6 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
 
-section LiesOver
-
-variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
-    [Algebra R B] [IsScalarTower R A B]
-
-noncomputable
-instance (p : Ideal A) [p.IsPrime] (q : Ideal B) [q.IsPrime] [q.LiesOver p] :
-    Algebra p.ResidueField q.ResidueField :=
-  (Ideal.ResidueField.mapₐ p q Ideal.LiesOver.over).toAlgebra
-
-instance (p : Ideal A) [p.IsPrime] (q : Ideal B) [q.IsPrime] [q.LiesOver p] :
-    IsScalarTower R p.ResidueField q.ResidueField := .of_algebraMap_eq'
-  ((Ideal.ResidueField.mapₐ p q Ideal.LiesOver.over).restrictScalars R).comp_algebraMap.symm
-
-instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
-    (Q : Ideal B) [Q.IsPrime] [Q.LiesOver q] [Q.LiesOver p] :
-    IsScalarTower p.ResidueField q.ResidueField Q.ResidueField := by
-  refine .of_algebraMap_eq fun x ↦ ?_
-  simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-    Ideal.ResidueField.mapₐ_apply, Ideal.ResidueField.map, IsLocalRing.ResidueField.map_map,
-    IsScalarTower.algebraMap_eq R A B,
-    ← Localization.localRingHom_comp]
-
-end LiesOver
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
+    IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
+  Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)

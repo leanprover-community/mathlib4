@@ -93,7 +93,7 @@ protected theorem isUniformEmbedding_coeFn :
 
 variable (σ E F) in
 protected theorem isEmbedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
-  let _: UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
+  let _ : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   PointwiseConvergenceCLM.isUniformEmbedding_coeFn σ E F |>.isEmbedding
 

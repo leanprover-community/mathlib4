@@ -210,10 +210,10 @@ def degree : (σ →₀ R) →+ R where
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
-theorem degree_def (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
+theorem degree_apply (d : σ →₀ R) : degree d = ∑ i ∈ d.support, d i := rfl
 
 theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
-  rw [degree_def, Finset.sum_subset] <;> simp
+  rw [degree_apply, Finset.sum_subset] <;> simp
 
 @[simp]
 theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
@@ -223,7 +223,7 @@ lemma degree_eq_zero_iff {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
-  simp only [degree_def, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
+  simp only [degree_apply, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}

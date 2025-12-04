@@ -151,7 +151,7 @@ end mapBifunctorMapHomotopy
 
 open mapBifunctorMapHomotopy in
 /-- The homotopy between `mapBifunctorMap f₁ f₂ F c` and `mapBifunctorMap f₁' f₂ F c` that
-is induced by an homotopy between `f₁` and `f₁'`. -/
+is induced by a homotopy between `f₁` and `f₁'`. -/
 noncomputable def mapBifunctorMapHomotopy₁ :
     Homotopy (mapBifunctorMap f₁ f₂ F c) (mapBifunctorMap f₁' f₂ F c) where
   hom := hom₁ h₁ f₂ F c

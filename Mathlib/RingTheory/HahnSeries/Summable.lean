@@ -751,7 +751,7 @@ theorem embDomain_succ_smul_powers :
   · simp [hx]
   · -- FIXME: smul_eq_mul introduces type confusion between HahnModule and HahnSeries.
     simp [embDomain_apply, of_symm_smul_of_eq_mul, powers_of_orderTop_pos hx, pow_succ',
-      -smul_eq_mul, -Algebra.id.smul_eq_mul]
+      -smul_eq_mul]
 
 include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by

@@ -173,7 +173,7 @@ f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
 $$
 
 over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
-Here $$\hat{v_i}$$ and $$\hat{v_j}$$ mean that these vectors are removed from the tuple.
+Here $\hat{v_i}$$ and $\hat{v_j}$$ mean that these vectors are removed from the tuple.
 
 We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
 to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,

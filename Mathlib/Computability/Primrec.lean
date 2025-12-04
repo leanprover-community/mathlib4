@@ -45,6 +45,9 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
+-- TODO: revisit this after #13791 is merged
+set_option linter.flexible false
+
 open List (Vector)
 open Denumerable Encodable Function
 

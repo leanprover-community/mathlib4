@@ -225,12 +225,12 @@ lemma subsingleton_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
 @[simp]
 lemma nontrivial_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
     Nontrivial (M ⊗[R] N) ↔ Nontrivial N := by
-  simp [← not_iff_not, not_nontrivial_iff_subsingleton]
+  contrapose!; exact subsingleton_tensorProduct_iff_right R M
 
 @[simp]
 lemma nontrivial_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
     Nontrivial (M ⊗[R] N) ↔ Nontrivial M := by
-  simp [← not_iff_not, not_nontrivial_iff_subsingleton]
+  contrapose!; exact subsingleton_tensorProduct_iff_left R M
 
 end
 

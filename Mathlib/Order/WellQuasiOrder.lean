@@ -47,7 +47,7 @@ theorem wellQuasiOrdered_of_isEmpty [IsEmpty α] (r : α → α → Prop) : Well
 
 theorem IsAntichain.finite_of_wellQuasiOrdered {s : Set α} (hs : IsAntichain r s)
     (hr : WellQuasiOrdered r) : s.Finite := by
-  refine Set.not_infinite.1 fun hi => ?_
+  by_contra! hi
   obtain ⟨m, n, hmn, h⟩ := hr fun n => hi.natEmbedding _ n
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     hs.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)

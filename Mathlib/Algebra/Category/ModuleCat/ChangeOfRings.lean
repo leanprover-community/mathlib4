@@ -950,7 +950,7 @@ lemma extendScalars_assoc :
 
 /-- The associativity compatibility for the extension of scalars, in the exact form
 that is needed in the definition `CommRingCat.moduleCatExtendScalarsPseudofunctor`
-in the file `Algebra.Category.ModuleCat.Pseudofunctor` -/
+in the file `Mathlib/Algebra/Category/ModuleCat/Pseudofunctor.lean` -/
 lemma extendScalars_assoc' :
     (extendScalarsComp (f₂₃.comp f₁₂) f₃₄).hom ≫
       Functor.whiskerRight (extendScalarsComp f₁₂ f₂₃).hom _ ≫

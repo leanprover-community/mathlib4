@@ -33,11 +33,9 @@ namespace Real
 
 variable {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ} {μ : MeasureTheory.Measure α}
 
-@[measurability]
 theorem measurable_exp : Measurable exp :=
   continuous_exp.measurable
 
-@[measurability]
 theorem measurable_log : Measurable log :=
   measurable_of_measurable_on_compl_singleton 0 <|
     Continuous.measurable <| continuousOn_iff_continuous_restrict.1 continuousOn_log
@@ -60,19 +58,15 @@ lemma aemeasurable_of_aemeasurable_exp_mul {t : ℝ}
   simpa only [mul_div_cancel_left₀ _ ht]
     using (aemeasurable_of_aemeasurable_exp hf).div (aemeasurable_const (b := t))
 
-@[measurability]
 theorem measurable_sin : Measurable sin :=
   continuous_sin.measurable
 
-@[measurability]
 theorem measurable_cos : Measurable cos :=
   continuous_cos.measurable
 
-@[measurability]
 theorem measurable_sinh : Measurable sinh :=
   continuous_sinh.measurable
 
-@[measurability]
 theorem measurable_cosh : Measurable cosh :=
   continuous_cosh.measurable
 
@@ -96,31 +90,24 @@ theorem measurable_re : Measurable re :=
 theorem measurable_im : Measurable im :=
   continuous_im.measurable
 
-@[measurability]
 theorem measurable_ofReal : Measurable ((↑) : ℝ → ℂ) :=
   continuous_ofReal.measurable
 
-@[measurability]
 theorem measurable_exp : Measurable exp :=
   continuous_exp.measurable
 
-@[measurability]
 theorem measurable_sin : Measurable sin :=
   continuous_sin.measurable
 
-@[measurability]
 theorem measurable_cos : Measurable cos :=
   continuous_cos.measurable
 
-@[measurability]
 theorem measurable_sinh : Measurable sinh :=
   continuous_sinh.measurable
 
-@[measurability]
 theorem measurable_cosh : Measurable cosh :=
   continuous_cosh.measurable
 
-@[measurability]
 theorem measurable_arg : Measurable arg :=
   have A : Measurable fun x : ℂ => Real.arcsin (x.im / ‖x‖) :=
     Real.measurable_arcsin.comp (measurable_im.div measurable_norm)
@@ -130,7 +117,6 @@ theorem measurable_arg : Measurable arg :=
     Measurable.ite (isClosed_le continuous_const continuous_im).measurableSet (B.add_const _)
       (B.sub_const _)
 
-@[measurability]
 theorem measurable_log : Measurable log :=
   (measurable_ofReal.comp <| Real.measurable_log.comp measurable_norm).add <|
     (measurable_ofReal.comp measurable_arg).mul_const I

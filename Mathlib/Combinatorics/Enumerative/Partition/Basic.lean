@@ -152,7 +152,7 @@ theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAnt
 theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
     p.toFinsuppAntidiag ∈ (Finset.Icc 1 n).finsuppAntidiag n := by
   have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
-    grind [Multiset.mem_toFinset]
+    grind
   suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
   convert ← p.parts_sum
   rw [Finset.sum_multiset_count]

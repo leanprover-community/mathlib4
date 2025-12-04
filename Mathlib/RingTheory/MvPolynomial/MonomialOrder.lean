@@ -611,6 +611,15 @@ theorem degree_prod [IsCancelMulZero R] {ι : Type*} {P : ι → MvPolynomial σ
   rw [leadingCoeff_ne_zero_iff]
   exact H i hi
 
+lemma degree_mul' [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
+    m.degree (f * g) = m.degree f + m.degree g := by
+  apply ne_zero_and_ne_zero_of_mul at hf
+  exact m.degree_mul hf.1 hf.2
+
+lemma notMem_support_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.degree g ∉ f.support := by
+  simp [coeff_eq_zero_of_lt h]
+
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem leadingCoeff_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :

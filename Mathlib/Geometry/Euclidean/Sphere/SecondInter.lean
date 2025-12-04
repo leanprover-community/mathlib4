@@ -31,6 +31,8 @@ namespace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable [NormedAddTorsor V₂ P₂]
 
 /-- The second intersection of a sphere with a line through a point on that sphere; that point
 if it is the only point of intersection of the line with the sphere. The intended use of this
@@ -38,6 +40,16 @@ definition is when `p ∈ s`; the definition does not use `s.radius`, so in gene
 the second intersection with the sphere through `p` and with center `s.center`. -/
 def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
   (-2 * ⟪v, p -ᵥ s.center⟫ / ⟪v, v⟫) • v +ᵥ p
+
+@[simp] lemma Sphere.secondInter_map (s : Sphere P) (p : P) (v : V) (f : P →ᵃⁱ[ℝ] P₂) :
+    Sphere.secondInter ⟨f s.center, s.radius⟩ (f p) (f.linearIsometry v) =
+      f (s.secondInter p v) := by
+  simp [secondInter, ← AffineIsometry.map_vsub]
+
+lemma Sphere.coe_secondInter (as : AffineSubspace ℝ P) [Nonempty as] (s : Sphere as)
+    (p : as) (v : as.direction) :
+    s.secondInter p v = Sphere.secondInter ⟨(s.center : P), s.radius⟩ (p : P) (v : V) :=
+  rfl
 
 /-- The distance between `secondInter` and the center equals the distance between the original
 point and the center. -/

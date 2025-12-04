@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.Embedding.IsSupported
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
-# Homology of the extension of an homological complex
+# Homology of the extension of a homological complex
 
 Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we shall
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,

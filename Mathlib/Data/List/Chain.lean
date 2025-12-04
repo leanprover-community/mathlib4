@@ -558,7 +558,7 @@ theorem IsChain.backwards_cons_induction_head (p : α → Prop) (l : List α) (h
 alias Chain.backwards_induction_head := IsChain.backwards_cons_induction_head
 
 /--
-If there is an non-empty `r`-chain, its head and last element are related by the
+If there is a non-empty `r`-chain, its head and last element are related by the
 reflexive transitive closure of `r`.
 -/
 theorem relationReflTransGen_of_exists_isChain (l : List α) (hl₁ : IsChain r l) (hne : l ≠ []) :
@@ -615,7 +615,7 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
   induction i with
   | zero => rfl
   | succ i h =>
-    rw [Function.iterate_succ', Function.comp_apply, h (by cutsat)]
+    rw [Function.iterate_succ', Function.comp_apply, h (by lia)]
     rw [List.isChain_iff_getElem] at hl
     apply hl
 

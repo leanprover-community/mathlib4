@@ -62,6 +62,14 @@ lemma petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : �
   simp [σ, ModularForm.SL_slash, petersson_slash,
     -Matrix.SpecialLinearGroup.map_apply_coe, -Matrix.SpecialLinearGroup.coe_matrix_coe]
 
+lemma petersson_symm (k : ℤ) (f f' : ℍ → ℂ) (τ : ℍ) :
+    petersson k f' f τ = conj (petersson k f f' τ) := by
+  simp [petersson, mul_comm]
+
+lemma petersson_norm_symm (k : ℤ) (f f' : ℍ → ℂ) (τ : ℍ) :
+    ‖petersson k f' f τ‖ = ‖petersson k f f' τ‖ := by
+  simp [petersson_symm k f]
+
 end UpperHalfPlane
 
 section
@@ -104,32 +112,31 @@ lemma petersson_exp_decay_left {f : F} (h_bd : IsZeroAtImInfty f) (f' : F') :
   refine hf'.norm_left.mul ((hbf.norm_left.mul <| isBigO_refl _ _).trans ?_)
   refine IsBigO.comp_tendsto (f := fun t : ℝ ↦ Real.exp (-b * t) * t ^ k)
      (g := fun t : ℝ ↦ Real.exp (-a * t)) ?_ tendsto_comap
-  refine (isLittleO_of_tendsto (fun _ h ↦ (Real.exp_ne_zero _ h).elim) ?_).isBigO
-  simp_rw [← div_mul_eq_mul_div₀, ← Real.exp_sub, ← sub_mul, neg_sub_neg, ← neg_sub b a,
-    mul_comm _ (_ ^ k), ← Real.rpow_intCast]
-  exact tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ (sub_pos.mpr ha')
+  simpa using (isLittleO_exp_mul_rpow_of_lt k (neg_lt_neg ha')).isBigO
 
 /-- If `f, f'` are modular forms and `f'` is zero at infinity, then `petersson k f f'` has
 exponentially rapid decay at infinity. -/
 lemma petersson_exp_decay_right (f : F) {f' : F'} (h_bd : IsZeroAtImInfty f') :
     ∃ a > 0, petersson k f f' =O[atImInfty] fun τ ↦ Real.exp (-a * im τ) := by
   obtain ⟨a, ha, ha'⟩ := h_bd.petersson_exp_decay_left k Γ f
-  use a, ha
-  rw [← isBigO_norm_left] at ha' ⊢
-  refine ha'.congr_left fun τ ↦ ?_
-  simp only [petersson, norm_mul, Complex.norm_conj, mul_comm]
+  exact ⟨a, ha, .of_norm_left <| ha'.norm_left.congr_left <| petersson_norm_symm k f f'⟩
+
+omit Γ in
+-- this lemma can't go in `UpperHalfPlane.FunctionsBoundedAtInfty` because it needs `Real.exp`
+lemma of_exp_decay {E : Type*} [NormedAddCommGroup E] {f : ℍ → E}
+    (hf : ∃ c > 0, f =O[atImInfty] fun τ ↦ Real.exp (-c * τ.im)) :
+    IsZeroAtImInfty f := by
+  obtain ⟨a, ha, ha'⟩ := hf
+  refine ha'.trans_tendsto <| (Real.tendsto_exp_atBot.comp ?_).comp tendsto_comap
+  exact tendsto_id.const_mul_atTop_of_neg (neg_lt_zero.mpr ha)
 
 lemma petersson_isZeroAtImInfty_left {f : F} (h_bd : IsZeroAtImInfty f) (f' : F') :
-    IsZeroAtImInfty (petersson k f f') := by
-  obtain ⟨a, ha, ha'⟩ := h_bd.petersson_exp_decay_left k Γ f'
-  refine ha'.trans_tendsto <| (Real.tendsto_exp_atBot.comp ?_).comp tendsto_comap
-  exact tendsto_id.const_mul_atTop_of_neg (neg_lt_zero.mpr ha)
+    IsZeroAtImInfty (petersson k f f') :=
+  of_exp_decay (h_bd.petersson_exp_decay_left k Γ f')
 
 lemma petersson_isZeroAtImInfty_right (f : F) {f' : F'} (h_bd : IsZeroAtImInfty f') :
-    IsZeroAtImInfty (petersson k f f') := by
-  obtain ⟨a, ha, ha'⟩ := h_bd.petersson_exp_decay_right k Γ f
-  refine ha'.trans_tendsto <| (Real.tendsto_exp_atBot.comp ?_).comp tendsto_comap
-  exact tendsto_id.const_mul_atTop_of_neg (neg_lt_zero.mpr ha)
+    IsZeroAtImInfty (petersson k f f') :=
+  of_exp_decay (h_bd.petersson_exp_decay_right k Γ f)
 
 end UpperHalfPlane.IsZeroAtImInfty
 

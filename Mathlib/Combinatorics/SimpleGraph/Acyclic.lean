@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -266,7 +267,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
-        cutsat
+        lia
       · simp only [isPath_copy]
         exact (hf _).tail
   case surj =>
@@ -343,9 +344,9 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
       gcongr
       exact le_trans q (G.minDegree_le_degree _)
     rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
-    cutsat
+    lia
   · have := h.isConnected.preconnected.minDegree_pos_of_nontrivial
-    cutsat
+    lia
 
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
@@ -383,7 +384,7 @@ lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v
   simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
   have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
   rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
-  cutsat
+  lia
 
 /-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
 removed. -/
@@ -415,5 +416,21 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w)
       hadj.symm hw
     rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
+
+lemma IsTree.diff_dist_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : SimpleGraph.Adj G v w) :
+    G.dist u v = G.dist u w + 1 ∨ G.dist u v + 1 = G.dist u w := by
+  grind [dist_ne_of_adj, Connected.diff_dist_adj, IsTree]
+
+/-- The unique two-coloring of a tree that colors the given vertex with zero -/
+noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
+  Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
+    grind [diff_dist_adj]
+
+/-- Arbitrary coloring with two colors for a tree -/
+noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
+  hG.coloringTwoOfVert hG.isConnected.nonempty.some
+
+lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
+  ⟨hG.coloringTwo⟩
 
 end SimpleGraph

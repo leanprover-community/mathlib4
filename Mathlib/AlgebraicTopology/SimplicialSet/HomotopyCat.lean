@@ -156,7 +156,9 @@ def OneTruncation₂.ofNerve₂.natIso :
     nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
   NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) (by
   · intro C D F
-    fapply ReflPrefunctor.ext <;> simp
+    fapply ReflPrefunctor.ext <;>
+    simp only [comp_obj, oneTruncation₂_obj, ReflQuiv.of_val,
+      ReflQuiv.forget_obj, Functor.comp_map, ReflQuiv.forget_map]
     · exact fun _ ↦ rfl
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
@@ -307,11 +309,13 @@ def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
   map {S T} F := mapHomotopyCategory F
   map_id S := by
     apply Quotient.lift_unique'
-    simp [mapHomotopyCategory, Quotient.lift_spec]
+    simp only [mapHomotopyCategory, comp_obj, oneTruncation₂_obj, Cat.freeRefl_obj_α,
+      ReflQuiv.of_val, Functor.comp_map, CategoryTheory.Functor.map_id, Quotient.lift_spec]
     exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
   map_comp {S T U} F G := by
     apply Quotient.lift_unique'
-    simp [mapHomotopyCategory, SSet.Truncated.HomotopyCategory.quotientFunctor]
+    simp only [mapHomotopyCategory, comp_obj, oneTruncation₂_obj, Cat.freeRefl_obj_α,
+      ReflQuiv.of_val, Functor.comp_map, map_comp, HomotopyCategory.quotientFunctor]
     rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
       Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 

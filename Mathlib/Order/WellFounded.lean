@@ -41,7 +41,8 @@ theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : �
 
 theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} :
     Acc r x ↔ IsEmpty { f : ℕ → α // f 0 = x ∧ ∀ n, r (f (n + 1)) (f n) } := by
-  rw [← not_iff_not, not_isEmpty_iff, nonempty_subtype]
+  contrapose!
+  rw [nonempty_subtype]
   exact not_acc_iff_exists_descending_chain
 
 /-- A relation is well-founded iff it doesn't have any infinite descending chain.

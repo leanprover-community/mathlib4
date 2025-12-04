@@ -70,7 +70,7 @@ theorem unop_le_unop_iff {S₁ S₂ : Submonoid Mᵐᵒᵖ} : S₁.unop ≤ S₂
   MulOpposite.unop_surjective.forall
 
 /-- A submonoid `H` of `G` determines a submonoid `H.op` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) /-- A additive submonoid `H` of `G` determines an additive submonoid
+@[to_additive (attr := simps) /-- An additive submonoid `H` of `G` determines an additive submonoid
 `H.op` of the opposite group `Gᵐᵒᵖ`. -/]
 def opEquiv : Submonoid M ≃o Submonoid Mᵐᵒᵖ where
   toFun := Submonoid.op

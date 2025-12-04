@@ -342,7 +342,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     grind
 
-/-- `Finsupp.mapRange` of a injective function is injective. -/
+/-- `Finsupp.mapRange` of an injective function is injective. -/
 lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
     Injective (Finsupp.mapRange (α := α) e he₀) := by
   intro a b h

@@ -289,10 +289,10 @@ private lemma summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk 
     Summable fun a : ℕ ↦ cotTermUpperBound k A B hB a := by
   simp_rw [← mul_assoc]
   apply Summable.mul_left
-  conv => enter [1, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by cutsat, zpow_neg, zpow_natCast];
+  conv => enter [1, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by lia, zpow_neg, zpow_natCast];
           enter [1, 1, 1]; norm_cast
   rw [summable_norm_iff, summable_nat_add_iff (f := fun n : ℕ ↦ ((n : ℝ) ^ (1 + k))⁻¹)]
-  exact summable_nat_pow_inv.mpr <| by cutsat
+  exact summable_nat_pow_inv.mpr <| by lia
 
 open EisensteinSeries in
 private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
@@ -303,10 +303,10 @@ private lemma iteratedDerivWithin_cotTerm_bounded_uniformly
     norm_pow, norm_neg,norm_one, one_pow, Complex.norm_natCast, one_mul, cotTermUpperBound,
     Int.reduceNeg, norm_zpow, Real.norm_eq_abs, two_mul, add_mul]
   gcongr
-  have h1 := summand_bound_of_mem_verticalStrip (k := k + 1) (by norm_cast; cutsat) ![1, n + 1] hB
+  have h1 := summand_bound_of_mem_verticalStrip (k := k + 1) (by norm_cast; lia) ![1, n + 1] hB
       (z := ⟨a, (hK ha)⟩) (A := A) (by aesop)
   have h2 := abs_norm_eq_max_natAbs_neg n ▸ (summand_bound_of_mem_verticalStrip (k := k + 1)
-    (by norm_cast; cutsat) ![1, -(n + 1)] hB (z := ⟨a, (hK ha)⟩) (A := A) (by aesop))
+    (by norm_cast; lia) ![1, -(n + 1)] hB (z := ⟨a, (hK ha)⟩) (A := A) (by aesop))
   simp only [Fin.isValue, Matrix.cons_val_zero, Int.cast_one, coe_mk_subtype, one_mul,
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.cast_add, Int.cast_natCast, neg_add_rev,
     abs_norm_eq_max_natAbs, Int.reduceNeg, Int.cast_neg, sub_eq_add_neg, ge_iff_le] at h1 h2 ⊢
@@ -336,13 +336,13 @@ lemma differentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
 private lemma aux_summable_add {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
   Summable fun (n : ℕ) ↦ (x + (n + 1)) ^ (-1 - k : ℤ) := by
   apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
-        (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by cutsat))).1).congr
+        (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by lia))).1).congr
   simp [← zpow_neg, sub_eq_add_neg]
 
 private lemma aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
   Summable fun (n : ℕ) ↦ (x - (n + 1)) ^ (-1 - k : ℤ) := by
   apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
-        (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by cutsat))).2).congr
+        (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by lia))).2).congr
   simp [← zpow_neg, sub_eq_add_neg]
 
 variable {z : ℂ}
@@ -401,7 +401,7 @@ theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤
     iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z =
       (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
   convert iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
-  rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; cutsat, zpow_neg_coe_of_pos _ (by cutsat),
+  rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; lia, zpow_neg_coe_of_pos _ (by lia),
     one_div]
 
 end iteratedDeriv

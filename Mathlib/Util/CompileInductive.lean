@@ -247,7 +247,6 @@ compile_inductive% PEmpty
 compile_inductive% Sum
 compile_inductive% PSum
 compile_inductive% And
-compile_inductive% False
 compile_inductive% Empty
 compile_inductive% Bool
 compile_inductive% Sigma

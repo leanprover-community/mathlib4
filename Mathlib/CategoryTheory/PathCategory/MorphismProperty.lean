@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 # Properties of morphisms in a path category.
 
 We provide a formulation of induction principles for morphisms in a path category in terms of
-`MorphismProperty`. This file is separate from `CategoryTheory.PathCategory.Basic` in order to
-reduce transitive imports. -/
+`MorphismProperty`. This file is separate from `Mathlib/CategoryTheory/PathCategory/Basic.lean` in
+order to reduce transitive imports. -/
 
 @[expose] public section
 

@@ -19,6 +19,10 @@ lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a �
 lemma SemilatticeSup.sup_le' {α : Type} [SemilatticeSup α] (a b c : α) : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
   SemilatticeSup.sup_le a b c
 
+structure Lattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
+
+attribute [to_dual existing] Lattice.toSemilatticeInf
+
 -- we still cannot reorder arguments of arguments, so `SemilatticeInf.mk` is not tranlatable
 /--
 error: @[to_dual] failed. The translated value is not type correct. For help, see the docstring of `to_additive`, section `Troubleshooting`. Failed to add declaration
