@@ -15,15 +15,14 @@ public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 Let `S` be a finitely presented `R`-algebra and suppose `P : R[X] → S` generates `S` with
 kernel `I`.
 
-In this file we show that if `I/I²` is free, there exists an `R`-presentation `P'` of `S`
-extending `P` with kernel `I'`, such that `I'/I'²` is free on the images of the relations of `P'`.
+In this file we show `Algebra.Generators.exists_presentation_of_free`: If `I/I²` is free, there
+exists an `R`-presentation `P'` of `S` extending `P` with kernel `I'`, such that `I'/I'²` is
+free on the images of the relations of `P'`.
 
 ## References
 
 - https://stacks.math.columbia.edu/tag/07CF
 -/
-
-@[expose] public section
 
 open Pointwise MvPolynomial TensorProduct
 namespace Algebra.Generators
@@ -31,6 +30,8 @@ namespace Algebra.Generators
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
 
 noncomputable section
+
+namespace PresentationOfFreeCotangent
 
 variable {ι : Type*} (P : Generators R S ι) {σ : Type*}
   (b : Module.Basis σ S P.toExtension.Cotangent)
@@ -139,7 +140,7 @@ lemma tensorCotangentInv_apply (i : σ) :
     D.tensorCotangentInv (b i) = 1 ⊗ₜ Extension.Cotangent.mk (D.kerGen i) :=
   Module.Basis.constr_basis _ _ _ _
 
-lemma hspan : Submodule.span D.T
+lemma span_range_mk_kerGen : Submodule.span D.T
     (Set.range <| fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
   refine Extension.Cotangent.span_eq_top_of_span_eq_ker _ ?_
   dsimp only [presLeft, Presentation.naive_toGenerators]
@@ -153,7 +154,7 @@ def tensorCotangentEquiv :
     simpa only [LinearMap.coe_comp, Function.comp_apply, tensorCotangentInv_apply,
       tensorCotangentHom_tmul] using D.hf (b i)
   · ext : 2
-    refine LinearMap.ext_on_range D.hspan fun i ↦ ?_
+    refine LinearMap.ext_on_range D.span_range_mk_kerGen fun i ↦ ?_
     simp [-toExtension_commRing, -toExtension_Ring, -toExtension_algebra₂, tensorCotangentHom_tmul,
       kerGen, D.hf]
 
@@ -233,17 +234,17 @@ lemma basis_apply [Nontrivial S] (r : Unit ⊕ σ) :
       LinearMap.liftBaseChange_tmul, one_smul, Extension.Cotangent.map_mk]
     rfl
 
-end Aux
+end PresentationOfFreeCotangent.Aux
 
 end
 
-/-- Let `S` be a finitely presented `R`-algebra and suppose `P : R[X] → S` generates `S` with
-kernel `I`. If `I/I²` is free, there exists an `R`-presentation `P'` of `S` extending `P` with
-kernel `I'`, such that `I'/I'²` is free on the images of the relations of `P'`. -/
+open PresentationOfFreeCotangent in
+/-- Version of `Algebra.Generators.exists_presentation_of_free_cotangent` taking
+a basis instead. -/
 @[stacks 07CF]
-lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
+public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation R S]
     {α : Type*} (P : Generators R S α) [Finite α] {σ : Type*}
-    (b : Module.Basis σ S P.toExtension.Cotangent) :
+    (b₀ : Module.Basis σ S P.toExtension.Cotangent) :
     ∃ (P' : Presentation R S (Unit ⊕ α) (Unit ⊕ σ))
       (b : Module.Basis (Unit ⊕ σ) S P'.toExtension.Cotangent),
       P'.val ∘ Sum.inr = P.val ∧
@@ -257,7 +258,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     exact ⟨P', default, by subsingleton, by subsingleton⟩
   classical
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
-  let v (i : σ) : P.ker := f (b i)
+  let v (i : σ) : P.ker := f (b₀ i)
   let J : Ideal P.Ring := Ideal.span (Set.range <| Subtype.val ∘ v)
   have hJfg : P.ker.FG := by
     rw [P.ker_eq_ker_aeval_val]
@@ -267,7 +268,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
   have hJ : J ≤ P.ker := by simp [J, Ideal.span_le, Set.range_subset_iff]
   suffices hJ : P.ker ≤ J ⊔ P.ker • P.ker by
     obtain ⟨g, hgmem, hg⟩ := Submodule.exists_sub_one_mem_and_smul_le_of_fg_of_le_sup hJfg le_rfl hJ
-    let D : Aux P b := { f := f, hf := hf, g := g, hgmem := hgmem, hg := hg }
+    let D : Aux P b₀ := { f := f, hf := hf, g := g, hgmem := hgmem, hg := hg }
     exact ⟨D.pres, D.basis, D.pres_val_comp_inr, D.basis_apply⟩
   rw [← Submodule.comap_le_comap_iff_of_le_range (f := P.ker.subtype) (by simp),
     Submodule.comap_subtype_self,
@@ -283,7 +284,33 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     Function.comp_def, ← Submodule.restrictScalars_span P.Ring S P.algebraMap_surjective]
   refine le_trans le_top (top_le_iff.mpr ?_)
   rw [Submodule.restrictScalars_eq_top_iff]
-  convert b.span_eq
+  convert b₀.span_eq
   exact hf _
+
+open PresentationOfFreeCotangent in
+/-- Let `S` be a finitely presented `R`-algebra and suppose `P : R[X] → S` generates `S` with
+kernel `I`. If `I/I²` is free, there exists an `R`-presentation `P'` of `S` extending `P` with
+kernel `I'`, such that `I'/I'²` is free on the images of the relations of `P'`.
+See `Algebra.Generators.exists_presentation_of_basis_cotangent` for a version taking
+a basis of `I/I²` instead. -/
+@[stacks 07CF]
+public lemma exists_presentation_of_free_cotangent [Algebra.FinitePresentation R S]
+    {α : Type*} (P : Generators R S α) [Finite α]
+    [Module.Free S P.toExtension.Cotangent] :
+    ∃ (P' : Presentation R S (Unit ⊕ α) (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent)))
+      (b : Module.Basis (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent))
+        S P'.toExtension.Cotangent),
+      P'.val ∘ Sum.inr = P.val ∧
+      ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
+  cases subsingleton_or_nontrivial S
+  · let P' : Presentation R S (Unit ⊕ α) (Unit ⊕ Fin (Module.finrank S P.toExtension.Cotangent)) :=
+      { toGenerators := .ofSurjective (fun i : Unit ⊕ α ↦ 0) (Function.surjective_to_subsingleton _)
+        relation _ := 1
+        span_range_relation_eq_ker := by simpa using (RingHom.ker_eq_top_of_subsingleton _).symm }
+    have : Subsingleton P'.toExtension.Cotangent := Module.subsingleton S _
+    exact ⟨P', default, by subsingleton, by subsingleton⟩
+  have : Module.Finite S P.toExtension.Cotangent :=
+    Algebra.Extension.Cotangent.finite P.fg_ker_of_finitePresentation
+  exact exists_presentation_of_basis_cotangent _ <| Module.finBasis S P.toExtension.Cotangent
 
 end Algebra.Generators
