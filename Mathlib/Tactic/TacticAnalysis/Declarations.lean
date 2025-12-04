@@ -289,13 +289,26 @@ register_option linter.tacticAnalysis.tryAtEachStep.fraction : Nat := {
   defValue := 1
 }
 
-/-- Run a tactic at each proof step, with timing.
+/--
+Whether to show timing information in "tryAtEachStep" tactic analysis output.
 
-Reports elapsed time in milliseconds for each successful replacement.
+When true (default), messages include elapsed time like `(23ms)`.
+Set to false in tests to avoid non-deterministic output.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.showTiming : Bool := {
+  defValue := true
+}
+
+/-- Run a tactic at each proof step, with optional timing.
+
+Reports elapsed time in milliseconds for each successful replacement
+when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
 -/
 def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
   run seq := do
-    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
+    let opts ← getOptions
+    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
+    let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
     for i in seq do
       if let [goal] := i.tacI.goalsBefore then
         if (hash goal) % fraction = 0 then
@@ -307,15 +320,19 @@ def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandEla
             pure [goal]
           let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
-            logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}` ({elapsedMs}ms)"
+            if showTiming then
+              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}` ({elapsedMs}ms)"
+            else
+              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}`"
 
-/-- Run a tactic (given as a string) at each proof step, with timing.
+/-- Run a tactic (given as a string) at each proof step, with optional timing.
 
 `label` is the human-readable name shown in output (e.g., "grind").
 `tacticStr` is the tactic syntax as a string (e.g., "grind +suggestions").
 Tactic sequences like "simp; grind" are also supported.
 
-Reports elapsed time in milliseconds for each successful replacement.
+Reports elapsed time in milliseconds for each successful replacement
+when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
 To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
 -/
 def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
@@ -326,7 +343,9 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
     let tacSeq ← ofExcept <|
       Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
     let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
-    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
+    let opts ← getOptions
+    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
+    let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
     for i in seq do
       if let [goal] := i.tacI.goalsBefore then
         if (hash goal) % fraction = 0 then
@@ -337,7 +356,10 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
             pure [goal]
           let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
-            logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{label}` ({elapsedMs}ms)"
+            if showTiming then
+              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{label}` ({elapsedMs}ms)"
+            else
+              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{label}`"
 
 /-- Run a custom tactic at each proof step, configured via environment variables.
 
