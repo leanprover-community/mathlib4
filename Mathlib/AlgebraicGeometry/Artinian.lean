@@ -57,11 +57,7 @@ class IsLocallyArtinian : Prop where
 attribute [instance] IsLocallyArtinian.component_artinian
 
 lemma IsLocallyArtinian.IsLocallyNoetherian [h : IsLocallyArtinian X] :
-    IsLocallyNoetherian X :=
-  {component_noetherian := fun U =>
-    by
-      have _ := h.1 U
-      infer_instance}
+    IsLocallyNoetherian X where
 
 lemma IsArtinianRing_DiscreteTopology (R : Type*) [CommRing R] [IsArtinianRing R] :
     DiscreteTopology (PrimeSpectrum R) := inferInstance
