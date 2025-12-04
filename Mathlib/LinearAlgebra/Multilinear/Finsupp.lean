@@ -19,7 +19,7 @@ public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 @[expose] public section
 
-variable {ι ι' S R : Type*} {κ : ι → Type*}
+variable {ι ι' R : Type*} {κ : ι → Type*}
 
 namespace MultilinearMap
 
