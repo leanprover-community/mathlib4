@@ -18,9 +18,8 @@ automatically generate fresh universe parameters.
 
 ## Syntax
 
-The syntax `Foo.{u₁, u₂, ...}` allows specifying universe parameters for a constant `Foo`,
-where each universe parameter can be:
-
+This overrides Lean's syntax `Foo.{u₁, u₂, ...}` to enable wildcards when specifying universe
+parameters for a constant `Foo`. Each parameter can now be:
 - `*` : A fresh universe parameter with base name `u`
 - `v*` : A fresh universe parameter with base name `v` (for any identifier `v`)
 - An explicit level expression (e.g., `0`, `u+1`, `max u v`, `_` for a level mvar, etc.)
@@ -29,16 +28,16 @@ where each universe parameter can be:
 
 ```lean
 -- Both universe parameters are fresh and inferred
-#check ULift.!{*, *}
+#check ULift.{*, *}
 
 -- First parameter is a fresh universe parameter, second is inferred
-#check ULift.!{*}
+#check ULift.{*}
 
 -- Named universe parameter
-variable (C : Type*) [Category.!{v*} C]
+variable (C : Type*) [Category.{v*} C]
 
 -- Explicit universe level
-variable (X : Type*) (y : ULift.!{0} X)
+variable (X : Type*) (y : ULift.{0} X)
 ```
 
 ## Implementation Notes
@@ -56,13 +55,13 @@ declare_syntax_cat wildcard_level
 @[nolint docBlame] syntax level : wildcard_level
 
 /--
-Term elaborator for the wildcard universe syntax `Foo.!{u₁, u₂, ...}`.
+Term elaborator for the wildcard universe syntax `Foo.{u₁, u₂, ...}`.
 
-This elaborator handles syntax of the form `ident.!{wildcard_level,*} args*`,
+This elaborator handles syntax of the form `ident.{wildcard_level,*} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
 syntax (name := appWithWildcards)
-    ("@" noWs)? ident noWs ".!{" wildcard_level,+ "}" Parser.Term.argument* : term
+    ("@" noWs)? ident noWs ".{" wildcard_level,+ "}" Parser.Term.argument* : term
 
 /--
 Represents the kind of wildcard universe parameter.
@@ -135,7 +134,7 @@ def reorganizeUniverseParams
 @[term_elab appWithWildcards, inherit_doc appWithWildcards]
 def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
-  | `($[@%$expl]?$id:ident.!{$us,*} $args*) =>
+  | `($[@%$expl]?$id:ident.{$us,*} $args*) =>
     let constName ← Lean.resolveGlobalConstNoOverload id
     let constInfo ← Lean.getConstInfo constName
     let numLevels := constInfo.levelParams.length
@@ -165,7 +164,9 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
     setLevelNames newLevelNames
 
     checkDeprecated id expr
+
     return expr
+
   | _ => throwUnsupportedSyntax
 
 end

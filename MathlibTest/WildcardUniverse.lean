@@ -12,57 +12,57 @@ universe u v w
 axiom Foo : Type u → Type v → Type w
 
 /-- info: Foo.{u, u_1, u_2} : Type u → Type u_1 → Type u_2 -/
-#guard_msgs in #check Foo.!{u}
+#guard_msgs in #check Foo.{u}
 
 /-- info: Foo.{v, u_1, u_2} : Type v → Type u_1 → Type u_2 -/
-#guard_msgs in #check Foo.!{v}
+#guard_msgs in #check Foo.{v}
 
 /-- info: Foo.{w, u_1, u_2} : Type w → Type u_1 → Type u_2 -/
-#guard_msgs in #check Foo.!{w}
+#guard_msgs in #check Foo.{w}
 
 /-- info: Foo.{u_1, u, u_2} : Type u_1 → Type u → Type u_2 -/
-#guard_msgs in #check Foo.!{*,u}
+#guard_msgs in #check Foo.{*,u}
 
 /-- info: Foo.{u_1, v, u_2} : Type u_1 → Type v → Type u_2 -/
-#guard_msgs in #check Foo.!{*,v}
+#guard_msgs in #check Foo.{*,v}
 
 /-- info: Foo.{q_1, v, u_1} : Type q_1 → Type v → Type u_1 -/
-#guard_msgs in #check Foo.!{q*,v}
+#guard_msgs in #check Foo.{q*,v}
 
 /-- info: Foo.{q_1, r_1, u_1} : Type q_1 → Type r_1 → Type u_1 -/
-#guard_msgs in #check Foo.!{q*,r*}
+#guard_msgs in #check Foo.{q*,r*}
 
 /-- info: Foo.{q_1, u, r_1} : Type q_1 → Type u → Type r_1 -/
-#guard_msgs in #check Foo.!{q*,u,r*}
+#guard_msgs in #check Foo.{q*,u,r*}
 
 /-- info: Foo.{u, q_1, r_1} : Type u → Type q_1 → Type r_1 -/
-#guard_msgs in #check Foo.!{u,q*,r*}
+#guard_msgs in #check Foo.{u,q*,r*}
 
 end Foo
 
 section ULiftTests
 
 /-- info: ULift.{r_1, s_1} : Type s_1 → Type (max s_1 r_1) -/
-#guard_msgs in #check (ULift.!{*, *} : Type _ → Type _)
+#guard_msgs in #check (ULift.{*, *} : Type _ → Type _)
 
-variable (X : Type*) (z : ULift.!{_} X)
+variable (X : Type*) (z : ULift.{_} X)
 def testInferred := z
 /-- info: testInferred.{u_1, u_2} (X : Type u_1) (z : ULift.{u_2, u_1} X) : ULift.{u_2, u_1} X -/
 #guard_msgs in #check testInferred
 
-variable (y : ULift.!{*} X)
+variable (y : ULift.{*} X)
 def testStarFirst := y
 /-- info: testStarFirst.{r_1, u_1} (X : Type u_1) (y : ULift.{r_1, u_1} X) : ULift.{r_1, u_1} X -/
 #guard_msgs in #check testStarFirst
 
 universe v
-variable (e : ULift.!{v, _} X)
+variable (e : ULift.{v, _} X)
 def testExplicit := e
 /-- info: testExplicit.{v, u_1} (X : Type u_1) (e : ULift.{v, u_1} X) : ULift.{v, u_1} X -/
 #guard_msgs in #check testExplicit
 
 /-- info: ULift.{r_2, s_1} : Type s_1 → Type (max s_1 r_2) -/
-#guard_msgs in #check ULift.!{*, *}
+#guard_msgs in #check ULift.{*, *}
 
 end ULiftTests
 
@@ -70,12 +70,12 @@ section CategoryTests
 
 open CategoryTheory
 
-variable (C : Type*) [Category.!{*} C]
+variable (C : Type*) [Category.{*} C]
 
 universe u
-variable (D : Type u) [Category.!{*} D]
+variable (D : Type u) [Category.{*} D]
 
-variable (E : Type 3) [Category.!{*} E]
+variable (E : Type 3) [Category.{*} E]
 
 def fooC := C ⥤ C
 def fooD := D ⥤ D
@@ -96,7 +96,7 @@ section CategoryProductTest
 
 open CategoryTheory
 
-variable (C D : Type*) [Category.!{*} (C × D)]
+variable (C D : Type*) [Category.{*} (C × D)]
 
 def fooProd := (C × D) ⥤ (C × D)
 
@@ -116,7 +116,7 @@ universe w
 
 abbrev TypeWithParam := {n : Nat // ∃ X : Type w, Nonempty (Fin n ≃ X)}
 
-variable [Category.!{*} TypeWithParam.{w}]
+variable [Category.{*} TypeWithParam.{w}]
 
 def ff := TypeWithParam.{w} ⥤ TypeWithParam.{w}
 
@@ -129,14 +129,14 @@ section NamedWildcardTests
 
 open CategoryTheory
 
-variable (C : Type*) [Category.!{w*} C]
+variable (C : Type*) [Category.{w*} C]
 
 def fooNamed := C ⥤ C
 
 /-- info: fooNamed.{w_1, u_1} (C : Type u_1) [Category.{w_1, u_1} C] : Type (max w_1 u_1) -/
 #guard_msgs in #check fooNamed
 
-variable (x : ULift.!{z*, _} C)
+variable (x : ULift.{z*, _} C)
 
 def testNamedULift := x
 
@@ -149,14 +149,14 @@ section NamedWildcardWithUsage
 
 open CategoryTheory
 
-variable (C : Type*) [Category.!{v*} C]
+variable (C : Type*) [Category.{v*} C]
 
 def fooNamedV := C ⥤ C
 
 /-- info: fooNamedV.{v_1, u_1} (C : Type u_1) [Category.{v_1, u_1} C] : Type (max v_1 u_1) -/
 #guard_msgs in #check fooNamedV
 
-variable (D : Type*) [Category.!{mor*} D]
+variable (D : Type*) [Category.{mor*} D]
 
 def fooBothNamed := C ⥤ D
 
@@ -172,8 +172,8 @@ section MixedWildcardTests
 
 open CategoryTheory
 
-variable (A : Type*) [Category.!{*} A]
-variable (B : Type*) [Category.!{w*} B]
+variable (A : Type*) [Category.{*} A]
+variable (B : Type*) [Category.{w*} B]
 
 def fooMixed := A ⥤ B
 
@@ -188,12 +188,12 @@ end MixedWildcardTests
 section MultipleUniverseArgsTests
 
 /-- info: ULift.{a_1, u_1} : Type u_1 → Type (max u_1 a_1) -/
-#guard_msgs in #check (ULift.!{a*, _} : Type _ → Type _)
+#guard_msgs in #check (ULift.{a*, _} : Type _ → Type _)
 
 /-- info: ULift.{b_1, c_1} : Type c_1 → Type (max c_1 b_1) -/
-#guard_msgs in #check (ULift.!{b*, c*} : Type _ → Type _)
+#guard_msgs in #check (ULift.{b*, c*} : Type _ → Type _)
 
-variable (X : Type*) (y : ULift.!{lift*} X)
+variable (X : Type*) (y : ULift.{lift*} X)
 
 def testNamedLift := y
 
@@ -206,14 +206,14 @@ section ExplicitLevelTests
 
 universe explicitU
 
-variable (X : Type*) (y : ULift.!{explicitU, _} X)
+variable (X : Type*) (y : ULift.{explicitU, _} X)
 
 def testExplicitLevel := y
 
 /-- info: testExplicitLevel.{explicitU, u_1} (X : Type u_1) (y : ULift.{explicitU, u_1} X) : ULift.{explicitU, u_1} X -/
 #guard_msgs in #check testExplicitLevel
 
-variable (z : ULift.!{explicitU + 1, _} X)
+variable (z : ULift.{explicitU + 1, _} X)
 
 def testExplicitLevelExpr := z
 
@@ -223,13 +223,13 @@ info: testExplicitLevelExpr.{explicitU, u_1} (X : Type u_1) (z : ULift.{explicit
 #guard_msgs in #check testExplicitLevelExpr
 
 /-- info: ULift.{0, 1} : Type 1 → Type 1 -/
-#guard_msgs in #check (ULift.!{0, 1} : Type 1 → Type 1)
+#guard_msgs in #check (ULift.{0, 1} : Type 1 → Type 1)
 
 end ExplicitLevelTests
 
 section InferredLevelTests
 
-variable (X : Type 3) (y : ULift.!{_, _} X)
+variable (X : Type 3) (y : ULift.{_, _} X)
 
 def testFullyInferred := y
 
@@ -240,7 +240,7 @@ end InferredLevelTests
 
 section PartialUniverseArgs
 
-variable (X : Type*) (y : ULift.!{*} X)
+variable (X : Type*) (y : ULift.{*} X)
 
 def testPartialArgs := y
 
@@ -374,15 +374,15 @@ This section tests that `*` wildcards use the constant's actual universe paramet
 as base names, with numeric suffixes stripped.
 -/
 
--- Test that ULift.!{*} uses `r` as base name (ULift's first param is `r`)
-variable (X : Type*) (ulift_test : ULift.!{*} X)
+-- Test that ULift.{*} uses `r` as base name (ULift's first param is `r`)
+variable (X : Type*) (ulift_test : ULift.{*} X)
 def testULiftBaseName := ulift_test
 /-- info: testULiftBaseName.{r_1, u_1} (X : Type u_1) (ulift_test : ULift.{r_1, u_1} X) : ULift.{r_1, u_1} X -/
 #guard_msgs in #check testULiftBaseName
 
--- Test that Category.!{*} uses `v` as base name (Category's first param is `v`)
+-- Test that Category.{*} uses `v` as base name (Category's first param is `v`)
 open CategoryTheory
-variable (C : Type*) [cat_test : Category.!{*} C]
+variable (C : Type*) [cat_test : Category.{*} C]
 def testCategoryBaseName := cat_test
 /-- info: testCategoryBaseName.{v_1, u_2} (C : Type u_2) [cat_test : Category.{v_1, u_2} C] : Category.{v_1, u_2} C -/
 #guard_msgs in #check testCategoryBaseName
@@ -392,10 +392,10 @@ universe u v w
 axiom Foo2 : Type u → Type v → Type w
 
 /-- info: Foo2.{u_3, v_2, w_1} : Type u_3 → Type v_2 → Type w_1 -/
-#guard_msgs in #check Foo2.!{*, *, *}
+#guard_msgs in #check Foo2.{*, *, *}
 
 /-- info: Foo2.{u_3, v, w_1} : Type u_3 → Type v → Type w_1 -/
-#guard_msgs in #check Foo2.!{*, v, *}
+#guard_msgs in #check Foo2.{*, v, *}
 
 end BaseNameExtractionTests
 
@@ -410,34 +410,34 @@ universe eu ev
 axiom ExplicitTest : {α : Type eu} → {β : Type ev} → α → β → α × β
 
 /-- info: @ExplicitTest.{eu_1, ev_1} : {α : Type eu_1} → {β : Type ev_1} → α → β → Prod.{eu_1, ev_1} α β -/
-#guard_msgs in #check @ExplicitTest.!{*, *}
+#guard_msgs in #check @ExplicitTest.{*, *}
 
 /-- info: ExplicitTest.{eu_1, ev_1} : ?m.1 → ?m.2 → Prod.{eu_1, ev_1} ?m.1 ?m.2 -/
-#guard_msgs in #check ExplicitTest.!{*, *}
+#guard_msgs in #check ExplicitTest.{*, *}
 
 -- Test applying with @ to provide implicit args explicitly
 variable (A : Type eu) (B : Type ev) (a : A) (b : B)
 
 /-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
-#guard_msgs in #check ExplicitTest.!{eu, ev} a b
+#guard_msgs in #check ExplicitTest.{eu, ev} a b
 
 /-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
-#guard_msgs in #check @ExplicitTest.!{eu, ev} A B a b
+#guard_msgs in #check @ExplicitTest.{eu, ev} A B a b
 
 -- Test with named wildcards
 /-- info: @ExplicitTest.{x_1, y_1} : {α : Type x_1} → {β : Type y_1} → α → β → Prod.{x_1, y_1} α β -/
-#guard_msgs in #check @ExplicitTest.!{x*, y*}
+#guard_msgs in #check @ExplicitTest.{x*, y*}
 
 -- Test with named arguments using @
 /-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
-#guard_msgs in #check @ExplicitTest.!{eu, ev} (α := A) (β := B) a b
+#guard_msgs in #check @ExplicitTest.{eu, ev} (α := A) (β := B) a b
 
 /-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
-#guard_msgs in #check @ExplicitTest.!{eu, ev} (β := B) (α := A) a b
+#guard_msgs in #check @ExplicitTest.{eu, ev} (β := B) (α := A) a b
 
 -- Test mixing positional and named arguments
 /-- info: ExplicitTest.{eu, ev} a b : Prod.{eu, ev} A B -/
-#guard_msgs in #check @ExplicitTest.!{eu, ev} A (β := B) a b
+#guard_msgs in #check @ExplicitTest.{eu, ev} A (β := B) a b
 
 -- Define another axiom with more arguments for thorough testing
 axiom ExplicitTest2 : {α : Type eu} → {β : Type ev} → {γ : Type eu} → α → β → γ → α × β × γ
@@ -447,22 +447,22 @@ info: @ExplicitTest2.{eu_1,
     ev_1} : {α : Type eu_1} →
   {β : Type ev_1} → {γ : Type eu_1} → α → β → γ → Prod.{eu_1, max eu_1 ev_1} α (Prod.{ev_1, eu_1} β γ)
 -/
-#guard_msgs in #check @ExplicitTest2.!{*, *}
+#guard_msgs in #check @ExplicitTest2.{*, *}
 
 /-- info: ExplicitTest2.{eu_1, ev_1} : ?m.1 → ?m.2 → ?m.3 → Prod.{eu_1, max eu_1 ev_1} ?m.1 (Prod.{ev_1, eu_1} ?m.2 ?m.3) -/
-#guard_msgs in #check ExplicitTest2.!{*, *}
+#guard_msgs in #check ExplicitTest2.{*, *}
 
 -- Test named arguments with ExplicitTest2
 variable (C : Type eu) (c : C)
 
 /-- info: ExplicitTest2.{eu, ev} a b c : Prod.{eu, max eu ev} A (Prod.{ev, eu} B C) -/
-#guard_msgs in #check @ExplicitTest2.!{eu, ev} (α := A) (β := B) (γ := C) a b c
+#guard_msgs in #check @ExplicitTest2.{eu, ev} (α := A) (β := B) (γ := C) a b c
 
 /--
 info: fun α =>
   @ExplicitTest2.{eu_1, ev} α
     B : (α : Type eu_1) → {γ : Type eu_1} → α → B → γ → Prod.{eu_1, max eu_1 ev} α (Prod.{ev, eu_1} B γ)
 -/
-#guard_msgs in #check @ExplicitTest2.!{*, ev} (β := B)
+#guard_msgs in #check @ExplicitTest2.{*, ev} (β := B)
 
 end ExplicitAppTests
