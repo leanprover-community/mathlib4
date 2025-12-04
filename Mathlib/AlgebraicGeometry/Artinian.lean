@@ -37,7 +37,7 @@ We define and prove basic properties about Artinian and Locally Artinian Schemes
 * `AlgebraicGeometry.IsArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian if
   and only if Spec R is Artinian.
 
-TODO: Show that all Artinian schemes are affine.
+TODO(Brian-Nugent): Show that all Artinian schemes are affine.
 
 -/
 
@@ -56,20 +56,20 @@ class IsLocallyArtinian : Prop where
 
 attribute [instance] IsLocallyArtinian.component_artinian
 
-lemma IsLocallyArtinian.IsLocallyNoetherian [h : IsLocallyArtinian X] :
+instance IsLocallyArtinian.isLocallyNoetherian [h : IsLocallyArtinian X] :
     IsLocallyNoetherian X where
 
 instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
     IsArtinianRing Γ(X, ⊤) :=
   h.1 ⟨⊤, isAffineOpen_top X⟩
 
-lemma IsLocallyArtinian_IsAffine_DiscreteTopology [IsLocallyArtinian X] [IsAffine X] :
+lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAffine X] :
     DiscreteTopology X := by
   have F := AlgebraicGeometry.Scheme.isoSpec X
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
   exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
 
-instance IsLocallyArtinian.Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U : X.Opens} :
+instance IsLocallyArtinian.isLocallyArtinian_opens [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U := by
   refine { component_artinian := ?_ }
   intro W
@@ -78,29 +78,29 @@ instance IsLocallyArtinian.Opens_IsLocallyArtinian [h : IsLocallyArtinian X] {U 
     h.1 ⟨(U.ι ''ᵁ W), AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion W.2 U.ι⟩
   exact RingEquiv.isArtinianRing F
 
-instance (priority := low) IsLocallyArtinian_DiscreteTopology [IsLocallyArtinian X] :
+instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
     DiscreteTopology X := by
   apply discreteTopology_iff_isOpen_singleton.mpr
   intro x
   have : x ∈ (⊤ : X.Opens) := trivial
   obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset this
   have _ : IsAffine W := hW1
-  have : DiscreteTopology W := IsLocallyArtinian_IsAffine_DiscreteTopology W
+  have : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
   have : IsOpen ({(⟨x, hW2⟩)} : Set W) := by
     apply discreteTopology_iff_forall_isOpen.mp
-    exact IsLocallyArtinian_IsAffine_DiscreteTopology W
+    exact IsLocallyArtinian.discreteTopology_of_isAffine W
   have _ := IsOpen.trans this W.2
   have : Subtype.val '' {⟨x, hW2⟩} = {x} := Set.image_singleton
   rw[← this]
   assumption
 
-theorem IsNoetherianRing.DiscreteTopololgy_IsArtinianRing
+theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
 (R : Type*) [CommRing R] [IsNoetherianRing R] [h : DiscreteTopology (PrimeSpectrum R)] :
     IsArtinianRing R := by
   apply isArtinianRing_iff_krullDimLE_zero.mpr
   exact (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp h).2
 
-lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
+lemma IsLocallyNoetherian.isLocallyArtinian_discreteTopology
     [IsLocallyNoetherian X] [DiscreteTopology X] :
     IsLocallyArtinian X := by
   refine { component_artinian := ?_ }
@@ -111,42 +111,39 @@ lemma IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian
     have F := AlgebraicGeometry.IsAffineOpen.isoSpec U.2
     apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mp
     exact instDiscreteTopologySubtype
-  exact IsNoetherianRing.DiscreteTopololgy_IsArtinianRing Γ(X, U)
+  exact IsNoetherianRing.discreteTopololgy_of_isArtinianRing Γ(X, U)
 
-theorem IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology :
+theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
-  ⟨fun _ => ⟨IsLocallyArtinian.IsLocallyNoetherian X, inferInstance⟩,
-  fun ⟨_,_⟩ => IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian X⟩
-
-instance inst_IsLocallyArtinian_IsLocallyNoetherian [IsLocallyArtinian X] :
-    IsLocallyNoetherian X := IsLocallyArtinian.IsLocallyNoetherian X
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩,
+  fun ⟨_,_⟩ => IsLocallyNoetherian.isLocallyArtinian_discreteTopology X⟩
 
 /-- A scheme is Artinian if it is Locally Artinian and quasi-compact -/
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
-instance inst_IsArtinianScheme_Finite [h : IsArtinianScheme X] :
+instance IsArtinianScheme.finite [h : IsArtinianScheme X] :
     Finite X := @finite_of_compact_of_discrete X _ _ _
 
-instance inst_IsArtinianScheme_IsNoetherianScheme [IsArtinianScheme X] :
+instance IsArtinianScheme.isNoetherianScheme [IsArtinianScheme X] :
     IsNoetherian X :=
       { toIsLocallyNoetherian := inferInstance,
         toCompactSpace := inferInstance}
 
-theorem IsArtinianScheme_iff_IsNoetherian_and_DiscreteTopology :
+theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
     IsArtinianScheme X ↔ IsNoetherian X ∧ DiscreteTopology X :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩,
   fun ⟨_,_⟩ =>
-    {toIsLocallyArtinian := IsLocallyNoetherian_DiscreteTopology_IsLocallyArtinian X,
+    {toIsLocallyArtinian := IsLocallyNoetherian.isLocallyArtinian_discreteTopology X,
       toCompactSpace := inferInstance}⟩
 
 /-- A commutative ring R is Artinian if and only if Spec R is and Artinian scheme -/
-theorem IsArtinianRing_iff_IsArtinianScheme (R : Type*) [CommRing R] :
+theorem IsArtinianRing.iff_isArtinianScheme (R : Type*) [CommRing R] :
     IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := by
   constructor
   · intro _
-    apply (IsArtinianScheme_iff_IsNoetherian_and_DiscreteTopology (Spec (CommRingCat.of R))).mpr
-    exact ⟨inferInstance, IsArtinianRing_DiscreteTopology R⟩
+    apply (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
+    exact ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩
   intro _
   have F := (AlgebraicGeometry.Scheme.ΓSpecIso (CommRingCat.of R)).commRingCatIsoToRingEquiv
   exact RingEquiv.isArtinianRing F
