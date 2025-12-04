@@ -127,7 +127,7 @@ private partial def evalPrimeFactorsListAux
       pure ⟨q([$ea]), q($eh ▸ FactorsHelper.singleton_self $ea)⟩
     else do
       let eh_a_lt_n : Q(Nat.blt $ea $en = true) :=
-        have : a < n := by cutsat
+        have : a < n := by lia
         (q(Eq.refl true) : Expr)
       let .isNat _ lit ehn_minFac ← evalMinFac.core q($en) q(inferInstance) q($enl) ehn n | failure
       have : $lit =Q $en := ⟨⟩
