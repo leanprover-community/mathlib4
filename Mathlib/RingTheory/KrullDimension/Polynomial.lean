@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Krull dimension of polynomial ring
@@ -22,6 +24,8 @@ This file proves properties of the krull dimension of the polynomial ring over a
 
 @[expose] public section
 
+section
+
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
   rw [ringKrullDim, ringKrullDim]
@@ -33,7 +37,9 @@ theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
       ← Ring.krullDimLE_iff]
     infer_instance
 
-variable [IsNoetherianRing R]
+namespace Polynomial
+
+variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 open Ideal IsLocalization
 
 /--
@@ -79,7 +85,7 @@ lemma height_eq_height_succ (p : Ideal R)
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
   have eq := comap_map_of_isPrime_disjoint _ Rₚ[X] P ‹P.IsMaximal›.isPrime disj
   have : (comap (algebraMap R[X] Rₚ[X]) P').IsMaximal := eq.symm ▸ ‹P.IsMaximal›
-  have : P'.IsMaximal := .of_isLocalization_of_disjoint (eq.symm ▸ disj)
+  have : P'.IsMaximal := .of_isLocalization_of_disjoint _ (eq.symm ▸ disj)
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
   have eq1 : p.height = p'.height := by
     rw [height_map_of_disjoint p.primeCompl]
