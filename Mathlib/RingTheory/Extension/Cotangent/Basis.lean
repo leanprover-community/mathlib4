@@ -141,7 +141,7 @@ lemma tensorCotangentInv_apply (i : σ) :
   Module.Basis.constr_basis _ _ _ _
 
 lemma span_range_mk_kerGen : Submodule.span D.T
-    (Set.range <| fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
+    (Set.range fun i ↦ Extension.Cotangent.mk (D.kerGen i)) = ⊤ := by
   refine Extension.Cotangent.span_eq_top_of_span_eq_ker _ ?_
   dsimp only [presLeft, Presentation.naive_toGenerators]
   exact (Generators.ker_naive _ _).symm
