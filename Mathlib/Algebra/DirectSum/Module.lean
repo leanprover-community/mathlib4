@@ -545,4 +545,58 @@ end Ring
 
 end Submodule
 
+section Congr
+
+variable {R : Type*} [Semiring R]
+    {ι : Type*}
+    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+
+/-- Direct sums of isomorphic additive groups are isomorphic. -/
+def congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
+    (⨁ i, N i) ≃+ ⨁ i, P i where
+  toAddHom := DirectSum.map fun i ↦ (u i).toAddMonoidHom
+  invFun := DirectSum.map fun i ↦ (u i).symm.toAddMonoidHom
+  left_inv x := by aesop
+  right_inv y := by aesop
+
+@[deprecated (since := "2025-12-01")] alias congr_addEquiv := congrAddEquiv
+
+theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
+    ⇑(congrAddEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")] alias coe_congr_addEquiv := coe_congrAddEquiv
+
+/-- Direct sums of isomorphic modules are isomorphic. -/
+def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
+  toAddEquiv := congrAddEquiv (fun i ↦ (u i).toAddEquiv)
+  map_smul' r x := by
+    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+
+@[deprecated (since := "2025-12-01")] alias congr_linearEquiv := congrLinearEquiv
+
+theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")] alias coe_congr_linearEquiv := coe_congrLinearEquiv
+
+theorem congrLinearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congrLinearEquiv u).toAddEquiv = congrAddEquiv (fun i ↦ (u i).toAddEquiv) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")]
+alias congr_linearEquiv_toAddEquiv := congrLinearEquiv_toAddEquiv
+
+theorem congrLinearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congrLinearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
+  rfl
+
+@[deprecated (since := "2025-12-01")]
+alias congr_linearEquiv_toLinearMap := congrLinearEquiv_toLinearMap
+
+end Congr
+
 end DirectSum

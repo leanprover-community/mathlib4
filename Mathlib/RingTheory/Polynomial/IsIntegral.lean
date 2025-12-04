@@ -27,7 +27,7 @@ lemma isIntegral_coeff_prod
     exact IsIntegral.sum _ fun i hi ↦ .mul (H _ (by simp) _) (IH (fun _ _ ↦ H _ (by aesop)) _)
 
 lemma isIntegral_coeff_of_factors [IsDomain S] (p : S[X])
-    (hpmon : IsIntegral R p.leadingCoeff) (hp : p.Factors)
+    (hpmon : IsIntegral R p.leadingCoeff) (hp : p.Splits)
     (hpr : ∀ x ∈ p.roots, IsIntegral R x) (i : ℕ) :
     IsIntegral R (p.coeff i) := by
   classical
@@ -57,7 +57,7 @@ lemma isIntegral_coeff_of_dvd [IsDomain S] (p : R[X]) (q : S[X]) (hp : p.Monic)
   refine (isIntegral_algHom_iff (IsScalarTower.toAlgHom R S L) (algebraMap S L).injective).mp ?_
   rw [IsScalarTower.coe_toAlgHom', ← coeff_map]
   refine Polynomial.isIntegral_coeff_of_factors _ (by simpa using .algebraMap hq) ?_ ?_ i
-  · refine .of_dvd ?_ ((hp.map _).map _).ne_zero (Polynomial.map_dvd _ H)
+  · refine .splits_of_dvd ?_ ((hp.map _).map _).ne_zero (Polynomial.map_dvd _ H)
     exact SplittingField.splits (p.map (algebraMap R S))
   · intro x hx
     exact ⟨p, hp, by simpa using aeval_eq_zero_of_dvd_aeval_eq_zero (a := x) H (by simp_all)⟩

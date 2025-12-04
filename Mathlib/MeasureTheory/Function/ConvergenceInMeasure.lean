@@ -337,7 +337,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
         ∀ᵐ (ω : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
   refine ⟨fun hfg _ hns ↦ (hfg.comp hns.tendsto_atTop).exists_seq_tendsto_ae, fun h1 ↦ ?_⟩
   rw [tendstoInMeasure_iff_tendsto_toNNReal]
-  by_contra! h; rcases h with ⟨ε, hε, h2⟩
+  by_contra! ⟨ε, hε, h2⟩
   obtain ⟨δ, ns, hδ, hns, h3⟩ : ∃ (δ : ℝ≥0) (ns : ℕ → ℕ), 0 < δ ∧ StrictMono ns ∧
       ∀ n, δ ≤ (μ {x | ε ≤ edist (f (ns n) x) (g x)}).toNNReal := by
     obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_notMem.1 h2
@@ -362,6 +362,15 @@ lemma tendstoInMeasure_bounded
   exact Lp.seq_tendsto_ae_bounded p (fun n => bound (l n)) (fun n => hf (l n)) hl.2
 
 end ExistsSeqTendstoAe
+
+/-- If the `eLpNorm` of a collection of `AEStronglyMeasurable` functions that converges in measure
+is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by `C`. -/
+lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [SeminormedAddGroup E]
+    {u : Filter ι} [NeBot u] [IsCountablyGenerated u] {f : ι → α → E} {g : α → E} {C : ℝ≥0∞}
+    (p : ℝ≥0∞) (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
+    (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
+  obtain ⟨l, hl⟩ := h_tendsto.exists_seq_tendsto_ae'
+  exact Lp.eLpNorm_le_of_ae_tendsto (hl.1.eventually bound) (fun n => hf (l n)) hl.2
 
 section TendstoInMeasureUnique
 
