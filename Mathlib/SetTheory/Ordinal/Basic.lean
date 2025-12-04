@@ -110,6 +110,7 @@ defined through the axiom of choice.
 
 Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`,
 and convert using
+
 ```
 Ordinal.toType.mk : Iio o → o.toType
 Ordinal.toType.toOrd : o.toType → Iio o
@@ -512,25 +513,22 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! -isSimp]
-noncomputable def toType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
+def toType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
+@[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := toType.mk
+
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
-noncomputable
 abbrev toType.toOrd {o : Ordinal} (α : o.toType) : Set.Iio o := toType.mk.symm α
 
-noncomputable
 instance (o : Ordinal) : Coe o.toType (Set.Iio o) where
   coe := toType.toOrd
-noncomputable
 instance (o : Ordinal) : CoeOut o.toType Ordinal where
   coe x := x.toOrd
-
-@[deprecated (since := "2025-12-04")] alias enumIsoToType := toType.mk
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
   ⟨_, ⟨toType.mk.toEquiv⟩⟩
