@@ -376,7 +376,7 @@ theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt
   convert measurableSet_of_differentiableAt_of_isComplete 𝕜 f this
   simp
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
   refine measurable_of_isClosed fun s hs => ?_
   have :
@@ -389,14 +389,14 @@ theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
     (measurableSet_of_differentiableAt_of_isComplete _ _ hs.isComplete).union
       ((measurableSet_of_differentiableAt _ _).compl.inter (MeasurableSet.const _))
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E) :
     Measurable fun x => fderiv 𝕜 f x y :=
   (ContinuousLinearMap.measurable_apply y).comp (measurable_fderiv 𝕜 f)
 
 variable {𝕜}
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) : Measurable (deriv f) := by
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
@@ -704,7 +704,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici :
   convert measurableSet_of_differentiableWithinAt_Ici_of_isComplete f this
   simp
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ici x) x := by
   refine measurable_of_isClosed fun s hs => ?_
@@ -752,7 +752,7 @@ theorem measurableSet_of_differentiableWithinAt_Ioi :
     MeasurableSet { x | DifferentiableWithinAt ℝ f (Ioi x) x } := by
   simpa [differentiableWithinAt_Ioi_iff_Ici] using measurableSet_of_differentiableWithinAt_Ici f
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ioi x) x := by
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f

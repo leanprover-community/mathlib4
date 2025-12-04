@@ -338,7 +338,7 @@ lemma lmarginalPartialTraj_succ [∀ n, IsSFiniteKernel (κ n)] (a : ℕ)
     all_goals lia
   all_goals fun_prop
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_lmarginalPartialTraj (a b : ℕ) {f : (Π n, X n) → ℝ≥0∞} (hf : Measurable f) :
     Measurable (lmarginalPartialTraj κ a b f) := by
   unfold lmarginalPartialTraj

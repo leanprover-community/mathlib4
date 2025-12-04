@@ -62,12 +62,12 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
   Measurable.ite measurableSet_Ici ((measurable_id.pow_const _).const_mul _) measurable_const
 
 /-- The Pareto pdf is strongly measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
     StronglyMeasurable (paretoPDFReal t r) :=
   (measurable_paretoPDFReal t r).stronglyMeasurable

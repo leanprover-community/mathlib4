@@ -148,18 +148,18 @@ theorem measurable_from_quotient {s : Setoid α} {f : Quotient s → β} :
     Measurable f ↔ Measurable (f ∘ Quotient.mk'') :=
   Iff.rfl
 
-@[measurability]
+@[fun_prop]
 theorem measurable_quotient_mk' [s : Setoid α] : Measurable (Quotient.mk' : α → Quotient s) :=
   fun _ => id
 
-@[measurability]
+@[fun_prop]
 theorem measurable_quotient_mk'' {s : Setoid α} : Measurable (Quotient.mk'' : α → Quotient s) :=
   fun _ => id
 
-@[measurability]
+@[fun_prop]
 theorem measurable_quot_mk {r : α → α → Prop} : Measurable (Quot.mk r) := fun _ => id
 
-@[to_additive (attr := measurability)]
+@[to_additive (attr := fun_prop)]
 theorem QuotientGroup.measurable_coe {G} [Group G] [MeasurableSpace G] {S : Subgroup G} :
     Measurable ((↑) : G → G ⧸ S) :=
   measurable_quotient_mk''
@@ -213,19 +213,19 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
   rw [Subtype.image_preimage_coe]
   exact hs.inter hu
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.subtype_coe {p : β → Prop} {f : α → Subtype p} (hf : Measurable f) :
     Measurable fun a : α => (f a : β) :=
   measurable_subtype_coe.comp hf
 
 alias Measurable.subtype_val := Measurable.subtype_coe
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
-@[measurability]
+@[fun_prop]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
     Measurable (rangeFactorization f) :=
   hf.subtype_mk
@@ -425,7 +425,7 @@ theorem measurable_fun_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_swap : Measurable (Prod.swap : α × β → β × α) :=
   Measurable.prod measurable_snd measurable_fst
 
@@ -582,7 +582,7 @@ theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun
   measurable_pi_iff.mpr hf
 
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_update' {a : δ} [DecidableEq δ] :
     Measurable (fun p : (∀ i, X i) × X a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
@@ -594,24 +594,24 @@ theorem measurable_update' {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : X (default : δ) → ∀ i, X i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_updateFinset' [DecidableEq δ] {s : Finset δ} :
     Measurable (fun p : (Π i, X i) × (Π i : s, X i) ↦ updateFinset p.1 s p.2) := by
   simp only [updateFinset, measurable_pi_iff]
   intro i
   by_cases h : i ∈ s <;> simp [h, Measurable.eval, measurable_fst, measurable_snd]
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : Π i, X i} :
     Measurable (updateFinset x s) :=
   measurable_updateFinset'.comp measurable_prodMk_left
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i : s, X i} :
     Measurable (updateFinset · s x) :=
   measurable_updateFinset'.comp measurable_prodMk_right
@@ -619,47 +619,47 @@ theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i 
 /-- The function `update f a : X a → Π a, X a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_update (f : ∀ a : δ, X a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
   measurable_update'.comp measurable_prodMk_left
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : X a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prodMk_right
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
     Measurable (restrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
     Measurable (Finset.restrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
     Measurable (s.restrict f) := hf.comp measurable_subtype_coe
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
     {f : t → γ} (hf : Measurable f) :
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :
     Measurable (s.restrict f) := hf.comp measurable_subtype_coe
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     {f : t → γ} (hf : Measurable f) :
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
@@ -674,7 +674,7 @@ theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f :
     (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
   (measurable_eq_mp X h).comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (Equiv.piCongrLeft X f) := by
   rw [measurable_pi_iff]
   intro i
@@ -714,7 +714,7 @@ instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingle
 
 variable (X)
 
-@[measurability]
+@[fun_prop]
 theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p X).symm := by
   refine measurable_pi_iff.2 fun j => ?_
@@ -728,7 +728,7 @@ theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p]
       measurable_pi_apply (X := fun i : {x // ¬p x} => X i.1) ⟨j, hj⟩
     exact Measurable.comp this measurable_snd
 
-@[measurability]
+@[fun_prop]
 theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p X) :=
   (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prodMk
@@ -780,11 +780,11 @@ instance Sum.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : Mea
 
 section Sum
 
-@[measurability]
+@[fun_prop]
 theorem measurable_inl [MeasurableSpace α] [MeasurableSpace β] : Measurable (@Sum.inl α β) :=
   Measurable.of_le_map inf_le_left
 
-@[measurability]
+@[fun_prop]
 theorem measurable_inr [MeasurableSpace α] [MeasurableSpace β] : Measurable (@Sum.inr α β) :=
   Measurable.of_le_map inf_le_right
 
@@ -800,7 +800,7 @@ theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl :
     le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
       (MeasurableSpace.comap_le_iff_le_map.2 <| hr)
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Sum.elim f g) :=
   measurable_fun_sum hf hg
@@ -958,17 +958,17 @@ section Function
 
 variable {κ X : Type*} [MeasurableSpace X]
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_curry : Measurable (@curry ι κ X) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 -- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
 lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_equivCurry : Measurable (Equiv.curry ι κ X) := measurable_curry
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_equivCurry_symm : Measurable (Equiv.curry ι κ X).symm := measurable_uncurry
 
 end Function
@@ -977,20 +977,20 @@ section Sigma
 
 variable {κ : ι → Type*} {X : (i : ι) → κ i → Type*} [∀ i j, MeasurableSpace (X i j)]
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_sigmaCurry : Measurable (Sigma.curry (γ := X)) :=
     measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_sigmaUncurry : Measurable (Sigma.uncurry (γ := X)) := by
   refine measurable_pi_lambda _ fun _ ↦ ?_
   simp only [Sigma.uncurry]
   fun_prop
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_piCurry : Measurable (Equiv.piCurry X) := measurable_sigmaCurry
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_piCurry_symm : Measurable (Equiv.piCurry X).symm := measurable_sigmaUncurry
 
 end Sigma
