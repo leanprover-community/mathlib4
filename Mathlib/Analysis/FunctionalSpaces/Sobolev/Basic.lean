@@ -260,6 +260,36 @@ namespace MemSobolev
 
 variable {c : ℝ}
 
+lemma memLp (hf : MemSobolev Ω f 0 p μ) : MemLp f p (μ.restrict Ω) := by
+  obtain ⟨g, hg⟩ := hf
+  have aux' : (fun x ↦ (g x 0).curry0) = f := by
+    ext x
+    exact hg.zero_eq x
+  simp_rw [← aux']
+  have := hg.memLp 0 (by simp)
+  -- TODO: curry0 is linear, so this is fine here?
+  sorry
+
+lemma memSobolev_zero :
+    MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
+  refine ⟨fun hf ↦ hf.memLp, fun hf ↦ ?_⟩
+  let S : E → FormalMultilinearSeries ℝ E F := fun x k ↦
+    if hk : k = 0 then
+      sorry --f.curry0--fun _a ↦ sorry
+    else 0
+  use S
+  refine {
+    zero_eq x := sorry -- should be true by definition
+    hasWeakDeriv := by
+      intro m hm
+      apply False.elim
+      simp_all
+    memLp m hm := by
+      simp only [nonpos_iff_eq_zero, Nat.cast_eq_zero] at hm
+      rw [hm]
+      sorry -- similar to the step above: hf should imply this...
+  }
+
 lemma add (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
