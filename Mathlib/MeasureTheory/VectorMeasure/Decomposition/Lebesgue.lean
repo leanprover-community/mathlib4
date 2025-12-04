@@ -176,7 +176,7 @@ theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fu
 
 variable {s t : SignedMeasure α}
 
-@[measurability]
+@[fun_prop]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
   rw [rnDeriv_def]
   fun_prop

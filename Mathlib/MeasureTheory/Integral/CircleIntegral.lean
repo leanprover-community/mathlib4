@@ -120,7 +120,7 @@ theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
   (differentiable_circleMap c R).continuous
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_circleMap (c : ℂ) (R : ℝ) : Measurable (circleMap c R) :=
   (continuous_circleMap c R).measurable
 

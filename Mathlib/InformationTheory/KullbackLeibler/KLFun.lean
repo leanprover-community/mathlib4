@@ -76,11 +76,11 @@ lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
 lemma continuous_klFun : Continuous klFun := by unfold klFun; fun_prop
 
 /-- `klFun` is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_klFun : Measurable klFun := continuous_klFun.measurable
 
 /-- `klFun` is strongly measurable. -/
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_klFun : StronglyMeasurable klFun := measurable_klFun.stronglyMeasurable
 
 section Derivatives

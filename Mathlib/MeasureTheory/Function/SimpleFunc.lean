@@ -166,11 +166,11 @@ theorem measurableSet_preimage (f : α →ₛ β) (s) : MeasurableSet (f ⁻¹' 
   measurableSet_cut (fun _ b => b ∈ s) f fun b => MeasurableSet.const (b ∈ s)
 
 /-- A simple function is measurable -/
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem measurable [MeasurableSpace β] (f : α →ₛ β) : Measurable f := fun s _ =>
   measurableSet_preimage f s
 
-@[measurability]
+@[fun_prop]
 protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α →ₛ β) :
     AEMeasurable f μ :=
   f.measurable.aemeasurable

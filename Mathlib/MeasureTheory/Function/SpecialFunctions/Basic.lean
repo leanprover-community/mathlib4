@@ -70,11 +70,11 @@ theorem measurable_sinh : Measurable sinh :=
 theorem measurable_cosh : Measurable cosh :=
   continuous_cosh.measurable
 
-@[measurability]
+@[fun_prop]
 theorem measurable_arcsin : Measurable arcsin :=
   continuous_arcsin.measurable
 
-@[measurability]
+@[fun_prop]
 theorem measurable_arccos : Measurable arccos :=
   continuous_arccos.measurable
 
@@ -82,11 +82,11 @@ end Real
 
 namespace Complex
 
-@[measurability]
+@[fun_prop]
 theorem measurable_re : Measurable re :=
   continuous_re.measurable
 
-@[measurability]
+@[fun_prop]
 theorem measurable_im : Measurable im :=
   continuous_im.measurable
 
@@ -130,27 +130,27 @@ open Real
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
 include hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
   Real.measurable_exp.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.log : Measurable fun x => log (f x) :=
   measurable_log.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.cos : Measurable fun x ↦ cos (f x) := measurable_cos.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.sin : Measurable fun x ↦ sin (f x) := measurable_sin.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.cosh : Measurable fun x ↦ cosh (f x) := measurable_cosh.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.sinh : Measurable fun x ↦ sinh (f x) := measurable_sinh.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.sqrt : Measurable fun x => √(f x) := continuous_sqrt.measurable.comp hf
 
 end RealComposition
@@ -162,31 +162,31 @@ open Real
 variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ℝ} (hf : AEMeasurable f μ)
 include hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.exp : AEMeasurable (fun x ↦ exp (f x)) μ :=
   measurable_exp.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.log : AEMeasurable (fun x ↦ log (f x)) μ :=
   measurable_log.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.cos : AEMeasurable (fun x ↦ cos (f x)) μ :=
   measurable_cos.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.sin : AEMeasurable (fun x ↦ sin (f x)) μ :=
   measurable_sin.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.cosh : AEMeasurable (fun x ↦ cosh (f x)) μ :=
   measurable_cosh.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.sinh : AEMeasurable (fun x ↦ sinh (f x)) μ :=
   measurable_sinh.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.sqrt : AEMeasurable (fun x ↦ √(f x)) μ :=
   continuous_sqrt.measurable.comp_aemeasurable hf
 
@@ -199,31 +199,31 @@ open Complex
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
 include hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=
   Complex.measurable_exp.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.ccos : Measurable fun x => Complex.cos (f x) :=
   Complex.measurable_cos.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.csin : Measurable fun x => Complex.sin (f x) :=
   Complex.measurable_sin.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.ccosh : Measurable fun x => Complex.cosh (f x) :=
   Complex.measurable_cosh.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.csinh : Measurable fun x => Complex.sinh (f x) :=
   Complex.measurable_sinh.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.carg : Measurable fun x => arg (f x) :=
   measurable_arg.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.clog : Measurable fun x => Complex.log (f x) :=
   measurable_log.comp hf
 
@@ -236,43 +236,43 @@ open Complex
 variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ℂ} (hf : AEMeasurable f μ)
 include hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.cexp : AEMeasurable (fun x ↦ exp (f x)) μ :=
   measurable_exp.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.ccos : AEMeasurable (fun x ↦ cos (f x)) μ :=
   measurable_cos.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.csin : AEMeasurable (fun x ↦ sin (f x)) μ :=
   measurable_sin.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.ccosh : AEMeasurable (fun x ↦ cosh (f x)) μ :=
   measurable_cosh.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.csinh : AEMeasurable (fun x ↦ sinh (f x)) μ :=
   measurable_sinh.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.carg : AEMeasurable (fun x ↦ arg (f x)) μ :=
   measurable_arg.comp_aemeasurable hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected lemma AEMeasurable.clog : AEMeasurable (fun x ↦ log (f x)) μ :=
   measurable_log.comp_aemeasurable hf
 
 end ComplexComposition
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.complex_ofReal {α : Type*} {m : MeasurableSpace α} {f : α → ℝ}
     (hf : Measurable f) :
     Measurable fun x ↦ (f x : ℂ) :=
   Complex.measurable_ofReal.comp hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem AEMeasurable.complex_ofReal {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
     {f : α → ℝ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x : ℂ)) μ :=

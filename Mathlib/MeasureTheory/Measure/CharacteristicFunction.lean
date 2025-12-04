@@ -182,12 +182,12 @@ lemma norm_one_sub_charFun_le_two [IsProbabilityMeasure μ] : ‖1 - charFun μ 
   _ ≤ 1 + 1 := by simp [norm_charFun_le_one]
   _ = 2 := by norm_num
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [SFinite μ] :
     StronglyMeasurable (charFun μ) :=
   (Measurable.stronglyMeasurable (by fun_prop)).integral_prod_left
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [SFinite μ] :
     Measurable (charFun μ) :=
   stronglyMeasurable_charFun.measurable

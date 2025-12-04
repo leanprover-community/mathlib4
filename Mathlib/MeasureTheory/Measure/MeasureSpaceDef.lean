@@ -430,7 +430,7 @@ it shows in pretty-printing. -/
 def mk (f : α → β) (h : AEMeasurable f μ) : α → β :=
   Classical.choose h
 
-@[measurability]
+@[fun_prop]
 theorem measurable_mk (h : AEMeasurable f μ) : Measurable (h.mk f) :=
   (Classical.choose_spec h).1
 
@@ -445,15 +445,15 @@ end AEMeasurable
 theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurable g μ :=
   ⟨fun hf => AEMeasurable.congr hf h, fun hg => AEMeasurable.congr hg h.symm⟩
 
-@[simp, fun_prop, measurability]
+@[simp, fun_prop]
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
   measurable_id.aemeasurable
 
@@ -461,7 +461,7 @@ theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : �
     (hf : AEMeasurable f μ) : AEMeasurable (g ∘ f) μ :=
   ⟨g ∘ hf.mk f, hg.comp hf.measurable_mk, EventuallyEq.fun_comp hf.ae_eq_mk _⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : δ → β}
     (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
