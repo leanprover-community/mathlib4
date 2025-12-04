@@ -294,8 +294,25 @@ lemma add (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  exact ⟨g + g', hg.add hg' sorry sorry⟩ -- TODO: think if these are required!
-  -- they should hold in our context, though!
+  refine ⟨g + g', hg.add hg' ?_  sorry⟩ -- second sorry should be similar
+  intro m hm
+  cases m with
+  | zero =>
+    have := hg.zero_eq
+    have := hg.memLp 0 hm.le
+    sorry -- issue: we know g x 0 is in L^p on Ω, but want LocallyIntegrableOn (i.e. L¹_loc)
+    -- If Ω is open, L¹_loc follows from L¹; if Ω is bounded, being L¹ follows from being L^p
+  | succ n =>
+    have aux : n < k := by
+      push_cast at hm
+      apply lt_trans ?_ hm
+      norm_cast
+      omega
+    have := hg.hasWeakDeriv n aux
+    have := this.locallyIntegrable -- almost what we want:
+    sorry
+    -- need to translate some currying
+    -- have (x) : (fun x ↦ g x (n + 1)) = (fun x ↦ (g x n.succ).curryLeft) := sorry
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
   obtain ⟨g, hg⟩ := hf
