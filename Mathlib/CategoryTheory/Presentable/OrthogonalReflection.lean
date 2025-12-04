@@ -45,19 +45,11 @@ define `succStruct W Z₀ : SuccStruct C` for any `Z₀ : C`. By applying
 a transfinite iteration to this `SuccStruct`, we obtain the following results
 under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
-<<<<<<< HEAD
-a regular cardinal) such that the domains and domains of the morphisms
-satisfying `W` are `κ`-presentable :
-* `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
-of the inclusion `W.isLocal ⥤ C`;
-* `MorphismProperty.isLocallyPresentable_isLocal`: the fullsubcategory
-=======
 a regular cardinal) such that the domains and codomains of the morphisms
-satisfying `W` are `κ`-presentable :
+satisfying `W` are `κ`-presentable:
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
 of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
->>>>>>> origin/locally-presentable-strong-generators
 `W.isLocal` is locally presentable.
 
 This is essentially the implication (i) → (ii) in Theorem 1.39 (and the corollary 1.40)
