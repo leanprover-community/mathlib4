@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
+public import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
 
@@ -24,6 +26,8 @@ public import Mathlib.RingTheory.Etale.Basic
 - `StandardEtalePair.homEquiv`:
   Maps out of `P.Ring` corresponds to `x` such that `f(x) = 0` and `g(x)` is invertible.
 - We also provide the instance that `P.Ring` is etale over `R`.
+
+- `Algebra.IsStandardEtale`: The class of standard etale algebras.
 
 -/
 
@@ -180,6 +184,9 @@ instance : Algebra.FormallyEtale R P.Ring := by
   exact ⟨⟨x + ε, hε⟩, by simpa, fun y hy ↦
     Subtype.ext (sub_eq_iff_eq_add'.mp (H _ ⟨hy, by simpa using y.2⟩))⟩
 
+instance : Algebra.Etale R P.Ring where
+  finitePresentation := .quotient (Submodule.fg_span (by simp))
+
 /-- An `AlgEquiv` between `P.Ring` and `R[X][Y]/⟨f, Yg-1⟩`,
 to not abuse the defeq between the two. -/
 def equivPolynomialQuotient :
@@ -235,3 +242,159 @@ lemma equivMvPolynomialQuotient_symm_apply :
   simp [equivMvPolynomialQuotient, StandardEtalePair.Ring]; rfl
 
 end StandardEtalePair
+
+/-- An isomorphism to the standard etale algebra of a standard etale pair. -/
+structure StandardEtalePresentation (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] extends
+    P : StandardEtalePair R where
+  /-- The image of X in a `StandardEtalePresentation`. -/
+  x : S
+  hasMap : P.HasMap x
+  lift_bijective : Function.Bijective (P.lift x hasMap)
+
+variable (P : StandardEtalePresentation R S)
+
+/-- The isomorphism to the standard etale algebra given a `StandardEtalePresentation`. -/
+def StandardEtalePresentation.equivRing : S ≃ₐ[R] P.Ring :=
+  .symm <| .ofBijective _ P.lift_bijective
+
+@[simp]
+lemma StandardEtalePresentation.equivRing_symm_X : P.equivRing.symm P.X = P.x :=
+  P.lift_X _ P.hasMap
+
+@[simp]
+lemma StandardEtalePresentation.equivRing_x : P.equivRing P.x = P.X :=
+  (P.equivRing.symm_apply_eq.mp P.equivRing_symm_X).symm
+
+/-- The `Algebra.Presentation` associated to a standard etale presentation. -/
+@[simps!]
+def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) (Fin 2) where
+  __ := Algebra.Generators.ofAlgHom ((P.lift _ P.hasMap).comp
+      (P.equivMvPolynomialQuotient.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _)))
+    (P.lift_bijective.surjective.comp
+      (P.equivMvPolynomialQuotient.symm.surjective.comp Ideal.Quotient.mk_surjective))
+  relation := ![Bivariate.equivMvPolynomial R (C P.f),
+    Bivariate.equivMvPolynomial R (.X * C P.g - 1)]
+  span_range_relation_eq_ker := by
+    rw [Algebra.Generators.ker_ofAlgHom, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
+      AlgHom.comp_toRingHom,
+      RingHom.ker_comp_of_injective _ (by exact P.lift_bijective.injective),
+      RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
+    simp [Set.pair_comm]
+
+@[simp] lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
+    MvPolynomial.aeval P.toPresentation.val
+    (Bivariate.equivMvPolynomial R (.C p)) = p.aeval P.x := by
+  change (((MvPolynomial.aeval _).comp (Bivariate.equivMvPolynomial R).toAlgHom).comp CAlgHom) _ = _
+  congr 1
+  ext
+  simp
+
+attribute [local simp] Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det
+  Matrix.det_fin_two Algebra.PreSubmersivePresentation.jacobiMatrix_apply
+  Polynomial.Bivariate.pderiv_zero_equivMvPolynomial
+  Polynomial.Bivariate.pderiv_one_equivMvPolynomial
+
+/-- The `Algebra.SubmersivePresentation` associated to a standard etale presentation. -/
+@[simps map toPreSubmersivePresentation_toPresentation]
+def StandardEtalePresentation.toSubmersivePresentation :
+    Algebra.SubmersivePresentation R S (Fin 2) (Fin 2) where
+  __ := P.toPresentation
+  map := id
+  map_inj := Function.injective_id
+  jacobian_isUnit := by simp [P.hasMap.2, P.hasMap.isUnit_derivative_f]
+
+lemma StandardEtalePresentation.toSubmersivePresentation_jacobian :
+    P.toSubmersivePresentation.jacobian = aeval P.x P.f.derivative * aeval P.x P.g := by
+  simp [StandardEtalePresentation.toSubmersivePresentation]
+
+lemma StandardEtalePresentation.exists_mul_aeval_x_g_pow_eq_aeval_x (x : S) :
+    ∃ p : R[X], ∃ n, x * P.g.aeval P.x ^ n = p.aeval P.x := by
+  obtain ⟨x, rfl⟩ := (P.equivRing.trans P.P.equivAwayAdjoinRoot).symm.surjective x
+  obtain ⟨⟨p, ⟨_, n, rfl⟩⟩, e⟩ := IsLocalization.surj (.powers (AdjoinRoot.mk P.f P.g)) x
+  obtain ⟨p, rfl⟩ := AdjoinRoot.mk_surjective p
+  refine ⟨p, n, P.equivRing.injective ?_⟩
+  simpa [← aeval_algHom_apply, StandardEtalePair.equivAwayAdjoinRoot, ← aeval_def] using
+    congr(P.equivAwayAdjoinRoot.symm $e)
+
+/-- Mapping `StandardEtalePresentation` under `AlgEquiv`s. -/
+def StandardEtalePresentation.mapEquiv (e : S ≃ₐ[R] T) : StandardEtalePresentation R T where
+  P := P.P
+  x := e P.x
+  hasMap := P.hasMap.map e.toAlgHom
+  lift_bijective := (show P.lift (e P.x) (P.hasMap.map e.toAlgHom) = e.toAlgHom.comp
+    (P.lift _ P.hasMap) from P.hom_ext (by simp)) ▸ e.bijective.comp P.lift_bijective
+
+namespace Algebra
+
+/-- The class of standard etale algebras,
+defined to be the existence of a `StandardEtalePresentation`. -/
+class IsStandardEtale (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] where
+  nonempty_standardEtalePresentation : Nonempty (StandardEtalePresentation R S)
+
+attribute [instance] IsStandardEtale.nonempty_standardEtalePresentation
+
+instance (P : StandardEtalePair R) : IsStandardEtale R P.Ring :=
+  ⟨⟨P, P.X, P.hasMap_X, by simpa [StandardEtalePair.lift_X_left] using Function.bijective_id⟩⟩
+
+instance (priority := low) [IsStandardEtale R S] : Algebra.Etale R S :=
+  .of_equiv IsStandardEtale.nonempty_standardEtalePresentation.some.equivRing.symm
+
+lemma IsStandardEtale.of_equiv (e : S ≃ₐ[R] T) [IsStandardEtale R S] : IsStandardEtale R T :=
+  ⟨⟨IsStandardEtale.nonempty_standardEtalePresentation.some.mapEquiv e⟩⟩
+
+instance : IsStandardEtale R R :=
+  ⟨⟨⟨⟨.X, by simp, 1, 1, 0, 0, by simp⟩, 0, ⟨by simp, by simp⟩, by
+    set P : StandardEtalePair R := ⟨.X, by simp, 1, 1, 0, 0, by simp⟩
+    have : P.X = 0 := Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.subset_span (Set.mem_insert _ _))
+    let e := AlgEquiv.ofAlgHom (P.lift (0 : R) ⟨by simp [P], by simp [P]⟩) (Algebra.ofId _ _)
+      (by ext) (by ext; simp [this])
+    exact e.bijective⟩⟩⟩
+
+lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
+    {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
+    [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :
+    IsStandardEtale R Sₛ := by
+  have P : StandardEtalePresentation R S := IsStandardEtale.nonempty_standardEtalePresentation.some
+  obtain ⟨p, n, hp⟩ := P.exists_mul_aeval_x_g_pow_eq_aeval_x s
+  let P' : StandardEtalePair R := ⟨P.f, P.monic_f, p * P.g, have ⟨p₁, p₂, m, e⟩ := P.cond;
+    ⟨p₁ * p ^ m, p₂ * p ^ m, m, by linear_combination e * p ^ m⟩⟩
+  let S' := Localization.Away (AdjoinRoot.mk P.f P.g)
+  let e : S ≃ₐ[R] S' := P.equivRing.trans P.P.equivAwayAdjoinRoot
+  have := IsLocalization.Away.mul S' (Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)))
+    (AdjoinRoot.mk P.f P.g) (.mk _ p)
+  rw [← map_mul] at this
+  have H : Submonoid.map e.symm.toRingEquiv.toMonoidHom (.powers
+      (algebraMap _ S' (AdjoinRoot.mk P.f p))) = .powers (aeval P.x p) := by
+    have : ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R _ S')).comp (AdjoinRoot.mkₐ P.f)) =
+      aeval P.x := by ext; simp [e, StandardEtalePair.equivAwayAdjoinRoot]
+    rw [Submonoid.map_powers]
+    exact congr(Submonoid.powers ($this p))
+  have : IsLocalization.Away (aeval P.x p) Sₛ :=
+    IsLocalization.Away.of_associated (r := s) ⟨(P.hasMap.2.pow n).unit, hp⟩
+  let e₁ : P'.Ring ≃ₐ[R]
+      Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)) :=
+    P'.equivAwayAdjoinRoot.trans ((IsLocalization.algEquiv (.powers (AdjoinRoot.mk P.f (p * P.g)))
+      (Localization.Away (AdjoinRoot.mk P.f (p * P.g))) _).restrictScalars R)
+  let e₂ : Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)) ≃ₐ[R] Sₛ :=
+    { __ := IsLocalization.ringEquivOfRingEquiv _ _ _ H,
+      commutes' r := by
+        simp [IsScalarTower.algebraMap_apply R S' (Localization.Away _),
+          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ] }
+  exact .of_equiv (e₁.trans e₂)
+
+/-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then
+  `T` is also standard etale. -/
+lemma IsStandardEtale.of_surjective
+    (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T]
+    [IsStandardEtale R S] [Algebra.Etale R T] (f : S →ₐ[R] T) (hf : Function.Surjective f) :
+    IsStandardEtale R T := by
+  letI := f.toAlgebra
+  have : IsScalarTower R S T := .of_algebraMap_eq' f.comp_algebraMap.symm
+  obtain ⟨e, he, hfe⟩ :=
+    (Ideal.isIdempotentElem_iff_of_fg _ (Algebra.FinitePresentation.ker_fG_of_surjective f hf)).mp
+      ((Algebra.FormallyEtale.iff_of_surjective hf).mp (.of_restrictScalars (R := R)))
+  have := IsLocalization.away_of_isIdempotentElem he.one_sub (hfe.trans (by simp)) hf
+  exact .of_isLocalizationAway (1 - e)
+
+end Algebra
