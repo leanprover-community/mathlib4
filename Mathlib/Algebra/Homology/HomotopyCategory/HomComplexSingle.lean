@@ -41,6 +41,12 @@ noncomputable def fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (_ : p + 
     Cochain ((singleFunctor C p).obj X) K n :=
   Cochain.single ((HomologicalComplex.singleObjXSelf (.up ℤ) p X).hom ≫ f) n
 
+variable (X K) in
+@[simp]
+lemma fromSingleMk_zero (p q n : ℤ) (h : p + n = q) :
+    fromSingleMk (X := X) (K := K) 0 h = 0 := by
+  simp [fromSingleMk]
+
 @[simp]
 lemma fromSingleMk_v {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
     (fromSingleMk f h).v p q h =
@@ -75,12 +81,6 @@ noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     · exact (HomologicalComplex.isZero_single_obj_X _ _ _ _ hp).eq_of_src _ _
   right_inv f := by simp
   map_add' := by simp
-
-variable (X K) in
-@[simp]
-lemma fromSingleMk_zero (p q n : ℤ) (h : p + n = q) :
-    fromSingleMk (X := X) (K := K) 0 h = 0 :=
-  (fromSingleEquiv h (X := X)).symm.map_zero
 
 @[simp]
 lemma fromSingleMk_add {p q : ℤ} (f g : X ⟶ K.X q) {n : ℤ} (h : p + n = q) :
