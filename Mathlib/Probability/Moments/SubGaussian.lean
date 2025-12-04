@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.Probability.Moments.Tilted
+module
+
+public import Mathlib.Probability.Kernel.Condexp
+public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Moments.Tilted
 
 /-!
 # Sub-Gaussian random variables
@@ -117,6 +119,8 @@ a conditional expectation, `(μ.trim hm)`-almost surely:
   science*][vershynin2018high]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Real
 
@@ -824,14 +828,14 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
     induction n with
     | zero => simp [h0]
     | succ n =>
-      specialize hn fun i hi ↦ h_subG i (by cutsat)
+      specialize hn fun i hi ↦ h_subG i (by lia)
       simp_rw [Finset.sum_range_succ _ (n + 1)]
-      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by cutsat))
+      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by lia))
       refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
       refine Finset.measurable_fun_sum (Finset.range (n + 1)) fun m hm ↦
         ((h_adapted m).mono (ℱ.mono ?_)).measurable
       simp only [Finset.mem_range] at hm
-      cutsat
+      lia
 
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]

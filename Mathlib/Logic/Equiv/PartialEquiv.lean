@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.Attr.Core
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Partial equivalences
@@ -66,6 +68,8 @@ If a lemma deals with the intersection of a set with either source or target of 
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 
 -/
+
+@[expose] public section
 open Lean Meta Elab Tactic
 
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
@@ -77,7 +81,7 @@ new file to become functional.
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
 @[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
-def mfld_cfg : Simps.Config where
+meta def mfld_cfg : Simps.Config where
   fullyApplied := false
 
 namespace Tactic.MfldSetTac

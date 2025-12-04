@@ -3,8 +3,10 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Batteries.Tactic.Lint
+module
+
+public import Mathlib.Init
+public import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -24,6 +26,8 @@ However, note that Unicode has a rather restricted character set for superscript
 (see `Mapping.superscript` and `Mapping.subscript` in this file), so you should not use this
 parser for complex expressions.
 -/
+
+public meta section
 
 universe u
 
@@ -48,7 +52,7 @@ def mkMapping (s₁ s₂ : String) : Mapping := Id.run do
   let mut toNormal := {}
   let mut toSpecial := {}
   assert! s₁.length == s₂.length
-  for sp in s₁.toSubstring, nm in s₂ do
+  for sp in s₁.toRawSubstring, nm in s₂ do
     assert! !toNormal.contains sp
     assert! !toSpecial.contains nm
     toNormal := toNormal.insert sp nm
@@ -105,7 +109,6 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
     else
       partitionPoint lo m
   else lo
-  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 
@@ -148,7 +151,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     if s.hasError then return s
     let rec
     /-- Applies the alignment mapping to a `Substring`. -/
-    alignSubstr : Substring → Substring
+    alignSubstr : Substring.Raw → Substring.Raw
       | ⟨_newStr, start, stop⟩ => c.substring (align start) (align stop),
     /-- Applies the alignment mapping to a `SourceInfo`. -/
     alignInfo : SourceInfo → SourceInfo

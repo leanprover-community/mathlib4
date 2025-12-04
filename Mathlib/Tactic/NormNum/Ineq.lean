@@ -3,14 +3,18 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Ring.Cast
+module
+
+public meta import Mathlib.Tactic.NormNum.Eq
+public meta import Mathlib.Algebra.Order.Invertible
+public meta import Mathlib.Algebra.Order.Monoid.WithTop
+public meta import Mathlib.Algebra.Order.Ring.Cast
 
 /-!
 # `norm_num` extensions for inequalities.
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -143,7 +147,7 @@ theorem isRat_lt_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_ge (isRat_le_true hb ha h)
 
-/-! # (In)equalities -/
+/-! ### (In)equalities -/
 
 theorem isNat_lt_true [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZero α] :
     {a b : α} → {a' b' : ℕ} →

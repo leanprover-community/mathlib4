@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.CategoryTheory.Monad.Algebra
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # The category of measurable spaces
@@ -25,6 +27,8 @@ Measurable spaces and measurable functions form a (concrete) category `MeasCat`.
 measurable space, giry monad, borel
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -37,6 +41,8 @@ universe u v
 
 /-- The category of measurable spaces and measurable functions. -/
 structure MeasCat : Type (u + 1) where
+  /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
+  of ::
   /-- The underlying measurable space. -/
   carrier : Type u
   [str : MeasurableSpace carrier]
@@ -47,10 +53,6 @@ namespace MeasCat
 
 instance : CoeSort MeasCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
-abbrev of (α : Type u) [ms : MeasurableSpace α] : MeasCat where
-  carrier := α
 
 theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
   rfl

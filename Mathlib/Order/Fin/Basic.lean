@@ -3,9 +3,11 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Embedding
-import Mathlib.Data.Fin.Rev
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Fin.Rev
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -32,6 +34,8 @@ This file expands on the development in the core library.
 * `Fin.natAddOrderEmb n i` : `Fin.natAdd` as an `OrderEmbedding`, adds `n` on `i` on the left;
 * `Fin.revOrderIso`: `Fin.rev` as an `OrderIso`, the antitone involution given by `i ↦ n-(i+1)`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -259,7 +263,7 @@ alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_val_le_val, coe_pred]
+  all_goals simp only [le_iff_val_le_val, val_pred]
   · exact pred_le_pred H
   · calc
       _ ≤ _ := Nat.pred_le _

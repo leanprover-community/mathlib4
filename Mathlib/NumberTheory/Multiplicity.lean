@@ -3,14 +3,16 @@ Copyright (c) 2022 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Multiplicity in Number Theory
@@ -27,6 +29,8 @@ This file contains results in number theory relating to multiplicity.
 * [Wikipedia, *Lifting-the-exponent lemma*]
   (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
+
+@[expose] public section
 
 
 open Ideal Ideal.Quotient Finset
@@ -369,7 +373,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · exact Nat.two_pow_sub_pow hxy hx hneven
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
-  · cutsat
+  · lia
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)

@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
@@ -40,6 +42,8 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 
 reals, conditionally complete, ordered field, uniqueness
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*}
 
@@ -259,8 +263,8 @@ def inducedOrderRingHom : α →+*o β :=
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
-          · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [mul_zero, AddMonoidHom.map_zero]
+          · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
+        · simp only [mul_zero, map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound

@@ -3,11 +3,13 @@ Copyright (c) 2021 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Order.Atoms
-import Mathlib.Order.Hom.Bounded
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Hom.Bounded
 /-!
 
 # Chains of divisors
@@ -34,6 +36,8 @@ and the set of factors of `a`.
   `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

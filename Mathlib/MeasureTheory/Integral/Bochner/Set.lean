@@ -3,11 +3,13 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Combinatorics.Enumerative.InclusionExclusion
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.MetricSpace.ThickenedIndicator
+module
+
+public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
 # Set integral
@@ -37,6 +39,8 @@ Note that the set notations are defined in the file
 `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean`,
 but we reference them here because all theorems about set integrals are in this file.
 -/
+
+@[expose] public section
 
 assert_not_exists InnerProductSpace
 
@@ -684,15 +688,19 @@ end NormedAddCommGroup
 
 section Mono
 
-variable {μ : Measure X} {f g : X → ℝ} {s t : Set X}
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
+    [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
+    {μ : Measure X} {f g : X → E} {s t : Set X}
 
 section
 variable (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
 include hf hg
 
 theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
-    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
-  integral_mono_ae hf hg h
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact integral_mono_ae hf hg h
+  · simp [integral, hE]
 
 theorem setIntegral_mono_ae (h : f ≤ᵐ[μ] g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg (ae_restrict_of_ae h)
@@ -736,11 +744,16 @@ theorem setIntegral_le_integral (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
     ∫ x in s, f x ∂μ ≤ ∫ x, f x ∂μ :=
   integral_mono_measure (Measure.restrict_le_self) hf hfi
 
-theorem setIntegral_ge_of_const_le {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
+theorem setIntegral_ge_of_const_le [CompleteSpace E] {c : E} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
+    (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : X => f x) s μ) :
+    μ.real s • c ≤ ∫ x in s, f x ∂μ := by
+  rw [← setIntegral_const c]
+  exact setIntegral_mono_on (integrableOn_const hμs) hfint hs hf
+
+theorem setIntegral_ge_of_const_le_real {f : X → ℝ} {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : X => f x) s μ) :
     c * μ.real s ≤ ∫ x in s, f x ∂μ := by
-  rw [mul_comm, ← smul_eq_mul, ← setIntegral_const c]
-  exact setIntegral_mono_on (integrableOn_const hμs) hfint hs hf
+  simpa [mul_comm] using setIntegral_ge_of_const_le hs hμs hf hfint
 
 end Mono
 

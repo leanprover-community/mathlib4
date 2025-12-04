@@ -3,9 +3,11 @@ Copyright (c) 2023 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.Group.Subgroup.Lattice
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-!
 
@@ -20,7 +22,7 @@ of `M`. `Submonoid.units` and `Subgroup.ofUnits` form a Galois coinsertion.
 
 We also make the equivalent additive definitions.
 
-# Implementation details
+## Implementation details
 There are a number of other constructions which are multiplicatively equivalent to `S.units` but
 which have a different type.
 
@@ -34,6 +36,8 @@ which have a different type.
 All of these are distinct from `S.leftInv`, which is the submonoid of `M` which contains
 every member of `M` with a right inverse in `S`.
 -/
+
+@[expose] public section
 
 variable {M : Type*} [Monoid M]
 
@@ -178,6 +182,9 @@ noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsU
 S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
+
+instance instSubsingletonUnits [Subsingleton Mˣ] {S : Submonoid M} : Subsingleton Sˣ :=
+   .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
 
 end Submonoid
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.PInfty
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -28,6 +30,8 @@ reflects isomorphisms.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
@@ -56,11 +60,11 @@ theorem decomposition_Q (n q : ℕ) :
       Finset.filter_false, Finset.sum_empty]
   | succ q hq =>
     by_cases! hqn : n < q
-    · rw [Q_is_eventually_constant (show n + 1 ≤ q by cutsat), hq]
+    · rw [Q_is_eventually_constant (show n + 1 ≤ q by lia), hq]
       congr 1
       ext ⟨x, hx⟩
       simp_rw [Finset.mem_filter_univ]
-      cutsat
+      lia
     · obtain ⟨a, ha⟩ := Nat.le.dest hqn
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
@@ -73,7 +77,7 @@ theorem decomposition_Q (n q : ℕ) :
         rfl
       · ext ⟨i, hi⟩
         simp_rw [Finset.mem_erase, Finset.mem_filter_univ, q', ne_eq, Fin.mk.injEq]
-        cutsat
+        lia
 
 variable (X)
 

@@ -3,13 +3,15 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.Cast.Commute
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.Cast.Commute
 
 /-!
 # Invertibility of elements given a characteristic
@@ -19,6 +21,8 @@ characteristic zero. Some more cases are given as a `def`, to be included only
 when needed. To construct instances for concrete numbers,
 `invertibleOfNonzero` is a useful definition.
 -/
+
+@[expose] public section
 
 
 variable {R K : Type*}

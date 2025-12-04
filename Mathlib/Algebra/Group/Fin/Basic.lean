@@ -3,10 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Data.Fin.Rev
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Data.Fin.Rev
 
 /-!
 # Fin is a group
@@ -15,6 +17,8 @@ This file contains the additive and multiplicative monoid instances on `Fin n`.
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
@@ -165,7 +169,7 @@ lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
 
 lemma lt_add_one_of_succ_lt {n : ℕ} [NeZero n] {a : Fin n} (ha : a + 1 < n) : a < a + 1 := by
   rw [lt_def, val_add, coe_ofNat_eq_mod, Nat.add_mod_mod, Nat.mod_eq_of_lt ha]
-  cutsat
+  lia
 
 lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
   rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]

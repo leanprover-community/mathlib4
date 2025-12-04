@@ -3,15 +3,19 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+module
+
+public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Adhesive
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 # Left exactness of sheafification
 In this file we show that sheafification commutes with finite limits.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits Opposite

@@ -6,9 +6,9 @@ section terminalReplacement
 
 section omega
 
-set_option linter.tacticAnalysis.omegaToCutsat true
+set_option linter.tacticAnalysis.omegaToLia true
 
-/-- warning: `cutsat` can replace `omega` -/
+/-- warning: `lia` can replace `omega` -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   omega
@@ -280,7 +280,7 @@ end tryAtEachStep
 
 section grindReplacement
 
-set_option linter.tacticAnalysis.regressions.omegaToCutsat true
+set_option linter.tacticAnalysis.regressions.omegaToLia true
 
 -- We should not complain about `omega` (and others) failing in a `try` context.
 example : x = y := by

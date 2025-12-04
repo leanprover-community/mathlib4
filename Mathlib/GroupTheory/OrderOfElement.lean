@@ -3,18 +3,20 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Group.Action
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.ModEq
-import Mathlib.Dynamics.PeriodicPts.Lemmas
-import Mathlib.GroupTheory.Index
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Order.Interval.Set.Infinite
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Group.Action
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.GroupTheory.Index
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Order of an element
@@ -34,6 +36,8 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -298,7 +302,7 @@ theorem exists_pow_eq_self_of_coprime (h : n.Coprime (orderOf x)) : ∃ m : ℕ,
     exact ⟨1, by rw [h, pow_one, pow_one]⟩
   by_cases h1 : orderOf x = 1
   · exact ⟨0, by rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]⟩
-  obtain ⟨m, h⟩ := exists_mul_emod_eq_one_of_coprime h (one_lt_iff_ne_zero_and_ne_one.mpr ⟨h0, h1⟩)
+  obtain ⟨m, -, h⟩ := exists_mul_mod_eq_one_of_coprime h (by lia)
   exact ⟨m, by rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]⟩
 
 /-- If `x^n = 1`, but `x^(n/p) ≠ 1` for all prime factors `p` of `n`,
@@ -574,7 +578,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   suffices s.Infinite by exact this.mono hs
   contrapose! h
   have : ¬Injective fun n : ℕ => x ^ n := by
-    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
+    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h
     contrapose! this
     exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
@@ -671,7 +675,7 @@ theorem orderOf_dvd_of_mem_zpowers (h : y ∈ Subgroup.zpowers x) : orderOf y �
 theorem smul_eq_self_of_mem_zpowers {α : Type*} [MulAction G α] (hx : x ∈ Subgroup.zpowers y)
     {a : α} (hs : y • a = a) : x • a = a := by
   obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hx
-  rw [← MulAction.toPerm_apply, ← MulAction.toPermHom_apply, MonoidHom.map_zpow _ y k,
+  rw [← MulAction.toPerm_apply, ← MulAction.toPermHom_apply, map_zpow _ y k,
     MulAction.toPermHom_apply]
   exact Function.IsFixedPt.perm_zpow (by exact hs) k -- Porting note: help elab'n with `by exact`
 

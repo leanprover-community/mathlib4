@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Order.Interval.Finset.SuccPred
-import Mathlib.Order.Interval.Multiset
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Order.Interval.Finset.SuccPred
+public import Mathlib.Order.Interval.Multiset
 
 /-!
 # Finite intervals of naturals
@@ -18,6 +20,8 @@ intervals as finsets and fintypes.
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -32,10 +36,10 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
   finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
-  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
+  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
+  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; lia
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -129,7 +133,7 @@ variable {a b c}
 
 lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
 
-lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by lia)⟩ :=
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 set_option linter.deprecated false in
@@ -146,29 +150,29 @@ theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := 
 lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   ext x
   simp only [mem_insert, mem_Icc]
-  cutsat
+  lia
 
 @[deprecated Finset.insert_Icc_right_eq_Icc_succ (since := "2025-04-24")]
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   ext x
   simp only [mem_insert, mem_Icc]
-  cutsat
+  lia
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨x + c, by cutsat⟩⟩
+  refine ⟨?_, fun h ↦ ⟨x + c, by lia⟩⟩
   rintro ⟨x, hx, rfl⟩
-  cutsat
+  lia
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨c - x, by cutsat⟩⟩
+  refine ⟨?_, fun h ↦ ⟨c - x, by lia⟩⟩
   rintro ⟨x, hx, rfl⟩
-  cutsat
+  lia
 
 set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
@@ -186,7 +190,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
   | succ n ih =>
     rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-      Ico_succ_right_eq_insert_Ico (by omega)]
+      Ico_succ_right_eq_insert_Ico (by lia)]
     rintro k hk l hl (hkl : k % a = l % a)
     have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
     simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl
@@ -222,8 +226,8 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
       rw [Nat.mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · cutsat
-    · cutsat
+    · lia
+    · lia
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 
 section Multiset
@@ -271,9 +275,9 @@ theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftE
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
-  · cutsat
+  · lia
   · rintro h
-    exact ⟨x - a, by cutsat⟩
+    exact ⟨x - a, by lia⟩
 
 end Finset
 
@@ -297,7 +301,7 @@ lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀
   · rintro ⟨b, hb⟩
     rcases base with ⟨n, hn⟩
     specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
-    all_goals cutsat
+    all_goals lia
 
 theorem Nat.decreasing_induction_of_infinite
     (h : ∀ n, P (n + 1) → P n) (hP : { x | P x }.Infinite) (n : ℕ) : P n :=

@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Compatibilities of properties of morphisms with respect to composition
@@ -13,6 +15,8 @@ which means that `P f → P g → P (f ≫ g)`. We also introduce the type class
 `W.ContainsIdentities`, `W.IsMultiplicative`, and `W.HasTwoOutOfThreeProperty`.
 
 -/
+
+@[expose] public section
 
 
 universe w v v' u u'

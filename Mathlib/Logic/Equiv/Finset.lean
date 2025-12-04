@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Logic.Equiv.Multiset
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Logic.Equiv.Multiset
 
 /-!
 # `Encodable` and `Denumerable` instances for `Finset`
 -/
+
+@[expose] public section
 
 variable {α}
 
@@ -83,7 +87,7 @@ theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < �
 theorem isChain_raise' : ∀ (l) (n), List.IsChain (· < ·) (raise' l n)
   | [], _ => .nil
   | [_], _ => .singleton _
-  | _ :: _ :: _, _ => .cons_cons (by omega) (isChain_raise' (_ :: _) _)
+  | _ :: _ :: _, _ => .cons_cons (by lia) (isChain_raise' (_ :: _) _)
 
 theorem isChain_cons_raise' (l m) : List.IsChain (· < ·) (m :: raise' l (m + 1)) :=
   isChain_raise' (m :: l) 0

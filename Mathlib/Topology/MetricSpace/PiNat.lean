@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -52,6 +54,8 @@ in general), and `ι` is countable.
   continuous functions to metric spaces, can be embedded inside their product.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -911,6 +915,8 @@ lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
+-- TODO: fix two non-terminal simps below; second one uses a long lemma list
+set_option linter.flexible false in
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
@@ -933,7 +939,7 @@ variable [∀ i, MetricSpace (F i)]
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 

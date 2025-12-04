@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.LinearAlgebra.Finsupp.Span
+module
+
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Lie submodules of a Lie algebra
@@ -24,6 +26,8 @@ use it to define various important operations, notably the Lie span of a subset 
 
 lie algebra, lie submodule, lie ideal, lattice structure
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -402,7 +406,7 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨆ i, p i) : Submodule R M) = ⨆ i, (p i : Submodule R M) := by
   rw [iSup, sSup_toSubmodule]; ext; simp [Submodule.mem_sSup, Submodule.mem_iSup]
 
-/-- The set of Lie submodules of a Lie module form a complete lattice. -/
+/-- The Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
   { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
       sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with

@@ -3,11 +3,12 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Eigenspace.Pi
-import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.LinearAlgebra.Eigenspace.Pi
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -37,6 +38,8 @@ and a proof obligation that the basis vectors are eigenvectors.
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
+
+@[expose] public section
 
 open Module.End
 

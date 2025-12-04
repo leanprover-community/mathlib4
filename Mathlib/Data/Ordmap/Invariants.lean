@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Ordmap.Ordnode
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Ordmap.Ordnode
+public import Mathlib.Tactic.Abel
 
 /-!
 # Invariants for the verification of `Ordnode`
@@ -43,6 +45,8 @@ Contributors are encouraged to pick this up and finish the job, if it appeals to
 
 ordered map, ordered set, data structure, verified programming
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -700,7 +704,7 @@ theorem balanceL_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : S
     rcases H with (⟨l', e, H | ⟨_, H₂⟩⟩ | ⟨r', e, H | ⟨_, H₂⟩⟩)
     · exact le_trans (le_trans (Nat.le_add_left _ _) H) (mul_pos (by decide) l1 : (0 : ℕ) < _)
     · exact le_trans H₂ (Nat.mul_le_mul_left _ (raised_iff.1 e).1)
-    · cases raised_iff.1 e; unfold delta; cutsat
+    · cases raised_iff.1 e; unfold delta; lia
     · exact le_trans (raised_iff.1 e).1 H₂
 
 theorem balance_sz_dual {l r}

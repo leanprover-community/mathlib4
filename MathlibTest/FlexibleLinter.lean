@@ -168,23 +168,29 @@ example (h : False) : 0 ≠ 0 := by
   try (simp; done)
   exact h.elim
 
+-- `ac_rfl` is an allowed follower
+#guard_msgs in
+example {a b c d : Nat} (h : False) (h' : d = a) : a + (b + c) = (b + d) + c := by
+  simp [h']
+  ac_rfl
+
 -- `grind` is another flexible tactic,
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
   grind
 
--- as are its `grobner` and `cutsat` front-ends.
+-- as are its `grobner` and `lia` front-ends.
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
   grobner
 
--- `cutsat` is another flexible tactic.
+-- `lia` is another flexible tactic.
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
-  cutsat
+  lia
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…

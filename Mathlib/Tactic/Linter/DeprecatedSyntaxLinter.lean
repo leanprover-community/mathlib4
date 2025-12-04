@@ -3,11 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jeremy Tan, Adomas Baliuka
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # Linter against deprecated syntax
@@ -33,6 +34,8 @@ probably possible to prove `False` using `native_decide`.
 This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
 It is not inherently limited to tactics.
 -/
+
+public meta section
 
 open Lean Elab Linter
 
@@ -107,7 +110,7 @@ where `<option>` contains `maxHeartbeats`, then it returns
 
 Otherwise, it returns `none`.
 -/
-def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring)
+def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring.Raw)
   | stx@`(command|set_option $mh $n:num in $_) =>
     let opt := mh.getId
     if !opt.components.contains `maxHeartbeats then
@@ -121,7 +124,7 @@ def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substri
   | _ => none
 
 /-- Whether a given piece of syntax represents a `decide` tactic call with the `native` option
-enabled. This may have false negatives for `decide (config := {<options>})` syntax). -/
+enabled. This may have false negatives for `decide (config := {<options>})` syntax. -/
 def isDecideNative (stx : Syntax ) : Bool :=
   match stx with
   | .node _ ``Lean.Parser.Tactic.decide args =>
@@ -182,7 +185,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
         -- we remove all subsequent potential flags and only decide whether to lint or not
         -- based on whether the current option has a comment.
         let rargs := rargs.filter (·.1 != `MaxHeartbeats)
-        if trailing.toString.trimLeft.isEmpty then
+        if trailing.toString.trimAsciiStart.isEmpty then
           rargs.push (`MaxHeartbeats, stx,
             s!"Please, add a comment explaining the need for modifying the maxHeartbeat limit, \
               as in\nset_option {opt} {n} in\n-- reason for change\n...")

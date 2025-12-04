@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Data.Multiset.Powerset
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Big operators on a finset in ordered groups
@@ -18,6 +20,8 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups/monoids.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

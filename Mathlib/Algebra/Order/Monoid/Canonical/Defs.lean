@@ -3,15 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.NeZero
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Canonically ordered monoids
 -/
+
+@[expose] public section
 
 universe u
 
@@ -133,6 +137,8 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
+@[to_additive (attr := simp)] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
+
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
@@ -222,7 +228,7 @@ end Semigroup
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
     [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid
 variable [Monoid α]

@@ -3,9 +3,11 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
-import Lean.Elab.Command
-import Lean.Elab.ParseImportsFast
-import Mathlib.Tactic.Linter.DirectoryDependency
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
+public meta import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -47,6 +49,8 @@ This makes it possible for the linter to check the entire header of the file, em
 could arise from this part and also flag that the file should contain a module doc-string after
 the `import` statements.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 
@@ -97,7 +101,7 @@ In conclusion, either the parsing is successful, and the linter can continue wit
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
 def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Syntax := do
-  let upToHere : Substring := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
+  let upToHere : Substring.Raw := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
@@ -124,7 +128,7 @@ def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax 
   let mut stxs := #[]
   if !line.startsWith "Authors: " then
     stxs := stxs.push
-      (toSyntax line (line.take "Authors: ".length) offset,
+      (toSyntax line (line.take "Authors: ".length |>.copy) offset,
        s!"The authors line should begin with 'Authors: '")
   if (line.splitOn "  ").length != 1 then
     stxs := stxs.push (toSyntax line "  " offset, s!"Double spaces are not allowed.")
@@ -137,7 +141,7 @@ def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax 
   -- If there are no previous exceptions, then we try to validate the names.
   if !stxs.isEmpty then
     return stxs
-  if (line.drop "Authors:".length).trim.isEmpty then
+  if (line.drop "Authors:".length).trimAscii.isEmpty then
     return #[(toSyntax line "Authors:" offset,
        s!"Please, add at least one author!")]
   else
@@ -167,7 +171,7 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
   let stdText (s : String) :=
     s!"Malformed or missing copyright header: `{s}` should be alone on its own line."
   let mut output := #[]
-  if (pieces.getD 1 "\n").take 1 != "\n" then
+  if (pieces.getD 1 "\n").take 1 != "\n".toSlice then
     output := output.push (toSyntax copyright "-/", s!"{stdText "-/"}")
   let lines := copyright.splitOn "\n"
   let closeComment := lines.getLastD ""
@@ -185,20 +189,20 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     let copStop := ". All rights reserved."
     if !copyrightAuthor.startsWith copStart then
       output := output.push
-        (toSyntax copyright (copyrightAuthor.take copStart.length),
+        (toSyntax copyright (copyrightAuthor.take copStart.length).copy,
          s!"Copyright line should start with 'Copyright (c) YYYY'")
     let author := (copyrightAuthor.drop (copStart.length + 2))
-    if output.isEmpty && author.take 1 != " " then
+    if output.isEmpty && author.take 1 != " ".toSlice then
       output := output.push
-        (toSyntax copyright (copyrightAuthor.drop (copStart.length + 2)),
+        (toSyntax copyright (copyrightAuthor.drop (copStart.length + 2)).copy,
          s!"'Copyright (c) YYYY' should be followed by a space")
-    if output.isEmpty && #["", ".", ","].contains ((author.drop 1).take 1).trim then
+    if output.isEmpty && #["", ".", ","].contains ((author.drop 1).take 1).trimAscii.copy then
       output := output.push
-        (toSyntax copyright (copyrightAuthor.drop (copStart.length + 3)),
+        (toSyntax copyright (copyrightAuthor.drop (copStart.length + 3)).copy,
          s!"There should be at least one copyright author, separated from the year by exactly one space.")
     if !copyrightAuthor.endsWith copStop then
       output := output.push
-        (toSyntax copyright (copyrightAuthor.takeRight copStop.length),
+        (toSyntax copyright (copyrightAuthor.takeEnd copStop.length).copy,
          s!"Copyright line should end with '. All rights reserved.'")
     -- Validate the authors line(s). The last line is the closing comment: trim that off right away.
     let authorsLines := authorsLines.dropLast
@@ -354,7 +358,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let mut msgs := ""
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
-    Linter.logLint linter.directoryDependency stx msgs.trimLeft
+    Linter.logLint linter.directoryDependency stx msgs.trimAsciiStart.copy
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with

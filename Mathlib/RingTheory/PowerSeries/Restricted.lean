@@ -3,11 +3,12 @@ Copyright (c) 2025 William Coram. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Coram
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Tactic.Bound
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Tactic.Bound
 
 /-!
 # Restricted power series
@@ -16,6 +17,8 @@ import Mathlib.Tactic.Bound
 `‖coeff R i f‖ * c ^ i → 0`.
 
 -/
+
+@[expose] public section
 
 namespace PowerSeries
 
@@ -45,7 +48,7 @@ lemma one : IsRestricted c (1 : PowerSeries R) := by
   simp only [isRestricted_iff, coeff_one, norm_mul, norm_pow, Real.norm_eq_abs]
   refine fun _ _ ↦ ⟨1, fun n hn ↦ ?_ ⟩
   split
-  · omega
+  · lia
   · simpa
 
 lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) := by
@@ -53,7 +56,7 @@ lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) := by
     Real.norm_eq_abs, abs_norm]
   refine fun _ _ ↦ ⟨n + 1, fun _ _ ↦ ?_⟩
   split
-  · omega
+  · lia
   · simpa
 
 lemma C (a : R) : IsRestricted c (C a) := by
@@ -103,7 +106,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   · right
     apply le_max'
     simp only [mem_image, mem_range]
-    exact ⟨i, by omega, rfl⟩
+    exact ⟨i, by lia, rfl⟩
   · left
     calc _ ≤ ‖(coeff i) f‖ * |c ^ i| := by bound
          _ ≤ 1 := by simpa using (hf i h).le

@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Finset.Lattice.Lemmas
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
@@ -26,6 +28,8 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 * `Finset.eraseInduction`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -505,7 +509,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
-  cutsat
+  lia
 
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
@@ -655,7 +659,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
     (hXY : 2 * n < #(X ∪ Y)) : ∃ C : Finset α, n < #C ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : #(X ∩ (Y \ X)) = 0 := Finset.card_eq_zero.mpr (by grind)
   have h₂ : #(X ∪ Y) = #X + #(Y \ X) := by grind
-  obtain h | h : n < #X ∨ n < #(Y \ X) := by cutsat
+  obtain h | h : n < #X ∨ n < #(Y \ X) := by lia
   · exact ⟨X, by grind⟩
   · exact ⟨Y \ X, by grind⟩
 
@@ -708,9 +712,7 @@ theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : #s ≤ 1
   Finset.card_le_one_iff.2 fun {_ _ _ _} => Subsingleton.elim _ _
 
 theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact card_le_one
+  contrapose!; exact card_le_one
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
@@ -866,7 +868,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
   | s =>
     H s fun {t} ht h =>
       have := Finset.card_lt_card h
-      have : n - #t < n - #s := by omega
+      have : n - #t < n - #s := by lia
       strongDownwardInduction H t ht
   termination_by s => n - #s
 

@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Infix
-import Mathlib.Data.Quot
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Quot
 
 /-!
 # List rotation
@@ -21,6 +23,8 @@ This file proves basic results about `List.rotate`, the list rotation.
 
 rotated, rotation, permutation, cycle
 -/
+
+@[expose] public section
 
 
 universe u
@@ -204,7 +208,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
         rw [Nat.sub_lt_iff_lt_add hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [Nat.add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
-      cutsat
+      lia
     · rwa [Nat.sub_lt_iff_lt_add' hm, length_drop, Nat.sub_add_cancel hlt.le]
 
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :

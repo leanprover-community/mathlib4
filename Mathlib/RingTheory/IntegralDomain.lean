@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Fintype.Inv
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Fintype.Inv
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -27,6 +29,8 @@ is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 
 integral domain, finite integral domain, finite field
 -/
+
+@[expose] public section
 
 section
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Counit
-import Mathlib.Algebra.MvPolynomial.Invertible
-import Mathlib.RingTheory.WittVector.Defs
+module
+
+public import Mathlib.Algebra.MvPolynomial.Counit
+public import Mathlib.Algebra.MvPolynomial.Invertible
+public import Mathlib.RingTheory.WittVector.Defs
 
 /-!
 # Witt vectors
@@ -43,6 +45,8 @@ in this file.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -297,7 +301,7 @@ theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
   have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
       (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
     simp [MvPolynomial.aeval_monomial, map_pow]
-  rw [this, show n + 1 = (n - i) + 1 + i by omega, pow_add, mul_comm]
+  rw [this, show n + 1 = (n - i) + 1 + i by lia, pow_add, mul_comm]
   apply mul_dvd_mul_left
   refine (pow_dvd_pow_of_dvd ?_ _).trans (pow_dvd_pow _ ?_)
   · exact hx i (Nat.le_of_lt_succ hi)

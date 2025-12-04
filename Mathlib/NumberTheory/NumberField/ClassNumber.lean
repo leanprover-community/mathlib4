@@ -3,11 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Riccardo Brasca, Xavier Roblot
 -/
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
-import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.RingTheory.Ideal.IsPrincipal
-import Mathlib.NumberTheory.RamificationInertia.Galois
+module
+
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
+public import Mathlib.NumberTheory.ClassNumber.Finite
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Class numbers of number fields
@@ -37,6 +39,8 @@ cardinality of the class group of its ring of integers
   The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
   to deal with the finite number of primes `p` in the interval.
 -/
+
+@[expose] public section
 
 open scoped nonZeroDivisors Real
 

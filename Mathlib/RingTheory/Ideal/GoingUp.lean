@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Integral
+module
+
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Ideals over/under ideals in integral extensions
@@ -20,6 +22,8 @@ coefficients of a minimal polynomial.
 Once mathlib has more material on the localization at a prime ideal, the results
 can be proven using more general going-up/going-down theory.
 -/
+
+@[expose] public section
 
 open Polynomial Submodule
 
@@ -91,9 +95,8 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
       (Ideal.quotientMap (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
         ((Quotient.mk P).comp C) := by
-  refine RingHom.ext fun x => ?_
-  repeat' rw [RingHom.coe_comp, Function.comp_apply]
-  rw [quotientMap_mk, coe_mapRingHom, map_C]
+  ext
+  simp
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to

@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Operations on `Submonoid`s
@@ -64,6 +66,8 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
 submonoid, range, product, map, comap
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

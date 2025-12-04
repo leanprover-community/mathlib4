@@ -3,10 +3,12 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Topology.Instances.Complex
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.NumberTheory.NumberField.Norm
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.Topology.Instances.Complex
 
 /-!
 # Infinite places of a number field
@@ -35,6 +37,8 @@ This file defines the infinite places of a number field.
 
 number field, infinite places
 -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -375,7 +379,8 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       have : (embedding w x).im = 0 := by
         rw [← Complex.conj_eq_iff_im]
         have := RingHom.congr_fun h' x
-        simp at this
+        simp only [ComplexEmbedding.conjugate_coe_eq, AlgHom.toRingHom_eq_coe,
+          RingHom.coe_coe] at this
         rw [this]
         exact hψ.symm
       rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
@@ -385,7 +390,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
     (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1) (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) :
     Algebra.adjoin ℚ {(x : K)} = ⊤ := by
-  rw [← IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite ℚ _)]
+  rw [← IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.of_finite ℚ _)]
   exact congr_arg IntermediateField.toSubalgebra <|
     NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
 
@@ -435,6 +440,18 @@ theorem card_add_two_mul_card_eq_rank :
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
+open scoped Classical in
+/--
+The signature of the permutation on the complex embeddings of `K` defined by sending an embedding
+to its conjugate has signature `(-1) ^ nrComplexPlaces K`.
+-/
+theorem ComplexEmbedding.conjugate_sign :
+    (ComplexEmbedding.involutive_conjugate K).toPerm.sign = (-1) ^ nrComplexPlaces K := by
+  rw [Equiv.Perm.sign_of_pow_two_eq_one, Embeddings.card, ← card_add_two_mul_card_eq_rank,
+    ← card_real_embeddings, Fintype.card, Fintype.card, Nat.add_sub_cancel_left,
+    Nat.mul_div_cancel_left _ zero_lt_two]
+  exact Equiv.ext (ComplexEmbedding.involutive_conjugate K).toPerm_involutive
+
 variable {K}
 
 theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
@@ -468,16 +485,16 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     rw [← Complex.abs_re_eq_norm] at him
-    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by cutsat)
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by lia)
     rwa [← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
-    exact hζ'.ne_one (by cutsat) <| Complex.ext (by simp [hone]) (by simp [him])
+    exact hζ'.ne_one (by lia) <| Complex.ext (by simp [hone]) (by simp [him])
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
       orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
-    cutsat
+    lia
 
 end IsPrimitiveRoot
 

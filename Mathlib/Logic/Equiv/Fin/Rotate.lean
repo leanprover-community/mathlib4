@@ -3,8 +3,10 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Lawrence Wu, Jeremy Tan
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Cyclic permutations on `Fin n`
@@ -14,6 +16,8 @@ This file defines
 * `finCycle`, the permutation that adds a fixed number to each element of `Fin n`
 and proves various lemmas about them.
 -/
+
+@[expose] public section
 
 open Nat
 
@@ -35,7 +39,7 @@ theorem finRotate_of_lt {k : ℕ} (h : k < n) :
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, Nat.add_comm]
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, by cutsat⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
+theorem finRotate_last' : finRotate (n + 1) ⟨n, by lia⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate_succ]
   rw [finAddFlip_apply_mk_right le_rfl]
   simp
@@ -126,6 +130,6 @@ lemma finCycle_eq_finRotate_iterate {k : Fin n} : finCycle k = (finRotate n)^[k.
     ext i; induction k using Fin.induction with
     | zero => simp
     | succ k ih =>
-      rw [Fin.val_eq_val, Fin.coe_castSucc] at ih
+      rw [Fin.val_eq_val, Fin.val_castSucc] at ih
       rw [Fin.val_succ, Function.iterate_succ', Function.comp_apply, ← ih, finRotate_succ_apply,
         finCycle_apply, finCycle_apply, add_assoc, Fin.coeSucc_eq_succ]

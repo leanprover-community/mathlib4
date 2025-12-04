@@ -3,23 +3,28 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+module
+
+public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # The Orthogonal-reflection construction
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
-any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
+any `Z : C`. This morphism belongs to `W.isLocal.isLocal` and
 is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
 of two morphisms that are roughly described as follows:
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
 and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
 coproducts and a pushout in essentially the same way as it is done in
-the file `CategoryTheory.SmallObject.Construction` for the small object
+the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` for the small object
 argument);
 * `fromStep W Z : step W Z ⟶ succ W Z`: this morphism coequalizes all pairs
 of morphisms `g₁ g₂ : Y ⟶ step W Z` such that there is a `f : X ⟶ Y`
@@ -44,13 +49,44 @@ suitable assumptions (TODO).
 
 -/
 
-universe w v u
+@[expose] public section
+
+universe w v' u' v u
 
 namespace CategoryTheory
 
-open Limits Localization
+open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
+
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    obtain ⟨_, _⟩ := hW f hf
+    refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
+    · obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₁
+      obtain ⟨j₂, g₂, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₂
+      dsimp at h ⊢
+      obtain ⟨j₃, u, v, huv⟩ :=
+        IsCardinalPresentable.exists_eq_of_isColimit κ p.isColimit (f ≫ g₁) (f ≫ g₂)
+          (by simpa)
+      simp only [Category.assoc] at huv
+      rw [← p.w u, ← p.w v, reassoc_of% ((p.prop_diag_obj j₃ _ hf).1 huv)]
+    · obtain ⟨j, g, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g
+      obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
+      exact ⟨g ≫ p.ι.app j, by simp⟩
+
+lemma MorphismProperty.isCardinalAccessible_ι_isLocal
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [HasCardinalFilteredColimits C κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.ι.IsCardinalAccessible κ where
+  preservesColimitOfShape J _ _ := by
+    have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
+    infer_instance
 
 namespace OrthogonalReflection
 
@@ -61,6 +97,17 @@ parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
 def D₁ : Type _ := Σ (f : W.toSet), f.1.left ⟶ Z
 
+instance [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C] :
+    Small.{w} (D₁ (W := W) (Z := Z)) := by
+  dsimp [D₁]
+  infer_instance
+
+lemma D₁.hasCoproductsOfShape [MorphismProperty.IsSmall.{w} W]
+    [LocallySmall.{w} C] [HasCoproducts.{w} C] :
+    HasCoproductsOfShape (D₁ (W := W) (Z := Z)) C :=
+  hasColimitsOfShape_of_equivalence
+    (Discrete.equivalence (equivShrink.{w} _).symm)
+
 variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
 of a morphism `X ⟶ Z`, this is the object `X`. -/
@@ -70,6 +117,8 @@ variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
 of a morphism `X ⟶ Z`, this is the object `Y`. -/
 def D₁.obj₂ (d : D₁ W Z) : C := d.1.1.right
+
+section
 
 variable [HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
 
@@ -90,8 +139,6 @@ variable {W Z} in
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
   Sigma.ι_desc _ _
-
-section
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
@@ -151,6 +198,23 @@ def D₂.multispanShape : MultispanShape where
   fst _ := .unit
   snd _ := .unit
 
+section
+
+variable [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C]
+
+instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
+  dsimp [D₂]
+  infer_instance
+
+instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
+
+attribute [local instance] essentiallySmall_of_small_of_locallySmall in
+lemma D₂.hasColimitsOfShape [HasColimitsOfSize.{w, w} C] :
+    HasColimitsOfShape (WalkingMultispan (multispanShape W Z)) C :=
+  hasColimitsOfShape_of_equivalence (equivSmallModel.{w} _).symm
+
+end
+
 /-- The diagram of the multicoequalizer of all pair of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 @[simps]
@@ -195,8 +259,8 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
-lemma leftBousfieldW_isLocal_toSucc :
-    LeftBousfield.W W.isLocal (toSucc W Z) := by
+lemma isLocal_isLocal_toSucc :
+    W.isLocal.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
   · ext ⟨⟩
     simp only [Category.assoc] at h
@@ -209,6 +273,9 @@ lemma leftBousfieldW_isLocal_toSucc :
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
+@[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
+  isLocal_isLocal_toSucc
+
 lemma isIso_toSucc_iff :
     IsIso (toSucc W Z) ↔ W.isLocal Z := by
   refine ⟨fun _ X Y f hf ↦ ?_, fun hZ ↦ ?_⟩
@@ -220,7 +287,7 @@ lemma isIso_toSucc_iff :
       simp only [Category.assoc] at hZ
       exact ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z ≫ inv (toSucc W Z),
         by simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc, hZ]⟩
-  · obtain ⟨f, hf⟩ := (leftBousfieldW_isLocal_toSucc W Z _ hZ).2 (𝟙 _)
+  · obtain ⟨f, hf⟩ := (isLocal_isLocal_toSucc W Z _ hZ).2 (𝟙 _)
     dsimp at hf
     refine ⟨f, hf, ?_⟩
     ext ⟨⟩

@@ -3,10 +3,12 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Order.Archimedean.IndicatorCard
-import Mathlib.Probability.Martingale.Centering
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Martingale.OptionalStopping
+module
+
+public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+public import Mathlib.Probability.Martingale.Centering
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Martingale.OptionalStopping
 
 /-!
 
@@ -31,6 +33,8 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
   `limsup atTop s` is almost everywhere equal to the set for which `∑ ℙ[s (n + 1)∣ℱ n] = ∞`.
 
 -/
+
+@[expose] public section
 
 
 open Filter
@@ -85,7 +89,7 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
       ne_top_of_le_ne_top (by simp) (min_le_left _ _)
     lift min (i : ℕ∞) (leastGE f r ω) to ℕ using h_top with p
     simp only [untopD_coe_enat, Nat.cast_lt, gt_iff_lt] at *
-    omega
+    lia
 
 @[deprecated (since := "2025-10-25")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
 

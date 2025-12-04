@@ -3,12 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Notation
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.List.Cycle
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Periodic points
@@ -40,6 +42,8 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 * https://en.wikipedia.org/wiki/Periodic_point
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -207,7 +211,7 @@ theorem periodicPts_subset_range : periodicPts f ⊆ range f := by
   rcases h with ⟨n, _, h⟩
   use f^[n - 1] x
   nth_rw 1 [← iterate_one f]
-  rw [← iterate_add_apply, Nat.add_sub_cancel' (by cutsat)]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by lia)]
   exact h
 
 @[deprecated (since := "2025-04-27")]

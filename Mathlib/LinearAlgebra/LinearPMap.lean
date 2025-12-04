@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.Prod
+module
+
+public import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Partially defined linear maps
@@ -27,6 +29,8 @@ is bounded above.
 They are also the basis for the theory of unbounded operators.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -223,7 +227,6 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
   ⟨⊥⟩
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
-  le := (· ≤ ·)
   le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.ext h ▸ rfl⟩
   le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
     ⟨le_trans fg_le gh_le, fun x _ hxz =>
@@ -242,7 +245,6 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
     ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.ext <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
-  bot := ⊥
   bot_le f :=
     ⟨bot_le, fun x y h => by
       have hx : x = 0 := Subtype.ext ((mem_bot R).1 x.2)

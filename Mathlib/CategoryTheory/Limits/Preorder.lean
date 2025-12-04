@@ -3,9 +3,10 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour, Joël Riou, Fernando Chu
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.Order.Bounds.Defs
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # (Co)limits in a preorder category
@@ -16,6 +17,8 @@ We provide basic results about (co)limits in the associated category of a preord
 - We show that (co)products correspond to infima (suprema).
 
 -/
+
+@[expose] public section
 
 universe v u u'
 

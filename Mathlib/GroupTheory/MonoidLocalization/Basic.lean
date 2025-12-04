@@ -3,11 +3,13 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.OreLocalization.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.GroupTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids
@@ -72,6 +74,8 @@ localization, monoid localization, quotient monoid, congruence relation, charact
 commutative monoid, grothendieck group
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero Ring
 
 open Function
@@ -115,7 +119,7 @@ end Submonoid
 namespace Localization
 
 /- Ensure that `@[to_additive]` uses the right namespace before the definition of `Localization`. -/
-run_meta ToAdditive.insertTranslation `Localization `AddLocalization
+insert_to_additive_translation Localization AddLocalization
 
 /-- The congruence relation on `M × S`, `M` a `CommMonoid` and `S` a submonoid of `M`, whose
 quotient is the localization of `M` at `S`, defined as the unique congruence relation on
@@ -536,7 +540,7 @@ lemma mk'_mul (x₁ x₂ : M) (y₁ y₂ : S) : f.mk' (x₁ * x₂) (y₁ * y₂
 
 @[to_additive]
 theorem mk'_one (x) : f.mk' x (1 : S) = f x := by
-  rw [mk', MonoidHom.map_one]
+  rw [mk', map_one]
   exact mul_one _
 
 /-- Given a localization map `f : M →* N` for a submonoid `S ⊆ M`, for all `z : N` we have that if
@@ -1040,7 +1044,7 @@ noncomputable def mulEquivOfLocalizations (k : LocalizationMap S P) : N ≃* P :
   invFun := k.lift f.map_units
   left_inv := f.lift_left_inverse
   right_inv := k.lift_left_inverse
-  map_mul' := MonoidHom.map_mul _ }
+  map_mul' := map_mul _ }
 
 @[to_additive (attr := simp)]
 theorem mulEquivOfLocalizations_apply {k : LocalizationMap S P} {x} :
