@@ -138,8 +138,7 @@ meta def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrT
     while levels.size < numLevels do
       levels := levels.push none
 
-    let constLevels : Array Level ← levels.mapM fun k => do
-      match k with
+    let constLevels : Array Level ← levels.mapM fun
       | none => Meta.mkFreshLevelMVar
       | some (.param baseName) => mkFreshLevelParam baseName
       | some (.explicit l) => elabLevel l
