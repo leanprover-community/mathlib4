@@ -786,6 +786,9 @@ lemma extClass_postcomp_bijective_of_lt (M N : ModuleCat.{v} R) (x : R) (reg : I
     (Limits.IsZero.eq_zero_of_src (AddCommGrpCat.isZero_of_subsingleton _) _)
   exact (AddCommGrpCat.mono_iff_injective _).mp mono
 
+/-- For `(r1, ... rk)` an `M`-regular contained in `Ann(N)`, the linear map from
+`N →ₗ[R] M⧸(r1, ... rk)` to `Ext N M k` defined by compostion of connection maps in
+long exact sequence of `Ext`. -/
 noncomputable def QuotientRegularSequenceToExt (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
     (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) →ₗ[R] Ext.{w} N M rs.length :=
@@ -821,6 +824,7 @@ lemma quotientRegularSequenceToExt_bijective (M N : ModuleCat.{v} R) {rs : List 
     · exact extClass_postcomp_bijective_of_lt M N a reg'.1 mem'.1
         (rs'.length_cons (a := a)).symm reg mem (by simp)
 
+/-- The linear equivalence obtained from the bijectivity of `QuotientRegularSequenceToExt`. -/
 noncomputable def ExtEquivQuotientRegularSequence (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
     Ext.{w} N M rs.length ≃ₗ[R] (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) :=
@@ -833,6 +837,8 @@ section
 
 variable {R}
 
+/-- An ideal `I` is irreducible if intersection of two ideals equals `I`
+implies one of them exactly being `I`. -/
 class Ideal.isIrreducible (I : Ideal R) : Prop where
   irr : ∀ {J₁ J₂ : Ideal R}, J₁ ⊓ J₂ = I → (J₁ = I ∨ J₂ = I)
 
