@@ -886,11 +886,13 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
   | insert b B hb h =>
     by_cases hb0 : g b = 0
     · simp_all
-    simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
+    simp? [Finset.sum_insert hb, hb0] at hd hfd ⊢ says
+      simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
     obtain ⟨⟨rfl, isunit_gb⟩, hd⟩ := hd
     use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
-    simp only [Finset.sum_insert hb, ite_smul, zero_smul, ↓reduceIte, Finset.sum_ite_eq', hb,
-      add_zero, sPolynomial_self, smul_zero, zero_add]
+    simp? [Finset.sum_insert hb, hb] says
+      simp only [Finset.sum_insert hb, ite_smul, zero_smul, ↓reduceIte, Finset.sum_ite_eq', hb,
+        add_zero, sPolynomial_self, smul_zero, zero_add]
     simp only [m.toSyn.injective.eq_iff] at *
     trans ∑ b' ∈ B, (g b' - (m.leadingCoeff (g b') * ↑isunit_gb.unit⁻¹) • g b)
     · suffices (-(∑ i ∈ B, m.leadingCoeff (g i))) = m.leadingCoeff (g b) by
