@@ -20,7 +20,7 @@ In particular, if `𝕜` is an `RCLike` field, `𝓓'(Ω, 𝕜)` is the usual no
 distribution on `Ω`.
 
 We denote the space of `F`-valued distributions on `Ω` by `𝓓'(Ω, F)`. Topologically,
-it is defined as `𝓓(Ω, ℝ) →L_c[ℝ] F`, meaning that we endow it with topology of uniform
+it is defined as `𝓓(Ω, ℝ) →L_c[ℝ] F`, meaning that we endow it with the topology of uniform
 convergence on compact subsets of `𝓓(Ω, ℝ)`. In this particular case, this happens to coincide
 with the topology of `𝓓(Ω, ℝ) →L[ℝ] F`, namely that of uniform convergence on bounded subsets.
 See the implementation notes below for more details.
@@ -53,7 +53,7 @@ At this point in time, it is not clear wether we should enforce an API barrier b
 `Distribution` as an `abbrev`, which means that we get a lot of instances for free, but also
 that there is no API barrier.
 
-If this happens to be a bad decision, which will become clear while developping the theory,
+If this happens to be a bad decision, which will become clear while developing the theory,
 do not hesitate to refactor to a `def` instead.
 
 ### Vector-valued distributions
@@ -73,7 +73,7 @@ Let us give two examples of how we plan to use this level of generality:
 
 ### Choice of scalar field
 
-In the litterature, it is common to define complex-valued distributions as continuous `ℂ`-linear
+In the literature, it is common to define complex-valued distributions as continuous `ℂ`-linear
 forms `T : 𝓓(Ω, ℂ) →L[ℂ] ℂ`. We use `𝓓(Ω, ℝ) →L[ℝ] ℂ` instead, that is, we only ever test
 against *real-valued* test functions.
 
@@ -96,11 +96,11 @@ This is not incompatible with the predicate approach: in fact, we think that suc
 should eventually become the primary interface for the order of a distribution. However, we believe
 that being able to talk about the space `𝓓'^{n}(Ω, F)` is also quite important, for the following
 reasons:
-* if `T` is a distribution of order at most `n`, it is natural to test it against a `C^n` test
+* if `T : 𝓓'(Ω,F)` is a distribution whose order is at most `n`, it is natural to test it against a `C^n` test
   function (especially if `n = 0`). This means that we naturally want to consider its extension
   `T'` as an element of `𝓓'^{n}(Ω, F)`.
 * it is often quite easy to keep track of the regularities while *defining* an operation on
-  distributions (e.g differentiation). On the other hand, once you have defined an operation on
+  distributions (e. g. differentiation). On the other hand, once you have defined an operation on
   `𝓓'^(Ω, F)`, it can be quite painful to study its relation to order *a posteriori*.
 
 Note that the topology on `𝓓'^{n}(Ω, F)` has no reason to be the subspace topology coming from
@@ -115,7 +115,7 @@ Note that, since `𝓓(Ω, ℝ)` is a Montel space, the topology on `𝓓'(Ω, F
 bounded convergence. Hence, our definition also agrees with
 [L. Schwartz, *Théorie des distributions*, Chapitre III, §3][schwartz1950].
 
-When `n` is finite however, `𝓓^{n}(Ω, ℝ)` is no longer a Montel space
+When `n` is finite, however, `𝓓^{n}(Ω, ℝ)` is no longer a Montel space
 (see [L. Schwartz, *Théorie des distributions*, Chapitre III, §2, p. 71][schwartz1950]), hence
 these two topologies have no reason to be the same. Schwartz uses compact convergence as a default
 (see [L. Schwartz, *Théorie des distributions à valeurs vectorielles*, §2, p. 50][schwartz1957]),
@@ -149,7 +149,9 @@ variable
 -- TODO: def or abbrev?
 variable (Ω F n) in
 /-- `𝓓'^{n}(Ω, F) = Distribution Ω F n` is the space of `F`-valued distributions on `Ω` with
-order at most `n`. In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/
+order at most `n`.
+
+In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/
 abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 
 /-- We denote `𝓓'^{n}(Ω, F)` the space of `F`-valued distributions on `Ω` with order at most
