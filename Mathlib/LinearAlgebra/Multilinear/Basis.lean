@@ -41,38 +41,41 @@ theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {�
 @[deprecated (since := "2025-05-12")]
 alias Basis.ext_multilinear_fin := Module.Basis.ext_multilinear
 
-section Basis
+namespace Basis
 
-universe uι uκ uS uR uM uN
-variable {ι : Type uι} [DecidableEq ι] {κ : ι → Type uκ} [∀ i, DecidableEq (κ i)]
-variable {S : Type uS} {R : Type uR} [DecidableEq R]
-variable {ι'} [DecidableEq ι'] {M : ι → Type uM} {N : Type uN}
-variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
-variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
-variable [∀ i, Module R (M i)] [Module R N]
+open Module
 
-open Module in
+variable {κ : ι → Type*} (b : (i : ι) → Basis (κ i) R (M i))
+  {ι' N : Type*} [AddCommMonoid N] [Module R N] (b' : Basis ι' R N)
+
+open scoped Classical in
 /-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/
-noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
+noncomputable def multilinearMap [Finite ι] [∀ i, Finite (κ i)] :
     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
-  repr := LinearEquiv.multilinearMapCongrLeft (fun i => (b i).repr.symm) ≪≫ₗ
-    (b'.repr).multilinearMapCongrRight R ≪≫ₗ freeFinsuppEquiv.symm
+  repr :=
+    have : Fintype ι := Fintype.ofFinite _
+    have (i : ι) : Fintype (κ i) := Fintype.ofFinite _
+    LinearEquiv.multilinearMapCongrLeft (fun i => (b i).repr.symm) ≪≫ₗ
+      (b'.repr).multilinearMapCongrRight R ≪≫ₗ freeFinsuppEquiv.symm
 
-open Module in
-theorem _root_.Basis.multilinearMap_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
-    (i : (Π i, κ i) × ι') :
+variable [Fintype ι] [∀ i, Fintype (κ i)]
+
+theorem multilinearMap_apply (i : (Π i, κ i) × ι') :
     Basis.multilinearMap b b' i =
-      ((LinearMap.id (M := R)).smulRight (b' i.2)).compMultilinearMap (
-        MultilinearMap.mkPiRing R ι 1 |>.compLinearMap fun i' => (b i').coord (i.1 i')
-      ) := by
-  ext _
-  simp [Basis.multilinearMap]
+      ((LinearMap.id (M := R)).smulRight (b' i.2)).compMultilinearMap
+        (MultilinearMap.mkPiRing R ι 1 |>.compLinearMap fun i' => (b i').coord (i.1 i')) := by
+  ext x
+  simp only [multilinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
+    LinearEquiv.trans_apply, LinearEquiv.multilinearMapCongrRight_symm_apply, Basis.coe_repr_symm,
+    LinearEquiv.multilinearMapCongrLeft_symm_apply, compLinearMap_apply, LinearEquiv.coe_coe,
+    LinearMap.compMultilinearMap_apply, freeFinsuppEquiv_single, one_smul,
+    Finsupp.linearCombination_single, Basis.coord_apply, mkPiRing_apply, smul_eq_mul, mul_one,
+    LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
+  convert rfl
 
-open Module in
 /-- The elements of the basis are the maps which scale `b' ii.2` by the
 product of all the `ii.1 ·` coordinates along `b i`. -/
-theorem _root_.Basis.multilinearMap_apply_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
-    (ii : (Π i, κ i) × ι') (v) :
+theorem multilinearMap_apply_apply (ii : (Π i, κ i) × ι') (v) :
     Basis.multilinearMap b b' ii v = (∏ i, (b i).repr (v i) (ii.1 i)) • b' ii.2 := by
   simp [Basis.multilinearMap_apply]
 

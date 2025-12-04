@@ -243,11 +243,8 @@ end dfinsuppFamily
 
 section freeDFinsuppEquiv
 
-variable [DecidableEq ι] [Fintype ι] [CommSemiring R]
-variable {M : ∀ i, κ i → Type uM} {N : (Π i, κ i) → Type uN}
-variable [∀ i k, AddCommMonoid (M i k)] [∀ p, AddCommMonoid (N p)]
-variable [∀ i k, Module R (M i k)] [∀ p, Module R (N p)]
-variable {ι'} [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
+variable {ι' : Type*} [DecidableEq ι] [Fintype ι] [CommSemiring R]
+  [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
 
 /--
 The linear equivalence of multilinear maps on free modules over `R` indexed by `fun i => κ i` on
@@ -255,19 +252,21 @@ the domain and `ι'` on the codomain and the dependent, finitely supported maps 
 `(Π i, κ i) × ι'` into `R`.
 -/
 def freeDFinsuppEquiv :
-  (Π₀ (_ : (Π i, κ i) × ι'), R) ≃ₗ[R] MultilinearMap R (fun i => Π₀ _ : κ i, R) (Π₀ _ : ι', R) :=
-    (DFinsupp.domLCongr (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) ≪≫ₗ
-    (DFinsupp.sigmaCurryLEquiv (M := fun _ _ => R)) ≪≫ₗ
-    DFinsupp.linearEquivFunOnFintype ≪≫ₗ
-    LinearEquiv.piCongrRight (fun _ => MultilinearMap.piRingEquiv (ι := ι)) ≪≫ₗ
-    fromDFinsuppEquiv κ R (M := fun _ _ => R)
+    (Π₀ (_ : (Π i, κ i) × ι'), R) ≃ₗ[R] MultilinearMap R (fun i => Π₀ _ : κ i, R) (Π₀ _ : ι', R) :=
+  (DFinsupp.domLCongr (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) ≪≫ₗ
+  (DFinsupp.sigmaCurryLEquiv (M := fun _ _ => R)) ≪≫ₗ
+  DFinsupp.linearEquivFunOnFintype ≪≫ₗ
+  LinearEquiv.piCongrRight (fun _ => MultilinearMap.piRingEquiv (ι := ι)) ≪≫ₗ
+  fromDFinsuppEquiv κ R (M := fun _ _ => R)
 
-theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) : freeDFinsuppEquiv f =
-  fromDFinsuppEquiv κ R (M := fun _ _ => R) (
-  LinearEquiv.piCongrRight (fun _ => MultilinearMap.piRingEquiv (ι := ι)) (
-  DFinsupp.linearEquivFunOnFintype (R := R) (
-  (DFinsupp.sigmaCurryLEquiv (R := R) (M := fun _ _ => R)) (
-  (DFinsupp.domLCongr (R := R) (M := fun _ => R) (Equiv.sigmaEquivProd _ _).symm) f)))) := rfl
+theorem freeDFinsuppEquiv_def (f : Π₀ (_ : (Π i, κ i) × ι'), R) :
+    freeDFinsuppEquiv f =
+      fromDFinsuppEquiv κ R
+      (LinearEquiv.piCongrRight (fun _ => MultilinearMap.piRingEquiv) <|
+      DFinsupp.linearEquivFunOnFintype (R := R) <|
+      DFinsupp.sigmaCurryLEquiv (R := R) <|
+      (DFinsupp.domLCongr (R := R) (Equiv.sigmaEquivProd _ _).symm) f) :=
+  rfl
 
 /--
 When `freeDFinsuppEquiv` is applied to a map with a single value of one the resulting multilinear
@@ -276,44 +275,28 @@ component of the domain.
 -/
 @[simp]
 theorem freeDFinsuppEquiv_single [DecidableEq ι'] (p : (Π i, κ i) × ι') (r : R)
-  (x : Π i, Π₀ _ : κ i, R) :
-  freeDFinsuppEquiv (DFinsupp.single p r) x = r • DFinsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
-  nth_rw 1 [show r = r • 1 by rw [smul_eq_mul]; ring]
-  rw [DFinsupp.single_smul, map_smul, smul_apply]
-  congr
+    (x : Π i, Π₀ _ : κ i, R) :
+    freeDFinsuppEquiv (.single p r) x = r • .single p.2 ((∏ i, (x i) (p.1 i))) := by
   classical
-  ext i'
-  simp_all only [freeDFinsuppEquiv_def, MultilinearMap.piRingEquiv, DFinsupp.domLCongr_apply,
-    DFinsupp.comapDomain', Equiv.symm_symm, Equiv.sigmaEquivProd_apply, DFinsupp.toFun_eq_coe,
-    Equiv.sigmaEquivProd_symm_apply, DFinsupp.sigmaCurryLEquiv_apply, DFinsupp.sigmaCurryEquiv,
-    Equiv.coe_fn_mk, fromDFinsuppEquiv_apply, LinearEquiv.piCongrRight_apply,
-    DFinsupp.linearEquivFunOnFintype_apply, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk,
-    mkPiRing_apply, DFinsupp.finset_sum_apply, DFinsupp.coe_smul, Pi.smul_apply,
-    DFinsupp.sigmaCurry_apply, DFinsupp.coe_mk', DFinsupp.single_apply, eq_rec_constant,
-    dite_eq_ite, smul_eq_mul, mul_ite, mul_one, mul_zero]
-  obtain ⟨fst, snd⟩ := p
-  simp_all only [Prod.mk.injEq]
-  by_cases h : snd = i'
-  · subst h
-    simp_all only [and_true, Finset.sum_ite_eq, Fintype.mem_piFinset, DFinsupp.mem_support_toFun,
-      ne_eq, ↓reduceIte, ite_eq_left_iff, not_forall, Decidable.not_not, forall_exists_index]
-    intro i h
-    symm
-    exact Finset.prod_eq_zero (Finset.mem_univ i) h
-  · simp_all only [and_false, ↓reduceIte, Finset.sum_const_zero]
+  conv_lhs => rw [← mul_one r, ← smul_eq_mul, DFinsupp.single_smul, map_smul, smul_apply]
+  congr
+  ext i
+  obtain ⟨p, j⟩ := p
+  rcases eq_or_ne j i with rfl | h
+  · suffices ∀ (l : ι), (x l) (p l) = 0 → 0 = ∏ i, (x i) (p i) by
+      simpa [freeDFinsuppEquiv_def, MultilinearMap.piRingEquiv, DFinsupp.sigmaCurryEquiv,
+        fromDFinsuppEquiv_apply]
+    exact fun i h ↦ (Finset.prod_eq_zero (Finset.mem_univ i) h).symm
+  · simp [freeDFinsuppEquiv_def, MultilinearMap.piRingEquiv, DFinsupp.sigmaCurryEquiv,
+      fromDFinsuppEquiv_apply, h]
 
 theorem freeDFinsuppEquiv_apply [DecidableEq ι'] [Fintype ι']
-  (f : Π₀ (_ : (Π i, κ i) × ι'), R) (x : Π i, Π₀ _ : κ i, R) :
-  freeDFinsuppEquiv f x = ∑ p, f p • DFinsupp.single p.2 ((∏ i, (x i) (p.1 i))) := by
+    (f : Π₀ (_ : (Π i, κ i) × ι'), R) (x : Π i, Π₀ _ : κ i, R) :
+    freeDFinsuppEquiv f x = ∑ p, f p • .single p.2 ((∏ i, (x i) (p.1 i))) := by
   apply DFinsupp.induction f
-  · rw [LinearEquiv.map_zero]
-    simp
-  · intro ⟨k, i'⟩ r f hf r_ne_zero hfx
-    simp only [map_add, add_apply, DFinsupp.coe_add, Pi.add_apply, DFinsupp.single_apply,
-      eq_rec_constant, dite_eq_ite]
-    simp_rw [freeDFinsuppEquiv_single]
-    simp only [add_smul, Finset.sum_add_distrib, ite_smul, zero_smul,
-      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, hfx]
+  · simp
+  · rintro p r f - - hfx
+    simp [Finset.sum_add_distrib, add_smul, hfx]
 
 end freeDFinsuppEquiv
 
