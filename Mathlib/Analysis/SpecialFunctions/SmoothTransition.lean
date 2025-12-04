@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Infinitely smooth transition function
@@ -74,7 +73,7 @@ theorem not_analyticAt_zero : ¬ AnalyticAt ℝ expNegInvGlue 0 := by
   obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
   suffices expNegInvGlue (r / 2) = 0 by simpa [hr, not_le_of_gt]
   exact h.eqOn_zero_of_preconnected_of_mem_closure (z₀ := 0)
-    (Metric.isConnected_ball hr).isPreconnected
+    (Real.ball_eq_Ioo 0 r ▸ isPreconnected_Ioo)
     (by simp [hr]) (by simp [Set.Iic_def]) (by simp [abs_of_pos, hr])
 
 /-!
