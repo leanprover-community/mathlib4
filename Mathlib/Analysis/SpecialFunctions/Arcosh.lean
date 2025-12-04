@@ -68,6 +68,16 @@ theorem cosh_arcosh {x : ℝ} (hx : 1 ≤ x) : cosh (arcosh x) = x := by
   ring
 
 @[simp]
+theorem arcosh_eq_zero_iff {x : ℝ} (hx : 1 ≤ x) : arcosh x = 0 ↔ x = 1 := by
+  constructor
+  case mpr => intro hx; subst hx; exact arcosh_zero
+  case mp =>
+  intro h
+  convert congrArg cosh h
+  · rw [cosh_arcosh hx]
+  · rw [cosh_zero]
+
+@[simp]
 theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) := by
   rw [arcosh, sinh_eq, exp_neg, exp_log (by positivity), x_add_sqrt_x_sq_sub_one_inv x hx]
   ring
@@ -77,6 +87,35 @@ theorem sinh_arcosh {x : ℝ} (hx : 1 ≤ x) : sinh (arcosh x) = √(x ^ 2 - 1) 
 theorem arcosh_cosh {x : ℝ} (hx : 0 ≤ x) : arcosh (cosh x) = x := by
 rw [arcosh, ← exp_eq_exp, exp_log (by positivity), ← eq_sub_iff_add_eq', exp_sub_cosh,
     ← sq_eq_sq₀ (sqrt_nonneg _) (sinh_nonneg_iff.mpr hx), ← sinh_sq, sq_sqrt (pow_two_nonneg _)]
+
+@[simp]
+theorem arcosh_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ arcosh x := by
+  apply log_nonneg
+  calc
+    1 ≤ x := hx
+    _ ≤ x + √(x ^ 2 - 1) := by
+      apply (le_add_iff_nonneg_right _).mpr
+      apply sqrt_nonneg
+
+@[simp]
+theorem arcosh_pos {x : ℝ} (hx : 1 < x) : 0 < arcosh x := by
+  have hx' := le_of_lt hx
+  apply Std.lt_of_le_of_ne (arcosh_nonneg hx')
+  contrapose! hx
+  exact ge_of_eq ((arcosh_eq_zero_iff hx').mp hx.symm).symm
+
+@[simp]
+theorem arcosh_le_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x ≤ arcosh y ↔ x ≤ y := by
+  rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
+  rw (occs := .pos [1]) [← abs_of_nonneg (arcosh_nonneg hx), ← abs_of_nonneg (arcosh_nonneg hy)]
+  exact cosh_le_cosh.symm
+
+@[simp]
+theorem arcosh_lt_arcosh {x y : ℝ} (hx : 1 ≤ x) (hy : 1 ≤ y) : arcosh x < arcosh y ↔ x < y := by
+  rw (occs := .pos [2]) [← cosh_arcosh hx, ← cosh_arcosh hy]
+  rw (occs := .pos [1]) [← abs_of_nonneg (arcosh_nonneg hx), ← abs_of_nonneg (arcosh_nonneg hy)]
+  exact cosh_lt_cosh.symm
+
 end Real
 
 /-- Real numbers which are at least 1. -/
@@ -119,13 +158,7 @@ def cosh' (x : ℝ≥0) : ℝ≥1 :=
 def arcosh' (x : ℝ≥1) : ℝ≥0 :=
   {
     val := arcosh x
-    property := by
-      apply log_nonneg
-      calc
-        1 ≤ x.val := x.property
-        _ ≤ x.val + √(x.val ^ 2 - 1) := by
-          apply (le_add_iff_nonneg_right _).mpr
-          apply sqrt_nonneg
+    property := arcosh_nonneg x.property
   }
 
 @[simp]
