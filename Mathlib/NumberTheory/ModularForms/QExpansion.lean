@@ -161,6 +161,9 @@ lemma hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinus
     (by simpa using hq) using 2 with m
   grind [qExpansion_coeff, sub_zero, smul_eq_mul]
 
+@[deprecated (since := "2025-12-04")] alias hasSum_qExpansion_of_abs_lt :=
+  hasSum_qExpansion_of_norm_lt
+
 lemma hasSum_qExpansion [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOne]
     [DiscreteTopology Γ] (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (τ : ℍ) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • 𝕢 h τ ^ m) (f τ) := by
@@ -325,7 +328,7 @@ theorem exp_decay_atImInfty (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) :
   (CuspFormClass.zero_at_infty f).exp_decay_atImInfty hh hΓ
 
 theorem exp_decay_atImInfty' [Fact (IsCusp OnePoint.infty Γ)] :
-    ∃ h > 0, f =O[atImInfty] fun τ ↦ Real.exp (-h * τ.im) :=
+    ∃ c > 0, f =O[atImInfty] fun τ ↦ Real.exp (-c * τ.im) :=
   (CuspFormClass.zero_at_infty f).exp_decay_atImInfty'
 
 end CuspFormClass
