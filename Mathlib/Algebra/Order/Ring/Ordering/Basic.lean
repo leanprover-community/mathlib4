@@ -304,8 +304,22 @@ instance : OrderBot (RingPreordering R) where
 
 end Bot
 
+theorem nonempty_ringPreordering_iff_isSemireal : Nonempty (RingPreordering R) ↔ IsSemireal R where
+  mp h := Nonempty.elim h fun P ↦ by
+    refine ⟨fun {x} hx hx₂ ↦ ?_⟩
+    apply P.neg_one_notMem
+    rw [show -1 = x by linear_combination -hx₂]
+    aesop
+  mpr h := ⟨⊥⟩
+
+theorem isSemireal (P : RingPreordering R) : IsSemireal R :=
+  nonempty_ringPreordering_iff_isSemireal.mp ⟨P⟩
+
 section sSup
 variable {S : Set (RingPreordering R)} (hS : S.Nonempty) (hSd : DirectedOn (· ≤ ·) S)
+
+-- TODO : define under `isSemireal` and add dummy valued when not directed
+--        use class `CompletePartialOrder`
 
 variable (S) in
 /-- The union of a directed set of preorderings is a preordering. -/
