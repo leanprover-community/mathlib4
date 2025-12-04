@@ -886,7 +886,7 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
   | insert b B hb h =>
     by_cases hb0 : g b = 0
     · simp_all
-    simp? [Finset.sum_insert hb, hb0] at hd hfd ⊢ says
+    simp? [Finset.sum_insert hb, hb0] at hfd hd says
       simp only [Finset.sum_insert hb, Finset.mem_insert, forall_eq_or_imp, hb0, or_false] at hfd hd
     obtain ⟨⟨rfl, isunit_gb⟩, hd⟩ := hd
     use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
