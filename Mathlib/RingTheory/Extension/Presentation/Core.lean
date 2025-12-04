@@ -77,9 +77,7 @@ class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
 instance : P.HasCoeffs P.Core where
-  coeffs_subset_range := by
-    refine subset_trans P.coeffs_subset_core ?_
-    simp [Core, Subalgebra.algebraMap_eq]
+  coeffs_subset_range := subset_trans P.coeffs_subset_core <| by simp [Core]
 
 variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
   [P.HasCoeffs R₀]
