@@ -5,6 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.Analysis.Normed.Field.WithAbs
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
@@ -32,6 +34,8 @@ This file defines the infinite places of a number field.
   `‖·‖_w` is the normalized absolute value for `w`.
 * `NumberField.InfinitePlace.card_add_two_mul_card_eq_rank`: the degree of `K` is equal to the
   number of real places plus twice the number of complex places.
+* `NumberField.InfinitePlace.denseRange_algebraMap_pi`: the image of `K` by the diagonal embedding
+  into the product of its infinite completions is dense.
 
 ## Tags
 
@@ -40,7 +44,8 @@ number field, infinite places
 
 @[expose] public section
 
-open scoped Finset
+
+open scoped Finset Topology
 
 open NumberField Fintype Module
 
@@ -526,3 +531,86 @@ lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
 
 end Rat
+
+namespace NumberField.InfinitePlace
+
+variable {K : Type*} [Field K] {v w : InfinitePlace K}
+
+@[simp]
+protected theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
+  rcases v with ⟨_, _⟩
+  aesop (add simp [coe_apply])
+
+@[simp]
+protected theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
+  rcases v with ⟨_, _⟩
+  aesop (add simp [coe_apply])
+
+@[simp]
+protected theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
+  rcases v with ⟨_, _⟩
+  aesop (add simp [coe_apply])
+
+/-- If `v` and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`. -/
+theorem eq_one_of_rpow_eq {t : ℝ} (h : (w ·) ^ t = v) : t = 1 := by
+  obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
+  exact ((n : ℝ).rpow_right_inj (by grind [Nat.cast_pos]) (by aesop)).1 <|
+    by simpa using funext_iff.1 h n
+
+/-- Two infinite places `v` and `w` are equal if and only if their underlying absolute values
+are equivalent. -/
+theorem eq_iff_isEquiv : w = v ↔ w.1.IsEquiv v.1 := by
+  refine ⟨fun h ↦ h ▸ .rfl, fun h ↦ ?_⟩
+  obtain ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
+  exact ext _ _ fun k ↦ by simpa [eq_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
+
+variable (v)
+
+/-- Infinite places are represented by non-trivial absolute values. -/
+theorem isNontrivial : v.1.IsNontrivial := by
+  obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
+  exact ⟨n, v.pos_iff.1 <| zero_lt_one.trans (by simpa), by simp [← coe_apply]; grind⟩
+
+variable {v} (K)
+
+open Filter in
+/--
+*Weak approximation for infinite places*
+The number field `K` is dense when embedded diagonally in the product
+`(v : InfinitePlace K) → WithAbs v.1`, in which `WithAbs v.1` represents `K` equipped with the
+topology coming from the infinite place `v`.
+-/
+theorem denseRange_algebraMap_pi [NumberField K] :
+    DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
+  classical
+  -- We have to show that given `(zᵥ)ᵥ` with `zᵥ : WithAbs v.1`, there is a `y : K` that is
+  -- arbitrarily close to each `zᵥ` in `v`'s topology.
+  refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
+  -- Given `v`, by previous results we can select a `aᵥ : K` for each infinite place `v`
+  -- such that `1 < v aᵥ` while `w aᵥ < 1` for all `w ≠ v`.
+  choose a hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
+    fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.mp hwv
+  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ⁻ⁿ) * zᵥ` in `K`
+  let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
+  -- We will show that this sequence converges to `z` in the product topology.
+  have : atTop.Tendsto (fun n v ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
+    -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
+    refine tendsto_pi_nhds.mpr fun u ↦ ?_
+    simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
+    refine tendsto_finset_sum _ fun w _ ↦ ?_
+    by_cases hw : u = w
+    · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
+      rw [← hw, Pi.single_apply u (z u), if_pos rfl]
+      have : u (a u)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx u).1
+      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z u)
+    · -- And `1 / (1 + aᵤ⁻ⁿ) → 0` in `WithAbs w.1` when `w ≠ u`.
+      simp only [Pi.single_apply w (z w), hw, if_false]
+      have : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
+        ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
+      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 <|
+        u.1.tendsto_div_one_add_pow_nhds_zero this).mul_const ((WithAbs.equiv u.1).symm _)
+  -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
+  let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
+  exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
+
+end NumberField.InfinitePlace

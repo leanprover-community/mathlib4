@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
@@ -48,6 +49,15 @@ instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
   ‹Algebra.IsSeparable R R'›
 
 end more_instances
+
+/- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
+result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
+a topology when `S = ℝ`. -/
+theorem tendsto_one_div_one_add_pow_nhds_one {R : Type*} [Field R] {v : AbsoluteValue R ℝ}
+    {a : R} (ha : v a < 1) :
+    Filter.atTop.Tendsto (fun n ↦ (WithAbs.equiv v).symm (1 / (1 + a ^ n))) (𝓝 1) := by
+  simpa using inv_one (G := WithAbs v) ▸ (tendsto_inv_iff₀ one_ne_zero).2
+    (tendsto_iff_norm_sub_tendsto_zero.2 <| by simpa using ha)
 
 /-!
 ### The completion of a field at an absolute value.
