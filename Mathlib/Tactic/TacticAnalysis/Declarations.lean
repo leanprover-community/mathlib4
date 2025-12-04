@@ -299,16 +299,35 @@ register_option linter.tacticAnalysis.tryAtEachStep.showTiming : Bool := {
   defValue := true
 }
 
+/--
+Whether to report when a tactic can be replaced with itself.
+
+When true (default), all successful replacements are reported, including when
+the suggested tactic matches the existing proof.
+When false, self-replacements are suppressed.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.selfReplacements : Bool := {
+  defValue := true
+}
+
 /-- Run a tactic at each proof step, with optional timing.
+
+`label` is an optional human-readable name for output. If `none`, the tactic syntax is used.
 
 Reports elapsed time in milliseconds for each successful replacement
 when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
+
+When `linter.tacticAnalysis.tryAtEachStep.selfReplacements` is false, cases where
+the suggested tactic matches the existing proof are suppressed.
 -/
-def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+def Mathlib.TacticAnalysis.tryAtEachStepCore
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic))
+    (label : Option String := none) : TacticAnalysis.Config where
   run seq := do
     let opts ← getOptions
     let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
     let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
+    let selfReplacements := linter.tacticAnalysis.tryAtEachStep.selfReplacements.get opts
     for i in seq do
       if let [goal] := i.tacI.goalsBefore then
         if (hash goal) % fraction = 0 then
@@ -320,10 +339,21 @@ def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandEla
             pure [goal]
           let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
+            -- Extract just the tactic name, ignoring trailing comments/whitespace
+            let oldTacticPP := ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trim
+            let newTacticPP ← label.getDM (return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trim)
+            -- Check if this is a self-replacement (tactic replacing itself)
+            if !selfReplacements && oldTacticPP == newTacticPP then
+              continue
             if showTiming then
-              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}` ({elapsedMs}ms)"
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}` can be replaced with `{newTacticPP}` ({elapsedMs}ms)"
             else
-              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}`"
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}` can be replaced with `{newTacticPP}`"
+
+/-- Run a tactic at each proof step. See `tryAtEachStepCore` for details. -/
+def Mathlib.TacticAnalysis.tryAtEachStep
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config :=
+  tryAtEachStepCore tac
 
 /-- Run a tactic (given as a string) at each proof step, with optional timing.
 
@@ -334,6 +364,9 @@ Tactic sequences like "simp; grind" are also supported.
 Reports elapsed time in milliseconds for each successful replacement
 when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
 To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
+
+When `linter.tacticAnalysis.tryAtEachStep.selfReplacements` is false, cases where
+the suggested tactic matches the existing proof are suppressed.
 -/
 def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
     (label : String) (tacticStr : String) : TacticAnalysis.Config where
@@ -343,23 +376,7 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
     let tacSeq ← ofExcept <|
       Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
     let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
-    let opts ← getOptions
-    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
-    let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
-    for i in seq do
-      if let [goal] := i.tacI.goalsBefore then
-        if (hash goal) % fraction = 0 then
-          let startTime ← IO.monoMsNow
-          let goalsAfter ← try
-            i.runTacticCode goal tac
-          catch _e =>
-            pure [goal]
-          let elapsedMs := (← IO.monoMsNow) - startTime
-          if goalsAfter.isEmpty then
-            if showTiming then
-              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{label}` ({elapsedMs}ms)"
-            else
-              logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{label}`"
+    (tryAtEachStepCore (fun _ _ => pure tac) label).run seq
 
 /-- Run a custom tactic at each proof step, configured via environment variables.
 

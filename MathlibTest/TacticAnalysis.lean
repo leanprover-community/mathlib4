@@ -281,6 +281,35 @@ end
 
 end tryAtEachStep
 
+section selfReplacements
+
+set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
+set_option linter.tacticAnalysis.tryAtEachStepGrind true
+
+-- With selfReplacements true (default), grind replacing grind is reported
+/-- info: `grind` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  grind
+
+section
+set_option linter.tacticAnalysis.tryAtEachStep.selfReplacements false
+
+-- With selfReplacements false, grind replacing grind is NOT reported
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  grind
+
+-- Non-self replacements are still reported when selfReplacements is false
+/-- info: `rfl` can be replaced with `grind` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  rfl
+
+end
+
+end selfReplacements
+
 section grindReplacement
 
 set_option linter.tacticAnalysis.regressions.omegaToCutsat true
