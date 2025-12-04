@@ -19,7 +19,7 @@ for any `n : ℤ`, which we phrase here by saying that
 
 ## TODO
 * When more definitions are introduced for t-structures (e.g. the heart),
-show that the conclusion hold when `K` and `L` are cohomologically bounded.
+show that the conclusion holds when `K` and `L` are cohomologically bounded.
 
 -/
 
