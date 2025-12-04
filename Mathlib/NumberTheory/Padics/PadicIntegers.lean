@@ -544,7 +544,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
         exact this.trans (max_le_iff.mpr ⟨hx, hi.le⟩)
 
 end Dvr
-  
+
 section FractionRing
 
 instance algebra : Algebra ℤ_[p] ℚ_[p] := .ofSubsemiringClass (subring p)
