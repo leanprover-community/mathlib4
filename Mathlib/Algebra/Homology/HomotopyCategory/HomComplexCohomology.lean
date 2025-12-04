@@ -126,7 +126,7 @@ def toHom :
     simp only [AddMonoidHom.mem_ker, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
       AddEquiv.toAddMonoidHom_eq_coe, Function.comp_apply, Cocycle.equivHomShift_symm_apply,
       Functor.mapAddHom_apply, HomotopyCategory.quotient_map_eq_zero_iff]
-    exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by cutsat),
+    exact ⟨(Cochain.equivHomotopy _ _).symm ⟨n.negOnePow • β.rightShift _ _ (by lia),
       by simp [Cochain.δ_rightShift _ _ _ _ _ _ (zero_add n), smul_smul]⟩⟩)
 
 lemma toHom_mk (x : Cocycle K L n) :
@@ -141,7 +141,7 @@ lemma toHom_mk_eq_zero_iff (x : Cocycle K L n) :
     obtain ⟨γ, h⟩ := Cochain.equivHomotopy _ _ h.some
     simp only [Cochain.ofHom_zero, add_zero, Cocycle.equivHomShift_symm_apply,
       Cocycle.cochain_ofHom_homOf_eq_coe, Cocycle.rightShift_coe] at h
-    exact ⟨n - 1, by simp, n.negOnePow • γ.rightUnshift _ (by cutsat),
+    exact ⟨n - 1, by simp, n.negOnePow • γ.rightUnshift _ (by lia),
       by simp [Cochain.δ_rightUnshift _ _ _ _ _ (zero_add n), smul_smul, ← h]⟩
   · rw [← mk_eq_zero_iff] at h
     rw [h, map_zero]
