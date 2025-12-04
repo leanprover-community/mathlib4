@@ -892,6 +892,7 @@ theorem symm_ofNonUnitalRingHom (f : R →ₙ+* S) (g : S →ₙ+* R) (h₁ h₂
   rfl
 
 end NonUnital
+
 section Unital
 
 variable [NonAssocSemiring R] [NonAssocSemiring S]
