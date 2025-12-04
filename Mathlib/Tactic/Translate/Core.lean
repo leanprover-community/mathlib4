@@ -539,13 +539,12 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
       value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
-/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
+/-- Abstracts the nested proofs in the value of `decl` if it is a def.
+This follows the behaviour of `Elab.abstractNestedProofs`. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let decl := decl.updateType (← withExporting <| Meta.abstractNestedProofs decl.type)
-  if decl matches .defnInfo _ then
-    return decl.updateValue (← Meta.abstractNestedProofs decl.value!)
-  else
-    return decl
+  let .defnInfo info := decl | return decl
+  let value ← withDeclNameForAuxNaming decl.name do Meta.abstractNestedProofs info.value
+  return .defnInfo { info with value }
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
@@ -1108,17 +1107,19 @@ Copies equation lemmas and attributes from `src` to `tgt`
 -/
 partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
     CoreM (Array Name) := do
-  if let some eqns := eqnsAttribute.find? (← getEnv) src then
-    unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
-      for eqn in eqns do
-        _ ← addTranslationAttr t eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
-  else
-    /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-    definitions. If we don't do that, the equation lemma for `src` might be generated later
-    when doing a `rw`, but it won't be generated for `tgt`. -/
-    translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
-      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
+  -- The equation lemmas can only be related if the value of `tgt` is the translated value of `src`.
+  unless cfg.existing do
+    if let some eqns := eqnsAttribute.find? (← getEnv) src then
+      unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
+        for eqn in eqns do
+          _ ← addTranslationAttr t eqn cfg
+        eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
+    else
+      /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+      definitions. If we don't do that, the equation lemma for `src` might be generated later
+      when doing a `rw`, but it won't be generated for `tgt`. -/
+      translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
+        (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes t cfg.ref cfg.attrs src tgt argInfo
 
@@ -1172,8 +1173,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     proceedFields t src tgt argInfo
   else
     -- tgt doesn't exist, so let's make it
-    withDeclNameForAuxNaming tgt <|
-      transformDeclRec t cfg.ref src tgt src argInfo.reorder cfg.dontTranslate
+    transformDeclRec t cfg.ref src tgt src argInfo.reorder cfg.dontTranslate
   let nestedNames ← copyMetaData t cfg src tgt argInfo
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)

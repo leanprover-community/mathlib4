@@ -211,7 +211,7 @@ def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
 /--
 `tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`
 and splits a goal of the form `_ ∧ _`, `_ ↔ _` or `∃ _, _` until it can be discharged
-using `reflexivity` or `solve_by_elim`.
+using `rfl` or `solve_by_elim`.
 This is a finishing tactic: it either closes the goal or raises an error.
 
 The Lean 3 version of this tactic by default attempted to avoid classical reasoning
