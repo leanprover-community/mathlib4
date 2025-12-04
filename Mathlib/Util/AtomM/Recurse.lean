@@ -42,6 +42,18 @@ structure Recurse.Config where
   red := TransparencyMode.reducible
   /-- if true, local let variables can be unfolded -/
   zetaDelta := false
+  /--
+  `wellBehavedDischarge` must **not** be set to `true` IF `eval` accesses local declarations with
+  index >= `Context.lctxInitIndices` when `contextual := false`.
+  Reason: it would prevent `simp` from aggressively caching results.
+  -/
+  wellBehavedDischarge : Bool
+  /--
+  When `contextual` is true (default: `false`) and simplification encounters an implication `p → q`
+  it includes `p` as an additional simp lemma when simplifying `q`, which is also added to the local
+  context and made available to `eval`.
+  -/
+  contextual : Bool := false
 deriving Inhabited, BEq, Repr
 
 -- See https://github.com/leanprover/lean4/issues/10295
@@ -70,7 +82,8 @@ monad.
 * `root`: true if this is a direct call to the function.
   `AtomM.RecurseM.run` sets this to `false` in recursive mode.
 -/
-def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr) (root := true) :
+def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr)
+    (wellBehavedDischarge : Bool) (root := true) :
     RecurseM Simp.Result :=
   fun nctx rctx s ↦ do
     let pre : Simp.Simproc := fun e =>
@@ -82,7 +95,8 @@ def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr) (root :
         pure (.done r)
       catch _ => pure <| .continue
     let post := Simp.postDefault #[]
-    (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
+    (·.1) <$> Simp.main parent nctx.ctx
+      (methods := { pre, post, wellBehavedDischarge := wellBehavedDischarge })
 
 /--
 Runs a tactic in the `AtomM.RecurseM` monad, given initial data:
@@ -99,7 +113,8 @@ partial def RecurseM.run
     {α : Type} (s : IO.Ref State) (cfg : Recurse.Config) (eval : Expr → AtomM Simp.Result)
     (simp : Simp.Result → MetaM Simp.Result) (x : RecurseM α) :
     MetaM α := do
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true, contextual := true }
+  let ctx ← Simp.mkContext
+    { zetaDelta := cfg.zetaDelta, singlePass := true, contextual := cfg.contextual }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
@@ -107,7 +122,7 @@ partial def RecurseM.run
     /-- The recursive context. -/
     rctx := { red := cfg.red, evalAtom },
     /-- The atom evaluator calls `AtomM.onSubexpressions` recursively. -/
-    evalAtom e := onSubexpressions eval e false nctx rctx s
+    evalAtom e := onSubexpressions eval e false cfg.wellBehavedDischarge nctx rctx s
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 /--
@@ -125,6 +140,6 @@ def recurse (s : IO.Ref State) (cfg : Recurse.Config)
     (eval : Expr → AtomM Simp.Result)
     (simp : Simp.Result → MetaM Simp.Result) (tgt : Expr) :
     MetaM Simp.Result := do
-  RecurseM.run s cfg eval simp <| onSubexpressions eval tgt
+  RecurseM.run s cfg eval simp <| onSubexpressions eval tgt cfg.wellBehavedDischarge
 
 end Mathlib.Tactic.AtomM

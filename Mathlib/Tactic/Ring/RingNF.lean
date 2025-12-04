@@ -68,6 +68,9 @@ structure Config extends AtomM.Recurse.Config where
   failIfUnchanged := true
   /-- The normalization style. -/
   mode := RingMode.SOP
+  /-- Whether `evalExpr` makes use of local hyptheses that are not available in
+    the main local context -/
+  wellBehavedDischarge := true
   deriving Inhabited, BEq, Repr
 
 -- See https://github.com/leanprover/lean4/issues/10295
