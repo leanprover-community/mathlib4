@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Yoneda
 public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Colimits of presentable objects
@@ -188,5 +189,17 @@ lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
   rw [← isCardinalPresentable_iff_of_isEquivalence c.pt κ e.functor]
   exact isCardinalPresentable_of_isColimit' _
     (isColimitOfPreserves e.functor hc) κ hK
+
+variable (C) in
+lemma isClosedUnderColimitsOfShape_isCardinalPresentable [LocallySmall.{w} C]
+    {κ : Cardinal.{w}} [Fact κ.IsRegular]
+    {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ (Type w)]
+    (hJ : HasCardinalLT (Arrow J) κ) :
+    (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    rintro X ⟨hX⟩
+    have := hX.prop_diag_obj
+    simp only [isCardinalPresentable_iff] at this ⊢
+    exact isCardinalPresentable_of_isColimit _ hX.isColimit κ hJ
 
 end CategoryTheory

@@ -194,20 +194,29 @@ instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.EssentiallySmall.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P.unop := by
   simpa
 
+instance (P : ObjectProperty C) [LocallySmall.{w} C]
+    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
+  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
+instance [EssentiallySmall.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (⊤ : ObjectProperty C) where
+  exists_small_le' :=
+    ⟨ofObj (equivSmallModel.{w} C).inverse.obj, inferInstance,
+      fun X _ ↦ ⟨_, ⟨_⟩, ⟨(equivSmallModel.{w} C).unitIso.app X⟩⟩⟩
+
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] (F : C ⥤ D) :
     ObjectProperty.Small.{w} (P.strictMap F) :=
   small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
     rintro ⟨_, ⟨X, hX⟩⟩
     exact ⟨⟨X, hX⟩, rfl⟩)
 
-instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] (F : C ⥤ D) :
-    ObjectProperty.EssentiallySmall.{w} (P.map F) := by
-  obtain ⟨Q, _, hQ⟩ := EssentiallySmall.exists_small_le'.{w} P
-  have : P.map F ≤ (Q.strictMap F).isoClosure := by
-    rintro X ⟨Y, hY, ⟨e⟩⟩
-    obtain ⟨Z, hZ, ⟨e'⟩⟩ := hQ _ hY
-    exact ⟨_, ⟨_, hZ⟩, ⟨e.symm ≪≫ F.mapIso e'⟩⟩
-  exact EssentiallySmall.of_le this
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P]
+    (F : C ⥤ D) : ObjectProperty.EssentiallySmall.{w} (P.map F) := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  exact ⟨Q.strictMap F, inferInstance, (map_monotone h₂ F).trans (by simp)⟩
 
 instance (P : ObjectProperty C) [LocallySmall.{w} C]
     [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
