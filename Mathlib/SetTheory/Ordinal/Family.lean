@@ -404,7 +404,7 @@ theorem bsup_succ_of_mono {o : Ordinal} {f : ∀ a < succ o, Ordinal}
 
 @[simp]
 theorem bsup_zero (f : ∀ a < (0 : Ordinal), Ordinal) : bsup 0 f = 0 :=
-  bsup_eq_zero_iff.2 fun _i hi => (not_neg hi).elim
+  bsup_eq_zero_iff.2 fun _i hi => (not_lt_zero hi).elim
 
 theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
     (bsup.{_, v} o fun _ _ => a) = a :=

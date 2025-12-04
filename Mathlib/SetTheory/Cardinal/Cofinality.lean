@@ -463,7 +463,7 @@ theorem id_of_le_cof (h : o ≤ o.cof.ord) : IsFundamentalSequence o o fun a _ =
   ⟨h, @fun _ _ _ _ => id, blsub_id o⟩
 
 protected theorem zero {f : ∀ b < (0 : Ordinal), Ordinal} : IsFundamentalSequence 0 0 f :=
-  ⟨by rw [cof_zero, ord_zero], @fun i _ hi => (not_neg hi).elim, blsub_zero f⟩
+  ⟨by rw [cof_zero, ord_zero], @fun i _ hi => (not_lt_zero hi).elim, blsub_zero f⟩
 
 protected theorem succ : IsFundamentalSequence (succ o) 1 fun _ _ => o := by
   refine ⟨?_, @fun i j hi hj h => ?_, blsub_const Ordinal.one_ne_zero o⟩
