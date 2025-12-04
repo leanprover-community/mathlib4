@@ -70,9 +70,6 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     rintro ⟨x, y⟩ _
     have A : √(x ^ 2 + y ^ 2) = ‖x + y * Complex.I‖ := by
       rw [Complex.norm_def, Complex.normSq_add_mul_I]
-    have Z := Complex.norm_mul_cos_add_sin_mul_I (x + y * Complex.I)
-    simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
-      mul_assoc] at Z
     simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
   open_source :=
