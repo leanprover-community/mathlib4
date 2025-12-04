@@ -278,6 +278,10 @@ theorem Splits.eq_prod_roots (hf : Splits f) :
     suffices hf : f.roots = m by rwa [hf]
     rw [hm, roots_C_mul _ hf0, roots_multiset_prod_X_sub_C]
 
+theorem Splits.eq_prod_roots_of_monic (hf : Splits f) (hm : f.Monic) :
+    f = (f.roots.map (X - C ·)).prod := by
+  conv_lhs => rw [hf.eq_prod_roots, hm.leadingCoeff, C_1, one_mul]
+
 theorem Splits.natDegree_eq_card_roots (hf : Splits f) :
     f.natDegree = f.roots.card := by
   by_cases hf0 : f.leadingCoeff = 0
@@ -296,6 +300,18 @@ theorem splits_iff_card_roots : Splits f ↔ f.roots.card = f.natDegree :=
 theorem Splits.roots_ne_zero (hf : Splits f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   simpa [hf.natDegree_eq_card_roots] using hf0
+
+theorem Splits.map_roots {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
+    (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
+  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
+
+omit [IsDomain R] in
+theorem Splits.image_rootSet {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
+    [IsSimpleRing A] [Algebra R A] [Algebra R B] (hf : (f.map (algebraMap R A)).Splits)
+    (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
+  classical
+  rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
+    ← hf.map_roots, map_map, g.comp_algebraMap, ← rootSet]
 
 theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := by
   refine ⟨fun hf ↦ ?_, ((Splits.X_sub_C _).mul ·)⟩
@@ -391,7 +407,17 @@ end DivisionSemiring
 
 section Field
 
-variable [Field R]
+variable [Field R] {f g : R[X]}
+
+theorem Splits.dvd_of_roots_le_roots (hp : f.Splits) (hp0 : f ≠ 0) (hq : f.roots ≤ g.roots) :
+    f ∣ g := by
+  rw [hp.eq_prod_roots, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
+  exact (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq)).trans
+    (prod_multiset_X_sub_C_dvd _)
+
+theorem Splits.dvd_iff_roots_le_roots (hf : f.Splits) (hf0 : f ≠ 0) (hg0 : g ≠ 0) :
+    f ∣ g ↔ f.roots ≤ g.roots :=
+  ⟨roots.le_of_dvd hg0, hf.dvd_of_roots_le_roots hf0⟩
 
 theorem Splits.comp_of_natDegree_le_one {f g : R[X]} (hf : f.Splits) (hg : g.natDegree ≤ 1) :
     (f.comp g).Splits := by
