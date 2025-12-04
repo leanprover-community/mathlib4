@@ -51,6 +51,8 @@ class IsLocallyArtinian : Prop where
   component_artinian : ∀ (U : X.affineOpens),
     IsArtinianRing Γ(X, U) := by infer_instance
 
+attribute [intsance] IsLocallyArtinian.component_artinian
+
 lemma IsLocallyArtinian_IsLocallyNoetherian :
     IsLocallyArtinian X → IsLocallyNoetherian X := fun hA =>
   {component_noetherian := fun U =>
