@@ -165,14 +165,16 @@ structure TranslateData : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
   /-- `argInfoAttr` stores the declarations that need some extra information to be translated. -/
   argInfoAttr : NameMapExtension ArgInfo
-  /-- The global `dont_translate` attribute specifies that operations on the given type
-  should not be translated. This can be either for types that are translated,
+  /-- The global `do_translate`/`dont_translate` attributes specify whether operations on
+  a given type should be translated. `dont_translate` can be used for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
+  `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
+  can be translated.
 
-  Note: The name generation is not aware that the operations on this type should not be translated,
-    so you generally have to specify a name manually, if some part should not be translated.
+  Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
+    translated thanks to this, you generally have to specify the translated name manually.
   -/
-  dontTranslateAttr : NameMapExtension Unit
+  doTranslateAttr : NameMapExtension Bool
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension Name
@@ -328,11 +330,10 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
-      if (t.dontTranslateAttr.find? env e.constName).isNone &&
-        (inApp || (findTranslation? env t e.constName).isSome) then
-        failure
-      else
-        return .inl e.constName
+      let doTranslate :=
+        (t.doTranslateAttr.find? env e.constName!).getD <|
+          inApp || (findTranslation? env t e.constName).isSome
+      if doTranslate then failure else return .inl e.constName
     if (← get).contains e then
       failure
     modify fun s => s.insert e
@@ -562,13 +563,12 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
       value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
-/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
+/-- Abstracts the nested proofs in the value of `decl` if it is a def.
+This follows the behaviour of `Elab.abstractNestedProofs`. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let decl := decl.updateType (← withExporting <| Meta.abstractNestedProofs decl.type)
-  if decl matches .defnInfo _ then
-    return decl.updateValue (← Meta.abstractNestedProofs decl.value!)
-  else
-    return decl
+  let .defnInfo info := decl | return decl
+  let value ← withDeclNameForAuxNaming decl.name do Meta.abstractNestedProofs info.value
+  return .defnInfo { info with value }
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
@@ -1139,17 +1139,19 @@ Copies equation lemmas and attributes from `src` to `tgt`
 -/
 partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
     CoreM (Array Name) := do
-  if let some eqns := eqnsAttribute.find? (← getEnv) src then
-    unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
-      for eqn in eqns do
-        _ ← addTranslationAttr t eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
-  else
-    /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-    definitions. If we don't do that, the equation lemma for `src` might be generated later
-    when doing a `rw`, but it won't be generated for `tgt`. -/
-    translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
-      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
+  -- The equation lemmas can only be related if the value of `tgt` is the translated value of `src`.
+  unless cfg.existing do
+    if let some eqns := eqnsAttribute.find? (← getEnv) src then
+      unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
+        for eqn in eqns do
+          _ ← addTranslationAttr t eqn cfg
+        eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
+    else
+      /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+      definitions. If we don't do that, the equation lemma for `src` might be generated later
+      when doing a `rw`, but it won't be generated for `tgt`. -/
+      translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
+        (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes t cfg.ref cfg.attrs src tgt argInfo
 
@@ -1158,7 +1160,7 @@ Make a new copy of a declaration, replacing fragments of the names of identifier
 the body using the `translations` dictionary.
 -/
 partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
-    (argInfo : ArgInfo := {}) : CoreM (Array Name) := withDeclNameForAuxNaming tgt do
+    (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
   transformDeclAux t argInfo.reorder cfg src tgt src
   copyMetaData t cfg src tgt argInfo
 
@@ -1217,9 +1219,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       transformDecl t cfg src tgt argInfo
   -- add pop-up information when mousing over the given translated name
   -- (the information will be over the attribute if no translated name is given)
-  pushInfoLeaf <| .ofTermInfo {
-    elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
-    stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
+  addConstInfo cfg.ref tgt
   if let some doc := cfg.doc then
     addDocStringCore tgt doc
   return nestedNames.push tgt

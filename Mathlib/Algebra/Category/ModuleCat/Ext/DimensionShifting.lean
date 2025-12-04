@@ -68,7 +68,7 @@ noncomputable abbrev ModuleCat.projective_shortComplex [Small.{v} R] (M : Module
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
   (e.constr ℕ id).shortComplexG
 
-theorem ModuleCat.projective_shortComplex_shortEaxct [Small.{v} R] (M : ModuleCat.{v} R) :
+theorem ModuleCat.projective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
     M.projective_shortComplex.ShortExact := by
   apply LinearMap.shortExact_shortComplexG
   refine fun m ↦ ⟨Finsupp.single m 1, ?_⟩
@@ -83,7 +83,7 @@ noncomputable abbrev ModuleCat.injective_shortComplex [Small.{v} R] (M : ModuleC
   let IP := Classical.choice (EnoughInjectives.presentation M)
   ShortComplex.mk IP.3 (Limits.cokernel.π IP.3) (Limits.cokernel.condition IP.3)
 
-theorem ModuleCat.injective_shortComplex_shortEaxct [Small.{v} R] (M : ModuleCat.{v} R) :
+theorem ModuleCat.injective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
     M.injective_shortComplex.ShortExact :=
   let IP := Classical.choice (EnoughInjectives.presentation M)
   { exact := ShortComplex.exact_cokernel IP.3
@@ -95,7 +95,7 @@ instance [Small.{v} R] (M : ModuleCat.{v} R) : Injective M.injective_shortComple
 
 /-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is projective. -/
-theorem extClass_precomp_surjective_of_projective_X₂ [UnivLE.{v, w}] [Small.{v} R]
+theorem extClass_precomp_surjective_of_projective_X₂ [Small.{v} R]
     (M : ModuleCat.{v} R) {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (n : ℕ)
     [Projective S.X₂] : Function.Surjective (h.extClass.precomp M (add_comm 1 n)) := by
   let _ := Ext.subsingleton_of_projective S.X₂ M
@@ -105,7 +105,7 @@ theorem extClass_precomp_surjective_of_projective_X₂ [UnivLE.{v, w}] [Small.{v
 
 /-- The connection maps in the covariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is injective. -/
-theorem extClass_postcomp_surjective_of_projective_X₂ [UnivLE.{v, w}] [Small.{v} R]
+theorem extClass_postcomp_surjective_of_projective_X₂ [Small.{v} R]
     {S : ShortComplex (ModuleCat.{v} R)} (h : S.ShortExact) (M : ModuleCat.{v} R) (n : ℕ)
     [Injective S.X₂] : Function.Surjective (h.extClass.postcomp M (rfl : n + 1 = n + 1)) := by
   let _ := Ext.subsingleton_of_injective M S.X₂
