@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Infinitely smooth transition function
