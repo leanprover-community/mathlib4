@@ -45,6 +45,8 @@ def whenNotLinterOption (opt : Lean.Option Bool) (x : m Unit) : m Unit := do
 Processes `set_option ... in`s that wrap the input `stx`, then acts on the inner syntax with
 `x` after checking that the provided linter option is `true`.
 
+If `breakOnError` is `true` (the default), avoids running the linter when errors are present.
+
 This is typically used to start off linter code:
 ```
 def myLinter : Linter where
@@ -55,7 +57,10 @@ def myLinter : Linter where
 Note: this definition is marked as `@[macro_inline]`, so it is okay to supply it with a linter option which has been registered in the same module.
 -/
 @[expose, macro_inline]
-def whenLinterActivated (opt : Lean.Option Bool) (x : CommandElab) : CommandElab :=
-  withSetOptionIn (whenLinterOption opt ∘ x)
+def whenLinterActivated (opt : Lean.Option Bool) (x : CommandElab) (breakOnError := true) :
+    CommandElab :=
+  withSetOptionIn fun stx => whenLinterOption opt do
+    unless (← get).messages.hasErrors && breakOnError do
+      x stx
 
 end Lean.Linter
