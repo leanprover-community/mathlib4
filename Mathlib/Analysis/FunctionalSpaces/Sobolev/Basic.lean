@@ -103,7 +103,7 @@ lemma weakDeriv_add (hf : LocallyIntegrableOn f Ω μ) (hf' : LocallyIntegrableO
 lemma weakDeriv_neg : weakDeriv Ω (-f) μ = -weakDeriv Ω f μ := by
   ext φ
   by_cases hf : LocallyIntegrableOn f Ω μ; swap
-  · have hf' : ¬LocallyIntegrableOn (-f) Ω μ := sorry
+  · have hf' : ¬LocallyIntegrableOn (-f) Ω μ := by rwa [locallyIntegrableOn_neg_iff]
     simp [weakDeriv, ofFun_of_not_locallyIntegrable hf, ofFun_of_not_locallyIntegrable hf']
   simp [weakDeriv, ofFun_neg hf]
 
@@ -211,10 +211,13 @@ namespace HasWTaylorSeriesUpTo
 
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
 
-lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
+lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
+    -- XXX: are these hypotheses required?
+    (hg : ∀ m, LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
+    (hg' : ∀ m, LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
     HasWTaylorSeriesUpTo Ω (f + f') (g + g') k p μ where
   zero_eq x := by simp [← hf.zero_eq, ← hf'.zero_eq]
-  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm) sorry sorry
+  hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).add (hf'.hasWeakDeriv m hm) (hg m) (hg' m)
   memLp m hm := (hf.memLp m hm).add (hf'.memLp m hm)
 
 lemma neg (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
@@ -228,10 +231,13 @@ lemma _root_.hasWTaylorSeriesUpTo_neg :
     HasWTaylorSeriesUpTo Ω (-f) (-g) k p μ ↔ HasWTaylorSeriesUpTo Ω f g k p μ :=
   ⟨fun hf ↦ by simpa using hf.neg, fun hf ↦ hf.neg⟩
 
-lemma sub (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ) :
+lemma sub (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
+    -- XXX: are these hypotheses required?
+    (hg : ∀ m, LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
+    (hg' : ∀ m, LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
     HasWTaylorSeriesUpTo Ω (f - f') (g - g') k p μ := by
   rw [sub_eq_add_neg f f', sub_eq_add_neg g g']
-  exact hf.add hf'.neg
+  exact hf.add hf'.neg hg (fun m ↦ (hg' m).neg)
 
 lemma smul (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
     HasWTaylorSeriesUpTo Ω (c • f) (c • g) k p μ where
@@ -259,7 +265,7 @@ lemma add (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  exact ⟨g + g', hg.add hg'⟩
+  exact ⟨g + g', hg.add hg' sorry sorry⟩ -- TODO: think if these are required!
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
   obtain ⟨g, hg⟩ := hf
@@ -269,7 +275,7 @@ lemma sub (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f - f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  exact ⟨g - g', hg.sub hg'⟩
+  exact ⟨g - g', hg.sub hg' sorry sorry⟩ -- TODO: think if these are required!
 
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
   obtain ⟨g, hg⟩ := hf
