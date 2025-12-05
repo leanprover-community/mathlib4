@@ -30,7 +30,7 @@ The pen-and-paper definition of nim defines the possible moves of `nim o` to be 
 However, this definition does not work for us because it would make the type of nim
 `Ordinal.{u} → SetTheory.PGame.{u + 1}`, which would make it impossible for us to state the
 Sprague-Grundy theorem, since that requires the type of `nim` to be
-`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we instead use `o.toType` for the possible
+`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we instead use `o.ToType` for the possible
 moves. We expose `toLeftMovesNim` and `toRightMovesNim` to conveniently convert an ordinal less than
 `o` into a left or right move of `nim o`, and vice versa.
 -/
@@ -52,22 +52,22 @@ namespace PGame
 /-- The definition of single-heap nim, which can be viewed as a pile of stones where each player can
   take a positive number of stones from it on their turn. -/
 noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, o.toType,
+  ⟨o.ToType, o.ToType,
     fun x => nim ((enumIsoToType o).symm x).val,
     fun x => nim ((enumIsoToType o).symm x).val⟩
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
-theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
-theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
+theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.ToType := by rw [nim]; rfl
+theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.ToType := by rw [nim]; rfl
 
 theorem moveLeft_nim_heq (o : Ordinal) :
-    (nim o).moveLeft ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+    (nim o).moveLeft ≍ fun i : o.ToType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
 @[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
 
 theorem moveRight_nim_heq (o : Ordinal) :
-    (nim o).moveRight ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+    (nim o).moveRight ≍ fun i : o.ToType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
 @[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
 
