@@ -79,11 +79,6 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
     push_cast; ring
   · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
 
-/-- The values at 0 and 1 match for `2 ≤ k` -/
-theorem bernoulliFun_eval_one_eq_zero (k : ℕ) :
-    bernoulliFun (k + 2) 1 = bernoulliFun (k + 2) 0 := by
-  simp only [bernoulliFun_eval_one, bernoulliFun_eval_zero, Nat.reduceEqDiff, ↓reduceIte, add_zero]
-
 end Evaluation
 
 section Calculus
@@ -129,24 +124,6 @@ theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
     ∫ x : ℝ in 0..1, bernoulliFun k x = 0 := by
   rw [integral_bernoulliFun, if_neg hk]
 
-end Calculus
-
-
-/-!
-### Integrability tactic
--/
-
-/-- Show interval integrability via continuity -/
-macro "integrable" : tactic =>
-  `(tactic|
-    · intros
-      apply Continuous.intervalIntegrable
-      fun_prop)
-
-/-!
-### Reflection principle: `B_s(1 - x) = (-1)^s B_s(x)`
--/
-
 /-- Fundamental theorem of calculus to express a Bernoulli polynomial via the previous one -/
 theorem bernoulliFun_eq_integral (k : ℕ) (x y : ℝ) :
     bernoulliFun (k + 1) y =
@@ -155,36 +132,17 @@ theorem bernoulliFun_eq_integral (k : ℕ) (x y : ℝ) :
   · abel
   · intro y _
     apply hasDerivAt_bernoulliFun
-  · refine Continuous.intervalIntegrable ?_ _ _
-    fun_prop
+  · exact Continuous.intervalIntegrable (by fun_prop) _ _
 
+end Calculus
+
+/-- Reflection principle: `B_s(1 - x) = (-1)^s B_s(x)` -/
 theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
     bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
-  induction k generalizing x with
-  | zero => simp only [bernoulliFun_zero, pow_zero, mul_one]
-  | succ k h =>
-    simp only [bernoulliFun_eq_integral _ 1 (1 - x), bernoulliFun_eval_one, bernoulliFun_eval_zero,
-      add_eq_right, Nat.cast_add, Nat.cast_one, intervalIntegral.integral_const_mul,
-      bernoulliFun_eq_integral _ 0 x]
-    by_cases k0 : k = 0
-    · simp [k0]
-      ring
-    · have ev : (-1) ^ (k + 1) * (bernoulli (k + 1) : ℝ) = bernoulli (k + 1) := by
-        cases (k + 1).even_or_odd with
-        | inl e => simp only [e, Even.neg_pow, one_pow, one_mul]
-        | inr o =>
-          rw [bernoulli, bernoulli'_odd_eq_zero o (by grind)]
-          simp only [mul_zero, Rat.cast_zero]
-      simp only [k0, ↓reduceIte, add_zero, mul_add, ev, add_right_inj]
-      rw [← mul_assoc, mul_comm _ (k + 1 : ℝ), mul_assoc]
-      apply congr_arg₂ _ rfl
-      nth_rw 1 [← sub_zero 1]
-      rw [← intervalIntegral.integral_comp_sub_left, intervalIntegral.integral_symm]
-      simp only [h, intervalIntegral.integral_const_mul, pow_succ, mul_neg, mul_one, neg_mul]
-
-/-!
-### Multiplication theorem
--/
+  simp only [bernoulliFun]
+  have := Polynomial.bernoulli_comp_one_sub_X (k := k)
+  apply_fun (·.aeval x) at this
+  simpa [Polynomial.aeval_comp] using this
 
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
@@ -231,10 +189,10 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
             add_comm (1 : ℝ), ← Nat.cast_add_one]
           rw [intervalIntegral.sum_integral_adjacent_intervals]
           · simp [div_self m0', integral_bernoulliFun_eq_zero]
-          · integrable
-        · integrable
-      · integrable
-      · integrable
+          · intros; exact Continuous.intervalIntegrable (by fun_prop) _ _
+        · intros; exact Continuous.intervalIntegrable (by fun_prop) _ _
+      · exact Continuous.intervalIntegrable (by fun_prop) _ _
+      · exact Continuous.intervalIntegrable (by fun_prop) _ _
     simp only [fc, intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_eq_zero, inv_eq_zero,
       Nat.cast_eq_zero, m0, false_or] at i
     simpa only [i] using fc
@@ -514,16 +472,6 @@ theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   · simp [Nat.factorial]; ring
   · decide
-
-theorem Polynomial.bernoulli_three_eval_one_quarter :
-    (Polynomial.bernoulli 3).eval (1 / 4) = 3 / 64 := by
-  simp_rw [Polynomial.bernoulli, Finset.sum_range_succ, Polynomial.eval_add,
-    Polynomial.eval_monomial]
-  rw [Finset.sum_range_zero, Polynomial.eval_zero, zero_add, bernoulli_one]
-  rw [bernoulli_eq_bernoulli'_of_ne_one zero_ne_one, bernoulli'_zero,
-    bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two,
-    bernoulli_eq_bernoulli'_of_ne_one (by decide : 3 ≠ 1), bernoulli'_three]
-  norm_num
 
 /-- Explicit formula for `L(χ, 3)`, where `χ` is the unique nontrivial Dirichlet character modulo 4.
 -/
