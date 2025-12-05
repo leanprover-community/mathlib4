@@ -25,8 +25,6 @@ namespace List
 
 variable {α : Type u}
 
-
-@[simp]
 theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
   rw [← length_eq_zero_iff, length_finRange]
 
@@ -34,18 +32,15 @@ theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
   simp [List.Nodup.count (nodup_finRange n)]
 
-@[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 
-@[simp]
 theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·.1]) = l :=
   finRange_map_get l
 
 @[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
   simpa using (nodup_finRange k).idxOf_getElem i
 
-@[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
   apply List.ext_getElem <;> simp
 
