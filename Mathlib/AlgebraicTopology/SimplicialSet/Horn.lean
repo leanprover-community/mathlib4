@@ -220,7 +220,6 @@ def ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
     Δ[n] ⟶ (Λ[n + 1, i] : SSet.{u}) :=
   yonedaEquiv.symm (face i j hij)
 
-@[simp]
 lemma yonedaEquiv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
     yonedaEquiv (ι i j hij) = face i j hij := by
   rw [ι, Equiv.apply_symm_apply]
