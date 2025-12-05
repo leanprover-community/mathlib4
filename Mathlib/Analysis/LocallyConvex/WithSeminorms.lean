@@ -22,6 +22,13 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
 * `SeminormFamily.moduleFilterBasis`: A module filter basis formed by the open balls.
 * `Seminorm.IsBounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
   bounded by a finite number of seminorms in `E`.
+* `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
+  (existing) topology on `E` is induced by the seminorms `p`.
+* `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+  by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
+  `LocallyConvexSpace 𝕜 E`.
+  The terminology is inspired by N. Bourbaki, *Variétés différentielles et analytiques*. However,
+  unlike Bourbaki, we do not ask seminorms to be ultrametric when `𝕜` is ultrametric.
 
 ## Main statements
 
@@ -269,6 +276,11 @@ structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSp
   topology_eq_withSeminorms : topology = p.moduleFilterBasis.topology
 
 variable (𝕜 E) in
+/-- A topological vector space `E` is **polynormable** over `𝕜` if its topology is induced by
+*some* family of `𝕜`-seminorms. Equivalently, its topology is induced by *all* its continuous
+seminorm.
+
+If `𝕜` is `RCLike`, this is equivalent to `LocallyConvexSpace 𝕜 E`. -/
 class PolynormableSpace [topology : TopologicalSpace E] where
   withSeminorms' : WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.1)
 
@@ -477,6 +489,7 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
+/-- A (semi-)normed space is polynormable. -/
 instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     PolynormableSpace 𝕜 E :=
   norm_withSeminorms 𝕜 E |>.toPolynormableSpace
@@ -889,6 +902,9 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     rcases hs with ⟨I, r, _, rfl⟩
     exact convex_ball _ _ _
 
+/-- A `PolynormableSpace` over `ℝ` is locally convex.
+
+TODO: generalize to `RCLike`. -/
 instance (priority := low) [PolynormableSpace ℝ E] : LocallyConvexSpace ℝ E :=
   PolynormableSpace.withSeminorms ℝ E |>.toLocallyConvexSpace
 

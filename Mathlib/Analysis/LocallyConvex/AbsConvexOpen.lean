@@ -27,6 +27,7 @@ convex open neighborhoods of zero.
 
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
+* `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
 
 -/
 
@@ -128,5 +129,6 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
   exact S.coe_isOpen.smul₀ hr''
 
-instance : PolynormableSpace 𝕜 E :=
+/-- Any locally convex real or complex vector space is polynormable. -/
+instance LocallyConvexSpace.toPolynormableSpace : PolynormableSpace 𝕜 E :=
   with_gaugeSeminormFamily.toPolynormableSpace
