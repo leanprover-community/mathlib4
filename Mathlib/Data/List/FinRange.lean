@@ -26,32 +26,13 @@ namespace List
 variable {α : Type u}
 
 
-theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (by simp) := by
-  apply List.ext_getElem <;> simp [finRange]
-
-theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
-  rw [finRange_eq_pmap_range]
-  exact (Pairwise.pmap nodup_range _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
-
 @[simp]
 theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
   rw [← length_eq_zero_iff, length_finRange]
 
-theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) := by
-  rw [finRange_eq_pmap_range]
-  exact List.pairwise_lt_range.pmap (by simp) (by simp)
-
-theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
-  rw [finRange_eq_pmap_range]
-  exact List.pairwise_le_range.pmap (by simp) (by simp)
-
 @[simp]
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
   simp [List.Nodup.count (nodup_finRange n)]
-
-theorem get_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange (n := n) ▸ h⟩ := by
-  simp
 
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
