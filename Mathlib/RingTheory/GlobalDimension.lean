@@ -126,7 +126,7 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
     | top => simp
     | coe n => simpa using aux n
 
-lemma globalDimension_eq_iSup_loclization_prime [Small.{v, u} R] [IsNoetherianRing R] :
+lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing R] :
     globalDimension.{v} R =
     ⨆ (p : PrimeSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
   apply le_antisymm
@@ -139,8 +139,7 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v, u} R] [IsNoetherianRi
   · simp only [iSup_le_iff, globalDimension]
     intro p Mp
     let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
-    have : IsScalarTower R (Localization.AtPrime p.1) Mp :=
-      ModuleCat.Algebra.instIsScalarTowerCarrier
+    let _ : IsScalarTower R (Localization.AtPrime p.1) Mp := IsScalarTower.of_compHom _ _ _
     apply le_trans (le_trans _ (projectiveDimension_le_projectiveDimension_of_isLocalizedModule
       p.1.primeCompl (ModuleCat.of R Mp)))
       (le_iSup (fun (M : ModuleCat.{v} R) ↦ projectiveDimension M) (ModuleCat.of R Mp))
@@ -150,7 +149,7 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v, u} R] [IsNoetherianRi
       ((ModuleCat.of R Mp).localizedModule_mkLinearMap p.1.primeCompl)
       LinearMap.id)).symm.toModuleIso)
 
-lemma globalDimension_eq_iSup_loclization_maximal [Small.{v, u} R] [IsNoetherianRing R] :
+lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRing R] :
     globalDimension.{v} R =
     ⨆ (p : MaximalSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
   apply le_antisymm
@@ -163,8 +162,7 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v, u} R] [IsNoetherian
   · simp only [iSup_le_iff, globalDimension]
     intro p Mp
     let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
-    have : IsScalarTower R (Localization.AtPrime p.1) Mp :=
-      ModuleCat.Algebra.instIsScalarTowerCarrier
+    have : IsScalarTower R (Localization.AtPrime p.1) Mp := IsScalarTower.of_compHom _ _ _
     apply le_trans (le_trans _ (projectiveDimension_le_projectiveDimension_of_isLocalizedModule
       p.1.primeCompl (ModuleCat.of R Mp)))
       (le_iSup (fun (M : ModuleCat.{v} R) ↦ projectiveDimension M) (ModuleCat.of R Mp))
