@@ -36,7 +36,7 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 ## TODO
 
-- `bernoulli_eval_one_neg` : $$ B_n(1 - x) = (-1)^n B_n(x) $$
+- `bernoulli_eval_one_neg` : $ B_n(1 - x) = (-1)^n B_n(x) $
 
 -/
 
