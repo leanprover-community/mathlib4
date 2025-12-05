@@ -132,8 +132,8 @@ theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.s
   have ⟨k, hk, h⟩ := List.infix_iff_getElem?.mp h
   have h₀ := Nat.zero_add _ ▸ h 0 Nat.zero_lt_two
   have h₁ := Nat.add_comm .. ▸ h 1 Nat.one_lt_two
-  rw [← getVert_eq_support_getElem? _ <| by grind [length_support], Option.some.injEq] at h₀ h₁
-  exact h₀ ▸ h₁ ▸ p.adj_getVert_succ (i := k) <| by grind [length_support]
+  rw [← getVert_eq_support_getElem? _ <| by grind, Option.some.injEq] at h₀ h₁
+  exact h₀ ▸ h₁ ▸ p.adj_getVert_succ (i := k) <| by grind
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
