@@ -41,7 +41,7 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
       · exact le_sup_left
   inf_eq := by simp [stdSimplex.face_inter_face]
 
-/-- The inclusion `Δ[1] ⟶ horn 2 0` which avoids `2`. -/
+/-- The inclusion `Δ[1] ⟶ Λ[2, 0]` which avoids `2`. -/
 abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 0 := horn.ι 0 2 (by simp)
 
 /-- The inclusion `Δ[1] ⟶ horn 2 0` which avoids `1`. -/
