@@ -114,7 +114,7 @@ def MulEquiv.toMultiplicative_toAdditive [MulOneClass G] :
     Multiplicative (Additive G) ≃* G :=
   AddEquiv.toMultiplicativeLeft <| MulEquiv.toAdditive (.refl _)
 
-/-- The additive version of an multiplicativized additive monoid is add-equivalent to itself. -/
+/-- The additive version of a multiplicativized additive monoid is add-equivalent to itself. -/
 @[simps! apply symm_apply]
 def AddEquiv.toAdditive_toMultiplicative [AddZeroClass G] :
     Additive (Multiplicative G) ≃+ G :=

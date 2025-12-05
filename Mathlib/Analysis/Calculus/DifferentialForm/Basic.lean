@@ -29,7 +29,7 @@ $$
 dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
-where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDeriv_apply`.
+where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
 
 ## TODO
 
@@ -68,7 +68,7 @@ $$
 dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
-where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDeriv_apply`.
+where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
 -/
 noncomputable def extDeriv (ω : E → E [⋀^Fin n]→L[𝕜] F) (x : E) : E [⋀^Fin (n + 1)]→L[𝕜] F :=
   .alternatizeUncurryFin (fderiv 𝕜 ω x)
@@ -83,7 +83,7 @@ $$
 dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
 $$
 
-where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDerivWithin_apply`.
+where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDerivWithin_apply`.
 -/
 noncomputable def extDerivWithin (ω : E → E [⋀^Fin n]→L[𝕜] F) (s : Set E) (x : E) :
     E [⋀^Fin (n + 1)]→L[𝕜] F :=
