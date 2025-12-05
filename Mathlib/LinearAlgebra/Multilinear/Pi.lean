@@ -20,8 +20,6 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 
   - `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
   - `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
-
-* `MultilinearMap.fromPiEquiv`, the linear equivalence between
 -/
 
 @[expose] public section
