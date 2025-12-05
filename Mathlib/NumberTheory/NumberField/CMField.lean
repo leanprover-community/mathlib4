@@ -105,8 +105,8 @@ theorem equivInfinitePlace_apply [NumberField K] (w : InfinitePlace K) :
 
 @[simp]
 theorem equivInfinitePlace_symm_apply [NumberField K] (w : InfinitePlace K⁺) (x : K⁺) :
-    (equivInfinitePlace K).symm w x = w x := by
-  rw [← comap_apply, ← equivInfinitePlace_apply, Equiv.apply_symm_apply]
+    (equivInfinitePlace K).symm w x = w x :=
+  congr($((equivInfinitePlace K).apply_symm_apply w) x)
 
 theorem units_rank_eq_units_rank [NumberField K] :
     Units.rank K⁺ = Units.rank K := by
@@ -431,7 +431,7 @@ theorem regOfFamily_realFunSystem :
   congr; ext i w
   rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
     show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
-    show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
+    show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl]
   simp [f, g]
 
 theorem regulator_div_regulator_eq_two_pow_mul_indexRealUnits_inv :
