@@ -54,7 +54,7 @@ theorem NonlinearRightInverse.bound {f : E →SL[σ] F} (fsymm : NonlinearRightI
 
 end ContinuousLinearMap
 
-variable {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomIsometric σ] [RingHomIsometric σ']
+variable {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] [RingHomIsometric σ']
 
 /-- Given a continuous linear equivalence, the inverse is in particular an instance of
 `ContinuousLinearMap.NonlinearRightInverse` (which turns out to be linear). -/
@@ -75,7 +75,6 @@ noncomputable instance [RingHomInvPair σ' σ] (f : E ≃SL[σ] F) :
 
 namespace ContinuousLinearMap
 
-omit [RingHomIsometric σ] in
 lemma noempty_interior_of_surj (surj : Surjective f) [CompleteSpace F] :
     ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty :=
   have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
@@ -98,7 +97,10 @@ theorem exists_approx_preimage_norm_le'
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
   · simp
-  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
+  · have : RingHomIsometric σ :=
+      have := RingHomInvPair.symm σ σ'
+      RingHomIsometric.inv σ'
+    have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
     have δpos : 0 < δ := by positivity
