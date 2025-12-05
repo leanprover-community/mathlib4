@@ -127,7 +127,7 @@ instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
 namespace Ordinal
 
 noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
-  .ofLinearWellFoundedLT o.ToType
+  .ofLinearWellFoundedLT _
 
 /-! ### Basic properties of the order type -/
 
