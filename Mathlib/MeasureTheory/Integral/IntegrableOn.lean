@@ -490,7 +490,7 @@ theorem integrableAtFilter_atBot_iff [Preorder α] [IsDirectedGE α] [Nonempty �
   obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
   exact ⟨t, hi.mono_set fun _ hx ↦ ht _ hx⟩
 
-theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirectedGE α] [Nonempty α] :
+theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirectedLE α] [Nonempty α] :
     IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
   integrableAtFilter_atBot_iff (α := αᵒᵈ)
 
