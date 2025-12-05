@@ -12842,6 +12842,7 @@ public import Mathlib.Probability.Independence.Conditional
 public import Mathlib.Probability.Independence.InfinitePi
 public import Mathlib.Probability.Independence.Integrable
 public import Mathlib.Probability.Independence.Integration
+public import Mathlib.Probability.Independence.Kernel
 public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.Probability.Independence.Process
