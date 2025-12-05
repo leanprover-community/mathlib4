@@ -47,33 +47,33 @@ lemma StrictConvex.centerMass_mem_interior {s : Set V} {t : Finset ι} {w : ι �
       rcases h with h | h
       · exact hi'0 (ws _ h)
       · exact hj'0 (ws _ h)
-    · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
-      by_cases hi : w i = 0
-      · simp only [hi, zero_add, zero_div, zero_smul, ne_eq, hsum_t, not_false_eq_true, div_self,
-          one_smul]
+    rw [Finset.centerMass_insert _ _ _ hi hsum_t]
+    by_cases hi : w i = 0
+    · simp only [hi, zero_add, zero_div, zero_smul, ne_eq, hsum_t, not_false_eq_true, div_self,
+        one_smul]
+      grind
+    by_cases hzi : z i = t.centerMass w z
+    · have hwi : w i + ∑ j ∈ t, w j ≠ 0 := by
+        refine LT.lt.ne' ?_
+        have hwi : 0 < w i := by grind
+        grw [hwi]
+        simp only [lt_add_iff_pos_right, gt_iff_lt]
+        exact (sum_nonneg hs₀).lt_of_ne' hsum_t
+      simp only [hzi, ← add_smul, ← add_div, ne_eq, hwi, not_false_eq_true, div_self, one_smul]
+      by_cases! hijt : ∃ i'' j'', i'' ∈ t ∧ j'' ∈ t ∧ z i'' ≠ z j'' ∧ w i'' ≠ 0 ∧ w j'' ≠ 0
+      · grind
+      · exfalso
+        obtain ⟨i'', hi'', hwi''⟩ : ∃ i'' ∈ t, w i'' ≠ 0 := by grind
+        have hijt' : ∀ j'', j'' ∈ t → w j'' ≠ 0 → z j'' = Function.const _ (z i'') j'' := by
+          grind
+        have hi : i = i' ∨ i = j' := by grind
+        have hzi'' : t.centerMass w z = z i'' := by
+          rw [t.centerMass_congr_fun hijt', t.centerMass_const hsum_t]
         grind
-      · by_cases hzi : z i = t.centerMass w z
-        · have hwi : w i + ∑ j ∈ t, w j ≠ 0 := by
-            refine LT.lt.ne' ?_
-            have hwi : 0 < w i := by grind
-            grw [hwi]
-            simp only [lt_add_iff_pos_right, gt_iff_lt]
-            exact (sum_nonneg hs₀).lt_of_ne' hsum_t
-          simp only [hzi, ← add_smul, ← add_div, ne_eq, hwi, not_false_eq_true, div_self, one_smul]
-          by_cases! hijt : ∃ i'' j'', i'' ∈ t ∧ j'' ∈ t ∧ z i'' ≠ z j'' ∧ w i'' ≠ 0 ∧ w j'' ≠ 0
-          · grind
-          · exfalso
-            obtain ⟨i'', hi'', hwi''⟩ : ∃ i'' ∈ t, w i'' ≠ 0 := by grind
-            have hijt' : ∀ j'', j'' ∈ t → w j'' ≠ 0 → z j'' = Function.const _ (z i'') j'' := by
-              grind
-            have hi : i = i' ∨ i = j' := by grind
-            have hzi'' : t.centerMass w z = z i'' := by
-              rw [t.centerMass_congr_fun hijt', t.centerMass_const hsum_t]
-            grind
-        · exact strictConvex_iff_div.1 hs zi
-            (hs.convex.centerMass_mem hs₀ (lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t))
-              (fun j hj ↦ hmem j (mem_insert_of_mem hj))) hzi (by grind)
-            ((sum_nonneg hs₀).lt_of_ne' hsum_t)
+    · exact strictConvex_iff_div.1 hs zi
+        (hs.convex.centerMass_mem hs₀ (lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t))
+          (fun j hj ↦ hmem j (mem_insert_of_mem hj))) hzi (by grind)
+        ((sum_nonneg hs₀).lt_of_ne' hsum_t)
 
 lemma StrictConvex.sum_mem_interior {s : Set V} {t : Finset ι} {w : ι → R} {z : ι → V}
     (hs : StrictConvex R s) (h0 : ∀ i ∈ t, 0 ≤ w i) (h1 : ∑ i ∈ t, w i = 1) {i j : ι}
@@ -104,7 +104,7 @@ lemma sum_mem_ball_of_strictConvexSpace {t : Finset ι} {w : ι → ℝ} {p : V}
   rw [← t.centerMass_eq_of_sum_1 _ h1]
   exact centerMass_mem_ball_of_strictConvexSpace h0 hi hj hij hi0 hj0 hz
 
-lemma norm_sum_lt_of_strict_ConvexSpace {t : Finset ι} {w : ι → ℝ} {r : ℝ} {z : ι → V}
+lemma norm_sum_lt_of_strictConvexSpace {t : Finset ι} {w : ι → ℝ} {r : ℝ} {z : ι → V}
     (h0 : ∀ i ∈ t, 0 ≤ w i) (h1 : ∑ i ∈ t, w i = 1) {i j : ι} (hi : i ∈ t) (hj : j ∈ t)
     (hij : z i ≠ z j) (hi0 : w i ≠ 0) (hj0 : w j ≠ 0) (hz : ∀ i ∈ t, ‖z i‖ ≤ r) :
     ‖∑ k ∈ t, w k • z k‖ < r := by
