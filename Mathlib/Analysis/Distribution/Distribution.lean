@@ -47,6 +47,7 @@ In the `Distributions` scope, we introduce the following notations:
 Note that the parameter `n` here lives in `ℕ∞`, unlike the parameter for `ContDiff` which lives
 in `WithTop ℕ∞` (to incorporate analytic functions). This means that we can't use the notation
 `∞` introduced for `ContDiff` for our regularity, because it denotes an element of `WithTop ℕ∞`.
+We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it would be confusing.
 
 ## Implementation Notes
 
