@@ -29,8 +29,7 @@ open DirectSum
 
 variable {R ι M' : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
 variable [CommSemiring R] [Fintype ι] [(i : ι) → DecidableEq (κ i)]
-variable [∀ i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
-variable [∀ i (j : κ i), Module R (M i j)] [Module R M']
+variable [∀ i j, AddCommMonoid (M i j)] [∀ i j, Module R (M i j)] [AddCommMonoid M'] [Module R M']
 
 /-- Two multilinear maps from direct sums are equal if they agree on the generators. -/
 @[ext]
