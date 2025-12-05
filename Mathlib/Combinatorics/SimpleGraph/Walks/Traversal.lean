@@ -206,8 +206,13 @@ theorem lastDart_eq {p : G.Walk v w} (h₁ : ¬ p.Nil) (h₂ : 0 < p.darts.lengt
   simp (disch := grind) [Dart.ext_iff, lastDart_toProd, darts_getElem_eq_getVert,
     p.getVert_of_length_le]
 
+@[simp]
+theorem head_darts_eq_firstDart {p : G.Walk v w} (hnil : p.darts ≠ []) :
+    p.darts.head hnil = p.firstDart (darts_eq_nil.not.mp hnil) := by
+  grind [firstDart_eq]
+
 theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
-    p.firstDart hnil = p.darts.head (by grind [length_darts, not_nil_iff_lt_length]) := by
+    p.firstDart hnil = p.darts.head (darts_eq_nil.not.mpr hnil) := by
   grind [firstDart_eq]
 
 theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
