@@ -342,8 +342,8 @@ which will print the `pull head` form of `e`.
 
 `#pull` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pullCommand)
-    tk:"#pull" disch?:(discharger)? ppSpace head:term " => " e:term : command =>
+macro (name := pullCommand) tk:"#pull" disch?:(discharger)? ppSpace head:term " => " e:term :
+    command =>
   `(command| #conv%$tk pull $[$disch?:discharger]? $head:term => $e)
 
 end Conv
