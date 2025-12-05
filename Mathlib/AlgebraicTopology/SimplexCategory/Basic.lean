@@ -30,6 +30,10 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
+instance {a b : SimplexCategory} : Finite (a ⟶ b) :=
+  Finite.of_injective (fun f ↦ f.toOrderHom.toFun)
+    (fun _ _ _ ↦ by aesop)
+
 instance {n m : SimplexCategory} : DecidableEq (n ⟶ m) := fun a b =>
   decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
 
