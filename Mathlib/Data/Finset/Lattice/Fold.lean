@@ -281,7 +281,7 @@ theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : 
   refine ⟨t, fun a ↦ ?_⟩
   classical
   have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩
-  rwa [GT.gt, right_lt_sup, not_not] at this
+  rwa [right_lt_sup, not_not] at this
 
 theorem exists_sup_eq_iSup [CompleteLattice β] [WellFoundedGT β] (f : α → β) :
     ∃ t : Finset α, t.sup f = ⨆ a, f a :=
