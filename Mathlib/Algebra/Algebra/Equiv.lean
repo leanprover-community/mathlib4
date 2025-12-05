@@ -862,4 +862,7 @@ endomorphisms. -/
 theorem LinearEquiv.algConj_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
     e.algConj R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl
 
+theorem LinearEquiv.symm_algConj (e : M₁ ≃ₗ[S] M₂) :
+    (e.algConj R).symm = e.symm.algConj R := rfl
+
 end algConj
