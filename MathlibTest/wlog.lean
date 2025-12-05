@@ -170,3 +170,9 @@ example (x y : ℕ) : True := by
   · guard_hyp h : x ≠ 0 ∨ y ≠ 0
     trivial
   · trivial
+
+example (x y : ℕ) : True := by
+  wlog! +distrib h: x = 0 ∧ y = 0
+  · guard_hyp h : x ≠ 0 ∨ y ≠ 0
+    trivial
+  · trivial
