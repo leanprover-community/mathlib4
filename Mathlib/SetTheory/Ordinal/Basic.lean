@@ -109,22 +109,25 @@ def Ordinal : Type (u + 1) :=
 defined through the axiom of choice.
 
 Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`. -/
-def Ordinal.toType (o : Ordinal.{u}) : Type u :=
+def Ordinal.ToType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
-instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.toType :=
+@[deprecated (since := "2025-12-04")]
+alias Ordinal.toType := Ordinal.ToType
+
+instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.ToType :=
   ⟨o.out.r, o.out.wo.wf⟩
 
-instance linearOrder_toType (o : Ordinal) : LinearOrder o.toType :=
+instance linearOrder_toType (o : Ordinal) : LinearOrder o.ToType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
-instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
+instance wellFoundedLT_toType (o : Ordinal) : WellFoundedLT o.ToType :=
   o.out.wo.toIsWellFounded
 
 namespace Ordinal
 
-noncomputable instance (o : Ordinal) : SuccOrder o.toType :=
-  SuccOrder.ofLinearWellFoundedLT o.toType
+noncomputable instance (o : Ordinal) : SuccOrder o.ToType :=
+  SuccOrder.ofLinearWellFoundedLT o.ToType
 
 /-! ### Basic properties of the order type -/
 
@@ -145,7 +148,7 @@ instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
 @[simp]
-theorem type_toType (o : Ordinal) : typeLT o.toType = o :=
+theorem type_toType (o : Ordinal) : typeLT o.ToType = o :=
   o.out_eq
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
@@ -193,15 +196,15 @@ theorem type_unit : type (@EmptyRelation Unit) = 1 :=
   rfl
 
 @[simp]
-theorem toType_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.toType ↔ o = 0 := by
-  rw [← @type_eq_zero_iff_isEmpty o.toType (· < ·), type_toType]
+theorem toType_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.ToType ↔ o = 0 := by
+  rw [← @type_eq_zero_iff_isEmpty o.ToType (· < ·), type_toType]
 
-instance isEmpty_toType_zero : IsEmpty (toType 0) :=
+instance isEmpty_toType_zero : IsEmpty (ToType 0) :=
   toType_empty_iff_eq_zero.2 rfl
 
 @[simp]
-theorem toType_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.toType ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff_nonempty o.toType (· < ·), type_toType]
+theorem toType_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.ToType ↔ o ≠ 0 := by
+  rw [← @type_ne_zero_iff_nonempty o.ToType (· < ·), type_toType]
 
 protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   type_ne_zero_of_nonempty _
@@ -365,14 +368,14 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
   Iff.rfl
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
-`α.toType` into `β.toType`. -/
-def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.toType ≤i β.toType := by
+`α.ToType` into `β.ToType`. -/
+def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
   apply Classical.choice (type_le_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
-of `α.toType` into `β.toType`. -/
-def principalSegToType {α β : Ordinal} (h : α < β) : α.toType <i β.toType := by
+of `α.ToType` into `β.ToType`. -/
+def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
 
@@ -405,7 +408,7 @@ theorem top_typein (r : α → α → Prop) [IsWellOrder α r] : (typein r).top 
 theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : typein r a < type r :=
   (typein r).lt_top a
 
-theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (· < ·) i < o := by
+theorem typein_lt_self {o : Ordinal} (i : o.ToType) : typein (α := o.ToType) (· < ·) i < o := by
   simp_rw [← type_toType o]
   apply typein_lt_type
 
@@ -476,7 +479,7 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Ii
 -- TODO: generalize to other well-orders
 @[simp]
 theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
-    enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
+    enum (· < ·) o₁ ≤ enum (α := a.ToType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
   rw [← enum_le_enum, not_lt]
 
 theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
@@ -488,8 +491,8 @@ theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type 
   rw [← enum_typein r a, enum_le_enum r]
   apply zero_le
 
-theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
-    enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
+theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
+    enum (α := o.ToType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 
@@ -504,11 +507,11 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
     f (enum r ⟨o, hr⟩) = enum s ⟨o, hr.trans_eq (Quotient.sound ⟨f⟩)⟩ :=
   relIso_enum' _ _ _ _
 
-/-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
+/-- The order isomorphism between ordinals less than `o` and `o.ToType`. -/
 @[simps! -isSimp]
-noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
-  invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
+noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.ToType where
+  toFun x := enum (α := o.ToType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
+  invFun x := ⟨typein (α := o.ToType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
@@ -525,15 +528,15 @@ instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc
 instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
-/-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
-def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+/-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
+def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [pos_iff_ne_zero])
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
+    enum (α := o.ToType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
-      (⊥ : o.toType) :=
+      (⊥ : o.ToType) :=
   rfl
 
 theorem lt_wf : @WellFounded Ordinal (· < ·) :=
@@ -899,15 +902,15 @@ instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
 theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
   rfl
 
-instance uniqueToTypeOne : Unique (toType 1) where
-  default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
+instance uniqueToTypeOne : Unique (ToType 1) where
+  default := enum (α := ToType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
-    rw [← enum_typein (α := toType 1) (· < ·) a]
+    rw [← enum_typein (α := ToType 1) (· < ·) a]
     congr
     rw [← lt_one_iff_zero]
     apply typein_lt_self
 
-theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
+theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
   Unique.eq_default x
 
 /-! ### Extra properties of typein and enum -/
@@ -915,16 +918,16 @@ theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
 -- TODO: use `enumIsoToType` for lemmas on `toType` rather than `enum` and `typein`.
 
 @[simp]
-theorem typein_one_toType (x : toType 1) : typein (α := toType 1) (· < ·) x = 0 := by
+theorem typein_one_toType (x : ToType 1) : typein (α := ToType 1) (· < ·) x = 0 := by
   rw [one_toType_eq x, typein_enum]
 
-theorem typein_le_typein' (o : Ordinal) {x y : o.toType} :
-    typein (α := o.toType) (· < ·) x ≤ typein (α := o.toType) (· < ·) y ↔ x ≤ y := by
+theorem typein_le_typein' (o : Ordinal) {x y : o.ToType} :
+    typein (α := o.ToType) (· < ·) x ≤ typein (α := o.ToType) (· < ·) y ↔ x ≤ y := by
   simp
 
-theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
-    a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
-  rw [← enum_typein (α := (succ o).toType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
+theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
+    a ≤ enum (α := (succ o).ToType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
+  rw [← enum_typein (α := (succ o).ToType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
     ← lt_succ_iff]
   apply typein_lt_self
 
@@ -998,7 +1001,7 @@ namespace Cardinal
 open Ordinal
 
 @[simp]
-theorem mk_toType (o : Ordinal) : #o.toType = o.card :=
+theorem mk_toType (o : Ordinal) : #o.ToType = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
@@ -1126,19 +1129,19 @@ theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]
 
-theorem mk_ord_toType (c : Cardinal) : #c.ord.toType = c := by simp
+theorem mk_ord_toType (c : Cardinal) : #c.ord.ToType = c := by simp
 
 theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
     card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 
-theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.toType) :
-    card (typein (α := c.ord.toType) (· < ·) x) < c := by
+theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
+    card (typein (α := c.ord.ToType) (· < ·) x) < c := by
   rw [← lt_ord]
   apply typein_lt_self
 
-theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.toType) : #(Iio i) < c :=
+theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c :=
   card_typein_toType_lt c i
 
 theorem ord_injective : Injective ord := by
@@ -1265,7 +1268,7 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
 
 /-- If a cardinal `c` is nonzero, then `c.ord.toType` has a least element. -/
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
-    OrderBot c.ord.toType :=
+    OrderBot c.ord.ToType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
 
 end Cardinal
