@@ -160,7 +160,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
       throwError "invalid use of explicit universe parameters, `{e}` is a local variable"
 
     -- Resolve constant name
-    let constName ← Lean.resolveGlobalConstNoOverload id
+    let constName ← realizeGlobalConstNoOverloadWithInfo id
     let constInfo ← Lean.getConstInfo constName
 
     -- Parse and elaborate wildcard universes

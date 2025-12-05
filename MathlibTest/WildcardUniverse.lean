@@ -494,3 +494,15 @@ variable (F : Type* → Type* → Type*)
 #guard_msgs in #check F.{*}
 
 end LocalCtx
+
+section RealizeDef
+
+def Alias := CategoryTheory.Category
+
+/--
+info: Alias.eq_def.{w_1, u_1} : Eq.{max (w_1 + 2) (u_1 + 3)} Alias.{w_1, u_1} CategoryTheory.Category.{u_1, w_1}
+-/
+#guard_msgs in
+#check Alias.eq_def.{w*}
+
+end RealizeDef
