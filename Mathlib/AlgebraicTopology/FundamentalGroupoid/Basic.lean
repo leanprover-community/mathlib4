@@ -3,11 +3,13 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.CategoryTheory.Category.Grpd
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Fundamental groupoid of a space
@@ -17,6 +19,8 @@ objects being points of `X`, and morphisms `x ⟶ y` being paths from `x` to `y`
 homotopy equivalence. With this, the fundamental group of `X` based at `x` is just the automorphism
 group of `x`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -342,7 +346,7 @@ lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
 
 @[reassoc]
 lemma conj_eqToHom {x y x' y' : X} {p : Path x y} (hx : x' = x) (hy : y' = y) :
-    eqToHom (congr_arg mk hx) ≫ ⟦p⟧ ≫ eqToHom (congr_arg mk hy.symm) = ⟦p.cast hx hy⟧ := by
+    eqToHom (congr_arg mk hx) ≫ .mk p ≫ eqToHom (congr_arg mk hy.symm) = .mk (p.cast hx hy) := by
   subst hx hy; simp
 
 end FundamentalGroupoid

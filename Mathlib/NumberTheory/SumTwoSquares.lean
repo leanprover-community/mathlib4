@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+module
+
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares
@@ -20,6 +22,8 @@ exponent of the largest power of `q` dividing `n` is even; see `Nat.eq_sq_add_sq
 There is an alternative characterization as the numbers of the form `a^2 * b`, where `b` is a
 natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_eq_sq_mul`.
 -/
+
+@[expose] public section
 
 
 section Fermat
@@ -72,7 +76,7 @@ section NegOneSquare
 theorem ZMod.isSquare_neg_one_of_dvd {m n : ℕ} (hd : m ∣ n) (hs : IsSquare (-1 : ZMod n)) :
     IsSquare (-1 : ZMod m) := by
   let f : ZMod n →+* ZMod m := ZMod.castHom hd _
-  rw [← RingHom.map_one f, ← RingHom.map_neg]
+  rw [← map_one f, ← map_neg]
   exact hs.map f
 
 /-- If `-1` is a square modulo coprime natural numbers `m` and `n`, then `-1` is also
@@ -168,7 +172,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
   obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
-    rw [show y ^ 2 = n + -1 * x ^ 2 by cutsat] at hc2
+    rw [show y ^ 2 = n + -1 * x ^ 2 by lia] at hc2
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv

@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Iso
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Order.Basic
 
 /-!
 # Properties of objects in a category
@@ -22,6 +24,8 @@ for predicates `C → Prop`.
   regarding terms in `ObjectProperty C` when `C` is pretriangulated
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -123,6 +127,11 @@ lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.map F (F.obj X) :=
   ⟨X, hX, ⟨Iso.refl _⟩⟩
 
+lemma map_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
+    P.map F ≤ Q.map F := by
+  rintro X ⟨Y, hY, ⟨e⟩⟩
+  exact ⟨Y, h _ hY, ⟨e⟩⟩
+
 /-- The strict image of a property of objects by a functor. -/
 inductive strictMap (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D
   | mk (X : C) (hX : P X) : strictMap P F (F.obj X)
@@ -134,6 +143,16 @@ lemma strictMap_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
 lemma strictMap_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.strictMap F (F.obj X) :=
   ⟨X, hX⟩
+
+lemma strictMap_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
+    P.strictMap F ≤ Q.strictMap F := by
+  rintro _ ⟨X, hX⟩
+  exact ⟨X, h _ hX⟩
+
+lemma strictMap_le_map (P : ObjectProperty C) (F : C ⥤ D) :
+    P.strictMap F ≤ P.map F := by
+  rintro _ ⟨X, hX⟩
+  exact ⟨X, hX, ⟨Iso.refl _⟩⟩
 
 @[simp]
 lemma strictMap_ofObj {ι : Type u'} (X : ι → C) (F : C ⥤ D) :

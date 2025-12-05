@@ -3,8 +3,10 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Lawrence Wu, Jeremy Tan
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Cyclic permutations on `Fin n`
@@ -14,6 +16,8 @@ This file defines
 * `finCycle`, the permutation that adds a fixed number to each element of `Fin n`
 and proves various lemmas about them.
 -/
+
+@[expose] public section
 
 open Nat
 
@@ -35,7 +39,7 @@ theorem finRotate_of_lt {k : ℕ} (h : k < n) :
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, Nat.add_comm]
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, by cutsat⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
+theorem finRotate_last' : finRotate (n + 1) ⟨n, by lia⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate_succ]
   rw [finAddFlip_apply_mk_right le_rfl]
   simp
@@ -84,9 +88,7 @@ theorem coe_finRotate (i : Fin n.succ) :
 
 theorem lt_finRotate_iff_ne_last (i : Fin (n + 1)) :
     i < finRotate _ i ↔ i ≠ Fin.last n := by
-  refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
-  · simp only [hc, finRotate_succ_apply, Fin.last_add_one, Fin.not_lt_zero] at hi
-  · rw [Fin.lt_def, coe_finRotate_of_ne_last hi, Nat.lt_add_one_iff]
+  simpa using Fin.lt_last_iff_ne_last
 
 theorem lt_finRotate_iff_ne_neg_one [NeZero n] (i : Fin n) :
     i < finRotate _ i ↔ i ≠ -1 := by

@@ -3,10 +3,13 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Martin Dvorak
 -/
-import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Algebra.Order.Kleene
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Languages
@@ -45,6 +48,8 @@ with respect to other language operations.
   then `l` is the language `m∗ * n`
 
 -/
+
+@[expose] public section
 
 
 open List Set Computability
@@ -279,28 +284,23 @@ theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ 
 theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 
-instance : KleeneAlgebra (Language α) :=
-  { instSemiring, instCompleteAtomicBooleanAlgebra with
-    kstar := fun L ↦ L∗,
-    one_le_kstar := fun a _ hl ↦ ⟨[], hl, by simp⟩,
-    mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
-    kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
-    kstar_mul_le_self := fun l m h ↦ by
-      rw [kstar_eq_iSup_pow, iSup_mul]
-      refine iSup_le (fun n ↦ ?_)
-      induction n with
-      | zero => simp
-      | succ n ih =>
-        rw [pow_succ, mul_assoc (l^n) l m]
-        exact le_trans (mul_le_mul_left' h _) ih,
-    mul_kstar_le_self := fun l m h ↦ by
-      rw [kstar_eq_iSup_pow, mul_iSup]
-      refine iSup_le (fun n ↦ ?_)
-      induction n with
-      | zero => simp
-      | succ n ih =>
-        rw [pow_succ, ← mul_assoc m (l^n) l]
-        exact le_trans (mul_le_mul_right' ih _) h }
+instance : KleeneAlgebra (Language α) where
+  __ : OrderBot (Language α) := inferInstance
+  one_le_kstar a _ hl := ⟨[], hl, by simp⟩
+  mul_kstar_le_kstar a := (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_kstar a := (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_self l m h := by
+    rw [kstar_eq_iSup_pow, iSup_mul]
+    refine iSup_le fun n ↦ ?_
+    induction n with
+    | zero => simp
+    | succ n ih => grw [pow_succ, mul_assoc, h, ih]
+  mul_kstar_le_self l m h := by
+    rw [kstar_eq_iSup_pow, mul_iSup]
+    refine iSup_le fun n ↦ ?_
+    induction n with
+    | zero => simp
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l^n) l, ih, h]
 
 @[deprecated add_le_add (since := "2025-10-26")]
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=

@@ -3,18 +3,22 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Defs
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.OfFn
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Data.Vector.Defs
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Additional theorems and definitions about the `Vector` type
 
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -160,16 +164,14 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
-  rcases v with ⟨l, rfl⟩
-  apply toList_injective
-  dsimp
-  simpa only [toList_ofFn] using List.ofFn_get _
+  ext
+  apply List.Vector.get_ofFn
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by cutsat⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by lia⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -201,6 +203,10 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
     funext i
     rw [get_tail, get_ofFn]
     rfl
+
+theorem toList_tail : ∀ (v : Vector α n), v.tail.toList = v.toList.tail
+  | ⟨[], _⟩     => by rfl
+  | ⟨_ :: _, _⟩ => by rfl
 
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
@@ -637,7 +643,7 @@ private def traverseAux {α β : Type u} (f : α → F β) : ∀ x : List α, F 
   | x :: xs => Vector.cons <$> f x <*> traverseAux f xs
 
 /-- Apply an applicative function to each component of a vector. -/
-protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
+@[no_expose] protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
   | ⟨v, Hv⟩ => cast (by rw [Hv]) <| traverseAux f v
 
 section

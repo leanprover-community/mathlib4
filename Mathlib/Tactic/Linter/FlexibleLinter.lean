@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Tactic.Linter.Header
+module
+
+public meta import Lean.Elab.Command
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "flexible" linter
@@ -88,6 +90,8 @@ By looking at the `mvar`s that are either only "before" or only "after", we focu
 We then propagate all the `FVarId`s that were present in the "before" goals to the "after" goals,
 while leaving untouched the ones in the "inert" goals.
 -/
+
+public meta section
 
 open Lean Elab Linter
 
@@ -283,8 +287,8 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
-  `omega` and `cutsat`, `grobner`
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
+  `omega` and `lia`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
@@ -300,6 +304,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
@@ -317,6 +322,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.grind,
     ``Lean.Parser.Tactic.grobner,
     ``Lean.Parser.Tactic.cutsat,
+    `tacticLia,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,
@@ -331,7 +337,7 @@ def flexible : Std.HashSet Name :=
     `cfcContTac,
     -- `continuity` and `measurability` also use `aesop` under the hood.
     `tacticContinuity,
-    `tacticMeasurability,
+    `Mathlib.Tactic.measurability,
     `finiteness,
     `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
@@ -340,7 +346,7 @@ def flexible : Std.HashSet Name :=
 
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
 the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
-For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
+For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false`. -/
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases' => false

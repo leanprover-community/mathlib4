@@ -3,17 +3,22 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.PSub
-import Mathlib.Data.Nat.Size
-import Mathlib.Data.Num.Bitwise
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Bitwise
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.PSub
+public import Mathlib.Data.Nat.Size
+public import Mathlib.Data.Num.Bitwise
+import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
 # Properties of the binary representation of integers
 -/
+
+@[expose] public section
 
 open Int
 
@@ -480,11 +485,11 @@ theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
       rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
         Nat.size_bit]
       have := to_nat_pos n
-      dsimp [Nat.bit]; cutsat
+      dsimp [Nat.bit]; lia
   | bit1 n => by
       rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
         Nat.size_bit]
-      dsimp [Nat.bit]; cutsat
+      dsimp [Nat.bit]; lia
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
   | 1 => rfl
@@ -584,6 +589,9 @@ theorem cast_pos [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] (n : P
 theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
   rw [← cast_to_nat, mul_to_nat, Nat.cast_mul, cast_to_nat, cast_to_nat]
 
+-- TODO: find a good way to fix the linter error
+-- simp is called on three goals, with different simp set
+set_option linter.flexible false in
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
@@ -719,6 +727,8 @@ theorem ppred_to_nat : ∀ n : Num, (↑) <$> ppred n = Nat.ppred n
 theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
   cases m <;> cases n <;> try { rfl }; apply PosNum.cmp_swap
 
+-- TODO: find a good way to fix the linter; simp applies to three goals at once
+set_option linter.flexible false in
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.

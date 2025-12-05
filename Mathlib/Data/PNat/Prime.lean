@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # Primality and GCD on pnat
@@ -12,6 +14,8 @@ import Mathlib.Data.PNat.Basic
 This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, analogous to those on
 `Nat`.
 -/
+
+@[expose] public section
 
 
 namespace Nat.Primes

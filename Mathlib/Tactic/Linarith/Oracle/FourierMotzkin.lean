@@ -3,8 +3,10 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Batteries.Lean.HashMap
-import Mathlib.Tactic.Linarith.Datatypes
+module
+
+public meta import Batteries.Lean.HashMap
+public meta import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -28,6 +30,8 @@ Theorem: `comps` and `comps'` are equisatisfiable.
 We recursively eliminate all variables from the system. If we derive an empty clause `0 < 0`,
 we conclude that the original system was unsatisfiable.
 -/
+
+public meta section
 
 open Batteries
 open Std (format ToFormat TreeSet)
@@ -138,7 +142,7 @@ structure PComp : Type where
   effective : TreeSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective. -/
+  do not appear in `c` itself, and are not in `effective`. -/
   implicit : TreeSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/

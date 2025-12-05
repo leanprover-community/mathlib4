@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Algebra.Ring.Rat
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Nonnegative rationals
@@ -35,13 +37,15 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
+@[expose] public section
+
 assert_not_exists CompleteLattice IsOrderedMonoid
 
 library_note2 «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
 the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
-un``@[simp]``ed):
+un-`@[simp]`ed):
 1. There is a significant portion of the library which needs the early lemma to be available via
   `simp` and which doesn't have access to the more general lemmas.
 2. The more general lemmas have more complicated typeclass assumptions, causing rewrites with them

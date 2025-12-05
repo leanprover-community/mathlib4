@@ -3,11 +3,13 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # The topological support of a function
@@ -28,6 +30,8 @@ The definitions have been put in the root namespace following many other topolog
 like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
 worth reconsidering namespacing the definitions here.
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Topology
@@ -69,6 +73,39 @@ theorem mulTSupport_binop_subset [One β] [One γ] (op : α → β → γ)
     (op1 : op 1 1 = 1) (f : X → α) (g : X → β) :
     mulTSupport (fun x ↦ op (f x) (g x)) ⊆ mulTSupport f ∪ mulTSupport g :=
   closure_mono (mulSupport_binop_subset op op1 f g) |>.trans closure_union.subset
+
+@[to_additive]
+lemma mulTSupport_comp_subset [One β] {g : α → β} (hg : g 1 = 1) (f : X → α) :
+    mulTSupport (g ∘ f) ⊆ mulTSupport f :=
+  closure_mono (mulSupport_comp_subset hg f)
+
+@[to_additive]
+lemma mulTSupport_subset_comp [One β] {g : α → β} (hg : ∀ {x}, g x = 1 → x = 1) (f : X → α) :
+    mulTSupport f ⊆ mulTSupport (g ∘ f) :=
+  closure_mono (mulSupport_subset_comp hg f)
+
+@[to_additive]
+lemma mulTSupport_comp_eq [One β] {g : α → β} (hg : ∀ {x}, g x = 1 ↔ x = 1) (f : X → α) :
+    mulTSupport (g ∘ f) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq g hg]
+
+@[to_additive]
+lemma mulTSupport_comp_eq_of_range_subset [One β] {g : α → β} {f : X → α}
+    (hg : ∀ {x}, x ∈ range f → (g x = 1 ↔ x = 1)) :
+    mulTSupport (g ∘ f) = mulTSupport f := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_of_range_subset hg]
+
+@[to_additive]
+lemma mulTSupport_comp_subset_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → α) {f : X → Y}
+    (hf : Continuous f) :
+    mulTSupport (g ∘ f) ⊆ f ⁻¹' mulTSupport g := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_preimage]
+  exact hf.closure_preimage_subset _
+
+@[to_additive]
+lemma mulTSupport_comp_eq_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → α) (f : X ≃ₜ Y) :
+    mulTSupport (g ∘ f) = f ⁻¹' mulTSupport g := by
+  rw [mulTSupport, mulTSupport, mulSupport_comp_eq_preimage, Homeomorph.preimage_closure]
 
 @[to_additive]
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
@@ -366,7 +403,7 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 @[to_additive, simp]
 protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
     HasCompactMulSupport (1 : α → β) := by
-  simp [HasCompactMulSupport, mulTSupport]
+  simp [HasCompactMulSupport]
 
 end Monoid
 

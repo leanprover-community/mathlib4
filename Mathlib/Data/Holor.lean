@@ -3,9 +3,11 @@ Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic properties of holors
@@ -30,6 +32,8 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 
 * <https://en.wikipedia.org/wiki/Tensor_rank_decomposition>
 -/
+
+@[expose] public section
 
 
 universe u

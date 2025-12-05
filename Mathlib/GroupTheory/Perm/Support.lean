@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Finset.NoncommProd
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # support of a permutation
@@ -27,6 +29,8 @@ Assume `α` is a Fintype:
   (Equivalently, `f.support` has at least 2 elements.)
 
 -/
+
+@[expose] public section
 
 
 open Equiv Finset Function

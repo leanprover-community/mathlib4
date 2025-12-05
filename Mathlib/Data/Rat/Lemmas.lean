@@ -3,15 +3,19 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Rat
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.PNat.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Data.PNat.Defs
 
 /-!
 # Further lemmas for the Rational Numbers
 
 -/
+
+@[expose] public section
 
 
 namespace Rat
@@ -315,7 +319,7 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :
   simp only [num_inv, num_ofNat, den_ofNat, Nat.cast_one, mul_one, Int.sign_eq_one_iff_pos,
     gt_iff_lt]
   change 0 < (a : ℤ)
-  cutsat
+  lia
 
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by simp
 

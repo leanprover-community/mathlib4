@@ -3,8 +3,10 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Kevin Buzzard
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebras
@@ -42,6 +44,8 @@ that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
 
 bialgebra
 -/
+
+@[expose] public section
 
 universe u v w
 

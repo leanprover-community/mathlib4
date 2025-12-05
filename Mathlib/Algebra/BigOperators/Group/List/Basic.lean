@@ -3,17 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.TakeDrop
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Int.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sums and products from lists
@@ -22,6 +24,8 @@ This file provides basic results about `List.prod`, `List.sum`, which calculate 
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
 counterparts.
 -/
+
+@[expose] public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -106,9 +110,8 @@ theorem prod_set :
       (L.set n a).prod =
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
   | x :: xs, 0, a => by simp [set]
-  | x :: xs, i + 1, a => by
-    simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt]
+  | x :: xs, i + 1, a => by simp [set, prod_set xs i a, mul_assoc]
+  | [], _, _ => by simp [set]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -268,7 +271,7 @@ lemma eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'
     (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
   refine ext_get h fun i h₁ h₂ => ?_
   have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
-  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
+  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (Nat.le_of_lt h₁)] at this
   convert mul_left_cancel this
 
 section Group
@@ -331,8 +334,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_of_length_le (le_of_not_gt hn), prod_nil, mul_one,
-      drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
+  · simp (disch := grind) [take_of_length_le, drop_eq_nil_of_le]
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :

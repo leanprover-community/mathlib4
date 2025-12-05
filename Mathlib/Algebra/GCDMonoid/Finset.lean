@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GCDMonoid.Multiset
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Algebra.GCDMonoid.Multiset
 
 /-!
 # GCD and LCM operations on finsets
@@ -25,6 +27,8 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 
 finset, gcd
 -/
+
+@[expose] public section
 
 variable {ι α β γ : Type*}
 

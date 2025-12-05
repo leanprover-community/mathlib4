@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
 
 /-!
 # Restrict the domain of a function to a set
@@ -13,6 +15,8 @@ import Mathlib.Data.Set.Image
 * `Set.restrict f s` : restrict the domain of `f` to the set `s`;
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
@@ -145,6 +149,14 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
   simp only [Injective, Subtype.ext_iff, val_codRestrict_apply]
 
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
+
+@[simp] theorem range_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+    range (s.codRestrict f h) = (↑) ⁻¹' range f := by
+  ext; simp [Subtype.ext_iff]
+
+theorem surjective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+    (s.codRestrict f h).Surjective ↔ range f = s := by
+  simp [← range_eq_univ, Subset.antisymm_iff (a := range f), range_subset_iff, h]
 
 theorem codRestrict_range_surjective (f : ι → α) :
     ((range f).codRestrict f mem_range_self).Surjective := by

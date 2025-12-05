@@ -3,19 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.MonoidAlgebra.MapDomain
-import Mathlib.Algebra.MonoidAlgebra.Module
-import Mathlib.Data.Finsupp.SMul
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.MonoidAlgebra.MapDomain
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.Data.Finsupp.SMul
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Monoid algebras
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

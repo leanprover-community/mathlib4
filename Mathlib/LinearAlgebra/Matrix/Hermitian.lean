@@ -3,8 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Star.Pi
-import Mathlib.LinearAlgebra.Matrix.ZPow
+module
+
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.ZPow
 
 /-! # Hermitian matrices
 
@@ -21,6 +23,8 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 self-adjoint matrix, hermitian matrix
 
 -/
+
+@[expose] public section
 
 -- TODO:
 -- assert_not_exists MonoidAlgebra
@@ -62,6 +66,10 @@ theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, sta
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
     (hf : Function.Semiconj f star star) : (A.map f).IsHermitian :=
   (conjTranspose_map f hf).symm.trans <| h.eq.symm ▸ rfl
+
+@[simp, nontriviality]
+theorem IsHermitian.of_subsingleton {A : Matrix n n α} [Subsingleton α] : A.IsHermitian :=
+  .ext fun _ _ ↦ Subsingleton.elim ..
 
 theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
   rw [IsHermitian, conjTranspose, transpose_map]

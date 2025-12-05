@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+module
+
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Relative cell complexes
@@ -25,6 +27,8 @@ see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgumen
 * https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w w' t v u
 

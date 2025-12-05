@@ -3,13 +3,17 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits Opposite

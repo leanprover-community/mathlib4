@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 /-!
 # σ-algebra of sets invariant under a self-map
 
@@ -12,6 +14,8 @@ to be the σ-algebra of sets `s : Set α` such that
 - `s` is measurable w.r.t. the canonical σ-algebra on `α`;
 - and `f ⁻ˢ' s = s`.
 -/
+
+@[expose] public section
 
 open Set Function
 open scoped MeasureTheory

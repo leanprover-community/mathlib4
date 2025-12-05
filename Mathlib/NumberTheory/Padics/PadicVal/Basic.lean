@@ -3,11 +3,13 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
-import Mathlib.NumberTheory.Divisors
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
-import Mathlib.Data.Nat.MaxPowDiv
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Int
+module
+
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # `p`-adic Valuation
@@ -58,6 +60,8 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 p-adic, p adic, padic, norm, valuation
 -/
+
+@[expose] public section
 
 
 universe u
@@ -491,7 +495,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
-  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by cutsat⟩), and_iff_right_iff_imp]
+  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by lia⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) pow_padicValNat_dvd
 
 /-- This is false for prime numbers other than 2:
@@ -521,7 +525,7 @@ theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
   simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Nat.mem_divisors]
-  exact ⟨(pow_dvd_pow p <| by cutsat).trans pow_padicValNat_dvd, hn⟩
+  exact ⟨(pow_dvd_pow p <| by lia).trans pow_padicValNat_dvd, hn⟩
 
 theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
     ((Finset.range (padicValNat p n)).image fun t => p ^ (t + 1)) ⊆ n.divisors.erase 1 := by
@@ -656,7 +660,7 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact 
     (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
   convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ ‹_›
-  all_goals cutsat
+  all_goals lia
 
 end padicValNat
 

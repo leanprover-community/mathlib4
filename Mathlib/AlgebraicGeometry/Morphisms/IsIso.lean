@@ -3,13 +3,17 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 /-!
 
 # Being an isomorphism is local at the target
 
 -/
+
+@[expose] public section
 
 open CategoryTheory MorphismProperty
 

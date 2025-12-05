@@ -3,26 +3,28 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Algebra.Ring.AddAut
-import Mathlib.Data.Nat.Totient
-import Mathlib.GroupTheory.Divisible
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.Order.T5
+module
+
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Algebra.Ring.AddAut
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Divisible
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Topology.Order.T5
 
 /-!
 # The additive circle
 
-We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`.
+We define the additive circle `AddCircle p` as the quotient `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`.
 
 See also `Circle` and `Real.angle`.  For the normed group structure on `AddCircle`, see
 `AddCircle.NormedAddCommGroup` in a later file.
 
 ## Main definitions and results:
 
-* `AddCircle`: the additive circle `𝕜 ⧸ (ℤ ∙ p)` for some period `p : 𝕜`
+* `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
 * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
 * `AddCircle.equivIco` and `AddCircle.equivIoc`: the natural equivalences
@@ -47,6 +49,8 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Exponential equivalence to `Circle`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -113,7 +117,7 @@ theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : Continu
 
 end Continuity
 
-/-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
+/-- The "additive circle": `𝕜 ⧸ ℤ ∙ p`. See also `Circle` and `Real.angle`. -/
 abbrev AddCircle [AddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 
@@ -399,7 +403,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
 
 omit [IsStrictOrderedRing 𝕜] in
 @[simp] lemma coe_fract (x : 𝕜) : (↑(Int.fract x) : AddCircle (1 : 𝕜)) = x := by
-  simp [← Int.self_sub_floor]
+  simp [← Int.self_sub_floor, mem_zmultiples_iff]
 
 end FloorRing
 

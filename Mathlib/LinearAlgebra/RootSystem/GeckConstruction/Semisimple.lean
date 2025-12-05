@@ -3,11 +3,13 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.Semisimple.Lemmas
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.Weights.Linear
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
@@ -25,6 +27,8 @@ algebras.
   Lie algebras.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -70,7 +74,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       · apply h
         rw [zero_add, one_smul, EmbeddingLike.apply_eq_iff_eq] at hk₁
         simp [← hk₁, -indexNeg_neg]
-      · have _i : (n + 1).AtLeastTwo := ⟨by cutsat⟩
+      · have _i : (n + 1).AtLeastTwo := ⟨by lia⟩
         exact P.nsmul_notMem_range_root (n := n + 1) (i := i) ⟨-j, hk₁⟩
     by_cases hij : P.root j + (n + 1) • P.root i ∈ range P.root
     · obtain ⟨l, hl⟩ := hij
@@ -131,7 +135,7 @@ lemma isNilpotent_e :
         rw [root_eq_neg_iff] at hij
         rw [hij, ← indexNeg_neg, neg_neg]
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
-    cutsat
+    lia
 
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
@@ -143,9 +147,10 @@ lemma isNilpotent_f :
   | zero => simp
   | succ n ih => rw [pow_succ, pow_succ, ← mul_assoc, ih, mul_assoc, ω_mul_f, ← mul_assoc]
 
-omit [P.IsReduced] [IsDomain R] in
+omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 @[simp] lemma trace_h_eq_zero :
     (h i).trace = 0 := by
+  classical
   letI _i := P.indexNeg
   suffices ∑ j, P.pairingIn ℤ j i = 0 by
     simp only [h_eq_diagonal, Matrix.trace_diagonal, Fintype.sum_sum_type, Finset.univ_eq_attach,

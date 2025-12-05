@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Group.BallSphere
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Group.BallSphere
 
 /-!
 # Algebraic structures on unit balls and spheres
@@ -14,6 +16,8 @@ In this file we define algebraic structures (`Semigroup`, `CommSemigroup`, `Mono
 `Metric.sphere (0 : 𝕜) 1`. In each case we use the weakest possible typeclass assumption on `𝕜`,
 from `NonUnitalSeminormedRing` to `NormedField`.
 -/
+
+@[expose] public section
 
 
 open Set Metric

@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Disjoint
+module
+
+public import Mathlib.Data.Set.Disjoint
 
 /-!
 # Lemmas about insertion, singleton, and pairs
@@ -15,6 +17,8 @@ This file provides extra lemmas about `insert`, `singleton`, and `pair`.
 insert, singleton
 
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra
 
@@ -249,6 +253,12 @@ theorem singleton_inter_eq_empty : {a} ∩ s = ∅ ↔ a ∉ s :=
 theorem inter_singleton_eq_empty : s ∩ {a} = ∅ ↔ a ∉ s := by
   rw [inter_comm, singleton_inter_eq_empty]
 
+@[simp] alias ⟨_, singleton_inter_of_notMem⟩ := singleton_inter_eq_empty
+@[simp] alias ⟨_, inter_singleton_of_notMem⟩ := inter_singleton_eq_empty
+
+@[simp] lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
+@[simp] lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
+
 theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
   nonempty_iff_ne_empty.symm
 
@@ -275,7 +285,7 @@ theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α
   · rw [setOf_mem_list_eq_replicate]
     rintro ⟨n, hn, rfl⟩
     simp only [List.nodup_replicate] at H
-    simp [show n = 1 by cutsat]
+    simp [show n = 1 by lia]
   · rintro rfl
     simp
 

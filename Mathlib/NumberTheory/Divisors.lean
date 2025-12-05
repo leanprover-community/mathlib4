@@ -3,15 +3,17 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Divisor Finsets
@@ -36,6 +38,8 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 divisors, perfect numbers
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -127,7 +131,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   constructor
   · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
     simp [Nat.mul_div_eq_iff_dvd, han]
-    cutsat
+    lia
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
@@ -579,6 +583,21 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han _ha hn hbn _hb -
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
+
+/-- Useful lemma for reordering sums. -/
+lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
+    n.divisorsAntidiagonal = ((Ioc 0 N) ×ˢ (Ioc 0 N)).filter
+    (fun x ↦ x.1 * x.2 = n) := by
+  ext ⟨n1, n2⟩
+  rw [Nat.mem_divisorsAntidiagonal]
+  simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Ioc]
+  constructor
+  · intro ⟨rfl, hn2⟩
+    grw [← hn]
+    simp (disch := lia) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
+    lia
+  · intro ⟨⟨hn1, hn2⟩, hn3⟩
+    exact ⟨hn3, n_ne_zero⟩
 
 end Nat
 

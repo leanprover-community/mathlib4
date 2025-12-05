@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Fintype.Option
-import Mathlib.Order.InitialSeg
-import Mathlib.Order.Nat
-import Mathlib.Order.SuccPred.CompleteLinearOrder
-import Mathlib.SetTheory.Cardinal.Defs
-import Mathlib.SetTheory.Cardinal.SchroederBernstein
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Order.InitialSeg
+public import Mathlib.Order.Nat
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.SetTheory.Cardinal.Defs
+public import Mathlib.SetTheory.Cardinal.SchroederBernstein
 
 /-!
 # Order on cardinal numbers
@@ -56,6 +58,8 @@ That is reflected in this file containing both the order and algebra structure.
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -306,7 +310,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     bot_le _ := bot_le
-    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+    mul_le_mul_left _ _ := mul_le_mul_left
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above

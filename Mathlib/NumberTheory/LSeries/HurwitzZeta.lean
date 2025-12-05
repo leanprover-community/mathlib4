@@ -3,10 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
-import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # The Hurwitz zeta function
@@ -34,6 +35,8 @@ This file gives the definition and properties of the following two functions:
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
 * `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
 -/
+
+@[expose] public section
 
 open Set Real Complex Filter Topology
 

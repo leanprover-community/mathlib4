@@ -3,8 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
-import Mathlib.CategoryTheory.FiberedCategory.Fiber
-import Mathlib.CategoryTheory.FiberedCategory.Fibered
+module
+
+public import Mathlib.CategoryTheory.FiberedCategory.Fiber
+public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
 
@@ -47,6 +49,8 @@ analogously to the standard fibers.
   some fiber followed by a pullback.
 
 -/
+
+@[expose] public section
 
 universe v₃ u₃ v₂ u₂ v₁ u₁
 

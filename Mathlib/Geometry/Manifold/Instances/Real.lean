@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.WithLp
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -41,6 +43,8 @@ model with corners cannot be implicit, see the discussion in
 The manifold structure on the interval `[x, y] = Icc x y` requires the assumption `x < y` as a
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

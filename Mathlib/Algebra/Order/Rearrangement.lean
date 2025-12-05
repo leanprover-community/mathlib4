@@ -3,13 +3,15 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Prod.Lex
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Order.Monotone.Monovary
+module
+
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Order.Monotone.Monovary
 
 /-!
 # Rearrangement inequality
@@ -45,6 +47,8 @@ file because it is easily deducible from the `Monovary` API.
 Add equality cases for when the permute function is injective. This comes from the following fact:
 If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g ∘ σ) ↔ σ = 1`.
 -/
+
+@[expose] public section
 
 
 open Equiv Equiv.Perm Finset Function OrderDual

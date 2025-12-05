@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
-import Mathlib.CategoryTheory.Monoidal.CommGrp_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
+public import Mathlib.CategoryTheory.Monoidal.CommGrp_
 
 /-!
 # `CommGrp (Type u) ≌ CommGrpCat.{u}`
@@ -14,6 +16,8 @@ is equivalent to the category of "native" bundled commutative groups.
 
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

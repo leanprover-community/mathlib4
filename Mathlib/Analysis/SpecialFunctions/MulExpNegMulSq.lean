@@ -3,9 +3,11 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Definition of `mulExpNegMulSq` and properties
@@ -26,6 +28,8 @@ boundedness and convergence properties.
 - `abs_mulExpNegMulSq_comp_le_norm`: For a fixed bounded continuous function `g`, the mapping
   `mulExpNegMulSq ε ∘ g` is bounded by `norm g`, uniformly in `ε ≥ 0`;
 -/
+
+@[expose] public section
 
 open NNReal ENNReal BoundedContinuousFunction Filter
 

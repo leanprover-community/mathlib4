@@ -3,12 +3,16 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Rat.Cast.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Casts of rational numbers into characteristic zero fields (or division rings).
 -/
+
+@[expose] public section
 
 open Function
 
@@ -17,6 +21,8 @@ variable {F ι α β : Type*}
 namespace Rat
 variable [DivisionRing α] [CharZero α] {p q : ℚ}
 
+-- TODO: find a good way to fix the linter; simp applies to several goals at once
+set_option linter.flexible false in
 @[stacks 09FR "Characteristic zero case."]
 lemma cast_injective : Injective ((↑) : ℚ → α)
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩, h => by

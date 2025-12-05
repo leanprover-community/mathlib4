@@ -3,11 +3,13 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Order.Atoms
 
 /-!
 # Order structures on finite types
@@ -43,6 +45,8 @@ We provide a few instances for concrete types:
 * `Bool.completeLinearOrder`
 * `Bool.completeBooleanAlgebra`
 -/
+
+@[expose] public section
 
 
 open Finset

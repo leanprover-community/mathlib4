@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Data.Multiset.Powerset
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Big operators on a finset in ordered groups
@@ -18,6 +20,8 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups/monoids.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -133,10 +137,24 @@ theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
       _ = ∏ i ∈ t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
       _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
 
+@[to_additive]
+theorem prod_le_prod_of_subset_of_le_one
+    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+    {f : ι → N} {s t : Finset ι} [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
+    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
+  prod_le_prod_of_subset_of_one_le' (N := Nᵒᵈ) h hf
+
 @[to_additive sum_mono_set_of_nonneg]
 theorem prod_mono_set_of_one_le' [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
     Monotone fun s ↦ ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_one_le' hst fun x _ _ ↦ hf x
+
+@[to_additive]
+theorem prod_anti_set_of_le_one
+    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+    {f : ι → N} [MulLeftMono N] (hf : ∀ (x : ι), f x ≤ 1) :
+    Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
+  fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by simp [hf])
 
 @[to_additive sum_le_univ_sum_of_nonneg]
 theorem prod_le_univ_prod_of_one_le' [MulLeftMono N] [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :

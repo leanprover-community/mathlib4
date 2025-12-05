@@ -3,7 +3,9 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
 /-!
 # Paths in simplicial sets
@@ -18,6 +20,8 @@ path in a simplicial set `X` is then defined as a 1-truncated path in the
 An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path
 of length `n`.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -170,7 +174,7 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
-    X.spine l (by cutsat) (X.map (tr (subinterval j l h)).op Δ) =
+    X.spine l (by lia) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
@@ -312,7 +316,7 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
-  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by cutsat) j l h Δ
+  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by lia) j l h Δ
 
 end spine
 

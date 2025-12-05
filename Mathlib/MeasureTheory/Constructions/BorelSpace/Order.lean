@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 -/
-import Mathlib.Topology.Semicontinuous
-import Mathlib.MeasureTheory.Function.AEMeasurableSequence
-import Mathlib.MeasureTheory.Order.Lattice
-import Mathlib.Topology.Order.Lattice
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Borel sigma algebras on spaces with orders
@@ -35,6 +37,8 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
   are measurable.
 
 -/
+
+@[expose] public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
@@ -446,23 +450,23 @@ theorem measurableSet_uIoc : MeasurableSet (uIoc a b) :=
 
 variable [SecondCountableTopology α]
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => max (f a) (g a) := by
   simpa only [max_def'] using hf.piecewise (measurableSet_le hg hf) hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => max (f a) (g a)) μ :=
   ⟨fun a => max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => min (f a) (g a) := by
   simpa only [min_def] using hf.piecewise (measurableSet_le hf hg) hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => min (f a) (g a)) μ :=
   ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
@@ -718,7 +722,7 @@ end LinearOrder
 
 section ConditionallyCompleteLattice
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompleteLattice α]
     (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b := by
   classical
@@ -727,7 +731,7 @@ theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompl
   · exact hf
   · exact measurable_const
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.iInf_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompleteLattice α]
     (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b := by
   classical
@@ -742,7 +746,7 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable (fun b ↦ ⨆ i, f i b) := by
   rcases isEmpty_or_nonempty ι with hι|hι
@@ -767,18 +771,18 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
 --   simp_rw [iSup_apply]
 --   exact .iSup fun i ↦ by fun_prop
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem AEMeasurable.iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ := by
   refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, .iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
   filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun b => ⨅ i, f i b :=
   .iSup (α := αᵒᵈ) hf
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem AEMeasurable.iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ :=
   .iSup (α := αᵒᵈ) hf
@@ -891,14 +895,14 @@ theorem Measurable.limsup' {ι ι'} {f : ι → δ → α} {u : Filter ι} (hf :
 
 /-- `liminf` over `ℕ` is measurable. See `Measurable.liminf'` for a version with a general filter.
 -/
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun x => liminf (fun i => f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
 /-- `limsup` over `ℕ` is measurable. See `Measurable.limsup'` for a version with a general filter.
 -/
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable fun x => limsup (fun i => f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _

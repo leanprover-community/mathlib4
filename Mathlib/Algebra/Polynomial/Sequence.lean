@@ -3,8 +3,10 @@ Copyright (c) 2025 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 
@@ -28,6 +30,8 @@ Generalize linear independence to:
   * just require coefficients are regular
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
+
+@[expose] public section
 
 open Module Submodule
 open scoped Function

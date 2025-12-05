@@ -3,15 +3,18 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+module
 
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Tactic.CongrM
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Tactic.CongrM
 
 /-! # CongrM widget
 
 This file defines a `congrm?` tactic that displays a widget panel allowing to generate
 a `congrm` call with holes specified by selecting subexpressions in the goal.
 -/
+
+public meta section
 
 open Lean Meta Server ProofWidgets
 

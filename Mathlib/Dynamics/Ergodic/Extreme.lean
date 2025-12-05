@@ -3,10 +3,12 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Dynamics.Ergodic.Function
-import Mathlib.Dynamics.Ergodic.RadonNikodym
-import Mathlib.Probability.ConditionalProbability
+module
+
+public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Dynamics.Ergodic.Function
+public import Mathlib.Dynamics.Ergodic.RadonNikodym
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Ergodic measures as extreme points
@@ -15,6 +17,8 @@ In this file we prove that a finite measure `μ` is an ergodic measure for a sel
 iff it is an extreme point of the set of invariant measures of `f` with the same total volume.
 We also specialize this result to probability measures.
 -/
+
+@[expose] public section
 
 open Filter Set Function MeasureTheory Measure ProbabilityTheory
 open scoped NNReal ENNReal Topology

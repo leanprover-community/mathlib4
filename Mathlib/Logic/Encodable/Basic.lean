@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Equiv
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Order.Directed
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Equiv
+public import Mathlib.Logic.Equiv.Nat
+public import Mathlib.Order.Directed
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -35,7 +37,12 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
+
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
 
 open Option List Nat Function
 
