@@ -295,7 +295,8 @@ theorem lt_succ_of_le : a ≤ b → a < succ b :=
 theorem succ_le_iff : succ a ≤ b ↔ a < b :=
   succ_le_iff_of_not_isMax <| not_isMax a
 
-@[gcongr, to_dual] theorem succ_lt_succ (hab : a < b) : succ a < succ b := by simp [hab]
+@[to_dual (attr := gcongr)]
+theorem succ_lt_succ (hab : a < b) : succ a < succ b := by simp [hab]
 
 theorem succ_strictMono : StrictMono (succ : α → α) := fun _ _ => succ_lt_succ
 
