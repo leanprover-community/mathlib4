@@ -297,11 +297,11 @@ elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
-    loc (failIfUnchanged := false)
+    loc (ifUnchanged := .silent)
 
 end ReduceModChar
 
