@@ -863,7 +863,6 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
         filter_upwards [this] with n hn; congr; exact hn.symm
       exact (Filter.tendsto_congr' this).mp (by simp [StronglyMeasurable.tendsto_approx])
 
-@[measurability]
 @[fun_prop]
 theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g : α → γ} {g' : γ → β}
     {mα : MeasurableSpace α} {mγ : MeasurableSpace γ} [TopologicalSpace β]
