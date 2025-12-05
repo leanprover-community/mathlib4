@@ -247,7 +247,8 @@ theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p 
   simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
 
 theorem set_support_mul_subset : { x | (p * q) x ≠ x } ⊆ { x | p x ≠ x } ∪ { x | q x ≠ x } := by
-  simpa using by grind
+  simp only [coe_mul]
+  grind
 
 end Set
 
@@ -548,7 +549,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
     mem_support]
   by_cases pb : p b
   · rw [extendDomain_apply_subtype _ _ pb]
-    simpa using by grind
+    grind [asEmbedding_apply]
   · rw [extendDomain_apply_not_subtype _ _ pb]
     simp only [not_exists, false_iff, not_and, not_true]
     rintro a _ rfl

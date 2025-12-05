@@ -199,7 +199,7 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
 3. n ∈ Ico a b
 -/
 theorem trichotomy (n a b : ℕ) : n < a ∨ b ≤ n ∨ n ∈ Ico a b := by
-  simpa using by grind
+  grind [mem]
 
 end Ico
 

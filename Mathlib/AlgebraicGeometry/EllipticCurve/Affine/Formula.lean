@@ -282,7 +282,8 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     · linear_combination (norm := (simp [field]; ring1)) -h₁
   · rw [equation_iff] at h₁ h₂
     rw [slope_of_X_ne hx]
-    simpa using by grind
+    simp only [addX]
+    grind
 
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : C (W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
