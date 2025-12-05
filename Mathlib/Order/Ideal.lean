@@ -331,7 +331,7 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirectedGE P (· ≥ ·)] {x : P} {I J s t : Ideal P}
+variable [SemilatticeSup P] [IsDirectedGE P] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
 instance : Min (Ideal P) :=

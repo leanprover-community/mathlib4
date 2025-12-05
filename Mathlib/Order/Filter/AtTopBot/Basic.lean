@@ -312,7 +312,7 @@ theorem map_val_atTop_of_Ici_subset [Preorder α] [IsDirectedLE α] {a : α} {s 
   choose f hl hr using exists_ge_ge (α := α)
   have : DirectedOn (· ≤ ·) s := fun x _ y _ ↦
     ⟨f a (f x y), h <| hl _ _, (hl x y).trans (hr _ _), (hr x y).trans (hr _ _)⟩
-  have : IsDirectedLE s (· ≤ ·) := by
+  have : IsDirectedLE s := by
     rw [directedOn_iff_directed] at this
     rwa [← directed_id_iff]
   refine map_atTop_eq_of_gc_preorder (Subtype.mono_coe _) a fun c hc ↦ ?_
