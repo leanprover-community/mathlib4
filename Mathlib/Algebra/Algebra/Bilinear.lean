@@ -270,7 +270,7 @@ variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
   __ := mul' R A
-  map_smul' a x := x.induction_on (by simp) (by simp+contextual [mul', smul_tmul', mul_assoc])
+  map_smul' a x := x.induction_on (by simp) (by simp +contextual [mul', smul_tmul', mul_assoc])
     (by simp+contextual [mul_add])
 
 end Semiring
