@@ -126,6 +126,14 @@ lemma cast_eq_self : s.cast hd = s := by
 
 end
 
+variable (X) in
+lemma iSup_subcomplex_eq_top :
+    ⨆ (s : X.N), s.subcomplex = ⊤ :=
+  le_antisymm (by simp) (by
+    rw [← Subcomplex.iSup_ofSimplex_nonDegenerate_eq_top X, iSup_le_iff]
+    rintro ⟨d, s, hs⟩
+    exact le_trans (by rfl) (le_iSup _ (N.mk _ hs)))
+
 end N
 
 /-- The map which sends a non degenerate simplex of a simplicial set to
