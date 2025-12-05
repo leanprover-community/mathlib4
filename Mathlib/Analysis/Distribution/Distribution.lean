@@ -53,10 +53,10 @@ We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it 
 
 ### `abbrev` or `def`
 
-At this point in time, it is not clear wether we should enforce an API barrier between
-`𝓓'(Ω, F)` and `𝓓(Ω, ℝ) →L_c[ℝ] F`. For now, we have made the "default" choice to implement
-`Distribution` as an `abbrev`, which means that we get a lot of instances for free, but also
-that there is no API barrier.
+At this point in time, it is not clear wether we should enforce a separation between the API
+for `𝓓'(Ω, F)` and the more generic API about `𝓓(Ω, ℝ) →L_c[ℝ] F`.
+For now, we have made the "default" choice to implement `Distribution` as an `abbrev`, which means
+that we get a lot of instances for free, but also that there is no such separation of APIs.
 
 If this happens to be a bad decision, which will become clear while developing the theory,
 do not hesitate to refactor to a `def` instead.
