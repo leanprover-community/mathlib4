@@ -57,7 +57,7 @@ declare_syntax_cat comma_wildcard_level
 @[nolint docBlame] syntax level : wildcard_level
 
 @[nolint docBlame] syntax ",*" : comma_wildcard_level
-@[nolint docBlame] syntax ", " wildcard_level : comma_wildcard_level
+@[nolint docBlame] syntax "," wildcard_level : comma_wildcard_level
 
 /--
 Term elaborator for the wildcard universe syntax `Foo.{u₁, u₂, ...}`.
