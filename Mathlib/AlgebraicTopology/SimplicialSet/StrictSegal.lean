@@ -170,7 +170,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (tr (intervalEdge j l hjl)).op (sx.spineToSimplex m h f) =
-      sx.spineToDiagonal l (by cutsat) (f.interval j l hjl) := by
+      sx.spineToDiagonal l (by lia) (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, Function.comp_apply]
   rw [← spineToSimplex_interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
     ← tr_comp, diag_subinterval_eq]
@@ -202,8 +202,8 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.castSucc := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -214,8 +214,8 @@ lemma spine_δ_vertex_ge (hij : j ≤ i.castSucc) :
       (sx.spineToSimplex (m + 1) _ f))).vertex i = f.vertex i.succ := by
   rw [spine_vertex, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp, spineToSimplex_vertex]
-  dsimp only [δ, len_mk, mkHom, Hom.toOrderHom_mk, Fin.succAboveOrderEmb_apply,
-    OrderEmbedding.toOrderHom_coe]
+  dsimp only [SimplexCategory.δ, len_mk, mkHom, Hom.toOrderHom_mk,
+    Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_le_castSucc j i hij]
 
 variable {i : Fin m} {j : Fin (m + 2)}
@@ -246,7 +246,7 @@ variable {X : SSet.Truncated.{u} (n + 2)} (sx : StrictSegal X) (m : ℕ)
 lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).arrow i =
-      sx.spineToDiagonal 2 (by cutsat) (f.interval i 2 (by cutsat)) := by
+      sx.spineToDiagonal 2 (by lia) (f.interval i 2 (by lia)) := by
   rw [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_eq hij, spineToSimplex_edge]
 
@@ -425,7 +425,7 @@ arrows not contained in the original path can be recovered as the diagonal edge
 of the `spineToSimplex` that "composes" arrows `i` and `i + 1`. -/
 lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).arrow i =
-      sx.spineToDiagonal (f.interval i 2 (by cutsat)) := by
+      sx.spineToDiagonal (f.interval i 2 (by lia)) := by
   simp only [SimplicialObject.δ, spine_arrow]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
