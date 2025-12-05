@@ -239,8 +239,13 @@ end PresentationOfFreeCotangent.Aux
 end
 
 open PresentationOfFreeCotangent in
-/-- Version of `Algebra.Generators.exists_presentation_of_free_cotangent` taking
-a basis instead. -/
+/--
+Version of `Algebra.Generators.exists_presentation_of_free_cotangent` taking a basis instead
+of a `Module.Free` assumption.
+Note that the basis `b₀` only serves as a way of saying
+that `I/I²` is free of rank `σ`, which gives more definitional control over `σ`.
+If this does not matter, use `Algebra.Generators.exists_presentation_of_free_cotangent` instead.
+-/
 @[stacks 07CF]
 public lemma exists_presentation_of_basis_cotangent [Algebra.FinitePresentation R S]
     {α : Type*} (P : Generators R S α) [Finite α] {σ : Type*}
