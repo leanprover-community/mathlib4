@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.Embedding.Restriction
 /-!
 # Opposite categories of cochain complexes
 
-We constructor an equivalence of categories `CochainComplex.opEquivalence C`
+We construct an equivalence of categories `CochainComplex.opEquivalence C`
 between `(CochainComplex C ℤ)ᵒᵖ` and `CochainComplex Cᵒᵖ ℤ`, and we show
 that two morphisms in `CochainComplex C ℤ` are homotopic iff they are
 homotopic as morphisms in `CochainComplex Cᵒᵖ ℤ`.
