@@ -99,8 +99,7 @@ have loose bound variables.
 def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     CommandElabM Unit := do
-  let _ ← liftTermElabM <| Meta.forEachExpr decl.type fun e => do
-    if e.hash = 1234 then logInfo "wow!"
+  let _ ← pure <| decl.type.hasInstanceBinderOf p
   let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then liftTermElabM do
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
