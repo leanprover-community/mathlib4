@@ -22,6 +22,13 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
 * `SeminormFamily.moduleFilterBasis`: A module filter basis formed by the open balls.
 * `Seminorm.IsBounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
   bounded by a finite number of seminorms in `E`.
+* `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
+  (existing) topology on `E` is induced by the seminorms `p`.
+* `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+  by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
+  `LocallyConvexSpace 𝕜 E`.
+  The terminology is inspired by N. Bourbaki, *Variétés différentielles et analytiques*. However,
+  unlike Bourbaki, we do not ask seminorms to be ultrametric when `𝕜` is ultrametric.
 
 ## Main statements
 
