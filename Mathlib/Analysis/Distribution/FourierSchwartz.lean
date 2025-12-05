@@ -161,7 +161,7 @@ variable [CompleteSpace E] [CompleteSpace F]
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
-  simpa using VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := (innerₗ V))
+  simpa using VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := innerₗ V)
     continuous_fourierChar continuous_inner f.integrable g.integrable
 
 @[deprecated (since := "2025-11-16")]
@@ -170,7 +170,7 @@ alias integral_bilin_fourierIntegral_eq := integral_bilin_fourier_eq
 theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
   simpa [fourierInv_coe] using VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
-    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+    (L := innerₗ V) continuous_fourierChar continuous_inner f.integrable g.integrable
 
 @[deprecated (since := "2025-11-16")]
 alias integral_sesq_fourierIntegral_eq := integral_sesq_fourier_eq
