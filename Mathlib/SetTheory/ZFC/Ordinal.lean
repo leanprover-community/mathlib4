@@ -277,12 +277,12 @@ open ZFSet
 
 The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
-  ⟨o.toType, fun a ↦ toPSet ((enumIsoToType o).symm a)⟩
+  ⟨o.ToType, fun a ↦ toPSet ((enumIsoToType o).symm a)⟩
 termination_by o
 decreasing_by exact ((enumIsoToType o).symm a).2
 
 @[simp]
-theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.toType := by
+theorem type_toPSet (o : Ordinal) : o.toPSet.Type = o.ToType := by
   rw [toPSet]
   rfl
 
