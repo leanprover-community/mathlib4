@@ -122,6 +122,13 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).op = P.op.inverseImage F.op := rfl
 
+/-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
+inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
+  | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
+
+lemma map_mem_strictMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    (P.strictMap F) (F.map f) := ⟨hf⟩
+
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
   ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
