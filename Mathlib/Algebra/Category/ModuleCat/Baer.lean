@@ -88,23 +88,18 @@ lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : �
     exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
   · rename_i n ih
     let ei : EnoughInjectives (ModuleCat R) := inferInstance
-    rcases ei.1 M with ⟨⟨I, inj, f, mono⟩⟩
-    let S := ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
-    have S_exact : S.ShortExact := {
-      exact := ShortComplex.exact_cokernel f
-      mono_f := ‹_›
-      epi_g := coequalizer.π_epi}
-    have (N : ModuleCat R) : Subsingleton (Ext N M (n + 1 + 1)) ↔
-      Subsingleton (Ext N (cokernel f) (n + 1)) := by
-      have (m : ℕ) : Subsingleton (AddCommGrpCat.of (Ext N S.X₂ (m + 1))) :=
-        subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective
+    rcases ei.1 M with ⟨ip⟩
+    let S := ip.shortComplex
+    have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
+      Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
+      let _ := Ext.subsingleton_of_injective N S.X₂
       have := ComposableArrows.Exact.isIso_map'
-        (Ext.covariantSequence_exact N S_exact (n + 1) (n + 1 + 1) rfl) 1 (by decide)
+        (Ext.covariantSequence_exact N ip.shortComplex_shortExact (n + 1) (n + 2) rfl) 1 (by decide)
         (IsZero.eq_zero_of_src (AddCommGrpCat.of (Ext N S.X₂ (n + 1))).isZero_of_subsingleton _)
-        (IsZero.eq_zero_of_tgt (AddCommGrpCat.of (Ext N S.X₂ (n + 1 + 1))).isZero_of_subsingleton _)
+        (IsZero.eq_zero_of_tgt (AddCommGrpCat.of (Ext N S.X₂ (n + 2))).isZero_of_subsingleton _)
       exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
     simp only [this] at h ⊢
-    exact ih (cokernel f) h
+    exact ih (cokernel ip.3) h
 
 lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
