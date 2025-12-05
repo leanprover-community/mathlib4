@@ -371,7 +371,6 @@ instance : nerveFunctor₂.{u, u}.Faithful :=
 instance : nerveFunctor₂.{u, u}.Full :=
   (fullyFaithfulNerveFunctor₂).full
 
-
 instance : Reflective nerveFunctor₂.{u, u} := Reflective.mk _ SSet.Truncated.nerve₂Adj
 
 end nerve
