@@ -165,6 +165,9 @@ than `a`. If `a` is maximal, then `succ a = a`. -/
 def succ : α → α :=
   SuccOrder.succ
 
+@[simp]
+theorem _root_.SuccOrder.succ_eq_succ : @SuccOrder.succ α _ _ = Order.succ := rfl
+
 theorem le_succ : ∀ a : α, a ≤ succ a :=
   SuccOrder.le_succ
 
@@ -563,6 +566,9 @@ variable [Preorder α] [PredOrder α] {a b : α}
 than `a`. If `a` is minimal, then `pred a = a`. -/
 def pred : α → α :=
   PredOrder.pred
+
+@[simp]
+theorem _root_.PredOrder.pred_eq_pred : @PredOrder.pred α _ _ = Order.pred := rfl
 
 theorem pred_le : ∀ a : α, pred a ≤ a :=
   PredOrder.pred_le
@@ -1239,7 +1245,7 @@ variable {X Y : Type*} [Preorder X] [Preorder Y]
 -- See note [reducible non-instances]
 /-- `SuccOrder` transfers across equivalences between orders. -/
 protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
-  succ y := f (succ (f.symm y))
+  succ y := f (Order.succ (f.symm y))
   le_succ y := by rw [← map_inv_le_iff f]; exact le_succ (f.symm y)
   max_of_succ_le h := by
     rw [← f.symm.isMax_apply]
@@ -1251,7 +1257,7 @@ protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y
 /-- `PredOrder` transfers across equivalences between orders. -/
 protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where
-  pred y := f (pred (f.symm y))
+  pred y := f (Order.pred (f.symm y))
   pred_le y := by rw [← le_map_inv_iff f]; exact pred_le (f.symm y)
   min_of_le_pred h := by
     rw [← f.symm.isMin_apply]
