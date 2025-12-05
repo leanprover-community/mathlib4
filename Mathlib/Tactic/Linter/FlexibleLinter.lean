@@ -91,14 +91,14 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
 namespace Mathlib.Linter
 
 /-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
-register_option linter.flexible : Bool := {
+public register_option linter.flexible : Bool := {
   defValue := false
   descr := "enable the flexible linter"
 }
@@ -196,8 +196,7 @@ The function is used to extract "location" information about `stx`: either expli
 
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
-partial
-def toStained : Syntax → Std.HashSet Stained
+partial def toStained : Syntax → Std.HashSet Stained
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with

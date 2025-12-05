@@ -15,7 +15,7 @@ The "ppRoundtrip" linter emits a warning when the syntax of a command differs su
 from the pretty-printed version of itself.
 -/
 
-public meta section
+meta section
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
@@ -29,7 +29,7 @@ However, it may not always be successful.
 It also prints both the source code and the "expected code" in a 5-character radius from
 the first difference.
 -/
-register_option linter.ppRoundtrip : Bool := {
+public register_option linter.ppRoundtrip : Bool := {
   defValue := false
   descr := "enable the ppRoundtrip linter"
 }
