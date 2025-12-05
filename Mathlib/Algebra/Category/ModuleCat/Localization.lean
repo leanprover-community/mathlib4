@@ -55,9 +55,11 @@ noncomputable def ModuleCat.localizedModule_mkLinearMap [Small.{v} R] (M : Modul
 
 instance ModuleCat.localizedModule_isLocalizedModule [Small.{v} R] (M : ModuleCat.{v} R)
     (S : Submonoid R) : IsLocalizedModule S (M.localizedModule_mkLinearMap S) := by
-  simpa [ModuleCat.localizedModule_mkLinearMap] using IsLocalizedModule.of_linearEquiv _ _ _
+  dsimp only [localizedModule_mkLinearMap]
+  infer_instance
 
 /-- The category version of `IsLocalizedModule.mapExtendScalars`. -/
+@[simps!]
 noncomputable def ModuleCat.localizedModule_map [Small.{v} R] {M N : ModuleCat.{v} R}
     (S : Submonoid R) (f : M ⟶ N) : (M.localizedModule S) ⟶ (N.localizedModule S) :=
   ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModule_mkLinearMap S)
@@ -65,21 +67,16 @@ noncomputable def ModuleCat.localizedModule_map [Small.{v} R] {M N : ModuleCat.{
 
 /-- Shrink of localization is a functor, sending `M` to `M.localizedModule S` and
 `f : M1 ⟶ M2` to `IsLocalizedModule.mapExtendScalars S _ _ (Localization S) f.hom`. -/
+@[simps]
 noncomputable def ModuleCat.localizedModule_functor [Small.{v} R] (S : Submonoid R) :
     ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S) where
   obj M := M.localizedModule S
   map := ModuleCat.localizedModule_map S
-  map_id X := by
-    ext
-    simp [localizedModule_map]
   map_comp {X Y Z} f g := by
     ext
     simp [localizedModule_map, IsLocalizedModule.map_comp' S _ (Y.localizedModule_mkLinearMap S)]
 
 instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModule_functor S).Additive where
-  map_add {X Y} {f g} := by
-    ext
-    simp [ModuleCat.localizedModule_functor, ModuleCat.localizedModule_map]
 
 lemma ModuleCat.localizedModule_functor_map_exact [Small.{v} R] (S : Submonoid R)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
