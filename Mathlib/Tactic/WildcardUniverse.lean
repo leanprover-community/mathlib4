@@ -90,6 +90,10 @@ def getBaseName (n : Name) : Name :=
   let basePart := s.takeWhile (· != '_')
   basePart.toName
 
+/--
+A helper function to convert an array of `comma_wildcard_level`s into
+an array of `wildcard_level`s.
+-/
 def mkWildcardLevelStx {m : Type → Type} [Monad m] [MonadExceptOf Exception m] [MonadQuotation m]
     (us : Array (TSyntax `comma_wildcard_level)) :
     m (Array (TSyntax `wildcard_level)) :=
