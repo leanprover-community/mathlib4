@@ -23,7 +23,7 @@ maximal elements from being predecessor limits. As such, we also provide `Order.
 @[expose] public section
 
 
-variable {α : Type*} {a b : α}
+variable {α β : Type*} {a b : α}
 
 namespace Order
 
@@ -104,6 +104,21 @@ theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
 
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
+
+@[simp]
+theorem _root_.OrderIso.isSuccPrelimit_apply [Preorder β] (e : α ≃o β) :
+    IsSuccPrelimit (e a) ↔ IsSuccPrelimit a := by
+  rw [Order.IsSuccPrelimit, ← e.forall_congr_right, Order.IsSuccPrelimit]
+  simp
+
+alias ⟨_, _root_.OrderIso.map_isSuccPrelimit⟩ := OrderIso.isSuccPrelimit_apply
+
+@[simp]
+theorem _root_.OrderIso.isSuccLimit_apply [Preorder β] (e : α ≃o β) :
+    IsSuccLimit (e a) ↔ IsSuccLimit a := by
+  rw [IsSuccLimit, IsSuccLimit, e.isMin_apply, e.isSuccPrelimit_apply]
+
+alias ⟨_, _root_.OrderIso.map_isSuccLimit⟩ := OrderIso.isSuccLimit_apply
 
 variable [SuccOrder α]
 
@@ -439,6 +454,21 @@ theorem not_isPredLimit_iff : ¬ IsPredLimit a ↔ IsMax a ∨ ¬ IsPredPrelimit
 
 theorem not_isPredLimit_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) : ¬ IsPredLimit a :=
   not_isPredLimit_iff.2 (Or.inr h)
+
+@[simp]
+theorem _root_.OrderIso.isPredPrelimit_apply [Preorder β] (e : α ≃o β) :
+    IsPredPrelimit (e a) ↔ IsPredPrelimit a := by
+  rw [Order.IsPredPrelimit, ← e.forall_congr_right, Order.IsPredPrelimit]
+  simp
+
+alias ⟨_, _root_.OrderIso.map_isPredPrelimit⟩ := OrderIso.isPredPrelimit_apply
+
+@[simp]
+theorem _root_.OrderIso.isPredLimit_apply [Preorder β] (e : α ≃o β) :
+    IsPredLimit (e a) ↔ IsPredLimit a := by
+  rw [IsPredLimit, IsPredLimit, e.isMax_apply, e.isPredPrelimit_apply]
+
+alias ⟨_, _root_.OrderIso.map_isPredLimit⟩ := OrderIso.isPredLimit_apply
 
 variable [PredOrder α]
 
