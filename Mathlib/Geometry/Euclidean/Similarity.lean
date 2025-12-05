@@ -5,8 +5,9 @@ Authors: Chu Zheng
 -/
 module
 
-import Mathlib.Geometry.Euclidean.Triangle
-import Mathlib.Topology.MetricSpace.Similarity
+public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Topology.MetricSpace.Similarity
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 /-!
 # Triangle Similarity
@@ -15,6 +16,8 @@ This file contains theorems about similarity of triangles, including conditions
 for similarity based on sides and angles.
 
 -/
+
+@[expose] public section
 
 open scoped Congruent EuclideanGeometry
 
@@ -31,11 +34,37 @@ variable {ι V₁ V₂ P₁ P₂ : Type*}
   {a b c : P₁} {a' b' c' : P₂}
 
 /-- If two triangles have two pairs equal angles, then the triangles are similar. -/
-theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c})
-    (h_not_col' : ¬ Collinear ℝ {a', b', c'})
-    (h₁ : ∠ a b c = ∠ a' b' c')
+theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : ∠ a b c = ∠ a' b' c')
     (h₂ : ∠ b c a = ∠ b' c' a') :
     ![a, b, c] ∼ ![a', b', c'] := by
+  have hne_pi_div_two : ∠ a b c ≠ Real.pi / 2 ∨ ∠ b c a ≠ Real.pi / 2 := by
+    by_contra hq
+    simp at hq
+    have := angle_lt_pi_div_two_of_angle_eq_pi_div_two hq.1 (ne₂₃_of_not_collinear h_not_col).symm
+    grind
+  have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by
+    by_contra hq
+    simp at hq
+    rw [hq.1] at h₁
+    rw [hq.2.1] at h₂
+    grind [angle_self_left]
+  have h_not_col' : ¬ Collinear ℝ {a', b', c'} := by
+    by_contra hcol
+    rw [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi] at hcol
+    rcases hcol with (h1 | h2 | h3 | h4)
+    · rw [h1] at h₁ h₂
+      simp at h₁
+      have : b' ≠ c' :=by grind
+      rw [angle_self_of_ne this] at h₂
+      have := collinear_of_angle_eq_zero h₂
+      rw [Set.pair_comm, Set.insert_comm] at this
+      grind
+    · rw [h2] at h₁ h₂
+      grind [angle_self_left, angle_self_right]
+    · rw [h3] at h₁
+      grind [collinear_of_angle_eq_zero]
+    · rw [h4] at h₁
+      grind [collinear_of_angle_eq_pi]
   have h_pos1 : 0 < dist a b := by simp [dist_pos, ne₁₂_of_not_collinear h_not_col]
   have h_pos1' : 0 < dist a' b' := by simp [dist_pos, ne₁₂_of_not_collinear h_not_col']
   have h_pos2 : 0 < dist b c := by simp [dist_pos, ne₂₃_of_not_collinear h_not_col]
