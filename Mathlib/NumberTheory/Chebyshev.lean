@@ -6,6 +6,7 @@ Authors: Alastair Irving, Ruben Van de Velde
 module
 
 public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.Primorial
@@ -224,5 +225,45 @@ theorem primeCounting_eq (x : ℝ) (hx : 2 ≤ x) :
       fun_prop (disch := assumption)
     · apply this
     · apply this z hz
+
+theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
+    IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
+  refine ContinuousOn.intervalIntegrable fun x hx ↦ ContinuousAt.continuousWithinAt ?_
+  rw [Set.mem_uIcc] at hx
+  have : x ≠ 0 := by bound
+  have : log x ^ 2 ≠ 0 := by simp; bound
+  fun_prop (disch := assumption)
+
+theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
+    ∫ x in a..b, 1 / log x  ^ 2 ≤ (b - a) / log a ^2 := by
+  trans ∫ x in a..b, 1 / log a ^ 2
+  · apply intervalIntegral.integral_mono_on hab
+    · apply intervalIntegrable_one_div_log_sq <;> linarith
+    · apply intervalIntegrable_const
+      simp
+    · intro x hx
+      gcongr
+      · bound
+      · bound
+      · linarith [hx.1]
+  rw [intervalIntegral.integral_const, smul_eq_mul, mul_one_div]
+
+open MeasureTheory in
+theorem integral_le {x : ℝ} (hx : 4 ≤ x) :
+    ∫ t in Set.Icc 2 x, 1 / ((log t) ^ 2) ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
+  have two_le_sqrt : 2 ≤ x.sqrt := by
+    apply Real.le_sqrt_of_sq_le
+    linarith
+  have sqrt_le_x : x.sqrt ≤ x := by
+    apply sqrt_le_left (by linarith) |>.mpr
+    bound
+  rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le (by linarith),
+    ← intervalIntegral.integral_add_adjacent_intervals (b := x.sqrt)]
+  · grw [integral_1_div_log_sq_le two_le_sqrt (by linarith),
+      integral_1_div_log_sq_le sqrt_le_x (by linarith)]
+    rw [log_sqrt (by linarith), add_comm, div_pow, ← div_mul, mul_comm, mul_div_assoc]
+    norm_num
+    gcongr <;> linarith
+  all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
 end Chebyshev
