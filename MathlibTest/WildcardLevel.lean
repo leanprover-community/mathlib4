@@ -1,6 +1,6 @@
 module
 
-import all Mathlib.Tactic.WildcardUniverse
+import all Mathlib.Tactic.WildcardLevel
 import Mathlib.Tactic.TypeStar
 import Mathlib.CategoryTheory.Functor.Basic
 
