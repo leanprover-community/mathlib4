@@ -122,7 +122,7 @@ variable (G)
 namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
-def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedLE ι] : Setoid (Σˣ f) where
+def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
     ⟨fun ⟨i, _⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ =>
@@ -135,7 +135,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirectedLE ι] : Setoid (�
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
 -/
-noncomputable def sigmaStructure [IsDirectedLE ι] [Nonempty ι] : L.Structure (Σˣ f) where
+noncomputable def sigmaStructure [IsDirectedOrder ι] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
       funMap F
@@ -149,18 +149,18 @@ noncomputable def sigmaStructure [IsDirectedLE ι] [Nonempty ι] : L.Structure (
 end DirectLimit
 
 /-- The direct limit of a directed system is the structures glued together along the embeddings. -/
-def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirectedLE ι] :=
+def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] :=
   Quotient (DirectLimit.setoid G f)
 
 attribute [local instance] DirectLimit.setoid DirectLimit.sigmaStructure
 
-instance [DirectedSystem G fun i j h => f i j h] [IsDirectedLE ι] [Inhabited ι]
+instance [DirectedSystem G fun i j h => f i j h] [IsDirectedOrder ι] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
   ⟨⟦⟨default, default⟩⟧⟩
 
 namespace DirectLimit
 
-variable [IsDirectedLE ι] [DirectedSystem G fun i j h => f i j h]
+variable [IsDirectedOrder ι] [DirectedSystem G fun i j h => f i j h]
 
 theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
@@ -403,7 +403,7 @@ theorem equiv_lift_of {i : ι} (x : G i) :
 variable {L ι G f}
 
 /-- The direct limit of countably many countably generated structures is countably generated. -/
-theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedLE ι] [Nonempty ι]
+theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
@@ -419,7 +419,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedLE ι] [Nonempty
       trivial
     · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 
-instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedLE ι] [Nonempty ι]
+instance cg' {ι : Type*} [Countable ι] [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) :=
@@ -429,7 +429,7 @@ end DirectLimit
 
 section Substructure
 
-variable [Nonempty ι] [IsDirectedLE ι]
+variable [Nonempty ι] [IsDirectedOrder ι]
 variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where

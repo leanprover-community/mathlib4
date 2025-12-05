@@ -133,11 +133,11 @@ lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
 lemma _root_.BddBelow.isBoundedUnder_of_range (hu : BddBelow (Set.range u)) :
     f.IsBoundedUnder (· ≥ ·) u := BddBelow.isBoundedUnder (s := univ) f.univ_mem (by simpa)
 
-lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirectedLE α] [Finite β]
+lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirectedOrder α] [Finite β]
     {f : Filter β} {u : β → α} : IsBoundedUnder (· ≤ ·) f u :=
   (Set.toFinite _).bddAbove.isBoundedUnder_of_range
 
-lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsDirectedGE α] [Finite β]
+lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsCodirectedOrder α] [Finite β]
     {f : Filter β} {u : β → α} : IsBoundedUnder (· ≥ ·) f u :=
   (Set.toFinite _).bddBelow.isBoundedUnder_of_range
 
@@ -177,23 +177,23 @@ theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : �
     [l.NeBot] (hf : Tendsto f l atBot) : ¬IsBoundedUnder (· ≥ ·) l f :=
   not_isBoundedUnder_of_tendsto_atTop (β := βᵒᵈ) hf
 
-theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirectedLE β] {f : α → β}
+theorem IsBoundedUnder.bddAbove_range_of_cofinite [Preorder β] [IsDirectedOrder β] {f : α → β}
     (hf : IsBoundedUnder (· ≤ ·) cofinite f) : BddAbove (range f) := by
   rcases hf with ⟨b, hb⟩
   haveI : Nonempty β := ⟨b⟩
   rw [← image_univ, ← union_compl_self { x | f x ≤ b }, image_union, bddAbove_union]
   exact ⟨⟨b, forall_mem_image.2 fun x => id⟩, (hb.image f).bddAbove⟩
 
-theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsDirectedGE β] {f : α → β}
+theorem IsBoundedUnder.bddBelow_range_of_cofinite [Preorder β] [IsCodirectedOrder β] {f : α → β}
     (hf : IsBoundedUnder (· ≥ ·) cofinite f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range_of_cofinite (β := βᵒᵈ) hf
 
-theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirectedLE β] {f : ℕ → β}
+theorem IsBoundedUnder.bddAbove_range [Preorder β] [IsDirectedOrder β] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≤ ·) atTop f) : BddAbove (range f) := by
   rw [← Nat.cofinite_eq_atTop] at hf
   exact hf.bddAbove_range_of_cofinite
 
-theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsDirectedGE β] {f : ℕ → β}
+theorem IsBoundedUnder.bddBelow_range [Preorder β] [IsCodirectedOrder β] {f : ℕ → β}
     (hf : IsBoundedUnder (· ≥ ·) atTop f) : BddBelow (range f) :=
   IsBoundedUnder.bddAbove_range (β := βᵒᵈ) hf
 
@@ -442,11 +442,11 @@ theorem Tendsto.isBoundedUnder_le_atBot (h : Tendsto u f atBot) : f.IsBoundedUnd
 theorem Tendsto.isBoundedUnder_ge_atTop (h : Tendsto u f atTop) : f.IsBoundedUnder (· ≥ ·) u :=
   isBounded_ge_atTop.mono h
 
-theorem bddAbove_range_of_tendsto_atTop_atBot [IsDirectedLE α] {u : ℕ → α}
+theorem bddAbove_range_of_tendsto_atTop_atBot [IsDirectedOrder α] {u : ℕ → α}
     (hx : Tendsto u atTop atBot) : BddAbove (Set.range u) :=
   hx.isBoundedUnder_le_atBot.bddAbove_range
 
-theorem bddBelow_range_of_tendsto_atTop_atTop [IsDirectedGE α] {u : ℕ → α}
+theorem bddBelow_range_of_tendsto_atTop_atTop [IsCodirectedOrder α] {u : ℕ → α}
     (hx : Tendsto u atTop atTop) : BddBelow (Set.range u) :=
   hx.isBoundedUnder_ge_atTop.bddBelow_range
 
