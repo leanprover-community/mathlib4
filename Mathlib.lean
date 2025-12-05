@@ -10840,6 +10840,7 @@ public import Mathlib.Data.List.NodupEquivFin
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Palindrome
+public import Mathlib.Data.List.PeriodicityLemma
 public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.List.Perm.Subperm
