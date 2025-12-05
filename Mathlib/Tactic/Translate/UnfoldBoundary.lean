@@ -19,7 +19,7 @@ public section identification
 universe u
 
 /-- `Identification` is used by translation attributes to insert abstraction boundaries in terms
-that need to be translated-/
+that need to be translated. -/
 structure Identification (α β : Type u) : Type u where
   /-- The unfolding function. -/
   toFun : α → β
