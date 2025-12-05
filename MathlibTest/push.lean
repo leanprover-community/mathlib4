@@ -86,9 +86,18 @@ variable (a b c : Real) (ha : 0 < a) (hc : 0 < c)
 #guard_msgs in
 #push (disch := positivity) Real.log => Real.log (a ^ 4 * c⁻¹ / a ^ b * Real.exp b)
 
-/-- info: Real.log (a ^ 4 * c⁻¹ / a ^ b) + b -/
+/-- info: ∑ i ∈ Finset.Ioo 0 5, Real.log ↑i -/
+#guard_msgs in
+#push (disch := simp <;> grind) Real.log => Real.log (∏ i ∈ Finset.Ioo 0 5, (i : Nat))
+
+set_option pp.numericTypes true in
+/-- info: Real.log (a ^ (4 : ℝ) * c⁻¹ / a ^ b) + b -/
 #guard_msgs in
 #pull (disch := positivity) Real.log => 4 * Real.log a + -Real.log c - b * Real.log a + b
 
+set_option pp.numericTypes true in
+/-- info: Real.log (a ^ (4 : ℕ) * c⁻¹ / a ^ b) + b -/
+#guard_msgs in
+#pull (disch := positivity) Real.log => (4 : Nat) * Real.log a + -Real.log c - b * Real.log a + b
 
 end log
