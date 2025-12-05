@@ -621,6 +621,7 @@ theorem pred_lt_of_not_isMin_of_le (ha : ¬IsMin a) : a ≤ b → pred a < b :=
 @[to_dual existing]
 theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 
+set_option linter.unusedVariables false in
 @[deprecated pred_mono (since := "2025-12-04")]
 theorem pred_le_pred_of_not_isMin_of_le (_ha : ¬IsMin a) (_hb : ¬IsMin b) (h : a ≤ b) :
     pred a ≤ pred b :=
