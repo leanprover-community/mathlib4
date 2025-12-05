@@ -129,7 +129,7 @@ theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (
 
 end exp
 
-lemma CartesianMonoidalCategory.isLeftAdjoint_prod_functor
+instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
     (A : C) [Closed A] :
     (prod.functor.obj A).IsLeftAdjoint :=
   Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd A)

@@ -24,7 +24,7 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 @[expose] public section
 
-open CategoryTheory.Category Simplicial
+open CategoryTheory.Category Simplicial Opposite
 
 universe v u
 
@@ -44,10 +44,26 @@ attribute [simp] nerve_obj
 instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
 
+section
+
+variable {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D)
+
 /-- Given a functor `C ⥤ D`, we obtain a morphism `nerve C ⟶ nerve D` of simplicial sets. -/
 @[simps -isSimp]
 def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : nerve C ⟶ nerve D :=
   { app := fun _ => (F.mapComposableArrows _).obj }
+
+lemma nerveMap_app_mk₀ (x : C) :
+    (nerveMap F).app (op ⦋0⦌) (ComposableArrows.mk₀ x) =
+      ComposableArrows.mk₀ (F.obj x) :=
+  ComposableArrows.ext₀ rfl
+
+lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
+    (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
+      ComposableArrows.mk₁ (F.map f) :=
+  ComposableArrows.ext₁ rfl rfl (by simp [nerveMap_app])
+
+end
 
 /-- The nerve of a category, as a functor `Cat ⥤ SSet` -/
 @[simps]
@@ -136,6 +152,7 @@ section
 attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
 
 /-- Bijection between edges in the nerve of category and morphisms in the category. -/
+@[simps -isSimp]
 def homEquiv {x y : ComposableArrows C 0} :
     (nerve C).Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
   toFun e := eqToHom (by simp) ≫ e.edge.hom ≫ eqToHom (by simp)
@@ -153,6 +170,9 @@ def edgeMk {x y : C} (f : x ⟶ y) : (nerve C).Edge (nerveEquiv.symm x) (nerveEq
 
 @[simp]
 lemma edgeMk_edge {x y : C} (f : x ⟶ y) : (edgeMk f).edge = ComposableArrows.mk₁ f := rfl
+
+@[simp]
+lemma edgeMk_id (x : C) : edgeMk (𝟙 x) = .id _ := by cat_disch
 
 lemma edgeMk_surjective {x y : C} :
     Function.Surjective (edgeMk : (x ⟶ y) → _) :=

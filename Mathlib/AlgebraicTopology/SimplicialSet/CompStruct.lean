@@ -93,6 +93,11 @@ def id : Edge x₀ x₀ := ofTruncated (.id _)
 
 variable (x₀) in
 @[simp]
+lemma toTruncated_id :
+    toTruncated (id x₀) = Truncated.Edge.id (X := (truncation 2).obj X) x₀ := rfl
+
+variable (x₀) in
+@[simp]
 lemma id_edge : (id x₀).edge = X.σ 0 x₀ := rfl
 
 /-- The image of an edge by a morphism of simplicial sets. -/
