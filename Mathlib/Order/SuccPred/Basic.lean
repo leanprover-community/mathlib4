@@ -159,7 +159,8 @@ variable [Preorder α] [SuccOrder α] {a b : α}
 
 /-- The successor of an element. If `a` is not maximal, then `succ a` is the least element greater
 than `a`. If `a` is maximal, then `succ a = a`. -/
-@[to_dual]
+@[to_dual /-- The predecessor of an element. If `a` is not minimal, then `pred a` is the greatest
+element less than `a`. If `a` is minimal, then `pred a = a`. -/]
 def succ : α → α :=
   SuccOrder.succ
 
@@ -223,7 +224,6 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   · rw [succ_le_iff_of_not_isMax fun ha => hb <| ha.mono h]
     apply lt_succ_of_le_of_not_isMax h hb
 
-@[to_dual]
 theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 
 /-- See also `Order.succ_eq_of_covBy`. -/
@@ -232,9 +232,10 @@ lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
   · by_contra hba
     exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) <| hab.lt.succ_le.lt_of_not_ge hba
   · exact hba.trans (le_succ _)
-#exit
+
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
 
+@[to_dual]
 theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x :=
   id_le_iterate_of_id_le le_succ _ _
 
@@ -571,37 +572,13 @@ section Preorder
 
 variable [Preorder α] [PredOrder α] {a b : α}
 
-/-- The predecessor of an element. If `a` is not minimal, then `pred a` is the greatest element less
-than `a`. If `a` is minimal, then `pred a = a`. -/
-def pred : α → α :=
-  PredOrder.pred
+-- TODO: auto-generate all of these through `to_dual`
 
-theorem pred_le : ∀ a : α, pred a ≤ a :=
-  PredOrder.pred_le
-
-theorem min_of_le_pred {a : α} : a ≤ pred a → IsMin a :=
-  PredOrder.min_of_le_pred
-
-theorem le_pred_of_lt {a b : α} : a < b → a ≤ pred b :=
-  PredOrder.le_pred_of_lt
-
-alias _root_.LT.lt.le_pred := le_pred_of_lt
-
-@[simp]
-theorem le_pred_iff_isMin : a ≤ pred a ↔ IsMin a :=
-  ⟨min_of_le_pred, fun h => h <| pred_le _⟩
-
-alias ⟨_root_.IsMin.of_le_pred, _root_.IsMin.le_pred⟩ := le_pred_iff_isMin
-
-@[simp]
-theorem pred_lt_iff_not_isMin : pred a < a ↔ ¬IsMin a :=
-  ⟨not_isMin_of_lt, fun ha => (pred_le a).lt_of_not_ge fun h => ha <| min_of_le_pred h⟩
-
-alias ⟨_, pred_lt_of_not_isMin⟩ := pred_lt_iff_not_isMin
-
+@[to_dual existing wcovBy_succ]
 theorem pred_wcovBy (a : α) : pred a ⩿ a :=
   ⟨pred_le a, fun _ hb nh => (le_pred_of_lt nh).not_gt hb⟩
 
+@[to_dual existing covBy_succ_of_not_isMax]
 theorem pred_covBy_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
   (pred_wcovBy a).covBy_of_lt <| pred_lt_of_not_isMin h
 
