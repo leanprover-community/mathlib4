@@ -398,7 +398,6 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
-  let e ← t.unfoldBoundaries.elim (pure e) (·.insertBoundaries e)
   let e' := aux (← getEnv) (← getBoolOption `trace.translate_detail) (← expand t e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
@@ -561,16 +560,21 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  let type := decl.type
+  let translateValue (v : Expr) : MetaM Expr := do
+    let v ← match t.unfoldBoundaries with
+      | some b => b.cast (← b.insertBoundaries v) decl.type
+      | none => pure v
+    reorderLambda reorder <| ← applyReplacementLambda t dont v
+  let type ← match t.unfoldBoundaries with
+    | some b => b.insertBoundaries decl.type
+    | none => pure decl.type
   decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall t dont <|
     renameBinderNames t type
   if let some v := decl.value? then
-    let v ← t.unfoldBoundaries.elim (pure v) (·.cast v type)
-    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda t dont v
-  else if let .opaqueInfo info@{ value := v, .. } := decl then -- not covered by `value?`
-    let v ← t.unfoldBoundaries.elim (pure v) (·.cast v type)
+    decl := decl.updateValue <| ← translateValue v
+  else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← reorderLambda reorder <| ← applyReplacementLambda t dont v }
+      value :=  ← translateValue info.value }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def.
@@ -899,7 +903,10 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
       universe levels, but '{tgt}' has {tgtDecl.levelParams.length} universe levels"
-  let srcType ← applyReplacementForall t cfg.dontTranslate srcDecl.type
+  let srcType ← match t.unfoldBoundaries with
+    | some b => b.insertBoundaries srcDecl.type
+    | none => pure srcDecl.type
+  let srcType ← applyReplacementForall t cfg.dontTranslate srcType
   let reorder' := guessReorder srcType tgtDecl.type
   trace[translate_detail] "The guessed reorder is {reorder'}"
   let reorder ←

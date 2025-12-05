@@ -18,10 +18,15 @@ public section identification
 
 universe u
 
+/-- `Identification` is used by translation attributes to insert abstraction boundaries in terms
+that need to be translated-/
 structure Identification (α β : Type u) : Type u where
+  /-- The unfolding function. -/
   toFun : α → β
+  /-- The refolding function. -/
   invFun : β → α
 
+/-- The identity `Identification`. -/
 @[expose]
 def Identification.Id {α : Type u} : Identification α α where
   toFun x := x
@@ -41,17 +46,13 @@ def withBlockUnfolding {α} (boundaries : UnfoldBoundaries) (x : MetaM α) : Met
   withCanUnfoldPred (fun _ cinfo =>
     return !boundaries.unfolds.contains cinfo.name && !boundaries.casts.contains cinfo.name) x
 
-def withoutBlockUnfolding {α} (x : MetaM α) : MetaM α := do
-  withReader ({· with canUnfold? := none }) x
-
-def unfold (e : Expr) (unfolds : NameMap SimpTheorem) : MetaM Simp.Result :=
-  withoutBlockUnfolding do
+def unfold (e : Expr) (unfolds : NameMap SimpTheorem) : MetaM Simp.Result := do
   let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
     (congrTheorems := (← getSimpCongrTheorems))
   (·.1) <$> Simp.main e ctx (methods := { pre })
 where
   pre (e : Expr) : SimpM Simp.Step := do
-    let .const c _ := e.getAppFn | return .continue
+    let .const c _ ← whnf e.getAppFn | return .continue
     let some thm := unfolds.find? c | return .continue
     let some r ← Simp.tryTheorem? e thm | return .continue
     return .done r
@@ -67,24 +68,24 @@ where
     let goal ← match r.proof? with
       | some proof => goal.replaceTargetEq r.expr proof
       | none => pure goal
-    let tgt ← goal.getType
-    if let .const c _ := (← whnf tgt.getForallBody).getAppFn then
-      if let some cast := boundaries.casts.find? c then
-        return ← forallTelescope tgt fun xs tgt => do
+    forallTelescope (← goal.getType) fun xs tgt => do
+      if let .const c _ := (← whnf tgt).getAppFn then
+        if let some cast := boundaries.casts.find? c then
           let cast ← mkConstWithFreshMVarLevels cast
           let (mvars, _, type) ← forallMetaTelescope (← inferType cast)
-          let_expr f@Identification α β := type | throwError "expected Identification, not {type}"
+          let_expr f@Identification α β := type | throwError "expected `Identification`, not {type}"
           if ← isDefEq tgt α then
             let goal' ← mkFreshExprMVar (← instantiateMVars β)
             go (mkAppN e xs) goal'.mvarId!
             goal.assign <| ← mkLambdaFVars xs <|
               mkApp4 (.const ``Identification.invFun f.constLevels!) α β (mkAppN cast mvars) goal'
+            return
           else
             throwError "identification `{cast}` could not be applied at {tgt}"
-    if ← isDefEq tgt (← inferType e) then
-      goal.assign e
-    else
-      throwError "could get {e} to have type {tgt}."
+      if ← isDefEq (← goal.getType) (← inferType e) then
+        goal.assign e
+      else
+        throwError "Error: could not cast {e} into the type {← goal.getType}."
 
 def unfoldConsts (e : Expr) (boundaries : UnfoldBoundaries) : MetaM Expr := do
   let eType ← inferType e
@@ -97,7 +98,7 @@ def unfoldConsts (e : Expr) (boundaries : UnfoldBoundaries) : MetaM Expr := do
         let e := mkApp4 (.const ``Identification.toFun f.constLevels!) α β (mkAppN cast mvars) e
         return ← unfoldConsts e boundaries
       else
-        throwError "identification `{cast}` could not be applied at {eType}"
+        throwError "Error: identification `{cast}` could not be applied at {eType}"
   let r ← unfold eType boundaries.unfolds
   let some pf := r.proof? | return e
   mkAppOptM ``cast #[eType, r.expr, pf, e]
@@ -113,11 +114,7 @@ def mkAppWithCast (f a : Expr) (boundaries : UnfoldBoundaries) : MetaM Expr :=
     let .forallE _ d _ _ ← whnf (← inferType f) | throwFunctionExpected f
     let a ← unfoldConsts a boundaries
     let a ← refoldConsts a d boundaries
-    try
-      checkApp f a
-      return f.app a
-    catch _ =>
-      throwError "invalid application {f} applied to {a}"
+    return f.app a
 
 def mkCast (e expectedType : Expr) (boundaries : UnfoldBoundaries) : MetaM Expr := do
   if ← isDefEq (← inferType e) expectedType then
