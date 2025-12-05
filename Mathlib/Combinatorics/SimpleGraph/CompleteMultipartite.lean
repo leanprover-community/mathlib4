@@ -402,22 +402,22 @@ theorem completeEquipartiteGraph_isContained_iff :
   ⟨fun ⟨f⟩ ↦ ⟨CompleteEquipartiteSubgraph.ofCopy f⟩, fun ⟨K⟩ ↦ ⟨K.toCopy⟩⟩
 
 /-- Simple graphs contain a copy of a `completeEquipartiteGraph (n + 1) t` iff there exists
-`s : Finset V` of size `#s = t` and `A : G.CompleteEquipartiteSubgraph n t` such that the
-vertices in `s` are adjacent to the vertices in `A`. -/
+`s : Finset V` of size `#s = t` and `K : G.CompleteEquipartiteSubgraph n t` such that the
+vertices in `s` are adjacent to the vertices in `K`. -/
 theorem completeEquipartiteGraph_succ_isContained_iff {n : ℕ} :
   completeEquipartiteGraph (n + 1) t ⊑ G
     ↔ ∃ᵉ (K : G.CompleteEquipartiteSubgraph n t) (s : Finset V),
-      #s = t ∧ ∀ ⦃v₁⦄, v₁ ∈ s → ∀ i, ∀ ⦃v₂⦄, v₂ ∈ K.parts i → G.Adj v₁ v₂ := by
+        #s = t ∧ ∀ i, G.IsCompleteBetween (K.parts i) s := by
   rw [completeEquipartiteGraph_isContained_iff]
   refine ⟨fun ⟨K'⟩ ↦ ?_, fun ⟨K, s, hs, hadj⟩ ↦ ?_⟩
   · let K : G.CompleteEquipartiteSubgraph n t := by
       refine ⟨fun i ↦ K'.parts i.castSucc, fun i ↦ K'.card_parts i.castSucc, ?_⟩
-      intro i₁ i₂ hne v₁ hv₁ v₂ hv₂
+      intro i j hne v₁ hv₁ v₂ hv₂
       rw [← Fin.castSucc_inj.ne] at hne
       exact K'.isCompleteBetween hne hv₁ hv₂
-    refine ⟨K, K'.parts (Fin.last n), K'.card_parts (Fin.last n), fun v₁ hv₁ i v₂ hv₂ ↦ ?_⟩
+    refine ⟨K, K'.parts (Fin.last n), K'.card_parts (Fin.last n), fun i v₁ hv₁ v₂ hv₂ ↦ ?_⟩
     have hne : i.castSucc ≠ Fin.last n := Fin.exists_castSucc_eq.mp ⟨i, rfl⟩
-    exact (K'.isCompleteBetween hne hv₂ hv₁).symm
+    exact K'.isCompleteBetween hne hv₁ hv₂
   · refine ⟨fun i ↦ if hi : ↑i < n then K.parts ⟨i, hi⟩ else s, fun i ↦ ?_,
       fun i₁ i₂ hne v₁ hv₁ v₂ hv₂ ↦ ?_⟩
     · by_cases hi : ↑i < n
@@ -428,8 +428,8 @@ theorem completeEquipartiteGraph_succ_isContained_iff {n : ℕ} :
       · have hne : i₁.castLT hi₁ ≠ i₂.castLT hi₂ := by
           simp [Fin.ext_iff, Fin.val_ne_of_ne hne]
         exact K.isCompleteBetween hne hv₁ hv₂
-      · exact (hadj hv₂ ⟨i₁, hi₁⟩ hv₁).symm
-      · exact hadj hv₁ ⟨i₂, hi₂⟩ hv₂
+      · exact hadj ⟨i₁, hi₁⟩ hv₁ hv₂
+      · exact (hadj ⟨i₂, hi₂⟩ hv₂ hv₁).symm
       · absurd hne
         rw [Fin.ext_iff, Nat.eq_of_le_of_lt_succ (le_of_not_gt hi₁) i₁.isLt,
           Nat.eq_of_le_of_lt_succ (le_of_not_gt hi₂) i₂.isLt]
