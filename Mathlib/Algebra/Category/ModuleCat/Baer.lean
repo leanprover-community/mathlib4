@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
@@ -25,21 +26,11 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian
 
-private instance small_of_quotient [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
-  small_of_surjective Ideal.Quotient.mk_surjective
-
 section
-
-universe w
-
-variable [UnivLE.{v, w}]
-
-private instance hasExt_of_small [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 open Limits in
 lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
-    (h : ∀ (I : Ideal R), Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :
+    (h : ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :
     Injective M := by
   rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
   intro I g
@@ -89,8 +80,8 @@ lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v
 
 open Limits in
 lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
-    (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M (n + 1)) := by
+    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M (n + 1)) := by
   induction n generalizing M
   · have : Injective M := injective_of_subsingleton_ext_quotient_one M h
     intro N
@@ -116,8 +107,8 @@ lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : �
     exact ih (cokernel f) h
 
 lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
-    (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M n) := by
+    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M n) := by
   match n with
   | 0 =>
     let e₀ := (Shrink.linearEquiv R (R ⧸ (⊥ : Ideal R))).trans
