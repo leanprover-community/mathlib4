@@ -202,7 +202,7 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
     IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
   simpa
 
-/-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
+/-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
   ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by

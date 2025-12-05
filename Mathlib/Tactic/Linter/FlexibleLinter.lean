@@ -287,8 +287,8 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
-  `omega` and `cutsat`, `grobner`
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
+  `omega` and `lia`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
@@ -304,6 +304,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
@@ -321,6 +322,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.grind,
     ``Lean.Parser.Tactic.grobner,
     ``Lean.Parser.Tactic.cutsat,
+    `tacticLia,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,
@@ -335,7 +337,7 @@ def flexible : Std.HashSet Name :=
     `cfcContTac,
     -- `continuity` and `measurability` also use `aesop` under the hood.
     `tacticContinuity,
-    `tacticMeasurability,
+    `Mathlib.Tactic.measurability,
     `finiteness,
     `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
