@@ -28,55 +28,67 @@ open CategoryTheory Abelian
 
 section
 
-open Limits in
-lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
-    (h : ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :
-    Injective M := by
-  rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
-  intro I g
+lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I : Ideal R) :
+    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
+    ∀ g : I →ₗ[R] M, ∃ g' : R →ₗ[R] M, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩ := by
   let Sf := (Shrink.linearEquiv.{v} R R).symm.toLinearMap.comp
     (I.subtype.comp (Shrink.linearEquiv.{v} R I).toLinearMap)
   let Sg := (Shrink.linearEquiv.{v} R (R ⧸ I)).symm.toLinearMap.comp
     ((Ideal.Quotient.mkₐ R I).toLinearMap.comp (Shrink.linearEquiv.{v} R R).toLinearMap)
   have exac : Function.Exact Sf Sg := by
     intro x
-    have (z : R) : z ∈ I ↔ ∃ y, ↑((equivShrink ↥I).symm y) = z := by
-      refine ⟨fun h ↦ ?_, fun ⟨y, hy⟩ ↦ by simp [← hy]⟩
-      use (equivShrink I) ⟨z, h⟩
-      simp
+    have (z : R) : z ∈ I ↔ ∃ y, ↑((equivShrink I).symm y) = z := by
+      refine ⟨fun h ↦ ⟨(equivShrink I) ⟨z, h⟩, by simp⟩, fun ⟨y, hy⟩ ↦ by simp [← hy]⟩
     simpa [Sf, Sg, Ideal.Quotient.eq_zero_iff_mem, AddEquiv.symm_apply_eq]
       using this ((equivShrink R).symm x)
-  have inj : Function.Injective Sf := by
-    simpa [Sf] using LinearEquiv.injective (Shrink.linearEquiv R I)
-  have surj : Function.Surjective Sg := by
-    simpa [Sg] using Ideal.Quotient.mk_surjective
+  have inj : Function.Injective Sf := by simpa [Sf] using (Shrink.linearEquiv R I).injective
+  have surj : Function.Surjective Sg := by simpa [Sg] using Ideal.Quotient.mk_surjective
   let S : ShortComplex (ModuleCat.{v} R) := {
     f := ModuleCat.ofHom Sf
     g := ModuleCat.ofHom Sg
     zero := by
       ext x
-      simp [Function.Exact.apply_apply_eq_zero exac] }
+      simp [exac.apply_apply_eq_zero] }
   have S_exact : S.ShortExact := {
     exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
     mono_f := (ModuleCat.mono_iff_injective _).mpr inj
     epi_g := (ModuleCat.epi_iff_surjective _).mpr surj }
-  have : IsZero (AddCommGrpCat.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :=
-    @AddCommGrpCat.isZero_of_subsingleton _ (h I)
-  have exac := Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl
-  have surj : Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) :=
-    (AddCommGrpCat.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
-  let f := g.comp (Shrink.linearEquiv R I).toLinearMap
-  rcases surj (Ext.mk₀ (ModuleCat.ofHom f)) with ⟨f', hf'⟩
-  simp only [Ext.bilinearComp_apply_apply] at hf'
-  rw [← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
-  have eqcomp := congrArg ModuleCat.Hom.hom ((Ext.mk₀_bijective _ _).1 hf')
-  simp only [← LinearMap.comp_assoc, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-    LinearEquiv.eq_comp_toLinearMap_iff, S, Sf, f] at eqcomp
-  use (ModuleCat.Hom.hom (Ext.addEquiv₀ f')).comp (Shrink.linearEquiv R R).symm.toLinearMap
-  intro x hx
-  simp only [LinearMap.coe_comp, Function.comp_apply, ← eqcomp, LinearEquiv.coe_coe,
-    Submodule.coe_subtype]
-  congr
+  have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
+    Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
+    apply Iff.trans _ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl).epi_f_iff.symm.trans
+      (AddCommGrpCat.epi_iff_surjective _))
+    refine ⟨fun h ↦ ((@AddCommGrpCat.isZero_of_subsingleton _ h).eq_zero_of_tgt _), fun h ↦ ?_⟩
+    exact AddCommGrpCat.subsingleton_of_isZero ((Ext.contravariant_sequence_exact₃' S_exact M 0 1
+      rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
+      (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
+  apply this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
+  · let f := g.comp (Shrink.linearEquiv R I).toLinearMap
+    rcases h (Ext.mk₀ (ModuleCat.ofHom f)) with ⟨f', hf'⟩
+    rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
+    have eqcomp := congrArg ModuleCat.Hom.hom ((Ext.mk₀_bijective _ _).1 hf')
+    simp only [← LinearMap.comp_assoc, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+      LinearEquiv.eq_comp_toLinearMap_iff, S, Sf, f] at eqcomp
+    use (ModuleCat.Hom.hom (Ext.addEquiv₀ f')).comp (Shrink.linearEquiv R R).symm.toLinearMap
+    intro x hx
+    simp only [LinearMap.coe_comp, Function.comp_apply, ← eqcomp, LinearEquiv.coe_coe,
+      Submodule.coe_subtype]
+    rfl
+  · rcases h ((Ext.addEquiv₀ e).hom.comp (Shrink.linearEquiv R I).symm.toLinearMap) with ⟨g', hg'⟩
+    use Ext.mk₀ (ModuleCat.ofHom (g'.comp (Shrink.linearEquiv R R).toLinearMap))
+    rw [Ext.bilinearComp_apply_apply, Ext.mk₀_comp_mk₀, ← Ext.mk₀_addEquiv₀_apply e]
+    congr
+    ext x
+    have eq : (Shrink.linearEquiv R R) (Sf x) = ((Shrink.linearEquiv R I) x).1 :=
+      (Shrink.linearEquiv R R).apply_symm_apply _
+    simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, S, eq, hg' _ ((Shrink.linearEquiv R I) x).2]
+    exact congrArg _ ((Shrink.linearEquiv R I).symm_apply_apply _)
+
+lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
+    (h : ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1)) :
+    Injective M := by
+  rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
+  exact fun I ↦ (ext_quotient_one_subsingleton_iff M I).mp (h I)
 
 open Limits in
 lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
@@ -93,10 +105,9 @@ lemma ext_subsingleton_of_quotients' [Small.{v} R] (M : ModuleCat.{v} R) (n : �
     have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
       Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
       let _ := Ext.subsingleton_of_injective N S.X₂
-      have := ComposableArrows.Exact.isIso_map'
-        (Ext.covariantSequence_exact N ip.shortComplex_shortExact (n + 1) (n + 2) rfl) 1 (by decide)
-        (IsZero.eq_zero_of_src (AddCommGrpCat.of (Ext N S.X₂ (n + 1))).isZero_of_subsingleton _)
-        (IsZero.eq_zero_of_tgt (AddCommGrpCat.of (Ext N S.X₂ (n + 2))).isZero_of_subsingleton _)
+      have := (Ext.covariantSequence_exact N ip.shortComplex_shortExact (n + 1) (n + 2)
+        rfl).isIso_map' 1 (by decide) ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
+        ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt  _)
       exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
     simp only [this] at h ⊢
     exact ih (cokernel ip.3) h
