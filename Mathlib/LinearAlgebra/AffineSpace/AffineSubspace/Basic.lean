@@ -884,17 +884,9 @@ lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
   rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
     Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
 
-theorem affineSpan_pair_parallel_comm_right {p₁ p₂ p₃ p₄ : P} :
-    line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔ line[k, p₁, p₂] ∥ line[k, p₄, p₃] := by
-  simp only [affineSpan_pair_parallel_iff_vectorSpan_eq, Set.pair_comm]
-
-theorem affineSpan_pair_parallel_comm_left {p₁ p₂ p₃ p₄ : P} :
-    line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔ line[k, p₂, p₁] ∥ line[k, p₃, p₄] := by
-  simp only [affineSpan_pair_parallel_iff_vectorSpan_eq, Set.pair_comm]
-
-theorem affineSpan_pair_parallel_comm {p₁ p₂ p₃ p₄ : P} :
-    line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔ line[k, p₂, p₁] ∥ line[k, p₄, p₃] := by
-  simp only [affineSpan_pair_parallel_iff_vectorSpan_eq, Set.pair_comm]
+theorem affineSpan_pair_comm {p₁ p₂ : P} :
+    line[k, p₁, p₂] = line[k, p₂, p₁] := by
+  rw [Set.pair_comm]
 
 end AffineSubspace
 
