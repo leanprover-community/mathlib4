@@ -60,12 +60,9 @@ end
 
 noncomputable section
 
-variable {C C' : Type u'} [Category.{v'} C] [Category.{v'} C'] {J : GrothendieckTopology C}
-  {J' : GrothendieckTopology C'} {R : Sheaf J RingCat} {S : Sheaf J' RingCat}
-  [HasSheafify J AddCommGrpCat] [HasSheafify J' AddCommGrpCat]
-  [J.WEqualsLocallyBijective AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
-  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
-  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {ι σ : Type u}
+variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat}
+  [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {ι σ : Type u}
 
 /-- Given two morphism of sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, then this sequence defines
@@ -102,17 +99,17 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat}
+  [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
+  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
 @[simps! generators_I relations_I]
-def Presentation.map (P : Presentation M)
+def Presentation.map {M : SheafOfModules.{u'} R} (P : Presentation M)
     (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
-    (hf' : F.obj (unit R) ≅ unit S) {M : SheafOfModules.{u'} R} :
+    (hf' : F.obj (unit R) ≅ unit S) :
     Presentation (F.obj M) :=
   letI f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _)
   letI g := P.generators.π
