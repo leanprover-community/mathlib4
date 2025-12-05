@@ -73,26 +73,24 @@ a `Presentation M`. -/
 def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
     (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
     (H' : IsColimit (CokernelCofork.ofπ g H)) : Presentation M :=
-  let gen : M.GeneratingSections := {
-    I := σ
-    s := M.freeHomEquiv g
-    epi := by simpa using epi_of_isColimit_cofork H'}
-  have eq_aux : gen.π = g := Equiv.symm_apply_apply M.freeHomEquiv g
-  have comp_zero : f ≫ gen.π = 0 := eq_aux ▸ H
-  {
-  generators := gen
-  relations := {
-    I := ι
-    s := (kernel gen.π).freeHomEquiv <| kernel.lift gen.π f comp_zero
-    epi := by
-      let h : cokernel f ≅ M := (H'.coconePointUniqueUpToIso (colimit.isColimit _)).symm
-      let h' : Abelian.image f ≅ kernel gen.π :=
-        kernel.mapIso (cokernel.π f) gen.π (Iso.refl _) h (by simp [h, eq_aux])
-      have comp_aux : Abelian.factorThruImage f ≫ h'.hom =
-        (kernel.lift gen.π f comp_zero) := equalizer.hom_ext <| by simp [h']
-      rw [← comp_aux, Equiv.symm_apply_apply]
-      infer_instance
-    }}
+  letI gen : M.GeneratingSections :=
+    { I := σ
+      s := M.freeHomEquiv g
+      epi := by simpa using epi_of_isColimit_cofork H'}
+  haveI eq_aux : gen.π = g := Equiv.symm_apply_apply M.freeHomEquiv g
+  haveI comp_zero : f ≫ gen.π = 0 := eq_aux ▸ H
+  { generators := gen
+    relations :=
+      { I := ι
+        s := (kernel gen.π).freeHomEquiv <| kernel.lift gen.π f comp_zero
+        epi := by
+          let h : cokernel f ≅ M := (H'.coconePointUniqueUpToIso (colimit.isColimit _)).symm
+          let h' : Abelian.image f ≅ kernel gen.π :=
+            kernel.mapIso (cokernel.π f) gen.π (Iso.refl _) h (by simp [h, eq_aux])
+          have comp_aux : Abelian.factorThruImage f ≫ h'.hom =
+            (kernel.lift gen.π f comp_zero) := equalizer.hom_ext <| by simp [h']
+          rw [← comp_aux, Equiv.symm_apply_apply]
+          infer_instance }}
 
 /-- Given a sheaf of `R`-module `M` and a `Presentation M`, there is two morphism of
 sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`  satisfying `H : f ≫ g = 0`
