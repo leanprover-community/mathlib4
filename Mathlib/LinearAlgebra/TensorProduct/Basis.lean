@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 
@@ -166,6 +167,42 @@ lemma TensorProduct.eq_repr_basis_left :
     ∃ (c : ι →₀ N), (c.sum fun i n ↦ ℬ i ⊗ₜ n) = x := by
   classical obtain ⟨c, rfl⟩ := (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.surjective x
   exact ⟨c, (TensorProduct.comm R M N).injective <| by simp [Finsupp.sum]⟩
+
+/-- Given a finite basis `ℬ` for `M`, any tensor `x ∈ M ⊗ N` decomposes as `∑ᵢ ℬᵢ ⊗ₜ nᵢ`
+where the `N`-component `nᵢ` is obtained by applying `ℬ.dualBasis i ⊗ id` to `x` and then
+identifying `R ⊗ N ≃ N` via `lid`. -/
+lemma TensorProduct.eq_sum_basis_tmul_dualBasis_apply [Fintype ι] :
+    x = ∑ i, ℬ i ⊗ₜ[R] (TensorProduct.lid R N)
+      ((TensorProduct.map (ℬ.dualBasis i) LinearMap.id) x) := by
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul u v =>
+    conv_lhs => rw [← ℬ.sum_repr u, TensorProduct.sum_tmul]
+    apply Finset.sum_congr rfl
+    intro i _
+    simp [TensorProduct.map_tmul, LinearMap.id_coe, id_eq, TensorProduct.lid_tmul,
+      Basis.coord_apply, TensorProduct.tmul_smul, TensorProduct.smul_tmul]
+  | add w1 w2 hw1 hw2 =>
+    simp only [map_add, TensorProduct.tmul_add, Finset.sum_add_distrib]
+    rw [← hw1, ← hw2]
+
+/-- Given a finite basis `𝒞` for `N`, any tensor `x ∈ M ⊗ N` decomposes as `∑ⱼ mⱼ ⊗ₜ 𝒞ⱼ`
+where the `M`-component `mⱼ` is obtained by applying `id ⊗ 𝒞.dualBasis j` to `x` and then
+identifying `M ⊗ R ≃ M` via `rid`. -/
+lemma TensorProduct.eq_sum_dualBasis_apply_tmul_basis [Fintype κ] :
+    x = ∑ j, (TensorProduct.rid R M)
+          ((TensorProduct.map LinearMap.id (𝒞.dualBasis j)) x) ⊗ₜ[R] 𝒞 j := by
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul u v =>
+    conv_lhs => rw [← 𝒞.sum_repr v, TensorProduct.tmul_sum]
+    apply Finset.sum_congr rfl
+    intro j _
+    simp [TensorProduct.map_tmul, LinearMap.id_coe, id_eq, TensorProduct.rid_tmul,
+      Basis.coord_apply, TensorProduct.tmul_smul, TensorProduct.smul_tmul]
+  | add w1 w2 hw1 hw2 =>
+    simp only [map_add, TensorProduct.add_tmul, Finset.sum_add_distrib]
+    rw [← hw1, ← hw2]
 
 omit [DecidableEq ι] in
 lemma TensorProduct.sum_tmul_basis_left_injective :
