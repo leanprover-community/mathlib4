@@ -15,7 +15,7 @@ Define the Exponential measure over the reals.
 
 ## Main definitions
 * `exponentialPDFReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
-  or `0` else, which is the probability density function of a exponential distribution with
+  or `0` else, which is the probability density function of an exponential distribution with
   rate `r` (when `hr : 0 < r`).
 * `exponentialPDF`: `ℝ≥0∞`-valued pdf,
   `exponentialPDF r = ENNReal.ofReal (exponentialPDFReal r)`.
@@ -62,12 +62,12 @@ lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPDF r y = 0 := lintegral_gammaPDF_of_nonpos hx
 
 /-- The exponential pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r) :=
   measurable_gammaPDFReal 1 r
 
 -- The exponential pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
     StronglyMeasurable (exponentialPDFReal r) := stronglyMeasurable_gammaPDFReal 1 r
 

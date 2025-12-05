@@ -345,3 +345,15 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
   positivity
+
+theorem iteratedDeriv_const {n : ℕ} {c : F} {x : 𝕜} :
+    iteratedDeriv n (fun _ ↦ c) x = if n = 0 then c else 0 := by
+  induction n generalizing c with
+  | zero => simp
+  | succ n h => simp [iteratedDeriv_succ', h]
+
+theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ c) s x = if n = 0 then c else 0 := by
+  induction n generalizing c with
+  | zero => simp
+  | succ n h => simp [iteratedDerivWithin_succ', Pi.zero_def, h]
