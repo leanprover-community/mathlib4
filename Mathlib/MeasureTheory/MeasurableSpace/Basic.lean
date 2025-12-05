@@ -231,7 +231,7 @@ theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
 theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : Measurable f :=
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 
-@[to_additive (attr := measurability, fun_prop)]
+@[to_additive (attr := fun_prop)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 
@@ -249,11 +249,11 @@ theorem measurable_const' {f : β → α} (hf : ∀ x y, f x = f y) : Measurable
   convert @measurable_const α β _ _ (f default) using 2
   apply hf
 
-@[measurability]
+@[fun_prop]
 theorem measurable_natCast [NatCast α] (n : ℕ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
 
-@[measurability]
+@[fun_prop]
 theorem measurable_intCast [IntCast α] (n : ℤ) : Measurable (n : β → α) :=
   @measurable_const α _ _ _ n
 
@@ -268,7 +268,7 @@ end TypeclassMeasurableSpace
 
 variable {m : MeasurableSpace α}
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurable f^[n]
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
@@ -284,7 +284,7 @@ protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf
     MeasurableSet (f ⁻¹' t) :=
   hf ht
 
-@[measurability, fun_prop]
+@[fun_prop]
 protected theorem Measurable.piecewise {_ : DecidablePred (· ∈ s)} (hs : MeasurableSet s)
     (hf : Measurable f) (hg : Measurable g) : Measurable (piecewise s f g) := by
   intro t ht
@@ -307,7 +307,7 @@ theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableS
     (hf : Measurable f) (hg : Measurable g) : Measurable fun x => ite (p x) (f x) (g x) :=
   Measurable.piecewise hp hf hg
 
-@[measurability, fun_prop]
+@[fun_prop]
 theorem Measurable.indicator [Zero β] (hf : Measurable f) (hs : MeasurableSet s) :
     Measurable (s.indicator f) :=
   hf.piecewise hs measurable_const

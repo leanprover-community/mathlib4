@@ -129,7 +129,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
-  simp only [Finset.sum_apply, LinearMap.coeFn_sum, LinearMap.smul_apply]
+  simp only [Finset.sum_apply, LinearMap.coe_sum, LinearMap.smul_apply]
   -- The required sum is zero because each individual term is zero.
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
