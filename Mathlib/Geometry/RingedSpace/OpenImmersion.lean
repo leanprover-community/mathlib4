@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 # Open immersions of structured spaces
@@ -24,7 +26,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is
-  contained in an open immersion factors though the open immersion.
+  contained in an open immersion factors through the open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpace`: If `f : X ⟶ Y` is an
   open immersion of presheafed spaces, and `Y` is a sheafed space, then `X` is also a sheafed
   space. The morphism as morphisms of sheafed spaces is given by `toSheafedSpaceHom`.
@@ -46,10 +48,12 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   immersion, then the pullback `(f, g)` exists (and the forgetful functor to `TopCat` preserves it).
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft`: Open immersions
   are stable under pullbacks.
-* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso` An (topological) open embedding
+* `AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_stalk_iso`: An (topological) open embedding
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace CategoryTheory Opposite Topology
@@ -218,7 +222,8 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
 instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom where
   base_open := (TopCat.homeoOfIso ((forget C).mapIso H)).isOpenEmbedding
   -- Porting note: `inferInstance` will fail if Lean is not told that `H.hom.c` is iso
-  c_iso _ := letI : IsIso H.hom.c := c_isIso_of_iso H.hom; inferInstance
+  c_iso _ := letI : IsIso H.hom.c := inferInstance;
+    inferInstance
 
 instance (priority := 100) ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     IsOpenImmersion f :=
@@ -298,28 +303,19 @@ def pullbackConeOfLeftFst :
                   apply LE.le.antisymm
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
-                    -- Porting note: need a slight hand holding
-                    -- used to be `simpa using h₁` before https://github.com/leanprover-community/mathlib4/pull/13170
-                    change _ ∈ _ ⁻¹' _ ∧ _
-                    simp only [TopCat.coe_of, restrict_carrier, Set.preimage_id', Set.mem_preimage,
-                      SetLike.mem_coe]
-                    constructor
-                    · change _ ∈ U.unop at h₁
-                      convert h₁
-                      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
-                    · rw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
+                    simpa [(TopCat.pullbackIsoProdSubtype_inv_fst_apply),
+                      (TopCat.pullbackIsoProdSubtype_inv_snd_apply)]
                   · rintro _ ⟨x, h₁, rfl⟩
                     exact ⟨_, h₁, CategoryTheory.congr_fun pullback.condition x⟩))
       naturality := by
         intro U V i
         induction U
         induction V
-        -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
-        -- before discrimination tree key generation
-        rw [inv_naturality_assoc]
-        dsimp
-        simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map,
-          Quiver.Hom.unop_op, ← Functor.map_comp, Category.assoc]
+        simp only [(inv_naturality_assoc), restrict_carrier, restrict_presheaf,
+          TopCat.Presheaf.pushforward_obj_obj, Functor.comp_obj, Functor.op_obj,
+          TopCat.Presheaf.pushforward_obj_map, Functor.comp_map, Functor.op_map, Quiver.Hom.unop_op,
+          NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op,
+          ← Functor.map_comp, Category.assoc]
         rfl }
 
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
@@ -327,14 +323,13 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
   · simpa using pullback.condition
   · induction U
-    -- Porting note: `NatTrans.comp_app` is not picked up by `dsimp`
-    -- Perhaps see : https://github.com/leanprover-community/mathlib4/issues/5026
-    rw [NatTrans.comp_app]
-    dsimp only [comp_c_app, unop_op, Functor.whiskerRight_app, pullbackConeOfLeftFst]
-    -- simp only [ofRestrict_c_app, NatTrans.comp_app]
-    simp only [app_invApp_assoc,
-      eqToHom_app, Category.assoc, NatTrans.naturality_assoc]
-    erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
+    simp only [(NatTrans.comp_app), comp_c_app, unop_op, Functor.whiskerRight_app,
+      pullbackConeOfLeftFst, app_invApp_assoc, eqToHom_app, Category.assoc,
+      NatTrans.naturality_assoc, restrict_carrier, comp_base, ofRestrict_base, restrict_presheaf,
+      Functor.comp_obj, Functor.op_obj, Opens.map_comp_obj, TopCat.Presheaf.pushforward_obj_obj,
+      Opens.carrier_eq_coe, homOfLE_leOfHom, TopCat.Presheaf.pushforward_obj_map, Functor.comp_map,
+      Functor.op_map, eqToHom_unop, ofRestrict_c_app, Functor.id_obj]
+    rw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr 1
 
 /-- We construct the pullback along an open immersion via restricting along the pullback of the
@@ -360,9 +355,8 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
               (by
                 dsimp only [Opens.map, IsOpenMap.functor, Functor.op]
                 congr 2
-                let s' : PullbackCone f.base g.base := PullbackCone.mk s.fst.base s.snd.base
-                  -- Porting note: in mathlib3, this is just an underscore
-                  (congr_arg Hom.base s.condition)
+                let s' : PullbackCone f.base g.base :=
+                  PullbackCone.mk s.fst.base s.snd.base (congr_arg Hom.base s.condition)
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   rw [← this]
@@ -490,7 +484,8 @@ def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 
 @[simp, reassoc]
 theorem lift_fac (H : Set.range g.base ⊆ Set.range f.base) : lift f g H ≫ f = g := by
-  erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
+  simp [AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift,
+    CategoryTheory.Limits.pullback.condition]
 
 theorem lift_uniq (H : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H := by rw [← cancel_mono f, hl, lift_fac]
@@ -581,8 +576,7 @@ instance toLocallyRingedSpace_isOpenImmersion :
 
 @[simp]
 theorem locallyRingedSpace_toLocallyRingedSpace {X Y : LocallyRingedSpace} (f : X ⟶ Y)
-    [LocallyRingedSpace.IsOpenImmersion f] : toLocallyRingedSpace Y f.1 = X := by
-    cases X; delta toLocallyRingedSpace; simp
+    [LocallyRingedSpace.IsOpenImmersion f] : toLocallyRingedSpace Y f.1 = X := rfl
 
 end ToLocallyRingedSpace
 
@@ -612,8 +606,7 @@ noncomputable section Pullback
 variable {X Y Z : SheafedSpace C} (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [H : SheafedSpace.IsOpenImmersion f]
 
--- Porting note: in mathlib3, this local notation is often followed by a space to avoid confusion
--- with the forgetful functor, now it is often wrapped in a parenthesis
+/-- This is often wrapped in parentheses to distinguish with the forgetful functor. -/
 local notation "forget" => SheafedSpace.forgetToPresheafedSpace
 
 open CategoryTheory.Limits.WalkingCospan
@@ -833,8 +826,7 @@ end
 
 section Prod
 
--- Porting note: here `ι` should have same universe level as morphism of `C`, so needs explicit
--- universe level now
+-- here `ι` should have same universe level as morphism of `C`, so needs explicit universe level
 variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F]
   (i : Discrete ι)
 
@@ -849,11 +841,7 @@ theorem sigma_ι_isOpenEmbedding : IsOpenEmbedding (colimit.ι F i).base := by
   rw [← Iso.eq_comp_inv] at this
   cases i
   rw [this, ← Category.assoc]
-  -- Porting note: `simp_rw` can't use `TopCat.isOpenEmbedding_iff_comp_isIso` and
-  -- `TopCat.isOpenEmbedding_iff_isIso_comp`.
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  rw [TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_comp_isIso,
-    TopCat.isOpenEmbedding_iff_comp_isIso, TopCat.isOpenEmbedding_iff_isIso_comp]
+  simp_rw [TopCat.isOpenEmbedding_iff_comp_isIso, (TopCat.isOpenEmbedding_iff_isIso_comp)]
   exact .sigmaMk
 
 theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.obj i)) :
@@ -891,13 +879,12 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): just `convert` is very slow, so helps it a bit
-      convert this using 2 <;> congr
+      convert this
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
     -- Porting note: this instance created manually to make the `inferInstance` below work
     have inst1 : IsIso (preservesColimitIso forgetToPresheafedSpace F).inv.c :=
-      PresheafedSpace.c_isIso_of_iso _
+      inferInstance
     rsuffices : IsIso
         (limit.π
           (PresheafedSpace.componentwiseDiagram (F ⋙ SheafedSpace.forgetToPresheafedSpace)
@@ -1115,7 +1102,7 @@ def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
 
 @[simp, reassoc]
 theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g := by
-  erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
+  simp [lift, pullback.condition]
 
 theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl : l ≫ f = g) :
     l = lift f g H' := by rw [← cancel_mono f, hl, lift_fac]

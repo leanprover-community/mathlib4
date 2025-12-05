@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 
 /-!
 # Theory of conditionally complete lattices
@@ -24,6 +26,8 @@ For instance, `sInf_le` is a statement in complete lattices ensuring `sInf s ≤
 while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Multiset
@@ -101,6 +105,10 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
 @[simp]
 theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   WithTop.sInf_empty (α := αᵒᵈ)
+
+theorem WithBot.sInf_empty (α : Type*) [CompleteLattice α] : (sInf ∅ : WithBot α) = ⊤ := by
+  rw [WithBot.sInf_eq (by simp) (OrderBot.bddBelow _), Set.preimage_empty, _root_.sInf_empty,
+    WithBot.coe_top]
 
 @[norm_cast]
 theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : BddAbove s) :
@@ -501,13 +509,13 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
   · have Bs : BddAbove s := by
-      rcases B with hB|⟨b, hb⟩
+      rcases B with hB | ⟨b, hb⟩
       · exact hB
       · refine ⟨b, fun x hx ↦ ?_⟩
         rcases hs x hx with ⟨y, hy, hxy⟩
         exact hxy.trans (hb hy)
     have Bt : BddAbove t := by
-      rcases B with ⟨b, hb⟩|hB
+      rcases B with ⟨b, hb⟩ | hB
       · refine ⟨b, fun y hy ↦ ?_⟩
         rcases ht y hy with ⟨x, hx, hyx⟩
         exact hyx.trans (hb hx)
@@ -800,7 +808,7 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   obtain rfl | hs := Set.eq_empty_or_nonempty s
   · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_notMem] using h
     rfl
-  apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_mono hst))
+  refine le_antisymm ?_ (by gcongr; exacts [ht, hs.image f])
   refine le_csInf ((hs.mono hst).image f) ?_
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a ha
@@ -940,6 +948,14 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     csSup_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csInf
     csInf_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csSup
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
+
+noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
+  le_sSup s a has := le_csSup (OrderTop.bddAbove _) has
+  sSup_le s a hsa := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sSup_empty]; exact bot_le)
+    (csSup_le · hsa)
+  sInf_le s a hsa := csInf_le (OrderBot.bddBelow _) hsa
+  le_sInf s a has := s.eq_empty_or_nonempty.elim (by rw [·, WithBot.sInf_empty]; exact le_top)
+    (le_csInf · has)
 
 open Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}

@@ -3,8 +3,10 @@ Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Edward Ayers
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Writer monads
@@ -18,6 +20,8 @@ computation progresses.
 - [Original Mark P Jones article introducing `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -95,10 +99,10 @@ instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
 
 instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
   (bind_pure_comp := by
-    intros; simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
-  (id_map := by intros; simp [Functor.map, WriterT.mk])
-  (pure_bind := by intros; simp [Bind.bind, Pure.pure, WriterT.mk])
-  (bind_assoc := by intros; simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
+    simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
+  (id_map := by simp [Functor.map, WriterT.mk])
+  (pure_bind := by simp [Bind.bind, Pure.pure, WriterT.mk])
+  (bind_assoc := by simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)

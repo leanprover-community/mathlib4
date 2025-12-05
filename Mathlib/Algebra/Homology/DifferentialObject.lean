@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.DifferentialObject
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.CategoryTheory.DifferentialObject
 
 /-!
 # Homological complexes are differential graded objects.
@@ -16,6 +18,8 @@ This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
 
+@[expose] public section
+
 open CategoryTheory CategoryTheory.Limits
 
 noncomputable section
@@ -23,7 +27,7 @@ noncomputable section
 /-!
 We first prove some results about differential graded objects.
 
-Porting note: after the port, move these to their own file.
+TODO: We should move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 

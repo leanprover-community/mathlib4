@@ -3,7 +3,9 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Lifting properties and (co)limits
@@ -12,6 +14,8 @@ In this file, we show some consequences of lifting properties in the presence of
 certain (co)limits.
 
 -/
+
+@[expose] public section
 
 universe v
 

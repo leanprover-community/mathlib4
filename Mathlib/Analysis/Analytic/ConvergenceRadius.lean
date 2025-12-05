@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Radius of convergence of a power series
@@ -35,6 +37,8 @@ For a power series in finitely many dimensions, there is a finer (directional, c
 notion, describing the polydisk of convergence. This notion is more specific, and not necessary to
 build the general theory. We do not define it here.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -151,7 +155,7 @@ theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
   refine ⟨_, rt, C, Or.inr zero_lt_one, fun n => ?_⟩
   calc
     |‖p n‖ * (r : ℝ) ^ n| = ‖p n‖ * (t : ℝ) ^ n * (r / t : ℝ) ^ n := by
-      field_simp [mul_right_comm, abs_mul]
+      simp [field, abs_mul, div_pow]
     _ ≤ C * (r / t : ℝ) ^ n := by gcongr; apply hC
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ = o(1)`. -/

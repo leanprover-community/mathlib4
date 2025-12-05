@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Hom
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Hom
+public import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 # The category of root pairings
@@ -24,6 +26,8 @@ given in SGA III Exp. 21 Section 6.
 This is mostly copied from `ModuleCat`.
 
 -/
+
+@[expose] public section
 
 open Set Function CategoryTheory
 
@@ -53,7 +57,7 @@ attribute [instance] RootPairingCat.coweightIsAddCommGroup RootPairingCat.coweig
 
 namespace RootPairingCat
 
-instance category : Category.{v, max (v+1) u} (RootPairingCat.{v} R) where
+instance category : Category.{v, max (v + 1) u} (RootPairingCat.{v} R) where
   Hom P Q := RootPairing.Hom P.pairing Q.pairing
   id P := RootPairing.Hom.id P.pairing
   comp f g := RootPairing.Hom.comp g f

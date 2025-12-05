@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.SuccPred.LinearLocallyFinite
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology
@@ -20,6 +22,8 @@ and `OrderTopology ℕ` become available.
 
 -/
 
+@[expose] public section
+
 
 open Order Set TopologicalSpace Filter
 
@@ -34,7 +38,7 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i =>
     { is_open_generated_countable :=
         ⟨{univ}, countable_singleton _, by simp only [eq_iff_true_of_subsingleton]⟩ }
-  secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)
+  secondCountableTopology_of_countable_cover (fun _ ↦ isOpen_discrete _)
     (iUnion_of_singleton α)
 
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]

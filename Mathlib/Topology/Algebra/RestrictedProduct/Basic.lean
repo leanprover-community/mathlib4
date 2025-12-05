@@ -3,11 +3,13 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Order.Filter.Cofinite -- for `Πʳ i, [R i, A i]` notation, confuses shake
-import Mathlib.Algebra.Module.Pi
+module
+
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Order.Filter.Cofinite -- for `Πʳ i, [R i, A i]` notation, confuses shake
+public import Mathlib.Algebra.Module.Pi
 
 /-!
 # Restricted products of sets, groups and rings
@@ -53,6 +55,8 @@ puts the structure of a topological space on a restricted product of topological
 restricted product, adeles, ideles
 -/
 
+@[expose] public section
+
 open Set Filter
 
 variable {ι : Type*}
@@ -78,12 +82,12 @@ open Batteries.ExtendedBinder
 
 /-- `Πʳ i, [R i, A i]_[𝓕]` is `RestrictedProduct R A 𝓕`. -/
 scoped[RestrictedProduct]
-notation3 "Πʳ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]_[" f "]" =>
+notation3 "Πʳ " (...) ", " "[" r:(scoped R => R)", " a:(scoped A => A) "]_[" f "]" =>
   RestrictedProduct r a f
 
 /-- `Πʳ i, [R i, A i]` is `RestrictedProduct R A cofinite`. -/
 scoped[RestrictedProduct]
-notation3"Πʳ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]" =>
+notation3 "Πʳ " (...) ", " "[" r:(scoped R => R)", " a:(scoped A => A) "]" =>
   RestrictedProduct r a cofinite
 
 namespace RestrictedProduct
@@ -403,7 +407,7 @@ homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` 
 @[to_additive
 /-- Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and
 `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]` of additive monoids, `RestrictedProduct.mapAlongAddMonoidHom`
-gives a additive monoid homomorphism between them. The data needed is a function `f : ι₂ → ι₁` such
+gives an additive monoid homomorphism between them. The data needed is a function `f : ι₂ → ι₁` such
 that `𝓕₂` tends to `𝓕₁` along `f`, and additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j`
 sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s. -/]
 def mapAlongMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where

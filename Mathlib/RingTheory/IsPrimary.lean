@@ -3,8 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary submodules
@@ -30,6 +32,8 @@ to define the nilpotency of `r : R`.
   Chapter 4, Exercise 21.
 
 -/
+
+@[expose] public section
 
 open Pointwise
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Sequences of functors from a category equipped with a shift
 
@@ -14,7 +16,7 @@ shift by an additive monoid `M`. In this file, we define a typeclass
 `F.shift a : C ⥤ A` for all `a : A`. For each `a : A`, we have
 an isomorphism `F.isoShift a : shiftFunctor C a ⋙ F ≅ F.shift a` which
 satisfies some coherence relations. This allows to state results
-(e.g. the long exact sequence of an homology functor (TODO)) using
+(e.g. the long exact sequence of a homology functor (TODO)) using
 functors `F.shift a` rather than `shiftFunctor C a ⋙ F`. The reason
 for this design is that we can often choose functors `F.shift a` that
 have better definitional properties than `shiftFunctor C a ⋙ F`.
@@ -24,6 +26,8 @@ for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category ZeroObject Limits
 

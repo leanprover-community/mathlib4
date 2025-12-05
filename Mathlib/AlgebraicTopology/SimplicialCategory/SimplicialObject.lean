@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-import Mathlib.CategoryTheory.Functor.FunctorHom
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+public import Mathlib.CategoryTheory.Functor.FunctorHom
 
 /-!
 # The category of simplicial objects is simplicial
@@ -19,6 +21,8 @@ sets is a simplicial category.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -27,13 +31,13 @@ variable {D : Type u} [Category.{v} D]
 
 namespace SimplicialObject
 
-noncomputable instance : EnrichedCategory SSet.{v} (SimplicialObject D)  :=
+instance : EnrichedCategory SSet.{v} (SimplicialObject D)  :=
   inferInstanceAs (EnrichedCategory (_ ⥤ Type v) (_ ⥤ D))
 
-noncomputable instance : SimplicialCategory (SimplicialObject D) where
+instance : SimplicialCategory (SimplicialObject D) where
   homEquiv := Functor.natTransEquiv.symm
 
-noncomputable instance : SimplicialCategory SSet.{v} :=
+instance : SimplicialCategory SSet.{v} :=
   inferInstanceAs (SimplicialCategory (SimplicialObject (Type v)))
 
 end SimplicialObject

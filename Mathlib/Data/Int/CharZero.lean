@@ -3,15 +3,19 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Data.Int.Cast.Field
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Int.Cast.Pi
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Int.Cast.Field
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Int.Cast.Pi
 
 /-!
 # Injectivity of `Int.Cast` into characteristic zero rings and fields.
 
 -/
+
+@[expose] public section
 
 open Nat Set
 

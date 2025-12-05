@@ -3,16 +3,20 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.RingTheory.OreLocalization.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -41,6 +45,10 @@ theorem LocalizationMap.nontrivial (f : LocalizationMap S N) (h : 0 ∉ S) : Non
 protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 := by
   have ⟨ms, eq⟩ := f.surj 0
   rw [← zero_mul, map_mul, ← eq, zero_mul, mul_zero]
+
+protected theorem IsLocalizationMap.map_zero {F} [FunLike F M N] [MulHomClass F M N] {f : F}
+    (hf : IsLocalizationMap S f) : f 0 = 0 :=
+  LocalizationMap.map_zero ⟨MulHomClass.toMulHom f, hf⟩
 
 instance : MonoidWithZeroHomClass (LocalizationMap S N) M N where
   map_zero f := by

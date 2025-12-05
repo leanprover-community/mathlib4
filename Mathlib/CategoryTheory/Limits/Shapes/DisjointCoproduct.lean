@@ -3,9 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Disjoint coproducts
@@ -22,6 +24,8 @@ Shows that a category with disjoint coproducts is `InitialMonoClass`.
 * Define extensive categories, and show every extensive category has disjoint coproducts.
 * Define coherent categories and use this to define positive coherent categories.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -128,8 +132,8 @@ lemma BinaryCoproductDisjoint.of_binaryCofan {c : BinaryCofan X Y} (hc : IsColim
     BinaryCoproductDisjoint X Y := by
   have (i : WalkingPair) : Mono (Cofan.inj c i) := by
     cases i
-    exact inferInstanceAs <| Mono c.inl
-    exact inferInstanceAs <| Mono c.inr
+    · exact inferInstanceAs <| Mono c.inl
+    · exact inferInstanceAs <| Mono c.inr
   refine .of_cofan hc (fun {i j} hij ↦ ?_) (fun {i j} hij ↦ ?_) (fun {i j} hij ↦ ?_)
   · match i, j with
     | .left, .right => exact s

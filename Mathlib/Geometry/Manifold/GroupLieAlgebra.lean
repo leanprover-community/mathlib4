@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.VectorField.LieBracket
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 /-!
 # The Lie algebra of a Lie group
@@ -32,6 +34,8 @@ The standing assumption in this file is that the group is `C^n` for `n = minSmoo
 it is `C^3` over `ℝ` or `ℂ`, and analytic otherwise.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 section LieGroup
@@ -51,9 +55,9 @@ variable (I G) in
 the word `AddGroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/]
 abbrev GroupLieAlgebra : Type _ := TangentSpace I (1 : G)
 
-/-- The invariant vector field associated to a vector `v` in the Lie alebra. At a point `g`, it
+/-- The invariant vector field associated to a vector `v` in the Lie algebra. At a point `g`, it
 is given by the image of `v` under left-multiplication by `g`. -/
-@[to_additive /-- The invariant vector field associated to a vector `v` in the Lie alebra. At a
+@[to_additive /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a
 point `g`, it is given by the image of `v` under left-addition by `g`. -/]
 noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
   mfderiv I I (g * ·) (1 : G) v

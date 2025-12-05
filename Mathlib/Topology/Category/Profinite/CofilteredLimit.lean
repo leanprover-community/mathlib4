@@ -3,11 +3,13 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.DiscreteQuotient
-import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.DiscreteQuotient
+public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered limits of profinite sets.
@@ -21,6 +23,8 @@ This file contains some theorems about cofiltered limits of profinite sets.
 - `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
 -/
+
+@[expose] public section
 
 namespace Profinite
 
@@ -45,9 +49,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
-    exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).hom.continuous,
-      hV.2.preimage ((F ⋙ toTopCat).map f).hom.continuous⟩
-    -- Porting note: `<;> continuity` fails
+    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> continuity
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
@@ -69,7 +71,6 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     dsimp only
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
-  -- Porting note: same remark as after `hB`
   -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each
   -- `j ∈ G` such that `U` is the union of the preimages of these clopen sets.
   obtain ⟨G, hG⟩ := this
@@ -86,8 +87,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s hs
     dsimp [W]
     rw [dif_pos hs]
-    exact ⟨(hV s).1.1.preimage (F.map _).hom.continuous,
-      (hV s).1.2.preimage (F.map _).hom.continuous⟩
+    refine ⟨(hV s).1.1.preimage ?_, (hV s).1.2.preimage ?_⟩ <;> fun_prop
   · ext x
     constructor
     · intro hx
@@ -189,14 +189,12 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
       refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
-      · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
-          rw [this]
-          exact isOpen_empty
-        exact @Set.eq_empty_of_isEmpty _ hj _
+      · convert isOpen_empty
+        ext x
+        exact hj.elim x
       · ext x
         exact hj.elim' (C.π.app j x)
-    simp only [← not_nonempty_iff, ← not_forall]
-    intro h
+    by_contra! h
     haveI : ∀ j : J, Nonempty ((F ⋙ Profinite.toTopCat).obj j) := h
     haveI : ∀ j : J, T2Space ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : T2Space (F.obj j))
