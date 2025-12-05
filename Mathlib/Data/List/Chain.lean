@@ -395,13 +395,14 @@ theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
 
 @[deprecated isChain_iff_getElem (since := "2025-11-25")]
 theorem isChain_cons_iff_get {R} {a : α} {l : List α} : IsChain R (a :: l) ↔
-    (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
-      ∀ (i : ℕ) (h : i < l.length - 1),
-        R (get l ⟨i, by lia⟩) (get l ⟨i+1, by lia⟩) := by
-  cases l <;> grind [isChain_iff_get]
+    ∀ (i : Fin l.length), R ((a :: l).get i.castSucc) ((a :: l).get i.succ) := by
+  simp only [isChain_iff_getElem, length_cons, Fin.forall_iff, Nat.add_lt_add_iff_right,
+    getElem_cons_succ, Fin.castSucc_mk, get_eq_getElem, Fin.succ_mk]
+
 theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by simp_all [isChain_iff_getElem]
 
+@[deprecated (since := "2025-09-19")] alias chain'_of_not := exists_not_getElem_of_not_isChain
 
 @[deprecated (since := "2025-09-19")] alias chain_iff_get := isChain_cons_iff_get
 
@@ -622,8 +623,13 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
 alias Chain'.iterate_eq_of_apply_eq := IsChain.iterate_eq_of_apply_eq
 
 theorem isChain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : IsChain r (replicate n a) := by
+  induction n using Nat.twoStepInduction <;> grind
+
+@[deprecated "Use `isChain_replicate_of_rel` with `n + 1` instead" (since := "2025-09-19")]
+alias chain_replicate_of_rel := isChain_replicate_of_rel
 
 theorem isChain_eq_iff_eq_replicate {l : List α} :
+    IsChain (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a := by
   induction l using twoStepInduction with
   | nil | singleton => simp
   | cons_cons a b l IH IH2 =>
