@@ -288,9 +288,7 @@ theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
 
 theorem Ico_filter_lt_of_le_right [DecidablePred (· < c)] (hcb : c ≤ b) :
     {x ∈ Ico a b | x < c} = Ico a c := by
-  ext x
-  rw [mem_filter, mem_Ico, mem_Ico, and_right_comm]
-  exact and_iff_left_of_imp fun h => h.2.trans_le hcb
+  grind
 
 theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred (c ≤ ·)] (hca : c ≤ a) :
     {x ∈ Ico a b | c ≤ x} = Ico a b :=
@@ -302,9 +300,7 @@ theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred (b ≤ ·)] :
 
 theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
     {x ∈ Ico a b | c ≤ x} = Ico c b := by
-  ext x
-  rw [mem_filter, mem_Ico, mem_Ico, and_comm, and_left_comm]
-  exact and_iff_right_of_imp fun h => hac.trans h.1
+  grind
 
 theorem Icc_filter_lt_of_lt_right {a b c : α} [DecidablePred (· < c)] (h : b < c) :
     {x ∈ Icc a b | x < c} = Icc a b :=
@@ -646,9 +642,7 @@ theorem Ico_eq_cons_Ioo (h : a < b) : Ico a b = (Ioo a b).cons a left_notMem_Ioo
 
 theorem Ico_filter_le_left {a b : α} [DecidablePred (· ≤ a)] (hab : a < b) :
     {x ∈ Ico a b | x ≤ a} = {a} := by
-  ext x
-  rw [mem_filter, mem_Ico, mem_singleton, and_right_comm, ← le_antisymm_iff, eq_comm]
-  exact and_iff_left_of_imp fun h => h.le.trans_lt hab
+  grind
 
 theorem card_Ico_eq_card_Icc_sub_one (a b : α) : #(Ico a b) = #(Icc a b) - 1 := by
   classical
@@ -861,9 +855,7 @@ theorem Ico_inter_Ico {a b c d : α} : Ico a b ∩ Ico c d = Ico (max a c) (min 
   rw [← coe_inj, coe_inter, coe_Ico, coe_Ico, coe_Ico, Set.Ico_inter_Ico]
 
 theorem Ioc_inter_Ioc {a b c d : α} : Ioc a b ∩ Ioc c d = Ioc (max a c) (min b d) := by
-  rw [← coe_inj]
-  push_cast
-  exact Set.Ioc_inter_Ioc
+  grind
 
 @[simp]
 theorem Ico_filter_lt (a b c : α) : {x ∈ Ico a b | x < c} = Ico a (min b c) := by
@@ -905,17 +897,13 @@ section LocallyFiniteOrderBot
 variable [LocallyFiniteOrderBot α]
 
 theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
-  rw [← coe_inj]
-  push_cast
-  exact Set.Iic_diff_Ioc
+  grind
 
 theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
   rw [Iic_diff_Ioc, min_eq_left hab]
 
 theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b := by
-  rw [← coe_inj]
-  push_cast
-  exact Set.Iic_union_Ioc_eq_Iic h
+  grind
 
 end LocallyFiniteOrderBot
 
