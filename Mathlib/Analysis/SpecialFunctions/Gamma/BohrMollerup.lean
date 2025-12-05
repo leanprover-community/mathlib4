@@ -362,6 +362,7 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
 
+-- TODO: prove uniqueness once the necessary material to do so makes its way into Mathlib
 theorem exists_isMinOn_Gamma_Ioi : ∃ x ∈ Ioo 1 2, IsMinOn Gamma (Ioi 0) x := by
   have ⟨x, hx, hmin⟩ := isCompact_Icc.exists_isMinOn (nonempty_Icc.mpr one_le_two) <|
     differentiableOn_Gamma_Ioi.continuousOn.mono <| by grind
