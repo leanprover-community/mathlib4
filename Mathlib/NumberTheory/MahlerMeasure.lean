@@ -24,12 +24,6 @@ namespace Polynomial
 
 open Int
 
-private lemma degree_map_int_castRingHom (p : ℤ[X]) :
-    (map (castRingHom ℂ) p).natDegree = p.natDegree := by
-  rcases eq_or_ne p 0 with rfl | hp
-  · simp
-  · simp [hp]
-
 lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
     1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
   apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
@@ -57,7 +51,7 @@ theorem card_eq_of_natDegree_le_of_coeff_le (h_B : ∀ i, ⌈B₁ i⌉ ≤ ⌊B�
       simpa using ⟨ceil_le.mp (prop.1 i), le_floor.mp (prop.2 i)⟩⟩
     left_inv p := by grind [ofFn_comp_toFn_eq_id_of_natDegree_lt]
     right_inv p := by grind [toFn_comp_ofFn_eq_id]
-  }--Cardinal.toNat_congr
+  }
   rw [Set.ncard_congr' e]
   norm_cast
   grind [Pi.card_Icc, card_Icc]
@@ -92,7 +86,9 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
     apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_choose_mul_mahlerMeasure d
     gcongr
     · exact mahlerMeasure_nonneg _
-    · exact choose_le_choose _ <| by rw [p.degree_map_int_castRingHom]; grind
+    · have : (p.map (Int.castRingHom ℂ)).natDegree = p.natDegree :=
+          p.natDegree_map_eq_of_injective <| (Int.castRingHom ℂ).injective_int
+      exact choose_le_choose _ <| by rw [this]; grind
 
 end Northcott
 
