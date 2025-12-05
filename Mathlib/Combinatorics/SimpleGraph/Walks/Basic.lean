@@ -271,14 +271,14 @@ theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := b
 theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := by simp [edges]
 
 @[simp]
-theorem fst_darts_getElem? {p : G.Walk u v} {i : ℕ} (h : i < p.length) :
-    (p.darts[i]'(by grind)).fst = p.support[i]'(by grind) := by
+theorem fst_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
+    p.darts[i].fst = p.support[i]'(by grind) := by
   rw [← p.support.getElem_dropLast <| by grind]
   grind [map_fst_darts]
 
 @[simp]
-theorem snd_darts_getElem? {p : G.Walk u v} {i : ℕ} (h : i < p.length) :
-    (p.darts[i]'(by grind)).snd = p.support[i + 1]'(by grind) := by
+theorem snd_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
+    p.darts[i].snd = p.support[i + 1]'(by grind) := by
   rw [← p.support.getElem_tail <| by grind]
   grind [map_snd_darts]
 
@@ -290,13 +290,13 @@ theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     refine ⟨i, by grind, fun j hj ↦ ?_⟩
     by_cases hj : j = 0
     · subst hj
-      grind [fst_darts_getElem?]
+      grind [fst_darts_getElem]
     · have hj : j = 1 := by grind
-      grind [snd_darts_getElem?]
+      grind [snd_darts_getElem]
   · have := h 0
     have := h 1
     convert p.darts.getElem_mem (n := i) (by grind)
-      <;> grind [fst_darts_getElem?, snd_darts_getElem?]
+      <;> grind [fst_darts_getElem, snd_darts_getElem]
 
 theorem mem_darts_iff_fst_snd_infix_support {p : G.Walk u v} {d : G.Dart} :
     d ∈ p.darts ↔ [d.fst, d.snd] <:+: p.support :=

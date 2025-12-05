@@ -125,7 +125,7 @@ theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p
     · simp [h', List.getElem_zero]
     · have := p.isChain_dartAdj_darts.getElem (n - 1) (by grind)
       grind [DartAdj, =_ cons_map_snd_darts]
-  · simp [p.getVert_eq_support_getElem h, ← p.cons_map_snd_darts]
+  · simp [p.getVert_eq_support_getElem h]
 
 theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
     G.Adj u' v' := by
