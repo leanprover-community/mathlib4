@@ -298,19 +298,8 @@ instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
   natCast_zero := Nat.cast_zero
   natCast_succ := Nat.cast_succ
 
-instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalNonAssocRing (DirectLimit G f) where
-
-instance [∀ i, NonUnitalRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
-    NonUnitalRing (DirectLimit G f) where
-
-instance [∀ i, NonAssocRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
-    NonAssocRing (DirectLimit G f) where
-
 instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Semiring (DirectLimit G f) where
-
-instance [∀ i, Ring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] : Ring (DirectLimit G f) where
 
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
@@ -324,6 +313,17 @@ instance [∀ i, NonAssocCommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i
 
 instance [∀ i, CommSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     CommSemiring (DirectLimit G f) where
+
+instance [∀ i, NonUnitalNonAssocRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalNonAssocRing (DirectLimit G f) where
+
+instance [∀ i, NonUnitalRing (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
+    NonUnitalRing (DirectLimit G f) where
+
+instance [∀ i, NonAssocRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    NonAssocRing (DirectLimit G f) where
+
+instance [∀ i, Ring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] : Ring (DirectLimit G f) where
 
 instance [∀ i, NonUnitalNonAssocCommRing (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
