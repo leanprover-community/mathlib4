@@ -474,7 +474,7 @@ theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjec
   | some x => exact mem_iff_getElem?.mp <| h x
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; lia)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -573,13 +573,6 @@ then the lists are equal. -/
 theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n : ℕ, l₁[n]! = l₂[n]!) :
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
-
-@[simp]
-theorem getElem_idxOf [BEq α] [LawfulBEq α] {a : α} : ∀ {l : List α} (h : idxOf a l < l.length),
-    l[idxOf a l] = a
-  | b :: l, h => by
-    by_cases h' : b = a <;>
-    simp [h', getElem_idxOf]
 
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
