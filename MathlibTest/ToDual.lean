@@ -1,5 +1,6 @@
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Notation
+import Mathlib.Tactic.ToAdditive
 
 -- test that we can translate between structures, reordering the arguments of the fields
 class SemilatticeInf (α : Type) extends PartialOrder α, Min α where
@@ -104,3 +105,7 @@ instead of using `@[to_dual self]` for those cases.
 -/
 @[to_dual self]
 theorem not_lt_self {α : Type} [PartialOrder α] (a : α) : ¬ a < a := lt_irrefl a
+
+-- Test that we do not translate numerals like we do in `@[to_additive]`
+@[to_dual self]
+theorem one_le_one {α : Type} [One α] [Preorder α] : (1 : α) ≤ 1 := le_rfl

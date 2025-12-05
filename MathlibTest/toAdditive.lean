@@ -231,7 +231,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl ToAdditive.data { ref := ← getRef} `Test.some_def `Test.add_some_def
+  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
