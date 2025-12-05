@@ -68,41 +68,46 @@ morphism `g : Y' ⟶ Y`, where we actually replace `g^* (f₁^* M₁)` by `gf₁
 where `gf₁ : Y' ⟶ X₁` is a morphism such that `g ≫ f₁ = gf₁` (and similarly for `M₂`). -/
 def pullHom ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
-    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
-    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch)
+    (φ : (F.map f₁.op.toLoc).toFunctor.obj M₁ ⟶ (F.map f₂.op.toLoc).toFunctor.obj M₂) ⦃Y' : C⦄
+    (g : Y' ⟶ Y) (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch)
     (hgf₂ : g ≫ f₂ = gf₂ := by cat_disch) :
-    (F.map gf₁.op.toLoc).obj M₁ ⟶ (F.map gf₂.op.toLoc).obj M₂ :=
-  (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).hom.app _ ≫
-    (F.map g.op.toLoc).map φ ≫
-      (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.app _
+    (F.map gf₁.op.toLoc).toFunctor.obj M₁ ⟶ (F.map gf₂.op.toLoc).toFunctor.obj M₂ :=
+  (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).hom.toNatTrans.app _ ≫
+    (F.map g.op.toLoc).toFunctor.map φ ≫
+      (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.toNatTrans.app _
 
 @[reassoc]
 lemma map_eq_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
-    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
-    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
-    (F.map g.op.toLoc).map φ =
-    (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).inv.app _ ≫
+    (φ : (F.map f₁.op.toLoc).toFunctor.obj M₁ ⟶ (F.map f₂.op.toLoc).toFunctor.obj M₂) ⦃Y' : C⦄
+    (g : Y' ⟶ Y) (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
+    (F.map g.op.toLoc).toFunctor.map φ =
+    (F.mapComp' f₁.op.toLoc g.op.toLoc gf₁.op.toLoc (by aesop)).inv.toNatTrans.app _ ≫
     pullHom φ g gf₁ gf₂ hgf₁ hgf₂ ≫
-    (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).hom.app _ := by
-  simp [pullHom]
+    (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).hom.toNatTrans.app _ := by
+  simp only [Cat.Hom.comp_toFunctor, Functor.comp_obj, pullHom, Category.assoc]
+  rw [← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id, ← Cat.Hom₂.comp_app,Iso.inv_hom_id]
+  simp
 
 @[simp]
 lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
-    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) :
+    (φ : (F.map f₁.op.toLoc).toFunctor.obj M₁ ⟶ (F.map f₂.op.toLoc).toFunctor.obj M₂) :
       pullHom φ (𝟙 _) f₁ f₂ = φ := by
-  simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
+  simp only [pullHom, op_id, Quiver.Hom.id_toLoc, Cat.Hom.comp_toFunctor, Functor.comp_obj,
+    mapComp'_comp_id_hom_app, Cat.Hom.id_toFunctor, mapComp'_comp_id_inv_app, NatTrans.naturality,
+    Functor.id_obj, Functor.id_map]
+  rw [←reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
+  simp
 
 @[simp]
 lemma pullHom_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
-    (φ : (F.map f₁.op.toLoc).obj M₁ ⟶ (F.map f₂.op.toLoc).obj M₂) ⦃Y' : C⦄ (g : Y' ⟶ Y)
-    (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) ⦃Y'' : C⦄
-    (g' : Y'' ⟶ Y') (g'f₁ : Y'' ⟶ X₁) (g'f₂ : Y'' ⟶ X₂)
-    (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch) (hgf₂ : g ≫ f₂ = gf₂ := by cat_disch)
+    (φ : (F.map f₁.op.toLoc).toFunctor.obj M₁ ⟶ (F.map f₂.op.toLoc).toFunctor.obj M₂) ⦃Y' : C⦄
+    (g : Y' ⟶ Y) (gf₁ : Y' ⟶ X₁) (gf₂ : Y' ⟶ X₂) ⦃Y'' : C⦄ (g' : Y'' ⟶ Y') (g'f₁ : Y'' ⟶ X₁)
+    (g'f₂ : Y'' ⟶ X₂) (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch) (hgf₂ : g ≫ f₂ = gf₂ := by cat_disch)
     (hg'f₁ : g' ≫ gf₁ = g'f₁ := by cat_disch) (hg'f₂ : g' ≫ gf₂ = g'f₂ := by cat_disch) :
     pullHom (pullHom φ g gf₁ gf₂ hgf₁ hgf₂) g' g'f₁ g'f₂ hg'f₁ hg'f₂ =
       pullHom φ (g' ≫ g) g'f₁ g'f₂ := by
@@ -110,7 +115,8 @@ lemma pullHom_pullHom
   rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
     F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop),
-    mapComp'_inv_naturality_assoc, Iso.hom_inv_id_app_assoc]
+    mapComp'_inv_naturality_assoc,
+      ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id,Cat.Hom₂.id_app, Category.id_comp]
 
 end LocallyDiscreteOpToCat
 
@@ -126,16 +132,18 @@ an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
 of morphisms $p^* M ⟶ p^* N$. -/
 @[simps]
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
-  obj T := (F.map (.toLoc T.unop.hom.op)).obj M ⟶ (F.map (.toLoc T.unop.hom.op)).obj N
+  obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
+    (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
   map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
 
 /-- Compatiblity isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     (Over.map q).op ⋙ F.presheafHom M N ≅
-      F.presheafHom ((F.map (.toLoc q.op)).obj M) ((F.map (.toLoc q.op)).obj N) :=
+      F.presheafHom ((F.map (.toLoc q.op)).toFunctor.obj M)
+        ((F.map (.toLoc q.op)).toFunctor.obj N) :=
   NatIso.ofComponents (fun T ↦ Equiv.toIso (by
-    letI e := F.mapComp' (.toLoc q.op) (.toLoc T.unop.hom.op)
-      (.toLoc ((Over.map q).obj T.unop).hom.op)
+    letI e := Cat.Hom.toNatIso (F.mapComp' (.toLoc q.op) (.toLoc T.unop.hom.op)
+      (.toLoc ((Over.map q).obj T.unop).hom.op))
     exact (Iso.homFromEquiv (e.app M)).trans (Iso.homToEquiv (e.app N)))) (by
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g

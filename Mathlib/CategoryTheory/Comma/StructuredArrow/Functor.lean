@@ -32,9 +32,13 @@ functorial way, inducing a functor `Dᵒᵖ ⥤ Cat`. -/
 @[simps]
 def functor (T : C ⥤ D) : Dᵒᵖ ⥤ Cat where
   obj d := .of <| StructuredArrow d.unop T
-  map f := map f.unop
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp)
-  map_comp f g := Functor.ext (fun _ => by simp)
+  map f := (map f.unop).toCatHom
+  map_id d := by
+    ext
+    exact Functor.ext (fun ⟨_, _, _⟩ => by simp)
+  map_comp f g := by
+    ext
+    exact Functor.ext (fun _ => by simp)
 
 end StructuredArrow
 
@@ -45,9 +49,13 @@ in a functorial way, inducing a functor `D ⥤ Cat`. -/
 @[simps]
 def functor (T : C ⥤ D) : D ⥤ Cat where
   obj d := .of <| CostructuredArrow T d
-  map f := CostructuredArrow.map f
-  map_id d := Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
-  map_comp f g := Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map f := (CostructuredArrow.map f).toCatHom
+  map_id d := by
+    ext
+    exact Functor.ext (fun ⟨_, _, _⟩ => by simp [CostructuredArrow.map, Comma.mapRight])
+  map_comp f g := by
+    ext
+    exact Functor.ext (fun _ => by simp [CostructuredArrow.map, Comma.mapRight])
 
 variable {E : Type u₃} [Category.{v₃} E]
 variable (L : C ⥤ D) (R : E ⥤ D)
@@ -73,7 +81,12 @@ between the Grothendieck construction on `CostructuredArrow.functor` and the com
 def commaToGrothendieckPrecompFunctor : Comma L R ⥤ Grothendieck (R ⋙ functor L) where
   obj X := ⟨X.right, mk X.hom⟩
   map f := ⟨f.right, homMk f.left⟩
-  map_id X := Grothendieck.ext _ _ rfl (by simp)
+  map_id X := Grothendieck.ext _ _ rfl (by
+    simp_rw [Grothendieck.id_base, Comma.id_right, Comma.id_left, Grothendieck.id_fiber]
+    simp only [Functor.comp_obj, functor_obj, Cat.of_α, Functor.comp_map, functor_map,
+      Functor.toCatHom_toFunctor, map_mk, eqToHom_refl, Category.id_comp, Grothendieck.id_base,
+      hom_eq_iff, mk_left, homMk_left, eqToHom_left]
+    )
   map_comp f g := Grothendieck.ext _ _ rfl (by simp)
 
 /-- For `L : C ⥤ D`, taking the Grothendieck construction of `CostructuredArrow.functor L`
@@ -112,7 +125,7 @@ def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
 @[simps]
 def preFunctor {D : Type u₁} [Category.{v₁} D] (S : C ⥤ D) (T : D ⥤ E) :
     functor (S ⋙ T) ⟶ functor T where
-  app e := pre S T e
+  app e := (pre S T e).toCatHom
 
 end CostructuredArrow
 
