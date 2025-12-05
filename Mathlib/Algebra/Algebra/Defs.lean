@@ -244,6 +244,10 @@ abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
   ofModule' (fun r x => by rw [h₁, one_mul]) fun r x => by rw [h₂, mul_one]
 
+instance [CommSemiring R] [Semiring A] [Module R A]
+    [SMulCommClass R A A] [IsScalarTower R A A] : Algebra R A :=
+  Algebra.ofModule smul_mul_assoc mul_smul_comm
+
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S]
