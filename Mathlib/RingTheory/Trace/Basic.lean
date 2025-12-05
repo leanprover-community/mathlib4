@@ -363,7 +363,7 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [Matrix.mul_apply, sum_mul]
   congr; ext y
   rw [map_apply, traceForm_apply, mul_comm (b y), ← smul_def]
-  simp only [id.smul_eq_mul, RingHom.id_apply, map_apply, transpose_apply, map_smulₛₗ,
+  simp only [smul_eq_mul, RingHom.id_apply, map_apply, transpose_apply, map_smulₛₗ,
     Algebra.smul_mul_assoc]
   rw [mul_comm (b x), ← smul_def]
   ring_nf
