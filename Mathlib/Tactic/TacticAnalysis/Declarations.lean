@@ -331,7 +331,12 @@ def Mathlib.TacticAnalysis.tryAtEachStepCore
     for h : idx in [:seq.size] do
       let i := seq[idx]
       if let [goal] := i.tacI.goalsBefore then
-        if (hash goal) % fraction = 0 then
+        -- Hash the pretty-printed goal for stability across runs
+        let goalDecl := i.tacI.mctxBefore.decls.find! goal
+        let goalPP ← i.ctxI.runMetaM goalDecl.lctx do
+          withOptions (·.setBool `pp.mvars false) do
+            return toString (← Meta.ppGoal goal)
+        if (hash goalPP) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
           let startTime ← IO.monoMsNow
           let goalsAfter ← try
