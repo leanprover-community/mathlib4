@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Bases
@@ -56,9 +58,11 @@ basis, bases
 
 -/
 
+@[expose] public section
+
 assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
--- (should be possible after splitting `Mathlib.LinearAlgebra.Finsupp.LinearCombination`)
+-- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 
 noncomputable section
 
@@ -69,15 +73,12 @@ open Function Set Submodule Finsupp
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 
-section Module
+namespace Module
 
 variable [Semiring R]
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
-section
-
-variable (ι R M)
-
+variable (ι R M) in
 /-- A `Basis ι R M` for a module `M` is the type of `ι`-indexed `R`-bases of `M`.
 
 The basis vectors are available as `DFunLike.coe (b : Basis ι R M) : ι → M`.
@@ -91,8 +92,6 @@ structure Basis where
     /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
     the `c`s such that `x = ∑ i, c i`. -/
     repr : M ≃ₗ[R] ι →₀ R
-
-end
 
 namespace Basis
 
@@ -126,7 +125,7 @@ theorem repr_symm_single : b.repr.symm (Finsupp.single i c) = c • b i :=
   calc
     b.repr.symm (Finsupp.single i c) = b.repr.symm (c • Finsupp.single i (1 : R)) := by
       { rw [Finsupp.smul_single', mul_one] }
-    _ = c • b i := by rw [LinearEquiv.map_smul, repr_symm_single_one]
+    _ = c • b i := by rw [map_smul, repr_symm_single_one]
 
 @[simp]
 theorem repr_self : b.repr (b i) = Finsupp.single i 1 :=
@@ -139,7 +138,7 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
-    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
+    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsuppSum ..
     _ = Finsupp.linearCombination R b v := by simp only [repr_symm_single,
                                                          Finsupp.linearCombination_apply]
 
@@ -231,11 +230,11 @@ def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
       (ι →₀ R) ≃ₗ[R] ι → R)
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-def Module.fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
+def fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 
-theorem Module.card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
+theorem card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
     card M = card R ^ card ι := by
   classical
     calc
@@ -262,6 +261,7 @@ theorem Basis.sum_equivFun [Fintype ι] (b : Basis ι R M) (u : M) :
     ∑ i, b.equivFun u i • b i = u := by
   rw [← b.equivFun_symm_apply, b.equivFun.symm_apply_apply]
 
+@[simp]
 theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u i • b i = u :=
   b.sum_equivFun u
 
@@ -322,19 +322,19 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  simp only [map_sum, LinearMap.map_smulₛₗ, h]
+  simp only [map_sum, map_smulₛₗ, h]
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
-  simp only [map_sum, LinearEquiv.map_smulₛₗ, h]
+  simp only [map_sum, map_smulₛₗ, h]
 
 /-- Two elements are equal iff their coordinates are equal. -/
 theorem ext_elem_iff {x y : M} : x = y ↔ ∀ i, b.repr x i = b.repr y i := by
   simp only [← DFunLike.ext_iff, EmbeddingLike.apply_eq_iff_eq]
 
-alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
+alias ⟨_, ext_elem⟩ := ext_elem_iff
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
@@ -353,11 +353,11 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
     { toFun x := f x i
-      map_add' _ _ := by beta_reduce; rw [hadd, Pi.add_apply]
+      map_add' _ _ := by rw [hadd, Pi.add_apply]
       map_smul' _ _ := by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine b.ext fun j => ?_
-    show b.repr (b j) i = f (b j) i
+    change b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
     b.repr x i = f_i x := by
@@ -387,7 +387,7 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 
 See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap`.
 -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
@@ -400,15 +400,7 @@ def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
 variable (h : ∀ (c) (x : M), f c • x = c • x)
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
-  apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically inferred from the definition of
-    -- `mapCoeffs`.
-    letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
-    haveI : IsScalarTower R' R M :=
-    { smul_assoc := fun x y z => by
-        change (f.symm x * y) • z = x • (y • z)
-        rw [mul_smul, ← h, f.apply_symm_apply] }
-    simp
+  apply_eq_iff.mpr <| by simp
 
 @[simp]
 theorem coe_mapCoeffs : (b.mapCoeffs f h : ι → M) = b :=
@@ -422,20 +414,16 @@ section ReindexRange
 def reindexRange : Basis (range b) R M :=
   haveI := Classical.dec (Nontrivial R)
   if h : Nontrivial R then
-    letI := h
     b.reindex (Equiv.ofInjective b (Basis.injective b))
   else
     letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
     .ofRepr (Module.subsingletonEquiv R M (range b))
 
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
-  by_cases htr : Nontrivial R
-  · letI := htr
-    simp [htr, reindexRange, reindex_apply, Equiv.apply_ofInjective_symm b.injective,
-      Subtype.coe_mk]
-  · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
-    letI := Module.subsingleton R M
+  cases subsingleton_or_nontrivial R
+  · let := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]
+  · simp [*, reindexRange, reindex_apply]
 
 theorem reindexRange_repr_self (i : ι) :
     b.reindexRange.repr (b i) = Finsupp.single ⟨b i, mem_range_self i⟩ 1 :=
@@ -456,10 +444,10 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
   apply (b.repr_apply_eq (fun x i => b.reindexRange.repr x ⟨b i, _⟩) _ _ _ x i).symm
   · intro x y
     ext i
-    simp only [Pi.add_apply, LinearEquiv.map_add, Finsupp.coe_add]
+    simp only [Pi.add_apply, map_add, Finsupp.coe_add]
   · intro c x
     ext i
-    simp only [Pi.smul_apply, LinearEquiv.map_smul, Finsupp.coe_smul]
+    simp only [Pi.smul_apply, map_smul, Finsupp.coe_smul]
   · intro i
     ext j
     simp only [reindexRange_repr_self]
@@ -548,6 +536,10 @@ theorem constr_apply (f : ι → M') (x : M) :
     constr (M' := M') b S f x = (b.repr x).sum fun b a => a • f b := by
   simp only [constr_def, LinearMap.comp_apply, lmapDomain_apply, linearCombination_apply]
   rw [Finsupp.sum_mapDomain_index] <;> simp [add_smul]
+
+@[simp] theorem constr_symm_apply (f : M →ₗ[R] M') (i) :
+    (b.constr S).symm f i = f (b i) := by
+  rfl
 
 @[simp]
 theorem constr_basis (f : ι → M') (i : ι) : (constr (M' := M') b S f : M → M') (b i) = f i := by
@@ -669,7 +661,7 @@ section Coord
 
 variable (i : ι)
 
-/-- `b.coord i` is the linear function giving the `i`'th coordinate of a vector
+/-- `b.coord i` is the linear function giving the `i`-th coordinate of a vector
 with respect to the basis `b`.
 
 `b.coord i` is an element of the dual space. In particular, for
@@ -696,7 +688,7 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
   ext m
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
     id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
-    LinearMap.coeFn_sum]
+    LinearMap.coe_sum]
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by

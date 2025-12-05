@@ -3,15 +3,16 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
+module
 
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.ChineseRemainder
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Nat.Pairing
-import Mathlib.Order.Fin.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.ChineseRemainder
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Nat.Pairing
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Gödel's Beta Function Lemma
@@ -44,19 +45,21 @@ and other key results from the repository https://github.com/iehality/lean4-logi
 Gödel, beta function
 -/
 
+@[expose] public section
+
 namespace Nat
 
-lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a + 1) :=
+lemma coprime_mul_succ {n m a} (ha : m - n ∣ a) : Coprime (n * a + 1) (m * a + 1) :=
   Nat.coprime_of_dvd fun p pp hn hm => by
     have : p ∣ (m - n) * a := by
       simpa [Nat.succ_sub_succ, ← Nat.mul_sub_right_distrib] using
-        Nat.dvd_sub (Nat.succ_le_succ <| Nat.mul_le_mul_right a h) hm hn
+        Nat.dvd_sub hm hn
     have : p ∣ a := by
       rcases (Nat.Prime.dvd_mul pp).mp this with (hp | hp)
       · exact Nat.dvd_trans hp ha
       · exact hp
     apply pp.ne_one
-    simpa [Nat.add_sub_cancel_left] using Nat.dvd_sub (le_add_right _ _) hn (this.mul_left n)
+    simpa [Nat.add_sub_cancel_left] using Nat.dvd_sub hn (this.mul_left n)
 
 variable {m : ℕ}
 
@@ -78,10 +81,9 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
   wlog ltij : i < j
   · exact (this a hij.symm (lt_of_le_of_ne (Fin.not_lt.mp ltij) hij.symm)).symm
   unfold Function.onFun coprimes
-  have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
+  have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_succ_of_le (le_max_left _ _))
   exact coprime_mul_succ
-    (Nat.succ_le_succ <| le_of_lt ltij)
-    (Nat.dvd_factorial (by omega)
+    (Nat.dvd_factorial (by lia)
       (by simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))
 
 /-- Gödel's Beta Function. This is similar to `(Encodable.decodeList)[i]`, but it is easier to

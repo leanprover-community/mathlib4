@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Morphism properties that are inverted by a functor
@@ -16,6 +18,8 @@ isomorphisms by a functor `F : C ⥤ D`.
 This is used in the localization of categories API (folder `CategoryTheory.Localization`).
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -90,7 +94,7 @@ end IsInvertedBy
 
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
-  FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
+  ObjectProperty.FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 
 @[ext]
 lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
@@ -101,7 +105,7 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   rfl
 
 instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
-  FullSubcategory.category _
+  ObjectProperty.FullSubcategory.category _
 
 @[ext]
 lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}

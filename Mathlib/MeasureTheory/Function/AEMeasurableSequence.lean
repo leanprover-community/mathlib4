@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions
@@ -19,6 +21,8 @@ and a measurable set `aeSeqSet hf p`, such that
 * `x ∈ aeSeqSet hf p → ∀ i : ι, aeSeq hf hp i x = f i x`
 * `x ∈ aeSeqSet hf p → p x (fun n ↦ f n x)`
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
@@ -108,7 +112,7 @@ theorem aeSeq_n_eq_fun_n_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) (n : ι) : aeSeq hf p n =ᵐ[μ] f n :=
   ae_all_iff.mp (aeSeq_eq_fun_ae hf hp) n
 
-theorem iSup [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
+theorem iSup [SupSet β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ⨆ n, aeSeq hf p n =ᵐ[μ] ⨆ n, f n := by
   simp_rw [Filter.EventuallyEq, ae_iff, iSup_apply]
   have h_ss : aeSeqSet hf p ⊆ { a : α | ⨆ i : ι, aeSeq hf p i a = ⨆ i : ι, f i a } := by
@@ -117,7 +121,7 @@ theorem iSup [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i)
     exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
   exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
 
-theorem iInf [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
+theorem iInf [InfSet β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n ↦ f n x) : ⨅ n, aeSeq hf p n =ᵐ[μ] ⨅ n, f n :=
   iSup (β := βᵒᵈ) hf hp
 

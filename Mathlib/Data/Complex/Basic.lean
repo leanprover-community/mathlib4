@@ -3,20 +3,24 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Tactic.Ring
 
 /-!
 # The complex numbers
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
-of characteristic zero. The result that the complex numbers are algebraically closed, see
-`FieldTheory.AlgebraicClosure`.
+of characteristic zero. For the result that the complex numbers are algebraically closed, see
+`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset Algebra
 
@@ -46,8 +50,6 @@ noncomputable instance : DecidableEq ℂ :=
 def equivRealProd : ℂ ≃ ℝ × ℝ where
   toFun z := ⟨z.re, z.im⟩
   invFun p := ⟨p.1, p.2⟩
-  left_inv := fun ⟨_, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
 
 @[simp]
 theorem eta : ∀ z : ℂ, Complex.mk z.re z.im = z
@@ -81,8 +83,6 @@ def ofReal (r : ℝ) : ℂ :=
 instance : Coe ℝ ℂ :=
   ⟨ofReal⟩
 
-@[deprecated (since := "2024-10-12")] alias ofReal' := ofReal
-
 @[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
   rfl
@@ -107,8 +107,6 @@ instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
 denoted by `s ×ℂ t`. -/
 def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
-
-@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
 
 @[inherit_doc]
 infixl:72 " ×ℂ " => reProdIm
@@ -270,7 +268,7 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal]
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 
@@ -293,7 +291,7 @@ namespace SMul
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
-`Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
+`Mathlib/Data/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
 scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
@@ -316,46 +314,56 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
-instance addCommGroup : AddCommGroup ℂ :=
-  { zero := (0 : ℂ)
-    add := (· + ·)
-    neg := Neg.neg
-    sub := Sub.sub
-    nsmul := fun n z => n • z
-    zsmul := fun n z => n • z
-    zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    add_assoc := by intros; ext <;> simp <;> ring
-    zero_add := by intros; ext <;> simp
-    add_zero := by intros; ext <;> simp
-    add_comm := by intros; ext <;> simp <;> ring
-    neg_add_cancel := by intros; ext <;> simp }
+instance addCommGroup : AddCommGroup ℂ where
+  nsmul := (· • ·)
+  zsmul := (· • ·)
+  zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  add_assoc := by intros; ext <;> simp <;> ring
+  zero_add := by intros; ext <;> simp
+  add_zero := by intros; ext <;> simp
+  add_comm := by intros; ext <;> simp <;> ring
+  neg_add_cancel := by intros; ext <;> simp
 
+/-! ### Casts -/
+
+instance instNatCast : NatCast ℂ where natCast n := ofReal n
+instance instIntCast : IntCast ℂ where intCast n := ofReal n
+instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
+instance instRatCast : RatCast ℂ where ratCast q := ofReal q
+
+@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
+@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
+
+@[simp] lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
+@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+
+
+/-! ### Ring structure -/
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
-    natCast := fun n => ⟨n, 0⟩
-    natCast_zero := by
-      ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
-    natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
-    intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun _ => by ext <;> rfl
-    intCast_negSucc := fun n => by
-      ext
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show -(1 : ℝ) + (-n) = -(↑(n + 1))
-        simp [Nat.cast_add, add_comm]
-      · simp [AddGroupWithOne.intCast_negSucc]
-        show im ⟨n, 0⟩ = 0
-        rfl
-    one := 1 }
+    natCast_zero := by ext <;> simp
+    natCast_succ _ := by ext <;> simp
+    intCast_ofNat _ := by ext <;> simp
+    intCast_negSucc _ := by ext <;> simp }
 
 instance commRing : CommRing ℂ :=
   { addGroupWithOne with
-    mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp <;> ring
     left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
@@ -401,32 +409,6 @@ def imAddGroupHom : ℂ →+ ℝ where
 theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
   rfl
 
-section
-end
-
-/-! ### Cast lemmas -/
-
-instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
-instance instRatCast : RatCast ℂ where ratCast q := ofReal q
-
-@[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
-@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
-@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
-@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
-@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
-
-@[simp]
-lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
-@[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
-
 lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
 lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 lemma re_zsmul (n : ℤ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
@@ -444,7 +426,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 
 /-- This defines the complex conjugate as the `star` operation of the `StarRing ℂ`. It
 is recommended to use the ring endomorphism version `starRingEnd`, available under the
-notation `conj` in the locale `ComplexConjugate`. -/
+notation `conj` in the scope `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]
@@ -461,7 +443,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
 
 @[simp]
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
-  Complex.ext_iff.2 <| by simp [star]
+  Complex.ext_iff.2 <| by simp
 
 @[simp]
 theorem conj_I : conj I = -I :=
@@ -614,7 +596,14 @@ lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal ∘ (n • f) = n �
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 
 @[simp]
-theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+lemma I_pow_three : I ^ 3 = -I := by rw [pow_succ, I_sq, neg_one_mul]
+
+@[simp]
+theorem I_pow_four : I ^ 4 = 1 := by rw [(by simp : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+
+lemma I_pow_eq_pow_mod (n : ℕ) : I ^ n = I ^ (n % 4) := by
+  conv_lhs => rw [← Nat.div_add_mod n 4]
+  simp [pow_add, pow_mul, I_pow_four]
 
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
@@ -637,7 +626,7 @@ theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
-  simp only [RingHom.map_neg, mul_neg, neg_re, normSq_neg]
+  simp only [map_neg, mul_neg, neg_re, normSq_neg]
   ring
 
 /-! ### Inversion -/
@@ -752,6 +741,8 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 instance instCharZero : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 
+instance instIsAddTorsionFree : IsAddTorsionFree ℂ := IsDomain.instIsAddTorsionFreeOfCharZero _
+
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
   simp only [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
@@ -763,7 +754,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
 
 /-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
 
-Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
+Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where

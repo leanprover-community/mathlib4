@@ -3,7 +3,9 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Order.Zorn
+module
+
+public import Mathlib.Order.Zorn
 
 /-!
 # Extend a partial order to a linear order
@@ -12,13 +14,14 @@ This file constructs a linear order which is an extension of the given partial o
 lemma.
 -/
 
+@[expose] public section
+
 
 universe u
 
 open Set
 
-/-- Any partial order can be extended to a linear order.
--/
+/-- **Szpilrajn extension theorem**: any partial order can be extended to a linear order. -/
 theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
     ∃ s : α → α → Prop, IsLinearOrder α s ∧ r ≤ s := by
   let S := { s | IsPartialOrder α s }
@@ -79,10 +82,10 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
   le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.2.1
   le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.2.1
   le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.2.1
-  decidableLE := Classical.decRel _
+  toDecidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as an order homomorphism. -/
-def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
+noncomputable def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
   toFun x := x
   monotone' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2
 

@@ -3,8 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Mathlib.Tactic.Core
-import Lean.Meta.Tactic.Cases
+module
+
+public meta import Mathlib.Tactic.Core
+public meta import Lean.Meta.Tactic.Cases
+import all Lean.MetavarContext
 
 /-!
 
@@ -18,6 +21,8 @@ The new goal will be placed at the top of the goal stack.
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
 
 open Lean Meta Elab Term Tactic MetavarContext.MkBinding
@@ -30,7 +35,7 @@ structure WLOGResult where
   * `h : ¬ P`: the assumption that `P` does not hold
   * `H`: the statement that in the original context `P` suffices to prove the goal.
   -/
-  reductionGoal    : MVarId
+  reductionGoal : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
@@ -46,7 +51,6 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
-open private withFreshCache mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
@@ -80,7 +84,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     let HType ← withFreshCache do
       mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := true)
     return (revertedFVars, HType))
-      { preserveOrder := false, mainModule := ctx.mainModule }
+      { preserveOrder := false, quotContext := ctx.quotContext }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType

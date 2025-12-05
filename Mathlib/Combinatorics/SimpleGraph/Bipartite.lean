@@ -3,8 +3,12 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
 # Bipartite graphs
@@ -23,6 +27,12 @@ This file proves results about bipartite simple graphs, including several double
   do not cover all the vertices, one recovers a covering of all the vertices by unioning the
   missing vertices `(s ∪ t)ᶜ` to either `s` or `t`.
 
+* `SimpleGraph.IsBipartite`: Predicate for a simple graph to be bipartite.
+  `G.IsBipartite` is defined as an abbreviation for `G.Colorable 2`.
+
+* `SimpleGraph.isBipartite_iff_exists_isBipartiteWith` is the proof that `G.IsBipartite` iff
+  `G.IsBipartiteWith s t`.
+
 * `SimpleGraph.isBipartiteWith_sum_degrees_eq` is the proof that if `G.IsBipartiteWith s t`, then
   the sum of the degrees of the vertices in `s` is equal to the sum of the degrees of the vertices
   in `t`.
@@ -34,19 +44,21 @@ This file proves results about bipartite simple graphs, including several double
   See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
   `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
 
+* `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
+  that connect a vertex in the set `s` to a vertex in the set `t`.
+
 ## Implementation notes
 
 For the formulation of double-counting arguments where a bipartite graph is considered as a
-relation `r : α → β → Prop`, see `Mathlib.Combinatorics.Enumerative.DoubleCounting`.
+relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
 ## TODO
-
-* Define `G.IsBipartite := G.Colorable 2` and prove `G.IsBipartite` iff there exist sets
-  `s t : Set V` such that `G.IsBipartiteWith s t`.
 
 * Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
   I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 -/
+
+@[expose] public section
 
 
 open BigOperators Finset Fintype
@@ -61,7 +73,7 @@ section IsBipartiteWith
 are adjacent in `G` then `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`. -/
 structure IsBipartiteWith (G : SimpleGraph V) (s t : Set V) : Prop where
   disjoint : Disjoint s t
-  mem_of_adj ⦃v w⦄ : G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s
+  mem_of_adj ⦃v w : V⦄ : G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s
 
 theorem IsBipartiteWith.symm (h : G.IsBipartiteWith s t) : G.IsBipartiteWith t s where
   disjoint := h.disjoint.symm
@@ -130,7 +142,15 @@ theorem isBipartiteWith_neighborSet_disjoint' (h : G.IsBipartiteWith s t) (hw : 
     Disjoint (G.neighborSet w) t :=
   Set.disjoint_of_subset_left (isBipartiteWith_neighborSet_subset' h hw) h.disjoint
 
-variable [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
+variable {s t : Finset V}
+
+section
+
+variable [Fintype ↑(G.neighborSet v)] [Fintype ↑(G.neighborSet w)]
+
+section decidableRel
+
+variable [DecidableRel G.Adj]
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is the set of vertices
 in `s` adjacent to `v` in `G`. -/
@@ -140,15 +160,32 @@ theorem isBipartiteWith_neighborFinset (h : G.IsBipartiteWith s t) (hv : v ∈ s
   rw [mem_neighborFinset, mem_filter, iff_and_self]
   exact h.mem_of_mem_adj hv
 
+/-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is the set of vertices
+in `s` adjacent to `w` in `G`. -/
+theorem isBipartiteWith_neighborFinset' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
+    G.neighborFinset w = { v ∈ s | G.Adj v w } := by
+  ext v
+  rw [mem_neighborFinset, adj_comm, mem_filter, iff_and_self]
+  exact h.mem_of_mem_adj' hw
+
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is the set of vertices
 "above" `v` according to the adjacency relation of `G`. -/
 theorem isBipartiteWith_bipartiteAbove (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     G.neighborFinset v = bipartiteAbove G.Adj t v := by
   rw [isBipartiteWith_neighborFinset h hv, bipartiteAbove]
 
+/-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is the set of vertices
+"below" `w` according to the adjacency relation of `G`. -/
+theorem isBipartiteWith_bipartiteBelow (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
+    G.neighborFinset w = bipartiteBelow G.Adj s w := by
+  rw [isBipartiteWith_neighborFinset' h hw, bipartiteBelow]
+
+end decidableRel
+
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     G.neighborFinset v ⊆ t := by
+  classical
   rw [isBipartiteWith_neighborFinset h hv]
   exact filter_subset (G.Adj v ·) t
 
@@ -164,23 +201,10 @@ theorem isBipartiteWith_degree_le (h : G.IsBipartiteWith s t) (hv : v ∈ s) : G
   rw [← card_neighborFinset_eq_degree]
   exact card_le_card (isBipartiteWith_neighborFinset_subset h hv)
 
-/-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is the set of vertices
-in `s` adjacent to `w` in `G`. -/
-theorem isBipartiteWith_neighborFinset' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
-    G.neighborFinset w = { v ∈ s | G.Adj v w } := by
-  ext v
-  rw [mem_neighborFinset, adj_comm, mem_filter, iff_and_self]
-  exact h.mem_of_mem_adj' hw
-
-/-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is the set of vertices
-"below" `w` according to the adjacency relation of `G`. -/
-theorem isBipartiteWith_bipartiteBelow (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
-    G.neighborFinset w = bipartiteBelow G.Adj s w := by
-  rw [isBipartiteWith_neighborFinset' h hw, bipartiteBelow]
-
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
     G.neighborFinset w ⊆ s := by
+  classical
   rw [isBipartiteWith_neighborFinset' h hw]
   exact filter_subset (G.Adj · w) s
 
@@ -196,12 +220,15 @@ theorem isBipartiteWith_degree_le' (h : G.IsBipartiteWith s t) (hw : w ∈ t) : 
   rw [← card_neighborFinset_eq_degree]
   exact card_le_card (isBipartiteWith_neighborFinset_subset' h hw)
 
+end
+
 /-- If `G.IsBipartiteWith s t`, then the sum of the degrees of vertices in `s` is equal to the sum
 of the degrees of vertices in `t`.
 
 See `Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow`. -/
-theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
+theorem isBipartiteWith_sum_degrees_eq [G.LocallyFinite] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = ∑ w ∈ t, G.degree w := by
+  classical
   simp_rw [← sum_attach t, ← sum_attach s, ← card_neighborFinset_eq_degree]
   conv_lhs =>
     rhs; intro v
@@ -213,15 +240,15 @@ theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
 
-variable [DecidableEq V]
+variable [Fintype V] [DecidableRel G.Adj]
 
-lemma isBipartiteWith_sum_degrees_eq_twice_card_edges (h : G.IsBipartiteWith s t) :
+lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartiteWith_support_subset h
   rw [← coe_union, ← Set.toFinset_subset] at hsub
   rw [← Finset.sum_subset hsub, ← sum_degrees_support_eq_twice_card_edges]
   intro v _ hv
-  rwa [Set.mem_toFinset, ← degree_eq_zero_iff_not_mem_support] at hv
+  rwa [Set.mem_toFinset, ← degree_eq_zero_iff_notMem_support] at hv
 
 /-- The degree-sum formula for bipartite graphs, summing over the "left" part.
 
@@ -229,6 +256,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
 `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right". -/
 theorem isBipartiteWith_sum_degrees_eq_card_edges (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = #G.edgeFinset := by
+  classical
   rw [← Nat.mul_left_cancel_iff zero_lt_two, ← isBipartiteWith_sum_degrees_eq_twice_card_edges h,
     sum_union (disjoint_coe.mp h.disjoint), two_mul, add_right_inj]
   exact isBipartiteWith_sum_degrees_eq h
@@ -241,5 +269,116 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
     ∑ v ∈ t, G.degree v = #G.edgeFinset := isBipartiteWith_sum_degrees_eq_card_edges h.symm
 
 end IsBipartiteWith
+
+section IsBipartite
+
+/-- The predicate for a simple graph to be bipartite. -/
+abbrev IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
+
+/-- If a simple graph `G` is bipartite, then there exist disjoint sets `s` and `t`
+such that all edges in `G` connect a vertex in `s` to a vertex in `t`. -/
+lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipartiteWith s t := by
+  obtain ⟨c, hc⟩ := h
+  refine ⟨{v | c v = 0}, {v | c v = 1}, by aesop (add simp [Set.disjoint_left]), ?_⟩
+  rintro v w hvw
+  apply hc at hvw
+  simp [Set.mem_setOf_eq] at hvw ⊢
+  lia
+
+/-- If a simple graph `G` has a bipartition, then it is bipartite. -/
+lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) : G.IsBipartite := by
+  refine ⟨s.indicator 1, fun {v w} hw ↦ ?_⟩
+  obtain (⟨hs, ht⟩ | ⟨ht, hs⟩) := h.2 hw <;>
+    { replace ht : _ ∉ s := h.1.subset_compl_left ht; simp [hs, ht] }
+
+/-- `G.IsBipartite` if and only if `G.IsBipartiteWith s t`. -/
+theorem isBipartite_iff_exists_isBipartiteWith :
+    G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t :=
+  ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
+
+end IsBipartite
+
+section Between
+
+/-- The subgraph of `G` containing edges that connect a vertex in the set `s` to a vertex in the
+set `t`. -/
+def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
+  Adj v w := G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s)
+  symm v w := by tauto
+
+lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
+
+lemma between_le : G.between s t ≤ G := fun _ _ h ↦ h.1
+
+lemma between_comm : G.between s t = G.between t s := by simp [between, or_comm]
+
+instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
+    DecidableRel (G.between s t).Adj :=
+  inferInstanceAs (DecidableRel fun v w ↦ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s))
+
+/-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
+theorem between_isBipartiteWith (h : Disjoint s t) : (G.between s t).IsBipartiteWith s t where
+  disjoint := h
+  mem_of_adj _ _ h := h.2
+
+/-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
+theorem between_isBipartite (h : Disjoint s t) : (G.between s t).IsBipartite :=
+  (between_isBipartiteWith h).isBipartite
+
+/-- The neighbor set of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
+in `G`. -/
+lemma neighborSet_subset_between_union (hv : v ∈ s) :
+    G.neighborSet v ⊆ (G.between s sᶜ).neighborSet v ∪ s := by
+  intro w hadj
+  rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
+  by_cases hw : w ∈ s
+  · exact Or.inr hw
+  · exact Or.inl ⟨hadj, Or.inl ⟨hv, hw⟩⟩
+
+/-- The neighbor set of `w ∈ sᶜ` in `G.between s sᶜ` excludes the vertices in `sᶜ` adjacent to `w`
+in `G`. -/
+lemma neighborSet_subset_between_union_compl (hw : w ∈ sᶜ) :
+    G.neighborSet w ⊆ (G.between s sᶜ).neighborSet w ∪ sᶜ := by
+  intro v hadj
+  rw [neighborSet, Set.mem_union, Set.mem_setOf, between_adj]
+  by_cases hv : v ∈ s
+  · exact Or.inl ⟨hadj, Or.inr ⟨hw, hv⟩⟩
+  · exact Or.inr hv
+
+variable [DecidableEq V] [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
+
+/-- The neighbor finset of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
+in `G`. -/
+lemma neighborFinset_subset_between_union (hv : v ∈ s) :
+    G.neighborFinset v ⊆ (G.between s sᶜ).neighborFinset v ∪ s := by
+  simpa [neighborFinset_def] using neighborSet_subset_between_union hv
+
+/-- The degree of `v ∈ s` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
+vertices from `s`. -/
+theorem degree_le_between_add (hv : v ∈ s) :
+    G.degree v ≤ (G.between s sᶜ).degree v + s.card := by
+  have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
+    simpa using between_isBipartiteWith disjoint_compl_right
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← card_union_of_disjoint (isBipartiteWith_neighborFinset_disjoint h_bipartite hv)]
+  exact card_le_card (neighborFinset_subset_between_union hv)
+
+/-- The neighbor finset of `w ∈ sᶜ` in `G.between s sᶜ` excludes the vertices in `sᶜ` adjacent to
+`w` in `G`. -/
+lemma neighborFinset_subset_between_union_compl (hw : w ∈ sᶜ) :
+    G.neighborFinset w ⊆ (G.between s sᶜ).neighborFinset w ∪ sᶜ := by
+  simpa [neighborFinset_def] using G.neighborSet_subset_between_union_compl (by simpa using hw)
+
+/-- The degree of `w ∈ sᶜ` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
+vertices from `sᶜ`. -/
+theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
+    G.degree w ≤ (G.between s sᶜ).degree w + sᶜ.card := by
+  have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
+    simpa using between_isBipartiteWith disjoint_compl_right
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← card_union_of_disjoint (isBipartiteWith_neighborFinset_disjoint' h_bipartite hw)]
+  exact card_le_card (neighborFinset_subset_between_union_compl hw)
+
+end Between
 
 end SimpleGraph

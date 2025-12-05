@@ -3,20 +3,24 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Order.PartialSups
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Algebra.Order.SuccPred.PartialSups
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Disjointed
 
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`
 
-This file contains material excised from `Mathlib.Order.Disjointed` to avoid import dependencies
-from `Mathlib.Algebra.Order` into `Mathlib.Order`.
+This file contains material excised from `Mathlib/Order/Disjointed.lean` to avoid import
+dependencies from `Mathlib.Algebra.Order` into `Mathlib.Order`.
 
 ## TODO
 
 Find a useful statement of `disjointedRec_succ`.
 -/
+
+@[expose] public section
 
 open Order
 
@@ -34,7 +38,7 @@ protected lemma Monotone.disjointed_add_one_sup {f : ι → α} (hf : Monotone f
     disjointed f (i + 1) ⊔ f i = f (i + 1) := by
   simpa only [succ_eq_add_one i] using hf.disjointed_succ_sup i
 
-protected lemma Monotone.disjointed_add_one [NoMaxOrder ι]  {f : ι → α} (hf : Monotone f) (i : ι) :
+protected lemma Monotone.disjointed_add_one [NoMaxOrder ι] {f : ι → α} (hf : Monotone f) (i : ι) :
     disjointed f (i + 1) = f (i + 1) \ f i := by
   rw [← succ_eq_add_one, hf.disjointed_succ]
   exact not_isMax i

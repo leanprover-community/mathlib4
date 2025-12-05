@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Bases in a vector space
@@ -28,7 +30,9 @@ basis, bases
 
 -/
 
-open Function Set Submodule
+@[expose] public section
+
+open Function Module Set Submodule
 
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
@@ -39,7 +43,7 @@ variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section ExistsBasis
 
@@ -154,7 +158,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
   exact Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
   funext fun x => ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :
@@ -173,7 +177,7 @@ end
 
 end ExistsBasis
 
-end Basis
+end Module.Basis
 
 open Fintype
 
@@ -248,13 +252,32 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
-  dsimp []
+  dsimp
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
+open scoped Classical in
+/-- The left inverse of `f : E →ₗ[𝕜] F`.
+
+If `f` is not injective, then we use the junk value `0`. -/
+noncomputable
+def LinearMap.leftInverse (f : V →ₗ[K] V') : V' →ₗ[K] V :=
+  if h_inj : LinearMap.ker f = ⊥ then
+  (f.exists_leftInverse_of_injective h_inj).choose
+  else 0
+
+theorem LinearMap.leftInverse_comp_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) :
+    f.leftInverse ∘ₗ f = LinearMap.id := by
+  simpa [leftInverse, h_inj] using (f.exists_leftInverse_of_injective h_inj).choose_spec
+
+/-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
+theorem LinearMap.leftInverse_apply_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) (x : V) :
+    f.leftInverse (f x) = x :=
+  LinearMap.ext_iff.mp (f.leftInverse_comp_of_inj h_inj) x
+
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
-  let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
-  ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
+  ⟨LinearMap.ker p.subtype.leftInverse,
+    LinearMap.isCompl_of_proj <| LinearMap.leftInverse_apply_of_inj p.ker_subtype⟩
 
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
@@ -266,27 +289,51 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 
+theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →ₗ[K] V')
+    (hv : v ∉ p) (y : V') : ∃ g : V →ₗ[K] V', g.comp p.subtype = f ∧ g v = y := by
+  rcases (LinearPMap.supSpanSingleton ⟨p, f⟩ v y hv).toFun.exists_extend with ⟨g, hg⟩
+  refine ⟨g, ?_, ?_⟩
+  · ext x
+    have := LinearPMap.supSpanSingleton_apply_mk_of_mem ⟨p, f⟩ y hv x.2
+    simpa using congr($hg _).trans this
+  · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
+    simpa using congr($hg _).trans this
+
+@[deprecated (since := "2025-05-23")]
+alias LinearMap.exists_extend_of_not_mem := LinearMap.exists_extend_of_notMem
+
 open Submodule LinearMap
+
+theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v ∉ p) :
+    ∃ f : V →ₗ[K] K, f v ≠ 0 ∧ p ≤ ker f := by
+  rcases LinearMap.exists_extend_of_notMem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
+  refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
+  simpa using congr($hpf ⟨x, hx⟩)
+
+/-- If `V` and `V'` are nontrivial vector spaces over a field `K`, the space of `K`-linear maps
+between them is nontrivial. -/
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
+
+@[deprecated (since := "2025-05-23")]
+alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
-  rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
-  rcases (LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
-  refine ⟨f, ?_, ?_⟩
-  · rintro rfl
-    rw [LinearMap.zero_comp] at hf
-    have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv 0 p.zero_mem 1
-    simpa using (LinearMap.congr_fun hf _).trans this
-  · refine fun x hx => mem_ker.2 ?_
-    have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv x hx 0
-    simpa using (LinearMap.congr_fun hf _).trans this
+  rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
+  rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
+  exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
   Nonempty.intro <|
-    ((quotientEquivOfIsCompl p q hq).prod (LinearEquiv.refl _ _)).trans
+    ((quotientEquivOfIsCompl p q hq).prodCongr (LinearEquiv.refl _ _)).trans
       (prodEquivOfIsCompl q p hq.symm)
 
 end DivisionRing

@@ -3,13 +3,15 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.BigOperators.Expect
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Floor
-import Mathlib.Data.Real.Pointwise
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Group
+module
+
+public import Mathlib.Algebra.BigOperators.Expect
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Field.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Floor
+public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Basic results on nonnegative real numbers
@@ -17,12 +19,14 @@ import Mathlib.Order.ConditionallyCompleteLattice.Group
 This file contains all results on `NNReal` that do not directly follow from its basic structure.
 As a consequence, it is a bit of a random collection of results, and is a good target for cleanup.
 
-## Notations
+## Notation
 
 This file uses `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-assert_not_exists Star
+@[expose] public section
+
+assert_not_exists TrivialStar
 
 open Function
 open scoped BigOperators
@@ -101,7 +105,7 @@ section Sub
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file
-`Mathlib.Algebra.Order.Sub.Basic`. See also `mul_tsub` and `tsub_mul`.
+`Mathlib/Algebra/Order/Sub/Basic.lean`. See also `mul_tsub` and `tsub_mul`.
 -/
 
 theorem sub_div (a b c : ℝ≥0) : (a - b) / c = a / c - b / c :=

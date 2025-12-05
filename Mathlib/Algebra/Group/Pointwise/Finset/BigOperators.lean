@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise big operators on finsets
@@ -13,16 +15,18 @@ This file contains basic results on applying big operators (product and sum) on 
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+since we expect the scope to be open whenever the instances are actually used (and making the
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
 finset multiplication, finset addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -37,7 +41,7 @@ variable [CommMonoid α]
 variable [DecidableEq α]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod  (s : Finset ι) (f : ι → Finset α) :
+theorem coe_prod (s : Finset ι) (f : ι → Finset α) :
     ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Topology.Category.CompHausLike.Basic
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.Topology.Category.CompHausLike.Basic
 /-!
 
 # Explicit limits and colimits
@@ -33,6 +35,8 @@ which may be useful due to their definitional properties.
 * Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
   we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Topology
 
@@ -111,9 +115,7 @@ lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
 
 lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
-  intro x
-  change (ι X a ≫ desc X π) _ = _
-  simp only [ι_desc]
+  tauto
 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
@@ -154,9 +156,6 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
-@[deprecated (since := "2024-10-18")]
-alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
-
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by
@@ -166,9 +165,6 @@ lemma Sigma.isOpenEmbedding_ι (a : α) :
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp
-
-@[deprecated (since := "2024-10-18")]
-alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
 
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
@@ -207,8 +203,7 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
-      (g.hom.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (by fun_prop) (by fun_prop)).isCompact
   CompHausLike.of P set
 
 /--
@@ -349,7 +344,7 @@ theorem hasPullbacksOfInclusions
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
-      intros X Y Z f
+      intro X Y Z f
       infer_instance }
 
 instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike P) :=
@@ -368,7 +363,7 @@ section Terminal
 variable {P : TopCat.{u} → Prop}
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit [HasProp P PUnit.{u+1}] :
+def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
     ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩

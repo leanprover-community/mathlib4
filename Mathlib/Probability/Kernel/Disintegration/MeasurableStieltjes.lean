@@ -3,10 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.MeasureTheory.Measure.Stieltjes
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.MeasureTheory.Measure.Stieltjes
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Measurable parametric Stieltjes functions
@@ -40,6 +42,8 @@ Finally, we define `stieltjesOfMeasurableRat`, composition of `toRatCDF` and
   function `α → StieltjesFunction`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter TopologicalSpace
 
@@ -449,9 +453,9 @@ lemma stieltjesOfMeasurableRat_eq (hf : Measurable f) (a : α) (r : ℚ) :
 lemma stieltjesOfMeasurableRat_unit_prod (hf : Measurable f) (a : α) :
     stieltjesOfMeasurableRat (fun (p : Unit × α) ↦ f p.2) (hf.comp measurable_snd) ((), a)
       = stieltjesOfMeasurableRat f hf a := by
-  simp_rw [stieltjesOfMeasurableRat,IsMeasurableRatCDF.stieltjesFunction,
+  simp_rw [stieltjesOfMeasurableRat, IsMeasurableRatCDF.stieltjesFunction,
     ← IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod a]
-  congr with x
+  congr 1 with x
   congr 1 with p : 1
   cases p with
   | mk _ b => rw [← toRatCDF_unit_prod b]

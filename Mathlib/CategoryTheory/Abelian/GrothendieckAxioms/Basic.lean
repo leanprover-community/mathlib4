@@ -3,12 +3,14 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.Logic.Equiv.List
 /-!
 
 # Grothendieck Axioms
@@ -47,9 +49,11 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 
@@ -62,7 +66,7 @@ A category `C` is said to have exact colimits of shape `J` provided that colimit
 exist and are exact (in the sense that they preserve finite limits).
 -/
 class HasExactColimitsOfShape (J : Type u') [Category.{v'} J] (C : Type u) [Category.{v} C]
-    [HasColimitsOfShape J C]  where
+    [HasColimitsOfShape J C] where
   /-- Exactness of `J`-shaped colimits stated as `colim : (J ⥤ C) ⥤ C` preserving finite limits. -/
   preservesFiniteLimits : PreservesFiniteLimits (colim (J := J) (C := C))
 
@@ -147,7 +151,7 @@ lemma HasExactColimitsOfShape.of_codomain_equivalence (J : Type*) [Category J] {
 /--
 Transport a `HasExactLimitsOfShape` along an equivalence of the shape.
 
-Note: When `C` has finite colimits, this lemma holds with the equivalence replaced by a initial
+Note: When `C` has finite colimits, this lemma holds with the equivalence replaced by an initial
 functor, see `hasExactLimitsOfShape_of_initial` below.
 -/
 lemma HasExactLimitsOfShape.of_domain_equivalence {J J' : Type*} [Category J] [Category J']
@@ -186,7 +190,7 @@ lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
       isoWhiskerLeft _ (preservesColimitNatIso F) ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (whiskeringRightObjCompIso G F) _ ≪≫
         isoWhiskerRight ((whiskeringRight J D D).mapIso (asIso adj.counit)) _ ≪≫
-        isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
     exact preservesLimit_of_natIso _ e⟩⟩
 
 /-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective.
@@ -204,7 +208,7 @@ lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
         (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (whiskeringRightObjCompIso F G) _ ≪≫
         isoWhiskerRight ((whiskeringRight J C C).mapIso (asIso adj.unit).symm) _ ≪≫
-        isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
     exact preservesColimit_of_natIso _ e⟩⟩
 
 end Adjunction
@@ -310,9 +314,9 @@ lemma AB5OfSize_of_univLE [HasFilteredColimitsOfSize.{w₂, w₂'} C] [UnivLE.{w
   constructor
   intro J _ _
   haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J))
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J))
   exact HasExactColimitsOfShape.of_domain_equivalence _ ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J)).symm
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J)).symm
 
 lemma AB5OfSize_shrink [HasFilteredColimitsOfSize.{max w w₂, max w' w₂'} C]
     [AB5OfSize.{max w w₂, max w' w₂'} C] :
@@ -344,9 +348,9 @@ lemma AB5StarOfSize_of_univLE [HasCofilteredLimitsOfSize.{w₂, w₂'} C] [UnivL
   constructor
   intro J _ _
   haveI := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J))
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J))
   exact HasExactLimitsOfShape.of_domain_equivalence _ ((ShrinkHoms.equivalence.{w₂} J).trans <|
-    Shrink.equivalence.{w₂'} (ShrinkHoms.{w'} J)).symm
+    Shrink.equivalence.{w₂', w₂} (ShrinkHoms.{w'} J)).symm
 
 lemma AB5StarOfSize_shrink [HasCofilteredLimitsOfSize.{max w w₂, max w' w₂'} C]
     [AB5StarOfSize.{max w w₂, max w' w₂'} C] :
@@ -365,7 +369,7 @@ lemma hasExactColimitsOfShape_of_final [HasFiniteLimits C] {J J' : Type*} [Categ
 
 /-- `HasExactLimitsOfShape` can be "pushed forward" along initial functors -/
 lemma hasExactLimitsOfShape_of_initial [HasFiniteColimits C] {J J' : Type*} [Category J]
-    [Category J'] (F : J ⥤ J') [F.Initial]  [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
+    [Category J'] (F : J ⥤ J') [F.Initial] [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] : HasExactLimitsOfShape J' C where
   preservesFiniteColimits :=
     letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩

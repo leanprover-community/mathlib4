@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
 # Refinements
@@ -37,21 +39,21 @@ locally. Then, arguing "up to refinements" is very similar to
 arguing locally for a Grothendieck topology (TODO: indeed,
 show that it corresponds to the "refinements" topology on an
 abelian category `C` that is defined by saying that
-a sieve is covering if it contains an epimorphism).
+a sieve is covering if it contains an epimorphism)).
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
 (see `ShortComplex.exact_iff_exact_up_to_refinements`).
 
 As it is outlined in the documentation of the file
-`Mathlib.CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
+`Mathlib/CategoryTheory/Abelian/Pseudoelements.lean`, the Freyd-Mitchell
 embedding theorem implies the existence of a faithful and exact functor `ι`
 from an abelian category `C` to the category of abelian groups. If we
 define a pseudo-element of `X : C` to be an element in `ι.obj X`, one
 may do diagram chases in any abelian category using these pseudo-elements.
 However, using this approach would require proving this embedding theorem!
 Currently, mathlib contains a weaker notion of pseudo-elements
-`Mathlib.CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
+`Mathlib/CategoryTheory/Abelian/Pseudoelements.lean`. Some theorems can be obtained
 using this notion, but there is the issue that for this notion
 of pseudo-elements a morphism `X ⟶ Y` in `C` is not determined by
 its action on pseudo-elements (see also `Counterexamples/Pseudoelement.lean`).
@@ -63,10 +65,12 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
-and exact embedding in abelian groups (1974)
-http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
+  and exact embedding in abelian groups (1974)
+  http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

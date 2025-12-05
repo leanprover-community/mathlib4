@@ -3,14 +3,18 @@ Copyright (c) 2024 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Continuous bundled maps on intervals
 
 In this file we prove a few results about `ContinuousMap` when the domain is an interval.
 -/
+
+@[expose] public section
 
 open Set ContinuousMap Filter Topology
 
@@ -68,7 +72,7 @@ theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
   ext ⟨x, hx⟩
   obtain rfl | hxb := eq_or_ne x b
   · simpa [concat, IccInclusionRight, IccExtendCM, projIccCM, inclusion, hb]
-  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
+  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_ge
     simp [concat, hb, IccInclusionRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
 
 @[simp]
@@ -107,11 +111,11 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
     simpa [projIccCM, projIcc, h2, hz.2] using h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
-  by_cases hxb : x ≤ b
+  by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]
     refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.1]
-  · replace hxb : b ≤ x := lt_of_not_le hxb |>.le
+  · replace hxb : b ≤ x := hxb.le
     rw [concat_right hfg hxb]
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.2]

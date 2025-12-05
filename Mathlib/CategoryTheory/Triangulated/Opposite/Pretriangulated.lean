@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
 /-!
 # The (pre)triangulated structure on the opposite category
@@ -12,11 +14,11 @@ import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 In this file, we shall construct the (pre)triangulated structure
 on the opposite category `Cᵒᵖ` of a (pre)triangulated category `C`.
 
-The shift on `Cᵒᵖ` was constructed in ``CategoryTheory.Triangulated.Opposite.Basic`,
+The shift on `Cᵒᵖ` was constructed in `Mathlib.CategoryTheory.Triangulated.Opposite.Basic`,
 and is such that shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by
-`-n` on `C`. In `CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
+`-n` on `C`. In `Mathlib.CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
 an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
-`CategoryTheory.Pretriangulated.triangleOpEquivalence`.
+`Mathlib.CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 Here, we defined the notion of distinguished triangles in `Cᵒᵖ`, such that
 `triangleOpEquivalence` sends distinguished triangles in `C` to distinguished triangles
@@ -30,6 +32,8 @@ in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -65,7 +69,7 @@ lemma mem_distinguishedTriangles_iff' (T : Triangle Cᵒᵖ) :
   rw [mem_distinguishedTriangles_iff]
   constructor
   · intro hT
-    exact ⟨_ ,hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
+    exact ⟨_, hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
   · rintro ⟨T', hT', ⟨e⟩⟩
     refine isomorphic_distinguished _ hT' _ ?_
     exact Iso.unop ((triangleOpEquivalence C).unitIso.app (Opposite.op T') ≪≫
@@ -150,7 +154,7 @@ a pretriangulated category. It is a scoped instance, so that we need to
 to use it: the reason is that it relies on the definition of the shift
 on the opposite category `Cᵒᵖ`, for which it is unclear whether it should
 be a global instance or not. -/
-scoped instance : Pretriangulated Cᵒᵖ where
+noncomputable scoped instance : Pretriangulated Cᵒᵖ where
   distinguishedTriangles := distinguishedTriangles C
   isomorphic_distinguished := isomorphic_distinguished
   contractible_distinguished := contractible_distinguished

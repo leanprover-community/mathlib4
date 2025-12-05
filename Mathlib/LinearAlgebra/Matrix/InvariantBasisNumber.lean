@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.InvariantBasisNumber
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.
 -/
+
+@[expose] public section
 
 
 variable {n m : Type*} [Fintype n] [DecidableEq n] [Fintype m] [DecidableEq m]
@@ -36,7 +40,7 @@ instance (priority := 100) rankCondition_of_nontrivial_of_commSemiring {R : Type
       (LinearMap.range_eq_top.mpr <| hp.comp hf)
     let e := Matrix.toLinAlgEquiv' (R := R) (n := Fin n).symm
     apply_fun e at eq
-    rw [← LinearMap.mul_eq_comp, ← LinearMap.one_eq_id, map_mul, map_one,
+    rw [← Module.End.mul_eq_comp, ← Module.End.one_eq_id, map_mul, map_one,
       Matrix.mul_eq_one_comm_of_equiv (Equiv.refl _),
       ← map_mul, ← map_one e, e.injective.eq_iff] at eq
     have : Injective p := (p.coe_comp f ▸ LinearMap.injective_of_comp_eq_id _ _ eq).of_comp_right hf

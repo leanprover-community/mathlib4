@@ -3,16 +3,19 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Order.Fin.Basic
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
 morphisms `n ⟶ m` being the monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
 
-In `Mathlib.AlgebraicTopology.SimplexCategory.Basic`, we show that this category
+In `Mathlib/AlgebraicTopology/SimplexCategory/Basic.lean`, we show that this category
 is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks
@@ -27,7 +30,7 @@ We provide the following functions to work with these objects:
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
 
-## Notations
+## Notation
 
 * `⦋n⦌` denotes the `n`-dimensional simplex. This notation is available with
   `open Simplicial`.
@@ -35,6 +38,8 @@ We provide the following functions to work with these objects:
   The truncation proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`.
   This notation is available with `open SimplexCategory.Truncated`.
 -/
+
+@[expose] public section
 
 universe v
 
@@ -147,12 +152,21 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   Hom.ext' _ _
 
-/-- The truncated simplex category. -/
-def Truncated (n : ℕ) :=
-  FullSubcategory fun a : SimplexCategory => a.len ≤ n
+/-- Homs in `SimplexCategory` are equivalent to order-preserving functions of finite linear
+orders. -/
+def homEquivOrderHom {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) →o Fin (b.len + 1)) where
+  toFun := Hom.toOrderHom
+  invFun := Hom.mk
 
-instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
-  FullSubcategory.category _
+/-- Homs in `SimplexCategory` are equivalent to functors between finite linear orders. -/
+def homEquivFunctor {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
+  SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
+
+/-- The truncated simplex category. -/
+abbrev Truncated (n : ℕ) :=
+  ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
 
 namespace Truncated
 
@@ -163,18 +177,23 @@ instance {n} : Inhabited (Truncated n) :=
 simplex category.
 -/
 def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := ObjectProperty.full_ι _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := ObjectProperty.faithful_ι _
 
 /-- A proof that the full subcategory inclusion is fully faithful -/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+    (inclusion n : Truncated n ⥤ _).op.FullyFaithful :=
+  Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+
+/-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
+scoped macro "trunc" : tactic =>
+  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> omega)
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
@@ -183,11 +202,39 @@ scoped syntax:max (name := mkNotation)
   "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
   | `(⦋$m:term⦌$n:subscript) =>
-    `((⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+    `((⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `⦋m, by ...⦌ₙ`."⟩ :
       SimplexCategory.Truncated $n))
   | `(⦋$m:term, $p:term⦌$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
+
+/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
+is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
+abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
+    (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
+  f
+
+@[simp]
+lemma Hom.tr_id {n : ℕ} (a : SimplexCategory) (ha : a.len ≤ n := by trunc) :
+    Hom.tr (𝟙 a) ha = 𝟙 _ := rfl
+
+@[reassoc]
+lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
+    (hc : c.len ≤ n := by trunc) :
+    tr (f ≫ g) = tr f ≫ tr g :=
+  rfl
+
+/-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
+  obj a := ⟨a.1, a.2.trans h⟩
+  map := id
+
+/-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
+def inclCompInclusion {n m : ℕ} (h : n ≤ m) :
+    incl n m ⋙ inclusion m ≅ inclusion n :=
+  Iso.refl _
 
 end Truncated
 

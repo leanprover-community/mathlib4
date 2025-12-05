@@ -3,9 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Unitization norms
@@ -57,6 +58,8 @@ viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. 
 bornology.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -212,9 +215,6 @@ theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
     IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
   injective := (addEquiv 𝕜 A).injective
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :

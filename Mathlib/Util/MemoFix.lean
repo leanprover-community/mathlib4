@@ -3,18 +3,25 @@ Copyright (c) 2022 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Edward Ayers
 -/
-import Std.Data.HashMap.Basic
-import Mathlib.Init
+module
+
+public import Std.Data.HashMap.Basic
+public import Mathlib.Init
 
 /-!
 # Fixpoint function with memoisation
 
 -/
 
+public section
+
 universe u v
 open ShareCommon Std
 
 private unsafe abbrev ObjectMap := @Std.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
+
+@[noinline]
+private def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
 
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) :
     Object := unsafeBaseIO do
@@ -22,7 +29,7 @@ private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Objec
   let rec fix (a) := unsafeBaseIO do
     if let some b := (← cache.get)[a]? then
       return b
-    let b := f fix a
+    let b ← injectIntoBaseIO (f fix a)
     cache.modify (·.insert a b)
     pure b
   pure <| fix a

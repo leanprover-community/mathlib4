@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.CategoryTheory.DiscreteCategory
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Monoids as discrete monoidal categories
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 The discrete category on a monoid is a monoidal category.
 Multiplicative morphisms induced monoidal functors.
 -/
+
+@[expose] public section
 
 
 universe u u'
@@ -27,9 +31,9 @@ namespace CategoryTheory
 instance Discrete.monoidal : MonoidalCategory (Discrete M) where
   tensorUnit := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)
-  whiskerLeft X _ _ f := eqToHom (by dsimp; rw [eq_of_hom f])
-  whiskerRight f X := eqToHom (by dsimp; rw [eq_of_hom f])
-  tensorHom f g := eqToHom (by dsimp; rw [eq_of_hom f, eq_of_hom g])
+  whiskerLeft X _ _ f := eqToHom (by rw [eq_of_hom f])
+  whiskerRight f X := eqToHom (by rw [eq_of_hom f])
+  tensorHom f g := eqToHom (by rw [eq_of_hom f, eq_of_hom g])
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
   associator _ _ _ := Discrete.eqToIso (mul_assoc _ _ _)
@@ -84,7 +88,8 @@ variable {K : Type u} [Monoid K]
 /-- The monoidal natural isomorphism corresponding to composing two multiplicative morphisms.
 -/
 @[to_additive Discrete.addMonoidalFunctorComp
-      "The monoidal natural isomorphism corresponding to\ncomposing two additive morphisms."]
+      /-- The monoidal natural isomorphism corresponding to
+composing two additive morphisms. -/]
 def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
       Discrete.monoidalFunctor (G.comp F) := Iso.refl _

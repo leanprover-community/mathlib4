@@ -1,9 +1,11 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Metric spaces
@@ -24,6 +26,8 @@ for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 
 metric, pseudo_metric, dist
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.sum
 
@@ -46,7 +50,7 @@ Any metric space is a T1 topological space and a uniform space (see `Topological
 `UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
-This eg ensures that we do not get a diamond when doing
+This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
@@ -103,11 +107,11 @@ theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
 /-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
 
 @[simp]
 theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, zero_eq_dist]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
 
 namespace Metric
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.SuccPred.Limit
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 
@@ -12,9 +14,11 @@ import Mathlib.Order.SuccPred.Limit
 
 -/
 
+@[expose] public section
+
 open Order Set
 
-variable {ι α : Type*}
+variable {ι : Sort*} {α : Type*}
 
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
@@ -71,9 +75,9 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
     by_contra h
     simp [h] at hs
     rw [not_isMax_iff] at h
-    exact hs.not_lt (csInf_mem h)
+    exact hs.not_gt (csInf_mem h)
   succ_le_of_lt {a b} ha := by
-    simp [ha.not_isMax]
+    simp only [ha.not_isMax, ↓reduceIte]
     exact csInf_le ⟨a, fun _ hc => hc.le⟩ ha
 
 end ConditionallyCompleteLinearOrder
@@ -93,11 +97,6 @@ lemma csSup_mem_of_not_isSuccPrelimit'
 lemma exists_eq_ciSup_of_not_isSuccPrelimit'
     (hf : BddAbove (range f)) (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccPrelimit' hf hf'
-
-@[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2025-01-05")]
-lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) :
-    ∃ i, f i = x :=
-  hf.mem_of_not_isSuccPrelimit hx
 
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
@@ -153,10 +152,5 @@ lemma exists_eq_iSup_of_not_isSuccPrelimit (hf : ¬ IsSuccPrelimit (⨆ i, f i))
 lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i)) :
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
-
-@[deprecated IsGLB.mem_of_not_isPredLimit (since := "2025-01-05")]
-lemma IsGLB.exists_of_not_isPredPrelimit (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
-    ∃ i, f i = x :=
-  hf.mem_of_not_isPredPrelimit hx
 
 end CompleteLinearOrder

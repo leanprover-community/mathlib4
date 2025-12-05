@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Ring.Nat
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # e-transforms
@@ -28,6 +30,8 @@ as internals of other proofs.
 Prove the invariance property of the Dyson e-transform.
 -/
 
+@[expose] public section
+
 
 open MulOpposite
 
@@ -46,8 +50,8 @@ variable [CommGroup α] (e : α) (x : Finset α × Finset α)
 
 /-- The **Dyson e-transform**. Turns `(s, t)` into `(s ∪ e • t, t ∩ e⁻¹ • s)`. This reduces the
 product of the two sets. -/
-@[to_additive (attr := simps) "The **Dyson e-transform**.
-Turns `(s, t)` into `(s ∪ e +ᵥ t, t ∩ -e +ᵥ s)`. This reduces the sum of the two sets."]
+@[to_additive (attr := simps) /-- The **Dyson e-transform**.
+Turns `(s, t)` into `(s ∪ e +ᵥ t, t ∩ -e +ᵥ s)`. This reduces the sum of the two sets. -/]
 def mulDysonETransform : Finset α × Finset α :=
   (x.1 ∪ e • x.2, x.2 ∩ e⁻¹ • x.1)
 
@@ -101,15 +105,15 @@ variable [Group α] (e : α) (x : Finset α × Finset α)
 
 /-- An **e-transform**. Turns `(s, t)` into `(s ∩ s • e, t ∪ e⁻¹ • t)`. This reduces the
 product of the two sets. -/
-@[to_additive (attr := simps) "An **e-transform**.
-Turns `(s, t)` into `(s ∩ s +ᵥ e, t ∪ -e +ᵥ t)`. This reduces the sum of the two sets."]
+@[to_additive (attr := simps) /-- An **e-transform**.
+Turns `(s, t)` into `(s ∩ s +ᵥ e, t ∪ -e +ᵥ t)`. This reduces the sum of the two sets. -/]
 def mulETransformLeft : Finset α × Finset α :=
   (x.1 ∩ op e • x.1, x.2 ∪ e⁻¹ • x.2)
 
 /-- An **e-transform**. Turns `(s, t)` into `(s ∪ s • e, t ∩ e⁻¹ • t)`. This reduces the
 product of the two sets. -/
-@[to_additive (attr := simps) "An **e-transform**.
-Turns `(s, t)` into `(s ∪ s +ᵥ e, t ∩ -e +ᵥ t)`. This reduces the sum of the two sets."]
+@[to_additive (attr := simps) /-- An **e-transform**.
+Turns `(s, t)` into `(s ∪ s +ᵥ e, t ∩ -e +ᵥ t)`. This reduces the sum of the two sets. -/]
 def mulETransformRight : Finset α × Finset α :=
   (x.1 ∪ op e • x.1, x.2 ∩ e⁻¹ • x.2)
 
@@ -142,8 +146,8 @@ theorem mulETransformRight.card :
   (card_union_add_card_inter _ _).trans <| by rw [card_smul_finset, two_mul]
 
 /-- This statement is meant to be combined with `le_or_lt_of_add_le_add` and similar lemmas. -/
-@[to_additive AddETransform.card "This statement is meant to be combined with
-`le_or_lt_of_add_le_add` and similar lemmas."]
+@[to_additive AddETransform.card /-- This statement is meant to be combined with
+`le_or_lt_of_add_le_add` and similar lemmas. -/]
 protected theorem MulETransform.card :
     (mulETransformLeft e x).1.card + (mulETransformLeft e x).2.card +
         ((mulETransformRight e x).1.card + (mulETransformRight e x).2.card) =

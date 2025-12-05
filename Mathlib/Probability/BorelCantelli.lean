@@ -3,9 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Martingale.BorelCantelli
-import Mathlib.Probability.ConditionalExpectation
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Probability.Martingale.BorelCantelli
+public import Mathlib.Probability.ConditionalExpectation
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 
@@ -21,8 +23,10 @@ filtration.
 - `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
-in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
+in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal Topology
 open MeasureTheory
@@ -50,20 +54,13 @@ theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [Comp
   exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
     (comap_measurable <| f j).stronglyMeasurable (hfi.indep_comap_natural_of_lt hf hij)
 
-@[deprecated (since := "2025-01-21")]
-alias iIndepFun.condexp_natural_ae_eq_of_lt := iIndepFun.condExp_natural_ae_eq_of_lt
-
 theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
-    fun _ => (μ (s j)).toReal := by
-  rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
+    fun _ => μ.real (s j) := by
+  rw [Filtration.filtrationOfSet_eq_natural (β := fun _ ↦ ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
-  simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
-
-@[deprecated (since := "2025-01-21")]
-alias iIndepSet.condexp_indicator_filtrationOfSet_ae_eq :=
-  iIndepSet.condExp_indicator_filtrationOfSet_ae_eq
+  simp only [integral_indicator_const _ (hsm _), smul_eq_mul, mul_one]; rfl
 
 open Filter
 
@@ -97,8 +94,8 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     rw [mem_upperBounds] at hB
     specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
-      rw [ENNReal.toReal_sum]
-      exact fun _ _ => measure_ne_top _ _
+      rw [ENNReal.toReal_sum (by finiteness)]
+      rfl
     · rwa [not_lt, ENNReal.ofNNReal_toNNReal, ENNReal.le_ofReal_iff_toReal_le]
       · simp
       · exact le_trans (by positivity) hB

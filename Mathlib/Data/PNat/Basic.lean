@@ -3,11 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.PNat.Equiv
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.PNat.Equiv
 
 /-!
 # The positive natural numbers
@@ -17,11 +19,16 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
+@[expose] public section
+
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
+  Add, Mul, Distrib for PNat
 
 namespace PNat
 
+instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
+instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
+instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
@@ -97,9 +104,9 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on `ℕ+` induced by
- similar structures on `ℕ`. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on `ℕ`. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
 @[simp, norm_cast]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
@@ -208,7 +215,7 @@ def coeMonoidHom : ℕ+ →* ℕ where
   map_mul' := mul_coe
 
 @[simp]
-theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
 @[simp]
@@ -230,7 +237,7 @@ theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
 
-theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+theorem lt_succ_self (a : ℕ+) : a < succPNat a := Nat.lt_add_one a
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
@@ -255,7 +262,7 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.le_pred_of_lt hab
-  · exact hab.le.trans (le_of_not_lt h)
+  · exact hab.le.trans (le_of_not_gt h)
 
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>

@@ -3,7 +3,9 @@ Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Computability.Halting
+module
+
+public import Mathlib.Computability.Halting
 
 /-!
 # Strong reducibility and degrees.
@@ -12,7 +14,7 @@ This file defines the notions of computable many-one reduction and one-one
 reduction between sets, and shows that the corresponding degrees form a
 semilattice.
 
-## Notations
+## Notation
 
 This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint union of two degrees.
 
@@ -24,6 +26,8 @@ This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint u
 
 computability, reducibility, reduction
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -53,7 +57,7 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ q → q ≤₀ r → p ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁,
-      fun a => ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      fun a => ⟨fun h => by rw [comp_apply, ← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 
 theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
   manyOneReducible_refl
@@ -84,7 +88,7 @@ theorem OneOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Prim
     {q : β → Prop} {r : γ → Prop} : p ≤₁ q → q ≤₁ r → p ≤₁ r
   | ⟨f, c₁, i₁, h₁⟩, ⟨g, c₂, i₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁, i₂.comp i₁, fun a =>
-      ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      ⟨fun h => by rw [comp_apply, ← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 
 theorem OneOneReducible.to_many_one {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ q → p ≤₀ q
@@ -372,7 +376,6 @@ private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d�
   apply ManyOneReducible.trans
 
 instance instPartialOrder : PartialOrder ManyOneDegree where
-  le := (· ≤ ·)
   le_refl := le_refl
   le_trans _ _ _ := le_trans
   le_antisymm _ _ := le_antisymm

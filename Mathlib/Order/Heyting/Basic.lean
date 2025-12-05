@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.PropInstances
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Order.PropInstances
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Heyting algebras
@@ -19,10 +21,10 @@ such that `a \ b ≤ c ↔ a ≤ b ⊔ c` and `￢a = ⊤ \ a`.
 
 Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 
-From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas boolean
+From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas Boolean
 algebras model classical logic.
 
-Heyting algebras are the order theoretic equivalent of cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of Cartesian closed categories.
 
 ## Main declarations
 
@@ -30,7 +32,7 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `GeneralizedCoheytingAlgebra`: Co-Heyting algebra without a bottom element (nor complement).
 * `HeytingAlgebra`: Heyting algebra.
 * `CoheytingAlgebra`: Co-Heyting algebra.
-* `BiheytingAlgebra`: bi-Heyting algebra.
+* `BiheytingAlgebra`: Bi-Heyting algebra.
 
 ## References
 
@@ -40,6 +42,8 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -110,9 +114,11 @@ instance [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
 instance [∀ i, HNot (π i)] : HNot (∀ i, π i) :=
   ⟨fun a i => ￢a i⟩
 
+@[push ←]
 theorem himp_def [∀ i, HImp (π i)] (a b : ∀ i, π i) : a ⇨ b = fun i => a i ⇨ b i :=
   rfl
 
+@[push ←]
 theorem hnot_def [∀ i, HNot (π i)] (a : ∀ i, π i) : ￢a = fun i => ￢a i :=
   rfl
 
@@ -129,7 +135,7 @@ end Pi
 /-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
 Heyting implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`.
 
- This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
+This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HImp α where
   /-- `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
@@ -503,11 +509,9 @@ theorem sup_sdiff_right_self : (a ⊔ b) \ b = a \ b := by rw [sup_sdiff, sdiff_
 @[simp]
 theorem sup_sdiff_left_self : (a ⊔ b) \ a = b \ a := by rw [sup_comm, sup_sdiff_right_self]
 
-@[gcongr]
 theorem sdiff_le_sdiff_right (h : a ≤ b) : a \ c ≤ b \ c :=
   sdiff_le_iff.2 <| h.trans <| le_sup_sdiff
 
-@[gcongr]
 theorem sdiff_le_sdiff_left (h : a ≤ b) : c \ b ≤ c \ a :=
   sdiff_le_iff.2 <| le_sup_sdiff.trans <| sup_le_sup_right h _
 
@@ -946,6 +950,7 @@ theorem himp_iff_imp (p q : Prop) : p ⇨ q ↔ p → q :=
 theorem compl_iff_not (p : Prop) : pᶜ ↔ ¬p :=
   Iff.rfl
 
+variable (α) in
 -- See note [reducible non-instances]
 /-- A bounded linear order is a bi-Heyting algebra by setting
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.
@@ -955,14 +960,12 @@ abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : Bihey
     himp := fun a b => if a ≤ b then ⊤ else b,
     compl := fun a => if a = ⊥ then ⊤ else ⊥,
     le_himp_iff := fun a b c => by
-      change _ ≤ ite _ _ _ ↔ _
       split_ifs with h
       · exact iff_of_true le_top (inf_le_of_right_le h)
       · rw [inf_le_iff, or_iff_left h],
     himp_bot := fun _ => if_congr le_bot_iff rfl rfl, sdiff := fun a b => if a ≤ b then ⊥ else a,
     hnot := fun a => if a = ⊤ then ⊥ else ⊤,
     sdiff_le_iff := fun a b c => by
-      change ite _ _ _ ≤ _ ↔ _
       split_ifs with h
       · exact iff_of_true bot_le (le_sup_of_le_left h)
       · rw [le_sup_iff, or_iff_right h],
@@ -1069,7 +1072,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
+instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u + 1} :=
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,

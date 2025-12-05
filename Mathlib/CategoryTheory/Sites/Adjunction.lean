@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.PreservesSheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Whiskering
+public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
 
@@ -14,10 +16,12 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open GrothendieckTopology CategoryTheory Limits Opposite
+open GrothendieckTopology Limits Opposite Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -63,7 +67,7 @@ lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj
   simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
     adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
     Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
-    instCategorySheaf_comp_val, instCategorySheaf_id_val, sheafificationAdjunction_counit_app_val,
+    comp_val, sheafificationAdjunction_counit_app_val,
     sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
 
 
@@ -97,14 +101,6 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 section ForgetToType
 
 variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
-
-@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
-
-/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
-@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
-    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafify J G ⊣ sheafForget J :=
-  adjunction _ adj
 
 example [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance

@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+module
+
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 
 /-! # Jacobi's theta function
 
@@ -16,6 +18,8 @@ and proves the modular transformation properties `θ (τ + 2) = θ τ` and
 `θ (-1 / τ) = (-I * τ) ^ (1 / 2) * θ τ`, using Poisson's summation formula for the latter. We also
 show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential decay as `im τ → ∞`.
 -/
+
+@[expose] public section
 
 open Complex Real Asymptotics Filter Topology
 
@@ -102,7 +106,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
     .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable
-  exact (norm_tsum_le_tsum_norm aux).trans ((tsum_mono aux s.summable this).trans_eq s.tsum_eq)
+  exact (norm_tsum_le_tsum_norm aux).trans ((aux.tsum_mono s.summable this).trans_eq s.tsum_eq)
 
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :

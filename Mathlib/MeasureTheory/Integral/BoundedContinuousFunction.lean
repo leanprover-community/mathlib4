@@ -3,8 +3,11 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Integration of bounded continuous functions
@@ -14,6 +17,8 @@ mostly specializations of results in general integration theory, but they are us
 specialized form in some other files, in particular in those related to the topology of weak
 convergence of probability measures and finite measures.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
@@ -93,18 +98,18 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
 variable [NormedSpace ℝ E]
 
 lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
-    ‖∫ x, f x ∂μ‖ ≤ ENNReal.toReal (μ Set.univ) * ‖f‖ := by
+    ‖∫ x, f x ∂μ‖ ≤ μ.real Set.univ * ‖f‖ := by
   calc  ‖∫ x, f x ∂μ‖
-    _ ≤ ∫ x, ‖f x‖ ∂μ                       := by exact norm_integral_le_integral_norm _
-    _ ≤ ∫ _, ‖f‖ ∂μ                         := ?_
-    _ = ENNReal.toReal (μ Set.univ) • ‖f‖   := by rw [integral_const]
+    _ ≤ ∫ x, ‖f x‖ ∂μ := norm_integral_le_integral_norm _
+    _ ≤ ∫ _, ‖f‖ ∂μ := ?_
+    _ = μ.real Set.univ • ‖f‖ := by rw [integral_const]
   apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
   exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
   convert f.norm_integral_le_mul_norm μ
-  simp only [measure_univ, ENNReal.toReal_one, one_mul]
+  simp
 
 lemma isBounded_range_integral
     {ι : Type*} (μs : ι → Measure X) [∀ i, IsProbabilityMeasure (μs i)] (f : X →ᵇ E) :
@@ -122,11 +127,11 @@ variable {X : Type*} [TopologicalSpace X]
 variable [MeasurableSpace X] [OpensMeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
 
 lemma integral_add_const (f : X →ᵇ ℝ) (c : ℝ) :
-    ∫ x, (f + const X c) x ∂μ = ∫ x, f x ∂μ + ENNReal.toReal (μ (Set.univ)) • c := by
+    ∫ x, (f + const X c) x ∂μ = ∫ x, f x ∂μ + μ.real Set.univ • c := by
   simp [integral_add (f.integrable _) (integrable_const c)]
 
 lemma integral_const_sub (f : X →ᵇ ℝ) (c : ℝ) :
-    ∫ x, (const X c - f) x ∂μ = ENNReal.toReal (μ (Set.univ)) • c - ∫ x, f x ∂μ := by
+    ∫ x, (const X c - f) x ∂μ = μ.real Set.univ • c - ∫ x, f x ∂μ := by
   simp [integral_sub (integrable_const c) (f.integrable _)]
 
 end RealValued
@@ -140,7 +145,7 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
     (h : ∀ f : X →ᵇ ℝ, 0 ≤ f → L.limsup (fun i ↦ ∫ x, f x ∂ (μs i)) ≤ ∫ x, f x ∂μ)
     (f : X →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, f x ∂ (μs i)) L (𝓝 (∫ x, f x ∂μ)) := by
-  rcases eq_or_neBot L with rfl|hL
+  rcases eq_or_neBot L with rfl | hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
@@ -148,12 +153,12 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
   apply tendsto_of_le_liminf_of_limsup_le _ _ bdd_above bdd_below
   · have key := h _ (f.norm_sub_nonneg)
     simp_rw [f.integral_const_sub ‖f‖] at key
-    simp only [measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul] at key
+    simp only [probReal_univ, smul_eq_mul, one_mul] at key
     have := limsup_const_sub L (fun i ↦ ∫ x, f x ∂ (μs i)) ‖f‖ bdd_above.isCobounded_ge bdd_below
     rwa [this, _root_.sub_le_sub_iff_left ‖f‖] at key
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key
-    simp only [measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul] at key
+    simp only [probReal_univ, smul_eq_mul, one_mul] at key
     have := limsup_add_const L (fun i ↦ ∫ x, f x ∂ (μs i)) ‖f‖ bdd_above bdd_below.isCobounded_le
     rwa [this, add_le_add_iff_right] at key
 
@@ -162,7 +167,7 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
     (h : ∀ f : X →ᵇ ℝ, 0 ≤ f → ∫ x, f x ∂μ ≤ L.liminf (fun i ↦ ∫ x, f x ∂ (μs i)))
     (f : X →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, f x ∂ (μs i)) L (𝓝 (∫ x, f x ∂μ)) := by
-  rcases eq_or_neBot L with rfl|hL
+  rcases eq_or_neBot L with rfl | hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
@@ -170,12 +175,12 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
   apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, f x ∂ (μs i)) (∫ x, f x ∂μ)
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key
-    simp only [measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul] at key
+    simp only [probReal_univ, smul_eq_mul, one_mul] at key
     have := liminf_add_const L (fun i ↦ ∫ x, f x ∂ (μs i)) ‖f‖ bdd_above.isCobounded_ge bdd_below
     rwa [this, add_le_add_iff_right] at key
   · have key := h _ (f.norm_sub_nonneg)
     simp_rw [f.integral_const_sub ‖f‖] at key
-    simp only [measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul] at key
+    simp only [probReal_univ, smul_eq_mul, one_mul] at key
     have := liminf_const_sub L (fun i ↦ ∫ x, f x ∂ (μs i)) ‖f‖ bdd_above bdd_below.isCobounded_le
     rwa [this, sub_le_sub_iff_left] at key
   · exact bdd_above

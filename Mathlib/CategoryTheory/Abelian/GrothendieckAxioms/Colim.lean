@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # Exactness of colimits
@@ -21,6 +23,8 @@ into the colimit is also a monomorphism (assuming `J`
 is filtered and `C` satisfies AB5).
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 
@@ -80,7 +84,7 @@ lemma IsColimit.mono_ι_app_of_isFiltered
         simp only [Category.id_comp, ← X.map_comp, Under.w] }
   have := NatTrans.mono_of_mono_app f
   exact colim.map_mono' f (isColimitConstCocone _ _)
-    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
+    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by cat_disch)
 
 section
 
@@ -92,7 +96,7 @@ variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] [HasZeroMorphism
   (hf : ∀ j, c₁.ι.app j ≫ f = S.f.app j ≫ c₂.ι.app j)
   (hg : ∀ j, c₂.ι.app j ≫ g = S.g.app j ≫ c₃.ι.app j)
 
-/-- Given `S : ShortCompex (J ⥤ C)` and (colimit) cocones for `S.X₁`, `S.X₂`,
+/-- Given `S : ShortComplex (J ⥤ C)` and (colimit) cocones for `S.X₁`, `S.X₂`,
 `S.X₃` equipped with suitable data, this is the induced
 short complex `c₁.pt ⟶ c₂.pt ⟶ c₃.pt`. -/
 @[simps]
@@ -138,18 +142,20 @@ open Limits
 open MorphismProperty
 
 variable (J C) in
-lemma isStableUnderColimitsOfShape_monomorphisms
+instance isStableUnderColimitsOfShape_monomorphisms
     [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :
-    (monomorphisms C).IsStableUnderColimitsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  have (j : J) : Mono (f.app j) := hf _
-  have := NatTrans.mono_of_mono_app f
-  exact colim.map_mono' f hc₁ hc₂ _ (by simp)
+    (monomorphisms C).IsStableUnderColimitsOfShape J where
+  condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ hφ := by
+    have (j : J) : Mono (f.app j) := hf _
+    have := NatTrans.mono_of_mono_app f
+    apply colim.map_mono' f hc₁ hc₂ φ (by simp [hφ])
 
 instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
     IsStableUnderCoproducts.{u'} (monomorphisms C) where
-  isStableUnderCoproductsOfShape _ :=
-    isStableUnderColimitsOfShape_monomorphisms _ _
+
+instance [HasFilteredColimitsOfSize.{v', u'} C] [AB5OfSize.{v', u'} C] :
+    IsStableUnderFilteredColimits.{v', u'} (monomorphisms C) where
+  isStableUnderColimitsOfShape J _ _ := by infer_instance
 
 end MorphismProperty
 

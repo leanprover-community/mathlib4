@@ -3,15 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Linear.Yoneda
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Linear.Yoneda
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
 /-!
 # The monoidal closed structure on `Module R`.
 -/
 
-suppress_compilation
+@[expose] public section
 
 universe v w x u
 
@@ -22,7 +24,7 @@ namespace ModuleCat
 variable {R : Type u} [CommRing R]
 
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
-(This is only a separate definition in order to speed up typechecking. )
+(This is only a separate definition in order to speed up typechecking.)
 -/
 def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃
@@ -32,10 +34,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
   left_inv f := by
     ext : 1
     apply TensorProduct.ext'
-    intro m n
-    simp only [Hom.hom₂_ofHom₂, LinearMap.comp_apply, hom_comp, MonoidalCategory.tensorLeft_obj]
-    erw [MonoidalCategory.braiding_hom_apply m n, TensorProduct.lift.tmul]
-  right_inv _ := rfl
+    solve_by_elim
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
@@ -70,7 +69,7 @@ theorem monoidalClosed_uncurry
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
-    (ihom.ev M).app N = ModuleCat.ofHom (TensorProduct.uncurry R M ((ihom M).obj N) N
+    (ihom.ev M).app N = ModuleCat.ofHom (TensorProduct.uncurry (.id R) M ((ihom M).obj N) N
       (LinearMap.lcomp _ _ homLinearEquiv.toLinearMap ∘ₗ LinearMap.id.flip)) := by
   rw [← MonoidalClosed.uncurry_id_eq_ev]
   ext : 1

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
+module
+
+public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 
 /-!
 # The small object argument
@@ -13,25 +15,25 @@ permits the small object argument (typeclass `HasSmallObjectArgument.{w} I`
 where `w` is an auxiliary universe) if there exists a regular
 cardinal `κ : Cardinal.{w}` such that `IsCardinalForSmallObjectArgument I κ`
 holds. This technical condition is defined in the file
-`Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`. It involves certain
+`Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgument.lean`. It involves certain
 smallness conditions relative to `w`, the existence of certain colimits in `C`,
 and for each object `A` which is the source of a morphism in `I`,
 the `Hom(A, -)` functor (`coyoneda.obj (op A)`) should commute
 to transfinite compositions of pushouts of coproducts of morphisms in `I`
 (this condition is automatically satisfied for a suitable `κ` when `A` is a
-presentable object of `C`, see the file `Mathlib.CategoryTheory.Presentable.Basic`).
+presentable object of `C`, see the file `Mathlib/CategoryTheory/Presentable/Basic.lean`).
 
 ## Main results
 
 Assuming `I` permits the small object argument, the two main results
 obtained in this file are:
 * the class `I.rlp.llp` of morphisms that have the left lifting property with
-respect to the maps that have the right lifting property with respect
-to `I` are exactly the retracts of transfinite compositions (indexed
-by a suitable well ordered type `J`) of pushouts of coproducts of
-morphisms in `I`;
+  respect to the maps that have the right lifting property with respect
+  to `I` are exactly the retracts of transfinite compositions (indexed
+  by a suitable well-ordered type `J`) of pushouts of coproducts of
+  morphisms in `I`;
 * morphisms in `C` have a functorial factorization as a morphism in
-`I.rlp.llp` followed by a morphism in `I.rlp`.
+  `I.rlp.llp` followed by a morphism in `I.rlp`.
 
 In the context of model categories, these results are known as Quillen's small object
 argument (originally for `J := ℕ`). Actually, the more general construction by
@@ -47,16 +49,16 @@ The main part in the proof is the construction of the functorial factorization.
 This involves a construction by transfinite induction. A general
 procedure for constructions by transfinite
 induction in categories (including the iteration of a functor)
-is done in the file `Mathlib.CategoryTheory.SmallObject.TransfiniteIteration`.
+is done in the file `Mathlib/CategoryTheory/SmallObject/TransfiniteIteration.lean`.
 The factorization of the small object argument is obtained by doing
 a transfinite iteration of a specific functor `Arrow C ⥤ Arrow C` which
-is defined in the file `Mathlib.CategoryTheory.SmallObject.Construction` (this definition
+is defined in the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` (this definition
 involves coproducts and a pushout). These ingredients are combined
-in the file `Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`
+in the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgument.lean`
 where the main results are obtained under a `IsCardinalForSmallObjectArgument I κ`
 assumption. The fact that the left lifting property with respect to
 a class of morphisms is stable by transfinite compositions was obtained in
-the file `Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting`.
+the file `Mathlib/CategoryTheory/SmallObject/TransfiniteCompositionLifting.lean`.
 
 ## References
 
@@ -66,6 +68,8 @@ the file `Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting`.
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -106,7 +110,7 @@ instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
   hasFunctorialFactorization I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.toType`)
 of pushouts of coproducts of morphisms in `C`. -/
@@ -116,7 +120,7 @@ lemma llp_rlp_of_hasSmallObjectArgument' :
   llp_rlp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions
 of pushouts of coproducts of morphisms in `C`. -/

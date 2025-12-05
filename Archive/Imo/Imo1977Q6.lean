@@ -19,11 +19,10 @@ then we use it to prove the statement for positive naturals.
 namespace Imo1977Q6
 
 theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
-  have h' : ∀ k n : ℕ, k ≤ n → k ≤ f n := by
-    intro k
-    induction' k with k h_ind
-    · intros; exact Nat.zero_le _
-    · intro n hk
+  have h' (k n : ℕ) (hk : k ≤ n) : k ≤ f n := by
+    induction k generalizing n with
+    | zero => exact Nat.zero_le _
+    | succ k h_ind =>
       apply Nat.succ_le_of_lt
       calc
         k ≤ f (f (n - 1)) := h_ind _ (h_ind (n - 1) (le_tsub_of_add_le_right hk))

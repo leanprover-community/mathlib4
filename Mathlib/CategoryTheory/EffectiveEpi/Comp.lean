@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # Composition of effective epimorphisms
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 This file provides `EffectiveEpi` instances for certain compositions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -32,7 +36,7 @@ def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' {α : Type*} {B : C} {X 
   desc e w := EffectiveEpiFamily.desc _ f (fun a ↦ i a ≫ e a) fun a₁ a₂ g₁ g₂ _ ↦ (by
     simp only [← Category.assoc]
     apply w _ _ (g₁ ≫ i a₁) (g₂ ≫ i a₂)
-    simp only [Category.assoc, hi]
+    simp only [Category.assoc]
     simp only [← Category.assoc, hi]
     simpa)
   fac e w a := by
@@ -81,7 +85,6 @@ noncomputable def effectiveEpiFamilyStructOfComp {C : Type*} [Category C]
     (fun i => g i ≫ φ i) (fun {T} i₁ i₂ g₁ g₂ eq =>
       by simpa [assoc] using h i₁ i₂ (g₁ ≫ g i₁) (g₂ ≫ g i₂) (by simpa [assoc] using eq))
   fac {W} φ h i := by
-    dsimp
     rw [← cancel_epi (g i), ← assoc, EffectiveEpiFamily.fac _ (fun i => g i ≫ f i)]
   uniq {W} φ _ m hm := EffectiveEpiFamily.uniq _ (fun i => g i ≫ f i) _ _ _
     (fun i => by rw [assoc, hm])
@@ -109,9 +112,7 @@ theorem effectiveEpiFamilyStructCompIso_aux
       g₁ ≫ π a₁ ≫ i = g₂ ≫ π a₂ ≫ i → g₁ ≫ e a₁ = g₂ ≫ e a₂)
     {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂) (hg : g₁ ≫ π a₁ = g₂ ≫ π a₂) :
     g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
-  apply h
-  rw [← Category.assoc, hg]
-  simp
+  grind
 
 variable [EffectiveEpiFamily X π] [IsIso i]
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DividedPowers.Basic
+module
+
+public import Mathlib.RingTheory.DividedPowers.Basic
 
 /-! # Divided power morphisms
 
@@ -48,6 +50,8 @@ modules*][Roby-1963]
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
+
+@[expose] public section
 
 open Ideal Set SetLike
 
@@ -140,7 +144,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
       hJ.dpow_add (hf (mem_map_of_mem f hx.1)) (hf (mem_map_of_mem f hy.1))]
     apply congr_arg
     ext k
-    rw [_root_.map_mul, hx.2, hy.2]
+    rw [map_mul, hx.2, hy.2]
   zero_mem' := by
     simp only [mem_setOf_eq, Submodule.zero_mem, map_zero, true_and]
     intro n
@@ -148,9 +152,8 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
     | zero => rw [hI.dpow_zero I.zero_mem, hJ.dpow_zero J.zero_mem, map_one]
     | succ n => rw [hI.dpow_eval_zero n.succ_ne_zero, hJ.dpow_eval_zero n.succ_ne_zero, map_zero]
   smul_mem' := fun r x hx ↦ by
-    simp only [mem_sep_iff, mem_coe] at hx ⊢
     refine ⟨I.smul_mem r hx.1, (fun n ↦ ?_)⟩
-    rw [smul_eq_mul, hI.dpow_mul hx.1, _root_.map_mul, _root_.map_mul, map_pow,
+    rw [smul_eq_mul, hI.dpow_mul hx.1, map_mul, map_mul, map_pow,
       hJ.dpow_mul (hf (mem_map_of_mem f hx.1)), hx.2 n]
 
 /-- The `DPMorphism` induced by a ring morphism, given that divided powers are compatible on a
@@ -162,7 +165,7 @@ def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
   ideal_comp         := hf
   dpow_comp {n} x hx := by
     have hS' : S ⊆ ideal_from_ringHom hI hJ hf := fun y hy ↦ by
-      simp only [mem_coe, ideal_from_ringHom, Submodule.mem_mk, mem_sep_iff]
+      simp only [mem_coe, ideal_from_ringHom, Submodule.mem_mk]
       exact ⟨hS ▸ subset_span hy, fun n => h y hy⟩
     rw [← span_le, ← hS] at hS'
     exact ((hS' hx).2 n).symm
@@ -219,7 +222,7 @@ protected def comp (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
   mk' (IsDPMorphism.comp hK g.isDPMorphism f.isDPMorphism)
 
 @[simp] lemma comp_toRingHom (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
-  (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
+    (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
 
 end DPMorphism
 

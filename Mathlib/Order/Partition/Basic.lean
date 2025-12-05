@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.SupIndep
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.SupIndep
 
 /-!
 # Partitions
@@ -28,6 +30,8 @@ where `s` is the set of all `x` for which `r x x`.
 * Give API lemmas for the specialization to the `Set` case.
 
 -/
+
+@[expose] public section
 variable {α : Type*} {s x y : α}
 
 open Set
@@ -40,11 +44,13 @@ structure Partition [CompleteLattice α] (s : α) where
   /-- The parts are `sSupIndep`. -/
   sSupIndep' : sSupIndep parts
   /-- The bottom element is not a part. -/
-  bot_not_mem' : ⊥ ∉ parts
+  bot_notMem' : ⊥ ∉ parts
   /-- The supremum of all parts is `s`. -/
   sSup_eq' : sSup parts = s
 
 namespace Partition
+
+@[deprecated (since := "2025-05-23")] alias bot_not_mem' := bot_notMem'
 
 section Basic
 
@@ -91,11 +97,13 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
   nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
 
 @[simp]
-lemma bot_not_mem (P : Partition s) : ⊥ ∉ P :=
-  P.bot_not_mem'
+lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=
+  P.bot_notMem'
+
+@[deprecated (since := "2025-05-23")] alias bot_not_mem := bot_notMem
 
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
-  fun h ↦ P.bot_not_mem <| h ▸ hx
+  fun h ↦ P.bot_notMem <| h ▸ hx
 
 lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
   bot_lt_iff_ne_bot.2 <| P.ne_bot_of_mem hx
@@ -105,7 +113,7 @@ lemma bot_lt_of_mem (hx : x ∈ P) : ⊥ < x :=
 protected def copy {t : α} (P : Partition s) (hst : s = t) : Partition t where
   parts := P
   sSupIndep' := P.sSupIndep
-  bot_not_mem' := P.bot_not_mem
+  bot_notMem' := P.bot_notMem
   sSup_eq' := hst ▸ P.sSup_eq
 
 @[simp]
@@ -121,7 +129,7 @@ def partscopyEquiv {t : α} (P : Partition s) (hst : s = t) : ↥(P.copy hst) �
 def removeBot (P : Set α) (indep : _root_.sSupIndep P) (sSup_eq : sSup P = s) : Partition s where
   parts := P \ {⊥}
   sSupIndep' := indep.mono diff_subset
-  bot_not_mem' := by simp
+  bot_notMem' := by simp
   sSup_eq' := by simp [← sSup_eq]
 
 end Basic

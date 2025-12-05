@@ -3,9 +3,11 @@ Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard
 -/
-import Mathlib.Algebra.Divisibility.Units
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Divisibility.Units
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Tactic.Common
 
 /-!
 # The maximal power of one natural number dividing another
@@ -18,6 +20,8 @@ We prove enough about `maxPowDiv` in this file to show equality with `Nat.padicV
 
 The implementation of `maxPowDiv` improves on the speed of `padicValNat`.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -42,14 +46,13 @@ end Nat
 namespace Nat.maxPowDiv
 
 theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
-  induction k, p, n using go.induct
+  fun_induction go
   case case1 h ih =>
-    unfold go
-    simp only [if_pos h]
-    exact ih
+    conv_lhs => unfold go
+    simpa [if_pos h] using ih
   case case2 h =>
-    unfold go
-    simp only [if_neg h]
+    conv_lhs => unfold go
+    simp [if_neg h]
 
 @[simp]
 theorem zero_base {n : ℕ} : maxPowDiv 0 n = 0 := by
@@ -96,7 +99,7 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   · rw [if_neg h]
     simp
 
-theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
+theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : p ^ pow ∣ n) :
     pow ≤ p.maxPowDiv n := by
   have ⟨c, hc⟩ := h
   have : 0 < c := by

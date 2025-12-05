@@ -3,8 +3,10 @@ Copyright (c) 2024 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm
@@ -16,6 +18,8 @@ an inner product space and for a real number `p > 1`.
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/
+
+@[expose] public section
 
 section ContDiffNormPow
 
@@ -38,7 +42,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
           rw [← rpow_one_add' (norm_nonneg x) (by positivity)]
           ring_nf
       _ =o[𝓝 0] (fun x : E ↦ ‖x‖ * 1) := by
-        refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by norm_num).mpr ?_
+        refine (isBigO_refl _ _).mul_isLittleO <| (isLittleO_const_iff <| by simp).mpr ?_
         convert continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
         simp [h2p.ne']
       _ =O[𝓝 0] (fun (x : E) ↦ x - 0) := by
@@ -46,9 +50,7 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
   · apply HasStrictFDerivAt.hasFDerivAt
     convert (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
     simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), ← Nat.cast_smul_eq_nsmul ℝ, smul_smul]
-    ring_nf -- doesn't close the goal?
-    congr! 2
-    ring
+    ring_nf
 
 theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=

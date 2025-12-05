@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Quotients by submodules
@@ -25,6 +26,10 @@ import Mathlib.SetTheory.Cardinal.Finite
   in `q`
 
 -/
+
+@[expose] public section
+
+assert_not_exists Cardinal
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -65,12 +70,29 @@ theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarT
 
 end Module
 
+variable {p}
+
+@[simp] protected lemma nontrivial_iff : Nontrivial (M ⧸ p) ↔ p ≠ ⊤ :=
+  QuotientAddGroup.nontrivial_iff.trans (by simp)
+
+@[simp] protected lemma subsingleton_iff : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
+  QuotientAddGroup.subsingleton_iff.trans (by simp)
+
+instance [Subsingleton M] : Subsingleton (M ⧸ p) := by simpa using Subsingleton.elim ..
+
+@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
-  obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
+  obtain ⟨x, _, notMem_s⟩ := SetLike.exists_of_lt h
   refine ⟨⟨mk x, 0, ?_⟩⟩
-  simpa using not_mem_s
+  simpa using notMem_s
+
+@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) := Quotient.nontrivial_iff.2 h
 
 end Quotient
+
+@[deprecated (since := "2025-11-02")]
+alias subsingleton_quotient_iff_eq_top := Quotient.subsingleton_iff
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
   Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
@@ -84,30 +106,13 @@ instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
   Fintype.ofSubsingleton 0
 
-variable {p}
-
-theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
-  constructor
-  · rintro h
-    refine eq_top_iff.mpr fun x _ => ?_
-    have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
-    rwa [sub_zero] at this
-  · rintro rfl
-    infer_instance
-
+variable {p} in
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
-  ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
+  ⟨fun ⟨h⟩ => Quotient.subsingleton_iff.mp (@Unique.instSubsingleton _ h),
     by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
-
-variable (p)
 
 noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
-
-theorem card_eq_card_quotient_mul_card (S : Submodule R M) :
-    Nat.card M = Nat.card S * Nat.card (M ⧸ S) := by
-  rw [mul_comm, ← Nat.card_prod]
-  exact Nat.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 
 section
 
@@ -216,10 +221,11 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
     (h' : p ≤ p.comap (f ^ k) := p.le_comap_pow_of_le_comap h k) :
     p.mapQ p (f ^ k) h' = p.mapQ p f h ^ k := by
   induction k with
-  | zero => simp [LinearMap.one_eq_id]
+  | zero => simp [Module.End.one_eq_id]
   | succ k ih =>
-    simp only [LinearMap.iterate_succ]
+    simp only [Module.End.iterate_succ]
     rw [mapQ_comp, ih]
+    exact p.le_comap_pow_of_le_comap h k
 
 theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h) = (q.comap f).map (mkQ p) :=
   le_antisymm (by rintro ⟨x⟩ hx; exact ⟨_, hx, rfl⟩)
@@ -286,11 +292,11 @@ end
 
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
-def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' } where
+def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simpa [comap_map_mkQ p]
+  right_inv := fun ⟨q, hq⟩ => Subtype.ext <| by simpa [comap_map_mkQ p]
   map_rel_iff' := comap_le_comap_iff <| range_mkQ _
 
 /-- The ordering on submodules of the quotient of `M` by `p` embeds into the ordering on submodules
@@ -314,7 +320,7 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
     rw [← Set.singleton_subset_iff] at hy
     exact Set.Subset.trans subset_span (span_mono (Set.preimage_mono hy))
   rw [← left_eq_sup] at hk
-  rw [range_coe f] at h₁
+  rw [coe_range f] at h₁
   rw [hk, ← LinearMap.map_le_map_iff, map_span, map_comap_eq, Set.image_preimage_eq_of_subset h₁]
   exact inf_le_right
 
@@ -368,18 +374,18 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃] [RingHomSurjective τ₁₂]
 
-theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : f.range.mkQ.comp f = 0 :=
+theorem range_mkQ_comp (f : M →ₛₗ[τ₁₂] M₂) : (range f).mkQ.comp f = 0 :=
   LinearMap.ext fun x => by simp
 
 theorem ker_le_range_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
-    ker g ≤ range f ↔ f.range.mkQ.comp g.ker.subtype = 0 := by
+    ker g ≤ range f ↔ (range f).mkQ.comp (ker g).subtype = 0 := by
   rw [← range_le_ker_iff, Submodule.ker_mkQ, Submodule.range_subtype]
 
 /-- An epimorphism is surjective. -/
 theorem range_eq_top_of_cancel {f : M →ₛₗ[τ₁₂] M₂}
     (h : ∀ u v : M₂ →ₗ[R₂] M₂ ⧸ (range f), u.comp f = v.comp f → u = v) : range f = ⊤ := by
   have h₁ : (0 : M₂ →ₗ[R₂] M₂ ⧸ (range f)).comp f = 0 := zero_comp _
-  rw [← Submodule.ker_mkQ (range f), ← h 0 f.range.mkQ (Eq.trans h₁ (range_mkQ_comp _).symm)]
+  rw [← Submodule.ker_mkQ (range f), ← h 0 (range f).mkQ (Eq.trans h₁ (range_mkQ_comp _).symm)]
   exact ker_zero
 
 end Ring

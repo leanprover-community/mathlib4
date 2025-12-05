@@ -3,8 +3,11 @@ Copyright (c) 2024 Wanyi He. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.Module.Torsion
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.Module.Torsion.Basic
+
 /-!
 # Characteristic of the ring of linear Maps
 
@@ -17,7 +20,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
   the characteristic of `R` is equal to the characteristic of the `R`-linear
   endomorphisms of `M` when `M` contains a non-torsion element `x`.
 
-## Notations
+## Notation
 
 - `R` is a commutative semiring
 - `M` is a `R`-module
@@ -30,6 +33,8 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
+@[expose] public section
+
 namespace Module
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -39,7 +44,7 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   characteristic of the `R`-linear endomorphisms of `M`. -/
 theorem charP_end {p : ℕ} [hchar : CharP R p]
     (htorsion : ∃ x : M, Ideal.torsionOf R M x = ⊥) : CharP (M →ₗ[R] M) p where
-  cast_eq_zero_iff' n := by
+  cast_eq_zero_iff n := by
     have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
     rw [exact, LinearMap.ext_iff, ← hchar.1]

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Definitions about upper/lower bounds
@@ -18,7 +20,11 @@ In this file we define:
 * `IsLUB s a`, `IsGLB s a` : `a` is a least upper bound (resp., a greatest lower bound)
   of `s`; for a partial order, it is unique if exists.
 * `IsCofinal s`: for every `a`, there exists a member of `s` greater or equal to it.
+* `IsCofinalFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `a ≤ b`
+* `IsCoinitialFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `b ≤ a`
 -/
+
+@[expose] public section
 
 variable {α : Type*} [LE α]
 
@@ -53,6 +59,14 @@ def IsLUB (s : Set α) : α → Prop :=
 /-- `a` is a greatest lower bound of a set `s`; for a partial order, it is unique if exists. -/
 def IsGLB (s : Set α) : α → Prop :=
   IsGreatest (lowerBounds s)
+
+/-- A set `s` is said to be cofinal for a set `t` if, for all `a ∈ s` there exists `b ∈ t`
+such that `a ≤ b`. -/
+def IsCofinalFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
+
+/-- A set `s` is said to be coinitial for a set `t` if, for all `a ∈ s` there exists `b ∈ t`
+such that `b ≤ a`. -/
+def IsCoinitialFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, b ≤ a
 
 /-- A set is cofinal when for every `x : α` there exists `y ∈ s` with `x ≤ y`. -/
 def IsCofinal (s : Set α) : Prop :=
