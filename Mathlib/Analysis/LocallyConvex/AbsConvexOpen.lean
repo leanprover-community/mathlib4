@@ -127,3 +127,6 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
   rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
   exact S.coe_isOpen.smul₀ hr''
+
+instance : PolynormableSpace 𝕜 E :=
+  with_gaugeSeminormFamily.toPolynormableSpace
