@@ -96,9 +96,9 @@ This is not incompatible with the predicate approach: in fact, we think that suc
 should eventually become the primary interface for the order of a distribution. However, we believe
 that being able to talk about the space `𝓓'^{n}(Ω, F)` is also quite important, for the following
 reasons:
-* if `T : 𝓓'(Ω,F)` is a distribution whose order is at most `n`, it is natural to test it against a `C^n` test
-  function (especially if `n = 0`). This means that we naturally want to consider its extension
-  `T'` as an element of `𝓓'^{n}(Ω, F)`.
+* if `T : 𝓓'(Ω,F)` is a distribution whose order is at most `n`, it is natural to test it against
+  a `C^n` test function (especially if `n = 0`). This means that we naturally want to consider its
+  extension `T'` as an element of `𝓓'^{n}(Ω, F)`.
 * it is often quite easy to keep track of the regularities while *defining* an operation on
   distributions (e. g. differentiation). On the other hand, once you have defined an operation on
   `𝓓'^(Ω, F)`, it can be quite painful to study its relation to order *a posteriori*.
