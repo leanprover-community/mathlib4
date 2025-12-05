@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.NumberTheory.Zsqrtd.Basic
+module
+
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Pell's equation and Matiyasevic's theorem
@@ -47,6 +49,8 @@ numbers but instead Davis' variant of using solutions to Pell's equation.
 Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
 
 -/
+
+@[expose] public section
 
 
 namespace Pell
@@ -234,6 +238,8 @@ theorem n_lt_xn (n) : n < xn a1 n :=
 theorem x_pos (n) : 0 < xn a1 n :=
   lt_of_le_of_lt (Nat.zero_le n) (n_lt_xn a1 n)
 
+-- TODO: fix non-terminal simp
+set_option linter.flexible false in
 theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     b ≤ pellZd a1 n → ∃ n, b = pellZd a1 n
   | 0, _ => fun h1 _ hl => ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩
@@ -288,7 +294,7 @@ theorem eq_pellZd (b : ℤ√(d a1)) (b1 : 1 ≤ b) (hp : IsPell b) : ∃ n, b =
       rw [Zsqrtd.natCast_val]
       exact
         Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| le_of_lt <| n_lt_xn _ _)
-          (Int.ofNat_zero_le _)
+          (Int.natCast_nonneg _)
 
 /-- Every solution to **Pell's equation** is recursively obtained from the initial solution
 `(1,0)` using the recursion `pell`. -/
@@ -297,7 +303,7 @@ theorem eq_pell {x y : ℕ} (hp : x * x - d a1 * y * y = 1) : ∃ n, x = xn a1 n
     match x, hp with
     | 0, (hp : 0 - _ = 1) => by rw [zero_tsub] at hp; contradiction
     | x + 1, _hp =>
-      Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| Nat.succ_pos x) (Int.ofNat_zero_le _)
+      Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| Nat.succ_pos x) (Int.natCast_nonneg _)
   let ⟨m, e⟩ := eq_pellZd a1 ⟨x, y⟩ this ((isPell_nat a1).2 hp)
   ⟨m,
     match x, y, e with
@@ -581,7 +587,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
-      let k2nl : 2 * n - k < n := by cutsat
+      let k2nl : 2 * n - k < n := by lia
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
       rw [← Nat.mod_eq_of_lt (Nat.sub_lt (x_pos a1 n) (x_pos a1 (2 * n - k)))]
@@ -685,12 +691,12 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
           _root_.ne_of_gt ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
-    have j42n : 4 * n - j ≤ 2 * n := by cutsat
+    have j42n : 4 * n - j ≤ 2 * n := by lia
     eq_of_xn_modEq a1 i2n j42n
       (h.symm.trans <| by
         let t := xn_modEq_x4n_sub a1 j42n
         rwa [tsub_tsub_cancel_of_le j4n] at t)
-      (by cutsat)
+      (by lia)
 
 theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
     (h : xn a1 j ≡ xn a1 i [MOD xn a1 n]) :

@@ -3,14 +3,18 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functors from a groupoid into a right/left rigid category form a right/left rigid category.
 
 (Using the pointwise monoidal structure on the functor category.)
 -/
+
+@[expose] public section
 
 
 noncomputable section

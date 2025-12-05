@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Faces
-import Mathlib.CategoryTheory.Idempotents.Basic
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Faces
+public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 
@@ -26,6 +28,8 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
@@ -108,7 +112,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
     · obtain ⟨a, ha⟩ := Nat.le.dest hqn
       have hnaq : n = a + q := by omega
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
-      have eq := v ⟨a, by cutsat⟩ (by
+      have eq := v ⟨a, by lia⟩ (by
         simp only [hnaq, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq

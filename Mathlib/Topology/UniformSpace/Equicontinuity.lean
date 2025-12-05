@@ -3,7 +3,9 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Equicontinuity of a family of functions
@@ -76,6 +78,8 @@ types, and in that case one should go back to the family definition rather than 
 
 equicontinuity, uniform convergence, ascoli
 -/
+
+@[expose] public section
 
 
 section

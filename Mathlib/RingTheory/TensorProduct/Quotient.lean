@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten, Yi Song, Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Yi Song, Sihan Su
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Interaction between quotients and tensor products for algebras
@@ -18,6 +20,8 @@ This file proves algebra analogs of the isomorphisms in
 - `Algebra.TensorProduct.quotIdealMapEquivTensorQuot`:
   `B ⧸ (I.map <| algebraMap A B) ≃ₐ[B] B ⊗[A] (A ⧸ I)`
 -/
+
+@[expose] public section
 
 open TensorProduct
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Cover
-import Mathlib.Order.Iterate
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Cover
+public import Mathlib.Order.Iterate
 
 /-!
 # Successor and predecessor
@@ -37,6 +39,8 @@ for all non-maximal elements (enforced by the combination of `le_succ` and the c
 The stricter condition of every element having a sensible successor can be obtained through the
 combination of `SuccOrder α` and `NoMaxOrder α`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -827,8 +831,7 @@ theorem Ici_pred (a : α) : Ici (pred a) = insert (pred a) (Ici a) :=
   ext fun _ => pred_le_iff_eq_or_le
 
 theorem Ioi_pred_eq_insert_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = insert a (Ioi a) := by
-  ext x; simp only [insert, mem_setOf, @eq_comm _ x a, mem_Ioi, Set.insert]
-  exact pred_lt_iff_eq_or_lt_of_not_isMin ha
+  simpa using Ioi_pred_of_not_isMin ha
 
 theorem Icc_pred_left (h : pred a ≤ b) : Icc (pred a) b = insert (pred a) (Icc a b) := by
   simp_rw [← Ici_inter_Iic, Ici_pred, insert_inter_of_mem (mem_Iic.2 h)]

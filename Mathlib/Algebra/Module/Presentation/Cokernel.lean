@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
 
 /-!
 # Presentation of a cokernel
@@ -23,6 +25,8 @@ More generally, if we have an exact sequence `M₁ → M₂ → M₃ → 0`,
 we obtain a presentation of `M₃`, see `Presentation.ofExact`.
 
 -/
+
+@[expose] public section
 
 universe w w₁ w₂₀ w₂₁ v₁ v₂ v₃ u
 
