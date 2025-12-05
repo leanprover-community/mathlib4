@@ -31,18 +31,8 @@ namespace Polynomial
 /-- Ring isomorphism between `R[X]ᵐᵒᵖ` and `Rᵐᵒᵖ[X]` sending each coefficient of a polynomial
 to the corresponding element of the opposite ring. -/
 def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
-  ((toFinsuppIso R).op.trans <| AddMonoidAlgebra.opRingEquiv.trans {
-    -- TODO(Yaël): Clean up after https://github.com/leanprover-community/mathlib4/pull/32254
-    -- The term should be `AddOpposite.opAddEquiv.addMonoidAlgebraCongrRight`.
-      toFun := AddMonoidAlgebra.mapDomain AddOpposite.unop
-      invFun := AddMonoidAlgebra.mapDomain .op
-      left_inv x := by ext; simp [← Finsupp.mapDomain_comp]
-      right_inv x := by ext; simp [← Finsupp.mapDomain_comp]
-      map_add' x y := Finsupp.mapDomain_add ..
-      map_mul' x y := by
-        simp [AddMonoidAlgebra.mul_def, AddMonoidAlgebra.mapDomain_sum, add_mul, mul_add,
-          Finsupp.sum_mapDomain_index, add_comm]
-    }).trans (toFinsuppIso _).symm
+  ((toFinsuppIso R).op.trans <| AddMonoidAlgebra.opRingEquiv.trans
+    AddOpposite.opAddEquiv.symm.addMonoidAlgebraCongrRight).trans (toFinsuppIso _).symm
 
 /-!  Lemmas to get started, using `opRingEquiv R` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
