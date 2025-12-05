@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.InnerProductSpace.Affine
 
 /-!
 # Perpendicular bisector of a segment
@@ -124,32 +125,7 @@ open AffineSubspace
 
 namespace EuclideanGeometry
 
-/-- Pythagorean theorem: if `p - a` is perpendicular to `c - a`, then
-`dist p (lineMap a c t) ^ 2 = dist p a ^ 2 + t ^ 2 * dist a c ^ 2`. -/
-lemma dist_sq_lineMap_of_inner_eq_zero {a c p : P} {t : ℝ}
-    (h_inner : ⟪p -ᵥ a, c -ᵥ a⟫ = 0) :
-    dist p (AffineMap.lineMap a c t) ^ 2 = dist p a ^ 2 + t ^ 2 * dist a c ^ 2 := by
-  set v := c -ᵥ a
-  have hbv : AffineMap.lineMap a c t -ᵥ a = t • v := by simp [AffineMap.lineMap_apply, v]
-  rw [dist_eq_norm_vsub, dist_eq_norm_vsub, dist_eq_norm_vsub' V,
-      show p -ᵥ AffineMap.lineMap a c t = (p -ᵥ a) - t • v by
-      rw [← hbv, vsub_sub_vsub_cancel_right],
-      ← real_inner_self_eq_norm_sq, ← real_inner_self_eq_norm_sq, ← real_inner_self_eq_norm_sq,
-      inner_sub_left, inner_sub_right, inner_sub_right,
-      inner_smul_right, inner_smul_left, inner_smul_left, inner_smul_right,
-      real_inner_comm (p -ᵥ a) v, h_inner]
-  simp only [inner_self_eq_norm_sq_to_K, RCLike.ofReal_real_eq_id, id_eq, mul_zero, sub_zero,
-    conj_trivial, zero_sub, sub_neg_eq_add, add_right_inj]
-  ring
-
-/-- Pythagorean theorem: if `p - a` is perpendicular to `c - a`, then
-`dist p c ^ 2 = dist p a ^ 2 + dist a c ^ 2`. -/
-lemma dist_sq_of_inner_eq_zero {a c p : P}
-    (h_inner : ⟪p -ᵥ a, c -ᵥ a⟫ = 0) :
-    dist p c ^ 2 = dist p a ^ 2 + dist a c ^ 2 := by
-  simpa using dist_sq_lineMap_of_inner_eq_zero (t := 1) h_inner
-
-/-- If `b` is strictly between `a` and `c`, and `p - a` is perpendicular to `b - a`,
+/-- If `b` is strictly between `a` and `c`, and `p -ᵥ a` is orthogonal to `b -ᵥ a`,
 then `p` is closer to `b` than to `c`. -/
 theorem dist_lt_of_sbtw_of_inner_eq_zero {a b c p : P}
     (h_sbtw : Sbtw ℝ a b c)
@@ -159,13 +135,13 @@ theorem dist_lt_of_sbtw_of_inner_eq_zero {a b c p : P}
   have hb : b -ᵥ a = t • (c -ᵥ a) := by simp [← hb_eq, AffineMap.lineMap_apply]
   have hpc : ⟪p -ᵥ a, c -ᵥ a⟫ = 0 := by simpa [ht0.ne', hb, inner_smul_right] using h_inner
   have h_sq_ineq : dist p b ^ 2 < dist p c ^ 2 := by
-    rw [← hb_eq, dist_sq_lineMap_of_inner_eq_zero hpc, dist_sq_of_inner_eq_zero hpc]
+    rw [← hb_eq, dist_sq_lineMap_of_inner_eq_zero t hpc, dist_sq_of_inner_eq_zero hpc]
     have hv_pos : 0 < dist a c ^ 2 := sq_pos_of_pos (dist_pos.mpr h_sbtw.left_ne_right)
     have ht_sq_lt : t ^ 2 < 1 := sq_lt_one_iff₀ ht0.le |>.mpr ht1
     nlinarith [sq_nonneg (dist p a), sq_nonneg (dist a c)]
   simpa only [Real.sqrt_sq dist_nonneg] using Real.sqrt_lt_sqrt (sq_nonneg _) h_sq_ineq
 
-/-- If `b` is weakly between `a` and `c`, and `p - a` is perpendicular to `c - a`,
+/-- If `b` is weakly between `a` and `c`, and `p -ᵥ a` is orthogonal to `c -ᵥ a`,
 then `p` is at least as close to `b` as to `c`. -/
 theorem dist_le_of_wbtw_of_inner_eq_zero {a b c p : P}
     (h_wbtw : Wbtw ℝ a b c)
@@ -173,7 +149,7 @@ theorem dist_le_of_wbtw_of_inner_eq_zero {a b c p : P}
     dist p b ≤ dist p c := by
   obtain ⟨t, ⟨ht0, ht1⟩, hb_eq⟩ := h_wbtw
   have h_sq_ineq : dist p b ^ 2 ≤ dist p c ^ 2 := by
-    rw [← hb_eq, dist_sq_lineMap_of_inner_eq_zero h_inner, dist_sq_of_inner_eq_zero h_inner]
+    rw [← hb_eq, dist_sq_lineMap_of_inner_eq_zero t h_inner, dist_sq_of_inner_eq_zero h_inner]
     have ht_sq_le : t ^ 2 ≤ 1 := sq_le_one_iff₀ ht0 |>.mpr ht1
     nlinarith [sq_nonneg (dist p a), sq_nonneg (dist a c)]
   simpa only [Real.sqrt_sq dist_nonneg] using Real.sqrt_le_sqrt h_sq_ineq
