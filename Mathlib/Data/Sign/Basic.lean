@@ -6,10 +6,8 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Cast
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Fintype.Order
 public import Mathlib.Data.Sign.Defs
 
 /-!
@@ -25,8 +23,6 @@ universe u
 variable {α : Type u}
 
 namespace SignType
-
-noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder _
 
 /-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
 @[simp, norm_cast]
@@ -132,22 +128,6 @@ def signHom : α →*₀ SignType where
 theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signHom x n
 
 end LinearOrderedRing
-
-section LinearOrderedAddCommGroup
-
-variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
-
-theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
-    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by
-  cases t
-  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
-    exact Finset.sum_eq_zero h
-  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h ⊢
-    exact Finset.sum_neg h hs
-  · simp_rw [pos_eq_one, sign_eq_one_iff] at h ⊢
-    exact Finset.sum_pos h hs
-
-end LinearOrderedAddCommGroup
 
 open Finset Nat
 
