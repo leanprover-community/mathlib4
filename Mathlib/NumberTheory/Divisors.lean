@@ -131,7 +131,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   constructor
   · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
     simp [Nat.mul_div_eq_iff_dvd, han]
-    cutsat
+    lia
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
@@ -594,8 +594,8 @@ lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0
   constructor
   · intro ⟨rfl, hn2⟩
     grw [← hn]
-    simp (disch := cutsat) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
-    cutsat
+    simp (disch := lia) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
+    lia
   · intro ⟨⟨hn1, hn2⟩, hn3⟩
     exact ⟨hn3, n_ne_zero⟩
 
