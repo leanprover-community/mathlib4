@@ -1,8 +1,16 @@
+/-
+Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid
+-/
 module
 
 public meta import Batteries.Lean.NameMapAttribute
 public import Mathlib.Init
 
+/-!
+# Modify proof terms so that they don't rely on unfolding certain constants
+-/
 
 namespace Mathlib.Tactic.UnfoldBoundary
 
@@ -38,12 +46,9 @@ def withoutBlockUnfolding {α} (x : MetaM α) : MetaM α := do
 
 def unfold (e : Expr) (unfolds : NameMap SimpTheorem) : MetaM Simp.Result :=
   withoutBlockUnfolding do
-  try
-    let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
-      (congrTheorems := (← getSimpCongrTheorems))
-    (·.1) <$> Simp.main e ctx (methods := { pre })
-  catch e =>
-    throwError "ohNOOOO\n{e.toMessageData}"
+  let ctx ← Simp.mkContext { Simp.neutralConfig with implicitDefEqProofs := false }
+    (congrTheorems := (← getSimpCongrTheorems))
+  (·.1) <$> Simp.main e ctx (methods := { pre })
 where
   pre (e : Expr) : SimpM Simp.Step := do
     let .const c _ := e.getAppFn | return .continue
@@ -135,6 +140,7 @@ structure UnfoldBoundaryExt where
   should not be unfolded in a proof that is translated. -/
   casts : NameMapExtension Name
 
+/-- Modify `e` so that it has type `expectedType`. -/
 def UnfoldBoundaryExt.cast (e expectedType : Expr) (boundaries : UnfoldBoundaryExt) :
     MetaM Expr := do
   let env ← getEnv
@@ -144,7 +150,7 @@ def UnfoldBoundaryExt.cast (e expectedType : Expr) (boundaries : UnfoldBoundaryE
   withBlockUnfolding boundaries do withTransparency TransparencyMode.all do
     mkCast e expectedType boundaries
 
-
+/-- Modify `e` so that it is well typed if the constants in `boundaries` cannot be unfolded. -/
 def UnfoldBoundaryExt.insertBoundaries (e : Expr) (boundaries : UnfoldBoundaryExt) :
     MetaM Expr := do
   let env ← getEnv

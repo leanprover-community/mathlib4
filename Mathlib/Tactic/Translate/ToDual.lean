@@ -135,6 +135,7 @@ initialize
       let .const declName _ := α.getAppFn | throwError "expected {α} to be a constant application"
       casts.add declName cast }
 
+@[inherit_doc TranslateData.unfoldBoundaries]
 def unfoldBoundaries : UnfoldBoundaryExt := { unfolds, casts }
 
 @[inherit_doc TranslateData.argInfoAttr]

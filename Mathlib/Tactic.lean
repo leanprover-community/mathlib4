@@ -299,6 +299,7 @@ public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual
+public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.TypeStar

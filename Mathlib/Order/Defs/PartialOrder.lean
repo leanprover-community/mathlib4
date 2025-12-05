@@ -146,20 +146,24 @@ namespace Mathlib.Tactic.UnfoldBoundary
 
 variable {α : Type*}
 
+/-- The cast for `DecidableLE` inserted by `to_dual`. -/
 @[to_dual_cast]
 def DecidableLE.identification [LE α] :
   Identification (DecidableLE α) (DecidableRel fun x y : α ↦ x ≤ y) := .Id
 
+/-- The dual cast for `DecidableLE` inserted by `to_dual`. -/
 @[to_dual existing identification]
 def DecidableLE.dual_identification [LE α] :
     Identification (DecidableLE α) (DecidableRel fun x y : α ↦ y ≤ x) where
   toFun h x y := h y x
   invFun h x y := h y x
 
+/-- The cast for `DecidableLT` inserted by `to_dual`. -/
 @[to_dual_cast]
 def DecidableLT.identification [LT α] :
   Identification (DecidableLT α) (DecidableRel fun x y : α ↦ x < y) := .Id
 
+/-- The dual cast for `DecidableLT` inserted by `to_dual`. -/
 @[to_dual existing identification]
 def DecidableLT.dual_identification [LT α] :
     Identification (DecidableLT α) (DecidableRel fun x y : α ↦ y < x) where
