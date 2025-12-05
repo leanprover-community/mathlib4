@@ -33,7 +33,7 @@ protected abbrev Small (F : C ⥤ Type w') := ∀ (X : C), _root_.Small.{w} (F.o
 
 /-- If a functor `F : C ⥤ Type w'` is `w`-small, this is the functor `C ⥤ Type w`
 obtained by shrinking `F.obj X` for all `X : C`. -/
-@[simps]
+@[simps, pp_with_univ]
 noncomputable def shrink (F : C ⥤ Type w') [FunctorToTypes.Small.{w} F] :
     C ⥤ Type w where
   obj X := Shrink.{w} (F.obj X)
