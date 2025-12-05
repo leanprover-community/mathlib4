@@ -209,8 +209,8 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm, fin.finite]
   have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
   have free : Module.Free R (ι →₀ Shrink.{v} R) := inferInstance
-  let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexG
-  have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexG surjf
+  let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
+  have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
   have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
   have ntr1 : Nontrivial S.X₁ := by
     by_contra h
@@ -343,8 +343,8 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
       · let _ := Quotient.field (maximalIdeal R)
         rcases Module.exists_finite_presentation R M with ⟨P, _, _, free, _, f, surjf⟩
         have : Module.Finite R (LinearMap.ker f) := Module.IsNoetherian.finite R (LinearMap.ker f)
-        let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexG
-        have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexG surjf
+        let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
+        have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
         have ntr2 : Nontrivial S.X₂ := Function.Surjective.nontrivial surjf
         have ntr1 : Nontrivial S.X₁ := by
           by_contra H
