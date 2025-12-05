@@ -234,26 +234,24 @@ theorem irreducible_smul_X_add_C {a : R} (b : R) (ha : a ≠ 0) (hab : IsRelPrim
     · push_neg at H
       rw [mul_comm] at h
       exact exact (this g f h H.le).symm
-    have hd := congr_arg degree h
-    have ha' : (a • (X : R[X])).degree = 1 := by
-      simp [smul_eq_C_mul a, degree_C ha]
-    rw [degree_mul, degree_add_C (by simp [ha']), ha'] at hd
-    rw [eq_comm, Nat.WithBot.add_eq_one_iff] at hd
-    rcases hd with hd | hd
-    · left
-      have hf := f.eq_C_of_degree_eq_zero hd.1
-      suffices IsUnit (f.coeff 0) by
-        rw [isUnit_iff]
-        exact ⟨f.coeff 0, this, hf.symm⟩
-      rw [hf, ← smul_eq_C_mul] at h
-      apply hab
-      · use g.coeff 1
-        simpa using congr_arg (fun f ↦ coeff f 1) h
-      · use g.coeff 0
-        simpa using congr_arg (fun f ↦ coeff f 0) h
-    · exfalso
-      rw [hd.1, hd.2, ← not_lt] at H
-      apply H (zero_lt_one' (WithBot ℕ))
+    have hd := congr(degree $h)
+    have aux : (a • (X : R[X]) + C b).degree = 1 := by compute_degree!
+    rw [degree_mul, aux, eq_comm, Nat.WithBot.add_eq_one_iff] at hd
+    obtain ⟨hf, -⟩ : f.degree = 0 ∧ g.degree = 1 := by
+      apply hd.resolve_right
+      rintro ⟨hf0, hfg⟩
+      simp_all [(zero_lt_one' (WithBot ℕ)).not_ge]
+    left
+    replace hf := f.eq_C_of_degree_eq_zero hf
+    suffices IsUnit (f.coeff 0) by
+      rw [isUnit_iff]
+      exact ⟨f.coeff 0, this, hf.symm⟩
+    rw [hf, ← smul_eq_C_mul] at h
+    apply hab
+    · use g.coeff 1
+      simpa using congr(coeff $h 1)
+    · use g.coeff 0
+      simpa using congr(coeff $h 0)
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
