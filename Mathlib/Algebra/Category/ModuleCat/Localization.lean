@@ -64,7 +64,7 @@ instance localizedModule_isLocalizedModule [Small.{v} R] (M : ModuleCat.{v} R)
 
 /-- `IsLocalizedModule.mapExtendScalars` as a morphism in `ModuleCat`. -/
 @[simps!]
-noncomputable def localizedModule_map [Small.{v} R] {M N : ModuleCat.{v} R}
+noncomputable def localizedModuleMap [Small.{v} R] {M N : ModuleCat.{v} R}
     (S : Submonoid R) (f : M ⟶ N) : (M.localizedModule S) ⟶ (N.localizedModule S) :=
   ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModule_mkLinearMap S)
     (N.localizedModule_mkLinearMap S) (Localization S) f.hom
@@ -76,10 +76,10 @@ noncomputable def localizedModule_map [Small.{v} R] {M N : ModuleCat.{v} R}
 noncomputable def localizedModule_functor [Small.{v} R] (S : Submonoid R) :
     ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S) where
   obj M := M.localizedModule S
-  map := ModuleCat.localizedModule_map S
+  map := ModuleCat.localizedModuleMap S
   map_comp {X Y Z} f g := by
     ext
-    simp [localizedModule_map, IsLocalizedModule.map_comp' S _ (Y.localizedModule_mkLinearMap S)]
+    simp [localizedModuleMap, IsLocalizedModule.map_comp' S _ (Y.localizedModule_mkLinearMap S)]
 
 instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModule_functor S).Additive where
 
