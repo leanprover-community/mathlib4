@@ -61,6 +61,11 @@ abbrev toSSet (A : X.Subcomplex) : SSet.{u} := A.toPresheaf
 instance : CoeOut X.Subcomplex SSet.{u} where
   coe := fun S ↦ S.toSSet
 
+instance {X : SSet.{u}} (n : SimplexCategoryᵒᵖ) (A : X.Subcomplex)
+    [DecidableEq (X.obj n)] :
+    DecidableEq ((A : SSet).obj n) :=
+  inferInstanceAs (DecidableEq (A.obj n))
+
 /-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
 abbrev ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A
 
