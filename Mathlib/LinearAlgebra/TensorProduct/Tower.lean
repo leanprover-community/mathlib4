@@ -674,6 +674,7 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
 def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.congr (.refl _ _) e
 
+@[simp]
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
     (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
    rfl
@@ -686,8 +687,7 @@ theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
 theorem _root_.LinearEquiv.baseChange_one :
     (1 : M ≃ₗ[R] M).baseChange R A M M = 1 := by
   ext x
-  rw [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange]
-  simp
+  simp [← LinearEquiv.coe_toLinearMap]
 
 theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans  (f.baseChange R A N P) := by
