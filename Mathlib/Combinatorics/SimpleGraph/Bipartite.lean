@@ -45,9 +45,10 @@ This file proves results about bipartite simple graphs, including several double
   See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
   `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
 
-* `SimpleGraph.CompleteBipartiteFinSubgraph G a b` is a finite complete bipartite subgraph, that is,
-  a "left" subset of `a` vertices and a "right" subset of `b` vertices such that every vertex in the
-  "left" subset is adjacent to every vertex in the "right" subset.
+* `SimpleGraph.completeBipartiteGraph_isContained_iff` is the proof that simple graphs contain a
+  copy of a `completeBipartiteGraph α β` iff there exists a "left" subset of `card α` vertices and
+  a "right" subset of `card β` vertices such that every vertex in the "left" subset is adjacent to
+  every vertex in the "right" subset.
 
 * `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
   that connect a vertex in the set `s` to a vertex in the set `t`.
