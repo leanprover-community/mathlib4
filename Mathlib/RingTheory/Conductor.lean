@@ -94,7 +94,7 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
   have lem : ∀ {a : R}, a ∈ I → l a • algebraMap R S a * algebraMap R S p ∈
       algebraMap R<x> S '' I.map (algebraMap R R<x>) := by
     intro a ha
-    rw [Algebra.id.smul_eq_mul, mul_assoc, mul_comm, mul_assoc, Set.mem_image]
+    rw [smul_eq_mul, mul_assoc, mul_comm, mul_assoc, Set.mem_image]
     refine Exists.intro
         (algebraMap R R<x> a * ⟨l a * algebraMap R S p,
           show l a * algebraMap R S p ∈ R<x> from ?h⟩) ?_

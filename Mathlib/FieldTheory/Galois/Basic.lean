@@ -315,6 +315,8 @@ end IntermediateField
 
 namespace IsGalois
 
+/-- See `InfiniteGalois.fixedField_fixingSubgroup` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     IntermediateField.fixedField (IntermediateField.fixingSubgroup K) = K := by
   have K_le : K ≤ IntermediateField.fixedField (IntermediateField.fixingSubgroup K) :=
@@ -327,15 +329,21 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     Nat.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
 
+/-- See `InfiniteGalois.fixedField_bot` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 @[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
     fixedField (⊤ : Subgroup Gal(E/F)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
 
+/-- See `InfiniteGalois.mem_bot_iff_fixed` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : Gal(E/F), f x = x := by
   rw [← fixedField_top, mem_fixedField_iff]
   simp only [Subgroup.mem_top, forall_const]
 
+/-- See `InfiniteGalois.mem_range_algebraMap_iff_fixed` for the infinite case,
+i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ Set.range (algebraMap F E) ↔ ∀ f : Gal(E/F), f x = x :=
   mem_bot_iff_fixed x
@@ -586,7 +594,7 @@ theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensiona
   · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
     exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
   · have h' : T'.rootSet E = T.rootSet E := by simp [Set.ext_iff, Polynomial.mem_rootSet', T']
-    rw [← lift_inj, lift_adjoin, ← coe_val, T.image_rootSet hT₂.1] at hT₂
+    rw [← lift_inj, lift_adjoin, ← coe_val, hT₂.1.image_rootSet] at hT₂
     rw [← restrictScalars_eq_top_iff (K := F), restrictScalars_adjoin, adjoin_union, adjoin_self,
       h', hT₂.2, lift_top, sup_comm, h]
 
