@@ -25,7 +25,7 @@ open Nat
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  cutsat
+  lia
 
 /-! ### `succ` and `pred` -/
 

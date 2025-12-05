@@ -433,7 +433,7 @@ lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_inje
     (hinj : Function.Injective (algebraMap 𝒪 K)) :
     IsFractionRing 𝒪 K := by
   have : IsDomain 𝒪 := hinj.isDomain
-  constructor
+  constructor; constructor
   · intro a
     simpa using hinj.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
   · intro x
