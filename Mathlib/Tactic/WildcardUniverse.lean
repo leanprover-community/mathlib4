@@ -58,7 +58,7 @@ declare_syntax_cat wildcard_level
 /--
 Term elaborator for the wildcard universe syntax `Foo.{u₁, u₂, ...}`.
 
-This elaborator handles syntax of the form `ident.{wildcard_level,*} args*`,
+This elaborator handles syntax of the form `ident.{wildcard_level,+} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
 syntax:arg (name := appWithWildcards)
