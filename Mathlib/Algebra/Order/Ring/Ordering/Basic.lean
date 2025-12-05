@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.Semireal.Defs
+public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.LinearCombination
@@ -196,11 +197,41 @@ theorem supportAddSubgroup_mono {Q : RingPreordering R} (h : P ≤ Q) :
 
 @[gcongr]
 theorem support_mono {Q : RingPreordering R} [P.HasIdealSupport] [Q.HasIdealSupport] (h : P ≤ Q) :
-    P.support ≤ Q.support := fun _ ↦ by aesop (add simp mem_support)
+    P.support ≤ Q.support := supportAddSubgroup_mono h
 
 /-! ## Order operations -/
 
+section Bot
+
+variable [IsSemireal R]
+
+instance : Bot (RingPreordering R) where
+  bot.toSubsemiring := Subsemiring.sumSq R
+  bot.neg_one_notMem' := by simpa using IsSemireal.not_isSumSq_neg_one
+
+@[simp] theorem bot_toSubsemiring : (⊥ : RingPreordering R).toSubsemiring = .sumSq R := rfl
+
+@[simp] theorem mem_bot {a} : a ∈ (⊥ : RingPreordering R) ↔ IsSumSq a :=
+  show a ∈ Subsemiring.sumSq R ↔ IsSumSq a by simp
+
+@[simp, norm_cast] theorem coe_bot : (⊥ : RingPreordering R) = {x : R | IsSumSq x} :=
+  show Subsemiring.sumSq R = {x : R | IsSumSq x} by simp
+
+instance : OrderBot (RingPreordering R) where
+  bot_le P a := by aesop
+
+end Bot
+
+theorem isSemireal (P : RingPreordering R) : IsSemireal R :=
+  .of_not_isSumSq_neg_one (P.neg_one_notMem <| mem_of_isSumSq ·)
+
+theorem _root_.nonempty_ringPreordering_iff_isSemireal :
+    Nonempty (RingPreordering R) ↔ IsSemireal R where
+  mp | ⟨P⟩ => P.isSemireal
+  mpr _ := ⟨⊥⟩
+
 section Inf
+
 variable (P₁ P₂ : RingPreordering R)
 
 instance : Min (RingPreordering R) where
@@ -208,8 +239,13 @@ instance : Min (RingPreordering R) where
 
 @[simp]
 theorem toSubsemiring_inf : (P₁ ⊓ P₂).toSubsemiring = P₁.toSubsemiring ⊓ P₂.toSubsemiring := rfl
-@[simp] theorem mem_inf (x : R) : x ∈ P₁ ⊓ P₂ ↔ x ∈ P₁ ∧ x ∈ P₂ := .rfl
-@[simp, norm_cast] theorem coe_inf : ↑(P₁ ⊓ P₂) = (P₁ ∩ P₂ : Set R) := rfl
+
+variable {P₁ P₂} in
+@[simp]
+theorem mem_inf {x} : x ∈ P₁ ⊓ P₂ ↔ x ∈ P₁ ∧ x ∈ P₂ := .rfl
+
+@[simp, norm_cast]
+theorem coe_inf : ↑(P₁ ⊓ P₂) = (P₁ ∩ P₂ : Set R) := rfl
 
 @[simp]
 theorem supportAddSubgroup_inf :
@@ -232,184 +268,6 @@ instance : SemilatticeInf (RingPreordering R) where
   le_inf _ _ _ _ _ := by simp_all [← SetLike.coe_subset_coe]
 
 end Inf
-
-section sInf
-variable {S : Set (RingPreordering R)} (hS : S.Nonempty)
-
-variable (S) in
-/-- The intersection of a nonempty set of preorderings is a ring preordering. -/
-def sInf : RingPreordering R where
-  __ := InfSet.sInf (RingPreordering.toSubsemiring '' S)
-  mem_of_isSquare' x := by aesop (add simp Submonoid.mem_iInf)
-  neg_one_notMem' := by simpa [Submonoid.mem_iInf] using
-    ⟨_, Set.Nonempty.some_mem hS, RingPreordering.neg_one_notMem _⟩
-
-@[simp]
-theorem sInf_toSubsemiring :
-  (sInf S hS).toSubsemiring = InfSet.sInf (RingPreordering.toSubsemiring '' S) := rfl
-
-@[simp, norm_cast]
-theorem coe_sInf : (sInf S hS : Set R) = ⋂ P ∈ S, P := by
-  have : (sInf S hS : Set R) = ⋂ P ∈ (RingPreordering.toSubsemiring '' S), P := rfl
-  simp_all
-
-@[simp]
-theorem mem_sInf (x : R) : x ∈ sInf S hS ↔ ∀ p ∈ S, x ∈ p := by
-  rw [show x ∈ sInf S hS ↔ x ∈ (sInf S hS : Set R) by simp [-coe_sInf]]
-  simp_all
-
-@[simp]
-theorem supportAddSubgroup_sInf :
-    (sInf S hS).supportAddSubgroup = InfSet.sInf (supportAddSubgroup '' S) := by
-  aesop (add simp mem_supportAddSubgroup)
-
-protected theorem HasIdealSupport.sInf (h : ∀ P ∈ S, P.HasIdealSupport) :
-    (sInf S hS).HasIdealSupport := by
-  simp_all [hasIdealSupport_iff]
-
-@[simp]
-theorem support_sInf (h : ∀ P ∈ S, P.HasIdealSupport) :
-    letI _ := HasIdealSupport.sInf hS h
-    (sInf S hS).support =
-    InfSet.sInf {s | ∃ P, ∃ hP : P ∈ S, letI _ := h _ hP; s = P.support} := by
-  aesop (add simp mem_support)
-
-theorem sInf_le {P} (hP : P ∈ S) : sInf S hS ≤ P := by
-  rw [← SetLike.coe_subset_coe]
-  simpa using Set.biInter_subset_of_mem hP
-
-theorem le_sInf {P} (hP : ∀ Q ∈ S, P ≤ Q) : P ≤ sInf S hS := by
-  rw [← SetLike.coe_subset_coe]
-  simpa using Set.subset_iInter₂ hP
-
-end sInf
-
-section Bot
-variable [IsSemireal R]
-
-instance : Bot (RingPreordering R) where
-  bot.toSubsemiring := Subsemiring.sumSq R
-  bot.neg_one_notMem' := by simpa using IsSemireal.not_isSumSq_neg_one
-
-@[simp] theorem bot_toSubsemiring : (⊥ : RingPreordering R).toSubsemiring = .sumSq R := rfl
-
-@[simp] theorem mem_bot (a) : a ∈ (⊥ : RingPreordering R) ↔ IsSumSq a :=
-  show a ∈ Subsemiring.sumSq R ↔ IsSumSq a by simp
-
-@[simp, norm_cast] theorem coe_bot : (⊥ : RingPreordering R) = {x : R | IsSumSq x} :=
-  show Subsemiring.sumSq R = {x : R | IsSumSq x} by simp
-
-instance : OrderBot (RingPreordering R) where
-  bot_le P a := by aesop
-
-end Bot
-
-theorem nonempty_ringPreordering_iff_isSemireal : Nonempty (RingPreordering R) ↔ IsSemireal R where
-  mp h := Nonempty.elim h fun P ↦ by
-    refine ⟨fun {x} hx hx₂ ↦ ?_⟩
-    apply P.neg_one_notMem
-    rw [show -1 = x by linear_combination -hx₂]
-    aesop
-  mpr h := ⟨⊥⟩
-
-theorem isSemireal (P : RingPreordering R) : IsSemireal R :=
-  nonempty_ringPreordering_iff_isSemireal.mp ⟨P⟩
-
-section sSup
-variable {S : Set (RingPreordering R)} (hS : S.Nonempty) (hSd : DirectedOn (· ≤ ·) S)
-
--- TODO : define under `isSemireal` and add dummy valued when not directed
---        use class `CompletePartialOrder`
-
-variable (S) in
-/-- The union of a directed set of preorderings is a preordering. -/
-def sSup : RingPreordering R where
-  __ := SupSet.sSup (toSubsemiring '' S)
-  mem_of_isSquare' x := by
-    have : DirectedOn (· ≤ ·) (toSubsemiring '' S) := directedOn_image.mpr hSd
-    aesop (add simp Subsemiring.mem_sSup_of_directedOn,
-               unsafe forward (Set.Nonempty.some_mem hS))
-  neg_one_notMem' := by
-    have : DirectedOn (· ≤ ·) (toSubsemiring '' S) := directedOn_image.mpr hSd
-    aesop (add simp Subsemiring.mem_sSup_of_directedOn,
-               unsafe forward (Set.Nonempty.some_mem hS))
-
-@[simp]
-theorem sSup_toSubsemiring :
-    (sSup S hS hSd).toSubsemiring = SupSet.sSup (RingPreordering.toSubsemiring '' S) := rfl
-
-@[simp, norm_cast]
-theorem coe_sSup : (sSup S hS hSd : Set R) = ⋃ P ∈ S, P := by
-  have : (sSup S hS hSd : Set R) = SupSet.sSup (toSubsemiring '' S) := rfl
-  simp_all [Subsemiring.coe_sSup_of_directedOn (by aesop) <| directedOn_image.mpr hSd]
-
-@[simp]
-theorem mem_sSup {x : R} : x ∈ sSup S hS hSd ↔ ∃ p ∈ S, x ∈ p := by
-  rw [show x ∈ sSup S hS hSd ↔ x ∈ (sSup S hS hSd : Set R) by simp [-coe_sSup]]
-  simp_all
-
-theorem le_sSup {P} (hP : P ∈ S) : P ≤ sSup S hS hSd := by
-  rw [← SetLike.coe_subset_coe]
-  simpa using Set.subset_biUnion_of_mem hP
-
-theorem sSup_le {P} (hP : ∀ Q ∈ S, Q ≤ P) : sSup S hS hSd ≤ P := by
-  rw [← SetLike.coe_subset_coe]
-  simpa using Set.iUnion₂_subset hP
-
-include hSd in
-theorem directedOn_image_supportAddSubgroup :
-    DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (supportAddSubgroup '' S) := by
-  rw [directedOn_image]
-  intro _ hx _ hy
-  rcases hSd _ hx _ hy with ⟨z, _⟩
-  exact ⟨z, by aesop (add safe apply supportAddSubgroup_mono)⟩
-
-@[simp]
-theorem supportAddSubgroup_sSup :
-    (sSup S hS hSd).supportAddSubgroup = SupSet.sSup (supportAddSubgroup '' S) := by
-  ext x
-  rw [AddSubgroup.mem_sSup_of_directedOn (by simp_all) (directedOn_image_supportAddSubgroup hSd)]
-  simp only [mem_supportAddSubgroup, mem_sSup, Set.mem_image, exists_exists_and_eq_and]
-  refine ⟨?_, by aesop⟩
-  rintro ⟨⟨_, hs₁, _⟩, ⟨_, hs₂, _⟩⟩
-  rcases hSd _ hs₁ _ hs₂ with ⟨s, hs⟩
-  exact ⟨s, by aesop⟩
-
-protected theorem HasIdealSupport.sSup (h : ∀ P ∈ S, P.HasIdealSupport) :
-    (sSup S hS hSd).HasIdealSupport := by
-  simp_rw [hasIdealSupport_iff, mem_sSup] at *
-  rintro x a ⟨P, hP, hP'⟩ ⟨Q, hQ, hQ'⟩
-  rcases hSd _ hP _ hQ with ⟨R, hR, hPR, hQR⟩
-  have := h _ hR x a (hPR hP') (hQR hQ')
-  aesop
-
-@[simp]
-theorem support_sSup (h : ∀ P ∈ S, P.HasIdealSupport) :
-    letI _ := HasIdealSupport.sSup hS hSd h
-    (sSup S hS hSd).support =
-    SupSet.sSup {s | ∃ P, ∃ hP : P ∈ S, letI _ := h _ hP; s = P.support} := by
-  generalize_proofs
-  ext x
-  have : x ∈ (sSup S hS hSd).support ↔ x ∈ SupSet.sSup (supportAddSubgroup '' S) := by
-    simp [← supportAddSubgroup_sSup (hS := hS) (hSd := hSd)]
-  rw [this,
-      AddSubgroup.mem_sSup_of_directedOn (by simp_all) (directedOn_image_supportAddSubgroup hSd),
-      Submodule.mem_sSup_of_directed]
-  · aesop
-  · rcases hS with ⟨P, hP⟩
-    exact ⟨let _ := h P hP; P.support, by aesop⟩
-  · rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-    rcases hSd _ hx _ hy with ⟨z, hz, _, _⟩
-    let _ := h _ hx
-    let _ := h _ hy
-    let _ := h _ hz
-    exact ⟨z.support, by aesop (add safe apply support_mono)⟩
-
-end sSup
-
-theorem nonempty_chain_bddAbove {S : Set (RingPreordering R)}
-    (hS : S.Nonempty) (hSc : IsChain (· ≤ ·) S) : BddAbove S :=
-  ⟨sSup S hS <| IsChain.directedOn hSc, fun _ => le_sSup hS <| IsChain.directedOn hSc⟩
 
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
