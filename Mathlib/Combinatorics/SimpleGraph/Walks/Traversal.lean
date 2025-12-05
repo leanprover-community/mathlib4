@@ -218,8 +218,13 @@ theorem firstDart_eq_head_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
 theorem firstDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.firstDart hnil ∈ p.darts :=
   p.firstDart_eq_head_darts _ ▸ List.head_mem _
 
+@[simp]
+theorem getLast_darts_eq_lastDart {p : G.Walk v w} (hnil : p.darts ≠ []) :
+    p.darts.getLast hnil = p.lastDart (darts_eq_nil.not.mp hnil) := by
+  grind [lastDart_eq, length_darts, not_nil_iff_lt_length]
+
 theorem lastDart_eq_getLast_darts {p : G.Walk v w} (hnil : ¬p.Nil) :
-    p.lastDart hnil = p.darts.getLast (by grind [length_darts, not_nil_iff_lt_length]) := by
+    p.lastDart hnil = p.darts.getLast (darts_eq_nil.not.mpr hnil) := by
   grind [lastDart_eq, length_darts, not_nil_iff_lt_length]
 
 theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil ∈ p.darts :=
@@ -236,7 +241,7 @@ theorem snd_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) ∈ p.edge
 theorem penultimate_eq_getLast_edges {p : G.Walk v w} (hnil : ¬p.Nil) :
     s(p.penultimate, w) = p.edges.getLast (p.edges.ne_nil_of_length_pos <|
       p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_edges.symm) := by
-  simp [← p.edge_lastDart hnil, lastDart_eq_getLast_darts, Walk.edges]
+  simp [← p.edge_lastDart hnil, Walk.edges]
 
 theorem penultimate_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(p.penultimate, w) ∈ p.edges :=
   p.penultimate_eq_getLast_edges hnil ▸ List.getLast_mem _
