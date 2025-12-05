@@ -575,7 +575,7 @@ theorem mk_arrow_eq_zero_iff : #(α → β') = 0 ↔ #α ≠ 0 ∧ #β' = 0 := b
 
 theorem mk_surjective_eq_zero_iff_lift :
     #{f : α → β' | Surjective f} = 0 ↔ lift.{v} #α < lift.{u} #β' ∨ (#α ≠ 0 ∧ #β' = 0) := by
-  set_option push_neg.use_distrib true in contrapose!
+  contrapose! +distrib
   rw [lift_mk_le', and_comm]
   simp_rw [mk_ne_zero_iff, mk_eq_zero_iff, nonempty_coe_sort,
     Set.Nonempty, mem_setOf, exists_surjective_iff, nonempty_fun]
