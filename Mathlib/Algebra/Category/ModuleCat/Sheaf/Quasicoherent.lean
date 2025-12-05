@@ -95,12 +95,11 @@ def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
 /-- Given a sheaf of `R`-module `M` and a `Presentation M`, there is two morphism of
 sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`  satisfying `H : f ≫ g = 0`
 and `IsColimit (CokernelCofork.ofπ g H)`. -/
-def Presentation.cokernelCofork {M : SheafOfModules.{u} R} (P : Presentation M) :
-    Σ' (ι σ : Type u) (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0),
-    IsColimit (CokernelCofork.ofπ g H) := by
-  use P.relations.I, P.generators.I, (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _),
-    P.generators.π, by simp
-  exact isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
+def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
+    IsColimit (CokernelCofork.ofπ
+      (f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _))
+      P.generators.π (by simp)) :=
+  isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
