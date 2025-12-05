@@ -149,19 +149,7 @@ section
 
 open Abelian
 
-variable [UnivLE.{v, v'}] [Small.{v', u'} S]
-
-universe w w'
-
-variable [UnivLE.{v, w}] [UnivLE.{v', w'}]
-
-instance hasExt_of_small1 [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
-
-instance hasExt_of_small2 [Small.{v'} S] : CategoryTheory.HasExt.{w'} (ModuleCat.{v'} S) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w'} (ModuleCat.{v'} S)
-
-variable [Small.{v} R]
+variable [UnivLE.{v, v'}] [Small.{v} R] [Small.{v'} S]
 
 noncomputable instance (n : ℕ) (M N : ModuleCat.{v'} S) : Module R (Ext M N n) :=
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
@@ -192,12 +180,12 @@ noncomputable def ModuleCat.extendScalars'_map_LinearMap (M N : ModuleCat.{v} R)
   letI := ModuleCat.Algebra'.extendScalars'_linear.{v, v'} R S
   (ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R (X := M) (Y := N)
 
-omit [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R] in
+omit [Small.{v} R] in
 lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R) :
   extendScalars'_map_LinearMap.{v, v'} S M N =
   (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
 
-omit [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R] in
+omit [Small.{v} R] in
 lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] :
     IsBaseChange S (ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N) := by
@@ -372,8 +360,8 @@ noncomputable def Ext.isBaseChangeMap_aux {M N : ModuleCat.{v} R}
     (isb2 : letI := RestrictScalars.moduleOrig R S NS; IsBaseChange S g)
     (n : ℕ) : Ext ((ModuleCat.extendScalars'.{v, v'} R S).obj M)
     ((ModuleCat.extendScalars'.{v, v'} R S).obj N) n ≃ₗ[S] Ext MS NS n := {
-  __ := (((extFunctorObj.{w'} ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
-  (iso_extendScalars'_of_isBaseChange S g isb2).symm).trans (((extFunctor.{w'} n).mapIso
+  __ := (((extFunctorObj ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
+  (iso_extendScalars'_of_isBaseChange S g isb2).symm).trans (((extFunctor n).mapIso
   (iso_extendScalars'_of_isBaseChange S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
   map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
@@ -384,8 +372,8 @@ noncomputable def Ext.isBaseChangeMap_aux' {M N : ModuleCat.{v} R}
     (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) :
     Ext ((ModuleCat.extendScalars'.{v, v'} R S).obj M)
     ((ModuleCat.extendScalars'.{v, v'} R S).obj N) n ≃ₗ[S] Ext MS NS n := {
-  __ := (((extFunctorObj.{w'} ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
-  (iso_extendScalars'_of_isBaseChange' S g isb2).symm).trans (((extFunctor.{w'} n).mapIso
+  __ := (((extFunctorObj ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
+  (iso_extendScalars'_of_isBaseChange' S g isb2).symm).trans (((extFunctor n).mapIso
   (iso_extendScalars'_of_isBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
   map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
@@ -438,11 +426,9 @@ namespace CategoryTheory.Abelian
 
 open ModuleCat
 
-universe w w'
-
 variable (S : Submonoid R) (A : Type u') [CommRing A] [Algebra R A] [IsLocalization S A]
 
-variable [UnivLE.{v, v'}] [Small.{v', u'} A] [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R]
+variable [UnivLE.{v, v'}] [Small.{v} R] [Small.{v'} A]
 
 variable {R}
 
