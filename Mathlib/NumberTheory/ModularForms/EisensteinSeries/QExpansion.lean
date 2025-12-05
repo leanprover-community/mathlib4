@@ -190,7 +190,7 @@ lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 k (p := 1)
     (f := fun n ↦ (n ^ k : ℂ)) (by norm_num)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
-  grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply, smul_eq_mul]
+  grind [ofReal_one, iteratedDerivWithin_zero, Pi.smul_apply]
 
 /-- This is a version of `EisensteinSeries.qExpansion_identity` for positive naturals,
 which shows that  `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n : ℕ+, n ^ k q ^n`
