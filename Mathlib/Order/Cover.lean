@@ -352,12 +352,6 @@ section LinearOrder
 
 variable [LinearOrder α] {a b c : α}
 
-theorem CovBy.Ioi_eq (h : a ⋖ b) : Ioi a = Ici b := by
-  rw [← Ioo_union_Ici_eq_Ioi h.lt, h.Ioo_eq, empty_union]
-
-theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
-  rw [← Iic_union_Ioo_eq_Iio h.lt, h.Ioo_eq, union_empty]
-
 theorem WCovBy.le_of_lt (hab : a ⩿ b) (hcb : c < b) : c ≤ a :=
   not_lt.1 fun hac => hab.2 hac hcb
 
@@ -369,6 +363,18 @@ theorem CovBy.le_of_lt (hab : a ⋖ b) : c < b → c ≤ a :=
 
 theorem CovBy.ge_of_gt (hab : a ⋖ b) : a < c → b ≤ c :=
   hab.wcovBy.ge_of_gt
+
+theorem CovBy.Ioi_eq (h : a ⋖ b) : Ioi a = Ici b := by
+  rw [← Ioo_union_Ici_eq_Ioi h.lt, h.Ioo_eq, empty_union]
+
+theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
+  rw [← Iic_union_Ioo_eq_Iio h.lt, h.Ioo_eq, union_empty]
+
+theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
+  subset_antisymm (fun _x hx ↦ ⟨h.ge_of_gt hx.1, hx.2⟩) <| Ico_subset_Ioo_left h.lt
+
+theorem CovBy.Ioo_eq_Ioc (h : a ⋖ b) (c : α) : Ioo c b = Ioc c a :=
+  subset_antisymm (fun _x hx ↦ ⟨hx.1, h.le_of_lt hx.2⟩) <| Ioc_subset_Ioo_right h.lt
 
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
   (hb.le_of_lt ha.lt).antisymm <| ha.le_of_lt hb.lt
