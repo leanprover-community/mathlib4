@@ -253,9 +253,8 @@ theorem nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast {l : List α} {a : α} (ha
     rw [getElem?_cons_succ, nextOr]
     split_ifs with hx
     · grind
-    rw [dropLast_cons₂, mem_cons] at ha
-    have ih := nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast <| ha.resolve_left hx
-    rw [idxOf_cons_ne _ <| Ne.symm hx, ← ih]
+    rw [idxOf_cons_ne _ <| Ne.symm hx, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
+    grind
 
 theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast) (d : α) :
     [a, l.nextOr a d] <:+: l := by
@@ -270,12 +269,11 @@ theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLa
 theorem nextOr_getLast_of_notMem_dropLast {l : List α} (hl : l ≠ []) (h : l.getLast hl ∉ l.dropLast)
     (d : α) : l.nextOr (l.getLast hl) d = d := by
   match l with
-  | nil => simp
-  | [head] => simp
+  | nil | [_] => simp
   | x :: y :: tail =>
     unfold nextOr
     split_ifs with h'
-    · simp [h'] at h
+    · grind
     apply nextOr_getLast_of_notMem_dropLast
     grind
 
@@ -343,15 +341,10 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
 theorem prev_eq_getElem?_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
     (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : l.prev a ha = l[l.idxOf a - 1]? := by
   match l with
-  | nil => simp at ha
-  | [head] => exact (ha₀ <| eq_of_mem_singleton ha).elim
+  | nil | [_] => grind
   | x :: y :: tail =>
-    rw [head_cons] at ha₀
-    simp [ha₀, prev]
-    split_ifs with hy
-    · grind
-    · have ih := (y :: tail).prev_eq_getElem?_idxOf_pred_of_ne_head (mem_of_ne_of_mem ha₀ ha) hy
-      grind
+    have ih := (y :: tail).prev_eq_getElem?_idxOf_pred_of_ne_head (a := a)
+    grind [prev]
 
 theorem prev_infix_of_mem_tail {l : List α} {a : α} (ha : a ∈ l)
     (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : [l.prev a ha, a] <:+: l := by
@@ -364,7 +357,7 @@ theorem prev_infix_of_mem_tail {l : List α} {a : α} (ha : a ∈ l)
 
 theorem prev_eq_getElem?_idxOf_pred_of_mem {l : List α} {a : α} (ha : a ∈ l) :
     l.prev a ha = l[(l.idxOf a + (l.length - 1)) % l.length]'(Nat.mod_lt _ <| by grind) := by
-  cases l with | nil => simp at ha | cons head tail =>
+  cases l with | nil => grind | cons head tail =>
   by_cases ha₀ : a = head
   · subst ha₀
     simp
