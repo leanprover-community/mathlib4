@@ -316,6 +316,38 @@ theorem iInf_eq_generate (s : ι → Filter α) : iInf s = generate (⋃ i, (s i
 theorem mem_iInf_of_mem {f : ι → Filter α} (i : ι) {s} (hs : s ∈ f i) : s ∈ ⨅ i, f i :=
   iInf_le f i hs
 
+@[elab_as_elim]
+theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f) {p : Set α → Prop}
+    (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s := by
+  have p_of_f : ∀ i, ∀ s ∈ f i, p s := fun i s hs ↦ by simpa using ins hs uni
+  let q : Set α → Prop := fun t ↦ t ∈ iInf f ∧ ∀ t', t ⊆ t' → p t'
+  have q_mono : Monotone q := fun a b hab ha ↦
+    ⟨mem_of_superset ha.1 hab, fun t hbt ↦ ha.2 _ (hab.trans hbt)⟩
+  have A : ∀ i, ∀ s ∈ f i, ∀ t, q t → q (s ∩ t) := fun i s hs t ht ↦ by
+    use inter_mem (mem_iInf_of_mem _ hs) ht.1
+    intro u hu
+    have : u = (u ∪ s) ∩ (u ∪ t) := by
+      rwa [← union_eq_left, union_inter_distrib_left, eq_comm] at hu
+    rw [this]
+    exact ins (mem_of_superset hs subset_union_right) (ht.2 _ subset_union_right)
+  have B : ∀ s t, q s → q t → q (s ∩ t) := fun s t hqs hqt ↦ by
+    let 𝓕 : Filter α :=
+    { sets := {s | ∀ t, q t → q (s ∩ t)}
+      univ_sets := by simp
+      sets_of_superset ha hab t ht := q_mono (inter_subset_inter_left _ hab) (ha t ht)
+      inter_sets ha hb t ht := by simpa [inter_assoc] using ha _ (hb _ ht) }
+    exact (le_iInf_iff.mpr A : 𝓕 ≤ iInf f) hqs.1 _ hqt
+  have C : ∀ i, ∀ s ∈ f i, q s := fun i s hs ↦
+    ⟨mem_iInf_of_mem _ hs, fun t hst ↦ p_of_f _ _ (mem_of_superset hs hst)⟩
+  let 𝓖 : Filter α :=
+  { sets := {t | q t}
+    univ_sets := by simpa [q] using uni
+    sets_of_superset ha hab :=
+      ⟨mem_of_superset ha.1 hab, fun t hbt ↦ ha.2 _ (hab.trans hbt)⟩
+    inter_sets := B _ _ }
+  have : 𝓖 ≤ iInf f := le_iInf_iff.mpr C
+  exact (this hs).2 s subset_rfl
+
 @[simp]
 theorem le_principal_iff {s : Set α} {f : Filter α} : f ≤ 𝓟 s ↔ s ∈ f :=
   ⟨fun h => h Subset.rfl, fun hs _ ht => mem_of_superset hs ht⟩
