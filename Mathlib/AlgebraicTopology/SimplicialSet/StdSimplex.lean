@@ -7,6 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 
 /-!
@@ -54,6 +56,10 @@ lemma map_id (n : SimplexCategory) :
 def objEquiv {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
     (stdSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
   Equiv.ulift.{u, 0}
+
+instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
+    DecidableEq ((stdSimplex.{u}.obj n).obj m) :=
+  fun a b ↦ decidable_of_iff (stdSimplex.objEquiv a = stdSimplex.objEquiv b) (by simp)
 
 /-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
 instance (n i : ℕ) : FunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (Fin (n + 1)) where
@@ -110,6 +116,10 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   uliftYonedaEquiv
+
+instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
+    DecidableEq (stdSimplex.obj n ⟶ X) :=
+  fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
 
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
@@ -311,6 +321,56 @@ def nonDegenerateEquiv {n d : ℕ} :
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
+
+/-- If `i : Fin (n + 2)`, this is the order isomorphism between `Fin (n +1)`
+and the complement of `{i}` as a finset. -/
+def finSuccAboveOrderIsoFinset {n : ℕ} (i : Fin (n + 2)) :
+    Fin (n + 1) ≃o ({i}ᶜ : Finset _) where
+  toEquiv := (finSuccAboveEquiv (p := i)).trans
+    { toFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
+      invFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩ }
+  map_rel_iff' := (Fin.succAboveOrderEmb i).map_rel_iff
+
+lemma face_singleton_compl {n : ℕ} (i : Fin (n + 2)) :
+    face.{u} {i}ᶜ =
+      Subcomplex.ofSimplex (objEquiv.symm (SimplexCategory.δ i)) :=
+  face_eq_ofSimplex _ _ (finSuccAboveOrderIsoFinset i)
+
+/-- In `Δ[n + 1]`, the face corresponding to the complement of `{i}`
+for `i : Fin (n + 2)` is isomorphic to `Δ[n]`. -/
+def faceSingletonComplIso {n : ℕ} (i : Fin (n + 2)) :
+    Δ[n] ≅ (face {i}ᶜ : SSet.{u}) :=
+  isoOfRepresentableBy (faceRepresentableBy _ _ (finSuccAboveOrderIsoFinset i))
+
+@[reassoc (attr := simp)]
+lemma faceSingletonComplIso_hom_ι {n : ℕ} (i : Fin (n + 2)) :
+    (faceSingletonComplIso.{u} i).hom ≫ (face {i}ᶜ).ι =
+      stdSimplex.δ i := rfl
+
+/-- Given `i : Fin (n + 1)`, this is the isomorphism from `Δ[0]` to the face
+of `Δ[n]` corresponding to `{i}`. -/
+noncomputable def faceSingletonIso {n : ℕ} (i : Fin (n + 1)) :
+    Δ[0] ≅ (face {i} : SSet.{u}) :=
+  stdSimplex.isoOfRepresentableBy
+    (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
+
+@[reassoc]
+lemma faceSingletonIso_zero_hom_comp_ι_eq_δ :
+    (faceSingletonIso.{u} (0 : Fin 2)).hom ≫ (face {0}).ι = stdSimplex.δ 1 := by
+  decide
+
+@[reassoc]
+lemma faceSingletonIso_one_hom_comp_ι_eq_δ :
+    (faceSingletonIso.{u} (1 : Fin 2)).hom ≫ (face {1}).ι = stdSimplex.δ 0 := by
+  decide
+
+/-- Given `i` and `j` in `Fin (n + 1)` such that `i < j`,
+this is the isomorphism from `Δ[1]` to the face
+of `Δ[n]` corresponding to `{i, j}`. -/
+noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
+    Δ[1] ≅ (face {i, j} : SSet.{u}) :=
+  stdSimplex.isoOfRepresentableBy
+    (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
 
 end stdSimplex
 
