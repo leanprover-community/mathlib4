@@ -30,15 +30,15 @@ This comes up in non-commutative graph theory for example.
 
 @[expose] public section
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-  [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+variable {𝕜 E A : Type*} [RCLike 𝕜]
 
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
 namespace InnerProductSpace
 
 section coalgebraOfAlgebra
-variable {A : Type*} [NormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+variable [NormedRing A] [InnerProductSpace 𝕜 A] [SMulCommClass 𝕜 A A]
+  [IsScalarTower 𝕜 A A] [FiniteDimensional 𝕜 A]
 
 /- TODO: This does not require submultiplicativity of the norm. When we unbundle the algebra
 and analysis hierachies, we should generalise this from `NormedRing` to `Ring`
@@ -52,9 +52,9 @@ This is implemented by providing an isometric linear equivalence between the inn
 space and a normed algebra.
 
 See note [reducible non-instances]. -/
-noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
-  comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
-  counit := adjoint (e.symm.toLinearMap ∘ₗ id.smulRight 1)
+noncomputable abbrev coalgebraOfAlgebra : Coalgebra 𝕜 A where
+  comul := adjoint (mul' 𝕜 A)
+  counit := adjoint (id.smulRight 1)
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
       ← (assocIsometry 𝕜 _ _ _).symm_symm, ← adjoint_toLinearMap_eq_symm]
@@ -73,7 +73,7 @@ noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra �
 end coalgebraOfAlgebra
 
 section algebraOfCoalgebra
-variable [Coalgebra 𝕜 E]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E] [Coalgebra 𝕜 E]
 
 /-- The multiplication on a finite-dimensional inner product space with a coalgebra structure
 given by `x * y = (adjoint comul) (x ⊗ₜ y)`.
