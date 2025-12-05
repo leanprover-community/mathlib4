@@ -78,20 +78,17 @@ instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projective_shortC
   Module.Free.finsupp R _ _
 
 /-- The standard short complex `N → P → M` with `P` projective. -/
-noncomputable abbrev ModuleCat.injective_shortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
-    ShortComplex (ModuleCat.{v} R) :=
-  let IP := Classical.choice (EnoughInjectives.presentation M)
-  ShortComplex.mk IP.3 (Limits.cokernel.π IP.3) (Limits.cokernel.condition IP.3)
+noncomputable abbrev CategoryTheory.InjectivePresentation.shortComplex
+    {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : ShortComplex (ModuleCat.{v} R) :=
+  ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
 
-theorem ModuleCat.injective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
-    M.injective_shortComplex.ShortExact :=
-  let IP := Classical.choice (EnoughInjectives.presentation M)
-  { exact := ShortComplex.exact_cokernel IP.3
-    mono_f := IP.4
+theorem ModuleCat.injective_shortComplex_shortExact {M : ModuleCat.{v} R}
+    (ip : InjectivePresentation M) : ip.shortComplex.ShortExact :=
+  { exact := ShortComplex.exact_cokernel ip.3
+    mono_f := ip.4
     epi_g := Limits.coequalizer.π_epi }
 
-instance [Small.{v} R] (M : ModuleCat.{v} R) : Injective M.injective_shortComplex.X₂ :=
-  (Classical.choice (EnoughInjectives.presentation M)).2
+instance {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : Injective ip.shortComplex.X₂ := ip.2
 
 /-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is projective. -/
