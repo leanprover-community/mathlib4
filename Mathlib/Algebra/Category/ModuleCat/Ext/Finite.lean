@@ -32,6 +32,6 @@ instance ModuleCat.finite_ext [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCa
   · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
   · rename_i n ih _
     rcases Module.exists_finite_presentation R N with ⟨N, _, _, _, _, f, surjf⟩
-    exact Module.Finite.of_surjective
-      ((LinearMap.shortExact_shortComplexKer surjf).extClass.precompOfLinear R M (add_comm 1 n))
-      (extClass_precomp_surjective_of_projective_X₂ M (LinearMap.shortExact_shortComplexKer surjf) n)
+    let exac := LinearMap.shortExact_shortComplexKer surjf
+    exact Module.Finite.of_surjective (exac.extClass.precompOfLinear R M (add_comm 1 n))
+      (extClass_precomp_surjective_of_projective_X₂ M exac n)
