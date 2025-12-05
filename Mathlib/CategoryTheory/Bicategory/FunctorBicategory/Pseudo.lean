@@ -127,6 +127,10 @@ def evaluationUncurried : B × (B ⥤ᵖ C) ⥤ᵖ C where
     apply whiskerLeftIso _ (Z.2.mapComp f.1 g.1) ≪≫ _
     dsimp -- TODO: fix
     apply (α_ _ _ _) ≪≫ _
+    -- need to whisker again...
+    have := whiskerLeftIso (f.2.app X.1) (g.2.naturality f.1).symm
+    --apply whiskerLeftIso (f.2.app X.1) (g.2.naturality f.1).symm ≪≫ _
+
     sorry
   map₂_whisker_left := sorry
   map₂_whisker_right := sorry
