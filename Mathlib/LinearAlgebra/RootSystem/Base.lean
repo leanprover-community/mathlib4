@@ -83,7 +83,6 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   by_contra! contra
-  rw [Finset.not_nonempty_iff_eq_empty] at contra
   inhabit ι
   simpa [P.ne_zero default, contra] using b.root_mem_or_neg_mem default
 

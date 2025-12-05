@@ -858,12 +858,8 @@ lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   constructor
   · contrapose! +distrib
     rintro (hs | rfl)
-    -- TODO: The `nonempty_iff_ne_empty` would be unnecessary if `push_neg` knew how to simplify
-    -- `s ≠ ∅` to `s.Nonempty` when `s : Finset α`.
-    -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/push_neg.20extensibility
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).pow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.pow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_pow hn
 
@@ -1010,9 +1006,8 @@ lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
   constructor
   · contrapose! +distrib
     rintro (hs | rfl)
-    · exact nonempty_iff_ne_empty.1 (nonempty_iff_ne_empty.2 hs).zpow
-    · rw [← nonempty_iff_ne_empty]
-      simp
+    · exact hs.zpow
+    · simp
   · rintro ⟨rfl, hn⟩
     exact empty_zpow hn
 

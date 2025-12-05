@@ -808,10 +808,10 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
     { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v, w⟩ := e
-  by_contra c
+  by_contra! c
   rw [IsIndepSet] at indA
   rw [mem_edgeSet] at he
-  rw [not_nonempty_iff_eq_empty, filter_eq_empty_iff] at c
+  rw [filter_eq_empty_iff] at c
   simp_rw [mem_compl, Sym2.mem_iff, not_or] at c
   by_cases vins : v ∈ s
   · have wins : w ∈ s := by by_contra wnins; exact (c wnins).right rfl
