@@ -9,17 +9,15 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.Data.Sign.Defs
 
-@[expose] public section
-
 /-!
 # Order theorems
 
 This file collects miscellaneous theorems on the order structure of `SignType`.
 -/
 
-variable {α ι : Type*}
+@[expose] public section
 
-namespace SignType
+variable {α ι : Type*}
 
 noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder _
 
@@ -34,5 +32,3 @@ theorem sign_sum {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType
     exact Finset.sum_neg h hs
   · simp_rw [pos_eq_one, sign_eq_one_iff] at h ⊢
     exact Finset.sum_pos h hs
-
-end SignType
