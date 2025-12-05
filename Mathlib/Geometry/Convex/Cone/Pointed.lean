@@ -126,7 +126,7 @@ lemma mem_span_set {s : Set E} : x ∈ span R s ↔
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 
-/-- The R-linear span of the conic span of s equals the R-linear span of s.
+/-- The linear span of the conic span of `s` equals the linear span of `s`.
 This is a specialization of `Submodule.span_span_of_tower` to pointed cones. -/
 lemma span_span_eq_span (s : Set E) :
     Submodule.span R (PointedCone.span R s : Set E) = Submodule.span R s := by
