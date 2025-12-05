@@ -5,9 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-meta import Lean.Elab.App
 public import Lean.Parser.Term
 public import Batteries.Tactic.Lint.Misc
+
+meta import Lean.Elab.App
 import Mathlib.Lean.Elab.Term
 
 /-!
@@ -70,7 +71,7 @@ Represents the kind of wildcard universe parameter.
 - `explicit`: An explicit level expression (including `_` for level mvars)
 -/
 inductive LevelWildcardKind where
-  | param (baseName : Name := `u)
+  | param (baseName : Name)
   | explicit (l : TSyntax `level)
 
 meta section
@@ -149,7 +150,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
       | some (.param baseName) => mkFreshLevelParam baseName
       | some (.explicit l) => elabLevel l
 
-    let fn : Expr := .const constName constLevels.toList
+    let fn : Expr ← mkConst constName constLevels.toList
 
     let (namedArgs, args, ellipsis) ← expandArgs args
 
@@ -162,8 +163,6 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
     let newLevelNames := reorganizeUniverseParams levels constLevels levelNames
 
     setLevelNames newLevelNames
-
-    checkDeprecated id expr
 
     return expr
 

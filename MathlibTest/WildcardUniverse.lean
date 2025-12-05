@@ -271,19 +271,19 @@ run_cmd testReorganize #[] #[] [] []
 run_cmd testReorganize #[none] #[mkMVar 1] [] []
 
 -- Single param with no dependencies
-run_cmd testReorganize #[some .param] #[.param `u_1] [] [`u_1]
+run_cmd testReorganize #[some <| .param `u] #[.param `u_1] [] [`u_1]
 
 -- Single param already in list
-run_cmd testReorganize #[some .param] #[.param `u_1] [`u_1] [`u_1]
+run_cmd testReorganize #[some <| .param `u] #[.param `u_1] [`u_1] [`u_1]
 
 -- Two independent params
-run_cmd testReorganize #[some .param, some .param] #[.param `u_1, .param `u_2] [] [`u_2, `u_1]
+run_cmd testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_1, .param `u_2] [] [`u_2, `u_1]
 
 -- Two params where first already exists
-run_cmd testReorganize #[some .param, some .param] #[.param `u_1, .param `u_2] [`u_1] [`u_2, `u_1]
+run_cmd testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_1, .param `u_2] [`u_1] [`u_2, `u_1]
 
 -- Two params where first depends on second (needs reordering)
-run_cmd testReorganize #[some .param, some .param] #[.param `u_2, .param `u_1] [`u_1] [`u_1, `u_2]
+run_cmd testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_2, .param `u_1] [`u_1] [`u_1, `u_2]
 
 -- Named wildcards - basic case
 run_cmd
@@ -295,43 +295,43 @@ run_cmd
     [`w_1, `v_1]
 
 -- Mixed mvar and param
-run_cmd testReorganize #[none, some .param] #[mkMVar 1, .param `u_1] [] [`u_1]
+run_cmd testReorganize #[none, some <| .param `u] #[mkMVar 1, .param `u_1] [] [`u_1]
 
 -- Mixed param and mvar
-run_cmd testReorganize #[some .param, none] #[.param `u_1, mkMVar 1] [] [`u_1]
+run_cmd testReorganize #[some <| .param `u, none] #[.param `u_1, mkMVar 1] [] [`u_1]
 
 -- Explicit level (should be ignored)
 run_cmd Lean.Elab.Command.liftTermElabM do
   let zero ← `(level|0)
-  guard <| reorganizeUniverseParams #[some <| .explicit zero, some .param]
+  guard <| reorganizeUniverseParams #[some <| .explicit zero, some <| .param `u]
     #[.zero, .param `u_1] [] = [`u_1]
 
 -- Complex case - three params with dependencies
 run_cmd
-  testReorganize #[some .param, some .param, some .param] #[.param `u_3, .param `u_2, .param `u_1]
+  testReorganize #[some <| .param `u, some <| .param `u, some <| .param `u] #[.param `u_3, .param `u_2, .param `u_1]
     [`u_1, `u_2] [`u_1, `u_2, `u_3]
 
 -- Param depends on later level max
 run_cmd
-  testReorganize #[some .param, some .param] #[.param `u_1, .max (.param `v) (.param `u_1)]
+  testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_1, .max (.param `v) (.param `u_1)]
     [`v] [`v, `u_1]
 
 -- Param depends on later level imax
 run_cmd
-  testReorganize #[some .param, some .param] #[.param `u_1, .imax (.param `w) (.param `u_1)] [`w]
+  testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_1, .imax (.param `w) (.param `u_1)] [`w]
     [`w, `u_1]
 
 -- Param depends on later level succ
-run_cmd testReorganize #[some .param, some .param] #[.param `u_1, .succ (.param `u_1)] [] [`u_1]
+run_cmd testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_1, .succ (.param `u_1)] [] [`u_1]
 
 -- Multiple dependencies in later levels
 run_cmd
-  testReorganize #[some .param, some .param] #[.param `u_3, .max (.param `u_1) (.param `u_2)]
+  testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_3, .max (.param `u_1) (.param `u_2)]
     [`u_1, `u_2] [`u_1, `u_2, `u_3]
 
 -- Chain of dependencie
 run_cmd
-  testReorganize #[some .param, some .param, some .param] #[.param `u_3, .param `u_2, .param `u_1]
+  testReorganize #[some <| .param `u, some <| .param `u, some <| .param `u] #[.param `u_3, .param `u_2, .param `u_1]
     [`u_1] [`u_1, `u_2, `u_3]
 
 -- All mvars (no params to reorganize)
@@ -339,7 +339,7 @@ run_cmd
   testReorganize #[none, none, none] #[mkMVar 1, mkMVar 2, mkMVar 3] [`u_1, `u_2] [`u_1, `u_2]
 
 -- Param that doesn't depend on anything goes first
-run_cmd testReorganize #[some .param, some .param] #[.param `u_2, .param `u_1] [] [`u_1, `u_2]
+run_cmd testReorganize #[some <| .param `u, some <| .param `u] #[.param `u_2, .param `u_1] [] [`u_1, `u_2]
 
 -- Complex named wildcards with multiple dependencies
 run_cmd
@@ -348,22 +348,22 @@ run_cmd
 
 -- Existing params that aren't being added
 run_cmd
-  testReorganize #[some .param] #[.param `u_2] [`existing_1, `existing_2]
+  testReorganize #[some <| .param `u] #[.param `u_2] [`existing_1, `existing_2]
     [`u_2, `existing_1, `existing_2]
 
 -- Insert after specific dependency
 run_cmd
-  testReorganize #[some .param, some .param] #[.param `new_1, .param `new_2] [`v, `w]
+  testReorganize #[some <| .param `u, some <| .param `u] #[.param `new_1, .param `new_2] [`v, `w]
     [`new_2, `new_1, `v, `w]
 
 -- Insert between existing params based on dependency
 run_cmd
-  testReorganize #[some .param, none] #[.param `u_3, .max (.param `u_1) (.param `u_2)]
+  testReorganize #[some <| .param `u, none] #[.param `u_3, .max (.param `u_1) (.param `u_2)]
     [`u_1, `u_2, `u_4] [`u_1, `u_2, `u_3, `u_4]
 
 -- No later dependencies - param goes to front
 run_cmd
-  testReorganize #[some .param, none] #[.param `u_new, mkMVar 1] [`u_1, `u_2] [`u_new, `u_1, `u_2]
+  testReorganize #[some <| .param `u, none] #[.param `u_new, mkMVar 1] [`u_1, `u_2] [`u_new, `u_1, `u_2]
 
 end ReorganizeUniverseParamsTests
 
@@ -466,3 +466,15 @@ info: fun α =>
 #guard_msgs in #check @ExplicitTest2.{*, ev} (β := B)
 
 end ExplicitAppTests
+
+section DeprecatedCheck
+
+axiom Bar2 : Type* → Type*
+
+@[deprecated Bar2 (since := "2025-12-04")]
+axiom Bar : Type* → Type*
+
+/-- warning: `Bar.{u_1, u_2}` has been deprecated: Use `Bar2.{u_1, u_2}` instead -/
+#guard_msgs in def T := Bar.{*, *}
+
+end DeprecatedCheck
