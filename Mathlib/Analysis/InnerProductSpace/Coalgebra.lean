@@ -54,20 +54,20 @@ space and a normed algebra.
 See note [reducible non-instances]. -/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
-  counit := adjoint (toSpanSingleton 𝕜 E (e.symm 1))
+  counit := innerₛₗ 𝕜 (e.symm 1)
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
       ← (assocIsometry 𝕜 _ _ _).symm_symm, ← adjoint_toLinearMap_eq_symm]
     simp_rw [← adjoint_comp]
     congr 1; ext; simp [mul_assoc]
   rTensor_counit_comp_comul := by
-    rw [← adjoint_rTensor, ← adjoint_comp, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
-      ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
+    rw [← adjoint_toSpanSingleton, ← adjoint_rTensor, ← adjoint_comp, ← toLinearMap_symm_lid,
+      ← toLinearEquiv_lidIsometry, ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
     congr 1; ext; simp
   lTensor_counit_comp_comul := by
-    rw [← adjoint_lTensor, ← adjoint_comp, ← toLinearMap_symm_rid, ← comm_trans_lid,
-      ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
-      ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
+    rw [← adjoint_toSpanSingleton, ← adjoint_lTensor, ← adjoint_comp, ← toLinearMap_symm_rid,
+      ← comm_trans_lid, ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry,
+      ← toLinearEquiv_trans, ← toLinearEquiv_symm, ← adjoint_toLinearMap_eq_symm]
     congr 1; ext; simp
 
 end coalgebraOfAlgebra
