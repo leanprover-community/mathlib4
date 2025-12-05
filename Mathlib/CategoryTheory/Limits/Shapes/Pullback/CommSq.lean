@@ -379,6 +379,23 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+
+/-- Same as `IsPullback.of_iso`, but using the data and compatibilities involving
+the inverse isomorphisms instead. -/
+lemma of_iso' (h : IsPullback fst snd f g)
+    {P' X' Y' Z' : C} {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
+    (e₁ : P' ≅ P) (e₂ : X' ≅ X) (e₃ : Y' ≅ Y) (e₄ : Z' ≅ Z)
+    (commfst : e₁.hom ≫ fst = fst' ≫ e₂.hom)
+    (commsnd : e₁.hom ≫ snd = snd' ≫ e₃.hom)
+    (commf : e₂.hom ≫ f = f' ≫ e₄.hom)
+    (commg : e₃.hom ≫ g = g' ≫ e₄.hom) :
+    IsPullback fst' snd' f' g' := by
+  apply h.of_iso e₁.symm e₂.symm e₃.symm e₄.symm
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commfst, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commsnd, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
+
 section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]

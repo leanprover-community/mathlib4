@@ -339,9 +339,7 @@ def finSuccAboveOrderIsoFinset {n : ℕ} (i : Fin (n + 2)) :
     Fin (n + 1) ≃o ({i}ᶜ : Finset _) where
   toEquiv := (finSuccAboveEquiv (p := i)).trans
     { toFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
-      invFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
-      left_inv _ := rfl
-      right_inv _ := rfl }
+      invFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩ }
   map_rel_iff' := (Fin.succAboveOrderEmb i).map_rel_iff
 
 lemma face_singleton_compl {n : ℕ} (i : Fin (n + 2)) :
@@ -365,7 +363,7 @@ of `Δ[n]` corresponding to `{i}`. -/
 noncomputable def faceSingletonIso {n : ℕ} (i : Fin (n + 1)) :
     Δ[0] ≅ (face {i} : SSet.{u}) :=
   stdSimplex.isoOfRepresentableBy
-      (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
+    (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
 
 @[reassoc]
 lemma faceSingletonIso_zero_hom_comp_ι_eq_δ :
