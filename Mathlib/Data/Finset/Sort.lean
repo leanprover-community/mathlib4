@@ -234,7 +234,7 @@ theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
 theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
     (List.finRange k).map (s.orderEmbOfFin h) = s.sort := by
   obtain rfl : k = s.sort.length := by simp [h]
-  exact List.finRange_map_getElem s.sort
+  exact List.map_getElem_finRange s.sort
 
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
