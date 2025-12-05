@@ -30,9 +30,6 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 * `freeDFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
   supported maps.
 
-* `freeDFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
-  supported maps.
-
 -/
 
 @[expose] public section
