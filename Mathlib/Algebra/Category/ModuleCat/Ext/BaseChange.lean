@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.FiveLemma
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
@@ -236,8 +236,6 @@ lemma ModuleCat.extendScalars'.mapExtLinearMap_eq_mapExt [Module.Flat R S]
 
 open ModuleCat
 
-set_option maxHeartbeats 230000 in
--- The dimension shifting is just too complicated
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
@@ -256,34 +254,14 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       Equiv.ofBijective_symm_apply_apply, Equiv.ofBijective_apply]
     congr 1
   · rename_i n ih _
-    rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
-    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-    have surjf : Function.Surjective f := by simpa [f] using hf'
-    let T : ShortComplex (ModuleCat.{v} R) := {
-      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-      g := ModuleCat.ofHom.{v} f
-      zero := by
-        ext x
-        simp }
-    have T_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) := by
-      intro x
-      simp [T]
-    have T_exact : T.ShortExact := {
-      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mpr T_exact'
-      mono_f := (ModuleCat.mono_iff_injective T.f).mpr (LinearMap.ker f).injective_subtype
-      epi_g := (ModuleCat.epi_iff_surjective T.g).mpr surjf}
-    let _ : Module.Finite R T.X₂ := by
-      simp [T, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-    have _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-    have _ : Module.Free R T.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
-    have proj := ModuleCat.projective_of_categoryTheory_projective T.X₂
+    rcases Module.exists_finite_presentation R M with ⟨L, _, _, _, _, f, surjf⟩
+    let T : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
+    have T_exact : T.ShortExact := LinearMap.shortExact_shortComplexKer surjf
     let TS := (T.map (ModuleCat.extendScalars'.{v, v'} R S))
     have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.extendScalars'.{v, v'} R S)
     have _ : Module.Free S TS.X₂ := by
       simp only [ModuleCat.extendScalars', ShortComplex.map_X₂, ModuleCat.ExtendScalars'.obj', TS]
       exact Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
-    have proj' := ModuleCat.projective_of_categoryTheory_projective TS.X₂
     let NS := ((ModuleCat.extendScalars'.{v, v'} R S).obj N)
     let f : Ext T.X₂ N n →ₗ[R] Ext T.X₁ N n := {
       __ := (mk₀ T.f).precomp N (zero_add n)
@@ -293,12 +271,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       map_smul' r x := by simp }
     have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
         (Ext.contravariant_sequence_exact₁' T_exact N n (n + 1) (add_comm 1 n))
-    have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext T.X₂ N (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _
-        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective)
-    have surj1 : Function.Surjective g := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.contravariant_sequence_exact₃' T_exact N n (n + 1) (add_comm 1 n)).epi_f
-      (isz1.eq_zero_of_tgt _))
+    have surj1 : Function.Surjective g :=
+      extClass_precomp_surjective_of_projective_X₂ N T_exact n
     let f' : Ext TS.X₂ NS n →ₗ[S] Ext TS.X₁ NS n := {
       __ := (mk₀ TS.f).precomp NS (zero_add n)
       map_smul' s x := by simp }
@@ -307,12 +281,8 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       map_smul' s x := by simp }
     have exac2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
         (Ext.contravariant_sequence_exact₁' TS_exact NS n (n + 1) (add_comm 1 n))
-    have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext TS.X₂ NS (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _
-        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective)
-    have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.contravariant_sequence_exact₃' TS_exact NS n (n + 1) (add_comm 1 n)).epi_f
-      (isz2.eq_zero_of_tgt _))
+    have surj2 : Function.Surjective g' :=
+      extClass_precomp_surjective_of_projective_X₂ NS TS_exact n
     let h₁ : Ext T.X₂ N n →ₗ[R] Ext TS.X₂ NS n := extendScalars'.mapExtLinearMap.{v, v'} S T.X₂ N n
     let h₂ : Ext T.X₁ N n →ₗ[R] Ext TS.X₁ NS n := extendScalars'.mapExtLinearMap.{v, v'} S T.X₁ N n
     let h₃ : Ext T.X₃ N (n + 1) →ₗ[R] Ext TS.X₃ NS (n + 1) :=
