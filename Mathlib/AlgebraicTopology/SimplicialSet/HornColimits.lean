@@ -26,8 +26,8 @@ open CategoryTheory Simplicial Opposite
 
 namespace horn₂₀
 
-lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
-    (stdSimplex.face {0, 2}) (horn.{u} 2 0) where
+lemma sq : Subcomplex.BicartSq.{u} (stdSimplex.face {0}) (stdSimplex.face {0, 1})
+    (stdSimplex.face {0, 2}) Λ[2, 0] where
   sup_eq := by
     apply le_antisymm
     · rw [sup_le_iff]
@@ -42,10 +42,10 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
   inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 0]` which avoids `2`. -/
-abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 0 := horn.ι 0 2 (by simp)
+abbrev ι₀₁ : Δ[1] ⟶ Λ[2, 0] := horn.ι.{u} 0 2 (by simp)
 
-/-- The inclusion `Δ[1] ⟶ horn 2 0` which avoids `1`. -/
-abbrev ι₀₂ : Δ[1] ⟶ horn.{u} 2 0 := horn.ι 0 1 (by simp)
+/-- The inclusion `Δ[1] ⟶ Λ[2, 0]` which avoids `1`. -/
+abbrev ι₀₂ : Δ[1] ⟶ Λ[2, 0] := horn.ι.{u} 0 1 (by simp)
 
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (1 : Fin 2))
@@ -59,8 +59,8 @@ end horn₂₀
 
 namespace horn₂₁
 
-lemma sq : Subcomplex.BicartSq (stdSimplex.face {1}) (stdSimplex.face {0, 1})
-    (stdSimplex.face {1, 2}) (horn.{u} 2 1) where
+lemma sq : Subcomplex.BicartSq.{u} (stdSimplex.face {1}) (stdSimplex.face {0, 1})
+    (stdSimplex.face {1, 2}) Λ[2, 1] where
   sup_eq := by
     apply le_antisymm
     · rw [sup_le_iff]
@@ -75,10 +75,10 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {1}) (stdSimplex.face {0, 1})
   inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 1]` which avoids `2`. -/
-abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 1 := horn.ι 1 2 (by simp)
+abbrev ι₀₁ : Δ[1] ⟶ Λ[2, 1] := horn.ι.{u} 1 2 (by simp)
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 1]` which avoids `0`. -/
-abbrev ι₁₂ : Δ[1] ⟶ horn.{u} 2 1 := horn.ι 1 0 (by simp)
+abbrev ι₁₂ : Δ[1] ⟶ Λ[2, 1] := horn.ι.{u} 1 0 (by simp)
 
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
@@ -92,8 +92,8 @@ end horn₂₁
 
 namespace horn₂₂
 
-lemma sq : Subcomplex.BicartSq (stdSimplex.face {2}) (stdSimplex.face {0, 2})
-    (stdSimplex.face {1, 2}) (horn.{u} 2 2) where
+lemma sq : Subcomplex.BicartSq.{u} (stdSimplex.face {2}) (stdSimplex.face {0, 2})
+    (stdSimplex.face {1, 2}) Λ[2, 2] where
   sup_eq := by
     apply le_antisymm
     · rw [sup_le_iff]
@@ -108,10 +108,10 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {2}) (stdSimplex.face {0, 2})
   inf_eq := by simp [stdSimplex.face_inter_face]
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 2]` which avoids `1`. -/
-abbrev ι₀₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 1 (by simp)
+abbrev ι₀₂ : Δ[1] ⟶ Λ[2, 2] := horn.ι.{u} 2 1 (by simp)
 
 /-- The inclusion `Δ[1] ⟶ Λ[2, 2]` which avoids `0`. -/
-abbrev ι₁₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 0 (by simp)
+abbrev ι₁₂ : Δ[1] ⟶ Λ[2, 2] := horn.ι.{u} 2 0 (by simp)
 
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
