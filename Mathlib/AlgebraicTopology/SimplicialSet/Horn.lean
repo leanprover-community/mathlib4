@@ -217,17 +217,19 @@ lemma faceι_ι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :
 /-- Given `i` and `j` in `Fin (n + 2)` such that `j ≠ i`, this is the inclusion
 of `Δ[n]` in `horn (n + 1) i` given by `stdSimplex.δ j`. -/
 def ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
-    Δ[n] ⟶ horn.{u} (n + 1) i :=
-  Subcomplex.lift ((stdSimplex.{u}.δ j)) (by
-    simp only [Subcomplex.range_eq_ofSimplex]
-    refine le_trans ?_ (face_le_horn j i hij)
-    rw [stdSimplex.face_singleton_compl]
-    rfl)
+    Δ[n] ⟶ (Λ[n + 1, i] : SSet.{u}) :=
+  yonedaEquiv.symm (face i j hij)
+
+@[simp]
+lemma yonedaEquiv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
+    yonedaEquiv (ι i j hij) = face i j hij := by
+  rw [ι, Equiv.apply_symm_apply]
 
 @[reassoc (attr := simp)]
 lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
-    ι i j hij ≫ (horn.{u} (n + 1) i).ι =
-      stdSimplex.{u}.δ j := by simp [ι]
+    ι i j hij ≫ Λ[n + 1, i].ι =
+      stdSimplex.{u}.δ j := by
+  rw [ι, face, Equiv.symm_apply_apply, Subpresheaf.lift_ι]
 
 @[reassoc (attr := simp)]
 lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
