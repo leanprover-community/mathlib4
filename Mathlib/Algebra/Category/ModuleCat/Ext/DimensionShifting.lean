@@ -49,15 +49,15 @@ theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGro
 variable {R M N}
 
 /-- Given a linear map `f : M → N`, we can obtain a short complex `ker(f) → M → N`. -/
-abbrev LinearMap.shortComplexG (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
+abbrev LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
   g := ModuleCat.ofHom.{v} f
   zero := by ext; simp
 
-theorem LinearMap.shortExact_shortComplexG {f : M →ₗ[R] N} (h : Function.Surjective f) :
-    f.shortComplexG.ShortExact where
+theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.Surjective f) :
+    f.shortComplexKer.ShortExact where
   exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr
-    fun _ ↦ by simp [shortComplexG]
+    fun _ ↦ by simp [shortComplexKer]
   mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
   epi_g := (ModuleCat.epi_iff_surjective _).mpr h
 
@@ -66,11 +66,11 @@ noncomputable abbrev ModuleCat.projective_shortComplex [Small.{v} R] (M : Module
     ShortComplex (ModuleCat.{v} R) :=
   let e : Module.Basis M R (M →₀ Shrink.{v} R) :=
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
-  (e.constr ℕ id).shortComplexG
+  (e.constr ℕ id).shortComplexKer
 
 theorem ModuleCat.projective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
     M.projective_shortComplex.ShortExact := by
-  apply LinearMap.shortExact_shortComplexG
+  apply LinearMap.shortExact_shortComplexKer
   refine fun m ↦ ⟨Finsupp.single m 1, ?_⟩
   simp [Module.Basis.constr_apply]
 
