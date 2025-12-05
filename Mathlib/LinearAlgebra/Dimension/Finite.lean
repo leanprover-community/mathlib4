@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # Conditions for rank to be finite
@@ -15,6 +17,8 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 Also contains characterization for when rank equals zero or rank equals one.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -73,12 +77,6 @@ lemma rank_eq_zero_iff :
     apply ha
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
-theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
-    0 < Module.rank R M :=
-  have := Module.nontrivial R M
-  (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
-    (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
-
 variable [Nontrivial R]
 
 section
@@ -95,8 +93,7 @@ theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=
   rank_zero_iff_forall_zero.trans (subsingleton_iff_forall_eq 0).symm
 
 theorem rank_pos_iff_exists_ne_zero : 0 < Module.rank R M ↔ ∃ x : M, x ≠ 0 := by
-  rw [← not_iff_not]
-  simpa using rank_zero_iff_forall_zero
+  contrapose!; rw [nonpos_iff_eq_zero]; exact rank_zero_iff_forall_zero
 
 theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
   rank_pos_iff_exists_ne_zero.trans (nontrivial_iff_exists_ne 0).symm
@@ -460,7 +457,7 @@ theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R 
 lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]
     {S : Submodule R M} [Module.Finite R S] :
     1 ≤ finrank R S ↔ S ≠ ⊥ := by
-  simp [← not_iff_not]
+  contrapose!; rw [Nat.lt_one_iff, finrank_eq_zero]
 
 @[simp]
 theorem Set.finrank_empty [Nontrivial R] :

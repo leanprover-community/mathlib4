@@ -3,13 +3,15 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Adam Topaz, Johan Commelin, Jakob von Raumer
 -/
-import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Abelian.Opposite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.Homology.ImageToKernel
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Exact sequences in abelian categories
@@ -30,6 +32,8 @@ true in more general settings.
   finite limits and colimits.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

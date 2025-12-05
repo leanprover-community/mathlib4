@@ -3,10 +3,12 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+module
+
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Eisenstein polynomials
@@ -21,6 +23,8 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
   ring of integers of `L`.
 
 -/
+
+@[expose] public section
 
 universe u v w z
 
@@ -66,10 +70,9 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       Ideal.mem_span_singleton]
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
-    rw [mul_assoc, mul_comm 1, mul_one] at hk
-    nth_rw 1 [← Nat.mul_one p] at hk
-    rw [mul_right_inj' hp.out.ne_zero] at hk
-    exact Nat.Prime.not_dvd_one hp.out (Dvd.intro k hk.symm)
+    have : 2 ≤ p := Nat.Prime.two_le hp.out
+    have : p < p^2 := by nlinarith
+    cases k <;> grind
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
     ((cyclotomic (p ^ (n + 1)) ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
@@ -110,10 +113,9 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       Ideal.mem_span_singleton]
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
-    rw [mul_assoc, mul_comm 1, mul_one] at hk
-    nth_rw 1 [← Nat.mul_one p] at hk
-    rw [mul_right_inj' hp.out.ne_zero] at hk
-    exact Nat.Prime.not_dvd_one hp.out (Dvd.intro k hk.symm)
+    have : 2 ≤ p := Nat.Prime.two_le hp.out
+    have : p < p^2 := by nlinarith
+    cases k <;> grind
 
 end Cyclotomic
 
@@ -282,7 +284,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       rw [hg k (mem_range_succ_iff.1 hk)
         (mem_range_succ_iff.2
           (le_trans (mem_range_succ_iff.1 hk) (succ_le_iff.1 (mem_range_succ_iff.1 hj)).le)),
-        Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, mul_assoc]
+        Algebra.smul_def, Algebra.smul_def, map_mul, mul_assoc]
     -- Since `minpoly R B.gen` is Eisenstein, we can find `f : ℕ → L` such that
     -- `(map (algebraMap R L) (minpoly R B.gen)).nat_degree ≤ i` implies `f i ∈ adjoin R {B.gen}`
     -- and `(algebraMap R L) p * f i = B.gen ^ i`. We will also need `hf₁`, a reformulation of this
@@ -313,7 +315,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         (minpoly.monic hBint).natDegree_map (algebraMap R K), ←
         minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, natDegree_minpoly, hn, Nat.sub_one,
         Nat.pred_succ]
-      cutsat
+      lia
     -- Using `hQ : aeval B.gen Q = p • z`, we write `p • z` as a sum of terms of degree less than
     -- `j+1`, that are multiples of `p` by induction, and terms of degree at least `j+1`.
     rw [aeval_eq_sum_range, Hj, range_add, sum_union (disjoint_range_addLeftEmbedding _ _),

@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Logic.UnivLE
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Logic.UnivLE
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Essentially small categories.
@@ -22,6 +24,8 @@ A category is `w`-locally small if every hom type is `w`-small.
 The main theorem here is that a category is `w`-essentially small iff
 the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
+
+@[expose] public section
 
 
 universe w w' v v' u u'
@@ -102,6 +106,10 @@ theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Ca
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
   ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
+
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] [LocallySmall.{w'} C] :
+    LocallySmall.{w'} (SmallModel.{w} C) :=
+  (locallySmall_congr (equivSmallModel.{w} C)).1 inferInstance
 
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] :
     LocallySmall.{v} C where

@@ -3,13 +3,15 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.OpenPartialHomeomorph
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Topology on the upper half plane
@@ -17,6 +19,8 @@ import Mathlib.Topology.OpenPartialHomeomorph
 In this file we introduce a `TopologicalSpace` structure on the upper half plane and provide
 various instances.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto, Oliver Butterley
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.CompactlySupported
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-import Mathlib.Order.Interval.Set.Union
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.CompactlySupported
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+public import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -39,6 +41,8 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
@@ -131,7 +135,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     intro x hx
     rw [mem_setOf_eq, and_assoc] at hx
     simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
-    rcases (by cutsat : m < n ∨ n < m) with hc | hc
+    rcases (by lia : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
@@ -301,7 +305,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     gcongr
     have h : ∀ n, (y n - ε') * μ.real (E n) ≤ ∫ x in (E n), f x ∂μ := by
       intro n
-      apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
+      apply setIntegral_ge_of_const_le_real (hE.2.2.2 n) (hE' n)
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
@@ -319,7 +323,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   · -- Rough bound of the sum
     have h : ∑ n : Fin N, y n ≤ N * b := by
       have (n : Fin N) := calc y n
-        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; cutsat]
+        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; lia]
         _ = b := by simp [field, ε']
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all

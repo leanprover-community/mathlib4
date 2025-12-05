@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
@@ -31,6 +33,8 @@ stones towards proving that the canonical functor
 ## TODOs:
 - Show that every `P_δ` admits a unique normal form.
 -/
+
+@[expose] public section
 
 namespace SimplexCategoryGenRel
 
@@ -127,7 +131,7 @@ lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
   (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
 
-/-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
+/-- An element of an `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
 def getElemAsFin {m L} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=

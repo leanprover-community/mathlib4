@@ -3,11 +3,13 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Existence of limits and colimits
@@ -54,6 +56,8 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -559,6 +563,21 @@ theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e
   apply hasLimit_of_equivalence_comp e
 
 variable (C)
+
+lemma HasLimitsOfShape.of_small
+    [HasLimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [Small.{u₁} J] [LocallySmall.{v₁} J] :
+    HasLimitsOfShape J C := by
+  have := HasLimitsOfSize.has_limits_of_shape (C := C) (ShrinkHoms (Shrink.{u₁} J))
+  exact hasLimitsOfShape_of_equivalence
+    ((ShrinkHoms.equivalence _).symm.trans (Shrink.equivalence _).symm)
+
+lemma HasLimitsOfShape.of_essentiallySmall
+    [HasLimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [EssentiallySmall.{u₁} J] [LocallySmall.{v₁} J] :
+    HasLimitsOfShape J C := by
+  have := HasLimitsOfShape.of_small.{v₁, u₁} C (SmallModel.{u₁} J)
+  exact hasLimitsOfShape_of_equivalence (equivSmallModel.{u₁} J).symm
 
 /-- A category that has larger limits also has smaller limits. -/
 theorem hasLimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
@@ -1073,6 +1092,21 @@ theorem hasColimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] 
   apply hasColimit_of_equivalence_comp e
 
 variable (C)
+
+lemma HasColimitsOfShape.of_small
+    [HasColimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [Small.{u₁} J] [LocallySmall.{v₁} J] :
+    HasColimitsOfShape J C := by
+  have := HasColimitsOfSize.has_colimits_of_shape (C := C) (ShrinkHoms (Shrink.{u₁} J))
+  exact hasColimitsOfShape_of_equivalence
+    ((ShrinkHoms.equivalence _).symm.trans (Shrink.equivalence _).symm)
+
+lemma HasColimitsOfShape.of_essentiallySmall
+    [HasColimitsOfSize.{v₁, u₁} C] (J : Type u₂) [Category.{v₂} J]
+    [EssentiallySmall.{u₁} J] [LocallySmall.{v₁} J] :
+    HasColimitsOfShape J C := by
+  have := HasColimitsOfShape.of_small.{v₁, u₁} C (SmallModel.{u₁} J)
+  exact hasColimitsOfShape_of_equivalence (equivSmallModel.{u₁} J).symm
 
 /-- A category that has larger colimits also has smaller colimits. -/
 theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]

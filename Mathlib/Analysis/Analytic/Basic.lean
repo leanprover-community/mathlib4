@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.ConvergenceRadius
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import Mathlib.Analysis.Analytic.ConvergenceRadius
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Analytic functions
@@ -48,6 +50,8 @@ We develop the basic properties of these notions, notably:
   disk of convergence, see `FormalMultilinearSeries.hasFPowerSeriesOnBall`.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*}
 
@@ -978,7 +982,7 @@ protected theorem HasFPowerSeriesWithinOnBall.continuousOn
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     ContinuousOn f (insert x s ∩ EMetric.ball x r) :=
   hf.tendstoLocallyUniformlyOn'.continuousOn <|
-    Eventually.of_forall fun n =>
+    Frequently.of_forall fun n =>
       ((p.partialSum_continuous n).comp (continuous_id.sub continuous_const)).continuousOn
 
 /-- If a function admits a power series expansion on a ball, then it is continuous there. -/

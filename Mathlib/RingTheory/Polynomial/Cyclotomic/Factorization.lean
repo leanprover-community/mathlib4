@@ -3,10 +3,12 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.RingTheory.SimpleModule.Basic
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.Algebra.CharP.CharAndCard
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.Algebra.CharP.CharAndCard
 
 /-!
 # Factorization of cyclotomic polynomials over finite fields
@@ -21,6 +23,8 @@ field of characteristic `p`, where `p` and `n` are coprime.
   `p` and `n` are coprime. Then the degree of `P` is the multiplicative order of `p ^ f` modulo `n`.
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -161,7 +165,7 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
     by_cases hQ : Q = P
     · simp only [hQ, insert_eq_cons, count_cons_self, nodup_singleton, mem_singleton,
         count_eq_one_of_mem, reduceAdd]
-      cutsat
+      lia
     · simp [hQ]
   have := prod_dvd_prod_of_le this
   simp only [insert_eq_cons, prod_cons, prod_singleton] at this

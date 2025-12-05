@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Preadditive monoidal categories
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 A monoidal category is `MonoidalPreadditive` if it is preadditive and tensor product of morphisms
 is linear in both factors.
 -/
+
+@[expose] public section
 
 noncomputable section
 

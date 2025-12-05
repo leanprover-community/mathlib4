@@ -3,17 +3,19 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Bounds
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Topology.MetricSpace.Sequences
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Bounds
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Topology.MetricSpace.Sequences
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm
-In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert] : if `μ` is a
-nonarchimedean seminorm on a commutative ring `R`, then `
+In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert]: if `μ` is a
+nonarchimedean seminorm on a commutative ring `R`, then
 `iInf (fun (n : PNat), (μ(x ^ (n : ℕ))) ^ (1 / (n : ℝ)))` is a power-multiplicative nonarchimedean
 seminorm on `R`.
 
@@ -39,6 +41,8 @@ seminorm on `R`.
 
 smoothingSeminorm, seminorm, nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -306,7 +310,7 @@ private theorem μ_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :
 private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
     (ψ : ℕ → ℕ) : BddAbove (Set.range fun n : ℕ => μ (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) := by
   have hψ : ∀ n, 0 ≤ 1 / (ψ n : ℝ) := fun _ ↦ by simp only [one_div, inv_nonneg, cast_nonneg]
-  by_cases hx : μ x ≤ 1
+  by_cases! hx : μ x ≤ 1
   · use 1
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index]
     rintro _ n rfl
@@ -319,7 +323,7 @@ private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : 
     apply le_trans (rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hμ1 _ _) (hψ n))
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     conv_rhs => rw [← rpow_one (μ x)]
-    rw [rpow_le_rpow_left_iff (not_le.mp hx)]
+    rw [rpow_le_rpow_left_iff hx]
     exact div_le_one_of_le₀ (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
 
 private theorem μ_bddAbove' (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
@@ -554,7 +558,7 @@ theorem isPowMul_smoothingFun (hμ1 : μ 1 ≤ 1) : IsPowMul (smoothingFun μ) :
   have hlim : Tendsto (fun n => smoothingSeminormSeq μ x (m * n)) atTop
       (𝓝 (smoothingFun μ x)) :=
     Tendsto.comp (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x) (tendsto_atTop_atTop_of_monotone
-      (fun n k hnk ↦ mul_le_mul_left' hnk m) (fun n ↦ ⟨n, le_mul_of_one_le_left' hm⟩))
+      (fun n k hnk ↦ mul_le_mul_right hnk m) (fun n ↦ ⟨n, le_mul_of_one_le_left' hm⟩))
   apply tendsto_nhds_unique _ (Tendsto.pow hlim m)
   have h_eq (n : ℕ) : smoothingSeminormSeq μ x (m * n) ^ m = smoothingSeminormSeq μ (x ^ m) n := by
     have hm' : (m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_lt_of_le zero_lt_one hm))
