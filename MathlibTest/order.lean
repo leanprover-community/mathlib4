@@ -106,7 +106,6 @@ error: No contradiction found.
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
 trace:
-[order] Working on type α (partial order)
 [order] Collected atoms:
     #0 := a ⊓ (b ⊔ c)
     #1 := a
@@ -116,6 +115,7 @@ trace:
     #5 := a ⊓ b ⊔ a ⊓ c
     #6 := a ⊓ b
     #7 := a ⊓ c
+[order] Working on type α (partial order)
 [order] Collected facts:
     #2 := #3 ⊔ #4
     #0 := #1 ⊓ #2
