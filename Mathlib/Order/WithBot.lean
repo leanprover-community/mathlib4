@@ -667,65 +667,6 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=
   rfl
 
-theorem untop_eq_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
-    a.untop h = b ↔ a = b :=
-  WithBot.unbot_eq_iff (α := αᵒᵈ) h
-
-theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
-    a = b.untop h ↔ a = b :=
-  WithBot.eq_unbot_iff (α := αᵒᵈ) h
-
-/-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
-@[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
-  toFun := fun ⟨x,h⟩ => WithTop.untop x h
-  invFun x := ⟨x, WithTop.coe_ne_top⟩
-  left_inv _ := by simp
-  right_inv _:= by simp
-
-/-- Function that sends an element of `WithTop α` to `α`,
-with an arbitrary default value for `⊤`. -/
-noncomputable
-abbrev untopA [Nonempty α] : WithTop α → α := untopD (Classical.arbitrary α)
-
-lemma untopA_eq_untop [Nonempty α] {a : WithTop α} (ha : a ≠ ⊤) : untopA a = untop a ha := by
-  cases a with
-  | top => contradiction
-  | coe a => simp
-
-end WithTop
-
-namespace Equiv
-
-/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithTop e`. -/
-@[simps apply]
-def withTopCongr (e : α ≃ β) : WithTop α ≃ WithTop β where
-  toFun := WithTop.map e
-  invFun := WithTop.map e.symm
-  left_inv x := by cases x <;> simp
-  right_inv x := by cases x <;> simp
-
-attribute [grind =] withTopCongr_apply
-
-@[simp]
-theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
-  Equiv.ext <| congr_fun WithBot.map_id
-
-@[simp, grind =]
-theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
-  rfl
-
-@[simp]
-theorem withTopCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
-    withTopCongr (e₁.trans e₂) = (withTopCongr e₁).trans (withTopCongr e₂) := by
-  ext x
-  simp
-
-end Equiv
-
-namespace WithTop
-
-variable {a b : α}
-
 section LE
 
 variable [LE α] {x y : WithTop α}
