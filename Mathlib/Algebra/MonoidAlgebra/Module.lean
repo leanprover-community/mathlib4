@@ -16,6 +16,11 @@ public import Mathlib.LinearAlgebra.Finsupp.LSum
 ## Main results
 
 * `MonoidAlgebra.module`, `AddMonoidAlgebra.module`: lift a module structure to monoid algebras
+
+## Implementation notes
+
+We do not state the equivalent of `DistribMulAction G (MonoidAlgebra k G)` for `AddMonoidAlgebra`
+because mathlib does not have the notion of distributive actions of additive groups.
 -/
 
 @[expose] public section
@@ -40,22 +45,29 @@ section SMul
 
 variable {S : Type*}
 
+@[to_additive (dont_translate := R) noZeroSMulDivisors]
 instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
     NoZeroSMulDivisors R (MonoidAlgebra k G) :=
   Finsupp.noZeroSMulDivisors
 
+@[to_additive (dont_translate := R) (relevant_arg := G) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=
   Finsupp.distribMulAction G k
 
+@[to_additive (dont_translate := R) (relevant_arg := G)]
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
   Finsupp.module G k
 
+@[to_additive (dont_translate := R) (relevant_arg := G) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R (MonoidAlgebra k G) :=
   Finsupp.faithfulSMul
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
+
+TODO: Change the type to `DistribMulAction Gᵈᵐᵃ (MonoidAlgebra k G)` and then it can be an instance.
+TODO: Generalise to a group acting on another, instead of just the left multiplication action.
 -/
 def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (MonoidAlgebra k G) :=
   Finsupp.comapDistribMulAction
@@ -71,29 +83,31 @@ It is good practice to have those, regardless of the `ext` issue.
 -/
 
 section ExtLemmas
+variable [Semiring k]
 
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[ext]
-theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid N]
-    [DistribMulAction R N] [DistribMulAction R k]
-    {f g : MonoidAlgebra k G →+[R] N}
+@[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
+/-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
+theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
+    [DistribMulAction R k] {f g : MonoidAlgebra k G →+[R] N}
     (h : ∀ a : G,
       f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
     f = g :=
   Finsupp.distribMulActionHom_ext' h
 
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
-abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
-    k →ₗ[R] MonoidAlgebra k G := Finsupp.lsingle a
+@[to_additive (dont_translate := R) (relevant_arg := G)
+/-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
+abbrev lsingle [Semiring R] [Module R k] (a : G) : k →ₗ[R] MonoidAlgebra k G := Finsupp.lsingle a
 
-@[simp]
-lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
+@[to_additive (attr := simp)]
+lemma lsingle_apply [Semiring R] [Module R k] (a : G) (b : k) :
     lsingle (R := R) a b = single a b :=
   rfl
 
 /-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
-@[ext high]
-lemma lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
+@[to_additive (attr := ext high)]
+lemma lhom_ext' {N : Type*} [Semiring R] [AddCommMonoid N] [Module R N] [Module R k]
     ⦃f g : MonoidAlgebra k G →ₗ[R] N⦄
     (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
     f = g :=
@@ -154,9 +168,7 @@ instance smulCommClass_self [SMulCommClass R k k] :
 
 instance smulCommClass_symm_self [SMulCommClass k R k] :
     SMulCommClass (MonoidAlgebra k G) R (MonoidAlgebra k G) :=
-  ⟨fun t a b => by
-    haveI := SMulCommClass.symm k R k
-    rw [← smul_comm]⟩
+  have := SMulCommClass.symm k R k; .symm ..
 
 end NonUnitalNonAssocAlgebra
 
@@ -188,74 +200,6 @@ end MonoidAlgebra
 namespace AddMonoidAlgebra
 
 variable {k G}
-
-section SMul
-
-variable {S : Type*}
-
-instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
-    DistribMulAction R k[G] :=
-  Finsupp.distribMulAction G k
-
-instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
-    FaithfulSMul R k[G] :=
-  Finsupp.faithfulSMul
-
-instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
-  Finsupp.module G k
-
-/-! It is hard to state the equivalent of `DistribMulAction G k[G]`
-because we've never discussed actions of additive groups. -/
-
-end SMul
-
-/-! #### Semiring structure -/
-
-
-section Semiring
-
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R k[G] :=
-  Finsupp.noZeroSMulDivisors
-
-end Semiring
-
-/-!
-#### Copies of `ext` lemmas and bundled `single`s from `Finsupp`
-
-As `AddMonoidAlgebra` is a type synonym, `ext` will not unfold it to find `ext` lemmas.
-We need bundled version of `Finsupp.single` with the right types to state these lemmas.
-It is good practice to have those, regardless of the `ext` issue.
--/
-
-section ExtLemmas
-
-/-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/
-@[ext]
-theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid N]
-    [DistribMulAction R N] [DistribMulAction R k]
-    {f g : AddMonoidAlgebra k G →+[R] N}
-    (h : ∀ a : G,
-      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
-    f = g :=
-  Finsupp.distribMulActionHom_ext' h
-
-/-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/
-abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
-    k →ₗ[R] AddMonoidAlgebra k G := Finsupp.lsingle a
-
-@[simp] lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
-    lsingle (R := R) a b = single a b := rfl
-
-/-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/
-@[ext high]
-lemma lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
-    ⦃f g : AddMonoidAlgebra k G →ₗ[R] N⦄
-    (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
-    f = g :=
-  Finsupp.lhom_ext' H
-
-end ExtLemmas
 
 section MiscTheorems
 
