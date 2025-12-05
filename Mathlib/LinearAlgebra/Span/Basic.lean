@@ -702,7 +702,7 @@ variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x
 
-lemma LinearMap.smulRight_id : id.smulRight = toSpanSingleton R M := rfl
+lemma smulRight_id : id.smulRight = toSpanSingleton R M := rfl
 
 theorem toSpanSingleton_apply_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
