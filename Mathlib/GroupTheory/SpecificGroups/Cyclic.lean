@@ -326,7 +326,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
           ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), by
             dsimp at hm
             have hgmn : g ^ (m * Nat.gcd n (Fintype.card α)) = 1 := by
-              rw [pow_mul, hm, ← pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
+              rw [pow_mul, hm, pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
             dsimp only
             rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
             refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
