@@ -975,7 +975,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     let p' : LTSeries α := {
       length := p.length - 1
       toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by lia⟩).unbot (by
-        apply ne_bot_of_gt (a := p.head)
+        apply ne_bot_of_gt (b := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
       step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by lia⟩ }
