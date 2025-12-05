@@ -50,10 +50,14 @@ is indicated by the syntax.
 open Lean Elab Term
 
 declare_syntax_cat wildcard_level
+declare_syntax_cat comma_wildcard_level
 
 @[nolint docBlame] syntax "*" : wildcard_level
 @[nolint docBlame] syntax ident noWs "*" : wildcard_level
 @[nolint docBlame] syntax level : wildcard_level
+
+@[nolint docBlame] syntax ",*" : comma_wildcard_level
+@[nolint docBlame] syntax ", " wildcard_level : comma_wildcard_level
 
 /--
 Term elaborator for the wildcard universe syntax `Foo.{u₁, u₂, ...}`.
@@ -62,7 +66,8 @@ This elaborator handles syntax of the form `ident.{wildcard_level,+} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
 syntax:arg (name := appWithWildcards)
-    ("@" noWs)? ident noWs ".{" wildcard_level,+ "}" Parser.Term.argument* : term
+    ("@" noWs)? ident noWs ".{" wildcard_level comma_wildcard_level* "}"
+      Parser.Term.argument* : term
 
 /--
 Represents the kind of wildcard universe parameter.
@@ -85,12 +90,21 @@ def getBaseName (n : Name) : Name :=
   let basePart := s.takeWhile (· != '_')
   basePart.toName
 
+def mkWildcardLevelStx {m : Type → Type} [Monad m] [MonadExceptOf Exception m] [MonadQuotation m]
+    (us : Array (TSyntax `comma_wildcard_level)) :
+    m (Array (TSyntax `wildcard_level)) :=
+  us.mapM fun u => do
+    match u with
+    | `(comma_wildcard_level|,*) => `(wildcard_level|*)
+    | `(comma_wildcard_level|, $u:wildcard_level) => `(wildcard_level|$u)
+    | _ => throwUnsupportedSyntax
+
 /--
 Parses an array of wildcard universe syntax into `LevelWildcardKind` values.
 Takes the constant's level parameter names to use as defaults for `*` wildcards.
 -/
-def elabWildcardUniverses {m : Type → Type}
-    [Monad m] [MonadExceptOf Exception m] (us : Array Syntax) (constLevelParams : List Name) :
+def elabWildcardUniverses {m : Type → Type} [Monad m] [MonadExceptOf Exception m]
+    (us : Array Syntax) (constLevelParams : List Name) :
     m (Array LevelWildcardKind) :=
   us.mapIdxM fun idx u =>
     match u with
@@ -135,11 +149,12 @@ def reorganizeUniverseParams
 @[term_elab appWithWildcards, inherit_doc appWithWildcards]
 def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
-  | `($[@%$expl]?$id:ident.{$us,*} $args*) =>
+  | `($[@%$expl]?$id:ident.{$u $us*} $args*) =>
     let constName ← Lean.resolveGlobalConstNoOverload id
     let constInfo ← Lean.getConstInfo constName
     let numLevels := constInfo.levelParams.length
 
+    let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
     let mut levels : Array (Option LevelWildcardKind) :=
       (← elabWildcardUniverses us constInfo.levelParams).map some
     while levels.size < numLevels do

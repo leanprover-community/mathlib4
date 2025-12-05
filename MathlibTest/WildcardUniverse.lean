@@ -26,6 +26,9 @@ axiom Foo : Type u → Type v → Type w
 /-- info: Foo.{u_1, u, u_2} : Type u_1 → Type u → Type u_2 -/
 #guard_msgs in #check Foo.{*,u}
 
+/-- info: Foo.{u, v_1, u_1} : Type u → Type v_1 → Type u_1 -/
+#guard_msgs in #check Foo.{u,*}
+
 /-- info: Foo.{u_1, v, u_2} : Type u_1 → Type v → Type u_2 -/
 #guard_msgs in #check Foo.{*,v}
 
@@ -46,7 +49,7 @@ end Foo
 section ULiftTests
 
 /-- info: ULift.{r_1, s_1} : Type s_1 → Type (max s_1 r_1) -/
-#guard_msgs in #check (ULift.{*, *} : Type _ → Type _)
+#guard_msgs in #check (ULift.{*,*} : Type _ → Type _)
 
 variable (X : Type*) (z : ULift.{_} X)
 def testInferred := z
