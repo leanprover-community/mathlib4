@@ -814,7 +814,7 @@ lemma degree_sPolynomial_le (f g : MvPolynomial σ R) :
   classical
   set_option push_neg.use_distrib true in
   wlog! h0 : f ≠ 0 ∧ g ≠ 0
-  · (obtain rfl|rfl := h0) <;> simp
+  · (obtain rfl | rfl := h0) <;> simp
   simp only [sPolynomial_def]
   apply degree_sub_le.trans
   apply (sup_le_sup degree_mul_le degree_mul_le).trans
