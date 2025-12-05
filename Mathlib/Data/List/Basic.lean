@@ -550,6 +550,11 @@ theorem IsPrefix.idxOf_eq_of_mem (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁)
   exact idxOf_append_of_mem ha |>.symm
 
 theorem IsSuffix.idxOf_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a ≤ l₂.length - l₁.length + l₁.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsSuffix.idxOf_add_length_le (hl : l₁ <:+ l₂) (a : α) :
     l₂.idxOf a + l₁.length ≤ l₁.idxOf a + l₂.length := by
   obtain ⟨l₃, rfl⟩ := hl
   grind
