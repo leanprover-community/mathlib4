@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Theory of univariate polynomials
@@ -233,7 +234,7 @@ theorem irreducible_smul_X_add_C {a : R} (b : R) (ha : a ≠ 0) (hab : IsRelPrim
     wlog H : f.degree ≤ g.degree generalizing f g
     · push_neg at H
       rw [mul_comm] at h
-      exact exact (this g f h H.le).symm
+      exact (this g f h H.le).symm
     have hd := congr(degree $h)
     have aux : (a • (X : R[X]) + C b).degree = 1 := by compute_degree!
     rw [degree_mul, aux, eq_comm, Nat.WithBot.add_eq_one_iff] at hd

@@ -56,16 +56,98 @@ lemma sum_X_mul_Y_eq_sum [Fintype n] :
     sum_X_mul_Y n R = ∑ i, X (.inl i) * X (.inr i) := by
   rw [sum_X_mul_Y, finsum_eq_sum_of_fintype]
 
-theorem irreducible_sum_X_mul_Y [Nontrivial n] :
+theorem irreducible_sum_X_mul_Y [Finite n] [Nontrivial n] [IsDomain R] :
     Irreducible (sum_X_mul_Y n R) := by
   have : DecidableEq n := Classical.typeDecidableEq n
   have : Fintype n := Fintype.ofFinite n
-  let p := ∑ x : n,
-    MvPolynomial.X (R := MvPolynomial n R) x * MvPolynomial.C ( (MvPolynomial.X (R := R) x))
-  let e := sumRingEquiv R n n
-  have : e (sum_X_mul_Y n R) = p := by
-    simp [finsum_eq_sum_of_fintype, e, p, sum_X_mul_Y, sumRingEquiv]
-  rw [← MulEquiv.irreducible_iff e, this]
+  let p := ∑ x : n, X (R := MvPolynomial n R) x * C ( (X (R := R) x))
+  suffices Irreducible p by
+    rw [← MulEquiv.irreducible_iff (sumRingEquiv R n n)]
+    simpa [sum_X_mul_Y_eq_sum, sumRingEquiv]
+  obtain ⟨i, j, hij⟩ := exists_pair_ne n
+  set S := MvPolynomial { x // x ≠ i } (MvPolynomial n R)
+  set f : MvPolynomial n (MvPolynomial n R) ≃ₐ[R] S[X] :=
+    ((renameEquiv (MvPolynomial n R) (Equiv.optionSubtypeNe i).symm).trans
+      (MvPolynomial.optionEquivLeft _ _)).restrictScalars R with hf
+  have hfXi : f (MvPolynomial.X i) = Polynomial.X := by
+    rw [hf, AlgEquiv.restrictScalars_apply]
+    simp [optionEquivLeft_apply]
+  have hfX (x : {x : n // x ≠ i}) : f (MvPolynomial.X x) =
+      Polynomial.C (MvPolynomial.X x) := by
+    rw [hf, AlgEquiv.restrictScalars_apply]
+    simp [optionEquivLeft_apply, dif_neg x.prop]
+  have hfCX (x : n) : f (C (X x)) = Polynomial.C (C (X x)) := by
+    rw [hf, AlgEquiv.restrictScalars_apply]
+    simp [optionEquivLeft_apply]
+  rw [← MulEquiv.irreducible_iff f]
+  let a : S := C (X (R := R) i)
+  let b : S := ∑ x : { x : n // x ≠ i},
+    (X (R := R) (x : n)) • X (R := MvPolynomial n R) x
+  suffices f p = a • Polynomial.X + Polynomial.C b  by
+    rw [this]
+    apply irreducible_smul_X_add_C
+    · intro ha
+      simp only [ne_eq, a] at ha
+      rw [C_eq_zero] at ha
+      exact X_ne_zero i ha
+    · intro c hca hcb
+      simp only [a] at hca
+      rw [dvd_C_iff_exists (X_ne_zero i)] at hca
+      obtain ⟨c, hc, rfl⟩ := hca
+      apply IsUnit.map
+      rw [dvd_X_iff_exists] at hc
+      obtain ⟨r, hr, hc | hc⟩ := hc <;>
+        have hr' : IsUnit (C (σ := n) r) := IsUnit.map C hr
+      · simpa [hc] using hr'
+      · exfalso
+        apply hij
+        rw [← MvPolynomial.X_dvd_X (σ := n) (R := R)]
+        apply dvd_of_mul_left_dvd (a := MvPolynomial.C r)
+        rw [MvPolynomial.C_dvd_iff_dvd_coeff] at hcb
+        specialize hcb (Finsupp.single ⟨j, Ne.symm hij⟩ 1)
+        rw [hc, MvPolynomial.smul_eq_C_mul] at hcb
+        simp only [b] at hcb
+        rw [MvPolynomial.coeff_sum] at hcb
+        simpa using hcb
+  simp only [p]
+  rw [map_sum, Fintype.sum_eq_add_sum_subtype_ne _ i]
+  rw [map_sum]
+  apply congr_arg₂
+  · simp only [ne_eq, map_mul, a]
+    rw [mul_comm, hfXi, hfCX, ← Polynomial.smul_eq_C_mul]
+  · apply Fintype.sum_congr
+    intro x
+    simp only [ne_eq, map_mul, hfX, hfCX]
+    rw [smul_eq_C_mul, map_mul, mul_comm]
+
+variable {n R}
+
+/-- The quadratic polynomial $$\sum_{i=1}^n c_i X_i Y_i$$. -/
+noncomputable def sum_smul_X_mul_Y (c : n → R) :
+    MvPolynomial (n ⊕ n) R :=
+  ∑ᶠ i, c i • X (.inl i) * X (.inr i)
+
+variable (c : n → R)
+
+lemma sum_smul_X_mul_Y_eq_sum [Fintype n] :
+    sum_smul_X_mul_Y c = ∑ i, c i • X (.inl i) * X (.inr i) := by
+  rw [sum_smul_X_mul_Y, finsum_eq_sum_of_fintype]
+
+theorem irreducible_sum_smul_X_mul_Y [Finite n] [Nontrivial n] [IsDomain R]
+    (hc : ∀ i, c i ≠ 0) :
+    Irreducible (sum_smul_X_mul_Y c) := by
+  have : DecidableEq n := Classical.typeDecidableEq n
+  have : Fintype n := Fintype.ofFinite n
+  let p := ∑ x : n, X x * C ( c x • X (R := R) x)
+  suffices Irreducible p by
+    rw [← MulEquiv.irreducible_iff (sumRingEquiv R n n)]
+    convert this
+    simp only [sumRingEquiv, sum_smul_X_mul_Y_eq_sum, smul_eq_C_mul, map_sum,
+      mvPolynomialEquivMvPolynomial_apply, map_mul, sumToIter_C, sumToIter_Xl, sumToIter_Xr,
+      p]
+    congr
+    ext1 i
+    ring
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
   set S := MvPolynomial { x // x ≠ i } (MvPolynomial n R)
   set f : MvPolynomial n (MvPolynomial n R) ≃ₐ[R] S[X] :=
@@ -83,22 +165,23 @@ theorem irreducible_sum_X_mul_Y [Nontrivial n] :
     rw [hf, AlgEquiv.restrictScalars_apply]
     simp [optionEquivLeft_apply]
   rw [← MulEquiv.irreducible_iff f]
-  let a : S := C (MvPolynomial.X (R := R) i)
+  let a : S := C (c i • MvPolynomial.X (R := R) i)
   let b : S := ∑ x : { x : n // x ≠ i},
-    (MvPolynomial.X (R := R) (x : n)) • X (R := MvPolynomial n R) x
+    (c x • MvPolynomial.X (R := R) (x : n)) • X (R := MvPolynomial n R) x
   suffices f p = a • Polynomial.X + Polynomial.C b  by
     rw [this]
     apply irreducible_smul_X_add_C
     · intro ha
+      apply hc i
       simp only [ne_eq, a] at ha
       rw [MvPolynomial.C_eq_zero] at ha
-      exact MvPolynomial.X_ne_zero i ha
-    · intro c hca hcb
-      simp only [a] at hca
-      rw [dvd_C_iff_exists (MvPolynomial.X_ne_zero i)] at hca
-      obtain ⟨c, hc, rfl⟩ := hca
+      simpa only [smul_eq_zero, X_ne_zero, or_false] using ha
+    · intro s hsa hsb
+      simp only [a] at hsa
+      rw [dvd_C_iff_exists ?_] at hsa
+      obtain ⟨t, ht, rfl⟩ := hsa
       apply IsUnit.map
-      rw [MvPolynomial.dvd_X_iff_exists] at hc
+      rw [MvPolynomial.dvd_smul_X_iff_exists ?_] at ht
       obtain ⟨r, hr, hc | hc⟩ := hc <;>
         have hr' : IsUnit (MvPolynomial.C (σ := n) r) :=
             IsUnit.map MvPolynomial.C hr
@@ -123,6 +206,7 @@ theorem irreducible_sum_X_mul_Y [Nontrivial n] :
     intro x
     simp only [ne_eq, map_mul, hfX, hfCX]
     rw [MvPolynomial.smul_eq_C_mul, map_mul, mul_comm]
+
 
 end
 
