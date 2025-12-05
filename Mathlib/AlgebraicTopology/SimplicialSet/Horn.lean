@@ -206,7 +206,7 @@ lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i
 /-- Given `i` and `j` in `Fin (n + 1)` such that `j ≠ i`, this is
 the inclusion of `stdSimplex.face {j}ᶜ` in the horn `horn n i`. -/
 def faceι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :
-    (stdSimplex.face {j}ᶜ : SSet.{u}) ⟶ (horn n i : SSet.{u}) :=
+    (stdSimplex.face {j}ᶜ : SSet.{u}) ⟶ (Λ[n, i] : SSet.{u}) :=
   Subcomplex.homOfLE (face_le_horn j i hij)
 
 @[reassoc (attr := simp)]
