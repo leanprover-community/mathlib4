@@ -288,18 +288,6 @@ theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ 
 theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
   simpa using floor_div_cast_of_nonneg n.cast_nonneg a
 
-theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa [hn.ne'] using (floor_div_cast_of_nonneg hn.le (↑n * a)).symm
-
-lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n⌋ / n = ⌊a⌋ := by
-  rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
-
-theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by lia) a
-
-theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
-  rw [mul_comm, natCast_mul_floor_div_cancel hn]
-
 end LinearOrderedField
 
 end floor
