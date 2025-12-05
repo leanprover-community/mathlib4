@@ -20,6 +20,8 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 
   - `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
   - `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
+
+* `MultilinearMap.fromPiEquiv`, the linear equivalence between
 -/
 
 @[expose] public section
@@ -162,46 +164,5 @@ def piFamilyₗ :
 end CommSemiring
 
 end piFamily
-
-section fromPiEquiv
-
-variable {R N ι : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
-variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [∀ i, Fintype (κ i)] [∀ i, DecidableEq (κ i)]
-variable [∀ i j, AddCommMonoid (M i j)] [∀ i j, Module R (M i j)] [AddCommMonoid N] [Module R N]
-
-/-- For a family of families of modules `M i j` where `j : κ i`,
-the collection of multilinear maps `f p` (for each way `p` to select one index `j` from each family
-`i`) is linearly equivalent to multilinear maps where each argument is the
-section along `i` of `m`. -/
-def fromPiEquiv :
-    ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) N) ≃ₗ[R]
-      MultilinearMap R (fun i ↦ Π j : κ i, M i j) N :=
-  LinearEquiv.ofLinear
-    ((LinearMap.lsum _ _ ℕ fun _ => .id).compMultilinearMapₗ _ ∘ₗ MultilinearMap.piFamilyₗ)
-    (LinearMap.pi fun p ↦ MultilinearMap.compLinearMapₗ fun i ↦ LinearMap.single _ _ (p i))
-    (by ext f x; simp)
-    (by ext f p a; simp)
-
-@[simp]
-theorem fromPiEquiv_single
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
-    (p : Π i, κ i) (x : Π i, M i (p i)) :
-    fromPiEquiv f (fun i => Pi.single (p i) (x i)) = f p x := by
-  simp [fromPiEquiv]
-
-/-- Prefer using `fromPiEquiv_single` where possible. -/
-theorem fromPiEquiv_apply
-    (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) N)
-    (x : Π i (j : κ i), M i j) :
-    fromPiEquiv f x = ∑ p, f p (fun i ↦ x i (p i)) := by
-  simp [fromPiEquiv]
-
-@[simp]
-theorem fromPiEquiv_symm_apply (f : MultilinearMap R (fun i ↦ Π j : κ i, M i j) N)
-    (p : Π i, κ i) :
-    fromPiEquiv.symm f p = f.compLinearMap (fun i ↦ LinearMap.single _ _ (p i)) :=
-  rfl
-
-end fromPiEquiv
 
 end MultilinearMap
