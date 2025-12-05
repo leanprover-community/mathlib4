@@ -39,9 +39,9 @@ The more standard Banach-Steinhaus theorem for normed spaces is then deduced fro
   that is pointwise bounded is (uniformly) equicontinuous. Here, pointwise bounded means that
   for all `k` and `x`, the family of real numbers `i ↦ q k (𝓕 i x)` is bounded above.
 * `PolynormableSpace.banach_steinhaus`: a version of the above which does not make reference
-  to a fixed seminorm family. Fix `E` a barrelled space and `F` a TVS satisfying
-  `WithSeminorms q` for some `q`. Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps
-  that is pointwise Von Neumann bounded is (uniformly) equicontinuous.
+  to a fixed seminorm family. Fix `E` a barrelled space and `F` a `PolynormableSpace`.
+  Any family `𝓕 : ι → E →L[𝕜] F` of continuous linear maps that is pointwise Von Neumann bounded
+  is (uniformly) equicontinuous.
 
 ## Implementation details
 
