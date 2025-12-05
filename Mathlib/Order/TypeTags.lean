@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 module
 
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.ToDual
 
 /-!
 # Order-related type synonyms
