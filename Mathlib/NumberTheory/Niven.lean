@@ -1,12 +1,15 @@
 /-
 Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Meiburg
+Authors: Alex Meiburg, Snir Broshi
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.RingTheory.Polynomial.RationalRoot
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.Complex.IsIntegral
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Rify
 
 /-! # Niven's Theorem
 
@@ -15,6 +18,8 @@ also have rational cosines, are 0, 30 degrees, and 90 degrees - up to reflection
 by π. Equivalently, the only rational numbers that occur as `cos(π * p / q)` are the five
 values `{-1, -1/2, 0, 1/2, 1}`.
 -/
+
+@[expose] public section
 
 namespace IsIntegral
 
@@ -37,24 +42,82 @@ variable {θ : ℝ}
 
 open Real
 
-theorem isIntegral_two_mul_cos_rat_mul_pi (r : ℚ) :
-    IsIntegral ℤ (2 * cos (r * π)) := by
-  let z : ℂ := .exp (.I * r * π)
-  obtain ⟨p, q, hq_pos, rfl⟩ : ∃ (p : ℤ) (q : ℕ), q ≠ 0 ∧ r = p / q :=
-    ⟨r.num, r.den, r.den_ne_zero, r.num_div_den.symm⟩
-  -- Let `z = e ^ (i * π * p / q)`, which is a root of unity.
-  have hz_root : z ^ (2 * q) = 1 := by
-    rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
-    use p
-    push_cast
-    field_simp [hq_pos]
-  -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
-  have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
-    simpa [Complex.cos, Complex.exp_neg, z] using by ring_nf
-  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by apply IsIntegral.add <;>
-      exact ⟨.X ^ (2 * q) - 1, Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
-  use f, hf₁
-  simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
+section IsIntegral
+
+namespace Complex
+
+lemma exp_rat_mul_pi_mul_I_pow_two_mul_den (q : ℚ) : exp (q * π * I) ^ (2 * q.den) = 1 := by
+  nth_rw 1 [← q.num_div_den, ← exp_nat_mul]
+  push_cast
+  rw [show 2 * q.den * (q.num / q.den * π * I) = q.num * (2 * π * I) by field,
+    exp_int_mul_two_pi_mul_I]
+
+/-- `exp(q * π * I)` for `q : ℚ` is integral over `ℤ`. -/
+theorem isIntegral_exp_rat_mul_pi_mul_I (q : ℚ) : IsIntegral ℤ <| exp <| q * π * I := by
+  refine .of_pow (Nat.mul_pos zero_lt_two q.den_pos) ?_
+  exact exp_rat_mul_pi_mul_I_pow_two_mul_den _ ▸ isIntegral_one
+
+/-- `exp(-(q * π) * I)` for `q : ℚ` is integral over `ℤ`. -/
+theorem isIntegral_exp_neg_rat_mul_pi_mul_I (q : ℚ) :
+    IsIntegral ℤ <| exp <| -(q * π) * I := by
+  simpa using isIntegral_exp_rat_mul_pi_mul_I (-q)
+
+/-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `sin` function. -/
+theorem isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) := by
+  rw [sin.eq_1, mul_div_cancel₀ _ two_ne_zero]
+  exact (isIntegral_exp_neg_rat_mul_pi_mul_I q).sub (isIntegral_exp_rat_mul_pi_mul_I q)
+    |>.mul isIntegral_int_I
+
+/-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `cos` function. -/
+theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) := by
+  rw [cos.eq_1, mul_div_cancel₀ _ two_ne_zero]
+  exact (isIntegral_exp_rat_mul_pi_mul_I q).add (isIntegral_exp_neg_rat_mul_pi_mul_I q)
+
+/-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `sin` function. -/
+theorem isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_sin_rat_mul_pi q).isAlgebraic
+
+/-- `cos(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `cos` function. -/
+theorem isAlgebraic_cos_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| cos <| q * π :=
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_cos_rat_mul_pi q).isAlgebraic
+
+/-- `tan(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `tan` function. -/
+theorem isAlgebraic_tan_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| tan <| q * π :=
+  (isAlgebraic_sin_rat_mul_pi q).mul (isAlgebraic_cos_rat_mul_pi q).inv
+
+end Complex
+
+namespace Real
+
+/-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `sin` function. -/
+theorem isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) :=
+  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+    simp [Complex.isIntegral_two_mul_sin_rat_mul_pi]
+
+/-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the real `cos` function. -/
+theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) :=
+  isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
+    simp [Complex.isIntegral_two_mul_cos_rat_mul_pi]
+
+@[deprecated (since := "2025-11-15")]
+alias _root_.isIntegral_two_mul_cos_rat_mul_pi := isIntegral_two_mul_cos_rat_mul_pi
+
+/-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `sin` function. -/
+theorem isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_sin_rat_mul_pi q).isAlgebraic
+
+/-- `cos(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `cos` function. -/
+theorem isAlgebraic_cos_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| cos <| q * π :=
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_cos_rat_mul_pi q).isAlgebraic
+
+/-- `tan(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `tan` function. -/
+theorem isAlgebraic_tan_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| tan <| q * π :=
+  isAlgebraic_algebraMap_iff (A := ℂ) RCLike.ofReal_injective |>.mp <| by
+    simp [Complex.isAlgebraic_tan_rat_mul_pi]
+
+end Real
+
+end IsIntegral
 
 /-- **Niven's theorem**: The only rational values of `cos` that occur at rational multiples of π
 are `{-1, -1/2, 0, 1/2, 1}`. -/
@@ -64,7 +127,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
   obtain ⟨r, rfl⟩ := hθ
   obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos (r * π) = k := by
-    rw [← (isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
+    rw [← (Real.isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
     exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by

@@ -3,16 +3,20 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles
 
 -/
 
-open Bundle Set PartialHomeomorph ContinuousLinearMap Pretrivialization Filter
+@[expose] public section
+
+open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
 
 open scoped Manifold Bundle Topology
 
@@ -50,7 +54,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
       ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
   refine EventuallyEq.mdifferentiableWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
-  · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
+  · simp_rw [Function.comp, OpenPartialHomeomorph.coe_coe, Trivialization.coe_coe]
     rw [Trivialization.coe_fst']
     exact hx
   · simp only [mfld_simps]
@@ -583,14 +587,13 @@ lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
       (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
   apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
-  rw [← tsum_eq_finsum]
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
     rw [Set.mem_setOf] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
-  exact Set.Finite.subset hfin this
+  rw [tsum_eq_finsum (hfin.subset this)]
 
 lemma MDifferentiableAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})

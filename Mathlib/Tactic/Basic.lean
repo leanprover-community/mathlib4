@@ -3,13 +3,15 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Lean
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.Simproc.ExistsAndEq
+module
+
+public meta import Lean
+public meta import Mathlib.Tactic.PPWithUniv
+public meta import Mathlib.Tactic.ExtendDoc
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.TypeStar
+public meta import Mathlib.Tactic.Linter.OldObtain
+public meta import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Basic tactics and utilities for tactic writing
@@ -22,6 +24,8 @@ and explicitly name the non-dependent hypotheses,
 - the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
 context).
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -125,4 +129,67 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 
 attribute [pp_with_univ] ULift PUnit PEmpty
 
+/-- Result of `withResetServerInfo`. -/
+structure withResetServerInfo.Result (α : Type) where
+  /-- Return value of the executed tactic. -/
+  result? : Option α
+  /-- Messages produced by the executed tactic. -/
+  msgs    : MessageLog
+  /-- Info trees produced by the executed tactic, wrapped in `CommandContextInfo.save`. -/
+  trees   : PersistentArray InfoTree
+
+/--
+Runs a tactic, returning any new messages and info trees rather than adding them to the state.
+-/
+def withResetServerInfo {α : Type} (t : TacticM α) :
+    TacticM (withResetServerInfo.Result α) := do
+  let (savedMsgs, savedTrees) ← modifyGetThe Core.State fun st =>
+    ((st.messages, st.infoState.trees), { st with messages := {}, infoState.trees := {} })
+  Prod.snd <$> MonadFinally.tryFinally' t fun result? => do
+    let msgs  ← Core.getMessageLog
+    let ist   ← getInfoState
+    let trees ← ist.trees.mapM fun tree => do
+      let tree := tree.substitute ist.assignment
+      let ctx := .commandCtx <| ← CommandContextInfo.save
+      return InfoTree.context ctx tree
+    modifyThe Core.State fun st =>
+      { st with messages := savedMsgs, infoState.trees := savedTrees }
+    return { result?, msgs, trees }
+
 end Mathlib.Tactic
+
+/-- A mathlib library note: the note's content should be contained in its doc-string. -/
+@[expose] def LibraryNote := Unit
+
+open Lean in
+/-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`
+in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
+You can access this note using, for example, `#print Mathlib.LibraryNote.«my note»`.
+-/
+macro "library_note2 " name:ident ppSpace dc:docComment : command =>
+  `($dc:docComment def $(mkIdent (`_root_.Mathlib.LibraryNote ++ name.getId)) : LibraryNote := ())
+
+open Lean Elab Command in
+/-- Support the old `library_note "foo"` syntax, with a deprecation warning. -/
+elab "library_note2 " name:str ppSpace dc:docComment : command => do
+  logWarningAt name <|
+    "deprecation warning: library_note2 now takes an identifier instead of a string.\n" ++
+    "Hint: replace the double quotes with «french quotes»."
+  let name := Name.mkSimple name.getString
+  let stx ← `(library_note2 $(mkIdent name):ident $dc:docComment)
+  elabCommandTopLevel stx
+
+library_note2 «partially-applied ext lemmas»
+/--
+When possible, `ext` lemmas are stated without a full set of arguments. As an example, for bundled
+homs `f`, `g`, and `of`, `f.comp of = g.comp of → f = g` is a better `ext` lemma than
+`(∀ x, f (of x) = g (of x)) → f = g`, as the former allows a second type-specific extensionality
+lemmas to be applied to `f.comp of = g.comp of`.
+If the domain of `of` is `ℕ` or `ℤ` and `of` is a `RingHom`, such a lemma could then make the goal
+`f (of 1) = g (of 1)`.
+
+For bundled morphisms, there is a `ext` lemma that always applies of the form
+`(∀ x, ⇑f x = ⇑g x) → f = g`. When adding type-specific `ext` lemmas like the one above, we want
+these to be tried first. This happens automatically since the type-specific lemmas are inevitably
+defined later.
+-/

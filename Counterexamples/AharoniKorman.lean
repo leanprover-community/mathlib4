@@ -354,8 +354,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     intro x hx
     exact no_infinite_antichain_level (this _) (hC.subset Set.inter_subset_left)
   case himage =>
-    rw [← Set.not_infinite]
-    intro h
+    by_contra! h
     obtain ⟨n, hn⟩ := h.nonempty
     suffices f '' A ⊆ Set.Iio (n + 2) from h ((Set.finite_Iio _).subset this)
     intro m
@@ -385,7 +384,6 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   rw [frequently_atTop]
   intro n₀
   by_contra! hC'
-  simp only [← Set.not_infinite, not_not] at hC'
   -- Define `m n` to be the smallest value of `min x y` as `(x, y, n)` ranges over `C`.
   let m (n : ℕ) : ℕ := sInf {min (ofHollom x).1 (ofHollom x).2.1 | x ∈ C ∩ level n}
   -- `m n` is well-defined above `n₀`, since the set in question is nonempty (it's infinite).
@@ -545,7 +543,7 @@ theorem exists_partition_iff_nonempty_spinalMap
   · rintro ⟨f⟩
     refine ⟨_, (Setoid.ker f).isPartition_classes, ?_⟩
     rintro _ ⟨x, rfl⟩
-    exact ⟨f.fibre_antichain _, f x, by simp [Setoid.ker, Function.onFun]⟩
+    exact ⟨f.fibre_antichain _, f x, by simp⟩
 
 variable {f : SpinalMap C}
 
@@ -568,7 +566,8 @@ def chainBetween (a b c d : ℕ) : Finset (ℕ × ℕ) :=
     then Ico (a, b) (a, d) ∪ Icc (a, d) (c, d)
     else ∅
 
-lemma chainBetween_isChain {a b c d : ℕ} : IsChain (· ≤ ·) (chainBetween a b c d).toSet := by
+lemma chainBetween_isChain {a b c d : ℕ} :
+    IsChain (· ≤ ·) (chainBetween a b c d : Set (ℕ × ℕ)) := by
   rw [chainBetween]
   split_ifs
   · rintro ⟨v, w⟩ hvw ⟨x, y⟩ hxy
@@ -577,7 +576,7 @@ lemma chainBetween_isChain {a b c d : ℕ} : IsChain (· ≤ ·) (chainBetween a
   · simp
 
 lemma image_chainBetween_isChain {a b c d n : ℕ} :
-    IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n)).toSet := by
+    IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
   simp
@@ -650,8 +649,8 @@ theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
   set I : Finset Hollom := {x ∈ int | x ∈ C}
   have int_eq : int = Set.Icc h(xl, yl, n) h(xh, yh, n) := by
     simp only [coe_image, coe_Icc, int, embed_image_Icc]
-  have hI : IsChain (· ≤ ·) I.toSet := hC.mono (by simp [Set.subset_def, I])
-  have hIn : I.toSet ⊆ level n := by simp +contextual [Set.subset_def, I, int, embed_apply]
+  have hI : IsChain (· ≤ ·) I := hC.mono (by simp [Set.subset_def, I])
+  have hIn : ↑I ⊆ level n := by simp +contextual [Set.subset_def, I, int, embed_apply]
   have : Set.MapsTo line int (Icc (xl + yl) (xh + yh)) := by
     rw [int_eq, coe_Icc]
     exact line_mapsTo rfl
@@ -1004,8 +1003,7 @@ lemma left_or_right_bias {n : ℕ} (a b : ℕ)
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(a, i, n) ≤ j) ∨
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(i, b, n) ≤ j) := by
   -- Suppose otherwise, and take `c` and `d` counterexamples to both alternatives
-  by_contra! h
-  obtain ⟨⟨c, hc⟩, d, hd⟩ := h
+  by_contra! ⟨⟨c, hc⟩, d, hd⟩
   -- Observe the set of points in `C ∩ level n` below `(d, c, n)` is finite, and aim to show that
   -- `C ∩ level n` is contained in this set, for a contradiction
   refine hCn (((Set.finite_Iic (d, c)).image (embed n)).subset ?_)
@@ -1144,8 +1142,8 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   -- ...then let `F` be the chain from `(a, a)` to `(3 * a, a)`...
   let F : Finset Hollom := (chainBetween a a (3 * a) a).image (embed n)
   -- ...observing that by definition of `a`, we know `F` is entirely within `S \ (C ∩ level n)`...
-  have F_subs : F.toSet ⊆ S n C \ (C ∩ level n) := calc
-    F.toSet = embed n '' chainBetween a a (3 * a) a := Finset.coe_image
+  have F_subs : ↑F ⊆ S n C \ (C ∩ level n) := calc
+    F = embed n '' chainBetween a a (3 * a) a := Finset.coe_image
     _ ⊆ embed n '' Finset.Icc (a, a) (3 * a, a) := Set.image_mono chainBetween_subset
     _ = embed n '' Set.Icc (a, a) (3 * a, a) := by simp
     _ ⊆ embed n '' Set.Ici (a, a) := Set.image_mono Set.Icc_subset_Ici_self

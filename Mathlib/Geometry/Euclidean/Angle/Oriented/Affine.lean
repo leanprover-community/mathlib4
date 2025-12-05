@@ -3,9 +3,11 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Side
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+module
+
+public import Mathlib.Analysis.Convex.Side
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Oriented angles.
@@ -18,6 +20,8 @@ This file defines oriented angles in Euclidean affine spaces.
   points.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -178,6 +182,14 @@ theorem oangle_eq_zero_iff_oangle_rev_eq_zero {p₁ p₂ p₃ : P} : ∡ p₁ p�
 theorem oangle_eq_pi_iff_oangle_rev_eq_pi {p₁ p₂ p₃ : P} : ∡ p₁ p₂ p₃ = π ↔ ∡ p₃ p₂ p₁ = π :=
   o.oangle_eq_pi_iff_oangle_rev_eq_pi
 
+/-- A homothety with a nonzero scale factor preserves angles. -/
+@[simp] lemma oangle_homothety (p p₁ p₂ p₃ : P) {r : ℝ} (h : r ≠ 0) :
+    ∡ (AffineMap.homothety p r p₁) (AffineMap.homothety p r p₂) (AffineMap.homothety p r p₃) =
+      ∡ p₁ p₂ p₃ := by
+  simp_rw [oangle, ← AffineMap.linearMap_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
+    LinearMap.id_coe, id_eq]
+  rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
+
 /-- An oriented angle is not zero or `π` if and only if the three points are affinely
 independent. -/
 theorem oangle_ne_zero_and_ne_pi_iff_affineIndependent {p₁ p₂ p₃ : P} :
@@ -230,6 +242,28 @@ theorem two_zsmul_oangle_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P}
     (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₅ p₆ := by
   rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq] at h₁₂₄₅ h₃₂₆₅
   exact two_zsmul_oangle_of_vectorSpan_eq h₁₂₄₅ h₃₂₆₅
+
+/-- Consider two angles `∡ p₁ p₂ p₃` and `∡ p₄ p₅ p₆` defined by triples of points. Each is the
+angle between two lines; if the pair `p₁ p₂` and `p₄ p₅` of corresponding lines is parallel, and
+also the pair `p₃ p₂` and `p₆ p₅` of corresponding lines is parallel, and also (roughly) the third
+pair of lines `p₁ p₃` and `p₄ p₆` are the same line, then the two angles are equal.  This is a
+stronger version of `two_zsmul_oangle_of_parallel`, which shows that the two angles are equal mod
+`π` in the absence of the condition on the third pair of lines. -/
+theorem oangle_eq_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ ∉ line[ℝ, p₁, p₃])
+    (h₄ : p₄ ∈ line[ℝ, p₁, p₃]) (h₆ : p₆ ∈ line[ℝ, p₁, p₃])
+    (h₁₂₄₅ : line[ℝ, p₁, p₂] ∥ line[ℝ, p₄, p₅]) (h₃₂₆₅ : line[ℝ, p₃, p₂] ∥ line[ℝ, p₆, p₅]) :
+    ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆ := by
+  rw [oangle, oangle]
+  have hd : line[ℝ, p₆, p₄].direction ≤ line[ℝ, p₃, p₁].direction := by
+    rw [Set.pair_comm p₃]
+    exact AffineSubspace.direction_le (affineSpan_pair_le_of_mem_of_mem h₆ h₄)
+  obtain ⟨r, hr, h₅₄, h₆₅, -⟩ := exists_eq_smul_of_parallel h₂ h₁₂₄₅
+    (Set.pair_comm p₃ p₂ ▸ Set.pair_comm p₆ p₅ ▸ h₃₂₆₅).direction_eq.symm.le hd
+  rw [← neg_inj, neg_vsub_eq_vsub_rev, ← smul_neg, neg_vsub_eq_vsub_rev] at h₅₄
+  rw [h₅₄, h₆₅]
+  rcases hr.lt_or_gt with hlt | hlt
+  · simp [-neg_vsub_eq_vsub_rev, hlt]
+  · simp [hlt]
 
 /-- Given three points not equal to `p`, the angle between the first and the second at `p` plus
 the angle between the second and the third equals the angle between the first and the third. -/
@@ -332,6 +366,22 @@ theorem angle_eq_iff_oangle_eq_of_sign_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h
     ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ ↔ ∡ p₁ p₂ p₃ = ∡ p₄ p₅ p₆ :=
   o.angle_eq_iff_oangle_eq_of_sign_eq (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃) (vsub_ne_zero.2 hp₄)
     (vsub_ne_zero.2 hp₆) hs
+
+/-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
+negations of each other, then the oriented angles are negations of each other (even in degenerate
+cases). -/
+lemma oangle_eq_neg_of_angle_eq_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆) (hs : (∡ p₁ p₂ p₃).sign = -(∡ p₄ p₅ p₆).sign) :
+    ∡ p₁ p₂ p₃ = -∡ p₄ p₅ p₆ :=
+  o.oangle_eq_neg_of_angle_eq_of_sign_eq_neg h hs
+
+/-- If the signs of two nondegenerate oriented angles between points are negations of each other,
+the oriented angles are negations of each other if and only if the unoriented angles are equal. -/
+lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ : P} (hp₁ : p₁ ≠ p₂)
+    (hp₃ : p₃ ≠ p₂) (hp₄ : p₄ ≠ p₅) (hp₆ : p₆ ≠ p₅) (hs : (∡ p₁ p₂ p₃).sign = -(∡ p₄ p₅ p₆).sign) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ ↔ ∡ p₁ p₂ p₃ = -∡ p₄ p₅ p₆ :=
+  o.angle_eq_iff_oangle_eq_neg_of_sign_eq_neg (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃)
+    (vsub_ne_zero.2 hp₄) (vsub_ne_zero.2 hp₆) hs
 
 /-- The oriented angle between three points equals the unoriented angle if the sign is
 positive. -/
@@ -739,5 +789,22 @@ theorem _root_.AffineSubspace.SOppSide.oangle_sign_eq_neg {s : AffineSubspace �
   rw [← (hp₃p₄.symm.trans (sOppSide_pointReflection hp₁ hp₃p₄.left_notMem)).oangle_sign_eq hp₁ hp₂,
     ← oangle_rotate_sign p₁, ← oangle_rotate_sign p₁, oangle_swap₁₃_sign,
     (sbtw_pointReflection_of_ne ℝ hp₁p₃).symm.oangle_sign_eq _]
+
+/-- The unoriented angles at `p₂` between `p₁` and `p₃`, and between `p₃` and `p₄`, are equal if
+and only if the oriented angles are equal (`p₃` lies on the angle bisector) or one of `p₁` and `p₄`
+is weakly between `p₂` and the other. -/
+lemma angle_eq_iff_oangle_eq_or_wbtw {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ≠ p₂) (hp₄ : p₄ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₃ p₂ p₄ ↔ ∡ p₁ p₂ p₃ = ∡ p₃ p₂ p₄ ∨ Wbtw ℝ p₂ p₁ p₄ ∨ Wbtw ℝ p₂ p₄ p₁ := by
+  simp_rw [angle, oangle,
+    o.angle_eq_iff_oangle_eq_or_sameRay (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₄)]
+  apply or_congr_right
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨r, hr, he⟩ := h.exists_pos_left (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₄)
+    rw [← vsub_vadd p₁ p₂, ← vsub_vadd p₄ p₂, ← he]
+    nth_rw 1 4 [← one_smul ℝ (p₁ -ᵥ p₂)]
+    exact wbtw_or_wbtw_smul_vadd_of_nonneg _ _ zero_le_one hr.le
+  · rcases h with h | h
+    · exact h.sameRay_vsub_left
+    · exact h.sameRay_vsub_left.symm
 
 end EuclideanGeometry

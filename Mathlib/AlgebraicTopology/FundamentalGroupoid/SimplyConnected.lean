@@ -3,10 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
@@ -19,6 +21,8 @@ A topological space is simply connected if its fundamental groupoid is equivalen
 
   - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
+
+@[expose] public section
 
 universe u
 
@@ -51,8 +55,6 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
-attribute [local instance] Path.Homotopic.setoid
-
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
@@ -71,8 +73,6 @@ instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [Con
 
 end SimplyConnectedSpace
 
-attribute [local instance] Path.Homotopic.setoid
-
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/
 theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :
@@ -88,3 +88,28 @@ theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
+
+open Path.Homotopic.Quotient in
+/-- A space is simply connected if and only if it is path-connected and every loop
+    at any basepoint is null-homotopic (i.e., homotopic to the constant loop). -/
+theorem simply_connected_iff_loops_nullhomotopic {Y : Type*} [TopologicalSpace Y] :
+    SimplyConnectedSpace Y ↔
+      PathConnectedSpace Y ∧ ∀ (x : Y) (γ : Path x x), Path.Homotopic γ (Path.refl x) := by
+  rw [simply_connected_iff_paths_homotopic']
+  constructor
+  · -- Forward: all paths homotopic implies all loops null-homotopic
+    intro ⟨hpc, hall⟩
+    exact ⟨hpc, fun x γ => hall γ (Path.refl x)⟩
+  · -- Backward: all loops null-homotopic implies all paths homotopic
+    intro ⟨hpc, hloops⟩
+    refine ⟨hpc, @fun x y p₁ p₂ => ?_⟩
+    -- Work in the quotient where structural steps can be done by simp
+    rw [← eq]
+    replace hloops : ∀ (x : Y) (γ : Path x x),
+        (⟦γ⟧ : Path.Homotopic.Quotient x x) = ⟦Path.refl x⟧ :=
+      fun x γ => Quotient.sound (hloops x γ)
+    have h : trans ⟦p₁⟧ (symm ⟦p₂⟧) = refl x := by
+      simpa using hloops x (p₁.trans p₂.symm)
+    calc ⟦p₁⟧
+      _ = trans (trans ⟦p₁⟧ (symm ⟦p₂⟧)) ⟦p₂⟧ := by simp
+      _ = ⟦p₂⟧ := by grind

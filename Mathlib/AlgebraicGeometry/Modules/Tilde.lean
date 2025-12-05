@@ -3,13 +3,14 @@ Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu
 -/
+module
 
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.AlgebraicGeometry.StructureSheaf
-import Mathlib.AlgebraicGeometry.Modules.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.AlgebraicGeometry.StructureSheaf
+public import Mathlib.AlgebraicGeometry.Modules.Sheaf
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 
 /-!
 
@@ -32,6 +33,8 @@ To get the `R`-module structure on the stalks on `M^~`, we had to define
 applying a forgetful functor to `ModuleCat.tilde M`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -146,24 +149,24 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module (Spec(R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
+    Module ((Spec <| .of R).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
   inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def tilde : Spec(R).Modules where
+noncomputable def tilde : (Spec <| .of R).Modules where
   val :=
     { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
       map := fun {U V} i ↦ ofHom
         -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
         -- This suggests `restrictScalars` needs to be redesigned.
-        (Y := (restrictScalars (Spec(R).ringCatSheaf.val.map i).hom).obj
-          (of (Spec(R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
+        (Y := (restrictScalars ((Spec <| .of R).ringCatSheaf.val.map i).hom).obj
+          (of ((Spec <| .of R).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
-  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ ).2
+  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrpCat) _ ).2
     M.tildeInType.2
 
 /--
@@ -191,7 +194,7 @@ lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
   refine Limits.Concrete.colimit_no_zero_smul_divisor
-    _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
+    _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.ext <| funext fun pt ↦ ?_⟩
     _ hst
   apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
     (congr_fun (Subtype.ext_iff.1 hs) pt)
@@ -208,7 +211,7 @@ noncomputable def toOpen (U : Opens (PrimeSpectrum.Top R)) :
   { toFun := fun f =>
     ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
       ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
-    map_add' := fun f g => Subtype.eq <| funext fun x ↦ LinearMap.map_add _ _ _
+    map_add' := fun f g => Subtype.ext <| funext fun x ↦ map_add _ _ _
     map_smul' := fun r m => by
       simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
         RingHom.id_apply]
@@ -241,7 +244,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
           germ_ext (C := ModuleCat R) (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
             (iWV := homOfLE inf_le_left) _ <|
-          Subtype.eq <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
+          Subtype.ext <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
   obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
   obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
@@ -341,7 +344,7 @@ theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectru
     ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f : M) (g : R) (hg : _),
       const M f g V hg = (tildeInModuleCat M).map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
-  ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.eq <| funext fun y => by
+  ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.ext <| funext fun y => by
     obtain ⟨h1, (h2 : g • s.1 ⟨y, _⟩ = LocalizedModule.mk f 1)⟩ := hfg y
     exact show LocalizedModule.mk f ⟨g, by exact h1⟩ = s.1 (iVU y) by
       set x := s.1 (iVU y); change g • x = _ at h2; clear_value x
@@ -370,7 +373,7 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
     (F := M.tildeInModuleCat)
   · exact homOfLE le_top
   · exact 𝟙 _
-  refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
+  refine Subtype.ext <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
   #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     added this refine hack to be able to add type hint in `change` -/
   refine (?_ : @Eq ?ty _ _)

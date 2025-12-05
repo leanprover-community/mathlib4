@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Gluing data
@@ -17,6 +19,8 @@ provide the API to realize it as a multispan diagram, and also state lemmas abou
 interaction with a functor that preserves certain pullbacks.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -239,15 +243,7 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
       | WalkingMultispan.left _ => Iso.refl _
       | WalkingMultispan.right _ => Iso.refl _)
     (by
-      rintro (⟨_, _⟩ | _) _ (_ | _ | _)
-      · erw [Category.comp_id, Category.id_comp, Functor.map_id]
-        rfl
-      · erw [Category.comp_id, Category.id_comp]
-        rfl
-      · erw [Category.comp_id, Category.id_comp, Functor.map_comp]
-        rfl
-      · erw [Category.comp_id, Category.id_comp, Functor.map_id]
-        rfl)
+      rintro (⟨_, _⟩ | _) _ (_ | _ | _) <;> simp)
 
 @[simp]
 theorem diagramIso_app_left (i : D.J × D.J) :

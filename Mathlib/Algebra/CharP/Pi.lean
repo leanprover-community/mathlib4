@@ -3,12 +3,16 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Characteristic of semirings of functions
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -24,7 +28,7 @@ instance pi (ι : Type u) [hi : Nonempty ι] (R : Type v) [Semiring R] (p : ℕ)
         ⟨fun h =>
           funext fun j =>
             show Pi.evalRingHom (fun _ => R) j (↑x : ι → R) = 0 by rw [map_natCast, h],
-          fun h => map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x ▸ by rw [h, RingHom.map_zero]⟩⟩
+          fun h => map_natCast (Pi.evalRingHom (fun _ : ι => R) i) x ▸ by rw [h, map_zero]⟩⟩
 
 -- diamonds
 instance pi' (ι : Type u) [Nonempty ι] (R : Type v) [CommRing R] (p : ℕ) [CharP R p] :

@@ -3,11 +3,13 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.Probability.Kernel.Basic
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Tactic.Peel
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
+module
+
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Kernel.Basic
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Tactic.Peel
+public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 /-!
 # Independence with respect to a kernel and a measure
@@ -45,6 +47,8 @@ definitions in the particular case of the usual independence notion.
   then the measurable space structures they generate are independent.
 * `ProbabilityTheory.Kernel.IndepSets.Indep`: variant with two π-systems.
 -/
+
+@[expose] public section
 
 open Set MeasureTheory MeasurableSpace
 
@@ -123,7 +127,7 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
   {_mα : MeasurableSpace α} {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
   {κ η : Kernel α Ω} {μ : Measure α}
   {π : ι → Set (Set Ω)} {s : ι → Set Ω} {S : Finset ι} {f : ∀ x : ι, Ω → β x}
-  {s1 s2 : Set (Set Ω)}
+  {s1 s2 : Set (Set Ω)} {ι' : Type*} {g : ι' → ι}
 
 @[simp] lemma iIndepSets_zero_right : iIndepSets π κ 0 := by simp [iIndepSets]
 
@@ -237,7 +241,7 @@ lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} {κ
     [IsMarkovKernel κ] : iIndepSets m κ μ := by
   rintro s f hf
   obtain rfl | ⟨i, rfl⟩ : s = ∅ ∨ ∃ i, s = {i} := by
-    simpa using (subsingleton_of_subsingleton (s := s.toSet)).eq_empty_or_singleton
+    simpa using (subsingleton_of_subsingleton (s := (s : Set ι))).eq_empty_or_singleton
   all_goals simp
 
 @[nontriviality, simp]
@@ -268,6 +272,64 @@ lemma IndepFun.meas_inter {β γ : Type*} [mβ : MeasurableSpace β] [mγ : Meas
     {f : Ω → β} {g : Ω → γ} (hfg : IndepFun f g κ μ)
     {s t : Set Ω} (hs : MeasurableSet[mβ.comap f] s) (ht : MeasurableSet[mγ.comap g] t) :
     ∀ᵐ a ∂μ, κ a (s ∩ t) = κ a s * κ a t := hfg _ _ hs ht
+
+lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
+    iIndepSets (π ∘ g) κ μ := by
+  intro s f hf
+  let f' := Function.extend g f fun _ => ∅
+  have f'_apply x : f' (g x) = f x := hg.extend_apply ..
+  classical
+  have hf' : ∀ i ∈ s.image g, f' i ∈ π i := by
+    simp_rw [Finset.forall_mem_image, f'_apply]
+    exact hf
+  filter_upwards [@h (s.image g) f' hf'] with a ha
+  simpa [Finset.set_biInter_finset_image, Finset.prod_image hg.injOn, f'_apply] using ha
+
+lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
+    iIndepSets π κ μ := by
+  obtain ⟨g', hg'⟩ := hg.hasRightInverse
+  convert h.precomp hg'.injective
+  rw [Function.comp_assoc, hg'.comp_eq_id, Function.comp_id]
+
+lemma iIndepSets_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepSets (π ∘ g) κ μ ↔ iIndepSets π κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+lemma iIndep.precomp (hg : Function.Injective g) (h : iIndep m κ μ) :
+    iIndep (m ∘ g) κ μ :=
+  (iIndepSets.precomp hg h :)
+
+lemma iIndep.of_precomp (hg : Function.Surjective g) (h : iIndep (m ∘ g) κ μ) :
+    iIndep m κ μ :=
+  iIndepSets.of_precomp hg h
+
+lemma iIndep_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndep (m ∘ g) κ μ ↔ iIndep m κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+lemma iIndepSet.precomp (hg : Function.Injective g) (h : iIndepSet s κ μ) :
+    iIndepSet (s ∘ g) κ μ :=
+  iIndep.precomp hg h
+
+lemma iIndepSet.of_precomp (hg : Function.Surjective g) (h : iIndepSet (s ∘ g) κ μ) :
+    iIndepSet s κ μ :=
+  iIndep.of_precomp hg h
+
+lemma iIndepSet_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepSet (s ∘ g) κ μ ↔ iIndepSet s κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
+
+lemma iIndepFun.precomp (hg : Function.Injective g) (h : iIndepFun f κ μ) :
+    iIndepFun (fun i ↦ f (g i)) κ μ :=
+  iIndep.precomp hg h
+
+lemma iIndepFun.of_precomp (hg : Function.Surjective g) (h : iIndepFun (fun i ↦ f (g i)) κ μ) :
+    iIndepFun f κ μ :=
+  iIndep.of_precomp hg h
+
+lemma iIndepFun_precomp_of_bijective (hg : Function.Bijective g) :
+    iIndepFun (fun i ↦ f (g i)) κ μ ↔ iIndepFun f κ μ :=
+  ⟨.of_precomp hg.surjective, .precomp hg.injective⟩
 
 end ByDefinition
 
@@ -362,13 +424,15 @@ theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
   obtain ⟨n, ht1⟩ := ht1
   exact hyp n t1 t2 ht1 ht2
 
-theorem IndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} {u : Set ι} (hyp : ∀ n ∈ u, IndepSets (s n) s' κ μ) :
     IndepSets (⋃ n ∈ u, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   simp_rw [Set.mem_iUnion] at ht1
   rcases ht1 with ⟨n, hpn, ht1⟩
   exact hyp n hpn t1 t2 ht1 ht2
+
+@[deprecated (since := "2025-11-02")] alias IndepSets.bUnion := IndepSets.biUnion
 
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h₁ : IndepSets s₁ s' κ μ) :
@@ -426,16 +490,10 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
     rcases Finset.mem_insert.mp hx with hx | hx
     · simp [hx, ht₁]
     · simp [Finset.mem_singleton.mp hx, hij.symm, ht₂]
-  have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true]
-  have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
   have h_inter : ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
       ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ := by
     simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
   filter_upwards [h_indep {i, j} hf_m] with a h_indep'
-  have h_prod : (∏ t ∈ ({i, j} : Finset ι), κ a (ite (t = i) t₁ t₂))
-      = κ a (ite (i = i) t₁ t₂) * κ a (ite (j = i) t₁ t₂) := by
-    simp only [hij, Finset.prod_singleton, Finset.prod_insert, not_false_iff,
-      Finset.mem_singleton]
   grind
 
 theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
@@ -971,8 +1029,6 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
-@[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr'
-
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : IndepFun f g κ μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
@@ -1119,7 +1175,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
     · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
-    · grind
+    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :
@@ -1200,9 +1256,6 @@ theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f κ μ)
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
-@[deprecated (since := "2025-03-05")]
-alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
-
 theorem iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a ↦ (f i a, f j a)) (f k) κ μ := by
@@ -1227,10 +1280,6 @@ lemma iIndepFun.indepFun_prodMk_prodMk (hf_indep : iIndepFun f κ μ)
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (hf_indep.indepFun_finset {i, j} {k, l} (by aesop) hf_meas).comp (hg i j) (hg k l)
-
-@[deprecated (since := "2025-03-05")]
-alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk_prod_mk :=
-  iIndepFun.indepFun_prodMk_prodMk
 
 theorem iIndepFun.indepFun_prodMk_prodMk₀ (hf_indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ))
@@ -1491,3 +1540,5 @@ lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
 -- for kernels
 
 end ProbabilityTheory.Kernel
+
+set_option linter.style.longFile 1700

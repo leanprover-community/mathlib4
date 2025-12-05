@@ -3,7 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Locally connected topological spaces
@@ -13,6 +16,8 @@ of connected *open* sets. Local connectivity is equivalent to each point having 
 of connected (not necessarily open) sets --- but in a non-trivial way, so we choose this definition
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
+
+@[expose] public section
 
 open Set Topology
 
@@ -132,5 +137,16 @@ lemma Topology.IsOpenEmbedding.locallyConnectedSpace [LocallyConnectedSpace α] 
 theorem IsOpen.locallyConnectedSpace [LocallyConnectedSpace α] {U : Set α} (hU : IsOpen U) :
     LocallyConnectedSpace U :=
   hU.isOpenEmbedding_subtypeVal.locallyConnectedSpace
+
+/-- If a space is locally connected, the topology of its connected components is discrete. -/
+instance [LocallyConnectedSpace α] : DiscreteTopology <| ConnectedComponents α := by
+  refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
+  simp [← ConnectedComponents.isQuotientMap_coe.isOpen_preimage,
+    connectedComponents_preimage_singleton, isOpen_connectedComponent]
+
+/-- A locally connected compact space has finitely many connected components. -/
+instance [LocallyConnectedSpace α] [CompactSpace α] : Finite <| ConnectedComponents α :=
+  finite_of_compact_of_discrete
 
 end LocallyConnectedSpace

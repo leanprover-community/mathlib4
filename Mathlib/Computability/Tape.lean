@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Data.List.GetD
 
 /-!
 # Turing machine tapes
@@ -23,6 +25,8 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -551,9 +555,12 @@ theorem Tape.write_nth {Γ} [Inhabited Γ] (b : Γ) :
   | _, -(_ + 1 : ℕ) => rfl
 
 @[simp]
-theorem Tape.write_mk' {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
-    (Tape.mk' L (R.cons a)).write b = Tape.mk' L (R.cons b) := by
-  simp only [Tape.write, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons]
+theorem Tape.write_mk {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
+    (mk a L R).write b = mk b L R := rfl
+
+@[simp]
+theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
+    (mk' L R).write b = mk' L (R.tail.cons b) := by simp [mk']
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
@@ -573,13 +580,7 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by
-  induction n generalizing L R with
-  | zero =>
-    simp only [ListBlank.nth_zero, ListBlank.modifyNth, iterate_zero_apply]
-    rw [← Tape.write_mk', ListBlank.cons_head_tail]
-  | succ n IH =>
-    simp only [ListBlank.head_cons, ListBlank.nth_succ, ListBlank.modifyNth, Tape.move_right_mk',
-      ListBlank.tail_cons, iterate_succ_apply, IH]
+  induction n generalizing L R <;> simp [*]
 
 theorem Tape.map_move {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) (d) :
     (T.move d).map f = (T.map f).move d := by

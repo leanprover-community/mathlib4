@@ -3,15 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.LocallySurjective
-import Mathlib.CategoryTheory.Sites.Localization
+module
+
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # Locally bijective morphisms of presheaves
 
-Let `C` a be category equipped with a Grothendieck topology `J`.
+Let `C` be a category equipped with a Grothendieck topology `J`.
 Let `A` be a concrete category.
-In this file, we introduce a type-class `J.WEqualsLocallyBijective A` which says
+In this file, we introduce a type class `J.WEqualsLocallyBijective A` which says
 that the class `J.W` (of morphisms of presheaves which become isomorphisms
 after sheafification) is the class of morphisms that are both locally injective
 and locally surjective (i.e. locally bijective). We prove that this holds iff
@@ -19,6 +21,8 @@ for any presheaf `P : Cᵒᵖ ⥤ A`, the sheafification map `toSheafify J P` is
 We show that this holds under certain universe assumptions.
 
 -/
+
+@[expose] public section
 
 universe w' w v' v u' u
 namespace CategoryTheory

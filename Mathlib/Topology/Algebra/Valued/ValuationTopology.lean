@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # The topology on a valued ring
@@ -21,6 +23,8 @@ from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valu
 should take this into consideration.
 
 -/
+
+@[expose] public section
 
 open scoped Topology uniformity
 open Set Valuation
@@ -116,10 +120,10 @@ namespace Valued
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
-    toUniformSpace := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+    toUniformSpace := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
     toIsUniformAddGroup := @isUniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
-      letI := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
+      letI := @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
       exact exists_congr fun γ => by rw [true_and]; rfl }
@@ -138,7 +142,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
 theorem toUniformSpace_eq :
-    toUniformSpace = @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
+    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ :=
   UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
 
@@ -216,13 +220,16 @@ theorem isClopen_ball (r : Γ₀) : IsClopen (X := R) {x | v x < r} :=
   ⟨isClosed_ball _ _, isOpen_ball _ _⟩
 
 /-- A closed ball centred at the origin in a valued ring is open. -/
-theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
+theorem isOpen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   rw [mem_nhds]
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
+
+@[deprecated (since := "2025-10-09")]
+alias isOpen_closedball := isOpen_closedBall
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := by
@@ -235,7 +242,7 @@ theorem isClosed_closedBall (r : Γ₀) : IsClosed (X := R) {x | v x ≤ r} := b
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/
 theorem isClopen_closedBall {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x ≤ r} :=
-  ⟨isClosed_closedBall _ _, isOpen_closedball _ hr⟩
+  ⟨isClosed_closedBall _ _, isOpen_closedBall _ hr⟩
 
 /-- A sphere centred at the origin in a valued ring is clopen. -/
 theorem isClopen_sphere {r : Γ₀} (hr : r ≠ 0) : IsClopen (X := R) {x | v x = r} := by
@@ -257,7 +264,7 @@ theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
 
 /-- The closed unit ball in a valued ring is open. -/
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
-  isOpen_closedball _ one_ne_zero
+  isOpen_closedBall _ one_ne_zero
 
 @[deprecated (since := "2025-04-25")]
 alias integer_isOpen := isOpen_integer

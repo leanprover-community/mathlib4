@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Sym.Sym2
 
 /-! # Unordered tuples of elements of a list
 
@@ -24,6 +26,8 @@ from a given list. These are list versions of `Nat.multichoose`.
   and lift the result to `Multiset` and `Finset`.
 
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -193,7 +197,7 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     exact (h.map _).append ih
   | swap x y xs =>
     simp only [List.sym2, map_cons, cons_append]
-    conv => enter [1,2,1]; rw [Sym2.eq_swap]
+    conv => enter [1, 2, 1]; rw [Sym2.eq_swap]
     -- Explicit permutation to speed up simps that follow.
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,

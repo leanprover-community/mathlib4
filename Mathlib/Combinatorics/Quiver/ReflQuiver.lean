@@ -3,8 +3,10 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Reflexive Quivers
@@ -17,6 +19,8 @@ prefunctors" for short.
 
 Note: Currently Category does not extend ReflQuiver, although it could. (TODO: do this)
 -/
+
+@[expose] public section
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
 
@@ -47,6 +51,8 @@ structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [
   map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by cat_disch
 
 namespace ReflPrefunctor
+
+attribute [simp] map_id
 
 -- These lemmas cannot be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
@@ -119,8 +125,19 @@ infixl:60 " ⋙rq " => ReflPrefunctor.comp
 /-- Notation for the identity prefunctor on a reflexive quiver. -/
 notation "𝟭rq" => id
 
-theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
-    (h : f = g) : F.map f = F.map g := congrArg F.map h
+theorem congr_map {U V : Type*} [ReflQuiver U] [ReflQuiver V] (F : U ⥤rq V) {X Y : U}
+    {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g := congrArg F.map h
+
+/-- An equality of refl prefunctors gives an equality on objects. -/
+theorem congr_obj {U V : Type*} [ReflQuiver U] [ReflQuiver V] {F G : U ⥤rq V}
+    (e : F = G) (X : U) : F.obj X = G.obj X := by cases e; rfl
+
+/-- An equality of refl prefunctors gives an equality on homs. -/
+theorem congr_hom {U V : Type*} [ReflQuiver U] [ReflQuiver V] {F G : U ⥤rq V}
+    (e : F = G) {X Y : U} (f : X ⟶ Y) :
+    Quiver.homOfEq (F.map f) (congr_obj e X) (congr_obj e Y) = G.map f := by
+  subst e
+  simp
 
 end ReflPrefunctor
 
