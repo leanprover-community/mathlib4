@@ -471,11 +471,10 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
   gcongr
-  · apply (le_seminorm 𝕜 i n f x).trans
-    apply Seminorm.le_def.1
-    exact Finset.le_sup_of_le (Finset.mem_Iic.2 <|
-      Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl
-  · exact mod_cast Nat.choose_le_choose i hk
+  grw [le_seminorm 𝕜 i n f x]
+  apply Seminorm.le_def.1
+  exact Finset.le_sup_of_le (Finset.mem_Iic.2 <|
+    Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl
 
 end Seminorms
 

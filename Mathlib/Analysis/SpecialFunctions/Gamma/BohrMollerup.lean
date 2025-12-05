@@ -49,6 +49,8 @@ open scoped Nat ENNReal Topology Real
 
 namespace Real
 
+local notation "Γ" => Gamma
+
 section Convexity
 
 /-- Log-convexity of the Gamma function on the positive reals (stated in multiplicative form),
@@ -359,6 +361,18 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   symm
   rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
+
+-- TODO: prove uniqueness once the necessary material to do so makes its way into Mathlib
+theorem exists_isMinOn_Gamma_Ioi : ∃ x ∈ Ioo 1 2, IsMinOn Gamma (Ioi 0) x := by
+  have ⟨x, hx, hmin⟩ := isCompact_Icc.exists_isMinOn (nonempty_Icc.mpr one_le_two) <|
+    differentiableOn_Gamma_Ioi.continuousOn.mono <| by grind
+  have ⟨h1, h2, h3half⟩ : Γ (3 / 2) < Γ 1 ∧ Γ (3 / 2) < Γ 2 ∧ Γ x ≤ Γ (3 / 2) := by
+    simpa [Gamma_three_div_two_lt_one] using hmin <| by norm_num
+  refine ⟨x, by grind, fun y _ ↦ ?_⟩
+  obtain hy | hy | hy : y ∈ Ioc 0 1 ∨ y ∈ Icc 1 2 ∨ y ∈ Ici 2 := by grind
+  · exact h3half.trans h1.le |>.trans <| Gamma_strictAntiOn_Ioc.antitoneOn hy (by simp) hy.right
+  · exact hmin hy
+  · exact h3half.trans h2.le |>.trans <| Gamma_strictMonoOn_Ici.monotoneOn (by simp) hy hy
 
 end StrictMono
 
