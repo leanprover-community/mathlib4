@@ -93,6 +93,16 @@ lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
   · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
   · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
 
+lemma IsCusp.mono {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ} (hGH : 𝒢 ≤ ℋ)
+    (hc : IsCusp c 𝒢) : IsCusp c ℋ :=
+  match hc with | ⟨h, hh, hp, hc⟩ => ⟨h, hGH hh, hp, hc⟩
+
+lemma IsCusp.of_relindex_ne_zero {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ}
+    (hGH : 𝒢.relIndex ℋ ≠ 0) (hc : IsCusp c ℋ) : IsCusp c 𝒢 := by
+  rw [← Subgroup.inf_relIndex_right] at hGH
+  rw [← isCusp_iff_of_relIndex_ne_zero inf_le_right hGH] at hc
+  exact hc.mono inf_le_left
+
 @[deprecated (since := "2025-09-17")]
 alias Commensurable.isCusp_iff := Subgroup.Commensurable.isCusp_iff
 

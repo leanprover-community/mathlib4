@@ -21,7 +21,7 @@ In this file we define the complex manifold structure on the upper half-plane.
 
 open Filter
 
-open scoped Manifold ContDiff MatrixGroups
+open scoped Manifold ContDiff MatrixGroups Topology
 
 variable {n : WithTop ℕ∞}
 
@@ -118,5 +118,24 @@ lemma mdifferentiable_inv_denom (g : GL (Fin 2) ℝ) :
 lemma mdifferentiable_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ g • τ) :=
   (contMDiff_smul hg).mdifferentiable le_top
+
+lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
+    {τ : ℍ} (hτ : ∃ᶠ z in 𝓝[≠] τ, f z = 0) : f = 0 := by
+  let F : ℂ → ℂ := f ∘ .ofComplex
+  rw [UpperHalfPlane.mdifferentiable_iff] at hf
+  have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
+  have := this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_
+  · ext w
+    convert this w.property
+    rw [Function.comp_apply, ofComplex_apply_of_im_pos]
+    rfl
+  · apply IsConnected.isPreconnected
+    apply Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)
+  · contrapose! hτ
+    rw [eventually_nhdsWithin_iff, ← isOpenEmbedding_coe.map_nhds_eq,
+      Filter.eventually_map] at hτ
+    rw [eventually_nhdsWithin_iff]
+    filter_upwards [hτ] with a ha
+    simp_all
 
 end UpperHalfPlane
