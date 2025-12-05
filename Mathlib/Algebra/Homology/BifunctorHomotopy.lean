@@ -193,7 +193,7 @@ noncomputable def mapBifunctorMapHomotopy₂ :
       ((((mapBifunctorMapHomotopy₁ h₂ f₁ F.flip c).compRight
         (mapBifunctorFlipIso L₁ L₂ F c).hom).compLeft
           ((mapBifunctorFlipIso K₁ K₂ F c).inv)).trans (Homotopy.ofEq (by simp)))
-  have hom₂_eq : hom₂ f₁ h₂ F c = H.hom := by
+  haveI hom₂_eq : hom₂ f₁ h₂ F c = H.hom := by
     ext j j' i₁ i₂ hj
     dsimp [H, mapBifunctorMapHomotopy₁]
     rw [add_zero, zero_add, ι_mapBifunctorFlipIso_inv_assoc, Linear.units_smul_comp,
