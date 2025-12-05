@@ -49,15 +49,15 @@ theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGro
 variable {R M N}
 
 /-- Given a linear map `f : M → N`, we can obtain a short complex `ker(f) → M → N`. -/
-abbrev LinearMap.shortComplexG (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
+abbrev LinearMap.shortComplexKer (f : M →ₗ[R] N) : ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
   g := ModuleCat.ofHom.{v} f
   zero := by ext; simp
 
-theorem LinearMap.shortExact_shortComplexG {f : M →ₗ[R] N} (h : Function.Surjective f) :
-    f.shortComplexG.ShortExact where
+theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.Surjective f) :
+    f.shortComplexKer.ShortExact where
   exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr
-    fun _ ↦ by simp [shortComplexG]
+    fun _ ↦ by simp [shortComplexKer]
   mono_f := (ModuleCat.mono_iff_injective _).mpr (LinearMap.ker f).injective_subtype
   epi_g := (ModuleCat.epi_iff_surjective _).mpr h
 
@@ -66,11 +66,11 @@ noncomputable abbrev ModuleCat.projective_shortComplex [Small.{v} R] (M : Module
     ShortComplex (ModuleCat.{v} R) :=
   let e : Module.Basis M R (M →₀ Shrink.{v} R) :=
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
-  (e.constr ℕ id).shortComplexG
+  (e.constr ℕ id).shortComplexKer
 
 theorem ModuleCat.projective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
     M.projective_shortComplex.ShortExact := by
-  apply LinearMap.shortExact_shortComplexG
+  apply LinearMap.shortExact_shortComplexKer
   refine fun m ↦ ⟨Finsupp.single m 1, ?_⟩
   simp [Module.Basis.constr_apply]
 
@@ -78,20 +78,17 @@ instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projective_shortC
   Module.Free.finsupp R _ _
 
 /-- The standard short complex `N → P → M` with `P` projective. -/
-noncomputable abbrev ModuleCat.injective_shortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
-    ShortComplex (ModuleCat.{v} R) :=
-  let IP := Classical.choice (EnoughInjectives.presentation M)
-  ShortComplex.mk IP.3 (Limits.cokernel.π IP.3) (Limits.cokernel.condition IP.3)
+noncomputable abbrev CategoryTheory.InjectivePresentation.shortComplex
+    {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : ShortComplex (ModuleCat.{v} R) :=
+  ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
 
-theorem ModuleCat.injective_shortComplex_shortExact [Small.{v} R] (M : ModuleCat.{v} R) :
-    M.injective_shortComplex.ShortExact :=
-  let IP := Classical.choice (EnoughInjectives.presentation M)
-  { exact := ShortComplex.exact_cokernel IP.3
-    mono_f := IP.4
+theorem ModuleCat.injective_shortComplex_shortExact {M : ModuleCat.{v} R}
+    (ip : InjectivePresentation M) : ip.shortComplex.ShortExact :=
+  { exact := ShortComplex.exact_cokernel ip.3
+    mono_f := ip.4
     epi_g := Limits.coequalizer.π_epi }
 
-instance [Small.{v} R] (M : ModuleCat.{v} R) : Injective M.injective_shortComplex.X₂ :=
-  (Classical.choice (EnoughInjectives.presentation M)).2
+instance {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : Injective ip.shortComplex.X₂ := ip.2
 
 /-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is projective. -/
