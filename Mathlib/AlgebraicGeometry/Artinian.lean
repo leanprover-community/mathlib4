@@ -69,7 +69,7 @@ lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAf
   apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
   exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
 
-instance IsLocallyArtinian.isLocallyArtinian_opens [h : IsLocallyArtinian X] {U : X.Opens} :
+instance [h : IsLocallyArtinian X] {U : X.Opens} :
     IsLocallyArtinian U := by
   refine { component_artinian := ?_ }
   intro W
