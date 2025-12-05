@@ -57,7 +57,7 @@ lemma hasDimensionLT_of_le (hn : d ≤ n := by cutsat) : HasDimensionLT X n wher
   degenerate_eq_top i hi :=
     X.degenerate_eq_top_of_hasDimensionLT d i (hn.trans hi)
 
-instance [HasDimensionLT X n] : HasDimensionLT X (n + 1) :=
+instance [HasDimensionLT X n] (k : ℕ) : HasDimensionLT X (n + k) :=
   X.hasDimensionLT_of_le n _
 
 end
