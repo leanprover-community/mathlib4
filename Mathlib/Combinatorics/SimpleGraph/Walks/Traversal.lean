@@ -228,7 +228,7 @@ theorem lastDart_mem_darts {p : G.Walk v w} (hnil : ¬p.Nil) : p.lastDart hnil �
 theorem snd_eq_head_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) = p.edges.head
     (p.edges.ne_nil_of_length_pos <|
       p.not_nil_iff_lt_length.mp hnil |>.trans_eq p.length_edges.symm) := by
-  simp [← p.edge_firstDart hnil, firstDart_eq_head_darts, Walk.edges]
+  simp [← p.edge_firstDart hnil, Walk.edges]
 
 theorem snd_mem_edges {p : G.Walk v w} (hnil : ¬p.Nil) : s(v, p.snd) ∈ p.edges :=
   p.snd_eq_head_edges hnil ▸ List.head_mem _
