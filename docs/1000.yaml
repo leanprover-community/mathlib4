@@ -163,7 +163,11 @@ Q193286:
 
 Q193878:
   title: Chinese remainder theorem
-  decl: Ideal.quotientInfRingEquivPiQuotient
+  decls:
+    - Ideal.quotientInfRingEquivPiQuotient
+    - ZMod.chineseRemainder
+  authors: Kenny Lau, Chris Hughes
+  date: 2019, 2021
 
 Q193882:
   title: Menelaus's theorem
