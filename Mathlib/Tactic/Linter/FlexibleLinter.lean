@@ -457,13 +457,23 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
       stains := new
 
   for (s, stainStx, d) in msgs do
-    let (tac, tacOnly) := if stainStx.getKind == ``Lean.Parser.Tactic.simpAll
-      then ("simp_all?", "simp_all only [...]")
-      else ("simp?", "simp only [...]")
-    Linter.logLint linter.flexible stainStx
-      m!"'{stainStx}' is a flexible tactic modifying '{d}'. \
-        Try '{tac}' and use the suggested '{tacOnly}'."
-    logInfoAt s m!"… and '{s}' uses '{d}'!"
+    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trim
+    let msg := match stainStx.getKind with
+      | ``Lean.Parser.Tactic.simp =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'simp?' and use the suggested 'simp only [...]'. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAll =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'simp_all?' and use the suggested 'simp_all only [...]'. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | `Aesop.Frontend.Parser.aesopTactic =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'aesop?' and use the suggested proof."
+      | _ =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'."
+    Linter.logLint linter.flexible stainStx msg
+    logInfoAt s m!"'{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
 
