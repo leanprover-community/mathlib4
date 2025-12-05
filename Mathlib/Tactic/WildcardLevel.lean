@@ -155,8 +155,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
   match stx with
   | `($[@%$expl]?$id:ident.{$u $us*} $args*) =>
     -- Check for local variables which shouldn't have explicit universe parameters
-    let n := id.getId
-    if let some (e, _) ← resolveLocalName n then
+    if let some (e, _) ← resolveLocalName id.getId then
       throwError "invalid use of explicit universe parameters, `{e}` is a local variable"
 
     -- Resolve constant name
