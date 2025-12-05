@@ -97,10 +97,11 @@ optimization. However, the `Parameter`s are created in a telescope, and their fi
 have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
-    (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) (ignoreProofs := true) :
+    (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     CommandElabM Unit := do
-  let type ← if ignoreProofs then liftCoreM <| decl.type.eraseProofs.run' else pure decl.type
-  let unusedInstances := type.getUnusedForallInstanceBinderIdxsWhere p
+  let _ ← liftTermElabM <| Meta.forEachExpr decl.type fun e => do
+    if e.hash = 1234 then logInfo "wow!"
+  let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then liftTermElabM do
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
@@ -152,12 +153,12 @@ pluralizing as appropriate.
 def _root_.Lean.Syntax.logUnusedInstancesInDeclsWhere (_cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
-    (declFilter : ConstantVal → Bool := fun _ => true) (ignoreProofs := true) :
+    (declFilter : ConstantVal → Bool := fun _ => true) :
     CommandElabM Unit := do
   for t in ← getInfoTrees do
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
-      thm.onUnusedInstancesInTypeWhere instanceTypeFilter (ignoreProofs := ignoreProofs)
+      thm.onUnusedInstancesInTypeWhere instanceTypeFilter
         fun unusedParams =>
           -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
           -- t.withDeclSigRef cmd thm.name do
