@@ -186,9 +186,9 @@ noncomputable def mapBifunctorMapHomotopy₂ :
     Homotopy (mapBifunctorMap f₁ f₂ F c) (mapBifunctorMap f₁ f₂' F c) :=
   letI : TotalComplexShape c₂ c₁ c := TotalComplexShape.symm c₁ c₂ c
   letI : TotalComplexShapeSymmetry c₁ c₂ c := TotalComplexShape.symmSymmetry c₁ c₂ c
-  have : F.flip.Additive := { }
-  have (X₁ : C₂) : (F.flip.obj X₁).Additive := { }
-  let H : Homotopy (mapBifunctorMap f₁ f₂ F c) (mapBifunctorMap f₁ f₂' F c) :=
+  haveI : F.flip.Additive := { }
+  haveI (X₁ : C₂) : (F.flip.obj X₁).Additive := { }
+  letI H : Homotopy (mapBifunctorMap f₁ f₂ F c) (mapBifunctorMap f₁ f₂' F c) :=
     (Homotopy.ofEq (by simp)).trans
       ((((mapBifunctorMapHomotopy₁ h₂ f₁ F.flip c).compRight
         (mapBifunctorFlipIso L₁ L₂ F c).hom).compLeft
