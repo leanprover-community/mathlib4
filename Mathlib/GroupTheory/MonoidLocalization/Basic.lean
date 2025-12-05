@@ -436,8 +436,6 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N →
   coe f := f.toMonoidHom
   coe_injective' := DFunLike.coe_injective.comp toMonoidHom_injective
 
-@[to_additive] theorem isLocalizationMap (f : LocalizationMap S N) : IsLocalizationMap S f := f.2
-
 @[to_additive] instance : MonoidHomClass (LocalizationMap S N) M N where
   map_one f := f.toMonoidHom.map_one
   map_mul f := f.map_mul
