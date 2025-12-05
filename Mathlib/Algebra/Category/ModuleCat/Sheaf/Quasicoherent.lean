@@ -60,7 +60,7 @@ end
 
 noncomputable section
 
-variable {C C' : Type (u')} [SmallCategory C] [SmallCategory C'] {J : GrothendieckTopology C}
+variable {C C' : Type u'} [Category.{v'} C] [Category.{v'} C'] {J : GrothendieckTopology C}
   {J' : GrothendieckTopology C'} {R : Sheaf J RingCat} {S : Sheaf J' RingCat}
   [HasSheafify J AddCommGrpCat] [HasSheafify J' AddCommGrpCat]
   [J.WEqualsLocallyBijective AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
