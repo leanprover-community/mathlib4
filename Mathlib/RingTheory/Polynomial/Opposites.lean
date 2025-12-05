@@ -32,7 +32,8 @@ namespace Polynomial
 to the corresponding element of the opposite ring. -/
 def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
   ((toFinsuppIso R).op.trans <| AddMonoidAlgebra.opRingEquiv.trans {
-    -- TODO: Clean up after https://github.com/leanprover-community/mathlib4/pull/32254
+    -- TODO(Yaël): Clean up after https://github.com/leanprover-community/mathlib4/pull/32254
+    -- The term should be `AddOpposite.opAddEquiv.addMonoidAlgebraCongrRight`.
       toFun := AddMonoidAlgebra.mapDomain AddOpposite.unop
       invFun := AddMonoidAlgebra.mapDomain .op
       left_inv x := by ext; simp [← Finsupp.mapDomain_comp]
