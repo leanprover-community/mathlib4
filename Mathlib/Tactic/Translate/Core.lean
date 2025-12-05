@@ -165,14 +165,16 @@ structure TranslateData : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
   /-- `argInfoAttr` stores the declarations that need some extra information to be translated. -/
   argInfoAttr : NameMapExtension ArgInfo
-  /-- The global `dont_translate` attribute specifies that operations on the given type
-  should not be translated. This can be either for types that are translated,
+  /-- The global `do_translate`/`dont_translate` attributes specify whether operations on
+  a given type should be translated. `dont_translate` can be used for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
+  `do_translate` is for types without arguments, like `Unit` and `Empty`, where the structure on it
+  can be translated.
 
-  Note: The name generation is not aware that the operations on this type should not be translated,
-    so you generally have to specify a name manually, if some part should not be translated.
+  Note: The name generation is not aware of `dont_translate`, so if some part of a lemma is not
+    translated thanks to this, you generally have to specify the translated name manually.
   -/
-  dontTranslateAttr : NameMapExtension Unit
+  doTranslateAttr : NameMapExtension Bool
   /-- `translations` stores all of the constants that have been tagged with this attribute,
   and maps them to their translation. -/
   translations : NameMapExtension Name
@@ -328,11 +330,10 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
-      if (t.dontTranslateAttr.find? env e.constName).isNone &&
-        (inApp || (findTranslation? env t e.constName).isSome) then
-        failure
-      else
-        return .inl e.constName
+      let doTranslate :=
+        (t.doTranslateAttr.find? env e.constName!).getD <|
+          inApp || (findTranslation? env t e.constName).isSome
+      if doTranslate then failure else return .inl e.constName
     if (← get).contains e then
       failure
     modify fun s => s.insert e
@@ -562,13 +563,37 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
       value := ← reorderLambda reorder <| ← applyReplacementLambda t dont info.value }
   return decl
 
-/-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
+/--
+Find the argument of `nm` that appears in the first translatable (type-class) argument.
+Returns 1 if there are no types with a translatable class as arguments.
+E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
+Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
+E.g. `[Pow A N]` is a translatable type-class on `A`, not on `N`.
+-/
+def findRelevantArg (t : TranslateData) (nm : Name) : CoreM Nat := MetaM.run' do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
+    let env ← getEnv
+    -- check if `tgt` has a translatable type argument, and if so,
+    -- find the index of a type from `xs` appearing in there
+    let relevantArg? (tgt : Expr) : Option Nat := do
+      let c ← tgt.getAppFn.constName?
+      guard (findTranslation? env t c).isSome
+      let relevantArg := (t.argInfoAttr.find? env c).elim 0 (·.relevantArg)
+      let arg ← tgt.getArg? relevantArg
+      xs.findIdx? (arg.containsFVar ·.fvarId!)
+    -- run the above check on all hypotheses and on the conclusion
+    let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
+        forallTelescope (← inferType x) fun _ys tgt ↦ return relevantArg? tgt
+    let arg := arg <|> relevantArg? ty
+    trace[translate_detail] "findRelevantArg: {arg}"
+    return arg.getD 0
+
+/-- Abstracts the nested proofs in the value of `decl` if it is a def.
+This follows the behaviour of `Elab.abstractNestedProofs`. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
-  let decl := decl.updateType (← withExporting <| Meta.abstractNestedProofs decl.type)
-  if decl matches .defnInfo _ then
-    return decl.updateValue (← Meta.abstractNestedProofs decl.value!)
-  else
-    return decl
+  let .defnInfo info := decl | return decl
+  let value ← withDeclNameForAuxNaming decl.name do Meta.abstractNestedProofs info.value
+  return .defnInfo { info with value }
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (t : TranslateData) (src pre tgt_pre : Name) : CoreM Name :=
@@ -650,13 +675,14 @@ partial def transformDeclAux (t : TranslateData) (reorder : List (List Nat)) (cf
   if let .opaqueInfo {value, ..} := srcDecl then
     for n in findAuxDecls value pre do
       transformDeclAux t reorder cfg pre tgt_pre n
-  -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
-  -- to the translation dictionary, since otherwise we cannot translate the name.
-  if !pre.isPrefixOf src then
-    insertTranslation t src tgt {}
-  -- now transform the source declaration
   -- expose target body when source body is exposed
   withExporting (isExporting := (← getEnv).setExporting true |>.find? src |>.any (·.hasValue)) do
+  -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
+  -- to the translation dictionary, since otherwise we cannot translate the name.
+  let relevantArg ← findRelevantArg t src
+  if !pre.isPrefixOf src || src != pre && relevantArg != 0 then
+    insertTranslation t src tgt { relevantArg }
+  -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
       updateDecl t tgt srcDecl reorder cfg.dontTranslate
@@ -764,31 +790,6 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation t srcLemma tgtLemma argInfo
-
-/--
-Find the argument of `nm` that appears in the first translatable (type-class) argument.
-Returns 1 if there are no types with a translatable class as arguments.
-E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
-E.g. `[Pow A N]` is a translatable type-class on `A`, not on `N`.
--/
-def findRelevantArg (t : TranslateData) (nm : Name) : MetaM Nat := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
-    let env ← getEnv
-    -- check if `tgt` has a translatable type argument, and if so,
-    -- find the index of a type from `xs` appearing in there
-    let relevantArg? (tgt : Expr) : Option Nat := do
-      let c ← tgt.getAppFn.constName?
-      guard (findTranslation? env t c).isSome
-      let relevantArg := (t.argInfoAttr.find? env c).elim 0 (·.relevantArg)
-      let arg ← tgt.getArg? relevantArg
-      xs.findIdx? (arg.containsFVar ·.fvarId!)
-    -- run the above check on all hypotheses and on the conclusion
-    let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
-        forallTelescope (← inferType x) fun _ys tgt ↦ return relevantArg? tgt
-    let arg := arg <|> relevantArg? ty
-    trace[translate_detail] "findRelevantArg: {arg}"
-    return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
@@ -1139,17 +1140,19 @@ Copies equation lemmas and attributes from `src` to `tgt`
 -/
 partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
     CoreM (Array Name) := do
-  if let some eqns := eqnsAttribute.find? (← getEnv) src then
-    unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
-      for eqn in eqns do
-        _ ← addTranslationAttr t eqn cfg
-      eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
-  else
-    /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
-    definitions. If we don't do that, the equation lemma for `src` might be generated later
-    when doing a `rw`, but it won't be generated for `tgt`. -/
-    translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
-      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
+  -- The equation lemmas can only be related if the value of `tgt` is the translated value of `src`.
+  unless cfg.existing do
+    if let some eqns := eqnsAttribute.find? (← getEnv) src then
+      unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
+        for eqn in eqns do
+          _ ← addTranslationAttr t eqn cfg
+        eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) t · |>.get!))
+    else
+      /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
+      definitions. If we don't do that, the equation lemma for `src` might be generated later
+      when doing a `rw`, but it won't be generated for `tgt`. -/
+      translateLemmas t #[src, tgt] argInfo "equation lemmas" fun nm ↦
+        (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes t cfg.ref cfg.attrs src tgt argInfo
 
@@ -1158,7 +1161,7 @@ Make a new copy of a declaration, replacing fragments of the names of identifier
 the body using the `translations` dictionary.
 -/
 partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
-    (argInfo : ArgInfo := {}) : CoreM (Array Name) := withDeclNameForAuxNaming tgt do
+    (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
   transformDeclAux t argInfo.reorder cfg src tgt src
   copyMetaData t cfg src tgt argInfo
 
@@ -1202,7 +1205,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       MetaM.run' <| checkExistingType t src tgt cfg
     else
       pure (cfg.reorder?.getD [])
-  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
+  let relevantArg ← cfg.relevantArg?.getDM <| findRelevantArg t src
   let argInfo := { reorder, relevantArg }
   insertTranslation t src tgt argInfo alreadyExists
   let nestedNames ←
