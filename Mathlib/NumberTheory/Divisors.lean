@@ -145,25 +145,39 @@ lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
   rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap
     (f_inj := by simp_all), List.toFinset_range'_1_1]
 
-lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
-    n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
-  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap fun a b c d h h' ha => ?_
+lemma pairwise_divisorsAntidiagonalList_fst {n : ℕ} :
+    n.divisorsAntidiagonalList.Pairwise (·.fst < ·.fst) := by
+  refine (List.sortedLT_range' _ _ Nat.one_ne_zero).pairwise.filterMap _ fun a b c d h ha h' => ?_
   rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
   simpa [← h.right, ← h'.right]
 
-lemma sorted_divisorsAntidiagonalList_snd {n : ℕ} :
-    n.divisorsAntidiagonalList.Sorted (·.snd > ·.snd) := by
+lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
+    n.divisorsAntidiagonalList.Pairwise (·.snd > ·.snd) := by
   obtain rfl | hn := eq_or_ne n 0
   · simp
-  refine (List.sorted_lt_range' _ _ Nat.one_ne_zero).filterMap ?_
-  simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt, and_imp, Prod.forall,
-    Prod.mk.injEq]
-  rintro a b _ _ _ _ ha rfl rfl hb rfl rfl hab
+  refine (List.sortedLT_range' _ _ Nat.one_ne_zero).pairwise.filterMap _ ?_
+  simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt,
+    and_imp, Prod.forall, Prod.mk.injEq]
+  rintro a b hab _ _ ha rfl rfl _ _ hb rfl rfl
   rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
+
+@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_fst :=
+  pairwise_divisorsAntidiagonalList_fst
+
+@[deprecated (since := "2025-11-27")] alias sorted_divisorsAntidiagonalList_snd :=
+  pairwise_divisorsAntidiagonalList_snd
+
+lemma sortedLT_map_fst_divisorsAntidiagonalList {n : ℕ} :
+    (n.divisorsAntidiagonalList.map Prod.fst).SortedLT :=
+  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_fst).sortedLT
+
+lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
+    (n.divisorsAntidiagonalList.map Prod.snd).SortedGT :=
+  (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
   have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
-  sorted_divisorsAntidiagonalList_fst.nodup
+  pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
 @[simp]
@@ -183,8 +197,8 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
   have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
-  refine List.eq_of_perm_of_sorted ?_ sorted_divisorsAntidiagonalList_snd.reverse <|
-    sorted_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id
+  refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
+    (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
     (nodup_divisorsAntidiagonalList.map Prod.swap_injective), mul_comm]
 
