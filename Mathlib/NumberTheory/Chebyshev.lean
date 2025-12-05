@@ -169,7 +169,7 @@ theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
       rw [← Nat.sub_add_cancel (by linarith : 1 ≤ k1),
         ← Nat.sub_add_cancel (by linarith : 1 ≤ k2)] at h
       convert Nat.Prime.pow_inj h1.1.2.2 h2.1.2.2 h using 1
-      cutsat
+      lia
     · intro n hn
       simp only [mem_filter, mem_Ioc] at hn
       simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, exists_prop, Prod.exists]
