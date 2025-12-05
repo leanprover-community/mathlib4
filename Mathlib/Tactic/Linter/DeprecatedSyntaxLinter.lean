@@ -235,5 +235,3 @@ def deprecatedSyntaxLinter : Linter where run stx := do
 initialize addLinter deprecatedSyntaxLinter
 
 end Mathlib.Linter.Style
-
-end

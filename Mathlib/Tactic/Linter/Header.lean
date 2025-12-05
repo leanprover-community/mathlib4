@@ -76,6 +76,7 @@ It returns the array of all `import` identifiers in `s`. -/
 --   to Mathlib.Init (where this linter is imported)
 -- - that function does not return the Syntax corresponding to each import,
 --   which we use to log more precise warnings.
+-- This function is public as the `DeprecatedModule` linter also uses it.
 public partial def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
   if let `(Lean.Parser.Module.import| import $n) := s then
