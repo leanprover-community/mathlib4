@@ -44,6 +44,10 @@ In the `Distributions` scope, we introduce the following notations:
   `n : ℕ∞`.
 * `𝓓'(Ω, F)`: the space of `F`-valued distributions on the open set `Ω`, i.e `𝓓'^{⊤}(Ω, F)`.
 
+Note that the parameter `n` here lives in `ℕ∞`, unlike the parameter for `ContDiff` which lives
+in `WithTop ℕ∞` (to incorporate analytic functions). This means that we can't use the notation
+`∞` introduced for `ContDiff` for our regularity, because it denotes an element of `WithTop ℕ∞`.
+
 ## Implementation Notes
 
 ### `abbrev` or `def`
