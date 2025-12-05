@@ -148,7 +148,7 @@ end IsCardinalFilteredGenerator
 end ObjectProperty
 
 /-- The property that a category `C` and a regular cardinal `κ`
-satisfy `P.IsCardinalFilteredGenerators κ` for an suitable essentially
+satisfy `P.IsCardinalFilteredGenerators κ` for a suitable essentially
 small `P : ObjectProperty C`. -/
 class HasCardinalFilteredGenerator (C : Type u) [hC : Category.{v} C]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] : Prop extends LocallySmall.{w} C where
