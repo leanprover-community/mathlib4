@@ -109,28 +109,31 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
-def Presentation.map
+@[simps! generators_I relations_I]
+def Presentation.map (P : Presentation M)
     (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
-    (hf' : F.obj (unit R) ≅ unit S) {M : SheafOfModules.{u'} R} (P : Presentation M) :
-    Presentation (F.obj M) := by
-  obtain ⟨ι, σ, f, g, H, h⟩ := Presentation.cokernelCofork P
-  let f_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map f ≫
+    (hf' : F.obj (unit R) ≅ unit S) {M : SheafOfModules.{u'} R} :
+    Presentation (F.obj M) :=
+  letI f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _)
+  letI g := P.generators.π
+  have H : f ≫ g = 0 := by simp [f, g]
+  letI f_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map f ≫
     (PreservesCoproduct.iso F _).hom ≫ (Sigma.mapIso fun b ↦ hf').hom
-  let g_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map g
-  have H' : f_new ≫ g_new = 0 := by
+  letI g_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map g
+  haveI H' : f_new ≫ g_new = 0 := by
     simp_rw [f_new, g_new, Category.assoc, Iso.hom_inv_id_assoc,
       Preadditive.IsIso.comp_left_eq_zero, IsHomLift.eq_of_isHomLift F (F.map f ≫ F.map g) (f ≫ g),
       H, Functor.map_zero]
-  let h' : IsColimit (CokernelCofork.ofπ g_new H') := by
+  letI h' : IsColimit (CokernelCofork.ofπ g_new H') := by
     refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv
-      (parallelPair.ext ?_ ?_ ?_ ?_) _).symm (isColimitCoforkMapOfIsColimit' F _ h))
+      (parallelPair.ext ?_ ?_ ?_ ?_) _).symm (isColimitCoforkMapOfIsColimit' F _ P.isColimit))
       (Cocones.ext ?_ ?_) <;> dsimp
-    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ ((PreservesCoproduct.iso F _)).symm
-    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ ((PreservesCoproduct.iso F _)).symm
-    · simp_rw [f_new, Category.assoc]
-      erw [Iso.hom_inv_id_assoc, Iso.hom_inv_id]
-      simp only [Functor.mapIso_inv, colim_map, PreservesCoproduct.inv_hom, Category.comp_id,
-        Iso.trans_hom, Iso.symm_hom, Category.assoc]
+    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ (PreservesCoproduct.iso F _).symm
+    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ (PreservesCoproduct.iso F _).symm
+    · apply Sigma.hom_ext
+      intro i
+      simp [f, f_new, Category.assoc, ← Functor.map_comp_assoc, -Functor.map_comp, -colim_map,
+        -PreservesCoproduct.inv_hom]
     · simp
     · exact Iso.refl _
     · intro j
@@ -140,7 +143,7 @@ def Presentation.map
       cases j <;> dsimp
       · aesop
       · aesop
-  exact presentationOfIsCokernelFree f_new g_new H' h'
+  presentationOfIsCokernelFree f_new g_new H' h'
 
 end
 
