@@ -4488,7 +4488,6 @@ public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.DFinsupp.PiTensorProduct
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.Basic
 public import Mathlib.LinearAlgebra.Dimension.Constructions
@@ -4508,7 +4507,6 @@ public import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
 public import Mathlib.LinearAlgebra.DirectSum.Basis
 public import Mathlib.LinearAlgebra.DirectSum.Finite
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.LinearAlgebra.DirectSum.PiTensorProduct
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Basis
@@ -4648,6 +4646,9 @@ public import Mathlib.LinearAlgebra.PerfectPairing.Matrix
 public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.DirectSum
+public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.Projectivization.Action
