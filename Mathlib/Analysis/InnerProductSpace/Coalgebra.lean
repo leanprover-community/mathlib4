@@ -54,7 +54,7 @@ space and a normed algebra.
 See note [reducible non-instances]. -/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
-  counit := adjoint (e.symm.toLinearMap ∘ₗ id.smulRight 1)
+  counit := adjoint (toSpanSingleton 𝕜 E (e.symm 1))
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
       ← (assocIsometry 𝕜 _ _ _).symm_symm, ← adjoint_toLinearMap_eq_symm]
