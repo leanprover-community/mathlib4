@@ -464,7 +464,8 @@ use of typeclass inference for this purpose. -/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
-instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; lia⟩
+instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo :=
+  ⟨add_le_add (one_le_iff_ne_zero.mpr (NeZero.ne n)) (Nat.le_refl 1)⟩
 
 namespace AtLeastTwo
 
