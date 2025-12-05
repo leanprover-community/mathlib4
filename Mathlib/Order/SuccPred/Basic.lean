@@ -199,11 +199,9 @@ theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
 @[to_dual pred_lt_of_not_isMin]
 alias ⟨_, lt_succ_of_not_isMax⟩ := lt_succ_iff_not_isMax
 
--- @[to_dual]
 theorem wcovBy_succ (a : α) : a ⩿ succ a :=
   ⟨le_succ a, fun _ hb => (succ_le_of_lt hb).not_gt⟩
 
--- @[to_dual]
 theorem covBy_succ_of_not_isMax (h : ¬IsMax a) : a ⋖ succ a :=
   (wcovBy_succ a).covBy_of_lt <| lt_succ_of_not_isMax h
 
