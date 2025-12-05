@@ -53,31 +53,31 @@ namespace PGame
   take a positive number of stones from it on their turn. -/
 noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
   ⟨o.toType, o.toType,
-    fun x => nim ((enumIsoToType o).symm x).val,
-    fun x => nim ((enumIsoToType o).symm x).val⟩
+    fun x => nim x,
+    fun x => nim x⟩
 termination_by o
-decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
+decreasing_by all_goals exact x.toOrd.prop
 
 theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
 theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
 theorem moveLeft_nim_heq (o : Ordinal) :
-    (nim o).moveLeft ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+    (nim o).moveLeft ≍ fun i : o.toType => nim i := by rw [nim]; rfl
 
 @[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
 
 theorem moveRight_nim_heq (o : Ordinal) :
-    (nim o).moveRight ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+    (nim o).moveRight ≍ fun i : o.toType => nim i := by rw [nim]; rfl
 
 @[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
 
 /-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
+  toType.mk.toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
 
 /-- Turns an ordinal less than `o` into a right move for `nim o` and vice versa. -/
 noncomputable def toRightMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).RightMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
+  toType.mk.toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
 
 @[simp]
 theorem toLeftMovesNim_symm_lt {o : Ordinal} (i : (nim o).LeftMoves) :
@@ -167,7 +167,7 @@ def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.ofUnique
-  all_goals simpa [enumIsoToType] using nimZeroRelabelling
+  all_goals simpa [toType.toOrd, toType.mk] using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nimOneRelabelling.equiv

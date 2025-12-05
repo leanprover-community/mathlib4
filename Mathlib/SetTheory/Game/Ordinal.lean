@@ -40,9 +40,9 @@ namespace Ordinal
 
 /-- Converts an ordinal into the corresponding pre-game. -/
 noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩
+  ⟨o.toType, PEmpty, fun x => toPGame x, PEmpty.elim⟩
 termination_by o
-decreasing_by exact ((enumIsoToType o).symm x).prop
+decreasing_by exact x.toOrd.prop
 
 @[simp]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.toType := by
@@ -61,7 +61,7 @@ instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves
 /-- Converts an ordinal less than `o` into a move for the `PGame` corresponding to `o`, and vice
 versa. -/
 noncomputable def toLeftMovesToPGame {o : Ordinal} : Set.Iio o ≃ o.toPGame.LeftMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
+  toType.mk.toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
 
 @[simp]
 theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
@@ -70,7 +70,7 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
 
 @[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
-    o.toPGame.moveLeft ≍ fun x : o.toType => ((enumIsoToType o).symm x).val.toPGame := by
+    o.toPGame.moveLeft ≍ fun x : o.toType => toPGame x := by
   rw [toPGame]
   rfl
 
