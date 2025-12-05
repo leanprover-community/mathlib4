@@ -46,11 +46,15 @@ section
 
 open Polynomial
 
-variable (n : Type*) [Finite n] (R : Type*) [CommRing R] [IsDomain R]
+variable (n : Type*) (R : Type*) [CommRing R]
 
 /-- The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 noncomputable def sum_X_mul_Y : MvPolynomial (n ⊕ n) R :=
   ∑ᶠ i, MvPolynomial.X (Sum.inl i) * MvPolynomial.X (Sum.inr i)
+
+lemma sum_X_mul_Y_eq_sum [Fintype n] :
+    sum_X_mul_Y n R = ∑ i, X (.inl i) * X (.inr i) := by
+  rw [sum_X_mul_Y, finsum_eq_sum_of_fintype]
 
 theorem irreducible_sum_X_mul_Y [Nontrivial n] :
     Irreducible (sum_X_mul_Y n R) := by

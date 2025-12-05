@@ -226,15 +226,14 @@ if `a ≠ 0` and `a, b` are relatively prime. -/
 theorem irreducible_smul_X_add_C {a : R} (b : R) (ha : a ≠ 0) (hab : IsRelPrime a b) :
     Irreducible (a • X + C b : Polynomial R) where
   not_isUnit h := by
-    obtain ⟨u, hu, h⟩ := isUnit_iff.mp h
+    obtain ⟨u, -, h⟩ := isUnit_iff.mp h
     apply ha
-    simpa using congr_arg (fun f ↦ coeff f 1) h.symm
+    simpa using congr(coeff $h 1).symm
   isUnit_or_isUnit f g h := by
     wlog H : f.degree ≤ g.degree generalizing f g
-    · rcases le_total f.degree g.degree with h' | h'
-      · exact this f g h h'
-      · rw [mul_comm] at h
-        exact or_comm.mp (this g f h h')
+    · push_neg at H
+      rw [mul_comm] at h
+      exact exact (this g f h H.le).symm
     have hd := congr_arg degree h
     have ha' : (a • (X : R[X])).degree = 1 := by
       simp [smul_eq_C_mul a, degree_C ha]
