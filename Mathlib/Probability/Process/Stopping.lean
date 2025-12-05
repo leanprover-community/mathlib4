@@ -331,7 +331,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → WithTop ℕ} (hτ : Is
     simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
     cases τ ω with
     | top => simp
-    | coe a => simp only [ENat.some_eq_coe]; norm_cast; cutsat
+    | coe a => simp only [ENat.some_eq_coe]; norm_cast; lia
 
 -- generalize to certain countable type?
 theorem add {f : Filtration ℕ m} {τ π : Ω → WithTop ℕ}
@@ -789,8 +789,7 @@ theorem stoppedProcess_stoppedProcess :
     · refine le_trans ?_ hστ
       simp [untopA_eq_untop]
   · nth_rewrite 2 [untopA_eq_untop]
-    · rw [coe_untop, min_assoc]
-      rfl
+    · rw [coe_untop, min_assoc, Pi.inf_apply]
     · exact (lt_of_le_of_lt (min_le_right _ _) <| lt_top_iff_ne_top.2 hσ).ne
 
 theorem stoppedProcess_stoppedProcess' :

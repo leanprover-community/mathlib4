@@ -308,7 +308,7 @@ instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
 /-- In any abelian category with enough projectives,
-`ProjectiveResolution.of Z` constructs an projective resolution of the object `Z`.
+`ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
 irreducible_def of : ProjectiveResolution Z where
   complex := ofComplex Z

@@ -81,7 +81,7 @@ lemma finGcdMap_smul {r : ℕ} (a : ℤ) {v : Fin 2 → ℤ} (hv : finGcdMap v =
     finGcdMap (a • v) = a.natAbs * r := by
   simp [finGcdMap, Int.gcd_mul_left, hv]
 
-/-- An abbreviation of the map which divides a integer vector by an integer. -/
+/-- An abbreviation of the map which divides an integer vector by an integer. -/
 abbrev divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
 
 lemma mem_gammaSet_one (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by

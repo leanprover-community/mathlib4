@@ -33,9 +33,9 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
     · let _ := (isMaximalCohenMacaulay_def M).mpr (le_antisymm (depth_le_ringKrullDim M) le)
       let _ := free_of_isMaximalCohenMacaulay_of_isRegularLocalRing M
       use 0
-      exact instHasProjectiveDimensionLTOfNatNatOfProjective M
+      infer_instance
     · have := ModuleCat.isZero_iff_subsingleton.mpr (not_nontrivial_iff_subsingleton.mp ntr)
-      have := CategoryTheory.Limits.IsZero.hasProjectiveDimensionLT_zero this
+      have := this.hasProjectiveDimensionLT_zero
       use 0
       exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
   · rename_i i ih _
@@ -46,23 +46,8 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)).trans
         (Finsupp.linearEquivFunOnFinite R R (Fin n))).1
       have surjf : Function.Surjective f := by simpa [f] using hf'
-      let S : ShortComplex (ModuleCat.{v} R) := {
-        f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-        g := ModuleCat.ofHom.{v} f
-        zero := by
-          ext x
-          simp }
-      have S_exact : S.ShortExact := {
-        exact := by
-          apply (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
-          intro x
-          simp [S]
-        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-      let _ : Module.Finite R S.X₂ := by
-        simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin n)]
-      let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-      let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+      let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
+      have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
         moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
@@ -78,7 +63,7 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       use m + 1
       exact (S_exact.hasProjectiveDimensionLT_X₃_iff m proj).mpr hm
     · have := ModuleCat.isZero_iff_subsingleton.mpr (not_nontrivial_iff_subsingleton.mp ntr)
-      have := CategoryTheory.Limits.IsZero.hasProjectiveDimensionLT_zero this
+      have := this.hasProjectiveDimensionLT_zero
       use 0
       exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
 
