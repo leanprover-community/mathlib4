@@ -38,7 +38,7 @@ open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 namespace InnerProductSpace
 
 section coalgebraOfAlgebra
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /- TODO: This does not require submultiplicativity of the norm. When we unbundle the algebra
 and analysis hierachies, we should generalise this from `NormedRing` to `Ring`
@@ -54,7 +54,7 @@ space and a normed algebra.
 See note [reducible non-instances]. -/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗᵢ[𝕜] A) : Coalgebra 𝕜 E where
   comul := adjoint (e.symm.toLinearMap ∘ₗ mul' 𝕜 A ∘ₗ map e.toLinearMap e.toLinearMap)
-  counit := adjoint (e.symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 A)
+  counit := adjoint (e.symm.toLinearMap ∘ₗ id.smulRight 1)
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor, ← toLinearEquiv_assocIsometry,
       ← (assocIsometry 𝕜 _ _ _).symm_symm, ← adjoint_toLinearMap_eq_symm]
