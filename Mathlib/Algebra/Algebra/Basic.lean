@@ -460,7 +460,7 @@ theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
 
 end Module
 
-instance {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
+example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=
   Algebra.ofModule smul_mul_assoc mul_smul_comm
 
