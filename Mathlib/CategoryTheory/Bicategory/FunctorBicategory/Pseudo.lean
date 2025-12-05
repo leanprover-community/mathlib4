@@ -76,7 +76,7 @@ variable (B C)
 Note that this instance is scoped to the `Pseudofunctor.StrongTrans` namespace. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
 rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance bicategory : Bicategory (Pseudofunctor B C) where
+scoped instance : Bicategory (Pseudofunctor B C) where
   whiskerLeft {F G H} η _ _ Γ := StrongTrans.whiskerLeft η Γ
   whiskerRight {F G H} _ _ Γ η := StrongTrans.whiskerRight Γ η
   associator {F G H} I := StrongTrans.associator
