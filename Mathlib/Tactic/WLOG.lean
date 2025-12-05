@@ -27,7 +27,7 @@ public meta section
 
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Term Tactic MetavarContext.MkBinding
+open Lean Meta Elab Term Tactic MetavarContext.MkBinding Parser.Tactic
 
 /-- The result of running `wlog` on a goal. -/
 structure WLOGResult where
@@ -118,7 +118,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
 
 /-- The implementation of `wlog` and `wlog!` -/
 def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `ident))
-    (H : Option (TSyntax `ident)) (push : Bool) :
+    (H : Option (TSyntax `ident)) (pushConfig : Option (TSyntax ``optConfig) := none) :
     TacticM Unit := do
   withMainContext do
   let H := H.map (·.getId)
@@ -129,10 +129,11 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
   let goal ← getMainGoal
   let { reductionGoal, hypothesisGoal, reductionFVarIds .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
-  if push then
-    reductionGoal.withContext do
-      let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
-      evalTactic (← `(tactic| try push_neg at $negHygName:ident))
+  let .some cfg := pushConfig | return
+  reductionGoal.withContext do
+    let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
+    Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
+        (failIfUnchanged := false)
 
 /-- `wlog h : P` will add an assumption `h : P` to the main goal, and add a side goal that requires
 showing that the case `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
@@ -155,17 +156,20 @@ syntax (name := wlog) "wlog " binderIdent " : " term
 
 elab_rules : tactic
 | `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
-  wlogCore h P xs H false
+  wlogCore h P xs H
 
 /--
 `wlog! h : P` is a variant of the `wlog h : P` tactic that also calls `push_neg` at the generated
-hypothesis `h : ¬ p` in the side goal.
+hypothesis `h : ¬ p` in the side goal. `wlog! h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P → ¬ Q`,
+while  `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P ∨ Q`. For more information, see
+the documentation on `push_neg`.
 -/
-syntax (name := wlog!) "wlog! " binderIdent " : " term
+syntax (name := wlog!) "wlog! " optConfig binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
 elab_rules : tactic
-| `(tactic| wlog! $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
-  wlogCore h P xs H true
+| `(tactic|
+    wlog! $cfg:optConfig $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+  wlogCore h P xs H cfg
 
 end Mathlib.Tactic
