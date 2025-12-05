@@ -237,7 +237,7 @@ lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
 
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
 
-@[to_dual]
+@[to_dual pred_iterate_le]
 theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x :=
   id_le_iterate_of_id_le le_succ _ _
 
@@ -340,14 +340,14 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 @[to_dual]
 alias ⟨_, _root_.IsMax.succ_eq⟩ := succ_eq_iff_isMax
 
-@[to_dual ge_iff_eq_or_le_pred]
+@[to_dual le_iff_eq_or_le_pred']
 lemma le_iff_eq_or_succ_le : a ≤ b ↔ a = b ∨ succ a ≤ b := by
   by_cases ha : IsMax a
   · simpa [ha.succ_eq] using le_of_eq
   · rw [succ_le_iff_of_not_isMax ha, le_iff_eq_or_lt]
 
 @[to_dual le_iff_eq_or_le_pred]
-lemma ge_iff_eq_or_succ_le : a ≤ b ↔ b = a ∨ succ a ≤ b := by
+lemma le_iff_eq_or_succ_le' : a ≤ b ↔ b = a ∨ succ a ≤ b := by
   rw [eq_comm]
   exact le_iff_eq_or_succ_le
 
@@ -618,25 +618,24 @@ theorem pred_covBy_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
 theorem pred_lt_of_not_isMin_of_le (ha : ¬IsMin a) : a ≤ b → pred a < b :=
   (pred_lt_of_not_isMin ha).trans_le
 
-theorem pred_le_pred_of_not_isMin_of_le (ha : ¬IsMin a) (hb : ¬IsMin b) :
-    a ≤ b → pred a ≤ pred b := by
-  rw [le_pred_iff_of_not_isMin hb]
-  exact (pred_lt_of_le_of_not_isMin · ha)
-
+@[to_dual existing]
 theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 
+@[deprecated pred_mono (since := "2025-12-04")]
+theorem pred_le_pred_of_not_isMin_of_le (_ha : ¬IsMin a) (_hb : ¬IsMin b) (h : a ≤ b) :
+    pred a ≤ pred b :=
+  pred_mono h
+
 /-- See also `Order.pred_eq_of_covBy`. -/
+@[to_dual existing le_succ_of_wcovBy]
 lemma pred_le_of_wcovBy (h : a ⩿ b) : pred b ≤ a := by
   obtain hab | ⟨-, hba⟩ := h.covBy_or_le_and_le
   · by_contra hba
     exact h.2 (hab.lt.le_pred.lt_of_not_ge hba) (pred_lt_of_not_isMin hab.lt.not_isMin)
   · exact (pred_le _).trans hba
 
+@[to_dual existing le_succ]
 alias _root_.WCovBy.pred_le := pred_le_of_wcovBy
-
-theorem pred_iterate_le (k : ℕ) (x : α) : pred^[k] x ≤ x := by
-  conv_rhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
-  exact Monotone.iterate_le_of_le pred_mono pred_le k x
 
 theorem isMin_iterate_pred_of_eq_of_lt {n m : ℕ} (h_eq : pred^[n] a = pred^[m] a)
     (h_lt : n < m) : IsMin (pred^[n] a) :=
