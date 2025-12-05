@@ -38,7 +38,7 @@ def embeddingUpIntDownInt : (up ℤ).Embedding (down ℤ) where
 instance : embeddingUpIntDownInt.IsRelIff where
   rel' := by dsimp; lia
 
-/-- The embedding of the complex shape `up ℤ` in `down ℤ` given by `n ↦ -n`. -/
+/-- The embedding of the complex shape `down ℤ` in `up ℤ` given by `n ↦ -n`. -/
 @[simps]
 def embeddingDownIntUpInt : (down ℤ).Embedding (up ℤ) where
   f n := -n
