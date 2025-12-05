@@ -318,7 +318,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
-        finCongr_apply, Matrix.of_apply, Fin.coe_castSucc, Fin.coe_cast]
+        finCongr_apply, Matrix.of_apply, Fin.val_castSucc, Fin.coe_cast]
       induction j using Fin.addCases with
       | left j =>
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.castAdd (n + 1)).cast (by grind)) =

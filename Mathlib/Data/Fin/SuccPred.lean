@@ -261,7 +261,7 @@ theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :
     ((Equiv.ofInjective castSucc (castSucc_injective _)).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castSucc]
+  rw [← val_castSucc]
   exact congr_arg val (Equiv.apply_ofInjective_symm _ _)
 
 theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
@@ -912,7 +912,7 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
   we give a direct proof by case analysis to avoid extra dependencies. -/
   ext
   simp? [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val] says
-    simp only [succAbove, predAbove, lt_def, coe_castSucc, apply_dite Fin.val, coe_pred,
+    simp only [succAbove, predAbove, lt_def, val_castSucc, apply_dite Fin.val, coe_pred,
       coe_castPred, dite_eq_ite, apply_ite Fin.val, val_succ]
   split_ifs <;> omega
 

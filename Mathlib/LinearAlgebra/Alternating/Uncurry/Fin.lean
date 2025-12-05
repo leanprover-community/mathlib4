@@ -192,7 +192,7 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
             f (v j.succ) (v i.castSucc) (j.removeNth <| i.castSucc.removeNth v)) := by
   simp? [alternatizeUncurryFin_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add] says
     simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
-      alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, coe_castSucc,
+      alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, val_castSucc,
       val_succ]
   refine Fintype.sum_congr _ _ fun i ↦ Finset.sum_congr rfl fun j hj ↦ ?_
   rw [Finset.mem_Ici] at hj

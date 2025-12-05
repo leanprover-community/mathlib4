@@ -226,7 +226,7 @@ theorem succAbove_cycleRange (i j : Fin n) :
   rcases lt_trichotomy j i with (hlt | heq | hgt)
   · have : castSucc (j + 1) = j.succ := by
       ext
-      rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
+      rw [val_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
