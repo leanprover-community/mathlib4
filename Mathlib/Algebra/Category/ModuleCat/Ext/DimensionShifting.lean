@@ -83,7 +83,7 @@ noncomputable abbrev CategoryTheory.InjectivePresentation.shortComplex
     {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : ShortComplex (ModuleCat.{v} R) :=
   ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
 
-theorem ModuleCat.injective_shortComplex_shortExact {M : ModuleCat.{v} R}
+theorem CategoryTheory.InjectivePresentation.shortComplex_shortExact {M : ModuleCat.{v} R}
     (ip : InjectivePresentation M) : ip.shortComplex.ShortExact :=
   { exact := ShortComplex.exact_cokernel ip.3
     mono_f := ip.4
