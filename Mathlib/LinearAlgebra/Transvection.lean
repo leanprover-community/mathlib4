@@ -161,14 +161,14 @@ theorem _root_.LinearEquiv.transvection.baseChange
     {f : Module.Dual R V} {v : V} (h : f v = 0)
     (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
     (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
-  simp [← toLinearMap_inj, coe_baseChange,
-    LinearEquiv.transvection.coe_toLinearMap, LinearMap.transvection.baseChange]
+  simp [← toLinearMap_inj, transvection.coe_toLinearMap, transvection.baseChange, coe_baseChange]
 
 open IsBaseChange
 
 variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
   [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
 
+@[simp]
 theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
     ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
   ext w

@@ -124,7 +124,7 @@ theorem linearMapLeftRightHom_apply
     linearMapLeftRightHom j β f (α m) = β (f m) := by
   simp [linearMapLeftRightHom_apply, IsBaseChange.equiv_symm_apply]
 
-theorem linearMapLeftRightHom_comp
+@[simp] theorem linearMapLeftRightHom_comp
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (β : N →ₗ[R] Q) (f : M →ₗ[R] N) :
     (linearMapLeftRightHom j β f).restrictScalars R ∘ₗ α = β ∘ₗ f := by
   ext; simp [linearMapLeftRightHom_comp_apply]
