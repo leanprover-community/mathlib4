@@ -19,6 +19,8 @@ This file collects miscellaneous theorems on the order structure of `SignType`.
 
 variable {α ι : Type*}
 
+open SignType
+
 noncomputable instance : CompleteLinearOrder SignType := Fintype.toCompleteLinearOrder _
 
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
