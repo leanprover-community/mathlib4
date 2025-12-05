@@ -578,7 +578,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   suffices s.Infinite by exact this.mono hs
   contrapose! h
   have : ¬Injective fun n : ℕ => x ^ n := by
-    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
+    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h
     contrapose! this
     exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this

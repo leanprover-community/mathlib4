@@ -1397,6 +1397,8 @@ lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
 lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
     (assocInv P s).snd = s.snd ≫ sYZ.snd := rfl
 
+-- TODO: find a good way to fix the linter; simp applies to two goals with different simp sets
+set_option linter.flexible false in
 /-- If all the binary fans involved a limit cones, `BinaryFan.assoc` produces another limit cone. -/
 @[simps]
 protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z}
