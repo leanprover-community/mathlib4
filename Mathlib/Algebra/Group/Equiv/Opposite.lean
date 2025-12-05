@@ -14,7 +14,14 @@ public import Mathlib.Algebra.Group.Opposite
 
 @[expose] public section
 
-variable {α : Type*}
+variable {M α : Type*}
+
+/-- `MulOpposite.op` on a commutative monoid is an isomorphism. -/
+@[to_additive (attr := simps!)
+/-- `AddOpposite.op` on a commutative additive monoid is an isomorphism. -/]
+def MulOpposite.opMulEquiv [CommMonoid M] : M ≃* Mᵐᵒᵖ where
+  __ := opEquiv
+  map_mul' _ _ := mul_comm ..
 
 namespace MulOpposite
 
