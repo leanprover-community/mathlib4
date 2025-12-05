@@ -80,8 +80,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- We pick `c : 𝕜` nonzero of norm `< 1`.
   obtain ⟨c, hc0, hc1⟩ := NormedField.exists_norm_lt_one 𝕜
   have c_ne := norm_pos_iff.mp hc0
-  -- We use a decreasing balanced basis for 0 : E and a balanced basis for 0 : F
-  -- and reformulate continuity in terms of these bases
+  -- We use a fast decreasing balanced basis for 0 : E, and reformulate continuity in terms of
+  -- this basis
   rcases (nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
   simp only [_root_.id] at bE
   have bE' : (𝓝 (0 : E)).HasBasis (fun _ ↦ True) (fun n : ℕ ↦ (c ^ n) • b n) := by
@@ -95,8 +95,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- Assume that f is not continuous at 0
   by_contra! h
   rcases h with ⟨V, hV, h⟩
-  -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`,
-  -- with `V` some neighborhood of `0` in `F`.
+  -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ c ^ n • b n` and
+  -- `f (u n) ∉ V`, with `V` some neighborhood of `0` in `F`.
   choose! u hu hu' using h
   -- The sequence `fun n ↦ c ^ (-n) • u n` converges to `0`
   have h_tendsto : Tendsto (fun n : ℕ => (c ^ n)⁻¹ • u n) atTop (𝓝 (0 : E)) := by
