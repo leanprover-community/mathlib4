@@ -11,7 +11,7 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 /-!
 # Continuity and Von Neumann boundedness
 
-This file proves that for two topological vector spaces `E` and `F` over `ℝ` or `ℂ`,
+This file proves that for two topological vector spaces `E` and `F` over nontrivially normed fields,
 if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous
 (this is `LinearMap.continuous_of_locally_bounded`).
 
