@@ -113,31 +113,4 @@ def evaluation : B ⥤ᵖ (B ⥤ᵖ C) ⥤ᵖ C where
   mapId b := isoMk (fun P ↦ P.mapId b) (fun θ ↦ by simp [naturality_id_inv])
   mapComp f g := isoMk (fun P ↦ P.mapComp f g) (fun θ ↦ by simp [naturality_comp_inv])
 
-/-- The evaluation pseudofunctor, sending `X : B` and `F : B ⥤ᵖ C` to `F.obj X`. It is
-pseudofunctorial in both `X` and `F`. -/
-@[simps!]
-def evaluationUncurried : B × (B ⥤ᵖ C) ⥤ᵖ C where
-  obj X := X.2.obj X.1
-  map {X Y} f := f.2.app X.1 ≫ Y.2.map f.1
-  map₂ {X Y f g} η := η.2.as.app X.1 ▷ Y.2.map f.1 ≫ (g.2.app X.1 ◁ Y.2.map₂ η.1)
-  map₂_comp {X Y f g h} η θ := by simp [← whisker_exchange_assoc]
-      -- TODO: add toProd
-  mapId X := λ_ (X.2.map (𝟙 X : (X.1 ⟶ X.1) × (X.2 ⟶ X.2)).1) ≪≫ X.2.mapId X.1
-  mapComp {X Y Z} f g := by
-    apply whiskerLeftIso _ (Z.2.mapComp f.1 g.1) ≪≫ _
-    dsimp -- TODO: fix
-    apply (α_ _ _ _) ≪≫ _
-    -- need to whisker again...
-    have := whiskerLeftIso (f.2.app X.1) (g.2.naturality f.1).symm
-    --apply whiskerLeftIso (f.2.app X.1) (g.2.naturality f.1).symm ≪≫ _
-
-    sorry
-  map₂_whisker_left := sorry
-  map₂_whisker_right := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
-  --(StrictPseudofunctor.prodPseudofunctor B (B ⥤ᵖ C)).comp (evaluation C).toStrictPseudofunctor
-
-
 end CategoryTheory.Pseudofunctor
