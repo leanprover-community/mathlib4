@@ -342,7 +342,8 @@ theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
 
 @[simp] alias ⟨_, _root_.IsMax.finsetIoi_eq⟩ := Ioi_eq_empty
 
-@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
+@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by
+  contrapose!; exact Ioi_eq_empty
 
 theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
 
@@ -410,7 +411,8 @@ theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
 
 @[simp] alias ⟨_, _root_.IsMin.finsetIio_eq⟩ := Iio_eq_empty
 
-@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
+@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by
+  contrapose!; exact Iio_eq_empty
 
 theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
 
