@@ -400,7 +400,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
 
 theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hmem : s(u, w) ∈ p.edges) :
     w = p.snd := by
-  have hnil := edges_eq_nil_iff_nil.not.mp <| List.ne_nil_of_mem hmem
+  have hnil := edges_eq_nil.not.mp <| List.ne_nil_of_mem hmem
   rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
   have : u ∉ p.tail.support := by induction p <;> simp_all
   grind [fst_mem_support_of_mem_edges]
