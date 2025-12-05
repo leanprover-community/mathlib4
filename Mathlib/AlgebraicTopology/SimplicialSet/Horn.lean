@@ -211,7 +211,7 @@ def faceι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :
 
 @[reassoc (attr := simp)]
 lemma faceι_ι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :
-    faceι i j hij ≫ (horn.{u} n i).ι = (stdSimplex.face {j}ᶜ).ι := by
+    faceι i j hij ≫ Λ[n, i].ι = (stdSimplex.face {j}ᶜ).ι := by
   simp [faceι]
 
 /-- Given `i` and `j` in `Fin (n + 2)` such that `j ≠ i`, this is the inclusion
