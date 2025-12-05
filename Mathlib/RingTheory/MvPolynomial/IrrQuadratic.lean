@@ -50,7 +50,7 @@ variable (n : Type*) (R : Type*) [CommRing R]
 
 /-- The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 noncomputable def sum_X_mul_Y : MvPolynomial (n ⊕ n) R :=
-  ∑ᶠ i, MvPolynomial.X (Sum.inl i) * MvPolynomial.X (Sum.inr i)
+  ∑ᶠ i, X (.inl i) * X (.inr i)
 
 lemma sum_X_mul_Y_eq_sum [Fintype n] :
     sum_X_mul_Y n R = ∑ i, X (.inl i) * X (.inr i) := by
