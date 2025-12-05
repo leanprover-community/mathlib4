@@ -110,7 +110,7 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {2}) (stdSimplex.face {0, 2})
 /-- The inclusion `Δ[1] ⟶ Λ[2, 2]` which avoids `1`. -/
 abbrev ι₀₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 1 (by simp)
 
-/-- The inclusion `Δ[1] ⟶ horn 2 2` which avoids `0`. -/
+/-- The inclusion `Δ[1] ⟶ Λ[2, 2]` which avoids `0`. -/
 abbrev ι₁₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 0 (by simp)
 
 lemma isPushout :
