@@ -103,7 +103,7 @@ lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
     refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
-    · simp; cutsat
+    · simp; lia
 
 @[grind =]
 lemma div2_val (n) : div2 n = n / 2 := by
@@ -220,12 +220,12 @@ theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
 /-! ### `bit0` and `bit1` -/
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | true, _, _ => by dsimp [bit]; cutsat
-  | false, _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; lia
+  | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | true, _, _ => by dsimp [bit]; cutsat
-  | false, _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; lia
+  | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
   cases b <;> dsimp [bit] <;> omega
@@ -252,8 +252,8 @@ theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive 
   bit_cases_on_injective.eq_iff
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => by dsimp [bit]; cutsat
-  | false, _, _, h => by dsimp [bit]; cutsat
+  | true, _, _, h => by dsimp [bit]; lia
+  | false, _, _, h => by dsimp [bit]; lia
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
   bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
