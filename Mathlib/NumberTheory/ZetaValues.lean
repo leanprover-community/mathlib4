@@ -140,7 +140,7 @@ end Calculus
 theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
     bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
   simp only [bernoulliFun]
-  have := Polynomial.bernoulli_comp_one_sub_X (k := k)
+  have := Polynomial.bernoulli_comp_one_sub_X k
   apply_fun (·.aeval x) at this
   simpa [Polynomial.aeval_comp] using this
 
