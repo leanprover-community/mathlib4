@@ -45,8 +45,8 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)).trans
         (Finsupp.linearEquivFunOnFinite R R (Fin n))).1
       have surjf : Function.Surjective f := by simpa [f] using hf'
-      let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexG
-      have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexG surjf
+      let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
+      have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
         moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
