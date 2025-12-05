@@ -179,7 +179,7 @@ instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory
 /-- If `D` is already an enriched ordinary category, there is a canonical functor from `D` to
 `ForgetEnrichment V D`. -/
 @[simps]
-def ForgetEnrichment.equivInverse (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equivInverse (D : Type u'') [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
     D ⥤ ForgetEnrichment V D where
   obj X := .of V X
   map f := ForgetEnrichment.homOf V (eHomEquiv V f)
@@ -188,7 +188,7 @@ def ForgetEnrichment.equivInverse (D : Type u') [Category.{v'} D] [EnrichedOrdin
 /-- If `D` is already an enriched ordinary category, there is a canonical functor from
 `ForgetEnrichment V D` to `D`. -/
 @[simps]
-def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equivFunctor (D : Type u'') [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
     ForgetEnrichment V D ⥤ D where
   obj X := ForgetEnrichment.to V X
   map f := (eHomEquiv V).symm (ForgetEnrichment.homTo V f)
@@ -199,7 +199,7 @@ def ForgetEnrichment.equivFunctor (D : Type u') [Category.{v'} D] [EnrichedOrdin
 
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
 @[simps]
-def ForgetEnrichment.equiv {D : Type u'} [Category.{v'} D] [EnrichedOrdinaryCategory V D] :
+def ForgetEnrichment.equiv {D : Type u''} [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
     ForgetEnrichment V D ≌ D where
   functor := equivFunctor V D
   inverse := equivInverse V D

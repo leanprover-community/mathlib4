@@ -273,7 +273,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
-  rw [measureReal_univ_eq_one, inv_one, one_smul]
+  rw [probReal_univ, inv_one, one_smul]
 
 theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : MeasurableSpace α) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
@@ -363,8 +363,8 @@ theorem _root_.ContinuousLinearMap.comp_condExp_add_const_comm {F : Type*} [Norm
     [CompleteSpace F] [NormedSpace ℝ F] [IsFiniteMeasure μ] (hm : m ≤ m₀) (hf_int : Integrable f μ)
     (T : E →L[ℝ] F) (a : F) : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[fun y ↦ T (f y) + a|m] := by
   have hp : (fun x ↦ T (μ[f|m] x) + a) =ᵐ[μ] μ[T ∘ f|m] + μ[(fun y ↦ a)|m] := by
-      filter_upwards [T.comp_condExp_comm hf_int] with b hb
-      simpa [condExp_const hm a]
+    filter_upwards [T.comp_condExp_comm hf_int] with b hb
+    simpa [condExp_const hm a]
   exact hp.trans (condExp_add (T.integrable_comp hf_int) (integrable_const a) m).symm
 
 section RCLike

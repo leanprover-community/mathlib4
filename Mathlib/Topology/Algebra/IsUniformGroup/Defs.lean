@@ -130,14 +130,14 @@ lemma uniformity_eq_comap_inv_mul_nhds_one :
 @[to_additive]
 lemma uniformity_eq_comap_mul_inv_nhds_one_swapped :
     𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ ↦ x.1 * x.2⁻¹) (𝓝 1) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_mul_inv_nhds_one, comap_comap]
-  rfl
+  rw [← comap_swap_uniformity, uniformity_eq_comap_mul_inv_nhds_one, comap_comap, Function.comp_def]
+  simp
 
 @[to_additive]
 lemma uniformity_eq_comap_inv_mul_nhds_one_swapped :
     𝓤 Gₗ = comap (fun x : Gₗ × Gₗ ↦ x.2⁻¹ * x.1) (𝓝 1) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap]
-  rfl
+  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap, Function.comp_def]
+  simp
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.2 / x.1) (𝓝 1) := by
@@ -147,8 +147,8 @@ theorem uniformity_eq_comap_nhds_one : 𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ =
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one_swapped :
     𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.1 / x.2) (𝓝 1) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap]
-  rfl
+  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
+  simp
 
 variable {Gₗ Gᵣ}
 
@@ -224,6 +224,17 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
     (hg : UniformContinuous g) : UniformContinuous fun x => f x * g x := by
   have : UniformContinuous fun x => f x / (g x)⁻¹ := hf.div hg.inv
   simp_all
+
+@[to_additive]
+theorem Finset.uniformContinuous_prod {α β ι : Type*} [UniformSpace α] [CommGroup α]
+    [IsUniformGroup α] [UniformSpace β] {f : ι → β → α} (s : Finset ι)
+    (h : ∀ i ∈ s, UniformContinuous (f i)) :
+    UniformContinuous (∏ i ∈ s, f i ·) := by
+  induction s using Finset.cons_induction with
+  | empty => simpa using uniformContinuous_const
+  | cons a s ha ih =>
+    simp_rw [Finset.mem_cons, forall_eq_or_imp] at h
+    simpa [Finset.prod_cons] using h.1.mul (ih h.2)
 
 @[to_additive]
 theorem uniformContinuous_mul : UniformContinuous fun p : α × α => p.1 * p.2 :=

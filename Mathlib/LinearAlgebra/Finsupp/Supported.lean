@@ -180,9 +180,8 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Codisjoint (supported M R s) (supported M R t) ↔ Codisjoint s t := by
   refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  rw [codisjoint_iff, eq_top_iff, ← supported_union] at h
-  have : Finsupp.single a x ∈ supported M R (s ∪ t) := h (show Finsupp.single a x ∈ _ from trivial)
-  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using this
+  rw [codisjoint_iff, ← supported_union, eq_top_iff'] at h
+  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using h (Finsupp.single a x)
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
