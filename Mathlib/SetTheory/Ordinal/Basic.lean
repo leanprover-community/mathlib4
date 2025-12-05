@@ -108,7 +108,14 @@ def Ordinal : Type (u + 1) :=
 /-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. This is
 defined through the axiom of choice.
 
-Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`. -/
+Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`,
+and convert using
+
+```
+Ordinal.toType.mk : Iio o → o.toType
+Ordinal.toType.toOrd : o.toType → Iio o
+```
+-/
 def Ordinal.toType (o : Ordinal.{u}) : Type u :=
   o.out.α
 
@@ -506,15 +513,25 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! -isSimp]
-noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
+def toType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
+@[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := toType.mk
+
+/-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
+abbrev toType.toOrd {o : Ordinal} (α : o.toType) : Set.Iio o := toType.mk.symm α
+
+instance (o : Ordinal) : Coe o.toType (Set.Iio o) where
+  coe := toType.toOrd
+instance (o : Ordinal) : CoeOut o.toType Ordinal where
+  coe x := x.toOrd
+
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
-  ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
+  ⟨_, ⟨toType.mk.toEquiv⟩⟩
 
 instance small_Iic (o : Ordinal.{u}) : Small.{u} (Iic o) := by
   rw [← Iio_union_right]
@@ -912,7 +929,7 @@ theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
 
 /-! ### Extra properties of typein and enum -/
 
--- TODO: use `enumIsoToType` for lemmas on `toType` rather than `enum` and `typein`.
+-- TODO: use `toType.mk` for lemmas on `toType` rather than `enum` and `typein`.
 
 @[simp]
 theorem typein_one_toType (x : toType 1) : typein (α := toType 1) (· < ·) x = 0 := by
@@ -1369,8 +1386,8 @@ end Ordinal
 
 /-! ### Sorted lists -/
 
-theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
-    {o : Ordinal} (hl : l.Sorted (· > ·)) (hm : m.Sorted (· > ·)) (hmltl : m < l)
+theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
+    {o : Ordinal} (hl : l.SortedGT) (hm : m.SortedGT) (hmltl : m < l)
     (hlt : ∀ i ∈ l, Ordinal.typein (α := α) (· < ·) i < o) :
       ∀ i ∈ m, Ordinal.typein (α := α) (· < ·) i < o := by
   replace hmltl : List.Lex (· < ·) m l := hmltl
@@ -1384,5 +1401,7 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
       suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a mem_cons_self); simpa
       cases hi with
       | head as => exact List.head_le_of_lt hmltl
-      | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
+      | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_pairwise_cons hm.pairwise hi)
           (List.head_le_of_lt hmltl))
+
+@[deprecated (since := "2025-11-27")] alias List.Sorted.lt_ord_of_lt := List.SortedGT.lt_ord_of_lt

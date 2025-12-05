@@ -3632,6 +3632,7 @@ public import Mathlib.Data.List.NodupEquivFin
 public import Mathlib.Data.List.OfFn
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.List.Palindrome
+public import Mathlib.Data.List.PeriodicityLemma
 public import Mathlib.Data.List.Perm.Basic
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.List.Perm.Subperm
@@ -4007,6 +4008,7 @@ public import Mathlib.Deprecated.Estimator
 public import Mathlib.Deprecated.MLList.BestFirst
 public import Mathlib.Deprecated.Order
 public import Mathlib.Deprecated.RingHom
+public import Mathlib.Deprecated.Sort
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
