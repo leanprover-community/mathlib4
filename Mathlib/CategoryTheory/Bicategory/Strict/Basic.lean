@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Bicategory.Basic
 
 /-!
 # Strict bicategories
@@ -20,6 +22,8 @@ We cannot use this definition directly here since the types of 2-morphisms depen
 For this reason, we use `eqToIso`, which gives isomorphisms from equalities, instead of
 identities.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

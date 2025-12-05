@@ -3,7 +3,9 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 
 /-!
 # Models of elliptic curves with prescribed j-invariant
@@ -31,6 +33,8 @@ It is a modification of [silverman2009], Chapter III, Proposition 1.4 (c).
 
 elliptic curve, weierstrass equation, j invariant
 -/
+
+@[expose] public section
 
 namespace WeierstrassCurve
 
@@ -159,7 +163,7 @@ lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j = ofJNe0Or172
 instance : (ofJ j).IsElliptic := by
   by_cases h0 : j = 0
   · by_cases h3 : (3 : F) = 0
-    · have := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
+    · have : Fact <| IsUnit (2 : F) := ⟨.of_mul_eq_one 2 <| by linear_combination h3⟩
       rw [h0, ofJ_0_of_three_eq_zero h3]
       infer_instance
     · have := Fact.mk (Ne.isUnit h3)
@@ -178,7 +182,7 @@ instance : (ofJ j).IsElliptic := by
 lemma ofJ_j : (ofJ j).j = j := by
   by_cases h0 : j = 0
   · by_cases h3 : (3 : F) = 0
-    · have := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
+    · have : Fact <| IsUnit (2 : F) := ⟨.of_mul_eq_one 2 <| by linear_combination h3⟩
       simp_rw [h0, ofJ_0_of_three_eq_zero h3, ofJ1728_j]
       linear_combination 576 * h3
     · have := Fact.mk (Ne.isUnit h3)

@@ -3,8 +3,10 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Topology.Algebra.SeparationQuotient.Hom
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 
 /-!
 # Lifts of maps to separation quotients of seminormed groups
@@ -28,10 +30,12 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 ## Main results
 
-* `norm_normedMk_eq_one : the operator norm of the projection is `1` if the subspace is not `⊤`.
+* `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not `⊤`.
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
+
+@[expose] public section
 
 section
 

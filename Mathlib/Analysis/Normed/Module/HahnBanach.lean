@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Normed.Module.RCLike.Extend
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Normed.Module.RCLike.Extend
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Extension Hahn-Banach theorem
@@ -26,6 +28,8 @@ In this setting, `exists_dual_vector` states that, for any nonzero `x`, there ex
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
 of `𝕜`).
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -94,12 +98,12 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [this]
     apply ext
-    · simp only [add_zero, Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub,
+    · simp only [add_zero, smul_eq_mul, I_re, ofReal_im, map_add, zero_sub,
         I_im', zero_mul, ofReal_re, sub_zero, mul_neg, ofReal_neg,
-        mul_re, mul_zero, sub_neg_eq_add, ContinuousLinearMap.map_smul]
-    · simp only [Algebra.id.smul_eq_mul, I_re, ofReal_im, AddMonoidHom.map_add, zero_sub, I_im',
+        mul_re, mul_zero, sub_neg_eq_add, map_smul]
+    · simp only [smul_eq_mul, I_re, ofReal_im, map_add, zero_sub, I_im',
         zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
-        sub_neg_eq_add, ContinuousLinearMap.map_smul]
+        sub_neg_eq_add, map_smul]
   -- And we derive the equality of the norms by bounding on both sides.
   refine ⟨h, le_antisymm ?_ ?_⟩
   · calc
