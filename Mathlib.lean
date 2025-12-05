@@ -11843,6 +11843,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
+public import Mathlib.LinearAlgebra.Multilinear.DirectSum
 public import Mathlib.LinearAlgebra.Multilinear.FiniteDimensional
 public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 public import Mathlib.LinearAlgebra.Multilinear.Pi
