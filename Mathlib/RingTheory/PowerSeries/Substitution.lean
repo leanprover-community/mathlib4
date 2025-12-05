@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.Data.Finsupp.Weight
 
 /-! # Substitutions in power series
 
@@ -220,6 +221,49 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff (subst a f) =
       finsum (fun d ↦ coeff d f • MvPowerSeries.constantCoeff (a ^ d)) := by
   simp only [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
+
+/-- Given power series `f` and multi variate power series `a`,
+then `a.order * f.order ≤ (f.subst a).order`. -/
+theorem le_order_subst (ha : HasSubst a) (f : PowerSeries R) :
+    a.order * f.order ≤ (f.subst a).order := by
+  classical
+  by_cases hf₀ : f.order = 0
+  · simp [hf₀]
+  apply MvPowerSeries.le_order
+  intro d hd
+  rw [coeff_subst ha, finsum_eq_zero_of_forall_eq_zero]
+  intro x
+  by_cases hf : f.order = ⊤
+  · simp [order_eq_top.mp hf]
+  · by_cases ha' : a.order = ⊤
+    · simp only [MvPowerSeries.order_eq_top_iff.mp ha']
+      by_cases hx : x = 0
+      · simp [hx, order_ne_zero_iff_constCoeff_eq_zero.mp hf₀]
+      · simp [zero_pow hx]
+    by_cases hx : x < f.order
+    · rw [coeff_of_lt_order x hx, zero_smul]
+    · suffices (MvPowerSeries.coeff d) (a ^ x) = 0 by rw [this, smul_zero]
+      rw [MvPowerSeries.coeff_pow, Finset.sum_eq_zero]
+      intro l hl
+      rw [← ENat.coe_toNat hf, ← ENat.coe_toNat ha'] at hd
+      rw [← ENat.coe_toNat hf] at hx
+      norm_cast at hx hd
+      simp only [Finset.mem_finsuppAntidiag] at hl
+      have h : ∃ i ∈ Finset.range x, (l i).degree < a.order := by
+        rw [← ENat.coe_toNat ha']
+        by_contra hc
+        simp only [not_exists, not_and, not_lt] at hc
+        suffices a.order.toNat * f.order.toNat ≤ d.degree by linarith
+        calc
+          _ ≤ a.order.toNat * x :=
+            Nat.mul_le_mul_left a.order.toNat <| Nat.le_of_not_lt hx
+          _ = ∑ i ∈ Finset.range x, a.order.toNat := by
+            rw [Finset.sum_const, Finset.card_range, Nat.mul_comm, Nat.nsmul_eq_mul]
+          _ ≤ _ := by
+            rw [←hl.1, map_sum]
+            exact Finset.sum_le_sum <| fun i hi => by exact_mod_cast hc i hi
+      obtain ⟨i, hi₀, hi₁⟩ := h
+      rw [Finset.prod_eq_zero hi₀ (MvPowerSeries.coeff_of_lt_order hi₁)]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
