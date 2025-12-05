@@ -233,6 +233,12 @@ variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGr
     {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
 include hq
 
+/-- Given a sequence of continuous linear maps which converges pointwise and for which the
+domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
+is a *continuous* linear map as well.
+
+This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
+but the proof ultimately goes back to sequences. -/
 @[deprecated continuousLinearMapOfTendsto (since := "2025-12-05")]
 protected abbrev WithSeminorms.continuousLinearMapOfTendsto [T2Space F] {l : Filter α}
     [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
