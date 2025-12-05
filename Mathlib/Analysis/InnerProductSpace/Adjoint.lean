@@ -256,20 +256,9 @@ theorem adjoint_innerSL_apply (x : E) :
     adjoint (innerSL 𝕜 x) = toSpanSingleton 𝕜 x :=
   ext_ring <| ext_inner_left 𝕜 <| fun _ => by simp [adjoint_inner_right]
 
-omit [CompleteSpace E] in
-theorem _root_.LinearMap.adjoint_innerₛₗ_apply [FiniteDimensional 𝕜 E] (x : E) :
-    LinearMap.adjoint (innerₛₗ 𝕜 x) = LinearMap.toSpanSingleton 𝕜 E x :=
-  have := FiniteDimensional.complete 𝕜 E
-  ext fun _ ↦ congr($(ContinuousLinearMap.adjoint_innerSL_apply x) _)
-
 theorem adjoint_toSpanSingleton (x : E) :
     adjoint (toSpanSingleton 𝕜 x) = innerSL 𝕜 x := by
   simp [← adjoint_innerSL_apply]
-
-omit [CompleteSpace E] in
-theorem _root_.LinearMap.adjoint_toSpanSingleton [FiniteDimensional 𝕜 E] (x : E) :
-    LinearMap.adjoint (LinearMap.toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
-  simp [← adjoint_innerₛₗ_apply]
 
 theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
     innerSL 𝕜 x ∘L f = innerSL 𝕜 (adjoint f x) := by
@@ -648,6 +637,15 @@ theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
     (T.isStarProjection_toContinuousLinearMap_iff.mpr hT)
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
+
+theorem adjoint_innerₛₗ_apply (x : E) :
+    adjoint (innerₛₗ 𝕜 x) = toSpanSingleton 𝕜 E x :=
+  have := FiniteDimensional.complete 𝕜 E
+  ext fun _ ↦ congr($(ContinuousLinearMap.adjoint_innerSL_apply x) _)
+
+theorem adjoint_toSpanSingleton (x : E) :
+    adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
+  simp [← adjoint_innerₛₗ_apply]
 
 end LinearMap
 
