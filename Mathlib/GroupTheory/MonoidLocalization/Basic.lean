@@ -733,7 +733,7 @@ theorem eq_of_eq (hg : ∀ y : S, IsUnit (g y)) {x y} (h : f x = f y) : g x = g 
 implies `k (g x) = k (g y)`. -/]
 theorem comp_eq_of_eq {T : Submonoid P} {Q : Type*} [CommMonoid Q] (hg : ∀ y : S, g y ∈ T)
     (k : LocalizationMap T Q) {x y} (h : f x = f y) : k (g x) = k (g y) :=
-  f.eq_of_eq (fun y : S ↦ show IsUnit (k.toMonoidHom.comp g y) by exact k.map_units ⟨g y, hg y⟩) h
+  f.eq_of_eq (fun y : S ↦ show IsUnit (k.toMonoidHom.comp g y) from k.map_units ⟨g y, hg y⟩) h
 
 variable (hg : ∀ y : S, IsUnit (g y))
 

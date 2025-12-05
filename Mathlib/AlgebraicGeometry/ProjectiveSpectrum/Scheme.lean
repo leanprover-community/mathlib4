@@ -721,7 +721,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
       (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra := by
   letI : Algebra (Away 𝒜 f) (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
     (mapId 𝒜 (Submonoid.powers_le.mpr x.2)).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
     refine .of_mul_eq_one

@@ -95,17 +95,23 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
+/-- An auxiliary typeclass to avoid auto-generated declarations
+under the `IsLocalization` namespace. -/
+class IsLocalization' : Prop extends M.IsLocalizationMap (algebraMap R S)
+
 /-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
-abbrev IsLocalization : Prop := M.IsLocalizationMap (algebraMap R S)
+abbrev IsLocalization := @IsLocalization'
 
-attribute [class] Submonoid.IsLocalizationMap
+theorem isLocalization_iff_isLocalizationMap :
+    IsLocalization M S ↔ M.IsLocalizationMap (algebraMap R S) :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 theorem isLocalization_iff : IsLocalization M S ↔
     (∀ y : M, IsUnit (algebraMap R S y)) ∧
     (∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1) ∧
-    ∀ {x y : R}, algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y :=
-  Submonoid.isLocalizationMap_iff ..
+    ∀ {x y : R}, algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y := by
+  rw [isLocalization_iff_isLocalizationMap, Submonoid.isLocalizationMap_iff]
 
 variable {M}
 
@@ -119,17 +125,17 @@ section
 
 /-- Everything in the image of `algebraMap` is a unit. -/
 theorem map_units : ∀ y : M, IsUnit (algebraMap R S y) :=
-  Submonoid.IsLocalizationMap.map_units ‹_›
+  IsLocalization'.toIsLocalizationMap.map_units
 
 variable (M) {S}
 /-- Every element in the localization can be expressed as a quotient of an element in the
 range of `algebraMap` by the image of an element of the submonoid. -/
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
-  Submonoid.IsLocalizationMap.surj ‹_›
+  IsLocalization'.toIsLocalizationMap.surj
 
 variable {M} in
 theorem exists_of_eq {x y : R} : algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y :=
-  Submonoid.IsLocalizationMap.exists_of_eq ‹_›
+  IsLocalization'.toIsLocalizationMap.exists_of_eq
 
 variable (S)
 
@@ -137,7 +143,7 @@ variable (S)
 abbrev toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S
-  isLocalizationMap : IsLocalization M S := ‹_›
+  isLocalizationMap := IsLocalization'.toIsLocalizationMap
 
 @[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
 
@@ -739,7 +745,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
     IsLocalization (M.map h) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
     convert IsLocalization.map_units S ⟨y, hy⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply]
@@ -829,7 +835,7 @@ theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => 
   (mkAddMonoidHom b).map_multiset_sum l
 
 instance isLocalization : IsLocalization M (Localization M) :=
-  (Localization.monoidOf M).isLocalizationMap
+  ⟨(Localization.monoidOf M).isLocalizationMap⟩
 
 instance [NoZeroDivisors R] : NoZeroDivisors (Localization M) := IsLocalization.noZeroDivisors M
 
