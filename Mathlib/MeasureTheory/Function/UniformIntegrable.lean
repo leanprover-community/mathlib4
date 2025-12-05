@@ -688,7 +688,7 @@ lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter
 
 /-- If `fn` is `UnifIntegrable`, then the family of a.e. limits of sequences of `fn` is
 `UnifIntegrable`. -/
-lemma UnifIntegrable.unifIntegrable_of_tendsto_ae {κ : Type*} (u : Filter κ) [NeBot u]
+lemma UnifIntegrable.unifIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
     [IsCountablyGenerated u] {fn : ι → α → β} (hUI : UnifIntegrable fn p μ)
     (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
     UnifIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
@@ -934,7 +934,7 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : 
 
 /-- If `fn` is `UniformIntegrable`, then the family of a.e. limits of sequences of `fn` is
 `UniformIntegrable`. -/
-lemma UniformIntegrable.uniformIntegrable_of_tendsto_ae {κ : Type*} (u : Filter κ) [NeBot u]
+lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
     [IsCountablyGenerated u] {fn : ι → α → β}
     (hUI : UniformIntegrable fn p μ) :
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
