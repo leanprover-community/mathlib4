@@ -199,15 +199,12 @@ theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
         exact le_pow hk
       · apply le_floor
         rw [← rpow_rpow_inv (cast_nonneg p) (cast_ne_zero.mpr hk.ne.symm)]
-        apply rpow_le_rpow
-        · bound
-        · rw_mod_cast [hpk]
-          exact le_floor_iff hx |>.mp hn.1.2
-        · bound
+        apply rpow_le_rpow (by bound) _ (by bound)
+        rw_mod_cast [hpk]
+        exact le_floor_iff hx |>.mp hn.1.2
     · simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, and_imp, Prod.forall]
       intro _ _ _ _ _ _ p_prime _
       rw [p_prime.pow_minFac (by linarith)]
-  simp only
   rw [sum_filter, sum_product]
   refine sum_congr rfl fun k hk ↦ ?_
   simp only [sum_ite, not_le, sum_const_zero, add_zero]
@@ -224,15 +221,13 @@ theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
 
 theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
     ψ x = θ x + ∑ n ∈ Icc 2 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
-  rw [psi_eq_sum_theta (by linarith), ← add_sum_erase (a := 1)]
-  · simp
-    congr
-  · simp only [mem_Icc, le_refl, one_le_floor_iff, true_and]
-    apply le_div_iff₀ _|>.mpr
-    · simp only [one_mul]
-      gcongr
-    · apply Real.log_pos
-      norm_num
+  rw [psi_eq_sum_theta (by linarith), ← add_sum_Ioc_eq_sum_Icc]
+  · congr
+    simp
+  · apply le_floor
+    apply le_div_iff₀ (by positivity)|>.mpr
+    simp
+    gcongr
 
 theorem theta_le_psi (x : ℝ) : θ x ≤ ψ x := by
   by_cases h : x < 2
