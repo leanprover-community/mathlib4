@@ -26,7 +26,7 @@ with the topology of `𝓓(Ω, ℝ) →L[ℝ] F`, namely that of uniform converg
 See the implementation notes below for more details.
 
 Right now, this file contains very few mathematical statements.
-The theory will be expanded very soon.
+The theory will be expanded in future PRs.
 
 ## Main Declarations
 
