@@ -93,7 +93,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
       simpa [add_eq_zero_iff_eq_neg] using LinearMap.ext_iff.1 eq
   refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
-  · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap,
+  · rw [← range_eq_top, eq_top_iff, LinearMap.range_codRestrict, ← map_le_iff_le_comap,
       Submodule.map_top, range_subtype]
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)

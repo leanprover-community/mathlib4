@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Center.Basic
+public import Mathlib.CategoryTheory.Center.Preadditive
 
 /-!
 # Center of a linear category
@@ -43,10 +43,7 @@ def toCatCenter [Linear R C] : R →+* CatCenter C where
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul]
     simp
   map_zero' := by cat_disch
-  map_add' a b := by
-    ext X
-    dsimp
-    rw [NatTrans.app_add, add_smul]
+  map_add' a b := by ext X; simp [add_smul]
 
 section
 
@@ -85,15 +82,14 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
       simp only [smulOfRingMorphism_smul_eq', Functor.id_obj, map_mul, End.mul_def,
         NatTrans.comp_app, assoc]
     smul_zero := fun a => by
-      simp only [smulOfRingMorphism_smul_eq, Functor.id_obj, comp_zero]
+      simp only [smulOfRingMorphism_smul_eq, comp_zero]
     zero_smul := fun a => by
-      simp only [smulOfRingMorphism_smul_eq, Functor.id_obj, map_zero,
+      simp only [smulOfRingMorphism_smul_eq, map_zero,
         zero_app, zero_comp]
     smul_add := fun a b => by
       simp [smulOfRingMorphism_smul_eq]
     add_smul := fun a b f => by
-      simp only [smulOfRingMorphism_smul_eq]
-      rw [map_add, NatTrans.app_add, Preadditive.add_comp] }
+      simp [smulOfRingMorphism_smul_eq] }
 
 /-- The `R`-linear structure on a preadditive category `C` equipped with
 a ring morphism `R →+* CatCenter C`. -/

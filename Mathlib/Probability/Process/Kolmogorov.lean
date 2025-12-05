@@ -151,11 +151,10 @@ section ZeroDist
 lemma IsAEKolmogorovProcess.edist_eq_zero (hX : IsAEKolmogorovProcess X P p q M)
     {s t : T} (h : edist s t = 0) :
     ∀ᵐ ω ∂P, edist (X s ω) (X t ω) = 0 := by
-  suffices ∀ᵐ ω ∂P, edist (X s ω) (X t ω) ^ p = 0 by
+  suffices (fun ω ↦ edist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
     filter_upwards [this] with ω hω
     simpa [hX.p_pos, not_lt_of_gt hX.p_pos] using hω
-  refine (lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p)).mp ?_
-  refine le_antisymm ?_ zero_le'
+  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p), ← nonpos_iff_eq_zero]
   calc ∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P
   _ ≤ M * edist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp [h, hX.q_pos]
@@ -168,11 +167,10 @@ lemma IsKolmogorovProcess.edist_eq_zero (hX : IsKolmogorovProcess X P p q M)
 lemma IsAEKolmogorovProcess.edist_eq_zero_of_const_eq_zero (hX : IsAEKolmogorovProcess X P p q 0)
     (s t : T) :
     ∀ᵐ ω ∂P, edist (X s ω) (X t ω) = 0 := by
-  suffices ∀ᵐ ω ∂P, edist (X s ω) (X t ω) ^ p = 0 by
+  suffices (fun ω ↦ edist (X s ω) (X t ω) ^ p) =ᵐ[P] 0 by
     filter_upwards [this] with ω hω
     simpa [hX.p_pos, not_lt_of_gt hX.p_pos] using hω
-  refine (lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p)).mp ?_
-  refine le_antisymm ?_ zero_le'
+  rw [← lintegral_eq_zero_iff' (hX.aemeasurable_edist.pow_const p), ← nonpos_iff_eq_zero]
   calc ∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P
   _ ≤ 0 * edist s t ^ q := hX.kolmogorovCondition s t
   _ = 0 := by simp

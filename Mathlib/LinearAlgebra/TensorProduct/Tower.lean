@@ -633,6 +633,15 @@ lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
+open AlgebraTensorModule in
+lemma baseChange_baseChange {A B : Type*} [CommSemiring A] [Algebra R A]
+    [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (f : M →ₗ[R] N) :
+    ((f.baseChange A).baseChange B) =
+    (cancelBaseChange R A B B N).symm ∘ₗ
+      (f.baseChange B) ∘ₗ (cancelBaseChange R A B B M) := by
+  ext; simp
+
 variable (R M) in
 @[simp]
 lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
@@ -642,6 +651,14 @@ lemma baseChange_mul (f g : Module.End R M) :
   ext; simp
 
 variable (R A M N)
+
+/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
+def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.congr (.refl _ _) e
+
+theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
+  rfl
 
 /-- `baseChange` as a linear map.
 
@@ -661,13 +678,9 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
     (f ^ n).baseChange A = f.baseChange A ^ n :=
   map_pow (Module.End.baseChangeHom _ _ _) f n
 
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
-
 @[simp]
 theorem _root_.LinearEquiv.coe_baseChange (e : M ≃ₗ[R] N) :
-    (e.baseChange R A M N : (A ⊗[R] M →ₗ[A] A ⊗[R] N)) = e.toLinearMap.baseChange A :=
+    (e.baseChange R A M N : (A ⊗[R] M →ₗ[A] A ⊗[R] N)) = LinearMap.baseChange A e :=
   rfl
 
 @[simp]
