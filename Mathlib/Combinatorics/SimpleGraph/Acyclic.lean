@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
 
@@ -105,6 +105,27 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
     c.toSimpleGraph.IsTree where
   isConnected := c.connected_toSimpleGraph
   IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
+
+lemma IsAcyclic.of_subsingleton [Subsingleton V] {G : SimpleGraph V} : G.IsAcyclic :=
+  fun v p hp ↦ hp.ne_nil <| match p with
+    | nil => rfl
+    | cons hadj _ => (G.irrefl <| Subsingleton.elim v _ ▸ hadj).elim
+
+lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
+  @IsAcyclic.of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
+
+lemma IsTree.of_subsingleton [Nonempty V] [Subsingleton V] {G : SimpleGraph V} : G.IsTree :=
+  ⟨.of_subsingleton, .of_subsingleton⟩
+
+theorem IsTree.coe_singletonSubgraph (G : SimpleGraph V) (v : V) :
+    G.singletonSubgraph v |>.coe.IsTree :=
+  .of_subsingleton
+
+theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |>.coe.IsTree := by
+  refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
+  have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
