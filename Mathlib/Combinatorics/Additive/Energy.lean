@@ -107,9 +107,7 @@ variable (s t)
 variable {s t}
 
 @[to_additive (attr := simp)] lemma mulEnergy_pos_iff : 0 < Eₘ[s, t] ↔ s.Nonempty ∧ t.Nonempty where
-  mp h := by
-    set_option push_neg.use_distrib true in
-    by_contra! rfl | rfl <;> simp at h
+  mp h := by by_contra! +distrib rfl | rfl <;> simp at h
   mpr h := mulEnergy_pos h.1 h.2
 
 @[to_additive (attr := simp)] lemma mulEnergy_eq_zero_iff : Eₘ[s, t] = 0 ↔ s = ∅ ∨ t = ∅ := by
