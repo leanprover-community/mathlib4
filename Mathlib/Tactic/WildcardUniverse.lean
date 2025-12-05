@@ -61,7 +61,7 @@ Term elaborator for the wildcard universe syntax `Foo.{u₁, u₂, ...}`.
 This elaborator handles syntax of the form `ident.{wildcard_level,*} args*`,
 where each wildcard universe can be `*`, `name*`, or an explicit level (including `_`).
 -/
-syntax (name := appWithWildcards)
+syntax:arg (name := appWithWildcards)
     ("@" noWs)? ident noWs ".{" wildcard_level,+ "}" Parser.Term.argument* : term
 
 /--

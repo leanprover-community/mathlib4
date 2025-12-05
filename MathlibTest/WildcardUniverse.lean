@@ -11,6 +11,9 @@ section Foo
 universe u v w
 axiom Foo : Type u → Type v → Type w
 
+/-- info: id.{u_1 + 2} Foo.{u_1, 0, 0} : Type u_1 → Type → Type -/
+#guard_msgs in #check id Foo.{*,0,0}
+
 /-- info: Foo.{u, u_1, u_2} : Type u → Type u_1 → Type u_2 -/
 #guard_msgs in #check Foo.{u}
 
