@@ -123,7 +123,7 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
     HasDimensionLT (⊤ : X.Subcomplex) d ↔ X.HasDimensionLT d :=
   hasDimensionLT_iff_of_iso (Subcomplex.topIso X) _
 
-instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT ((⊥ : X.Subcomplex)) n where
+instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩
     simp at hx
