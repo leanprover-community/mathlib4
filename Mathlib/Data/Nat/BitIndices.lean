@@ -59,13 +59,13 @@ theorem bitIndices_bit_false (n : ℕ) :
     bitIndices (2 * n) = (bitIndices n).map (· + 1) := by
   rw [← bitIndices_bit_false, bit_false]
 
-@[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
+@[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.SortedLT := by
   induction n using binaryRec with
-  | zero => simp
+  | zero => simp [sortedLT_iff_pairwise]
   | bit b n hs =>
     suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
-      cases b <;> simpa [List.Sorted, bit_false, bit_true, List.pairwise_map]
-    exact List.Pairwise.imp (by simp) hs
+      cases b <;> simpa [sortedLT_iff_pairwise, bit_false, bit_true, List.pairwise_map]
+    exact List.Pairwise.imp (by simp) hs.pairwise
 
 @[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
     bitIndices (2^k * n) = (bitIndices n).map (· + k) := by
@@ -90,14 +90,14 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 /-- Together with `Nat.twoPowSum_bitIndices`, this implies a bijection between `ℕ` and `Finset ℕ`.
 See `Finset.equivBitIndices` for this bijection. -/
-theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
+theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.SortedLT L) :
     (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
   cases L with | nil => simp | cons a L =>
-  obtain ⟨haL, hL⟩ := sorted_cons.1 hL
+  obtain ⟨haL, hL⟩ := pairwise_cons.1 hL.pairwise
   simp_rw [Nat.lt_iff_add_one_le] at haL
-  have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by
+  have h' : ∃ (L₀ : List ℕ), L₀.SortedLT ∧ L = L₀.map (· + a + 1) := by
     refine ⟨L.map (· - (a+1)), ?_, ?_⟩
-    · rwa [Sorted, pairwise_map, Pairwise.and_mem,
+    · rwa [sortedLT_iff_pairwise, pairwise_map, Pairwise.and_mem,
         Pairwise.iff (S := fun x y ↦ x ∈ L ∧ y ∈ L ∧ x < y), ← Pairwise.and_mem]
       simp only [and_congr_right_iff]
       exact fun x y hx _ ↦ by rw [tsub_lt_tsub_iff_right (haL _ hx)]
