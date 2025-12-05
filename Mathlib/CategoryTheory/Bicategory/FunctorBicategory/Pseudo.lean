@@ -29,11 +29,11 @@ open Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
-namespace StrongTrans
-
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-variable {F G H I : B ⥤ᵖ C}
+namespace StrongTrans
+
+variable {F G H I : Pseudofunctor B C}
 
 /-- Left whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
@@ -77,7 +77,7 @@ variable (B C)
 Note that this instance is scoped to the `Pseudofunctor.StrongTrans` namespace. -/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
 rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
-scoped instance bicategory : Bicategory (Pseudofunctor B C) where
+scoped instance : Bicategory (Pseudofunctor B C) where
   whiskerLeft {F G H} η _ _ Γ := StrongTrans.whiskerLeft η Γ
   whiskerRight {F G H} _ _ Γ η := StrongTrans.whiskerRight Γ η
   associator {F G H} I := StrongTrans.associator
