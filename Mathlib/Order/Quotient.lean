@@ -120,7 +120,7 @@ instance [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient
 
 theorem mk_lt_mk {x y : α} : Quotient.mk s x < Quotient.mk s y ↔ x < y ∧ ¬ x ≈ y := by
   classical
-  set_option push_neg.use_distrib true in contrapose!
+  contrapose! +distrib
   rw [mk_le_mk, comm_of (· ≈ ·)]
 
 theorem lt_of_mk_lt_mk {x y : α} (h : Quotient.mk s x < Quotient.mk s y) : x < y :=
