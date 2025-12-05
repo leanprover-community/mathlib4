@@ -485,7 +485,6 @@ axiom Bar : Type* → Type*
 
 end DeprecatedCheck
 
-
 section LocalCtx
 
 -- Local variables can't have explicit universe parameters

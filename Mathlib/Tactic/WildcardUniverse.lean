@@ -154,7 +154,6 @@ def reorganizeUniverseParams
 def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
   | `($[@%$expl]?$id:ident.{$u $us*} $args*) =>
-
     -- Check for local variables which shouldn't have explicit universe parameters
     let n := id.getId
     if let some (e, _) ← resolveLocalName n then
@@ -188,7 +187,6 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
     let constLevels ← constLevels.mapM Lean.instantiateLevelMVars
     setLevelNames <| reorganizeUniverseParams levels constLevels (← getLevelNames)
 
-    -- Conclude
     return expr
 
   | _ => throwUnsupportedSyntax
