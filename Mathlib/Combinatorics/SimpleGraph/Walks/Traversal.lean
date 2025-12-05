@@ -140,9 +140,9 @@ lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
 lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬p.Nil) : p.snd ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
-lemma support_getElem_one_eq_snd {p : G.Walk u v} (hnil : ¬p.Nil) :
-    p.support[1]'(by grind [length_support, not_nil_iff_lt_length]) = p.snd := by
-  grind [getVert_eq_support_getElem, not_nil_iff_lt_length]
+@[simp]
+lemma support_getElem_one {p : G.Walk u v} (hp) : p.support[1]'hp = p.snd := by
+  grind [getVert_eq_support_getElem, length_support, not_nil_iff_lt_length]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
