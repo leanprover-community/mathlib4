@@ -407,13 +407,13 @@ end Oriented
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
 divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
-    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t.points i₁) (t.points i₃) /
-      Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) / 2 = t.circumradius := by
-  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    dist (t.points i₁) (t.points i₃) / Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) / 2 =
+      t.circumradius := by
+  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
   let t' : Triangle ℝ S := t.restrict S le_rfl
   have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    simp_rw [S]
-    rw [direction_affineSpan, t.independent.finrank_vectorSpan]
+    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
     simp⟩
   have : Module.Oriented ℝ S.direction (Fin 2) :=
     ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
