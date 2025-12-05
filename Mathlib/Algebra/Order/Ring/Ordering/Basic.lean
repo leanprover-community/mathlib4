@@ -285,8 +285,9 @@ def comap : RingPreordering A where
 @[simp]
 theorem coe_comap : (P.comap f : Set A) = f ⁻¹' P := rfl
 
+variable {f P} in
 @[simp]
-theorem mem_comap (x) : x ∈ P.comap f ↔ f x ∈ P := .rfl
+theorem mem_comap {x} : x ∈ P.comap f ↔ f x ∈ P := .rfl
 
 theorem comap_comap (Q : RingPreordering C) (g : B →+* C) :
     (Q.comap g).comap f = Q.comap (g.comp f) := rfl
@@ -294,7 +295,8 @@ theorem comap_comap (Q : RingPreordering C) (g : B →+* C) :
 instance [HasMemOrNegMem P] : HasMemOrNegMem (P.comap f) where
   mem_or_neg_mem x := by have := mem_or_neg_mem P (f x); aesop
 
-theorem mem_comap_supportAddSubgroup (x) :
+variable {f P} in
+theorem mem_comap_supportAddSubgroup {x} :
     x ∈ (P.comap f).supportAddSubgroup ↔ f x ∈ P.supportAddSubgroup := by
   simp [mem_supportAddSubgroup]
 
@@ -306,9 +308,10 @@ theorem comap_supportAddSubgroup :
 instance [P.HasIdealSupport] : HasIdealSupport (P.comap f) where
   smul_mem_support x a ha := by have := smul_mem_support P (f x) (by simpa using ha); simp_all
 
-theorem mem_comap_support [P.HasIdealSupport] (x) :
+variable {f P} in
+theorem mem_comap_support [P.HasIdealSupport] {x} :
     x ∈ (P.comap f).support ↔ f x ∈ P.support := by
-  simpa using mem_comap_supportAddSubgroup _ P _
+  simpa using mem_comap_supportAddSubgroup (P := P)
 
 @[simp]
 theorem comap_support [P.HasIdealSupport] :
@@ -342,8 +345,9 @@ def map : RingPreordering B where
 @[simp]
 theorem coe_map : (map f P hf hsupp : Set B) = f '' P := rfl
 
+variable {hf hsupp} in
 @[simp]
-theorem mem_map (y) : y ∈ map f P hf hsupp ↔ ∃ x ∈ P, f x = y := .rfl
+theorem mem_map {x} : x ∈ map f P hf hsupp ↔ ∃ y ∈ P, f y = x := .rfl
 
 instance [HasMemOrNegMem P] : HasMemOrNegMem (map f P hf hsupp) where
   mem_or_neg_mem x := by
@@ -351,7 +355,8 @@ instance [HasMemOrNegMem P] : HasMemOrNegMem (map f P hf hsupp) where
     have := mem_or_neg_mem P x'
     aesop
 
-theorem mem_map_supportAddSubgroup (x) :
+variable {hf hsupp} in
+theorem mem_map_supportAddSubgroup {x} :
     x ∈ (map f P hf hsupp).supportAddSubgroup ↔ ∃ y ∈ P.supportAddSubgroup, f y = x := by
   refine ⟨fun ⟨⟨a, ⟨ha₁, ha₂⟩⟩, ⟨b, ⟨hb₁, hb₂⟩⟩⟩ => ?_, by aesop (add simp mem_supportAddSubgroup)⟩
   have : -(a + b) + b ∈ P := by exact add_mem (hsupp (show f (a + b) = 0 by simp_all)).2 hb₁
@@ -370,7 +375,8 @@ instance [P.HasIdealSupport] : HasIdealSupport <| map f P hf hsupp where
     have := smul_mem_support P x' ha'
     aesop
 
-theorem mem_map_support [P.HasIdealSupport] (x) :
+variable {hf hsupp} in
+theorem mem_map_support [P.HasIdealSupport] {x} :
     x ∈ (map f P hf hsupp).support ↔ ∃ y ∈ P.support, f y = x := by
   simpa using mem_map_supportAddSubgroup ..
 
