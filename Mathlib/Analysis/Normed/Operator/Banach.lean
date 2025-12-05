@@ -605,7 +605,7 @@ lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : 
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
   IsClosed.completeSpace_coe (hs := hf.isClosed_range f.uniformContinuous)
 
-variable [RingHomInvPair σ' σ] [RingHomIsometric σ] [RingHomIsometric σ']
+variable [RingHomInvPair σ' σ] [RingHomIsometric σ']
 
 open Function
 lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
