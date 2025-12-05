@@ -154,20 +154,24 @@ def reorganizeUniverseParams
 def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
   | `($[@%$expl]?$id:ident.{$u $us*} $args*) =>
-    -- Step 1: Check for local variables (which can't have explicit universe parameters)
-    if let some (e, _) ← resolveLocalName id.getId then
+
+    -- Add completion info
+    let n := id.getId
+    addCompletionInfo <| .id id n (danglingDot := false) (← getLCtx) expectedType?
+
+    -- Check for local variables which shouldn't have explicit universe parameters
+    if let some (e, _) ← resolveLocalName n then
       throwError "invalid use of explicit universe parameters, `{e}` is a local variable"
 
-    -- Step 2: Resolve constant and get info
+    -- Resolve constant name
     let constName ← Lean.resolveGlobalConstNoOverload id
     let constInfo ← Lean.getConstInfo constName
-    let numLevels := constInfo.levelParams.length
 
-    -- Step 3: Parse and elaborate wildcard universes
+    -- Parse and elaborate wildcard universes
     let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
     let mut levels : Array (Option LevelWildcardKind) :=
       (← elabWildcardUniverses us constInfo.levelParams).map some
-    while levels.size < numLevels do
+    while levels.size < constInfo.levelParams.length do
       levels := levels.push none
 
     let constLevels : Array Level ← levels.mapM fun
@@ -175,21 +179,19 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
       | some (.param baseName) => mkFreshLevelParam baseName
       | some (.explicit l) => elabLevel l
 
-    -- Step 4: Create constant expression using Term.mkConst (handles deprecation)
+    -- Create constant expression using Term.mkConst (handles deprecation)
     let fn ← mkConst constName constLevels.toList
 
-    -- Step 5: Add completion info for IDE integration
-    addCompletionInfo <| .id id id.getId (danglingDot := false) (← getLCtx) expectedType?
-
-    -- Step 6: Elaborate arguments
+    -- Elaborate arguments
     let (namedArgs, args, ellipsis) ← expandArgs args
     let expr ← elabAppArgs fn namedArgs args expectedType?
       (explicit := expl.isSome) (ellipsis := ellipsis)
 
-    -- Step 7: Instantiate level mvars and reorganize
+    -- Instantiate level mvars and reorganize
     let constLevels ← constLevels.mapM Lean.instantiateLevelMVars
     setLevelNames <| reorganizeUniverseParams levels constLevels (← getLevelNames)
 
+    -- Conclude
     return expr
 
   | _ => throwUnsupportedSyntax
