@@ -258,7 +258,7 @@ theorem adjoint_innerSL_apply (x : E) :
 
 omit [CompleteSpace E] in
 theorem _root_.LinearMap.adjoint_innerₛₗ_apply [FiniteDimensional 𝕜 E] (x : E) :
-    adjoint (innerₛₗ 𝕜 x) = toSpanSingleton 𝕜 E x :=
+    LinearMap.adjoint (innerₛₗ 𝕜 x) = LinearMap.toSpanSingleton 𝕜 E x :=
   have := FiniteDimensional.complete 𝕜 E
   ext fun _ ↦ congr($(ContinuousLinearMap.adjoint_innerSL_apply x) _)
 
@@ -268,7 +268,7 @@ theorem adjoint_toSpanSingleton (x : E) :
 
 omit [CompleteSpace E] in
 theorem _root_.LinearMap.adjoint_toSpanSingleton [FiniteDimensional 𝕜 E] (x : E) :
-    adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
+    LinearMap.adjoint (LinearMap.toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
   simp [← adjoint_innerₛₗ_apply]
 
 theorem innerSL_apply_comp (x : F) (f : E →L[𝕜] F) :
