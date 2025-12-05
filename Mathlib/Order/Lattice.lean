@@ -214,6 +214,9 @@ theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
 theorem sup_le_sup (h₁ : a ≤ b) (h₂ : c ≤ d) : a ⊔ c ≤ b ⊔ d :=
   sup_le (le_sup_of_le_left h₁) (le_sup_of_le_right h₂)
 
+-- FIXME: these theorems use the wrong `left`/`right` naming convention.
+-- FIXME: the fact that the following theorems use `(reorder := h₁ c)` is not good.
+-- Instead, we should use a consistent argument ordering.
 @[to_dual (reorder := h₁ c)]
 theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
   sup_le_sup le_rfl h₁
@@ -271,6 +274,7 @@ theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔
 theorem sup_sup_distrib_right (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ (b ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 
+-- FIXME: These theorems use the wrong `left`/`right` naming convention.
 @[to_dual]
 theorem sup_congr_left (hb : b ≤ a ⊔ c) (hc : c ≤ a ⊔ b) : a ⊔ b = a ⊔ c :=
   (sup_le le_sup_left hb).antisymm <| sup_le le_sup_left hc
