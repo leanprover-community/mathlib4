@@ -19,8 +19,8 @@ public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 ## Implementation notes
 
-It is hard to state the equivalent of `DistribMulAction G (MonoidAlgebra k G)` for
-`AddMonoidAlgebra`.
+We do not state the equivalent of `DistribMulAction G (MonoidAlgebra k G)` for `AddMonoidAlgebra`
+because mathlib does not have the notion of distributive actions of additive groups.
 -/
 
 @[expose] public section
