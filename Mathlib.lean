@@ -1425,6 +1425,10 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 public import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Dimension
+public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
+public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
+public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
@@ -1436,6 +1440,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
+public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
+public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.Skeleton
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
@@ -2371,10 +2377,12 @@ public import Mathlib.CategoryTheory.Discrete.SumsProducts
 public import Mathlib.CategoryTheory.Distributive.Cartesian
 public import Mathlib.CategoryTheory.Distributive.Monoidal
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.EffectiveEpi.Coequalizer
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
 public import Mathlib.CategoryTheory.EffectiveEpi.Coproduct
 public import Mathlib.CategoryTheory.EffectiveEpi.Enough
 public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
+public import Mathlib.CategoryTheory.EffectiveEpi.FunctorToTypes
 public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 public import Mathlib.CategoryTheory.Elements
@@ -2678,6 +2686,7 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.EffectiveEpi
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Images
