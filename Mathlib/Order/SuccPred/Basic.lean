@@ -340,11 +340,16 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 @[to_dual]
 alias ⟨_, _root_.IsMax.succ_eq⟩ := succ_eq_iff_isMax
 
-@[to_dual le_iff_eq_or_le_pred]
+@[to_dual ge_iff_eq_or_le_pred]
 lemma le_iff_eq_or_succ_le : a ≤ b ↔ a = b ∨ succ a ≤ b := by
   by_cases ha : IsMax a
   · simpa [ha.succ_eq] using le_of_eq
   · rw [succ_le_iff_of_not_isMax ha, le_iff_eq_or_lt]
+
+@[to_dual le_iff_eq_or_le_pred]
+lemma ge_iff_eq_or_succ_le : a ≤ b ↔ b = a ∨ succ a ≤ b := by
+  rw [eq_comm]
+  exact le_iff_eq_or_succ_le
 
 @[to_dual le_and_pred_le_iff]
 theorem le_and_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
