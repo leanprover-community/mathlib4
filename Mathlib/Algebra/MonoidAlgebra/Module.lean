@@ -96,7 +96,7 @@ def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) :
   map_smul' k m := by simp
 
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
+@[to_additive (dont_translate := R) (relevant_arg := N) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
     [DistribMulAction R k] {f g : MonoidAlgebra k G →+[R] N}

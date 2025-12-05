@@ -114,17 +114,17 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     rw [ih ag hag eq]
     simp_rw [support_erase, Finset.erase_union_distrib]
 
--- @[to_additive (dont_translate := R) (relevant_arg := A)]
+@[to_additive (dont_translate := R) (relevant_arg := A)]
 instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
     IsRightCancelMulZero (MonoidAlgebra R A) :=
   MulOpposite.isLeftCancelMulZero_iff.mp <|
     MonoidAlgebra.opRingEquiv.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
 
--- @[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsCancelMulZero R] [Mul A] [UniqueProds A] :
     IsCancelMulZero (MonoidAlgebra R A) where
 
--- @[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R)]
 instance [IsCancelAdd R] [IsDomain R] [Monoid A] [UniqueProds A] :
     IsDomain (MonoidAlgebra R A) where
 
