@@ -6,6 +6,7 @@ Authors: Thomas Browning, Nailin Guan
 module
 
 public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!

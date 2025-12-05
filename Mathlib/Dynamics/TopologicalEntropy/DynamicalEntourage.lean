@@ -5,8 +5,7 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
@@ -67,9 +66,14 @@ lemma dynEntourage_mem_uniformity [UniformSpace X] (h : UniformContinuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     dynEntourage T U n ∈ 𝓤 X := by
   rw [dynEntourage_eq_inter_Ico T U n]
-  refine Filter.iInter_mem.2 fun k ↦ ?_
-  rw [map_iterate T T k]
-  exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [iInter_coe_set, mem_Ico, Nat.zero_le, true_and] at ih ⊢
+    rw [Set.biInter_lt_succ]
+    apply Filter.inter_mem ih
+    rw [map_iterate T T n]
+    exact uniformContinuous_def.1 (UniformContinuous.iterate T n h) U U_uni
 
 lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) (x : X) :
