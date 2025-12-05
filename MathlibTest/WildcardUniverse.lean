@@ -484,3 +484,14 @@ axiom Bar : Type* → Type*
 #guard_msgs in def T := Bar.{*, *}
 
 end DeprecatedCheck
+
+
+section LocalCtx
+
+-- Local variables can't have explicit universe parameters
+variable (F : Type* → Type* → Type*)
+
+/-- error: invalid use of explicit universe parameters, `F` is a local variable -/
+#guard_msgs in #check F.{*}
+
+end LocalCtx
