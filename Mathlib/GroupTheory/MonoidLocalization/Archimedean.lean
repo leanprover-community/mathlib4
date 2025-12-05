@@ -24,7 +24,7 @@ theorem isLocalizationMap [PartialOrder G] [AddLeftMono G] [Archimedean G]
   S.isLocalizationMap_of_addGroup Subtype.val_injective fun g ↦
     have ⟨p, hpS, hp0⟩ := (S.bot_or_exists_ne_zero).resolve_left hS
     have ⟨n, le⟩ := arch (-g) (p.2.lt_of_ne <| Subtype.coe_ne_coe.mpr hp0.symm)
-    ⟨⟨g + n • p, by simpa using add_le_add_left le g⟩, _, nsmul_mem hpS n, by simp⟩
+    ⟨⟨n • p + g, by simpa using add_le_add_left le g⟩, _, nsmul_mem hpS n, by simp⟩
 
 instance isLocalizationMap_top [LinearOrder G] [AddLeftMono G] [Archimedean G] :
     (⊤ : AddSubmonoid {g : G // 0 ≤ g}).IsLocalizationMap Subtype.val := by

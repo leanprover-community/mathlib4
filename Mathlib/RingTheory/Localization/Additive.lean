@@ -285,8 +285,8 @@ variable {R S T F G : Type*}
 protected theorem map_one [AddCommMonoid R] [MulOneClass R] [AddCommMonoid S] [MulOneClass S]
     [LeftDistribClass S] (M : AddSubmonoid R) [FunLike F R S] [MulHomClass F R S] {f : F}
     (hf : IsLocalizationMap M f) : f 1 = 1 :=
-  have ⟨x, eq⟩ := hf.surj' 1
-  (hf.map_add_units' x.2).add_right_cancel <| by
+  have ⟨x, eq⟩ := hf.surj 1
+  (hf.map_addUnits x.2).add_right_cancel <| by
     rw [eq, ← mul_one (f 1), ← one_mul x.2.1, map_mul, ← mul_add, eq, ← map_mul, one_mul]
 
 section CompatibleSMul
@@ -299,8 +299,8 @@ theorem linearMapCompatibleSMul [Semiring R] [Module R N₁] [Module R N₂]
     (hf : IsLocalizationMap M fun r : R ↦ r • (1 : S)) :
     LinearMap.CompatibleSMul N₁ N₂ S R where
   map_smul l s n := by
-    have ⟨x, eq⟩ := hf.surj' s
-    apply (((hf.map_add_units' x.2).smul_right n).map l).add_right_cancel
+    have ⟨x, eq⟩ := hf.surj s
+    apply (((hf.map_addUnits x.2).smul_right n).map l).add_right_cancel
     rw [← map_add, ← add_smul, eq, smul_one_smul, map_smul, ← smul_one_smul S, ← eq, add_smul]
     simp_rw [smul_one_smul, map_smul]
 
@@ -310,8 +310,8 @@ theorem tensorProductCompatibleSMul [CommSemiring R] [Module R N₁] [Module R N
     (hf : IsLocalizationMap M fun r : R ↦ r • (1 : S)) :
     CompatibleSMul R S N₁ N₂ where
   smul_tmul s n₁ n₂ := by
-    have ⟨x, eq⟩ := hf.surj' s
-    apply (((hf.map_add_units' x.2).smul_right n₁).tmul_right R n₂).add_right_cancel
+    have ⟨x, eq⟩ := hf.surj s
+    apply (((hf.map_addUnits x.2).smul_right n₁).tmul_right R n₂).add_right_cancel
     rw [← add_tmul, ← add_smul, eq, smul_one_smul, smul_tmul, ← smul_one_smul S, ← eq, add_smul]
     simp_rw [tmul_add, smul_one_smul, smul_tmul]
 
@@ -340,11 +340,11 @@ noncomputable def liftNonUnitalRingHom : S →ₙ+* T where
     congr
     on_goal 1 => trans g (rx * ry)
     on_goal 3 =>
-      simp_rw [← coe_map_neg, ← val_mul_right, l.lift_eq, ← neg_mul_right,
+      simp_rw [← coe_map_neg, ← val_mulRight, l.lift_eq, ← neg_mulRight,
         ← coe_map_neg, ← AddUnits.ext_iff, neg_inj, AddUnits.ext_iff]
       trans g (mx * ry)
     on_goal 5 =>
-      simp_rw [← coe_map_neg, ← val_mul_left, l.lift_eq, ← neg_mul_left,
+      simp_rw [← coe_map_neg, ← val_mulLeft, l.lift_eq, ← neg_mulLeft,
         ← coe_map_neg, ← AddUnits.ext_iff, neg_inj, AddUnits.ext_iff]
       trans g (rx * my)
     on_goal 7 => simp_rw [← coe_map_neg, AddUnits.neg_mul_neg]; trans g (mx * my)
@@ -414,8 +414,8 @@ is a localization map. -/
 theorem isLocalizationMap_tensorProductMk :
     IsLocalizationMap (⊤ : AddSubmonoid M) (TensorProduct.mk ℕ ℤ M 1) := by
   let l := AddLocalization.addMonoidOf (⊤ : AddSubmonoid M)
-  convert (ofAddEquivOfLocalizations l l.addMonoidHomTensor).isLocalizationMap
-  exact funext fun _ ↦ .symm <| (ofAddEquivOfLocalizations_apply ..).trans (l.lift_eq ..)
+  convert ← (ofAddEquivOfLocalizations l l.addMonoidHomTensor).isLocalizationMap
+  exact funext fun m ↦ (l.ofAddEquivOfLocalizations_apply m).trans (l.lift_eq ..)
 
 end AddSubmonoid
 
