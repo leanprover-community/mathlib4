@@ -314,7 +314,7 @@ theorem map_val_atTop_of_Ici_subset [Preorder α] [IsDirectedLE α] {a : α} {s 
     ⟨f a (f x y), h <| hl _ _, (hl x y).trans (hr _ _), (hr x y).trans (hr _ _)⟩
   have : IsDirectedLE s := by
     rw [directedOn_iff_directed] at this
-    rwa [← directed_id_iff]
+    rwa [IsDirectedLE, ← directed_id_iff]
   refine map_atTop_eq_of_gc_preorder (Subtype.mono_coe _) a fun c hc ↦ ?_
   exact ⟨⟨c, h hc⟩, rfl, fun _ ↦ .rfl⟩
 
