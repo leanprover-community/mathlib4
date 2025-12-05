@@ -775,7 +775,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
     -- where we used `calc₁` again.
     rw [← mul_le_mul_iff_right₀ (show 0 < 1 - K by linarith [hK])]
     suffices (1 - K) * #(Set.toFinset H * S) ≤ (1 - ε / 2) * #(H : Set G).toFinset by
-      apply le_of_eq_of_le' _ this; simp [K]; field
+      apply le_of_le_of_eq this; simp [K]; field
     rw [sub_mul, one_mul, sub_le_iff_le_add]
     calc
           (#(Set.toFinset H * S) : ℝ)

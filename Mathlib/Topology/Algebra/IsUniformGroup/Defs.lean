@@ -130,14 +130,14 @@ lemma uniformity_eq_comap_inv_mul_nhds_one :
 @[to_additive]
 lemma uniformity_eq_comap_mul_inv_nhds_one_swapped :
     𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ ↦ x.1 * x.2⁻¹) (𝓝 1) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_mul_inv_nhds_one, comap_comap]
-  rfl
+  rw [← comap_swap_uniformity, uniformity_eq_comap_mul_inv_nhds_one, comap_comap, Function.comp_def]
+  simp
 
 @[to_additive]
 lemma uniformity_eq_comap_inv_mul_nhds_one_swapped :
     𝓤 Gₗ = comap (fun x : Gₗ × Gₗ ↦ x.2⁻¹ * x.1) (𝓝 1) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap]
-  rfl
+  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap, Function.comp_def]
+  simp
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.2 / x.1) (𝓝 1) := by
@@ -147,8 +147,8 @@ theorem uniformity_eq_comap_nhds_one : 𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ =
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one_swapped :
     𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.1 / x.2) (𝓝 1) := by
-  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap]
-  rfl
+  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
+  simp
 
 variable {Gₗ Gᵣ}
 
