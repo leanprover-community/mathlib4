@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Down-compressions
@@ -24,7 +26,7 @@ when the resulting set is not already in `𝒜`.
 
 ## Notation
 
-`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in locale `SetFamily`.
+`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in scope `SetFamily`.
 
 ## References
 
@@ -34,6 +36,8 @@ when the resulting set is not already in `𝒜`.
 
 compression, down-compression
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {s : Finset α} {a : α}
@@ -88,7 +92,7 @@ theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset
 theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s => s.erase a := by
   ext s
-  simp only [mem_union, mem_memberSubfamily, mem_nonMemberSubfamily, mem_image, exists_prop]
+  simp only [mem_union, mem_memberSubfamily, mem_nonMemberSubfamily, mem_image]
   constructor
   · rintro (h | h)
     · exact ⟨_, h.1, erase_insert h.2⟩
@@ -182,7 +186,7 @@ it suffices to prove it for
 * the finset family which only contains the empty finset.
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.
 * `ℬ ∪ 𝒞` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the ground type and
-  `ℬ`is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
+  `ℬ` is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
   Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you `𝒜 = ℬ ∪ 𝒞`, so that
   `ℬ = {s ∈ 𝒜 | a ∉ s}` and `𝒞 = {s ∈ 𝒜 | a ∈ s}`.
 

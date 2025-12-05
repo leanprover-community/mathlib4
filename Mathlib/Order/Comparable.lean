@@ -3,7 +3,9 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Comparability and incomparability relations
@@ -31,6 +33,8 @@ to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 
 These definitions should be linked to `IsChain` and `IsAntichain`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -176,7 +180,7 @@ theorem antisymmRel_compl_apply : AntisymmRel rᶜ a b ↔ IncompRel r a b :=
 
 @[simp]
 theorem incompRel_compl : IncompRel rᶜ = AntisymmRel r := by
-  simp [← antisymmRel_compl, AntisymmRel, compl]
+  simp [← antisymmRel_compl, compl]
 
 @[simp]
 theorem incompRel_compl_apply : IncompRel rᶜ a b ↔ AntisymmRel r a b := by

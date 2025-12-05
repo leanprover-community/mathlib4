@@ -3,9 +3,11 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Michael Stoll
 -/
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.FiniteDimensional
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # L-series
@@ -52,6 +54,8 @@ by David Loeffler and Michael Stoll.
 L-series
 -/
 
+@[expose] public section
+
 open Complex
 
 /-!
@@ -76,14 +80,14 @@ lemma term_def (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 
 /-- An alternate spelling of `term_def` for the case `f 0 = 0`. -/
 lemma term_def₀ {f : ℕ → ℂ} (hf : f 0 = 0) (s : ℂ) (n : ℕ) :
-    LSeries.term f s n = f n * (n : ℂ) ^ (- s) := by
+    LSeries.term f s n = f n * (n : ℂ) ^ (-s) := by
   rw [LSeries.term]
   split_ifs with h <;> simp [h, hf, cpow_neg, div_eq_inv_mul, mul_comm]
 
 @[simp]
 lemma term_zero (f : ℕ → ℂ) (s : ℂ) : term f s 0 = 0 := rfl
 
--- We put `hn` first for convnience, so that we can write `rw [LSeries.term_of_ne_zero hn]` etc.
+-- We put `hn` first for convenience, so that we can write `rw [LSeries.term_of_ne_zero hn]` etc.
 @[simp]
 lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
@@ -105,7 +109,7 @@ lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : �
 
 lemma pow_mul_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     (n + 1) ^ s * term f s (n + 1) = f (n + 1) := by
-  simp [term, natCast_add_one_cpow_ne_zero n _, mul_comm (f _), mul_div_assoc']
+  simp [term, natCast_add_one_cpow_ne_zero n _, mul_div_assoc']
 
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by
@@ -160,8 +164,8 @@ noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
 
--- TODO: change argument order in `LSeries_congr` to have `s` last.
-lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
+/-- Congruence for `LSeries` with the evaluation variable `s`. -/
+lemma LSeries_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : ℂ) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
@@ -226,7 +230,7 @@ lemma LSeriesHasSum_iff {f : ℕ → ℂ} {s a : ℂ} :
 
 lemma LSeriesHasSum_congr {f g : ℕ → ℂ} (s a : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesHasSum f s a ↔ LSeriesHasSum g s a := by
-  simp [LSeriesHasSum_iff, LSeriesSummable_congr s h, LSeries_congr s h]
+  simp [LSeriesHasSum_iff, LSeriesSummable_congr s h, LSeries_congr h s]
 
 lemma LSeriesSummable.of_re_le_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re ≤ s'.re)
     (hf : LSeriesSummable f s) : LSeriesSummable f s' := by
@@ -316,8 +320,8 @@ by a constant times `n^(re s)`. -/
 lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable f s) :
     ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C * n ^ s.re := by
   replace h := h.norm
-  by_contra! H
-  obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
+  use tsum fun n ↦ ‖term f s n‖
+  by_contra! ⟨n, hn₀, hn⟩
   have := h.le_tsum n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
     div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this

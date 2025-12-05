@@ -3,9 +3,11 @@ Copyright (c) 2024 Nicolas Rolland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolas Rolland
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.ConnectedComponents
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.ConnectedComponents
 
 /-!
 # Adjunctions related to Cat, the category of categories
@@ -20,6 +22,8 @@ components and functors to functions between those sets.
 All this could be made with 2-functors
 
 -/
+
+@[expose] public section
 
 universe v u
 namespace CategoryTheory.Cat
@@ -47,7 +51,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
       naturality := fun _ _ _  ↦  Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
-            aesop_cat ) } }
+            cat_disch ) } }
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
@@ -67,10 +71,10 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
         naturality := fun _ _ _ =>
           funext (fun xcc => by
             obtain ⟨x,h⟩ := Quotient.exists_rep xcc
-            aesop_cat) }
+            cat_disch) }
     homEquiv_counit := fun {C X G} => by
       funext cc
       obtain ⟨_, _⟩ := Quotient.exists_rep cc
-      aesop_cat }
+      cat_disch }
 
 end CategoryTheory.Cat

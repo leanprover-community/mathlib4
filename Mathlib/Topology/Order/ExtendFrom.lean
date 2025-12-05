@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.ExtendFrom
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Topology.ExtendFrom
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Lemmas about `extendFrom` in an order topology.
 -/
+
+@[expose] public section
 
 open Filter Set Topology
 
@@ -31,7 +35,7 @@ theorem eq_lim_at_left_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [De
     (ha : Tendsto f (𝓝[>] a) (𝓝 la)) : extendFrom (Ioo a b) f a = la := by
   apply extendFrom_eq
   · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, left_mem_Icc, right_mem_Icc]
+    simp only [le_of_lt hab, left_mem_Icc]
   · simpa [hab]
 
 theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
@@ -39,7 +43,7 @@ theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [D
     (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : extendFrom (Ioo a b) f b = lb := by
   apply extendFrom_eq
   · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, left_mem_Icc, right_mem_Icc]
+    simp only [le_of_lt hab, right_mem_Icc]
   · simpa [hab]
 
 theorem continuousOn_Ico_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]

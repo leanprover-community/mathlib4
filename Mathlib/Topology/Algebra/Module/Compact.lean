@@ -3,16 +3,20 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 
 # Compact submodules
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommSemiring R] [TopologicalSpace R] [AddCommMonoid M] [Module R M]
 variable [TopologicalSpace M] [ContinuousAdd M] [ContinuousSMul R M]
@@ -21,10 +25,10 @@ lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG)
     IsCompact (X := M) N := by
   obtain ⟨s, hs⟩ := hN
   have : LinearMap.range (Fintype.linearCombination R (α := s) Subtype.val) = N := by
-    simp [Finsupp.range_linearCombination, hs]
+    simp [hs]
   rw [← this]
   refine isCompact_range ?_
-  simp only [Fintype.linearCombination, Finset.univ_eq_attach, smul_eq_mul, LinearMap.coe_mk,
+  simp only [Fintype.linearCombination, Finset.univ_eq_attach, LinearMap.coe_mk,
     AddHom.coe_mk]
   fun_prop
 

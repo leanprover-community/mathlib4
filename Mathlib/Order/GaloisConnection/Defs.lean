@@ -3,15 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Util.AssertExists
 
 /-!
 # Galois connections, insertions and coinsertions
 
-Galois connections are order theoretic adjoints, i.e. a pair of functions `u` and `l`,
+Galois connections are order-theoretic adjoints, i.e. a pair of functions `u` and `l`,
 such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 ## Main definitions
@@ -22,6 +24,8 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 * `GaloisInsertion`: A Galois insertion is a Galois connection where `l ∘ u = id`
 * `GaloisCoinsertion`: A Galois coinsertion is a Galois connection where `u ∘ l = id`
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice RelIso
 
@@ -223,7 +227,7 @@ end GaloisConnection
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
 structure GaloisInsertion {α β : Type*} [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
-  /-- A contructive choice function for images of `l`. -/
+  /-- A constructive choice function for images of `l`. -/
   choice : ∀ x : α, u (l x) ≤ x → β
   /-- The Galois connection associated to a Galois insertion. -/
   gc : GaloisConnection l u
@@ -289,7 +293,7 @@ end GaloisInsertion
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/
 structure GaloisCoinsertion [Preorder α] [Preorder β] (l : α → β) (u : β → α) where
-  /-- A contructive choice function for images of `u`. -/
+  /-- A constructive choice function for images of `u`. -/
   choice : ∀ x : β, x ≤ l (u x) → α
   /-- The Galois connection associated to a Galois coinsertion. -/
   gc : GaloisConnection l u

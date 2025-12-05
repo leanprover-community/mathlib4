@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.FreeMonoid.UniqueProds
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.FreeMonoid.UniqueProds
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 
 /-!
 # Free Algebras
@@ -47,6 +49,8 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 3. The free algebra `FreeAlgebra R X` is the quotient of `FreeAlgebra.Pre R X` by
   the relation `FreeAlgebra.Rel R X`.
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) [CommSemiring R]
@@ -377,12 +381,12 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
-        rw [map_add, map_add, ha, hb]
+        grind
       | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
-        rw [map_mul, map_mul, ha, hb] }
+        grind }
 
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
@@ -512,8 +516,8 @@ theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap 
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
   have hf1 : f1 (ι R x) = 1 := lift_ι_apply _ _
-  rw [h, f0.commutes, Algebra.id.map_eq_self] at hf0
-  rw [h, f1.commutes, Algebra.id.map_eq_self] at hf1
+  rw [h, f0.commutes, Algebra.algebraMap_self_apply] at hf0
+  rw [h, f1.commutes, Algebra.algebraMap_self_apply] at hf1
   exact zero_ne_one (hf0.symm.trans hf1)
 
 @[simp]
@@ -558,7 +562,8 @@ theorem induction {motive : FreeAlgebra R X → Prop}
   suffices a = lift R of a by
     rw [this]
     exact Subtype.prop (lift R of a)
-  simp [AlgHom.ext_iff] at of_id
+  simp only [AlgHom.ext_iff, AlgHom.coe_id, id_eq, AlgHom.coe_comp, Subalgebra.coe_val,
+    Function.comp_apply] at of_id
   exact of_id a
 
 @[simp]

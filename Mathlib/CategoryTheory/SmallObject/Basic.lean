@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
+module
+
+public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 
 /-!
 # The small object argument
@@ -28,7 +30,7 @@ obtained in this file are:
 * the class `I.rlp.llp` of morphisms that have the left lifting property with
   respect to the maps that have the right lifting property with respect
   to `I` are exactly the retracts of transfinite compositions (indexed
-  by a suitable well ordered type `J`) of pushouts of coproducts of
+  by a suitable well-ordered type `J`) of pushouts of coproducts of
   morphisms in `I`;
 * morphisms in `C` have a functorial factorization as a morphism in
   `I.rlp.llp` followed by a morphism in `I.rlp`.
@@ -66,6 +68,8 @@ the file `Mathlib/CategoryTheory/SmallObject/TransfiniteCompositionLifting.lean`
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -106,7 +110,7 @@ instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
   hasFunctorialFactorization I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.toType`)
 of pushouts of coproducts of morphisms in `C`. -/
@@ -116,7 +120,7 @@ lemma llp_rlp_of_hasSmallObjectArgument' :
   llp_rlp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions
 of pushouts of coproducts of morphisms in `C`. -/

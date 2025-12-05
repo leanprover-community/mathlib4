@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.Order.Antidiag.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Algebra.Order.Antidiag.Prod
 
 /-!
 # Internally graded rings and algebras
@@ -49,6 +51,8 @@ This file also provides some extra structure on `A 0`, namely:
 internally graded ring
 -/
 
+@[expose] public section
+
 
 open DirectSum
 
@@ -72,7 +76,7 @@ theorem SetLike.natCast_mem_graded [Zero ι] [AddMonoidWithOne R] [SetLike σ R]
 theorem SetLike.intCast_mem_graded [Zero ι] [AddGroupWithOne R] [SetLike σ R]
     [AddSubgroupClass σ R] (A : ι → σ) [SetLike.GradedOne A] (z : ℤ) : (z : R) ∈ A 0 := by
   cases z
-  · rw [Int.ofNat_eq_coe, Int.cast_natCast]
+  · rw [Int.ofNat_eq_natCast, Int.cast_natCast]
     exact SetLike.natCast_mem_graded _ _
   · rw [Int.cast_negSucc]
     exact neg_mem (SetLike.natCast_mem_graded _ _)
@@ -163,11 +167,8 @@ theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
   · subst h
     rw [of_eq_same]
     rfl
-  · rw [of_eq_of_ne _ _ _ h]
+  · rw [of_eq_of_ne _ _ _ (Ne.symm h)]
     rfl
-
-@[deprecated (since := "2025-04-06")]
-alias coe_mul_apply_eq_dfinsupp_sum := coe_mul_apply_eq_dfinsuppSum
 
 open Finset in
 theorem coe_mul_apply_eq_sum_antidiagonal [AddMonoid ι] [HasAntidiagonal ι]
@@ -364,6 +365,11 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 `SetLike.GradedMonoid A`. -/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
+instance : Algebra (A 0) R :=
+  Algebra.ofSubsemiring <| SetLike.GradeZero.subsemiring A
+
+@[simp] lemma algebraMap_apply (x : A 0) : algebraMap (A 0) R x = x := rfl
+
 end CommSemiring
 
 section Ring
@@ -376,7 +382,7 @@ def subring : Subring R where
   __ := subsemiring A
   neg_mem' := neg_mem
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instRing : Ring (A 0) := (subring A).toRing
 
@@ -388,7 +394,7 @@ section CommRing
 variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instCommRing : CommRing (A 0) := (subring A).toCommRing
 
@@ -404,7 +410,7 @@ def subalgebra : Subalgebra S R where
   __ := subsemiring A
   algebraMap_mem' := algebraMap_mem_graded A
 
--- TODO: it might be expensive to unify `A` in this instances in practice
+-- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
 
@@ -412,17 +418,6 @@ instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgeb
     ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
 
 end Algebra
-
-section
-
-variable [CommSemiring S] [CommSemiring R] [Algebra S R] [AddCommMonoid ι]
-variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
-
-instance : Algebra (A 0) R := (SetLike.GradeZero.subalgebra A).toAlgebra
-
-@[simp] lemma algebraMap_apply (x) : algebraMap (A 0) R x = x := rfl
-
-end
 
 end SetLike.GradeZero
 
@@ -457,9 +452,8 @@ theorem mul_apply_eq_zero {r r' : ⨁ i, A i} {m n : ι}
   rw [Subtype.ext_iff, ZeroMemClass.coe_zero, coe_mul_apply]
   apply Finset.sum_eq_zero fun x hx ↦ ?_
   obtain (hx | hx) : x.1 < m ∨ x.2 < n := by
-    by_contra! h
-    obtain ⟨hm, hn⟩ := h
-    obtain rfl : x.1 + x.2 = k := by aesop
+    by_contra! ⟨hm, hn⟩
+    obtain rfl : x.1 + x.2 = k := by simp_all
     apply lt_irrefl (m + n) <| lt_of_le_of_lt (by gcongr) hk
   all_goals simp [hr, hr', hx]
 
@@ -468,7 +462,7 @@ variable [CanonicallyOrderedAdd ι]
 /-- The difference with `DirectSum.listProd_apply_eq_zero` is that the indices at which
 the terms of the list are zero is allowed to vary. -/
 theorem listProd_apply_eq_zero' {l : List ((⨁ i, A i) × ι)}
-    (hl : ∀ xn ∈ l, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (l.map Prod.snd).sum)  :
+    (hl : ∀ xn ∈ l, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (l.map Prod.snd).sum) :
     (l.map Prod.fst).prod n = 0 := by
   induction l generalizing n with
   | nil => simp [(zero_le n).not_gt] at hn
@@ -500,7 +494,7 @@ variable {A : ι → σ} [SetLike.GradedMonoid A]
 /-- The difference with `DirectSum.multisetProd_apply_eq_zero` is that the indices at which
 the terms of the multiset are zero is allowed to vary. -/
 theorem multisetProd_apply_eq_zero' {s : Multiset ((⨁ i, A i) × ι)}
-    (hs : ∀ xn ∈ s, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (s.map Prod.snd).sum)  :
+    (hs : ∀ xn ∈ s, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < (s.map Prod.snd).sum) :
     (s.map Prod.fst).prod n = 0 := by
   have := listProd_apply_eq_zero' (l := s.toList) (by simpa using hs)
     (by simpa [← Multiset.sum_coe, ← Multiset.map_coe])
@@ -516,7 +510,7 @@ theorem multisetProd_apply_eq_zero {s : Multiset (⨁ i, A i)} {m : ι}
 /-- The difference with `DirectSum.finsetProd_apply_eq_zero` is that the indices at which
 the terms of the multiset are zero is allowed to vary. -/
 theorem finsetProd_apply_eq_zero' {s : Finset ((⨁ i, A i) × ι)}
-    (hs : ∀ xn ∈ s, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < ∑ xn ∈ s, xn.2)  :
+    (hs : ∀ xn ∈ s, ∀ k < xn.2, xn.1 k = 0) ⦃n : ι⦄ (hn : n < ∑ xn ∈ s, xn.2) :
     (∏ xn ∈ s, xn.1) n = 0 := by
   simpa using listProd_apply_eq_zero' (l := s.toList) (by simpa using hs) (by simpa)
 
