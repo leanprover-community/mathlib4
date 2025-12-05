@@ -47,7 +47,7 @@ The elaborator automatically reorganizes universe parameters to ensure the order
 is indicated by the syntax.
 -/
 
-open Lean Elab Term
+open Lean Meta Elab Term
 
 declare_syntax_cat wildcard_level
 declare_syntax_cat comma_wildcard_level
@@ -161,7 +161,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
 
     -- Resolve constant name
     let constName ← realizeGlobalConstNoOverloadWithInfo id
-    let constInfo ← Lean.getConstInfo constName
+    let constInfo ← getConstInfo constName
 
     -- Parse and elaborate wildcard universes
     let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
@@ -171,7 +171,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
       levels := levels.push none
 
     let constLevels : Array Level ← levels.mapM fun
-      | none => Meta.mkFreshLevelMVar
+      | none => mkFreshLevelMVar
       | some (.param baseName) => mkFreshLevelParam baseName
       | some (.explicit l) => elabLevel l
 
@@ -184,7 +184,7 @@ def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorr
       (explicit := expl.isSome) (ellipsis := ellipsis)
 
     -- Instantiate level mvars and reorganize
-    let constLevels ← constLevels.mapM Lean.instantiateLevelMVars
+    let constLevels ← constLevels.mapM instantiateLevelMVars
     setLevelNames <| reorganizeUniverseParams levels constLevels (← getLevelNames)
 
     return expr
