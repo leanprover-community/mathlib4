@@ -397,8 +397,8 @@ theorem isPWO_iUnion_support_prod_smul {s : α → HahnSeries Γ R} {t : β → 
     intro ab
     refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
       (hs := (s ab.1).isPWO_support) (ht := (t ab.2).isPWO_support))
+    simp only [Set.mem_setOf_eq]
     contrapose! hx
-    simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
     rw [mem_support, not_not, HahnModule.coeff_smul, hx, sum_empty]
   refine Set.Subset.trans (Set.iUnion_mono fun a => (hsupp a)) ?_
   simp_all only [Set.iUnion_subset_iff, Prod.forall]

@@ -90,11 +90,10 @@ theorem biUnion_mem {ι : Type*} (h𝒜 : IsSetAlgebra 𝒜) {s : ι → Set α}
 /-- An algebra of sets is closed by finite intersections. -/
 theorem biInter_mem {ι : Type*} (h𝒜 : IsSetAlgebra 𝒜) {s : ι → Set α} (S : Finset ι)
     (hs : ∀ i ∈ S, s i ∈ 𝒜) : ⋂ i ∈ S, s i ∈ 𝒜 := by
-  by_cases h : S = ∅
+  by_cases! h : S = ∅
   · rw [h, ← Finset.set_biInter_coe, Finset.coe_empty, biInter_empty]
     exact h𝒜.univ_mem
-  · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at h
-    exact h𝒜.isSetRing.biInter_mem S h hs
+  · exact h𝒜.isSetRing.biInter_mem S h hs
 
 end IsSetAlgebra
 

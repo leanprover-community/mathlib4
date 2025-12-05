@@ -81,13 +81,13 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   · contrapose!
     rintro hn
     obtain ⟨p, hp, hpn⟩ := exists_prime_and_dvd hn.2
-    exact Nonempty.ne_empty <| ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
+    exact ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
 
 @[simp]
 lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
   contrapose!
-  rw [Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, Nat.le_one_iff_eq_zero_or_eq_one]
+  rw [primeFactors_eq_empty, Nat.le_one_iff_eq_zero_or_eq_one]
 
 @[simp] protected lemma Prime.primeFactors (hp : p.Prime) : p.primeFactors = {p} := by
   simp [Nat.primeFactors, primeFactorsList_prime hp]

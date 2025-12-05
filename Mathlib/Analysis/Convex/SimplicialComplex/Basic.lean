@@ -82,7 +82,7 @@ instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
   ⟨fun K s => s ∈ K.faces⟩
 
 lemma nonempty_of_mem_faces (hs : s ∈ K.faces) : s.Nonempty := by
-  rw [Finset.nonempty_iff_ne_empty]; rintro rfl; exact K.empty_notMem hs
+  by_contra! rfl; exact K.empty_notMem hs
 
 /-- The underlying space of a simplicial complex is the union of its faces. -/
 def space (K : SimplicialComplex 𝕜 E) : Set E :=

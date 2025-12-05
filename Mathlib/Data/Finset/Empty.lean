@@ -144,10 +144,11 @@ theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := by grind
 theorem nonempty_of_ne_empty {s : Finset α} (h : s ≠ ∅) : s.Nonempty :=
   exists_mem_of_ne_zero (mt val_eq_zero.1 h)
 
+@[push ←]
 theorem nonempty_iff_ne_empty {s : Finset α} : s.Nonempty ↔ s ≠ ∅ :=
   ⟨Nonempty.ne_empty, nonempty_of_ne_empty⟩
 
-@[simp]
+@[simp, push]
 theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   nonempty_iff_ne_empty.not.trans not_not
 
