@@ -310,7 +310,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     bot_le _ := bot_le
-    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+    mul_le_mul_left _ _ := mul_le_mul_left
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above

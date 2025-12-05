@@ -67,7 +67,7 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
     Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, idxOf_lt_length_iff.2 (h a)⟩
-  left_inv i := by simp [List.idxOf_getElem, nd]
+  left_inv i := by simp [nd]
   right_inv a := by simp
 
 end Nodup
@@ -194,7 +194,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · cutsat
+      · lia
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i

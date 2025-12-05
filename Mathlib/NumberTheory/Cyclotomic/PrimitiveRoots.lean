@@ -393,7 +393,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
   have hirr₁ : Irreducible (cyclotomic (p ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by cutsat) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by lia) hirr
   set η := ζ ^ p ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by
@@ -408,8 +408,8 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
         exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
       · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
     rw [HKη]
-    have H := IntermediateField.adjoin_simple_toSubalgebra_of_integral
-      ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
+    have H := IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+      ((integral {p ^ (k + 1)} K L).isIntegral (η + 1)).isAlgebraic
     refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
     rw [H]
     have hη' : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by simpa using hη
