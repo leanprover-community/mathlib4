@@ -13,7 +13,7 @@ public meta import Mathlib.Tactic.Linter.Header
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
@@ -22,7 +22,7 @@ namespace Mathlib.Linter
 /--
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/
-register_option linter.style.docString : Bool := {
+public register_option linter.style.docString : Bool := {
   defValue := false
   descr := "enable the style.docString linter"
 }
@@ -30,7 +30,7 @@ register_option linter.style.docString : Bool := {
 /--
 The "empty doc string" warns on empty doc-strings.
 -/
-register_option linter.style.docString.empty : Bool := {
+public register_option linter.style.docString.empty : Bool := {
   defValue := true
   descr := "enable the style.docString.empty linter"
 }
@@ -39,7 +39,7 @@ register_option linter.style.docString.empty : Bool := {
 Extract all `declModifiers` from the input syntax. We later extract the `docstring` from it,
 but we avoid extracting directly the `docComment` node, to skip `#adaptation_note`s.
 -/
-def getDeclModifiers : Syntax → Array Syntax
+public def getDeclModifiers : Syntax → Array Syntax
   | s@(.node _ kind args) =>
     (if kind == ``Parser.Command.declModifiers then #[s] else #[]) ++ args.flatMap getDeclModifiers
   | _ => #[]
