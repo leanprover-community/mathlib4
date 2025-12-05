@@ -269,7 +269,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     #(Nat.Partition.odds n) = coeff n (partialOddGF α m) := by
-  rw [← partialOddGF_prop, Nat.Partition.odds]
+  rw [← partialOddGF_prop, Nat.Partition.odds, Nat.Partition.restricted]
   congr with p
   apply forall₂_congr
   intro i hi

@@ -3185,6 +3185,9 @@ Q5552370:
 
 Q5566491:
   title: Glaisher's theorem
+  decl: Nat.Partition.card_restricted_eq_card_countRestricted
+  authors: Weiyi Wang
+  date: 2025
 
 Q5567394:
   title: Gleason's theorem
