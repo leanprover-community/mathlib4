@@ -192,18 +192,16 @@ theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGr
     (uniformContinuous_addMonoidHom_of_continuous hg)
     (uniformContinuous_addMonoidHom_of_continuous hf)]
 
+@[simp]
+theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) := by
+  simp [RingHom.ext_iff, mapRingHom_apply]
+
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
 def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
-    Completion α ≃+* Completion β where
-  __ := mapRingHom f hf
-  invFun := mapRingHom f.symm hf'
-  left_inv := Function.leftInverse_iff_comp.2 <| by
-    rw [← RingEquiv.coe_toRingHom] at hf hf'
-    simpa [← DFunLike.coe_fn_eq, coe_mapRingHom] using mapRingHom_comp hf' hf
-  right_inv := Function.rightInverse_iff_comp.2 <| by
-    rw [← RingEquiv.coe_toRingHom] at hf hf'
-    simpa [← DFunLike.coe_fn_eq, coe_mapRingHom] using mapRingHom_comp hf hf'
+    Completion α ≃+* Completion β :=
+  .ofRingHom (mapRingHom f.toRingHom hf) (mapRingHom f.symm.toRingHom hf')
+    (by simp [mapRingHom_comp]) (by simp [mapRingHom_comp])
 
 section Algebra
 
