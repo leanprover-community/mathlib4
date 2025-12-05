@@ -107,30 +107,23 @@ alias Splits.comp_of_map_degree_le_one := Splits.comp_of_degree_le_one
 
 variable (i)
 
-theorem exists_root_of_splits' {f : K[X]} (hs : Splits (f.map i)) (hf0 : degree (f.map i) ≠ 0) :
-    ∃ x, eval₂ i x f = 0 := by
-  simpa only [eval_map] using hs.exists_eval_eq_zero hf0
+@[deprecated (since := "2025-12-01")]
+alias exists_root_of_splits' := Splits.exists_eval_eq_zero
 
-theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits (f.map i))
-    (hf0 : natDegree (f.map i) ≠ 0) : (f.map i).roots ≠ 0 :=
-  hs.roots_ne_zero hf0
+@[deprecated (since := "2025-12-01")]
+alias roots_ne_zero_of_splits' := Splits.roots_ne_zero
 
-/-- Pick a root of a polynomial that splits. See `rootOfSplits` for polynomials over a field
-which has simpler assumptions. -/
-def rootOfSplits' {f : K[X]} (hf : (f.map i).Splits) (hfd : (f.map i).degree ≠ 0) : L :=
-  Classical.choose <| exists_root_of_splits' i hf hfd
+@[deprecated (since := "2025-12-01")]
+alias rootOfSplits' := rootOfSplits
 
-theorem map_rootOfSplits' {f : K[X]} (hf : (f.map i).Splits) (hfd) :
-    f.eval₂ i (rootOfSplits' i hf hfd) = 0 :=
-  Classical.choose_spec <| exists_root_of_splits' i hf hfd
+@[deprecated (since := "2025-12-01")]
+alias map_rootOfSplits' := eval_rootOfSplits
 
-theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits (p.map i)) :
-    (p.map i).natDegree = Multiset.card (p.map i).roots :=
-  hsplit.natDegree_eq_card_roots
+@[deprecated (since := "2025-12-01")]
+alias natDegree_eq_card_roots' := Splits.natDegree_eq_card_roots
 
-theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i ≠ 0)
-    (hsplit : Splits (p.map i)) : (p.map i).degree = Multiset.card (p.map i).roots := by
-  simp [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots' hsplit]
+@[deprecated (since := "2025-12-01")]
+alias degree_eq_card_roots' := Splits.degree_eq_card_roots
 
 end CommRing
 
@@ -171,27 +164,20 @@ theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0)
 @[deprecated (since := "2025-11-30")]
 alias degree_eq_one_of_irreducible_of_splits := Splits.degree_eq_one_of_irreducible
 
-theorem exists_root_of_splits {f : K[X]} (hs : Splits (f.map i)) (hf0 : degree f ≠ 0) :
-    ∃ x, eval₂ i x f = 0 :=
-  exists_root_of_splits' i hs ((f.degree_map i).symm ▸ hf0)
+@[deprecated (since := "2025-12-01")]
+alias exists_root_of_splits := Splits.exists_eval_eq_zero
 
-theorem roots_ne_zero_of_splits {f : K[X]} (hs : Splits (f.map i)) (hf0 : natDegree f ≠ 0) :
-    (f.map i).roots ≠ 0 :=
-  roots_ne_zero_of_splits' i hs (ne_of_eq_of_ne (natDegree_map i) hf0)
+@[deprecated (since := "2025-12-01")]
+alias roots_ne_zero_of_splits := Splits.roots_ne_zero
 
-/-- Pick a root of a polynomial that splits. This version is for polynomials over a field and has
-simpler assumptions. -/
-def rootOfSplits {f : K[X]} (hf : (f.map i).Splits) (hfd : f.degree ≠ 0) : L :=
-  rootOfSplits' i hf ((f.degree_map i).symm ▸ hfd)
+@[deprecated (since := "2025-12-01")]
+alias map_rootOfSplits := eval_rootOfSplits
 
 /-- `rootOfSplits'` is definitionally equal to `rootOfSplits`. -/
+@[deprecated "`rootOfSplits'` is now deprecated." (since := "2025-12-01")]
 theorem rootOfSplits'_eq_rootOfSplits {f : K[X]} (hf : (f.map i).Splits) (hfd) :
-    rootOfSplits' i hf hfd = rootOfSplits i hf (f.degree_map i ▸ hfd) :=
+    rootOfSplits hf hfd = rootOfSplits hf (f.degree_map i ▸ hfd) :=
   rfl
-
-theorem map_rootOfSplits {f : K[X]} (hf : (f.map i).Splits) (hfd) :
-    f.eval₂ i (rootOfSplits i hf hfd) = 0 :=
-  map_rootOfSplits' i hf (ne_of_eq_of_ne (degree_map f i) hfd)
 
 @[deprecated (since := "2025-11-30")]
 alias natDegree_eq_card_roots := Splits.natDegree_eq_card_roots
@@ -199,27 +185,23 @@ alias natDegree_eq_card_roots := Splits.natDegree_eq_card_roots
 @[deprecated (since := "2025-11-30")]
 alias degree_eq_card_roots := Splits.degree_eq_card_roots
 
-theorem roots_map {f : K[X]} (hf : f.Splits) : (f.map i).roots = f.roots.map i :=
-  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
+@[deprecated (since := "2025-12-02")]
+alias roots_map := Splits.map_roots
 
 theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
     (hf : Splits f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
     x ∈ F := by
   obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
-    (roots_map F.subtype hf ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
+    (hf.map_roots F.subtype ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
   exact x.2
 
-theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : (p.map (algebraMap R K)).Splits)
-    (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
-  classical
-    rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
-      ← roots_map _ h, map_map, f.comp_algebraMap,
-      ← rootSet]
+@[deprecated (since := "2025-12-02")]
+alias image_rootSet := Splits.image_rootSet
 
 theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
     (h : (p.map (algebraMap R K)).Splits) (f : K →ₐ[R] L) :
     Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
-  rw [← image_rootSet h f, Algebra.adjoin_image, ← Algebra.map_top]
+  rw [← h.image_rootSet f, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
 
 @[deprecated (since := "2025-11-25")]
@@ -227,18 +209,6 @@ alias eq_prod_roots_of_splits := Splits.eq_prod_roots
 
 @[deprecated (since := "2025-11-25")]
 alias eq_prod_roots_of_splits_id := Splits.eq_prod_roots
-
-theorem Splits.dvd_of_roots_le_roots {p q : K[X]} (hp : p.Splits) (hp0 : p ≠ 0)
-    (hq : p.roots ≤ q.roots) : p ∣ q := by
-  rw [Splits.eq_prod_roots hp, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
-  exact dvd_trans
-    (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq))
-    (prod_multiset_X_sub_C_dvd _)
-
-theorem Splits.dvd_iff_roots_le_roots {p q : K[X]}
-    (hp : p.Splits) (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
-    p ∣ q ↔ p.roots ≤ q.roots :=
-  ⟨Polynomial.roots.le_of_dvd hq0, hp.dvd_of_roots_le_roots hp0⟩
 
 theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
     (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
@@ -252,10 +222,8 @@ theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
   convert aeval_eq_prod_aroots_sub_of_splits (hsplit.map <| .id K) v
   rw [Algebra.algebraMap_self, map_id]
 
-theorem eq_prod_roots_of_monic_of_splits_id {p : K[X]} (m : Monic p)
-    (hsplit : Splits p) : p = (p.roots.map fun a => X - C a).prod := by
-  convert Splits.eq_prod_roots hsplit
-  simp [m]
+@[deprecated (since := "2025-12-02")]
+alias eq_prod_roots_of_monic_of_splits_id := Splits.eq_prod_roots_of_monic
 
 theorem aeval_eq_prod_aroots_sub_of_monic_of_splits [Algebra K L] {p : K[X]} (m : Monic p)
     (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
@@ -277,7 +245,7 @@ variable (R) in
 theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
     (hs : f.Splits) (hm : f.Monic)
     (hr : ∀ a ∈ f.roots, a ∈ (algebraMap R K).range) : f ∈ Polynomial.lifts (algebraMap R K) := by
-  rw [eq_prod_roots_of_monic_of_splits_id hm hs, lifts_iff_liftsRing]
+  rw [hs.eq_prod_roots_of_monic hm, lifts_iff_liftsRing]
   refine Subring.multiset_prod_mem _ _ fun P hP => ?_
   obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
   exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
@@ -307,9 +275,8 @@ local infixl:50 " ~ᵤ " => Associated
 
 open UniqueFactorizationMonoid Associates
 
-theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
-    (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits (f.map i) :=
-  splits_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
+@[deprecated (since := "2025-12-02")]
+alias splits_of_exists_multiset := splits_iff_exists_multiset
 
 @[deprecated (since := "2025-11-30")]
 alias splits_of_splits_id := Splits.map
@@ -372,7 +339,7 @@ theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
     aeval r (Polynomial.derivative P) = (((P.aroots L).erase r).map fun a => r - a).prod := by
   replace hmo := hmo.map (algebraMap K L)
   rw [aeval_def, ← eval_map, ← derivative_map]
-  nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
+  nth_rw 1 [hP.eq_prod_roots_of_monic hmo]
   rw [eval_multiset_prod_X_sub_C_derivative hr]
 
 theorem eval_derivative_eq_eval_mul_sum_of_splits {p : K[X]} {x : K}
