@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Independence.Kernel
+public import Mathlib.Probability.Independence.Kernel.IndepFun
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Group.Convolution
 
