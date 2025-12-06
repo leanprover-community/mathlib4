@@ -629,11 +629,11 @@ alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_suppor
 
 end Nat
 
--- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
--- TODO(Jovan): Remove the annotations once unnecessary again.
-
 namespace MulOpposite
 variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
+
+-- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
+-- TODO(Jovan): Remove the annotations once unnecessary again.
 
 @[to_additive self (dont_translate := M), simp]
 lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
