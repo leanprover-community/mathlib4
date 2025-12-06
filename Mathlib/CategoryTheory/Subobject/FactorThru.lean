@@ -155,6 +155,16 @@ theorem factorThru_ofLE {Y Z : C} {P Q : Subobject Y} {f : Z ⟶ Y} (h : P ≤ Q
   ext
   simp
 
+theorem le_of_factors {P Q : Subobject Y} (h : Q.Factors P.arrow) : P ≤ Q :=
+  le_of_comm (Q.factorThru P.arrow h) (Q.factorThru_arrow P.arrow h)
+
+/--
+Given two subobjects `P Q : Subobject Y`, if `P` factors through `Q`, then there is a morphism of
+subobjects from `P` to `Q`.
+-/
+def homOfFactors {P Q : Subobject Y} (h : Q.Factors P.arrow) : P ⟶ Q :=
+  homOfLE <| le_of_factors h
+
 section Preadditive
 
 variable [Preadditive C]
