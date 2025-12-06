@@ -299,31 +299,31 @@ end IsBipartite
 
 section Copy
 
-variable {α β : Type*} [Fintype α] [Fintype β] {a b : ℕ}
+variable {α β : Type*} [Fintype α] [Fintype β]
 
 /-- A "left" subset of `card α` vertices and a "right" subset of `card β` vertices such that every
 vertex in the "left" subset is adjacent to every vertex in the "right" subset gives rise to a copy
 of a complete bipartite graph. -/
 noncomputable def Copy.completeBipartiteGraph
-    (left right : Finset V) (card_left : #left = a) (card_right : #right = b)
-    (h : G.IsCompleteBetween left right) : Copy (completeBipartiteGraph (Fin a) (Fin b)) G := by
-  have : Nonempty (Fin a ↪ left) := by
-    apply Function.Embedding.nonempty_of_card_le
-    rw [Fintype.card_fin, card_coe, card_left]
-  let fs : Fin a ↪ left := Classical.arbitrary (Fin a ↪ left)
-  have : Nonempty (Fin b ↪ right) := by
-    apply Function.Embedding.nonempty_of_card_le
-    rw [Fintype.card_fin, card_coe, card_right]
-  let ft : Fin b ↪ right := Classical.arbitrary (Fin b ↪ right)
-  let f : Fin a ⊕ Fin b ↪ V := by
-    refine ⟨Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft), fun s₁ s₂ ↦ ?_⟩
+    (left right : Finset V) (card_left : #left = card α) (card_right : #right = card β)
+    (h : G.IsCompleteBetween left right) : Copy (completeBipartiteGraph α β) G := by
+  have : Nonempty (α ↪ left) := by
+    rw [← card_coe] at card_left
+    exact Function.Embedding.nonempty_of_card_le card_left.symm.le
+  let fα : α ↪ left := Classical.arbitrary (α ↪ left)
+  have : Nonempty (β ↪ right) := by
+    rw [← card_coe] at card_right
+    exact Function.Embedding.nonempty_of_card_le card_right.symm.le
+  let fβ : β ↪ right := Classical.arbitrary (β ↪ right)
+  let f : α ⊕ β ↪ V := by
+    refine ⟨Sum.elim (Subtype.val ∘ fα) (Subtype.val ∘ fβ), fun s₁ s₂ ↦ ?_⟩
     match s₁, s₂ with
-    | Sum.inl p₁, Sum.inl p₂ => simp
-    | Sum.inr p₁, Sum.inl p₂ =>
-      simpa using (h (fs p₂).prop (ft p₁).prop).ne'
-    | Sum.inl p₁, Sum.inr p₂ =>
-      simpa using (h (fs p₁).prop (ft p₂).prop).symm.ne'
-    | Sum.inr p₁, Sum.inr p₂ => simp
+    | .inl p₁, .inl p₂ => simp
+    | .inr p₁, .inl p₂ =>
+      simpa using (h (fα p₂).prop (fβ p₁).prop).ne'
+    | .inl p₁, .inr p₂ =>
+      simpa using (h (fα p₁).prop (fβ p₂).prop).symm.ne'
+    | .inr p₁, .inr p₂ => simp
   refine ⟨⟨f.toFun, fun {s₁ s₂} hadj ↦ ?_⟩, f.injective⟩
   rcases hadj with ⟨hs₁, hs₂⟩ | ⟨hs₁, hs₂⟩
   all_goals dsimp [f]
@@ -351,8 +351,7 @@ theorem completeBipartiteGraph_isContained_iff :
     rw [← hl, ← hr]
     exact f.toHom.map_adj (by simp)
   mpr := fun ⟨left, right, card_left, card_right, h⟩ ↦
-    let K := Copy.completeBipartiteGraph left right card_left card_right h
-    ⟨K.comp <| Iso.toCopy ⟨(equivFin α).sumCongr (equivFin β), by simp⟩⟩
+    ⟨Copy.completeBipartiteGraph left right card_left card_right h⟩
 
 end Copy
 
