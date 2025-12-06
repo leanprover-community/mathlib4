@@ -404,12 +404,12 @@ theorem factorsThrough_toFunLifted_π :
   · simp only [hq, hu, ← LinearMap.comp_apply, comp_toLinearMap, rTensor_comp]
     congr; ext; rfl
 
-theorem toFun_eq_toFunLifted_apply {t : S ⊗[R] M} {s : Finset S}
+theorem toFun_eq_rTensor_φ_toFun' {t : S ⊗[R] M} {s : Finset S}
     {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
     f.toFun S t = (φ R s).toLinearMap.rTensor N (f.toFun' _ p) := by
   rw [PolynomialLaw.toFun, ← ha, (factorsThrough_toFunLifted_π f).extend_apply, toFunLifted]
 
-theorem exists_lift_of_le_rTensor_range
+theorem exists_lift_of_mem_range_rTensor
     {T : Type*} [CommSemiring T] [Algebra R T]
     (A : Subalgebra R T) {φ : S →ₐ[R] T} (hφ : A ≤ φ.range) {t : T ⊗[R] M}
     (ht : t ∈ range ((Subalgebra.val A).toLinearMap.rTensor M)) :
@@ -430,7 +430,7 @@ theorem π_surjective : Function.Surjective (π R M S) := by
   intro t
   obtain ⟨B : Subalgebra R S, hB : B.FG, ht : t ∈ range _⟩ := TensorProduct.Algebra.exists_of_fg t
   obtain ⟨s : Finset S, hs : (PolynomialLaw.φ R s).range = B⟩ := exists_range_φ_eq_of_fg hB
-  obtain ⟨p, hp⟩ := exists_lift_of_le_rTensor_range B (le_of_eq hs.symm) ht
+  obtain ⟨p, hp⟩ := exists_lift_of_mem_range_rTensor B (le_of_eq hs.symm) ht
   exact ⟨⟨s, p⟩, hp⟩
 
 /-- Lift an element of a tensor product -/
@@ -450,7 +450,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
   obtain ⟨gen, hgen⟩ := exists_range_φ_eq_of_fg hB
   have hAB : A ≤ A ⊔ Algebra.adjoin R ({s} : Finset S) := le_sup_left
   rw [← hgen] at hAB
-  obtain ⟨p, hp⟩ := exists_lift_of_le_rTensor_range _ hAB ht
+  obtain ⟨p, hp⟩ := exists_lift_of_mem_range_rTensor _ hAB ht
   have hs : s ∈ (φ R gen).range  := by
     rw [hgen]
     apply Algebra.subset_adjoin
@@ -460,17 +460,13 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
 
 /-- For semirings in the universe `u`, `PolynomialLaw.toFun` coincides
 with `PolynomialLaw.toFun'`. -/
-theorem toFun_eq_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
-    f.toFun S = f.toFun' S := by
+@[simp]
+theorem toFun'_eq_toFun (S : Type u) [CommSemiring S] [Algebra R S] :
+    f.toFun' S = f.toFun S := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [f.toFun_eq_toFunLifted_apply ha, f.isCompat_apply']
-  exact congr_arg _ ha
-
-/-- For semirings in the universe `u`, `PolynomialLaw.toFun` coincides
-with `PolynomialLaw.toFun'`. -/
-theorem toFun_eq_toFun'_apply (S : Type u) [CommSemiring S] [Algebra R S] (t : S ⊗[R] M) :
-    f.toFun S t = f.toFun' S t := congr_fun (f.toFun_eq_toFun' S) t
+  simp only [f.toFun_eq_rTensor_φ_toFun' ha, f.isCompat_apply']
+  exact congr_arg _ ha.symm
 
 /-- Extends `PolynomialLaw.isCompat_apply'` to all universes. -/
 theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ[R] T) (t : S ⊗[R] M) :
@@ -496,7 +492,7 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
   let p' := rTensor M (rename j).toLinearMap  p
   have ha' : π R M T (⟨s', p'⟩ : lifts R M T) = rTensor M h.toLinearMap t := by
     simp only [← ha, π, p', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, eq_h_comp]
-  rw [toFun_eq_toFunLifted_apply f ha, toFun_eq_toFunLifted_apply f ha', ← LinearMap.comp_apply,
+  rw [toFun_eq_rTensor_φ_toFun' f ha, toFun_eq_rTensor_φ_toFun' f ha', ← LinearMap.comp_apply,
     ← rTensor_comp, ← comp_toLinearMap]
   apply toFun'_eq_of_diagram f p p' h h'
   · simp only [val_comp_codRestrict, h']
@@ -525,23 +521,27 @@ variable
   {S : Type*} [CommSemiring S] [Algebra R S]
 
 /-- Extension of `PolynomialLaw.zero_def` -/
-theorem zero_toFun : (0 : M →ₚₗ[R] N).toFun S = 0 := by
+@[simp]
+theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [toFun_eq_toFunLifted_apply _ ha, zero_def, Pi.zero_apply, _root_.map_zero]
+  simp only [toFun_eq_rTensor_φ_toFun' _ ha, zero_def, Pi.zero_apply, _root_.map_zero]
 
 /-- Extension of `PolynomialLaw.add_def_apply` -/
+@[simp]
 theorem add_toFun_apply (t : S ⊗[R] M) :
     (f + g).toFun S t = f.toFun S t + g.toFun S t := by
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [Pi.add_apply, toFun_eq_toFunLifted_apply _ ha, add_def, map_add]
+  simp only [Pi.add_apply, toFun_eq_rTensor_φ_toFun' _ ha, add_def, map_add]
 
 /-- Extension of `PolynomialLaw.add_def` -/
+@[simp]
 theorem add_toFun :
     (f + g).toFun S = f.toFun S + g.toFun S := by
   ext t
   simp only [Pi.add_apply, add_toFun_apply]
 
+@[simp]
 theorem neg_toFun {R : Type u} [CommRing R]
     {M : Type*} [AddCommGroup M] [Module R M]
     {N : Type*} [AddCommGroup N] [Module R N]
@@ -550,15 +550,15 @@ theorem neg_toFun {R : Type u} [CommRing R]
     (-f).toFun S = (-1 : R) • (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [toFun_eq_toFunLifted_apply _ ha, neg_def, Pi.smul_apply, map_smul]
-
+  simp only [toFun_eq_rTensor_φ_toFun' _ ha, neg_def, Pi.smul_apply, map_smul]
 
 variable (S) in
 /-- Extension of `PolynomialLaw.smul_def` -/
+@[simp]
 theorem smul_toFun : (r • f).toFun S = r • (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
-  simp only [toFun_eq_toFunLifted_apply _ ha, smul_def, Pi.smul_apply, map_smul]
+  simp only [toFun_eq_rTensor_φ_toFun' _ ha, smul_def, Pi.smul_apply, map_smul]
 
 end Module
 
@@ -570,17 +570,9 @@ variable {R : Type u} [CommSemiring R]
     (f : M →ₚₗ[R] N)
     (S : Type*) [CommSemiring S] [Algebra R S]
 
-theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
-    1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
-  simp only [ground]
-  convert f.isCompat_apply' (Algebra.ofId R S) (1 ⊗ₜ[R] x)
-  · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
-    congr
-  · rw [rTensor_tmul, toLinearMap_apply, map_one]
-
-theorem isCompat_apply_ground (x : M) :
+theorem one_tmul_ground (x : M) :
     1 ⊗ₜ f.ground x = f.toFun S (1 ⊗ₜ x) := by
-  simp only [ground, ← toFun_eq_toFun']
+  simp only [ground, toFun'_eq_toFun]
   convert f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
     congr
@@ -603,8 +595,8 @@ theorem comp_toFun (S : Type*) [CommSemiring S] [Algebra R S] :
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
   have hb : PolynomialLaw.π R N S ⟨s, f.toFun' _ p⟩ = f.toFun S t := by
-    simp only [toFun_eq_toFunLifted_apply _ ha, π]
-  rw [Function.comp_apply, toFun_eq_toFunLifted_apply _ hb, toFun_eq_toFunLifted_apply _ ha,
+    simp only [toFun_eq_rTensor_φ_toFun' _ ha, π]
+  rw [Function.comp_apply, toFun_eq_rTensor_φ_toFun' _ hb, toFun_eq_rTensor_φ_toFun' _ ha,
     comp_toFun', Function.comp_apply]
 
 theorem comp_apply (S : Type*) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
