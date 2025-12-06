@@ -79,6 +79,7 @@ open Polynomial
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
+/-- The linear polynomial $$\sum_i c_i X_i$$. -/
 noncomputable def sum_smul_X :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
@@ -126,6 +127,8 @@ theorem totalDegree_sum_smul_X (hc_ne_zero : c ≠ 0) :
     simp [h]
 
 variable (R) in
+/-- The isomorphism from multivariate polynomials in `n` indeterminates to
+polynomials with coefficients in `n - 1` indeterminates. -/
 private noncomputable
 def φ [DecidableEq n] (i : n) :
     MvPolynomial n R ≃ₐ[R] (MvPolynomial {x // x ≠ i} R)[X] :=
