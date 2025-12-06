@@ -29,6 +29,7 @@ namespace FunctorToTypes
 
 /-- A functor to types `F : C ⥤ Type w'` is `w`-small if for any `X : C`,
 the type `F.obj X` is `w`-small. -/
+@[pp_with_univ]
 protected abbrev Small (F : C ⥤ Type w') := ∀ (X : C), _root_.Small.{w} (F.obj X)
 
 /-- If a functor `F : C ⥤ Type w'` is `w`-small, this is the functor `C ⥤ Type w`
