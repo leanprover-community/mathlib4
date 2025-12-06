@@ -24,6 +24,19 @@ finitely generated subalgebra is a quotient of a polynomial ring in the universe
 the commutation of tensor products with direct limits, we extend the functor
 to all `R`-algebras.
 
+The two fields involving the definition of `PolynomialLaw`,
+`PolynomialLaw.toFun'` and `PolynomialLaw.isCompat'` are primed.
+They are superseded by their universe-polymorphic counterparts,
+the definition `PolynomialLaw.toFun` and the lemma `PolynomialLaw.isCompat`
+which should be used once the theory is properly stated.
+
+For constructions of general definitions of `PolynomialLaw`
+at a universe-polymorphic level, one needs to lift
+elements in a tensor product to smaller universes.
+For this, one can make use of
+`PolynomialLaw.exists_lift` or `PolynomialLaw.exists_lift'`,
+or establish appropriate generalizations.
+
 ## Main definitions/lemmas
 
 * Instance : `Module R (M →ₚₗ[R] N)` shows that polynomial laws form a `R`-module.
