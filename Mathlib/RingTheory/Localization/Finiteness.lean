@@ -46,20 +46,7 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
   classical
   obtain ⟨T, hT⟩ := ‹Module.Finite R M›
   use T.image f
-  rw [eq_top_iff]
-  rintro x -
-  obtain ⟨⟨y, m⟩, (hyx : IsLocalizedModule.mk' f y m = x)⟩ :=
-    IsLocalizedModule.mk'_surjective S f x
-  have hy : y ∈ Submodule.span R T := by rw [hT]; trivial
-  have : f y ∈ Submodule.map f (Submodule.span R T) := Submodule.mem_map_of_mem hy
-  rw [Submodule.map_span] at this
-  have H : Submodule.span R (f '' T) ≤
-      (Submodule.span Rₚ (f '' T)).restrictScalars R := by
-    rw [Submodule.span_le]; exact Submodule.subset_span
-  convert (Submodule.span Rₚ (f '' T)).smul_mem
-    (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 0
-  · rw [← hyx, ← IsLocalizedModule.mk'_one S, IsLocalizedModule.mk'_smul_mk']
-    simp
+  simpa using span_eq_top_of_isLocalizedModule Rₚ S f hT
 
 instance [Module.Finite R M] : Module.Finite (Localization S) (LocalizedModule S M) :=
   of_isLocalizedModule S (LocalizedModule.mkLinearMap S M)
