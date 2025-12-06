@@ -139,7 +139,7 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
   obtain hf' := congrArg ArchimedeanClass.mk hf
   contrapose! hf' with h0
   rw [← hab, DFinsupp.sum]
-  by_cases hnonempty : f.support.Nonempty
+  by_cases! hnonempty : f.support.Nonempty
   · have hmem (x : ArchimedeanClass M) : (f x).val ∈ u.stratum x :=
       Set.mem_of_mem_of_subset (f x).prop (by simp)
     have hmono : StrictMonoOn (fun i ↦ ArchimedeanClass.mk (f i).val) f.support := by
@@ -156,7 +156,7 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
     contrapose! h
     rw [DFinsupp.notMem_support_iff, u.archimedeanClassMk_of_mem_stratum ha h0]
     simpa using (f c).prop
-  · rw [Finset.not_nonempty_iff_eq_empty.mp hnonempty]
+  · rw [hnonempty]
     symm
     simpa using h0
 
@@ -293,7 +293,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     contrapose! hne with hempty
     apply DFinsupp.sum_eq_zero
     intro c
-    simpa using DFinsupp.notMem_support_iff.mp (forall_not_of_not_exists hempty c)
+    simpa using DFinsupp.notMem_support_iff.mp (Finset.eq_empty_iff_forall_notMem.mp hempty c)
   have htop : f.support.min' hsupport ≠ ⊤ := by
     by_contra! h
     have h : ⊤ ∈ f.support := h ▸ f.support.min'_mem hsupport
@@ -338,16 +338,14 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
   rw [DFinsupp.sum, mk_sum hsupport hmono]
   rw [seed.archimedeanClassMk_of_mem_stratum (f _).prop
     (by simpa using f.support.min'_mem hsupport)]
-  by_cases hsupport' : (f.support.erase (f.support.min' hsupport)).Nonempty
+  by_cases! hsupport' : (f.support.erase (f.support.min' hsupport)).Nonempty
   · rw [mk_sum hsupport' (hmono.mono (by simp))]
     rw [seed.archimedeanClassMk_of_mem_stratum (f _).prop (by
       simpa using (Finset.mem_erase.mp <| (f.support.erase _).min'_mem hsupport').2)]
     apply Finset.min'_lt_of_mem_erase_min'
     apply Finset.min'_mem _ _
   · -- special case: `f` has a single term, and becomes 0 after removing it
-    have : f.support.erase (f.support.min' hsupport) = ∅ :=
-      Finset.not_nonempty_iff_eq_empty.mp hsupport'
-    simpa [this] using lt_top_iff_ne_top.mpr htop
+    simpa [hsupport'] using lt_top_iff_ne_top.mpr htop
 
 theorem baseEmbedding_strictMono [IsOrderedAddMonoid R] : StrictMono seed.baseEmbedding := by
   intro x y h

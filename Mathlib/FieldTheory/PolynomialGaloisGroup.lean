@@ -134,9 +134,8 @@ theorem mapRoots_bijective [h : Fact ((p.map (algebraMap F E)).Splits)] :
   · exact fun _ _ h => Subtype.ext (RingHom.injective _ (Subtype.ext_iff.mp h))
   · intro y
     -- this is just an equality of two different ways to write the roots of `p` as an `E`-polynomial
-    have key :=
-      roots_map (IsScalarTower.toAlgHom F p.SplittingField E : p.SplittingField →+* E)
-        (IsSplittingField.splits p.SplittingField p)
+    have key := (IsSplittingField.splits p.SplittingField p).map_roots
+      (IsScalarTower.toAlgHom F p.SplittingField E : p.SplittingField →+* E)
     rw [map_map, AlgHom.comp_algebraMap] at key
     have hy := Subtype.mem y
     simp only [rootSet, Finset.mem_coe, Multiset.mem_toFinset, key, Multiset.mem_map] at hy
@@ -304,12 +303,10 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     by_cases hr' : natDegree r = 0
     · exact Splits.of_natDegree_le_one <| natDegree_map_le.trans (hr'.trans_le zero_le_one)
     obtain ⟨x, hx⟩ :=
-      exists_root_of_splits _ (SplittingField.splits (r.comp q)) fun h =>
-        hr'
-          ((mul_eq_zero.mp
-                (natDegree_comp.symm.trans (natDegree_eq_of_degree_eq_some h))).resolve_right
-            hq)
-    rw [← aeval_def, aeval_comp] at hx
+      Splits.exists_eval_eq_zero (SplittingField.splits (r.comp q)) fun h =>
+        hr' ((mul_eq_zero.mp (natDegree_comp.symm.trans (natDegree_eq_of_degree_eq_some
+          (by rwa [degree_map] at h)))).resolve_right hq)
+    rw [eval_map, ← aeval_def, aeval_comp] at hx
     have h_normal : Normal F (r.comp q).SplittingField := SplittingField.instNormal (r.comp q)
     have qx_int := Normal.isIntegral h_normal (aeval x q)
     exact (h_normal.splits _).splits_of_dvd (map_ne_zero (minpoly.ne_zero (h_normal.isIntegral _)))
@@ -359,7 +356,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
   have hp : p.degree ≠ 0 := fun h =>
     Nat.Prime.ne_zero p_deg (natDegree_eq_zero_iff_degree_le_zero.mpr (le_of_eq h))
   let α : p.SplittingField :=
-    rootOfSplits (algebraMap F p.SplittingField) (SplittingField.splits p) hp
+    rootOfSplits (SplittingField.splits p) (by rwa [degree_map])
   have hα : IsIntegral F α := .of_finite F α
   use Module.finrank F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
@@ -372,7 +369,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
     · exact natDegree_le_of_dvd this p_irr.ne_zero
     · exact natDegree_le_of_dvd key (minpoly.ne_zero hα)
   apply minpoly.dvd F α
-  rw [aeval_def, map_rootOfSplits _ (SplittingField.splits p) hp]
+  rw [aeval_def, ← eval_map, eval_rootOfSplits]
 
 end Gal
 

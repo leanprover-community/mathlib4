@@ -94,13 +94,6 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
       rw [← cancel_epi (adj₁.counit.app X)]
       apply hm.trans ((h _).desc' s.π _).2.symm
 
-/-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
-coequalizer of something (i.e. a regular epi).
--/
-noncomputable def counitCoequalises' [h : ∀ X : B, IsRegularEpi (adj₁.counit.app X)] (X : B) :
-    IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
-  counitCoequalises adj₁ (fun _ ↦ regularEpiOfIsRegularEpi _) X
-
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
 
