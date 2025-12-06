@@ -788,23 +788,24 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       ?_ (Walk.start_mem_support _)
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 
-theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
-    ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by sorry
-  -- rw [isBridge_iff]
-  -- intro h
-  -- contrapose!
-  -- rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
-  -- simp only [h, true_and]
+theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.Adj v w ∧ G.IsBridge s(v, w) ↔
+    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
+  rw [isBridge_iff, and_congr_right_iff]
+  intro h
+  contrapose!
+  rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
+  simp only [h, true_and]
+
 
 theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
-    G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
+    G.Adj (Sym2.ind e) ∧ G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
   classical
-  simp only [isBridge_iff, not_and, not_not] at h
+  simp only [isBridge_iff, not_not] at h
   obtain hxy | hxy := em' <| G.Adj x y
   · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
