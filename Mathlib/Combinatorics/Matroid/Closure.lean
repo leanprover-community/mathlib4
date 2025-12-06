@@ -28,13 +28,13 @@ We also define a predicate `Spanning`, to describe a set whose closure is the en
 
 ## Main definitions
 
-* For `M : Matroid α` and `F : Set α`, `M.IsFlat F` means that `F` is a isFlat of `M`.
+* For `M : Matroid α` and `F : Set α`, `M.IsFlat F` means that `F` is an isFlat of `M`.
 * For `M : Matroid α` and `X : Set α`, `M.closure X` is the closure of `X` in `M`.
 * For `M : Matroid α` and `X : ↑(Iic M.E)` (i.e. a bundled subset of `M.E`),
   `M.subtypeClosure X` is the closure of `X`, viewed as a term in `↑(Iic M.E)`.
   This is a `ClosureOperator` on `↑(Iic M.E)`.
 * For `M : Matroid α` and `S ⊆ M.E`, `M.Spanning S` means that `S` has closure equal to `M.E`,
-  or equivalently that `S` contains a isBase of `M`.
+  or equivalently that `S` contains an isBase of `M`.
 
 ## Implementation details
 
