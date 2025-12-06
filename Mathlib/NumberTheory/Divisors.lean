@@ -262,8 +262,8 @@ lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
 
 @[simp]
-lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 :=
-  not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
+lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 := by
+  contrapose!; exact nonempty_divisors
 
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
@@ -319,7 +319,7 @@ lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
 
 @[simp]
 lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
-  rw [← not_nonempty_iff_eq_empty, nonempty_properDivisors, not_lt]
+  contrapose!; exact nonempty_properDivisors
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
@@ -444,8 +444,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     intro h
     apply Subset.antisymm hsub
     rw [← sdiff_eq_empty_iff_subset]
-    contrapose h
-    rw [← Ne, ← nonempty_iff_ne_empty] at h
+    contrapose! h
     apply ne_of_lt
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
     gcongr

@@ -97,15 +97,23 @@ def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 
 @[simp] lemma valuation_equiv_symm (x : R) : valuation v ((equiv v).symm x) = v x := rfl
 
-/-- Canonical ring equivalence between `WithVal v` and `WithVal w`. -/
-def equivWithVal {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
-    WithVal v ≃+* WithVal w :=
-  (WithVal.equiv v).trans (WithVal.equiv w).symm
+variable {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
 
-theorem equivWithVal_symm {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
+/-- Canonical ring equivalence between `WithVal v` and `WithVal w`. -/
+def equivWithVal (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
+    WithVal v ≃+* WithVal w :=
+  (equiv v).trans (equiv w).symm
+
+theorem equivWithVal_symm (v : Valuation R Γ₀) (w : Valuation R Γ'₀) :
     (equivWithVal v w).symm = equivWithVal w v := rfl
+
+@[simp]
+theorem equivWithVal_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) {x : WithVal v} :
+    equivWithVal v w x = (equiv w).symm (equiv v x) := rfl
+
+@[simp]
+theorem equivWithVal_symm_apply (v : Valuation R Γ₀) (w : Valuation R Γ'₀) {x : WithVal w} :
+    (equivWithVal v w).symm x = (equiv v).symm (equiv w x) := rfl
 
 instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
   Valued.mk' (valuation v)
@@ -119,21 +127,6 @@ theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} :
 
 theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} :
     a < b ↔ v (equiv v a) < v (equiv v b) := .rfl
-
-@[simp]
-theorem equiv_equivWithVal_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : WithVal v) :
-    equiv w (equivWithVal v w x) = equiv v x := rfl
-
-@[simp]
-theorem equiv_equivWithVal_symm_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : WithVal w) :
-    equiv v ((equivWithVal v w).symm x) = equiv w x := rfl
-
-@[simp]
-theorem equivWithVal_symm_equiv_apply {Γ'₀ : Type*} [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation R Γ₀) (w : Valuation R Γ'₀) (x : R) :
-    (equivWithVal v w).symm ((equiv w).symm x) = (equiv v).symm x := rfl
 
 end Ring
 
@@ -175,9 +168,7 @@ to `WithVal w`. -/
 def IsEquiv.orderRingIso (h : v.IsEquiv w) :
     WithVal v ≃+*o WithVal w where
   __ := equivWithVal v w
-  map_le_map_iff' := by
-    intro a b
-    simp [h.symm (equiv v a), le_def]
+  map_le_map_iff' := h.symm ..
 
 @[simp]
 theorem IsEquiv.orderRingIso_apply (h : v.IsEquiv w) (x : WithVal v) :
@@ -187,42 +178,30 @@ theorem IsEquiv.orderRingIso_apply (h : v.IsEquiv w) (x : WithVal v) :
 theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
     h.orderRingIso.symm x = (equivWithVal v w).symm x := rfl
 
--- TODO: remove surjectivity when we have bases for Valued's ValuativeRel
-theorem IsEquiv.uniformContinuous_equivWithVal (hw : Function.Surjective w) (h : v.IsEquiv w) :
+-- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
+theorem IsEquiv.uniformContinuous_equivWithVal
+    (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
     UniformContinuous (equivWithVal v w) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _)]
   intro γ _
-  obtain ⟨r, hr⟩ := hw γ
-  use .mk0 (v r) (by simp [h.ne_zero, hr])
-  simp only [Units.val_mk0, Set.mem_setOf_eq, true_and]
-  intro x hx
-  rw [← hr, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r, ← lt_def,
-    ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
-  rw [← WithVal.apply_equiv, ← (equiv v).apply_symm_apply r, ← lt_def] at hx
-  simpa
+  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
+  use .mk0 (v r / v s) (by simp [h.ne_zero, hr₀.ne.symm, hs₀.ne.symm]), trivial, fun x hx ↦ ?_
+  rw [← hr, Set.mem_setOf_eq, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
+    lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
+    ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
+    ← h.orderRingIso.lt_symm_apply]
+  simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
-def IsEquiv.uniformEquiv (hv : Function.Surjective v) (hw : Function.Surjective w)
+def IsEquiv.uniformEquiv (hv : ∀ γ : Γ₀ˣ, ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ)
+    (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ)
     (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
   __ := equivWithVal v w
   uniformContinuous_toFun := h.uniformContinuous_equivWithVal hw
   uniformContinuous_invFun := h.symm.uniformContinuous_equivWithVal hv
-
-open UniformSpace.Completion in
-theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
-    {v' : Valuation K Γ₀'} (h : v.IsEquiv v') (hv : Function.Surjective v)
-    (hv' : Function.Surjective v') {x : v.Completion} :
-    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv hv hv') x) ≤ 1 := by
-  induction x using induction_on with
-  | hp =>
-    exact (mapEquiv (h.uniformEquiv hv hv')).toHomeomorph.isClosed_setOf_iff
-      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
-  | ih a =>
-    rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_coe]
-    simpa using h.le_one_iff_le_one
 
 end Equivalence
 
