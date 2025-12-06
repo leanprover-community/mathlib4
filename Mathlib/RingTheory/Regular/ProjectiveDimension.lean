@@ -27,14 +27,6 @@ For `M` a finitely generated module over Noetherian local ring `R` and an `R`-re
 
 section ENat
 
-lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
-    a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | top => simpa only [_root_.top_add, top_le_iff] using WithTop.add_coe_eq_top_iff
-  | coe a => induction b with
-    | top => simp
-    | coe b => simp [← Nat.cast_add]
-
 lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
   induction a with
@@ -44,7 +36,7 @@ lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
     | bot => simp
     | coe b =>
       norm_cast
-      exact ENat.add_le_add_right_iff a b c
+      exact WithTop.add_le_add_iff_right (ENat.coe_ne_top c)
 
 lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
@@ -80,20 +72,13 @@ lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal 
 
 section
 
-universe w
-
-variable [UnivLE.{v, w}]
-
-instance hasExt_of_small' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
-
 variable {R}
 
 variable [IsNoetherianRing R] [Small.{v} R]
 
 lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
-    (h : ∀ L : ModuleCat.{v} R, Module.Finite R L →  Subsingleton (Ext.{w} M L n)) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} M N n) := by
+    (h : ∀ L : ModuleCat.{v} R, Module.Finite R L →  Subsingleton (Ext M L n)) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N n) := by
   induction n generalizing M
   · let _ := h M ‹_›
     let _ : Subsingleton (M ⟶ M) := Ext.homEquiv₀.symm.subsingleton
@@ -102,28 +87,9 @@ lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finit
     rw [Ext.homEquiv₀.subsingleton_congr]
     exact subsingleton_of_forall_eq 0 (fun f ↦ this.eq_zero_of_src f)
   · rename_i n hn _
-    rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
-    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-    have surjf : Function.Surjective f := by simpa [f] using hf'
-    let S : ShortComplex (ModuleCat.{v} R) := {
-      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-      g := ModuleCat.ofHom.{v} f
-      zero := by
-        ext x
-        simp }
-    have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
-      intro x
-      simp [S]
-    have S_exact : S.ShortExact := {
-      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
-      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-    let _ : Module.Finite R S.X₂ := by
-      simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-    let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
-    have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
+    rcases Module.exists_finite_presentation R M with ⟨_, _, _, _, _, f, surjf⟩
+    let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
+    have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
     match n with
     | 0 =>
       simp only [zero_add, ← projective_iff_subsingleton_ext_one]
@@ -138,11 +104,11 @@ lemma ext_vanish_of_for_all_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finit
         Subsingleton (Ext M L (n + 2)) := by
         let _ (m : ℕ) : Subsingleton (Ext S.X₂ L (m + 1)) :=
           subsingleton_of_forall_eq 0 (fun y ↦ Ext.eq_zero_of_projective y)
-        have isi := ComposableArrows.Exact.isIso_map' (Ext.contravariantSequence_exact S_exact L
-            (n + 1) (n + 2) (add_comm 1 _)) 1 (by decide)
-          (((AddCommGrpCat.of (Ext S.X₂ L (n + 1))).isZero_of_subsingleton).eq_zero_of_src _)
-          (((AddCommGrpCat.of (Ext S.X₂ L (n + 2))).isZero_of_subsingleton).eq_zero_of_tgt _)
-        exact (@CategoryTheory.asIso _ _ _ _ _ isi).addCommGroupIsoToAddEquiv.subsingleton_congr
+        have isi := (Ext.contravariantSequence_exact S_exact L (n + 1) (n + 2)
+          (add_comm 1 _)).isIso_map' 1 (by decide)
+          ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
+          ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt _)
+        exact (@asIso _ _ _ _ _ isi).addCommGroupIsoToAddEquiv.subsingleton_congr
       simp only [← this]
       apply hn S.X₁
       simpa [this] using h
@@ -154,7 +120,6 @@ variable {R} [IsLocalRing R] [IsNoetherianRing R]
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
-  letI := HasExt.standard (ModuleCat.{v} R)
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
@@ -189,15 +154,13 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
       simp only [HasProjectiveDimensionLE, hasProjectiveDimensionLT_iff]
       intro i hi
       have : ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N i) := by
-        apply ext_vanish_of_for_all_finite
+        apply ext_vanish_of_for_all_finite M _
         intro L _
         have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
           (n + 1 + 1) (i + 1) (Nat.add_le_add_right hi 1) L
         have exac := Ext.contravariant_sequence_exact₁' S_exact L i (i + 1) (add_comm 1 i)
         have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
-        have : S.f = x • 𝟙 M := by
-          ext
-          simp [S]
+        have : S.f = x • 𝟙 M := rfl
         simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
         by_contra ntr
         let _ : Nontrivial (Ext M L i) := not_subsingleton_iff_nontrivial.mp ntr
@@ -213,17 +176,15 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
       intro N e
       exact (this N).eq_zero e
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simpa only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff,
+  induction N with
+  | bot =>
+    simpa only [le_bot_iff, projectiveDimension_eq_bot_iff,
       ModuleCat.isZero_iff_subsingleton, WithBot.add_eq_bot, WithBot.one_ne_bot, or_false]
       using sub.symm
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
 
 lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat.{v} R)
     [Nontrivial M] [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
@@ -294,9 +255,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) :=
     ((Shrink.linearEquiv R _).trans (Submodule.quotEquivOfEq _ _ (by simp))).trans
     ((Ideal.ofList rs).smulTopLinearEquiv (Shrink.linearEquiv R R).symm)
-  rw [projectiveDimension_eq_of_iso e.toModuleIso]
-  let _ : Module.Finite R (Shrink.{v} R) := Module.Finite.equiv (Shrink.linearEquiv R _).symm
-  let _ : Module.Free R (Shrink.{v} R) := Module.Free.of_equiv (Shrink.linearEquiv R _).symm
-  rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
-    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
-  rw [projectiveDimension_eq_zero_of_projective, zero_add]
+  rw [projectiveDimension_eq_of_iso e.toModuleIso,
+    projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
+    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
+    projectiveDimension_eq_zero_of_projective, zero_add]
