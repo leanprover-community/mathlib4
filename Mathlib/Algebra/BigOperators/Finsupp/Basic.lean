@@ -456,7 +456,7 @@ theorem sum_sub_index [AddGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : 
 theorem prod_embDomain [Zero M] [CommMonoid N] {v : α →₀ M} {f : α ↪ β} {g : β → M → N} :
     (v.embDomain f).prod g = v.prod fun a b => g (f a) b := by
   rw [prod, prod, support_embDomain, Finset.prod_map]
-  simp_rw [embDomain_apply]
+  simp_rw [embDomain_apply_self]
 
 @[to_additive]
 theorem prod_finset_sum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g : ι → α →₀ M}
