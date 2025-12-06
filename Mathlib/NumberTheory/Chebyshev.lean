@@ -154,7 +154,7 @@ theorem integrable_theta_div (x : ℝ) :
   fun_prop (disch := assumption)
 
 open MeasureTheory in
-theorem primeCounting_eq (x : ℝ) (hx : 2 ≤ x) :
+theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in Set.Icc 2 x, θ t / (t * log t ^ 2) := by
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero]
