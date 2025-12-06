@@ -6,8 +6,8 @@ Authors: Kevin Buzzard, Antoine Labelle
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.Logic.UnivLE
 
 /-!
