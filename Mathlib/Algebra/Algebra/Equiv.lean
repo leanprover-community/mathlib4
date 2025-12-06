@@ -855,13 +855,15 @@ variable {R S M₁ M₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [Module R
 variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/
-@[simps!] def algConj (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
+@[simps!] def conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : Module.End S M₁ ≃ₐ[R] Module.End S M₂ where
   __ := e.conjRingEquiv
   commutes' _ := by ext; change e.restrictScalars R _ = _; simp
 
-theorem algConj_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
-    e.algConj R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl
+@[deprecated (since := "2025-12-06")] alias algConj := conjAlgEquiv
 
-theorem symm_algConj (e : M₁ ≃ₗ[S] M₂) : (e.algConj R).symm = e.symm.algConj R := rfl
+theorem conjAlgEquiv_apply (e : M₁ ≃ₗ[S] M₂) (f : Module.End S M₁) :
+    e.conjAlgEquiv R f = e.toLinearMap ∘ₗ f ∘ₗ e.symm.toLinearMap := rfl
+
+theorem symm_conjAlgEquiv (e : M₁ ≃ₗ[S] M₂) : (e.conjAlgEquiv R).symm = e.symm.conjAlgEquiv R := rfl
 
 end LinearEquiv

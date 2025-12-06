@@ -25,10 +25,10 @@ variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective 
 
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
-public theorem AlgEquiv.eq_linearEquivAlgConj (f : End K V ≃ₐ[K] End K V) :
-    ∃ T : V ≃ₗ[K] V, f = T.algConj K := by
+public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K V) :
+    ∃ T : V ≃ₗ[K] V, f = T.conjAlgEquiv K := by
   nontriviality V
-  simp_rw [AlgEquiv.ext_iff, algConj_apply, ← comp_assoc, eq_comp_toLinearMap_symm]
+  simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← comp_assoc, eq_comp_toLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
   obtain ⟨v, huv⟩ := Projective.exists_dual_ne_zero K hu
   obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRight v u) z = (0 : End K V) z := by
@@ -55,5 +55,5 @@ public theorem Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
-  have ⟨T, hT⟩ := f.eq_linearEquivAlgConj
+  have ⟨T, hT⟩ := f.eq_linearEquivConjAlgEquiv
   exact ⟨.ofLinearEquiv T, hT.symm⟩

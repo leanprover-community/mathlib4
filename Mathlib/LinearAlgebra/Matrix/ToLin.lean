@@ -1034,7 +1034,7 @@ def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R 
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to
 square matrices. -/
 def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matrix n n R :=
-  (h.equivFun.algConj R).trans algEquivMatrix'
+  (h.equivFun.conjAlgEquiv R).trans algEquivMatrix'
 
 end
 
