@@ -559,6 +559,12 @@ theorem prod_range_add (f : ℕ → M) (n m : ℕ) :
   | zero => simp
   | succ m hm => rw [Nat.add_succ, prod_range_succ, prod_range_succ, hm, mul_assoc]
 
+lemma prod_range_mul (f : ℕ → M) (n m : ℕ) :
+    (∏ i ∈ range (m * n), f i) = ∏ i ∈ range m, ∏ j ∈ range n, f (i * n + j) := by
+  induction m with
+  | zero => simp
+  | succ m ih => simp [Nat.add_one_mul, prod_range_add, ih]
+
 @[to_additive sum_range_one]
 theorem prod_range_one (f : ℕ → M) : ∏ k ∈ range 1, f k = f 0 := by
   rw [range_one, prod_singleton]
