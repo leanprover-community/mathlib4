@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.ULift
-import Mathlib.Util.Delaborators
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.ULift
+public import Mathlib.Util.Delaborators
+public import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers
@@ -46,6 +48,8 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

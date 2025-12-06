@@ -3,12 +3,16 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Basic
-import Batteries.Data.Nat.Basic
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Batteries.Data.Nat.Basic
 
 /-!
 # Properties of the natural number square root function.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -173,7 +177,7 @@ lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| (have := sqrt_le_add n; by grind)
 
 @[simp]
-lemma log2_two : (2 : ℕ).log2 = 1 := rfl
+lemma log2_two : (2 : ℕ).log2 = 1 := by simp [log2_def]
 
 @[simp]
 lemma sqrt_two : sqrt 2 = 1 := by simp [sqrt, sqrt.iter]

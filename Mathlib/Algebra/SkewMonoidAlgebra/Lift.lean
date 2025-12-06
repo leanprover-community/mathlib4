@@ -3,12 +3,16 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Algebra.Equiv
+module
+
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Algebra.Equiv
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

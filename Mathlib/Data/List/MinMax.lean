@@ -3,11 +3,13 @@ Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Order.BoundedOrder.Lattice
-import Mathlib.Data.List.Induction
-import Mathlib.Order.MinMax
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Order.BoundedOrder.Lattice
+public import Mathlib.Data.List.Induction
+public import Mathlib.Order.MinMax
+public import Mathlib.Order.WithBot
 
 /-!
 # Minimum and maximum of lists
@@ -23,6 +25,8 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -195,7 +199,7 @@ theorem index_of_argmax :
       simp_all
     rw [h] at hm
     dsimp only at hm
-    simp only [cond_eq_if, beq_iff_eq]
+    simp only [cond_eq_ite, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_gt ‹_› ‹_›
     · rw [if_pos rfl]
@@ -219,9 +223,9 @@ theorem mem_argmax_iff :
       rcases harg : argmax f l with - | n
       · simp_all
       · have :=
-          _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
+          Nat.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
             (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-        rw [(idxOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+        rw [(idxOf_inj hml).1 this, Option.mem_def]⟩
 
 theorem argmax_eq_some_iff :
     argmax f l = some m ↔
