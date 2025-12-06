@@ -15,23 +15,6 @@ Many results about polynomials hold when the coefficient ring has no zero diviso
 
 This file does not define any new operations, but proves some of these stronger results.
 
-## Notation
-
-As in other polynomial files, we typically use the notation:
-
-+ `σ : Type*` (indexing the variables)
-
-+ `R : Type*` `[NoZeroDivisors R]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
-
-+ `a : R`
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ R`
-
 ## TODOs
 
 * Add a `totalDegree_mul_eq` theorem, which states that the total degree of a product of two
@@ -41,20 +24,11 @@ nonzero multivariate polynomials is the sum of their total degrees.
 
 @[expose] public section
 
-
-noncomputable section
-
-open Set Function Finsupp AddMonoidAlgebra
-
-universe u v
-
-variable {R : Type u} {S : Type v}
+variable {R : Type*}
 
 namespace MvPolynomial
 
 variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
-
-section NoZeroDivisors
 
 variable [CommSemiring R] [NoZeroDivisors R]
 
@@ -86,7 +60,5 @@ lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
   simp_rw [Multiset.count_add, ← degreeOf_def, degreeOf_mul hp hq]
 
 end Degrees
-
-end NoZeroDivisors
 
 end MvPolynomial
