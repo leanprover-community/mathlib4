@@ -72,7 +72,7 @@ instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty C�
       infer_instance)
 
 @[simp]
-lemma op_iff (L : C ⥤ D) (W : MorphismProperty C) :
+lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
     L.op.IsLocalization W.op ↔ L.IsLocalization W :=
   ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
     fun _ ↦ inferInstance⟩
