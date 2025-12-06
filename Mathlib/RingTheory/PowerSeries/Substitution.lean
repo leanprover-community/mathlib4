@@ -259,11 +259,8 @@ theorem subst_X (ha : HasSubst a) :
 
 section
 
-variable (w : τ → ℕ)
-
-theorem le_weightedOrder_subst (ha : HasSubst a) (f : PowerSeries R) :
-    f.order * (a.weightedOrder w) ≤
-      (f.subst a).weightedOrder w := by
+theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeries R) :
+    f.order * (a.weightedOrder w) ≤ (f.subst a).weightedOrder w := by
   refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ (PowerSeries.hasSubst_iff.mp ha) _)
   simp only [ne_eq, Function.comp_const, le_iInf_iff]
   intro i hi
@@ -274,15 +271,10 @@ theorem le_weightedOrder_subst (ha : HasSubst a) (f : PowerSeries R) :
   split_ifs with _
   <;> apply mul_le_mul_left (f.order_le _ (by delta PowerSeries.coeff; convert hi; aesop))
 
-
 theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
     a.order * f.order ≤ (f.subst a).order := by
-  refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ (PowerSeries.hasSubst_iff.mp ha) _)
-  simp only [ne_eq, Function.comp_const, le_iInf_iff]
-  intro i hi
-  trans a.order * ↑(i .unit)
-  · refine mul_le_mul_right (f.order_le _ (by delta PowerSeries.coeff; convert hi; aesop)) a.order
-  · simp [Finsupp.weight_apply, Finsupp.sum_fintype, MvPowerSeries.order, mul_comm]
+  refine .trans ?_ (MvPowerSeries.le_order_subst (PowerSeries.hasSubst_iff.mp ha) _)
+  simp [order_coe]
 
 end
 
