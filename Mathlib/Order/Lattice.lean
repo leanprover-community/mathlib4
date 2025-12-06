@@ -373,6 +373,8 @@ end SemilatticeSup
 /-- A lattice is a join-semilattice which is also a meet-semilattice. -/
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 
+attribute [to_dual existing] Lattice.toSemilatticeInf
+
 instance OrderDual.instLattice (α) [Lattice α] : Lattice αᵒᵈ where
 
 /-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree
