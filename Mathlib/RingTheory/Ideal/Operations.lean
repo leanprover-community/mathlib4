@@ -91,7 +91,7 @@ protected theorem mul_smul : (I * J) • N = I • J • N :=
 theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
     (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
   suffices LinearMap.range (LinearMap.toSpanSingleton R M x) ≤ M' by
-    rw [← LinearMap.toSpanSingleton_one R M x]
+    rw [← LinearMap.toSpanSingleton_apply_one R M x]
     exact this (LinearMap.mem_range_self _ 1)
   rw [LinearMap.range_eq_map, ← hs, map_le_iff_le_comap, Ideal.span, span_le]
   exact fun r hr ↦ H ⟨r, hr⟩
