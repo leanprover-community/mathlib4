@@ -161,7 +161,7 @@ theorem integrable_theta_div (x : ℝ) :
   fun_prop (disch := assumption)
 
 theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
-    π ⌊x⌋₊ = θ x / log x + ∫ t in Set.Icc 2 x, θ t / (t * log t ^ 2) := by
+    π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero]
   rw [← add_sum_erase (a := 2) _ _ (by simp [prime_two, le_floor hx])]
@@ -192,11 +192,12 @@ theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
   rw [(by simp : 2 = ⌊(2 : ℝ)⌋₊)]
   rw [sum_mul_eq_sub_sub_integral_mul a (f := fun n ↦ 1 / log n) (by linarith) (by linarith)]
   · have int_deriv (f : ℝ → ℝ) :
-      ∫ (u : ℝ) in Set.Ioc 2 x, deriv (fun x ↦ 1 / log x) u * f u =
-      ∫ (u : ℝ) in Set.Icc 2 x, f u * -(u * log u ^ 2)⁻¹ := by
-      rw [← integral_Icc_eq_integral_Ioc]
-      apply setIntegral_congr_ae measurableSet_Icc
-      refine Filter.Eventually.of_forall (fun u hu => ?_)
+      ∫ u in Set.Ioc 2 x, deriv (fun x ↦ 1 / log x) u * f u =
+      ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ := by
+      rw [← intervalIntegral.integral_of_le hx]
+      apply intervalIntegral.integral_congr
+      intro u hu
+      rw [Set.uIcc_of_le hx] at hu
       simp only [one_div, mul_inv_rev, mul_neg]
       rw [deriv_log_inv]
       · ring
@@ -204,7 +205,7 @@ theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
     rw [int_deriv]
     have : log 2 ≠ 0 := by simp; linarith
     simp [a, Set.indicator_apply, sum_filter, show Icc 0 2 = {0, 1, 2} by ext; simp; omega,
-      prime_two, theta_eq_sum_Icc, this, MeasureTheory.integral_neg]
+      prime_two, theta_eq_sum_Icc, this]
     ring_nf!
     congr
     ext
@@ -340,7 +341,7 @@ theorem primeCounting_sub_theta_div_log_isBigO :
     (fun x ↦ π ⌊x⌋₊ - θ x / log x) =O[atTop] (fun x ↦ x / log x ^ 2) := by
   apply integral_theta_div_log_sq_isBigO.congr' _ (by rfl)
   filter_upwards [eventually_ge_atTop 2] with x hx
-  rw [primeCounting_eq hx, integral_Icc_eq_integral_Ioc, intervalIntegral.integral_of_le hx]
+  rw [primeCounting_eq hx]
   simp
 
 theorem eventually_primeCounting_le {c : ℝ} (hc : log 4 < c) :
@@ -349,8 +350,7 @@ theorem eventually_primeCounting_le {c : ℝ} (hc : log 4 < c) :
   replace this := this.bound
   specialize this (by linarith :  0 < c - log 4)
   filter_upwards [eventually_ge_atTop 2, this] with x hx hx2
-  rw [primeCounting_eq hx, integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hx,
-    (by ring : c * x / log x = log 4 * x / log x + (c - log 4) * x / log x)]
+  rw [primeCounting_eq hx, (by ring : c * x / log x = log 4 * x / log x + (c - log 4) * x / log x)]
   grw [theta_le_log4_mul_x (by linarith)]
   · gcongr
     rw [norm_eq_abs, norm_eq_abs] at hx2
