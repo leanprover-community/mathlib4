@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Noetherian.Basic
 
-
 /-!
 
 # Dimension Shifting
