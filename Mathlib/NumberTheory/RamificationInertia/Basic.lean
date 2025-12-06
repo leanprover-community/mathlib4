@@ -288,19 +288,23 @@ theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ 
   exact dif_neg fun h => hp.ne_top <| h.symm.trans comap_top
 
 @[simp]
-theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsMaximal] :
-    inertiaDeg p P = finrank (R ⧸ p) (S ⧸ P) := by
-  nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
-  rw [inertiaDeg, dif_pos (over_def P p).symm]
+theorem inertiaDeg_algebraMap [P.LiesOver p] :
+    inertiaDeg p P = finrank (R ⧸ p) (S ⧸ P) :=
+  dif_pos (over_def P p).symm
 
 theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
   have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
+/-- Variant with a weaker constraint, but on the prime upstairs instead. -/
+theorem inertiaDeg_pos' [P.IsPrime] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
+  have : p.IsPrime := Ideal.over_def P p ▸ inferInstance
+  Module.finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
 theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
   (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
 
-lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
+lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     inertiaDeg p (P.comap e) = inertiaDeg p P := by
   have he : (P.comap e).comap (algebraMap R S) = p ↔ P.comap (algebraMap R S₁) = p := by
     rw [← comap_coe e, comap_comap, ← e.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
@@ -310,7 +314,7 @@ lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] 
   · rw [inertiaDeg, dif_neg (fun eq => h ⟨(he.mp eq).symm⟩)]
     rw [inertiaDeg, dif_neg (fun eq => h ⟨eq.symm⟩)]
 
-lemma inertiaDeg_map_eq [p.IsMaximal] (P : Ideal S)
+lemma inertiaDeg_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg p (P.map e) = inertiaDeg p P := by
   rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
@@ -327,30 +331,47 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
 
 end DecEq
 
-
 section absNorm
+
+attribute [local instance] Ideal.Quotient.field Ideal.bot_prime in
+lemma absNorm_pow_inertiaDeg
+    [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
+    [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S]
+    [Algebra R S] [p.IsPrime] [P.LiesOver p] :
+    p.absNorm ^ p.inertiaDeg P = P.absNorm := by
+  have : FaithfulSMul R S := by
+    rw [faithfulSMul_iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot]
+    refine Ideal.eq_bot_of_comap_eq_bot (R := ℤ) ?_
+    rw [RingHom.comap_ker, ← IsScalarTower.algebraMap_eq, ← RingHom.injective_iff_ker_eq_bot]
+    exact FaithfulSMul.algebraMap_injective ..
+  have : Module.Finite R S := .of_restrictScalars_finite ℤ R S
+  by_cases hP : P = ⊥
+  · simp_all [Ideal.over_def P p, under_bot, zero_pow Module.finrank_pos.ne']
+  have : p.IsMaximal := Ideal.IsPrime.isMaximal ‹_› fun e ↦
+    hP <| Ideal.eq_bot_of_comap_eq_bot ((Ideal.over_def P p).symm.trans e)
+  letI := Ideal.finiteQuotientOfFreeOfNeBot P hP
+  rw [eq_comm, absNorm_apply, Submodule.cardQuot_apply, Module.natCard_eq_pow_finrank (K := R ⧸ p),
+    inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply]
 
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
-lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
+lemma pow_inertiaDeg_eq_absNorm [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
-    absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
-  have : (span {p}).IsMaximal :=
-    (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
-  have h : Module.Finite (ℤ ⧸ span {p}) (R ⧸ P) := module_finite_of_liesOver P (span {p})
-  let _ : Field (ℤ ⧸ span {p}) := Quotient.field (span {p})
-  rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
-    Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
-  simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+    p.natAbs ^ ((span {p}).inertiaDeg P) = absNorm P := by
+  have : (span {p}).IsPrime := (Ideal.span_singleton_prime hp.ne_zero).mpr hp
+  simp [← absNorm_pow_inertiaDeg (span {p}) P]
 
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
-lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
+lemma pow_inertiaDeg_eq_absNorm' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
-    absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
-  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
+    p ^ ((span {(p : ℤ)}).inertiaDeg P) = absNorm P :=
+  pow_inertiaDeg_eq_absNorm P (Nat.prime_iff_prime_int.mp hp)
+
+@[deprecated (since := "2025-10-25")] alias absNorm_eq_pow_inertiaDeg := pow_inertiaDeg_eq_absNorm
+@[deprecated (since := "2025-10-25")] alias absNorm_eq_pow_inertiaDeg' := pow_inertiaDeg_eq_absNorm'
 
 end absNorm
 section FinrankQuotientMap
