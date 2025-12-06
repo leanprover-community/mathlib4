@@ -280,6 +280,7 @@ lemma isRegularAtInfty_of_neg_one_mem (h𝒢 : -1 ∈ 𝒢) : 𝒢.IsRegularAtIn
 
 variable [TopologicalSpace R] [IsTopologicalRing R]
 
+-- TODO rename
 /-- If `𝒢` is discrete, so is its strict period subgroup. -/
 instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
     DiscreteTopology 𝒢.strictPeriods := by
@@ -290,6 +291,7 @@ instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
   exact .of_continuous_injective (continuous_upperRightHom.restrict this)
     (this.restrict_inj.mpr injective_upperRightHom.injOn)
 
+-- TODO rename
 /-- If `𝒢` is discrete, so is its period subgroup. -/
 instance instDiscreteTopPeriods [T2Space R] [hG : DiscreteTopology 𝒢] :
     DiscreteTopology 𝒢.periods :=
