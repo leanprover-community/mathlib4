@@ -210,36 +210,23 @@ alias eq_prod_roots_of_splits := Splits.eq_prod_roots
 @[deprecated (since := "2025-11-25")]
 alias eq_prod_roots_of_splits_id := Splits.eq_prod_roots
 
-theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
-    (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
-    aeval v p = algebraMap K L p.leadingCoeff * ((p.aroots L).map fun a ↦ v - a).prod := by
-  rw [← eval_map_algebraMap, Splits.eq_prod_roots hsplit]
-  simp [eval_multiset_prod]
+@[deprecated (since := "2025-12-06")]
+alias aeval_eq_prod_aroots_sub_of_splits := Splits.aeval_eq_prod_aroots
 
-theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
-    (hsplit : Splits p) (v : K) :
-    eval v p = p.leadingCoeff * (p.roots.map fun a ↦ v - a).prod := by
-  convert aeval_eq_prod_aroots_sub_of_splits (hsplit.map <| .id K) v
-  rw [Algebra.algebraMap_self, map_id]
+@[deprecated (since := "2025-12-06")]
+alias eval_eq_prod_roots_sub_of_splits_id := Splits.eval_eq_prod_roots
 
 @[deprecated (since := "2025-12-02")]
 alias eq_prod_roots_of_monic_of_splits_id := Splits.eq_prod_roots_of_monic
 
-theorem aeval_eq_prod_aroots_sub_of_monic_of_splits [Algebra K L] {p : K[X]} (m : Monic p)
-    (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
-    aeval v p = ((p.aroots L).map fun a ↦ v - a).prod := by
-  simp [aeval_eq_prod_aroots_sub_of_splits hsplit, m]
+@[deprecated (since := "2025-12-06")]
+alias aeval_eq_prod_aroots_sub_of_monic_of_splits := Splits.aeval_eq_prod_aroots_of_monic
 
-theorem eval_eq_prod_roots_sub_of_monic_of_splits_id {p : K[X]} (m : Monic p)
-    (hsplit : Splits p) (v : K) :
-    eval v p = (p.roots.map fun a ↦ v - a).prod := by
-  simp [eval_eq_prod_roots_sub_of_splits_id hsplit, m]
+@[deprecated (since := "2025-12-06")]
+alias eval_eq_prod_roots_sub_of_monic_of_splits_id := Splits.eval_eq_prod_roots_of_monic
 
-theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Splits (h.map i))
-    (h_roots : (h.map i).roots = {i x}) : h = C h.leadingCoeff * (X - C x) := by
-  apply Polynomial.map_injective _ i.injective
-  rw [Splits.eq_prod_roots h_splits, h_roots]
-  simp
+@[deprecated (since := "2025-12-06")]
+alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 
 variable (R) in
 theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
