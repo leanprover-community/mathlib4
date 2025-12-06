@@ -60,8 +60,7 @@ section DegreeOf
 lemma degreeOf_mul (hp : p ≠ 0) (hq : q ≠ 0) :
     degreeOf n (p * q) = degreeOf n p + degreeOf n q := by
   classical
-  simp_rw [degreeOf_eq_natDegree]
-  simp only [ne_eq, map_mul]
+  simp_rw [degreeOf_eq_natDegree, map_mul]
   rw [Polynomial.natDegree_mul] <;> simpa [← renameEquiv_apply, EmbeddingLike.map_eq_zero_iff]
 
 theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ≠ 0) :
@@ -79,8 +78,7 @@ lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
   classical
   apply Multiset.ext'
   intro s
-  simp only [Multiset.count_add, ← degreeOf_def]
-  rw [degreeOf_mul hp hq]
+  simp_rw [Multiset.count_add, ← degreeOf_def, degreeOf_mul hp hq]
 
 end Degrees
 
