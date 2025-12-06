@@ -69,16 +69,13 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
   let _ : IsLocalizedModule S gM := FinitePresentation.isLocalizedModule_mapExtendScalars S g f Rₛ
   let hM := IsLocalizedModule.mapExtendScalars S h f Rₛ
   let _ : IsLocalizedModule S hM := FinitePresentation.isLocalizedModule_mapExtendScalars S h f Rₛ
-  have surj := Baer.iff_surjective.mp MB I
-  have eq'' : Iₛ.subtype.restrictScalars R =
-    ((IsLocalizedModule.map S g h) (Submodule.subtype I)) := by
+  have eq'' : Iₛ.subtype.restrictScalars R = ((IsLocalizedModule.map S g h) I.subtype) := by
     simp only [IsLocalizedModule.map, LinearMap.coe_mk, AddHom.coe_mk]
     symm
     apply IsLocalizedModule.lift_unique _ _ _ _
     ext x
     simp [g, h]
-  have eq' : (LinearMap.lcomp Rₛ Mₛ (Submodule.subtype Iₛ)) =
-    IsLocalizedModule.map S hM gM (LinearMap.lcomp R M (Submodule.subtype I)) := by
+  have eq' : Iₛ.subtype.lcomp Rₛ Mₛ = IsLocalizedModule.map S hM gM (I.subtype.lcomp R M) := by
     simp only [IsLocalizedModule.map, LinearMap.coe_mk, AddHom.coe_mk]
     symm
     apply (IsLocalizedModule.lift_unique _ _ _ _)
@@ -121,7 +118,7 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   let _ : IsLocalizedModule m.primeCompl hM :=
     FinitePresentation.isLocalizedModule_mapExtendScalars m.primeCompl h f Rₘ
   have eq'' : Iₘ.subtype.restrictScalars R =
-    ((IsLocalizedModule.map m.primeCompl g h) (Submodule.subtype I)) := by
+    ((IsLocalizedModule.map m.primeCompl g h) I.subtype) := by
     simp only [IsLocalizedModule.map, LinearMap.coe_mk, AddHom.coe_mk]
     symm
     apply (IsLocalizedModule.lift_unique _ _ _ _)
@@ -129,8 +126,8 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Submodule.coe_subtype,
       Function.comp_apply, Algebra.linearMap_apply, g, h]
     rw [Submodule.toLocalized'_apply_coe, Algebra.linearMap_apply]
-  have eq' : (LinearMap.lcomp Rₘ Mₘ (Submodule.subtype Iₘ)).restrictScalars R =
-    IsLocalizedModule.map m.primeCompl hM gM (LinearMap.lcomp R M (Submodule.subtype I)) := by
+  have eq' : (Iₘ.subtype.lcomp Rₘ Mₘ).restrictScalars R =
+    IsLocalizedModule.map m.primeCompl hM gM (I.subtype.lcomp R M) := by
     simp only [IsLocalizedModule.map, LinearMap.coe_mk, AddHom.coe_mk]
     symm
     apply (IsLocalizedModule.lift_unique _ _ _ _)
@@ -146,9 +143,8 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
     change ((IsLocalizedModule.map m.primeCompl h f) x) y.1 = _
     congr 1
     simp [← eq'']
-  have eq : (LinearMap.lcomp Rₘ Mₘ (Submodule.subtype Iₘ)) =
-    IsLocalizedModule.mapExtendScalars m.primeCompl hM gM Rₘ
-    (LinearMap.lcomp R M (Submodule.subtype I)) := by
+  have eq : Iₘ.subtype.lcomp Rₘ Mₘ = IsLocalizedModule.mapExtendScalars m.primeCompl hM gM Rₘ
+    (I.subtype.lcomp R M) := by
     simp [IsLocalizedModule.mapExtendScalars, ← eq']
   have MB : Baer Rₘ Mₘ := Baer.of_injective (H m ‹_›)
   have surj : Function.Surjective (LinearMap.lcomp Rₘ Mₘ (Submodule.subtype Iₘ)) :=
