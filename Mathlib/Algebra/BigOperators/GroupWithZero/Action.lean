@@ -12,14 +12,12 @@ public import Mathlib.Data.Finset.Basic
 public import Mathlib.Algebra.Group.Action.Basic
 
 /-!
-# Lemmas about group actions on big operators
+# Lemmas about group with zero actions on big operators
 
 This file contains results about two kinds of actions:
 
 * sums over `DistribSMul`: `r • ∑ x ∈ s, f x = ∑ x ∈ s, r • f x`
 * products over `MulDistribMulAction` (with primed name): `r • ∏ x ∈ s, f x = ∏ x ∈ s, r • f x`
-* products over `SMulCommClass` (with unprimed name):
-  `b ^ s.card • ∏ x ∈ s, f x = ∏ x ∈ s, b • f x`
 
 Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other files.
 -/
@@ -94,46 +92,3 @@ theorem smul_finprod_perm [Finite G] (b : N) (g : G) :
   simp only [finprod_eq_prod_of_fintype, Finset.smul_prod_perm]
 
 end
-
-namespace List
-
-@[to_additive]
-theorem smul_prod [Monoid M] [MulOneClass N] [MulAction M N] [IsScalarTower M N N]
-    [SMulCommClass M N N] (l : List N) (m : M) :
-    m ^ l.length • l.prod = (l.map (m • ·)).prod := by
-  induction l with
-  | nil => simp
-  | cons head tail ih => simp [← ih, smul_mul_smul_comm, pow_succ']
-
-end List
-
-namespace Multiset
-
-@[to_additive]
-theorem smul_prod [Monoid M] [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
-    [SMulCommClass M N N] (s : Multiset N) (b : M) :
-    b ^ card s • s.prod = (s.map (b • ·)).prod :=
-  Quot.induction_on s <| by simp [List.smul_prod]
-
-end Multiset
-
-namespace Finset
-
-theorem smul_prod
-    [CommMonoid N] [Monoid M] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
-    (s : Finset N) (b : M) (f : N → N) :
-    b ^ s.card • ∏ x ∈ s, f x = ∏ x ∈ s, b • f x := by
-  have : Multiset.map (fun (x : N) ↦ b • f x) s.val =
-      Multiset.map (fun x ↦ b • x) (Multiset.map f s.val) := by
-    simp only [Multiset.map_map, Function.comp_apply]
-  simp_rw [prod_eq_multiset_prod, card_def, this, ← Multiset.smul_prod _ b, Multiset.card_map]
-
-theorem prod_smul
-    [CommMonoid N] [CommMonoid M] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
-    (s : Finset N) (b : N → M) (f : N → N) :
-    ∏ i ∈ s, b i • f i = (∏ i ∈ s, b i) • ∏ i ∈ s, f i := by
-  induction s using Finset.cons_induction_on with
-  | empty =>  simp
-  | cons _ _ hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]
-
-end Finset
