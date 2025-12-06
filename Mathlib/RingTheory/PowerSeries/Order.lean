@@ -136,7 +136,7 @@ theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
   | top => simp
   | coe n => simp [order_eq_nat]
 
-theorem order_coe {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
+theorem order_eq_order {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
   refine eq_of_le_of_ge ?_ ?_
   · refine MvPowerSeries.le_order fun d hd => by
       have : coeff ↑(Finsupp.degree d) φ = 0 := coeff_of_lt_order _ hd

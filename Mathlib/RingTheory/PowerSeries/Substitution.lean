@@ -274,7 +274,7 @@ theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeri
 theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
     a.order * f.order ≤ (f.subst a).order := by
   refine .trans ?_ (MvPowerSeries.le_order_subst (PowerSeries.hasSubst_iff.mp ha) _)
-  simp [order_coe]
+  simp [order_eq_order]
 
 end
 
