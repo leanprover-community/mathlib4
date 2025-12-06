@@ -45,11 +45,8 @@ theorem size_zero : size 0 = 0 := by simp [size]
 
 @[simp]
 theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := by
-  unfold size
-  conv =>
-    lhs
-    rw [binaryRec]
-    simp [h]
+  rw [size, binaryRec_eq_of_ne_zero h, size]
+  simp
 
 section
 
