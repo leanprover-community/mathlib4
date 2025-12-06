@@ -8,6 +8,13 @@ module
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Noetherian.Orzech
 
+/-! # Bases of modules and the Orzech property
+
+It is shown in this file that any spanning set of a module over a ring satisfying the Orzech
+property of cardinality not exceeding the rank of the module must be linearly independent,
+and therefore is a basis.
+-/
+
 @[expose] public section
 
 section Basis
