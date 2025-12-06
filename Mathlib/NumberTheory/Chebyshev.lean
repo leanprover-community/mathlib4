@@ -297,16 +297,13 @@ theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
   push_neg at hx
   apply le_trans (psi_le hx)
   rw [add_mul]
-  apply add_le_add_right
-  calc
-  _ ≤ (2 * x.sqrt) * (2 * x.sqrt) := by
-    gcongr
-    grw [sqrt_eq_rpow, log_le_rpow_div (ε := 1 / 2) (by linarith) (by linarith)]
-    field_simp
-    rfl
-  _ = 4 * (x.sqrt) ^ 2 := by ring
-  _ = _ := by
-    rw [sq_sqrt (by linarith)]
+  gcongr 1
+  grw [sqrt_eq_rpow, log_le_rpow_div (ε := 1 / 2) (by linarith) (by linarith), ← mul_div_assoc,
+    ← mul_one_div]
+  nth_rw 2 [mul_assoc]
+  rw [← rpow_add (by linarith)]
+  norm_num
+  linarith
 
 /-- `ψ - θ` is the sum of `Λ` over non-primes. -/
 theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
