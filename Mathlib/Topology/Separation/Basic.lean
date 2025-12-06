@@ -689,6 +689,18 @@ theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b)
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
   Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
 
+@[simp]
+theorem eventually_nhdsNE_eventually_nhds_iff_eventually_nhdsNE [T1Space X] {a : X} {p : X → Prop} :
+    (∀ᶠ y in 𝓝[≠] a, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝[≠] a, p x := by
+  nth_rw 2 [← eventually_eventually_nhdsWithin]
+  constructor
+  · intro h
+    filter_upwards [h] with _ hy
+    exact eventually_nhdsWithin_of_eventually_nhds hy
+  · intro h
+    filter_upwards [h, eventually_nhdsWithin_of_forall fun _ a ↦ a] with _ _ _
+    simp_all [IsOpen.nhdsWithin_eq]
+
 theorem continuousWithinAt_insert [TopologicalSpace Y] [T1Space X]
     {x y : X} {s : Set X} {f : X → Y} :
     ContinuousWithinAt f (insert y s) x ↔ ContinuousWithinAt f s x := by
