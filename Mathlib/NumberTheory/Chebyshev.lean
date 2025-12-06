@@ -133,13 +133,20 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   gcongr
   exact floor_le hx
 
+section PrimeCounting
+
+/-! ## Relation to prime counting
+
+We relate `θ` to the prime counting function `π`.-/
+
 lemma deriv_log_inv {x : ℝ} (h0 : x ≠ 0) (h1 : x ≠ 1) (h2 : x ≠ -1) :
     deriv (fun x => (log x)⁻¹) x = -x⁻¹ / (log x ^ 2) := by
   rw [deriv_fun_inv'', deriv_log]
   · fun_prop (disch := assumption)
   exact log_ne_zero.mpr ⟨h0, h1, h2⟩
 
-open MeasureTheory in
+open Asymptotics Filter MeasureTheory
+
 theorem integrable_theta_div (x : ℝ) :
     IntegrableOn (fun t ↦ (θ t) / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
   conv => arg 1; ext; rw [theta, div_eq_mul_one_div, mul_comm, sum_filter]
@@ -153,7 +160,6 @@ theorem integrable_theta_div (x : ℝ) :
     apply pow_ne_zero _ <| log_ne_zero_of_pos_of_ne_one _ _ <;> linarith [hx.1]
   fun_prop (disch := assumption)
 
-open MeasureTheory in
 theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in Set.Icc 2 x, θ t / (t * log t ^ 2) := by
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
@@ -248,7 +254,6 @@ theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
       · linarith [hx.1]
   rw [intervalIntegral.integral_const, smul_eq_mul, mul_one_div]
 
-open MeasureTheory in
 theorem integral_one_div_log_sq_le_one_div_log_sq {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, 1 / log t ^ 2 ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
   have two_le_sqrt : 2 ≤ x.sqrt := by
@@ -265,7 +270,6 @@ theorem integral_one_div_log_sq_le_one_div_log_sq {x : ℝ} (hx : 4 ≤ x) :
     gcongr <;> linarith
   all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
-open MeasureTheory in
 theorem integral_theta_div_log_sq_le {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, θ t / (t * log t ^ 2) ≤ log 4 * (4 * x / log x ^ 2 + √x / log 2 ^ 2) := by
   trans ∫ t in 2..x, log 4 * (1 / log t ^ 2)
@@ -283,7 +287,6 @@ theorem integral_theta_div_log_sq_le {x : ℝ} (hx : 4 ≤ x) :
         positivity
   grw [intervalIntegral.integral_const_mul, integral_one_div_log_sq_le_one_div_log_sq hx]
 
-open Asymptotics Filter in
 theorem sqrt_isBigO :
     Real.sqrt =O[atTop] (fun x ↦ x / log x ^2) := by
   apply isBigO_mul_iff_isBigO_div _|>.mp
@@ -297,7 +300,6 @@ theorem sqrt_isBigO :
   filter_upwards [eventually_gt_atTop 1] with x hx
   apply pow_ne_zero _ <| log_ne_zero.mpr ⟨_, _, _⟩ <;> linarith
 
-open Asymptotics Filter in
 theorem integral_theta_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by
   trans (fun x ↦ log 4 * (4 * x / log x ^ 2 + √x / log 2 ^ 2))
@@ -322,7 +324,6 @@ theorem integral_theta_div_log_sq_isBigO :
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
   apply IsBigO.const_mul_left sqrt_isBigO
 
-open Asymptotics Filter in
 theorem integral_theta_div_log_sq_isLittleO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =o[atTop] (fun x ↦ x / log x) := by
   apply integral_theta_div_log_sq_isBigO.trans_isLittleO
@@ -335,7 +336,6 @@ theorem integral_theta_div_log_sq_isLittleO :
   filter_upwards with x
   simp
 
-open Asymptotics Filter MeasureTheory in
 theorem primeCounting_sub_theta_div_log_isBigO :
     (fun x ↦ π ⌊x⌋₊ - θ x / log x) =O[atTop] (fun x ↦ x / log x ^ 2) := by
   apply integral_theta_div_log_sq_isBigO.congr' _ (by rfl)
@@ -343,7 +343,6 @@ theorem primeCounting_sub_theta_div_log_isBigO :
   rw [primeCounting_eq hx, integral_Icc_eq_integral_Ioc, intervalIntegral.integral_of_le hx]
   simp
 
-open Asymptotics Filter MeasureTheory in
 theorem eventually_primeCounting_le {c : ℝ} (hc : log 4 < c) :
     ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ c * x / log x := by
   have := integral_theta_div_log_sq_isLittleO
@@ -361,4 +360,5 @@ theorem eventually_primeCounting_le {c : ℝ} (hc : log 4 < c) :
     · bound
   · bound
 
+end PrimeCounting
 end Chebyshev
