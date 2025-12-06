@@ -360,12 +360,13 @@ lemma differentiable_completedSinZeta (a : UnitAddCircle) :
 
 lemma completedHurwitzZetaOdd_neg (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaOdd (-a) s = -completedHurwitzZetaOdd a s := by
-  simp [completedHurwitzZetaOdd, StrongFEPair.Λ, hurwitzOddFEPair, mellin, oddKernel_neg,
-    integral_neg, neg_div]
+  simp only [completedHurwitzZetaOdd, StrongFEPair.Λ_eq]
+  simp [hurwitzOddFEPair, mellin, oddKernel_neg, integral_neg, neg_div]
 
 lemma completedSinZeta_neg (a : UnitAddCircle) (s : ℂ) :
     completedSinZeta (-a) s = -completedSinZeta a s := by
-  simp [completedSinZeta, StrongFEPair.Λ, mellin, StrongFEPair.symm, WeakFEPair.symm,
+  simp only [completedSinZeta, StrongFEPair.Λ_eq]
+  simp [mellin, StrongFEPair.symm, WeakFEPair.symm,
     hurwitzOddFEPair, sinKernel_neg, integral_neg, neg_div]
 
 /-- Functional equation for the odd Hurwitz zeta function. -/
@@ -374,7 +375,7 @@ theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
   rw [completedHurwitzZetaOdd, completedSinZeta,
     (by { push_cast; ring } : (1 - s + 1) / 2 = ↑(3 / 2 : ℝ) - (s + 1) / 2),
     ← hurwitzOddFEPair_k, (hurwitzOddFEPair a).functional_equation ((s + 1) / 2),
-    hurwitzOddFEPair_ε, one_smul]
+    hurwitzOddFEPair_ε, one_smul, StrongFEPair.symm_toWeakFEPair]
 
 /-- Functional equation for the odd Hurwitz zeta function (alternative form). -/
 lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
@@ -403,6 +404,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     apply Summable.div_const
     apply Summable.of_nat_of_neg <;>
     simpa
+  rw [completedSinZeta, StrongFEPair.symm_Λ_eq]
   refine (mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum).congr_fun
     fun n ↦ ?_
   simp [Int.sign_eq_sign, ← Int.cast_abs] -- non-terminal simp OK when `ring` follows
@@ -441,6 +443,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     simp_rw [c, ← mul_one_div ‖_‖]
     apply Summable.mul_left
     rwa [summable_one_div_int_add_rpow]
+  rw [completedHurwitzZetaOdd, StrongFEPair.Λ_eq]
   have := mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum
   refine this.congr_fun fun n ↦ ?_
   simp only [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]
