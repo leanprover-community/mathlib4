@@ -969,3 +969,28 @@ example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 
 example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
+
+/-! ## Contextual rewrites in subexpressions -/
+
+-- Ensure that the discharger has access to changes in the local context, and that the simp cache
+-- does not attempt to reuse the proof in an invalid context.
+example (x : ℚ) : (if x ≠ 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x ≠ 0 then 1 else x / x) = 1
+  exact test_sorry
+
+example (x : ℚ) : (if x = 0 then x / x else x / x) = 1 := by
+  field_simp
+  guard_target = (if x = 0 then x / x else 1) = 1
+  exact test_sorry
+
+/- This test exists to document current behaviour. It would be desirable if the `x ≠ 0` hypothesis
+  was available in the local context of the first x / x expression.
+
+  This could be acheived by setting `contextual := true` in `Recurse.Config`, but that would have
+  the side effect of adding all implication hypotheses to the simp-set, which could lead to
+  unexpected behaviour. -/
+example (x : ℚ) : (x ≠ 0 → x / x = 1) ∧ x / x = 1 := by
+  field_simp
+  guard_target = (x ≠ 0 → x / x = 1) ∧ x / x = 1
+  exact test_sorry
