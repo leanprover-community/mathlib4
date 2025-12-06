@@ -285,31 +285,6 @@ theorem _root_.Real.isGLB_of_bddBelow_antitoneOn_Ici_tendsto {f : ℕ → ℝ} {
   rw [tendsto_nhds_unique h_tto (Real.tendsto_csInf_of_bddBelow_antitoneOn_Ici h_bdd h_ant)]
   exact isGLB_csInf (image_nonempty.mpr nonempty_Ici) h_bdd
 
--- TODO remove `Real.tendsto_of_bddAbove_monotone` entirely
-/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (range f))
-    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
-  ⟨iSup f, Real.tendsto_ciSup_of_bddAbove_monotone h_bdd h_mon⟩
-
--- TODO remove `Real.tendsto_of_bddBelow_antitone` entirely
-/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
-theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (range f))
-    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) :=
-  ⟨iInf f, Real.tendsto_ciInf_of_bddBelow_antitone h_bdd h_ant⟩
-
-/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
-theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
-    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
-  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
-    rintro r ⟨n, hn⟩
-    simp_rw [← hn]
-    exact NNReal.coe_nonneg _
-  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
-  have hL0 : 0 ≤ L :=
-    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
-    (le_isGLB_iff h_glb).mpr h_bdd_0
-  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
-
 end Monotone
 
 lemma iSup_pow_of_ne_zero (hn : n ≠ 0) (f : ι → ℝ≥0) : (⨆ i, f i) ^ n = ⨆ i, f i ^ n :=
