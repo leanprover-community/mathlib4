@@ -284,19 +284,7 @@ theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' :
     a * a'
       = a.sum fun _ ai => a'.sum fun _ aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
-  -- Porting note: I have no idea how the proof from ml3 worked it used to be
-  -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
-  -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
-  rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
-  dsimp only [DirectSum]
-  rw [DFinsupp.sumAddHom_apply, AddMonoidHom.dfinsuppSum_apply]
-  apply congrArg _
-  simp_rw [flip_apply]
-  funext x
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [DFinsupp.sumAddHom_apply]
-  simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+  simp [DirectSum, DFinsupp.sumAddHom_apply, toAddMonoid, AddMonoidHom.dfinsuppSum_apply]
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
