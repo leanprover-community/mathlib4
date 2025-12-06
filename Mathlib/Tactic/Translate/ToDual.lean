@@ -31,9 +31,6 @@ open Lean Meta Elab Command Std Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
-
 @[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
 
@@ -134,6 +131,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("max", ["Min"]),
   ("untop", ["Unbot"]),
   ("unbot", ["Untop"]),
+  ("minimal", ["Maximal"]),
+  ("maximal", ["Minimal"]),
+  ("lower", ["Upper"]),
+  ("upper", ["Lower"]),
+  ("succ", ["Pred"]),
+  ("pred", ["Succ"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
