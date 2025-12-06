@@ -11,7 +11,7 @@ public import Mathlib.Algebra.BigOperators.RingEquiv
 public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.GroupTheory.Finite
+public import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices
@@ -51,7 +51,7 @@ instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fin
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
     Finite (Matrix m n α) := inferInstanceAs (Finite (m → n → α))
 
-instance [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
+instance (priority := low) [Semiring α] [Finite α] : IsStablyFiniteRing α := ⟨inferInstance⟩
 
 section
 variable (R)

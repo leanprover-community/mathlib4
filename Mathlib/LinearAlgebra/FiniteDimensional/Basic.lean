@@ -334,7 +334,7 @@ instance : IsStablyFiniteRing (Module.End R M) := by
   rw [RingEquiv.isStablyFiniteRing_iff e.conjRingEquiv]
   infer_instance
 
-/-- TODO: move the whole section to `Module.End` namespace. -/
+-- TODO: move the whole section to `Module.End` namespace.
 theorem _root_.Module.End.injective_of_surjective {f : Module.End R M} (hf : Surjective f) :
     Injective f :=
   have ⟨_, eq⟩ := projective_lifting_property _ .id hf
@@ -357,7 +357,7 @@ theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (
 they are inverse to each other on the other side. -/
 @[deprecated mul_eq_one_comm (since := "2025-11-30")] protected
 theorem mul_eq_one_comm [FiniteDimensional K V] {f g : V →ₗ[K] V} : f * g = 1 ↔ g * f = 1 :=
-  ⟨mul_eq_one_symm, mul_eq_one_symm⟩
+  mul_eq_one_comm
 
 theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
     (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :

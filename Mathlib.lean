@@ -4234,12 +4234,12 @@ public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.GroupTheory.DivisibleHull
 public import Mathlib.GroupTheory.DoubleCoset
 public import Mathlib.GroupTheory.EckmannHilton
 public import Mathlib.GroupTheory.Exponent
-public import Mathlib.GroupTheory.Finite
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.GroupTheory.FiniteAbelian.Duality
 public import Mathlib.GroupTheory.Finiteness

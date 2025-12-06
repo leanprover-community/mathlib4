@@ -581,7 +581,8 @@ section IsStablyFiniteRing
 
 attribute [instance] IsStablyFiniteRing.isDedekindFiniteMonoid
 
-instance (R) [NonAssocSemiring R] [IsStablyFiniteRing R] : IsDedekindFiniteMonoid R :=
+instance (priority := low) (R) [NonAssocSemiring R] [IsStablyFiniteRing R] :
+    IsDedekindFiniteMonoid R :=
   let f : R →* Matrix (Fin 1) (Fin 1) R :=
     ⟨⟨fun r ↦ diagonal fun _ ↦ r, rfl⟩, fun _ _ ↦ (diagonal_mul_diagonal ..).symm⟩
   MonoidHom.isDedekindFiniteMonoid_of_injective f fun _ _ eq ↦ by simpa [f] using congr($eq 0 0)
@@ -1218,12 +1219,21 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
     (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e * Mᵀ.submatrix e id = M * Mᵀ := by
   rw [submatrix_mul_equiv, submatrix_id_id]
 
-instance (n R) [MulOne R] [AddCommMonoid R] [Fintype n] [DecidableEq n] [IsStablyFiniteRing R] :
-    IsDedekindFiniteMonoid (Matrix n n R) :=
+variable (m n R : Type*) [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+variable [MulOne R] [AddCommMonoid R]
+
+instance [IsStablyFiniteRing R] : IsDedekindFiniteMonoid (Matrix n n R) :=
   let e := Fintype.equivFin n
   let f := MonoidHom.mk ⟨reindex (α := R) e e, submatrix_one_equiv _⟩
     fun _ _ ↦ (submatrix_mul_equiv ..).symm
   MonoidHom.isDedekindFiniteMonoid_of_injective f (reindex e e).injective
+
+/-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
+theorem mul_eq_one_comm_of_equiv [IsStablyFiniteRing R] {A : Matrix m n R} {B : Matrix n m R}
+    (e : m ≃ n) : A * B = 1 ↔ B * A = 1 :=
+  (reindex e e).injective.eq_iff.symm.trans <| by
+    rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
+      mul_eq_one_comm, submatrix_mul_equiv, Equiv.coe_refl, submatrix_id_id]
 
 end Matrix
 

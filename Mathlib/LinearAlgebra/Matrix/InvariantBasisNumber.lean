@@ -22,7 +22,7 @@ open Function Matrix LinearMap
 
 variable {R : Type*} [Semiring R]
 
-instance [IsStablyFiniteRing R] [Nontrivial R] : RankCondition R where
+instance (priority := low) [IsStablyFiniteRing R] [Nontrivial R] : RankCondition R where
   le_of_fin_surjective {n m} f hf := by
     by_contra! lt
     let p : (Fin m → R) →ₗ[R] Fin n → R := funLeft R R (Fin.castLE lt.le)

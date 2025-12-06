@@ -337,7 +337,7 @@ attribute [to_additive existing] isDedekindFiniteMonoid_iff
   mp := mul_eq_one_symm
   mpr := mul_eq_one_symm
 
-@[to_additive] instance (M) [MulOne M] [Std.Commutative (α := M) (· * ·)] :
+@[to_additive] instance (priority := low) (M) [MulOne M] [Std.Commutative (α := M) (· * ·)] :
     IsDedekindFiniteMonoid M where
   mul_eq_one_symm := (Std.Commutative.comm ..).trans
 
@@ -747,9 +747,6 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
-
-@[to_additive] instance (priority := high) (M) [CommMonoid M] :
-    IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 
