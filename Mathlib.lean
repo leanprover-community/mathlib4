@@ -6928,6 +6928,7 @@ public import Mathlib.Topology.Category.LightProfinite.Basic
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 public import Mathlib.Topology.Category.LightProfinite.Extend
+public import Mathlib.Topology.Category.LightProfinite.Injective
 public import Mathlib.Topology.Category.LightProfinite.Limits
 public import Mathlib.Topology.Category.LightProfinite.Sequence
 public import Mathlib.Topology.Category.Locale
