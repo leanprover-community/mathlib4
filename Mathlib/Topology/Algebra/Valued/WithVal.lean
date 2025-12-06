@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
