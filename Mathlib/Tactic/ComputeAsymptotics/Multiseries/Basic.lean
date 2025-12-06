@@ -227,10 +227,8 @@ theorem extendBasisMiddle_WellOrdered {left right : Basis} {b : ℝ → ℝ} {ms
   cases left with
   | nil =>
     simp only [List.nil_append, extendBasisMiddle]
-    apply WellOrdered.cons h_wo
-    · simp
-      norm_cast
-    · exact WellOrdered.nil
+    apply WellOrdered.cons_nil
+    assumption
   | cons left_hd left_tl =>
   simp only [List.cons_append, extendBasisMiddle, List.append_eq]
   let motive (ms' : PreMS (left_hd :: left_tl ++ b :: right)) : Prop :=
@@ -389,11 +387,8 @@ theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms 
   | nil => simpa [updateBasis]
   | insert f ex_tl =>
     simp only [updateBasis]
-    apply WellOrdered.cons
-    · exact updateBasis_WellOrdered h_wo
-    · simp
-      norm_cast
-    · exact WellOrdered.nil
+    apply WellOrdered.cons_nil
+    exact updateBasis_WellOrdered h_wo
   | keep basis_hd ex_tl =>
     simp only [updateBasis]
     let motive (ms' : PreMS (BasisExtension.keep basis_hd ex_tl).getBasis) : Prop :=

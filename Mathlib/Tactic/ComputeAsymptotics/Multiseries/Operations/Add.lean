@@ -34,8 +34,8 @@ exponents. It is defined corecursively as following:
 noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   match basis with
   | [] => a.toReal + b.toReal
-  | List.cons basid_hd basis_tl =>
-    let T := (PreMS (basid_hd :: basis_tl)) × (PreMS (basid_hd :: basis_tl))
+  | List.cons basis_hd basis_tl =>
+    let T := (PreMS (basis_hd :: basis_tl)) × (PreMS (basis_hd :: basis_tl))
     let g : T → Option (ℝ × PreMS basis_tl × T) := fun (X, Y) =>
       match destruct X, destruct Y with
       | none, none => none
@@ -567,6 +567,317 @@ theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
     (X.sub Y).Approximates (fX - fY) := by
   apply add_Approximates hX_approx
   apply neg_Approximates hY_approx
+
+instance {basis_hd basis_tl} : Stream'.Seq.FriendOperation (add (basis := basis_hd :: basis_tl)) :=
+  sorry
+
+theorem eq_of_bisim_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {x y : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+    (base : motive x y)
+    (step : ∀ x y, motive x y → (x = y) ∨ ∃ exp coef,
+      ∃ (c x' y' : PreMS (basis_hd :: basis_tl)),
+      x = cons exp coef (c + x') ∧ y = cons exp coef (c + y') ∧ motive x' y') :
+    x = y := by
+  let motive' (x y : PreMS (basis_hd :: basis_tl)) : Prop :=
+    ∃ (x' y' c : PreMS (basis_hd :: basis_tl)),
+      x = c + x' ∧ y = c + y' ∧ motive x' y'
+  apply eq_of_bisim_strong motive'
+  · simp only [motive']
+    use x, y, 0
+    simpa
+  · intro x y ih
+    simp only [motive'] at ih
+    obtain ⟨x', y', c, rfl, rfl, ih⟩ := ih
+    specialize step x' y' ih
+    obtain step | ⟨exp, coef, c', x_tl, y_tl, rfl, rfl, h_tl⟩  := step
+    · simp [step]
+    right
+    cases c with
+    | nil =>
+      simp [motive']
+      grind
+    | cons c_exp c_coef c_tl =>
+      rw [add_cons_cons, add_cons_cons]
+      split_ifs with h1 h2
+      · simp [motive']
+        use ?_, ?_, ?_
+      · simp [motive', add_assoc']
+        use ?_, ?_, ?_
+      · simp [motive', add_assoc']
+        use ?_, ?_, ?_
+
+theorem eq_of_bisim_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {x y : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop)
+    (base : motive x y)
+    (step : ∀ x y, motive x y → (x = y) ∨ ∃ (c x' y' : PreMS (basis_hd :: basis_tl)),
+      x = c + x' ∧ y = c + y' ∧ x'.leadingExp < c.leadingExp ∧ y'.leadingExp < c.leadingExp ∧
+      motive x' y') :
+    x = y := by
+  apply eq_of_bisim_add motive
+  · exact base
+  intro x y ih
+  obtain step | ⟨c, x', y', rfl, rfl, hx, hy, h_next⟩ := step x y ih
+  · simp [step]
+  cases c with
+  | nil => simp at hx
+  | cons c_exp c_coef c_tl =>
+  cases x' with
+  | nil =>
+    cases y' with
+    | nil => simp
+    | cons y_exp y_coef y_tl =>
+      right
+      simp
+      use c_tl, nil
+      simp
+      use cons y_exp y_coef y_tl
+      simpa [add_cons_left hy]
+  | cons x_exp x_coef x_tl =>
+    cases y' with
+    | nil =>
+      right
+      simp
+      use c_tl, cons x_exp x_coef x_tl
+      simp [add_cons_left hx]
+      use nil
+      simpa
+    | cons y_exp y_coef y_tl =>
+      right
+      simp
+      simp [add_cons_left hx, add_cons_left hy]
+      use c_tl, cons x_exp x_coef x_tl
+      simp
+      use cons y_exp y_coef y_tl
+
+theorem WellOrdered.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → Prop) (h_base : motive ms)
+    (h_step :
+      ∀ (exp : ℝ) (coef : PreMS basis_tl) (tl : PreMS (basis_hd :: basis_tl)),
+        motive (PreMS.cons exp coef tl) → coef.WellOrdered ∧ tl.leadingExp < ↑exp ∧
+        ∃ A B, tl = A + B ∧ A.WellOrdered ∧ motive B) :
+    ms.WellOrdered := by
+  let motive' (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
+    ∃ A B, ms = A + B ∧ A.WellOrdered ∧ motive B
+  apply WellOrdered.coind motive'
+  · simp [motive']
+    use PreMS.nil, ms
+    simp [WellOrdered.nil, h_base]
+  intro exp coef tl ih
+  simp [motive'] at ih
+  obtain ⟨A, B, h_eq, hA_wo, hB⟩ := ih
+  simp [motive']
+  cases A with
+  | nil =>
+    simp at h_eq
+    subst h_eq
+    specialize h_step _ _ _ hB
+    obtain ⟨h_coef_wo, h_comp, X, Y, h_tl, hX, hY⟩ := h_step
+    simp [h_coef_wo, h_comp]
+    use X, Y
+  | cons A_exp A_coef A_tl =>
+  obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := WellOrdered_cons hA_wo
+  cases B with
+  | nil =>
+    simp at h_eq
+    simp [h_eq, hA_coef_wo, hA_comp]
+    use A_tl, PreMS.nil
+    simp [hA_tl, hB]
+  | cons B_exp B_coef B_tl =>
+  specialize h_step _ _ _ hB
+  obtain ⟨hB_coef_wo, hB_comp, X, Y, hB_tl, hX, hY⟩ := h_step
+  rw [add_cons_cons] at h_eq
+  split_ifs at h_eq with h1 h2
+  · simp at h_eq
+    simp [h_eq, hA_coef_wo, hA_comp, h1]
+    use A_tl, PreMS.cons B_exp B_coef B_tl
+  · simp at h_eq
+    simp [h_eq, hB_coef_wo, hB_comp, h2]
+    use PreMS.cons A_exp A_coef A_tl + X, Y
+    simp [hB_tl, add_WellOrdered hA_wo hX, hY]
+    abel
+  · have : A_exp = B_exp := by linarith
+    subst this
+    simp at h_eq
+    simp [h_eq, hA_comp, hB_comp, add_WellOrdered hA_coef_wo hB_coef_wo]
+    use A_tl + X, Y
+    simp [hB_tl, add_WellOrdered hA_tl hX, hY]
+    abel
+
+theorem WellOrdered.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → Prop) (h_base : motive ms)
+    (h_step :
+      ∀ ms, motive ms → (ms = PreMS.nil) ∨ ∃ A B, ms = A + B ∧ A.WellOrdered ∧
+      B.leadingExp < A.leadingExp ∧ motive B) :
+    ms.WellOrdered := by
+  apply WellOrdered.add_coind motive h_base
+  intro exp coef tl ih
+  specialize h_step _ ih
+  simp at h_step
+  obtain ⟨A, B, h_eq, hA_wo, hBA, hB⟩ := h_step
+  cases A with
+  | nil => simp at hBA
+  | cons A_exp A_coef A_tl =>
+  obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := WellOrdered_cons hA_wo
+  cases B with
+  | nil =>
+    simp at h_eq
+    simp [h_eq, hA_coef_wo, hA_comp]
+    use A_tl, PreMS.nil
+    simp [hA_tl, hB]
+  | cons B_exp B_coef B_tl =>
+  simp [add_cons_left hBA] at h_eq
+  simp at hBA
+  simp [h_eq, hA_coef_wo, hA_comp, hBA]
+  use A_tl, PreMS.cons B_exp B_coef B_tl
+
+theorem Approximates.add_coind {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    (motive : PreMS (basis_hd :: basis_tl) → (ℝ → ℝ) → Prop) (h_base : motive ms f)
+    (h_step :
+      ∀ (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ),
+        motive ms f →
+        ms = PreMS.nil ∧ f =ᶠ[atTop] 0 ∨
+        ∃ exp coef tl fC,
+          ms = PreMS.cons exp coef tl ∧ coef.Approximates fC ∧ majorated f basis_hd exp ∧
+          ∃ A B fA, tl = A + B ∧ A.Approximates fA ∧
+          motive B (fun t ↦ f t - basis_hd t ^ exp * fC t - fA t)) :
+    ms.Approximates f := by
+  let motive' (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) : Prop :=
+    ∃ A B fA fB, ms = A + B ∧ A.Approximates fA ∧ f =ᶠ[atTop] fA + fB ∧ motive B fB
+  apply Approximates.coind motive'
+  · use PreMS.nil, ms, 0, f
+    simp [Approximates.nil, h_base]
+  intro ms f ih
+  simp only [motive'] at ih
+  obtain ⟨A, B, fA, fB, rfl, hA, hf_eq, hB⟩ := ih
+  simp [motive']
+  cases A with
+  | nil =>
+    apply Approximates_nil at hA
+    specialize h_step _ _ hB
+    obtain ⟨rfl, hfB⟩ | ⟨exp, coef, tl, fC, rfl, h_coef, h_maj, X, Y, fX, h_tl, hX, hY⟩ := h_step
+    · simp
+      grw [hf_eq, hA, hfB]
+      simp
+    right
+    use exp, coef, fC, X, Y
+    simp [h_coef, h_tl]
+    constructor
+    · apply majorated_of_EventuallyEq _ h_maj
+      grw [hf_eq, hA]
+      simp
+    use fX, hX, fun t ↦ fB t - basis_hd t ^ exp * fC t - fX t
+    simp [hY]
+    push fun _ ↦ _
+    grw [hf_eq, hA]
+    convert EventuallyEq.refl _ _ using 1
+    ext t
+    simp
+  | cons A_exp A_coef A_tl =>
+    right
+    obtain ⟨fAC, hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
+    specialize h_step _ _ hB
+    obtain ⟨rfl, hfB⟩ |
+      ⟨B_exp, B_coef, B_tl, fBC, rfl, hB_coef, hB_maj, X, Y, fX, h_tl, hX, hY⟩ := h_step
+    · use A_exp, A_coef, fAC, A_tl, PreMS.nil
+      simp [hA_coef]
+      constructor
+      · apply majorated_of_EventuallyEq _ hA_maj
+        grw [hf_eq, hfB]
+        simp
+      refine ⟨_, hA_tl, fB, ?_, hB⟩
+      push fun _ ↦ _
+      grw [hf_eq, hfB]
+      simp
+    rw [add_cons_cons]
+    split_ifs with h1 h2
+    · use A_exp, A_coef, fAC, A_tl, PreMS.cons B_exp B_coef B_tl
+      simp [hA_coef]
+      constructor
+      · apply majorated_of_EventuallyEq hf_eq
+        apply add_majorated' hA_maj hB_maj (by rfl) (by linarith)
+      refine ⟨_, hA_tl, _, ?_, hB⟩
+      push fun _ ↦ _
+      grw [hf_eq]
+      convert EventuallyEq.refl _ _ using 1
+      ext t
+      simp
+      ring
+    · use B_exp, B_coef, fBC, PreMS.cons A_exp A_coef A_tl + X, Y
+      simp [h_tl]
+      constructorm* _ ∧ _
+      · abel
+      · assumption
+      · apply majorated_of_EventuallyEq hf_eq
+        apply add_majorated' hA_maj hB_maj (by linarith) (by rfl)
+      use fA + fX
+      constructor
+      · apply add_Approximates hA hX
+      refine ⟨_, ?_, hY⟩
+      push fun _ ↦ _
+      grw [hf_eq]
+      convert EventuallyEq.refl _ _ using 1
+      ext t
+      simp
+      ring
+    · have : A_exp = B_exp := by linarith
+      subst this
+      use A_exp, A_coef + B_coef, fAC + fBC, A_tl + X, Y
+      constructorm* _ ∧ _
+      · simp [h_tl]
+        abel
+      · apply add_Approximates hA_coef hB_coef
+      · apply majorated_of_EventuallyEq hf_eq
+        apply add_majorated' hA_maj hB_maj (by rfl) (by rfl)
+      refine ⟨_, add_Approximates hA_tl hX, _, ?_, hY⟩
+      push fun _ ↦ _
+      grw [hf_eq]
+      convert EventuallyEq.refl _ _ using 1
+      ext t
+      simp
+      ring
+
+-- theorem Approximates.add_coind' {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
+--     {ms : PreMS (basis_hd :: basis_tl)}
+--     (motive : PreMS (basis_hd :: basis_tl) → (ℝ → ℝ) → Prop) (h_base : motive ms f)
+--     (h_step :
+--       ∀ ms f, motive ms f → (ms = PreMS.nil ∧ f =ᶠ[atTop] 0) ∨ ∃ A B fA fB, ms = A + B ∧ B.leadingExp < A.leadingExp ∧
+--       A.Approximates fA ∧ f =ᶠ[atTop] fA + fB ∧ motive B fB) :
+--     ms.Approximates f := by
+--   apply Approximates.add_coind motive h_base
+--   intro ms f ih
+--   specialize h_step _ _ ih
+--   obtain ⟨rfl, hfB⟩ | ⟨A, B, fA, fB, rfl, hBA, hA, hf_eq, hB⟩ := h_step
+--   · simpa
+--   right
+--   cases A with
+--   | nil => simp at hBA
+--   | cons A_exp A_coef A_tl =>
+--   obtain ⟨fAC, hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
+--   cases B with
+--   | nil =>
+--     simp
+--     use fAC, A_tl, PreMS.nil
+--     simp [hA_coef]
+--     constructor
+--     · apply majorated_of_EventuallyEq _ hA_maj
+--       grw [hf_eq]
+--       simp
+--     use fAC, hA_tl, fun t ↦ fB t - basis_hd t ^ A_exp * fAC t
+--     simp [hA_tl]
+--     push fun _ ↦ _
+--     grw [hf_eq, hfB]
+--     convert EventuallyEq.refl _ _ using 1
+
+
+
+
+
+
 
 end PreMS
 

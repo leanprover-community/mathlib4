@@ -59,10 +59,12 @@ public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 public import Mathlib.Tactic.ComputeDegree

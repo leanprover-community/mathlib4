@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.Data.Seq.Basic
+import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 
 /-!
 # Main definitions
@@ -74,6 +74,14 @@ def corec {β : Type*} {basis_hd} {basis_tl} (f : β → Option (ℝ × PreMS ba
     PreMS (basis_hd :: basis_tl) :=
   Stream'.Seq.corec (fun a => (f a).map (fun (exp, coef, next) => ((exp, coef), next))) b
 
+noncomputable def gcorec {β γ : Type*} {basis_hd} {basis_tl}
+    (F : β → Option (ℝ × PreMS basis_tl × γ × β))
+    (op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl))
+    [Stream'.Seq.FriendOperation op]
+    (b : β) :
+    PreMS (basis_hd :: basis_tl) :=
+  Stream'.Seq.gcorec (fun a => (F a).map (fun (exp, coef, c, next) => ((exp, coef), c, next))) op b
+
 def destruct {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
     Option (ℝ × PreMS basis_tl × PreMS (basis_hd :: basis_tl)) :=
   (Seq.destruct ms).map (fun ((exp, coef), tl) => (exp, coef, tl))
@@ -134,10 +142,6 @@ theorem cons_eq_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp1 exp2 : �
   rw [cons, cons, Seq.cons_eq_cons]
   grind
 
-#check Stream'.Seq.corec_nil
-
-#check Stream'.Seq.corec_cons
-
 theorem corec_nil {β : Type*} {basis_hd} {basis_tl}
     {f : β → Option (ℝ × PreMS basis_tl × β)} {b : β} (h : f b = none) :
     corec f b = (nil : PreMS (basis_hd :: basis_tl)) := by
@@ -152,6 +156,29 @@ theorem corec_cons {β : Type*} {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS 
   simp [corec, cons]
   rw [Seq.corec_cons]
   simpa
+
+theorem gcorec_nil {β γ : Type*} {basis_hd} {basis_tl} {F : β → Option (ℝ × PreMS basis_tl × γ × β)}
+    {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    [Stream'.Seq.FriendOperation op] {b : β}
+    (h : F b = none) :
+    gcorec F op b = nil := by
+  unfold gcorec
+  rw [Stream'.Seq.gcorec_nil]
+  · simp [nil]
+  · simpa
+
+theorem gcorec_some {β γ : Type*} {basis_hd} {basis_tl}
+    {F : β → Option (ℝ × PreMS basis_tl × γ × β)}
+    {op : γ → PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl)}
+    [Stream'.Seq.FriendOperation op] {b : β}
+    {exp : ℝ} {coef : PreMS basis_tl} {c : γ} {next : β}
+    (h : F b = some (exp, coef, c, next)) :
+    gcorec F op b = cons exp coef (op c (gcorec F op next)) := by
+  unfold gcorec
+  rw [Stream'.Seq.gcorec_some]
+  · simp [cons]
+    rfl
+  · simpa
 
 @[simp]
 theorem destruct_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
@@ -239,6 +266,11 @@ def leadingExp (ms : PreMS (basis_hd :: basis_tl)) : WithBot ℝ :=
   | some (exp, _) => exp
 
 @[simp]
+theorem bot_lt_zero : (⊥ : WithBot ℝ) < 0 := by
+  rw [← sign_eq_neg_one_iff]
+  rfl
+
+@[simp]
 theorem leadingExp_nil : @leadingExp basis_hd basis_tl .nil = ⊥ := by
   simp [leadingExp]
 
@@ -252,8 +284,9 @@ theorem leadingExp_of_head :
   cases ms <;> simp
 
 /-- If `ms.leadingExp = ⊥` then `ms = []`. -/
+@[simp]
 theorem leadingExp_eq_bot :
-    ms = .nil ↔ ms.leadingExp = ⊥ := by
+    ms.leadingExp = ⊥ ↔ ms = nil := by
   cases ms <;> simp
 
 /-- If `ms.leadingExp` is real number `exp` then `ms = cons (exp, coef) tl` for some `coef` and
@@ -410,8 +443,8 @@ theorem majorated_self {f : ℝ → ℝ} {exp : ℝ}
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
 
 /-- If one can majorate `f` with `exp1`, then it can be majorated with any `exp2 > exp1`. -/
-theorem majorated_of_lt {f basis_hd : ℝ → ℝ} {exp1 exp2 : ℝ}
-    (h_lt : exp1 < exp2) (h : majorated f basis_hd exp1) :
+theorem majorated_of_le {f basis_hd : ℝ → ℝ} {exp1 exp2 : ℝ}
+    (h_lt : exp1 ≤ exp2) (h : majorated f basis_hd exp1) :
     majorated f basis_hd exp2 := by
   simp only [majorated] at *
   intro exp' h_exp
@@ -457,6 +490,13 @@ theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_exp g_exp : ℝ} (hf : maj
   apply IsLittleO.add
   · exact hf _ h_exp.left
   · exact hg _ h_exp.right
+
+theorem add_majorated' {f g basis_hd : ℝ → ℝ} {exp f_exp g_exp : ℝ}
+    (hf : majorated f basis_hd f_exp)
+    (hg : majorated g basis_hd g_exp) (hf_exp : f_exp ≤ exp) (hg_exp : g_exp ≤ exp) :
+    majorated (f + g) basis_hd exp := by
+  apply majorated_of_le _ (add_majorated hf hg)
+  simp [hf_exp, hg_exp]
 
 /-- Product of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
 majorated with exponent `f_exp + g_exp`. -/
