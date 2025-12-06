@@ -10,6 +10,7 @@ public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
 import Lean.Elab.Command
+public meta import Qq
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -126,6 +127,15 @@ structure InstanceOfConcern where
   fvarId : FVarId
   idx : Nat
 
+#check Expr.instantiate1
+open Qq
+run_meta do
+  let e := q(fun x : Nat => x + 1)
+  match e with
+  | .lam _ _ body _ => logInfo m!"{← Meta.isProp <|← inferType body}"
+  | _ => pure ()
+
+#check Meta.isProof
 
 def go (p : Expr → Bool)
     (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
@@ -140,6 +150,7 @@ def go (p : Expr → Bool)
         let fvarId := fvar[0]!.fvarId! -- wish we didn't have to do this...
         go p e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
     else
+      -- Could do better by taking a forallTelescope-like approach and going as many foralls forward as possible before instantiating, instantiating the bindong domains separately along the way.
       let e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
       -- trace[debug] "after instantiation: {e}"
       go p e (currentBinderIdx + 1) currentFVars
@@ -173,8 +184,8 @@ have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
-    CommandElabM Unit := do
-  if decl.type.hasInstanceBinderOf p then liftTermElabM do
+    CommandElabM Unit := liftTermElabM do
+  -- if decl.type.hasInstanceBinderOf p then liftTermElabM do
     let unusedInstances ← decl.type.collectUnusedInstanceIdxsOf p
     if let some maxIdx := unusedInstances.back? then
       unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
