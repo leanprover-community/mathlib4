@@ -159,7 +159,7 @@ lemma hasSum_qExpansion_of_norm_lt [ModularFormClass F Γ k] [Γ.HasDetPlusMinus
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
   convert hasSum_taylorSeries_on_ball (differentiableOn_cuspFunction_ball f hh hΓ)
     (by simpa using hq) using 2 with m
-  grind [qExpansion_coeff, sub_zero, smul_eq_mul]
+  grind [qExpansion_coeff, sub_zero]
 
 @[deprecated (since := "2025-12-04")] alias hasSum_qExpansion_of_abs_lt :=
   hasSum_qExpansion_of_norm_lt

@@ -68,7 +68,7 @@ See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWit
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
   smul a b := b * a.unop
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
 
 @[to_additive]
