@@ -3,8 +3,10 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Archimedean groups as localizations of submonoids of nonnegative elements
@@ -12,6 +14,8 @@ import Mathlib.GroupTheory.MonoidLocalization.Basic
 An Archimedean group is the localization of its submonoid of nonnegative elements
 at any nontrivial submonoid.
 -/
+
+@[expose] public section
 
 namespace Archimedean
 

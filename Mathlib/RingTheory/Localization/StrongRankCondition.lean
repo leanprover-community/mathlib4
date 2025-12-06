@@ -3,10 +3,12 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.GroupTheory.MonoidLocalization.Lemmas
-import Mathlib.RingTheory.Localization.Additive
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.GroupTheory.MonoidLocalization.Lemmas
+public import Mathlib.RingTheory.Localization.Additive
 
 /-!
 # Additive localization and strong rank condition
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Localization.Additive
 We show that a commutative semiring with cancellative addition satisfies the strong rank condition,
 by embedding it into its additive localization ("Grothendieck ring").
 -/
+
+@[expose] public section
 
 namespace AddSubmonoid
 
@@ -27,7 +31,7 @@ private def localizationMap (ι : Type*) :
     LocalizationMap (pi Set.univ fun _ : ι ↦ M) (ι → S) where
   toFun := Pi.map fun i ↦ ringHomEquivModuleIsScalarTower.symm ⟨‹_›, ‹_›⟩
   map_add' _ _ := funext fun i ↦ by simp
-  toIsLocalizationMap := .pi _ fun i ↦ by exact h
+  isLocalizationMap' := .pi _ fun i ↦ by exact h
 
 lemma localizationMap_smul {ι : Type*} {r : R} {x : ι → R} :
     localizationMap h ι (r • x) = r • localizationMap h ι x :=
@@ -55,7 +59,7 @@ private noncomputable def lmapFun' {α β : Type} [Finite α] (f : (α → R) �
   map_smul' r x := by
     let g α := DistribSMul.toAddMonoidHom (α → S) r
     suffices (mapFun h f).comp (g α) = (g β).comp (mapFun h f) from congr($this x)
-    refine (localizationMap h _).epic_of_localizationMap fun y ↦ ?_
+    refine (localizationMap h _).epic_of_localizationMap <| DFunLike.ext _ _ fun y ↦ ?_
     simp [mapFun, g, ← localizationMap_smul h, -AddMonoidHom.coe_mk]
 
 private noncomputable def lmapFun {α β : Type} [Finite α] (f : (α → R) →ₗ[R] β → R) :

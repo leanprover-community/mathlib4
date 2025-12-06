@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Localization.Additive
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The characteristic predicate of tensor product
@@ -665,7 +665,7 @@ theorem isLocalizationMap_iff_isTensorProduct (f : M →ₗ[ℕ] G) :
     IsLocalizationMap ⊤ f ↔ IsTensorProduct (zmultiplesHom _ f).toNatLinearMap where
   mp h := (⟨f.toAddHom, h⟩ : LocalizationMap ⊤ G).addMonoidHomTensor.symm.bijective
   mpr h := by
-    convert (isLocalizationMap_tensorProductMk M).comp_addEquiv h.equiv.toAddEquiv
+    convert (isLocalizationMap_tensorProductMk M).addEquiv_comp h.equiv.toAddEquiv
     ext; simp
 
 theorem isLocalizationMap_iff_isBaseChange (f : M →ₗ[ℕ] G) :
