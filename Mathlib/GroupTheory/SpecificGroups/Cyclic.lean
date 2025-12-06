@@ -15,6 +15,7 @@ public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.Tactic.Group
 
 /-!
+
 # Cyclic groups
 
 A group `G` is called cyclic if there exists an element `g : G` such that every element of `G` is of
@@ -587,6 +588,29 @@ namespace IsSimpleGroup
 
 section CommGroup
 
+variable [CommGroup α]
+
+@[to_additive]
+theorem not_mem_zpowers_zpow {g : α} {k : ℕ} (horder : orderOf g = 0) (hk : 1 < k) :
+    g ∉ Subgroup.zpowers (g ^ k) := by
+  rintro ⟨z, hz⟩
+  have hz' : g ^ (k * z) = g ^ (1 : ℤ) := by simpa [zpow_mul, zpow_ofNat] using hz
+  have hzk : ↑k * z = 1 := by
+    have finj : Function.Injective (fun n : ℤ => g ^ n) := by
+      simp_all only [orderOf_eq_zero_iff, injective_zpow_iff_not_isOfFinOrder, not_false_eq_true]
+    exact finj hz'
+  have k_div_one_nat : k ∣ 1 := Int.ofNat_dvd.mp (dvd_of_mul_right_eq z hzk)
+  simp_all
+
+@[to_additive]
+theorem not_mem_zpowsers_sq {g : α} (horder : orderOf g = 0) :
+    g ∉ Subgroup.zpowers (g ^ 2) :=
+  not_mem_zpowers_zpow horder (Nat.one_lt_two)
+
+end CommGroup
+
+section CommSimpleGroup
+
 variable [CommGroup α] [IsSimpleGroup α]
 
 @[to_additive]
@@ -597,8 +621,40 @@ instance (priority := 100) isCyclic : IsCyclic α := by
     (eq_bot_or_eq_top (Subgroup.zpowers g)).resolve_left (Subgroup.zpowers_ne_bot.2 hg)
   exact ⟨⟨g, (Subgroup.eq_top_iff' _).1 this⟩⟩
 
+/-- A commutative simple group is a finite group. -/
+@[to_additive /-- A commutative simple group is a finite group. -/]
+scoped instance : Finite α := by
+  obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic α)
+  by_contra hnf
+  have horder : ¬IsOfFinOrder g := by
+    intro h
+    simp_all only [not_finite_iff_infinite, ← Set.infinite_univ_iff, ← finite_zpowers,
+      Subgroup.coe_top, Set.Finite.not_infinite]
+  let H : Subgroup α  := Subgroup.zpowers (g ^ 2)
+  have hneq_Top : H ≠ ⊤ := by
+    intro htop
+    have h1 : g ^ 1 ∈ Subgroup.zpowers g := Subgroup.npow_mem_zpowers g 1
+    have hn1 : g ^ 1 ∉ H := by
+      simpa [H] using not_mem_zpowsers_sq (g := g) (orderOf_eq_zero_iff.mpr horder)
+    simp_all only [Subgroup.mem_top]
+  have hneq_bot : H ≠ ⊥ := by
+    intro hbot
+    have hng : g ^ 2 ≠ (1 : α) := by
+      by_contra he
+      have hg2 : orderOf g = 2 := by
+        refine orderOf_eq_prime_iff.mpr ?_; aesop
+      have h02 : (0 : ℕ) = 2 := by
+        simp [orderOf_eq_zero_iff.mpr horder] at hg2
+      simp_all only [ne_eq, bot_ne_top, not_false_eq_true, OfNat.zero_ne_ofNat]
+    have hmemg2 : g ^ 2 ∈ H := by
+      refine (Subgroup.mem_zpowers_iff).mpr ?_
+      exact ⟨1, by simp⟩
+    rw [hbot] at hmemg2; exact hng hmemg2
+  have := IsSimpleGroup.eq_bot_or_eq_top_of_normal (H := H) (Subgroup.normal_of_comm H)
+  rcases this <;> contradiction
+
 @[to_additive]
-theorem prime_card [Finite α] : (Nat.card α).Prime := by
+theorem prime_card : (Nat.card α).Prime := by
   have h0 : 0 < Nat.card α := Nat.card_pos
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   rw [Nat.prime_def]
@@ -620,17 +676,17 @@ theorem prime_card [Finite α] : (Nat.card α).Prime := by
     rw [← Subgroup.mem_bot, ← h]
     exact Subgroup.mem_zpowers _
 
-end CommGroup
+end CommSimpleGroup
 
 end IsSimpleGroup
 
 @[to_additive]
-theorem Group.is_simple_iff_prime_card [Finite α] [Group α] [IsMulCommutative α] :
+theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
+theorem CommGroup.is_simple_iff_prime_card [CommGroup α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
   Group.is_simple_iff_prime_card
@@ -773,6 +829,15 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
   exact Int.quotientZMultiplesNatEquivZMod n
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
+
+/-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
+theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
+    ∃ p : ℕ , (Nat.Prime p) ∧ Nonempty (Additive G ≃+ ZMod p) := by
+  obtain ⟨g, hg⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (inferInstance : IsCyclic G)
+  use orderOf g; rw [← (orderOf_eq_card_of_zpowers_eq_top hg).symm]
+  constructor
+  · exact IsSimpleGroup.prime_card
+  · exact ⟨(zmodAddCyclicAddEquiv (G := Additive G) inferInstance).symm⟩
 
 /-- The isomorphism from `Multiplicative (ZMod n)` to any cyclic group of `Nat.card` equal to `n`.
 -/
