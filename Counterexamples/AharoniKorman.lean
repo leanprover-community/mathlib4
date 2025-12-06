@@ -322,9 +322,8 @@ theorem scattered {f : ℚ → Hollom} (hf : StrictMono f) : False := by
   -- Take `x ≠ y` with `g x = g y`
   obtain ⟨x, y, hgxy, hxy'⟩ : ∃ x y, g x = g y ∧ x ≠ y := by simpa [Function.Injective] using hg''
   -- and wlog `x < y`
-  wlog hxy : x < y generalizing x y
-  · simp only [not_lt] at hxy
-    exact this y x hgxy.symm hxy'.symm (lt_of_le_of_ne' hxy hxy')
+  wlog! hxy : x < y generalizing x y
+  · exact this y x hgxy.symm hxy'.symm (lt_of_le_of_ne' hxy hxy')
   -- Now `f '' [x, y]` is infinite, as it is the image of an infinite set of rationals,
   have h₁ : (f '' Set.Icc x y).Infinite := (Set.Icc_infinite hxy).image hf.injective.injOn
   -- but it is contained in `[f x, f y]` by monotonicity

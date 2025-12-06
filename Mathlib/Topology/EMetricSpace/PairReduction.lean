@@ -298,8 +298,8 @@ lemma card_finset_logSizeBallSeq_card_eq_zero (hJ : J.Nonempty) :
 lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i ≠ j) :
     Disjoint
       ((logSizeBallSeq J hJ a c i).smallBall c) ((logSizeBallSeq J hJ a c j).smallBall c) := by
-  wlog h : i < j generalizing i j
-  · exact Disjoint.symm <| this hij.symm <| (ne_iff_lt_iff_le.mpr (not_lt.mp h)).mp hij.symm
+  wlog! h : i < j generalizing i j
+  · exact Disjoint.symm <| this hij.symm <| (ne_iff_lt_iff_le.mpr h).mp hij.symm
   apply Finset.disjoint_of_subset_right
   · exact (Finset.filter_subset _ _).trans (antitone_logSizeBallSeq_add_one_subset hJ h)
   simp [finset_logSizeBallSeq_add_one, Finset.disjoint_sdiff]
@@ -378,10 +378,10 @@ lemma edist_le_of_mem_pairSet (ha : 1 < a) (hJ_card : #J ≤ a ^ n) {s t : T}
     (h : (s, t) ∈ pairSet J a c) : edist s t ≤ n * c := by
   obtain ⟨i, hiJ, h'⟩ : ∃ i < #J, (s, t) ∈ pairSetSeq J a c i := by simpa [pairSet] using h
   have hJ : J.Nonempty := Finset.card_pos.mp (Nat.zero_lt_of_lt hiJ)
-  wlog hn : 1 ≤ n
+  wlog! hn : 1 ≤ n
   · convert zero_le (n * c)
     convert edist_self _
-    simp only [Nat.lt_one_iff.mp (Nat.lt_of_not_ge hn), pow_zero, Nat.cast_le_one] at hJ_card
+    simp only [Nat.lt_one_iff.mp hn, pow_zero, Nat.cast_le_one] at hJ_card
     have ⟨hs, ht⟩ := Finset.mem_product.mp (pairSet_subset h)
     exact Finset.card_le_one_iff.mp hJ_card ht hs
   simp only [pairSetSeq, hJ, ↓reduceDIte, logSizeBallStruct.ball, Finset.product_eq_sprod,
