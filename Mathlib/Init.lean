@@ -26,6 +26,10 @@ public import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 public import Mathlib.Tactic.MinImports
 public import Mathlib.Tactic.TacticAnalysis.Declarations
+-- This is a redundant import, but it is needed so that
+-- the linter doesn't complain about `ParseCommand` not importing `Header`.
+-- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
+public import Mathlib.Util.ParseCommand
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -68,7 +72,6 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
-  linter.flexible
   linter.hashCommand
   linter.oldObtain
   linter.privateModule
