@@ -57,6 +57,7 @@ import Archive.Imo.Imo2024Q2
 import Archive.Imo.Imo2024Q3
 import Archive.Imo.Imo2024Q5
 import Archive.Imo.Imo2024Q6
+import Archive.Imo.Imo2025Q3
 import Archive.Kuratowski
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
