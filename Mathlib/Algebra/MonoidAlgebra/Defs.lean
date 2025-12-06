@@ -82,15 +82,25 @@ scoped syntax:max (priority := high) term noWs "[" term "]" : term
 
 macro_rules | `($R[$M]) => `(AddMonoidAlgebra $R $M)
 
+open Lean.PrettyPrinter Delaborator
+
 /-- Unexpander for `AddMonoidAlgebra`. -/
 @[scoped app_unexpander AddMonoidAlgebra]
-meta def unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $k $g) => `($k[$g])
+meta def unexpander : Unexpander
+  | `($_ $R $M) => `($R[$M])
   | _ => throw ()
+
+/-- This prevents `ofCoeff x` being printed as `{ coeff := x }` by `delabStructureInstance`. -/
+@[app_delab ofCoeff] meta def delabOfCoeff : Delab := delabApp
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prevents `ofCoeff x` being printed as `{ coeff := x }` by `delabStructureInstance`. -/
+@[app_delab ofCoeff] meta def delabOfCoeff : Delab := delabApp
+
 section Semiring
 variable [Semiring R] {x y : MonoidAlgebra R M} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 
@@ -143,6 +153,16 @@ instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd (MonoidAlgebra R M) :=
 @[to_additive
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
 def single (m : M) (r : R) : MonoidAlgebra R M := .ofCoeff <| .single m r
+
+/-- Remove a term from an element of the monoid algebra. -/
+@[to_additive /-- Remove a term from an element of the monoid algebra. -/]
+def erase (m : M) (x : MonoidAlgebra R M) : MonoidAlgebra R M := .ofCoeff <| .erase m x.coeff
+
+@[to_additive (attr := simp)]
+lemma coeff_erase (m : M) (x : MonoidAlgebra R M) : (x.erase m).coeff = x.coeff.erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_erase (m : M) (x : M →₀ R) : ofCoeff (x.erase m) = (ofCoeff x).erase m := rfl
 
 section SMul
 
@@ -243,6 +263,14 @@ lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r�
 @[to_additive (attr := deprecated coeff_add (since := "2025-11-26"))]
 lemma coe_add (f g : MonoidAlgebra R M) : ⇑(f + g).coeff = f.coeff + g.coeff := rfl
 
+@[to_additive]
+lemma single_add_erase (m : M) (x : MonoidAlgebra R M) : single m (x.coeff m) + x.erase m = x := by
+  ext; simp [Finsupp.single_add_erase]
+
+@[to_additive]
+lemma erase_add_single (m : M) (x : MonoidAlgebra R M) : x.erase m + single m (x.coeff m) = x := by
+  ext; simp [Finsupp.erase_add_single]
+
 /-- `MonoidAlgebra.single` as an `AddMonoidHom`.
 
 TODO: Rename to `singleAddMonoidHom`. -/
@@ -306,6 +334,14 @@ protected theorem coeff_single_apply {a a' : M} {b : R} [Decidable (a = a')] :
 lemma single_eq_zero : single m r = 0 ↔ r = 0 := by simp [single]
 
 @[to_additive] lemma single_ne_zero : single m r ≠ 0 ↔ r ≠ 0 := by simp [single]
+
+@[to_additive (attr := elab_as_elim)]
+lemma induction {motive : MonoidAlgebra R M → Prop} (x : MonoidAlgebra R M)
+    (zero : motive 0)
+    (single_add : ∀ m r x, m ∉ x.coeff.support → r ≠ 0 → motive x → motive (single m r + x)) :
+    motive x :=
+  Finsupp.induction (motive := fun x ↦ motive <| ofCoeff x) x.coeff
+    (by simpa using zero) (fun m r x ↦ single_add m r (ofCoeff x))
 
 @[to_additive (attr := elab_as_elim)]
 lemma induction_linear {p : MonoidAlgebra R M → Prop} (x : MonoidAlgebra R M) (zero : p 0)

@@ -112,7 +112,7 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     rw [← g₁.erase_add_single ag, ← g₂.erase_add_single ag, this] at eq ⊢
     simp_rw [mul_add, add_right_cancel_iff] at eq
     rw [ih ag hag eq]
-    simp_rw [support_erase, Finset.erase_union_distrib]
+    simp [Finset.erase_union_distrib]
 
 @[to_additive (dont_translate := R) (relevant_arg := A)]
 instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
