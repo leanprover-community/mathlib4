@@ -85,12 +85,37 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}\nwhich \
   {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
 
+-- TODO: surely this exists somewhere, under some name?
+def _root_.Lean.Expr.isSorryAx : Expr → Bool
+  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
+  | _ => false
+
+-- -- Could cache visited exprs like `collectFVars` does; could try inverting and using `forEachWhere`
+-- def collectFVarsOutsideOfProofs (e : Expr) :
+--     StateRefT FVarIdSet MetaM Unit :=
+--   withTraceNode `debug (fun _ => pure m!"collecting {e}") do
+--   Meta.forEachExpr' e fun subExpr => do
+--     trace[debug] "{← do
+--       let mut msg := m!"{subExpr}"
+--       if !subExpr.hasFVar then msg :=  m!"{msg}{crossEmoji}no fvars"
+--       else if subExpr.isSorry then msg :=  m!"{msg}{crossEmoji}is sorry"
+--       else if (← Meta.isProof subExpr) then msg :=  m!"{msg}{crossEmoji}is proof"
+--       else if subExpr.isFVar then msg :=  m!"{msg}{checkEmoji}is fvar! ({subExpr.fvarId!.1})"
+--       pure msg}"
+--     -- If it doesn't have an fvar, or it's a sorry, or it's a proof, don't go further.
+--     pure (subExpr.hasFVar && !subExpr.isSorryAx) <&&> notM (Meta.isProof subExpr) <&&> do
+--       -- Every free variable is a free variable of concern, by design
+--       let .fvar fvarId := subExpr | return true
+--       -- Note many fvarIds will be encountered. Not much need to
+--       modifyThe FVarIdSet (·.insert fvarId)
+--       return false
+
 -- Could cache visited exprs like `collectFVars` does; could try inverting and using `forEachWhere`
 def collectFVarsOutsideOfProofs (e : Expr) :
     StateRefT FVarIdSet MetaM Unit :=
-  e.forEach' fun subExpr =>
+  Meta.forEachExpr' e fun subExpr =>
     -- If it doesn't have an fvar, or it's a sorry, or it's a proof, don't go further.
-    pure (subExpr.hasFVar && !subExpr.isSorry) <&&> notM (Meta.isProof subExpr) <&&> do
+    pure (subExpr.hasFVar && !subExpr.isSorryAx) <&&> notM (Meta.isProof subExpr) <&&> do
       -- Every free variable is a free variable of concern, by design
       let .fvar fvarId := subExpr | return true
       -- Note many fvarIds will be encountered. Not much need to
@@ -106,14 +131,17 @@ def go (p : Expr → Bool)
     (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
     StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
   let e := e.cleanupAnnotations
+  -- trace[debug] "looking at {e}"
   if h : e.isForall then
     collectFVarsOutsideOfProofs (e.forallDomain h)
     if e.binderInfo.isInstImplicit && p (e.forallDomain h) then
-      forallBoundedTelescope e (some 1) fun fvar e =>
+      forallBoundedTelescope e (some 1) fun fvar e => do
+        -- trace[debug] "after tele: {e}"
         let fvarId := fvar[0]!.fvarId! -- wish we didn't have to do this...
         go p e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
     else
-      letI e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
+      let e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
+      -- trace[debug] "after instantiation: {e}"
       go p e (currentBinderIdx + 1) currentFVars
   else
     match e with
@@ -124,6 +152,7 @@ def go (p : Expr → Bool)
       -- do not increment binder index
       go p e currentBinderIdx currentFVars
     | e =>
+      -- trace[debug] "end: {e}"
       collectFVarsOutsideOfProofs e
       return currentFVars
 
