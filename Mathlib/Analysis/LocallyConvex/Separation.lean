@@ -43,13 +43,17 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E : Type*}
+variable {E : Type*} {s t : Set E} {x y : E}
+
+section
+
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
 all of `s` to values strictly below `1`. -/
-theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGroup E]
-    [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
+theorem separate_convex_open_set (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
     ∃ f : StrongDual ℝ E, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
@@ -79,12 +83,6 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
     exact
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
-
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
-  {s t : Set E} {x y : E}
-section
-
-variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is open,
 there is a continuous linear functional which separates them. -/
@@ -209,7 +207,11 @@ end
 
 namespace RCLike
 
-variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable {𝕜 : Type*} [RCLike 𝕜]
+
+section
+
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
 noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : StrongDual ℝ E →ₗ[ℝ] StrongDual 𝕜 E :=
@@ -308,6 +310,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
       (convex_singleton y) isClosed_singleton (disjoint_singleton.2 hxy)
   exact ⟨f, by linarith [hs x rfl, ht y rfl]⟩
 
+/-- A closed convex set is an intersection of halfspaces. -/
 theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : StrongDual 𝕜 E, { x | ∃ y ∈ s, re (l x) ≤ re (l y) } = s := by
   rw [Set.iInter_setOf]
@@ -316,4 +319,37 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
+
+/-- A variant of `iInter_halfSpaces_eq`. If `s` is nonempty, then all the halfspaces are
+nontrivial. -/
+theorem iInter_halfSpaces_eq' (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ∃ (L : (sᶜ : Set E) → StrongDual 𝕜 E) (c : (sᶜ : Set E) → ℝ),
+    ⋂ y, { x | re (L y x) ≤ c y } = s ∧ (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
+  have (y : (sᶜ : Set E)) := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ y.2
+  choose L c hLc using this
+  refine ⟨L, c, ?_, fun h y => ?_⟩
+  · rw [iInter_setOf]
+    refine subset_antisymm (fun x hx => ?_) fun x hx l => ((hLc l).1 x hx).le
+    by_contra!
+    simp only [Subtype.forall, mem_compl_iff, mem_setOf_eq] at hx
+    linarith [(hLc ⟨x, this⟩).2, hx x this]
+  · by_contra! p
+    have := lt_trans ((hLc y).1 h.some h.some_mem) (hLc y).2
+    simp [p] at this
+
+/-- A closed convex set with a Lindelöf complement is an intersection of countably many
+halfspaces. -/
+theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E] (hs₁ : Convex ℝ s)
+    (hs₂ : IsClosed s) : ∃ L : ℕ → StrongDual 𝕜 E, ∃ c : ℕ → ℝ,
+    ⋂ n, { x | re (L n x) ≤ c n } = s ∧ (s.Nonempty → ∀ y, ∃ x, re (L y x) ≠ 0) := by
+  by_cases hsc : Nonempty (sᶜ : Set E)
+  · obtain ⟨L, c, hLc⟩ := iInter_halfSpaces_eq' (𝕜 := 𝕜) hs₁ hs₂
+    have ⟨k, hk⟩ := eq_closed_inter_nat (fun y => { x | re (L y x) ≤ c y })
+      (fun y => isClosed_le (continuous_re.comp (L y).continuous) continuous_const)
+    exact ⟨L ∘ k, c ∘ k, hk.trans hLc.1, fun hs n => hLc.2 hs (k n)⟩
+  · sorry
+
+
+end
+
 end RCLike
