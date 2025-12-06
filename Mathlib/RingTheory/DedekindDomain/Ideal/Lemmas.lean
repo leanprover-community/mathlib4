@@ -1004,7 +1004,7 @@ noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B 
   (factors (p.map (algebraMap A B))).toFinset
 
 variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.IsTorsionFree A B]
 
 include hpb in
 theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
