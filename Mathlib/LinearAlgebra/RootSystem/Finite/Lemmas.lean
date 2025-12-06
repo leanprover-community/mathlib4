@@ -91,7 +91,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
-  cutsat
+  lia
 
 variable [IsDomain R]
 -- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
@@ -215,7 +215,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       simp_all
     simp_rw [coxeterWeightIn, Int.mul_mem_one_two_three_iff, mem_insert_iff, mem_singleton_iff,
       Prod.mk.injEq] at this
-    cutsat
+    lia
   · -- The case where the two roots are linearly dependent
     have : (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(1, 4), (2, 2), (4, 1)} : Set _) := by
       have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
@@ -322,8 +322,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h
     refine ⟨i, j, fun k ↦ ?_⟩
-    by_contra! hk
-    obtain ⟨hki_ne, hkj_ne⟩ := hk
+    by_contra! ⟨hki_ne, hkj_ne⟩
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
