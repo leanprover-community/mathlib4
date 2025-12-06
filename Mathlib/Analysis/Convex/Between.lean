@@ -9,6 +9,7 @@ public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Interval.Set.Group
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.Data.Sign.Order
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Tactic.FieldSimp
 
