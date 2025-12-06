@@ -225,7 +225,7 @@ theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i 
 
 variable (M) in
 @[simp]
-private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
+private theorem mem_acceptsFrom_sep {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
   | nil => simp only [nil_mem_acceptsFrom, mem_setOf_eq]; tauto
