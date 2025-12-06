@@ -412,8 +412,7 @@ theorem le_weightedOrder_subst_of_forall_ne_zero
   simp [Finsupp.weight_apply, Finsupp.sum, (ne_zero_iff_weightedOrder_finite _).mp (ha0 _)]
 
 theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
-    (⨅ (i : σ), (order ∘ a) i) * f.order ≤
-      (f.subst a).order := by
+    (⨅ i, (a i).order) * f.order ≤ (f.subst a).order := by
   refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ ha _)
   simp only [ne_eq, le_iInf_iff]
   intro i hi
