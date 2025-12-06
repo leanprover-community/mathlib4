@@ -59,7 +59,7 @@ The cost of allowing a restriction of `M` to be 'bigger' than `M` itself is that
 the statement `M ↾ R ≤r M` is only true with the hypothesis `R ⊆ M.E`
 (at least, if we want `≤r` to be a partial order).
 But this isn't too inconvenient in practice. Indeed `(· ⊆ M.E)` proofs
-can often be automatically provided by `aesop_mat`.
+can often be automatically provided by `ground`.
 
 We define the restriction order `≤r` to give a `PartialOrder` instance on the type synonym
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
@@ -152,7 +152,7 @@ theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ �
 @[simp] theorem restrict_idem (M : Matroid α) (R : Set α) : M ↾ R ↾ R = M ↾ R := by
   rw [M.restrict_restrict_eq Subset.rfl]
 
-@[simp] theorem isBase_restrict_iff (hX : X ⊆ M.E := by aesop_mat) :
+@[simp] theorem isBase_restrict_iff (hX : X ⊆ M.E := by ground) :
     (M ↾ X).IsBase I ↔ M.IsBasis I X := by
   simp_rw [isBase_iff_maximal_indep, IsBasis, and_iff_left hX, maximal_iff, restrict_indep_iff]
 
@@ -194,7 +194,7 @@ theorem isBasis_restrict_iff' : (M ↾ R).IsBasis I X ↔ M.IsBasis I (X ∩ M.E
   rw [inter_eq_self_of_subset_left hXR, and_iff_left_iff_imp]
   exact fun h ↦ h.subset.trans hXR
 
-theorem isBasis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
+theorem isBasis_restrict_iff (hR : R ⊆ M.E := by ground) :
     (M ↾ R).IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ R := by
   rw [isBasis_restrict_iff', and_congr_left_iff]
   intro hXR
@@ -280,7 +280,7 @@ theorem IsRestriction.antisymm {M' : Matroid α} (h : M ≤r M') (h' : M' ≤r M
 theorem IsRestriction.trans {M₁ M₂ M₃ : Matroid α} (h : M₁ ≤r M₂) (h' : M₂ ≤r M₃) : M₁ ≤r M₃ :=
   le_trans (α := Matroidᵣ α) h h'
 
-theorem restrict_isRestriction (M : Matroid α) (R : Set α) (hR : R ⊆ M.E := by aesop_mat) :
+theorem restrict_isRestriction (M : Matroid α) (R : Set α) (hR : R ⊆ M.E := by ground) :
     M ↾ R ≤r M :=
   ⟨R, hR, rfl⟩
 
@@ -386,7 +386,7 @@ theorem Dep.of_isRestriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
   rw [restrict_dep_iff] at hX
   exact ⟨hX.1, hX.2.trans hR⟩
 
-theorem Dep.dep_isRestriction (hX : M.Dep X) (hNM : N ≤r M) (hXE : X ⊆ N.E := by aesop_mat) :
+theorem Dep.dep_isRestriction (hX : M.Dep X) (hNM : N ≤r M) (hXE : X ⊆ N.E := by ground) :
     N.Dep X := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hX.not_indep]
 

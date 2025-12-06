@@ -96,6 +96,9 @@ register_simp_attr enat_to_nat_coe
 /-- A simp set for the `pnat_to_nat` tactic. -/
 register_simp_attr pnat_to_nat_coe
 
+/-- A simp set for the `ground` tactic. -/
+register_simp_attr ground_simps
+
 /-- `mon_tauto` is a simp set to prove tautologies about morphisms from some (tensor) power of `M`
 to `M`, where `M` is a (commutative) monoid object in a (braided) monoidal category.
 
