@@ -44,6 +44,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 `Archive` and `Counterexamples`. (`tests` omits the first two options.) -/
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
+    ⟨`linter.unusedVariables, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`experimental.module, true⟩,
     -- Enforcing the module system's restrictions on using private declarations in public contexts
