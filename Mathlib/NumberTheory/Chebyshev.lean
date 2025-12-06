@@ -287,12 +287,6 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
-theorem log_le_two_mul_sqrt_self {x : ℝ} (hx : 0 ≤ x) :
-    x.log ≤ 2 * x.sqrt := by
-  apply div_le_iff₀' (by linarith) |>.mp
-  rw [← log_sqrt hx]
-  exact log_le_self <| sqrt_nonneg _
-
 /- Chebyshev's bound `ψ x ≤ c x` with an explicit constnat.
 Note that `Chebyshev.psi_le` gives a sharper bound with a better main term. -/
 theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
@@ -307,7 +301,9 @@ theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
   calc
   _ ≤ (2 * x.sqrt) * (2 * x.sqrt) := by
     gcongr
-    exact log_le_two_mul_sqrt_self (by linarith)
+    grw [sqrt_eq_rpow, log_le_rpow_div (ε := 1 / 2) (by linarith) (by linarith)]
+    field_simp
+    rfl
   _ = 4 * (x.sqrt) ^ 2 := by ring
   _ = _ := by
     rw [sq_sqrt (by linarith)]
