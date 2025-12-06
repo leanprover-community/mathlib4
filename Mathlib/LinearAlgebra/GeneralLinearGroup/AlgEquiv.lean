@@ -13,10 +13,10 @@ public import Mathlib.LinearAlgebra.GeneralLinearGroup.Defs
 /-!
 # Algebra automorphisms in `End K V` are inner
 
-This file shows that given any algebra equivalence `f : End K V ≃ₐ End K V`,
-there exists a linear equivalence `T : V ≃ₗ V` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
+This file shows that given any algebra equivalence `f : End K V ≃ₐ[K] End K V`,
+there exists a linear equivalence `T : V ≃ₗ[K] V` such that `f x = T ∘ₗ x ∘ₗ T.symm`.
 In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup K V` to
-`End K V ≃ₐ End K V` is surjective.
+`End K V ≃ₐ[K] End K V` is surjective.
 -/
 
 namespace Module.End
