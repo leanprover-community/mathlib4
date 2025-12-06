@@ -251,11 +251,8 @@ theorem Projective.exists_dual_ne_zero [Projective R M] {x : M} (hx : x ≠ 0) :
     ∃ f : Dual R M, f x ≠ 0 :=
   have ⟨M', _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R M›
   let b := Free.chooseBasis R M'
-  have : i x ≠ 0 := by
-    by_contra!
-    apply_fun s at this
-    simp [← LinearMap.comp_apply, his, hx] at this
-  have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
+  have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
+  have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| ext h
   ⟨b.coord j ∘ₗ i, hj⟩
 
 end Ring
