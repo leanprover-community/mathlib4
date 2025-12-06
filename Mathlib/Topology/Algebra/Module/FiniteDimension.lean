@@ -512,6 +512,9 @@ theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E 
   have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
   exact (completeSpace_congr this).1 inferInstance
 
+instance {𝕜 : Type*} [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E] :
+    CompleteSpace E := FiniteDimensional.complete 𝕜 E
+
 variable {𝕜 E}
 
 /-- A finite-dimensional subspace is complete. -/
