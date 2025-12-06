@@ -16,7 +16,7 @@ In this file we define a homeomorphism between nonzero elements of a normed spac
 and `Metric.sphere (0 : E) r × Set.Ioi (0 : ℝ)`, `r > 0`.
 One may think about it as generalization of polar coordinates to any normed space.
 
-We also specialize this definition to the case `r = 1` and prove
+We also specialize this definition to the case `r = 1` and prove TODO
 -/
 
 @[expose] public section
