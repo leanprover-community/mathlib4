@@ -153,7 +153,7 @@ noncomputable def Homotopy.precomp
     rw [← fac, Category.assoc, ← comp_whiskerRight_assoc, f.comm,
       comp_whiskerRight_assoc, h.rel, whiskerRight_fst_assoc]
 
-/-- The postcomposition by a relative morphism of homotopy classes of relative morphisms. -/
+/-- The postcomposition of an homotopy class by a relative morphism. -/
 def HomotopyClass.postcomp (h : HomotopyClass A B φ)
     (f' : RelativeMorphism B C ψ) {φψ : (A : SSet) ⟶ (C : SSet)}
     (fac : φ ≫ ψ = φψ) :
@@ -168,6 +168,21 @@ lemma postcomp_homotopyClass
     f.homotopyClass.postcomp f' fac =
       (f.comp f' fac).homotopyClass := rfl
 
+/-- The precomposition of an homotopy class with a relative morphism. -/
+noncomputable def HomotopyClass.precomp
+    (h : HomotopyClass B C ψ)
+    (f' : RelativeMorphism A B φ) {φψ : (A : SSet) ⟶ (C : SSet)}
+    (fac : φ ≫ ψ = φψ) :
+    HomotopyClass A C φψ :=
+  Quot.lift (fun f ↦ (f'.comp f fac).homotopyClass)
+    (fun _ _ ⟨h⟩ ↦ (h.precomp f' fac).eq) h
+
+@[simp]
+lemma precomp_homotopyClass
+    (f : RelativeMorphism A B φ) (f' : RelativeMorphism B C ψ)
+    {φψ : (A : SSet) ⟶ (C : SSet)} (fac : φ ≫ ψ = φψ) :
+    f'.homotopyClass.precomp f fac =
+      (f.comp f' fac).homotopyClass := rfl
 end RelativeMorphism
 
 end SSet
