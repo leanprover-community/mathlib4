@@ -50,7 +50,7 @@ variable {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D)
 
 /-- Given a functor `C ⥤ D`, we obtain a morphism `nerve C ⟶ nerve D` of simplicial sets. -/
 @[simps -isSimp]
-def nerveMap : nerve C ⟶ nerve D :=
+def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : nerve C ⟶ nerve D :=
   { app := fun _ => (F.mapComposableArrows _).obj }
 
 lemma nerveMap_app_mk₀ (x : C) :
@@ -152,6 +152,7 @@ section
 attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
 
 /-- Bijection between edges in the nerve of category and morphisms in the category. -/
+@[simps -isSimp]
 def homEquiv {x y : ComposableArrows C 0} :
     (nerve C).Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
   toFun e := eqToHom (by simp) ≫ e.edge.hom ≫ eqToHom (by simp)

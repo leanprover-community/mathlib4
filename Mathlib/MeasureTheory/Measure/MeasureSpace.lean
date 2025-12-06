@@ -1177,6 +1177,10 @@ lemma nonempty_of_neZero (μ : Measure α) [NeZero μ] : Nonempty α :=
   (isEmpty_or_nonempty α).resolve_left fun h ↦ by
     simpa [eq_empty_of_isEmpty] using NeZero.ne (μ univ)
 
+theorem measure_support_eq_zero_iff {E : Type*} [Zero E] (μ : Measure α := by volume_tac)
+    {f : α → E} : μ f.support = 0 ↔ f =ᵐ[μ] 0 := by
+  rfl
+
 section Sum
 variable {f : ι → Measure α}
 
@@ -1327,6 +1331,10 @@ instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite 
     · rwa [compl_mem_cofinite, measure_toMeasurable]
     · rw [compl_subset_comm]
       apply subset_toMeasurable
+
+theorem cofinite_le_ae : μ.cofinite ≤ ae μ := by
+  intro s hs
+  simp_all [mem_cofinite, mem_ae_iff]
 
 end Measure
 

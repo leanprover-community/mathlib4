@@ -124,7 +124,7 @@ theorem num_series' [Field α] (i : ℕ) :
     | zero => simp [mul_sub, zero_pow, constantCoeff_indicator]
     | succ n =>
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
-        LinearMap.map_sub, reduceCtorEq]
+        map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
       rw [sum_ite, sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
@@ -269,7 +269,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     #(Nat.Partition.odds n) = coeff n (partialOddGF α m) := by
-  rw [← partialOddGF_prop, Nat.Partition.odds]
+  rw [← partialOddGF_prop, Nat.Partition.odds, Nat.Partition.restricted]
   congr with p
   apply forall₂_congr
   intro i hi
@@ -339,8 +339,8 @@ theorem same_gf [Field α] (m : ℕ) :
   set! π₃ : PowerSeries α := ∏ i ∈ range m, (1 + X ^ (i + 1)) with hπ₃
   rw [← hπ₃] at ih
   have h : constantCoeff (1 - X ^ (2 * m + 1) : α⟦X⟧) ≠ 0 := by
-    rw [RingHom.map_sub, RingHom.map_pow, constantCoeff_one, constantCoeff_X,
-      zero_pow (2 * m).succ_ne_zero, sub_zero]
+    rw [map_sub, map_pow, constantCoeff_one, constantCoeff_X, zero_pow (2 * m).succ_ne_zero,
+      sub_zero]
     exact one_ne_zero
   calc
     (∏ i ∈ range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *

@@ -63,7 +63,7 @@ namespace CCState
 
 open CCM
 
-/-- Make an new `CCState` from the given `config`. -/
+/-- Make a new `CCState` from the given `config`. -/
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false

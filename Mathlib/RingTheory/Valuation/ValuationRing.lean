@@ -137,12 +137,12 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul]; congr 1; linear_combination h
+    simp only [← map_mul]; congr 1; linear_combination h
   · left
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul]; congr 1; linear_combination h
+    simp only [← map_mul]; congr 1; linear_combination h
 
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
@@ -209,13 +209,13 @@ noncomputable def valuation : Valuation K (ValueGroup A K) where
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      simp only [← map_mul, ← map_add]
       congr 1; linear_combination h
     · apply le_trans _ (le_max_right _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      simp only [← map_mul, ← map_add]
       congr 1; linear_combination h
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
@@ -433,7 +433,7 @@ lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_inje
     (hinj : Function.Injective (algebraMap 𝒪 K)) :
     IsFractionRing 𝒪 K := by
   have : IsDomain 𝒪 := hinj.isDomain
-  constructor
+  constructor; constructor
   · intro a
     simpa using hinj.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
   · intro x

@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
@@ -32,7 +32,6 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
-(A computable `hoFunctor.Monoidal` instance is obtained in the file `HoFunctorMonoidal`.)
 
 -/
 
@@ -47,10 +46,10 @@ namespace SSet
 
 namespace Truncated
 
-section liftOfIsStrictSegal
-/-! The goal of this section is to define `SSet.Truncated.liftOfIsStrictSegal`
+section liftOfStrictSegal
+/-! The goal of this section is to define `SSet.Truncated.liftOfStrictSegal`
 which allows to construct of morphism `X ⟶ Y` of `2`-truncated simplicial sets
-from the data of maps on `0`- and `1`-simplices when `Y` is strict segal.
+from the data of maps on `0`- and `1`-simplices when `Y` is strict Segal.
 -/
 
 variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌₂) (f₁ : X _⦋1⦌₂ → Y _⦋1⦌₂)
@@ -62,9 +61,9 @@ variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌�
   (hσ : ∀ (x : X _⦋0⦌₂), f₁ (X.map (σ₂ 0).op x) = Y.map (σ₂ 0).op (f₀ x))
   (hY : Y.StrictSegal)
 
-namespace liftOfIsStrictSegal
+namespace liftOfStrictSegal
 
-/-- Auxiliary definition for `SSet.Truncated.liftOfIsStrictSegal`. -/
+/-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
   (hY.spineEquiv 2).symm
     (.mk₂ (Y.spine 1 (by simp) (f₁ (X.map (δ₂ 2).op x)))
@@ -119,7 +118,6 @@ lemma hσ'₀ (x : X _⦋1⦌₂) :
 include hσ in
 lemma hσ'₁ (x : X _⦋1⦌₂) :
     f₂ f₀ f₁ hδ₁ hδ₀ hY (X.map (σ₂ 1).op x) = Y.map (σ₂ 1).op (f₁ x) := by
-  have := hσ
   apply (hY.spineEquiv 2).injective
   ext i
   fin_cases i
@@ -135,7 +133,7 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
       ← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_one,
       op_comp, FunctorToTypes.map_comp_apply, hδ₀]
 
-/-- Auxiliary definition for `SSet.Truncated.liftOfIsStrictSegal`. -/
+/-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
   obtain ⟨n, hn⟩ := n
   induction n using SimplexCategory.rec with | _ n
@@ -162,35 +160,35 @@ lemma naturalityProperty_eq_top :
       · ext; apply hδ'₀ f₀ f₁ hδ₁ hδ₀ hY
       · ext; apply hδ'₁ f₀ f₁ hδ₁ hδ₀ H hY
       · ext; apply hδ'₂ f₀ f₁ hδ₁ hδ₀ hY
-    · omega
+    · cutsat
   · obtain _ | _ | n := n
     · fin_cases i
       ext; apply hσ
     · fin_cases i
       · ext; apply hσ'₀ f₀ f₁ hδ₁ hδ₀ hσ hY
       · ext; apply hσ'₁ f₀ f₁ hδ₁ hδ₀ hσ hY
-    · omega
+    · cutsat
 
-end liftOfIsStrictSegal
+end liftOfStrictSegal
 
-open liftOfIsStrictSegal in
+open liftOfStrictSegal in
 /-- Constructor for morphisms `X ⟶ Y` between `2`-truncated simplicial sets from
-the data of maps on `0`- and `1`-simplices when `Y` is strict segal. -/
-def liftOfIsStrictSegal : X ⟶ Y where
-  app := liftOfIsStrictSegal.app f₀ f₁ hδ₁ hδ₀ hY
+the data of maps on `0`- and `1`-simplices when `Y` is strict Segal. -/
+def liftOfStrictSegal : X ⟶ Y where
+  app := liftOfStrictSegal.app f₀ f₁ hδ₁ hδ₀ hY
   naturality _ _ φ :=
-    (liftOfIsStrictSegal.naturalityProperty_eq_top f₀ f₁ hδ₁ hδ₀ H hσ hY).symm.le
+    (liftOfStrictSegal.naturalityProperty_eq_top f₀ f₁ hδ₁ hδ₀ H hσ hY).symm.le
       φ.unop (by simp)
 
 @[simp]
-lemma liftOfIsStrictSegal_app_0 :
-    (liftOfIsStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = f₀ := rfl
+lemma liftOfStrictSegal_app_0 :
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋0⦌₂) = f₀ := rfl
 
 @[simp]
-lemma liftOfIsStrictSegal_app_1 :
-    (liftOfIsStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = f₁ := rfl
+lemma liftOfStrictSegal_app_1 :
+    (liftOfStrictSegal f₀ f₁ hδ₁ hδ₀ H hσ hY).app (op ⦋1⦌₂) = f₁ := rfl
 
-end liftOfIsStrictSegal
+end liftOfStrictSegal
 
 namespace HomotopyCategory
 
@@ -224,7 +222,7 @@ lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
 to a functor `X.HomotopyCategory ⥤ C`. -/
 def homToNerveMk (F : X.HomotopyCategory ⥤ C) : X ⟶ (truncation 2).obj (nerve C) :=
-  liftOfIsStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x)))
+  liftOfStrictSegal (fun x ↦ nerveEquiv.symm (F.obj (mk x)))
     (fun f ↦ ComposableArrows.mk₁ (F.map (homMk (Truncated.Edge.mk' f))))
     (fun f ↦ ComposableArrows.ext₀ rfl)
     (fun f ↦ ComposableArrows.ext₀ rfl)
@@ -372,7 +370,6 @@ instance : nerveFunctor₂.{u, u}.Faithful :=
 
 instance : nerveFunctor₂.{u, u}.Full :=
   (fullyFaithfulNerveFunctor₂).full
-
 
 instance : Reflective nerveFunctor₂.{u, u} := Reflective.mk _ SSet.Truncated.nerve₂Adj
 

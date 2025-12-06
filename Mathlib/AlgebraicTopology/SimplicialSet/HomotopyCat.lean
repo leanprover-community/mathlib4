@@ -71,7 +71,7 @@ lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
     Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
   rfl
 
-/-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphisms
+/-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphism
 of `2`-truncated simplicial sets. -/
 @[simps]
 def map {S T : SSet.Truncated 2} (f : S ⟶ T) :
@@ -103,41 +103,31 @@ variable {C : Type u} [Category.{v} C]
 
 /-- An equivalence between the type of objects underlying a category and the type of 0-simplices in
 the 2-truncated nerve. -/
-@[simps -isSimp]
-def nerveEquiv : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C where
-  toFun X := X.obj 0
-  invFun X := .mk₀ X
-  left_inv _ := ComposableArrows.ext₀ rfl
+@[simps! -isSimp]
+def nerveEquiv : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C :=
+  CategoryTheory.nerveEquiv
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
 def nerveHomEquiv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
-    (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
-  toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
-      eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
-  invFun f :=
-    { edge := ComposableArrows.mk₁ f
-      src_eq := ComposableArrows.ext₀ rfl
-      tgt_eq := ComposableArrows.ext₀ rfl }
-  left_inv φ := by
-    ext
-    exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
-      (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
-  right_inv f := by cat_disch
+    (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) :=
+  nerve.homEquiv
+
+lemma nerveHomEquiv_apply {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))}
+    (f : X ⟶ Y) :
+    nerveHomEquiv f = eqToHom (congr_arg ComposableArrows.left f.src_eq.symm) ≫
+      f.edge.hom ≫ eqToHom (congr_arg ComposableArrows.left f.tgt_eq) :=
+  rfl
 
 @[simp]
 lemma nerveHomEquiv_id (X : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
     nerveHomEquiv (𝟙rq X) = 𝟙 _ :=
-  nerveHomEquiv.symm.injective (by
-    simp only [nerveEquiv_apply, Equiv.symm_apply_apply]
-    obtain ⟨x, rfl⟩ := ComposableArrows.mk₀_surjective X
-    ext
-    exact ComposableArrows.ext₁ rfl rfl (by aesop))
+  nerve.homEquiv_id _
 
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
 def ofNerve₂ (C : Type u) [Category.{u} C] :
     ReflQuiv.of (OneTruncation₂ ((truncation 2).obj (nerve C))) ≅ ReflQuiv.of C :=
   ReflQuiv.isoOfEquiv.{u,u} OneTruncation₂.nerveEquiv
-    (fun _  _↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
+    (fun _ _ ↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
 
 lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
     {F G : X ⟶ ((truncation 2).obj (nerve C))}
@@ -159,9 +149,10 @@ def OneTruncation₂.ofNerve₂.natIso :
   NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C)
     (fun F ↦ ReflPrefunctor.ext (by cat_disch) (fun x y f ↦ by
       obtain ⟨f, rfl, rfl⟩ := f
-      simp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso,
-        Quiv.isoOfEquiv, nerveMap_app, nerveHomEquiv, nerveFunctor₂,
-        SimplicialObject.truncation, ReflQuiv.category]))
+      dsimp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso,
+        Quiv.isoOfEquiv, nerveHomEquiv_apply]
+      simp only [comp_id, id_comp]
+      rfl))
 
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
@@ -235,9 +226,8 @@ inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
         (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
 
-
 @[deprecated "HoRel₂.of_compStruct" (since := "2025-11-06")]
-lemma HoRel₂.mk' {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
+lemma HoRel₂.mk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
     {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
     (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     HoRel₂ V
@@ -255,11 +245,9 @@ variable (V W : SSet.Truncated.{u} 2)
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
 def HomotopyCategory : Type u :=
   Quotient (OneTruncation₂.HoRel₂ V)
+  deriving Category.{u}
 
 namespace HomotopyCategory
-
-instance : Category.{u} V.HomotopyCategory :=
-  inferInstanceAs (Category (CategoryTheory.Quotient _))
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
 simplicial set `V` to its homotopy category. -/
@@ -285,6 +273,14 @@ lemma ext {x y : V.HomotopyCategory} (h : x.as.as = y.as.as) : x = y := by
   obtain ⟨y, rfl⟩ := y.mk_surjective
   obtain rfl : x = y := h
   rfl
+
+@[elab_as_elim, cases_eliminator]
+protected lemma cases_on {motive : V.HomotopyCategory → Prop}
+    (h : ∀ (x : V _⦋0⦌₂), motive (.mk x))
+    (x : V.HomotopyCategory) :
+    motive x := by
+  obtain ⟨x', rfl⟩ := mk_surjective x
+  exact h x'
 
 /-- The morphism in the homotopy category of a `2`-truncated simplicial set that
 is induced by an edge. -/
@@ -319,7 +315,7 @@ morphisms in `V.HomotopyCategory` corresponding to the edges of `V`.
 (Any morphism in `V.HomotopyCategory` is in the multiplicative closure
 of this family of morphisms, see `multiplicativeClosure_morphismPropertyHomMk`.) -/
 def morphismPropertyHomMk : MorphismProperty V.HomotopyCategory :=
-    .ofHoms (fun (e : Σ (x y : V _⦋0⦌₂), Edge x y) ↦ homMk e.2.2)
+  .ofHoms (fun (e : Σ (x y : V _⦋0⦌₂), Edge x y) ↦ homMk e.2.2)
 
 lemma morphismPropertyHomMk_of_edge {x y : V _⦋0⦌₂} (e : Edge x y) :
     morphismPropertyHomMk V (homMk e) := by
@@ -392,7 +388,8 @@ variable {F G : V.HomotopyCategory ⥤ D}
 section
 
 variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
-  (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e))
+  (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),
+    F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
@@ -412,7 +409,7 @@ section
 
 variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
   (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
-    (iso x).hom ≫ G.map (homMk e))
+    (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
@@ -434,9 +431,7 @@ lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
       F.map (homMk e) = eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm) :
     F = G :=
   Functor.ext_of_iso (mkNatIso (fun x ↦ eqToIso (h₁ x))
-    (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _) (fun x ↦ by
-      obtain ⟨x, rfl⟩ := x.mk_surjective
-      simp)
+    (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _)
 
 end
 
@@ -521,7 +516,7 @@ theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism. -/
-theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D]
+theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D : Type*} [Category D]
     (F₁ F₂ : V.HomotopyCategory ⥤ D)
     (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
@@ -532,6 +527,10 @@ end Truncated
 /-- The functor that takes a simplicial set to its homotopy category by passing through the
 2-truncation. -/
 def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFunctor₂
+
+/-- For a simplicial set `X`, the underlying type of `hoFunctor.obj X` is equivalent to `X _⦋0⦌`. -/
+def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
+  (Quotient.equiv.{u,u} _).trans (Quotient.equiv _)
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/

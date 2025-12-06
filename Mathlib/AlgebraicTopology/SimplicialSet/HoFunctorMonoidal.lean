@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-import Mathlib.CategoryTheory.Functor.CurryingThree
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
+public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+public import Mathlib.CategoryTheory.Functor.CurryingThree
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # The homotopy functor is monoidal
@@ -16,6 +18,8 @@ of categories `(X ⊗ Y).HomotopyCategory ≌ X.HomotopyCategory × Y.HomotopyCa
 (see `SSet.Truncated.HomotopyCategory.BinaryProduct.equivalence`).
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -193,13 +197,10 @@ def inverseCompFunctorIso : inverse X Y ⋙ functor X Y ≅ 𝟭 _ :=
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)
       (fun y₀ y₁ e ↦ by
         dsimp
-        rw [inverse_map_mkHom_id_homMk]
         cat_disch))
       (fun x₀ x₁ e ↦ by
         ext y : 2
         obtain ⟨y, rfl⟩ := y.mk_surjective
-        dsimp
-        rw [inverse_map_mkHom_homMk_id]
         cat_disch))
 
 @[simp]
@@ -244,18 +245,10 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
     (mapHomotopyCategory f).prod (𝟭 _) ⋙ inverse X' Y ≅
       inverse X Y ⋙ mapHomotopyCategory (f ▷ Y) :=
   Functor.fullyFaithfulCurry.preimageIso
-    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
-      dsimp
-      simp only [CategoryTheory.Functor.map_id, mapHomotopyCategory_obj, Category.comp_id,
-        Category.id_comp]
-      rw [inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
-        mapHomotopyCategory_homMk, Edge.map_whiskerRight, Edge.map_id])) (fun x₀ x₁ e ↦ by
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)) (fun x₀ x₁ e ↦ by
       ext y
       obtain ⟨y, rfl⟩ := y.mk_surjective
-      dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [inverse_map_mkHom_homMk_id, inverse_map_mkHom_homMk_id,
-        mapHomotopyCategory_homMk, Edge.map_whiskerRight]))
+      simp))
 
 variable {Y} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
@@ -264,18 +257,10 @@ def idProdMapHomotopyCategoryCompInverseIso (g : Y ⟶ Y') :
     Functor.prod (𝟭 _) (mapHomotopyCategory g) ⋙ inverse X Y' ≅
       inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
   Functor.fullyFaithfulCurry.preimageIso
-    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
-      dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      rw [inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
-        mapHomotopyCategory_homMk, Edge.map_whiskerLeft])) (fun x₀ x₁ e ↦ by
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)) (fun x₀ x₁ e ↦ by
       ext y
       obtain ⟨y, rfl⟩ := y.mk_surjective
-      dsimp
-      simp only [CategoryTheory.Functor.map_id, mapHomotopyCategory_obj, Category.comp_id,
-        Category.id_comp]
-      rw [inverse_map_mkHom_homMk_id, inverse_map_mkHom_homMk_id,
-        mapHomotopyCategory_homMk, Edge.map_whiskerLeft, Edge.map_id]))
+      simp))
 
 variable {X} in
 lemma mapHomotopyCategory_prod_id_comp_inverse (f : X ⟶ X') :
@@ -296,30 +281,23 @@ def inverseCompMapHomotopyCategoryFstIso :
   Functor.fullyFaithfulCurry.preimageIso
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
       dsimp
-      rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_id_homMk,
-        mapHomotopyCategory_homMk, Edge.map_fst]
-      apply homMk_id)) (fun x₀ x₁ e ↦ by
+      rw [Category.comp_id]
+      exact homMk_id x)) (fun x₀ x₁ e ↦ by
       ext y
       obtain ⟨y, rfl⟩ := y.mk_surjective
-      dsimp
-      rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_homMk_id,
-        mapHomotopyCategory_homMk, Edge.map_fst]))
+      simp))
 
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second projection. -/
 def inverseCompMapHomotopyCategorySndIso :
     inverse X Y ⋙ mapHomotopyCategory (snd _ _) ≅ CategoryTheory.Prod.snd _ _  :=
   Functor.fullyFaithfulCurry.preimageIso
-    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _) (fun y₀ y₁ e ↦ by
-      dsimp
-      rw [Category.comp_id, Category.id_comp, inverse_map_mkHom_id_homMk,
-        mapHomotopyCategory_homMk, Edge.map_snd])) (fun x₀ x₁ e ↦ by
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)) (fun x₀ x₁ e ↦ by
       ext y
       obtain ⟨y, rfl⟩ := y.mk_surjective
       dsimp
-      rw [Category.comp_id, Category.comp_id, inverse_map_mkHom_homMk_id,
-        mapHomotopyCategory_homMk, Edge.map_snd]
-      apply homMk_id))
+      simp only [Category.comp_id]
+      exact homMk_id y))
 
 lemma inverse_comp_mapHomotopyCategory_fst :
     inverse X Y ⋙ mapHomotopyCategory (fst _ _) = CategoryTheory.Prod.fst _ _ :=
@@ -356,25 +334,19 @@ def associativity'Iso :
       rw [Category.comp_id, Category.id_comp, ← prod_id,
         inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
         CategoryTheory.Functor.map_id]
-      dsimp
-      rw [inverse_map_mkHom_id_homMk, mapHomotopyCategory_homMk]
       rfl)) (fun y₀ y₁ e ↦ by
       ext z
       obtain ⟨z, rfl⟩ := z.mk_surjective
       dsimp
-      rw [Category.comp_id, Category.id_comp,
-        inverse_map_mkHom_id_homMk, inverse_map_mkHom_homMk_id,
-        inverse_map_mkHom_homMk_id, inverse_map_mkHom_id_homMk]
+      rw [Category.comp_id, Category.id_comp]
+      erw [inverse_map_mkHom_id_homMk]
       rfl)) (fun x₀ x₁ e ↦ by
       ext y z
       obtain ⟨y, rfl⟩ := y.mk_surjective
       obtain ⟨z, rfl⟩ := z.mk_surjective
       dsimp
-      rw [Category.comp_id, Category.id_comp,
-        inverse_map_mkHom_homMk_id, inverse_map_mkHom_homMk_id,
-        ← prod_id, CategoryTheory.Functor.map_id]
-      dsimp
-      rw [inverse_map_mkHom_homMk_id]
+      simp only [Category.comp_id, Category.id_comp]
+      erw [inverse_map_mkHom_homMk_id]
       rfl))
 
 variable {X Y Z} in
@@ -426,9 +398,23 @@ instance : hoFunctor₂.{u}.Monoidal :=
       right_unitality X := right_unitality X (𝟙_ _)
       associativity _ _ _ := associativity _ _ _ }
 
-instance : hoFunctor.{u}.Monoidal :=
+/-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
+instance hofunctor.monoidal : hoFunctor.{u}.Monoidal :=
   inferInstanceAs ((truncation 2 ⋙ hoFunctor₂).Monoidal)
 
+open MonoidalCategory
+
 end Truncated
+
+/-- An equivalence between the vertices of a simplicial set `X` and the
+objects of `hoFunctor.obj X`. -/
+def hoFunctor.unitHomEquiv (X : SSet.{u}) :
+    (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
+  (SSet.unitHomEquiv X).trans <|
+    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+
+theorem hoFunctor.unitHomEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
+    hoFunctor.unitHomEquiv X x = Functor.LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x :=
+  rfl
 
 end SSet
