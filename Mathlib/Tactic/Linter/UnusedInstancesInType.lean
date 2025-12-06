@@ -10,7 +10,6 @@ public meta import Mathlib.Lean.Environment
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Linter.Basic
 import Lean.Elab.Command
-public meta import Qq
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -126,16 +125,6 @@ def collectFVarsOutsideOfProofs (e : Expr) :
 structure InstanceOfConcern where
   fvarId : FVarId
   idx : Nat
-
-#check Expr.instantiate1
-open Qq
-run_meta do
-  let e := q(fun x : Nat => x + 1)
-  match e with
-  | .lam _ _ body _ => logInfo m!"{← Meta.isProp <|← inferType body}"
-  | _ => pure ()
-
-#check Meta.isProof
 
 def go (p : Expr → Bool)
     (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
