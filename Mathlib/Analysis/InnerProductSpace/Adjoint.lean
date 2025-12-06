@@ -191,6 +191,9 @@ theorem orthogonal_range (T : E →L[𝕜] F) :
   rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
   simp
 
+instance _root_.InnerProductSpace.completeSpaceOfFiniteDimensional [FiniteDimensional 𝕜 E] :
+    CompleteSpace E := FiniteDimensional.complete 𝕜 E
+
 omit [CompleteSpace E] in
 theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
     (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
