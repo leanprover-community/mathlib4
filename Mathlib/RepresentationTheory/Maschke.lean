@@ -151,10 +151,12 @@ theorem exists_leftInverse_of_injective
   letI : Module k V := .compHom V (algebraMap k A)
   have := IsScalarTower.of_compHom k A W
   have := IsScalarTower.of_compHom k A V
-  obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
-    simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| DFunLike.congr_fun hφ
+  set φ := (f.restrictScalars k).leftInverse
+  have hφ : ∀ (x : V), φ (f x) = x := by
+    apply LinearMap.leftInverse_apply_of_inj
+    simp [hf]
+  refine ⟨φ.equivariantProjection G, LinearMap.ext ?_⟩
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| hφ
 
 namespace Submodule
 

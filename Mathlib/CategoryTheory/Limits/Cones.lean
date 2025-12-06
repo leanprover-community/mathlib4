@@ -428,7 +428,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { pt := G.obj A.pt
       π :=
         { app := fun j => G.map (A.π.app j)
-          naturality := by intros; erw [← G.map_comp]; simp } }
+          naturality := by simp [← G.map_comp] } }
   map f :=
     { hom := G.map f.hom
       w := ConeMorphism.map_w f G }
