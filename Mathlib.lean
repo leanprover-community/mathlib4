@@ -5977,6 +5977,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
