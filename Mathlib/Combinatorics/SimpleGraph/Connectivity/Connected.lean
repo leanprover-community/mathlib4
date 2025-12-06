@@ -715,8 +715,7 @@ section BridgeEdges
 /-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
 are no longer reachable from one another. -/
 def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
-  e ∈ G.edgeSet ∧
-    Sym2.lift ⟨fun v w => ¬(G \ fromEdgeSet {e}).Reachable v w, by simp [reachable_comm]⟩ e
+  Sym2.lift ⟨fun v w => ¬ (G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
 
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
