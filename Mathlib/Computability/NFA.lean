@@ -257,12 +257,10 @@ theorem eval_append_singleton (x : List α) (a : α) :
 
 variable (M) in
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
+def accepts : Language α := M.acceptsFrom M.start
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
-
-theorem accepts_eq_acceptsFrom_start : M.accepts = M.acceptsFrom M.start := rfl
 
 variable (M) in
 /-- `M.Path` represents a concrete path through the NFA from a start state to an end state
@@ -521,7 +519,7 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
         · simp only [nil_mem_acceptsFrom (M:=M1)]
           tauto
         · exists (a :: z)
-          simp only [accepts_eq_acceptsFrom_start, cons_mem_acceptsFrom (M:=M2), stepSet,
+          simp only [accepts, cons_mem_acceptsFrom (M:=M2), stepSet,
             acceptsFrom_iUnion₂,
             Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))]
           tauto
@@ -531,7 +529,7 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
         rw [nil_mem_acceptsFrom] at hx
         obtain ⟨s1, hs1, haccept1⟩ := hx
         simp only [List.nil_append] at heq; subst y
-        simp only [accepts_eq_acceptsFrom_start, cons_mem_acceptsFrom (M:=M2), stepSet,
+        simp only [accepts, cons_mem_acceptsFrom (M:=M2), stepSet,
           acceptsFrom_iUnion₂, Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))] at hy
         tauto
       | cons b x =>
@@ -543,7 +541,7 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
 /-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of `M1 * M2`
 (`M1.concat M2`) is exactly equal to `L = L1 * L2`. -/
 theorem concat_accepts : (M1 * M2).accepts = M1.accepts * M2.accepts := by
-  simp [concat_acceptsFrom, accepts_eq_acceptsFrom_start]
+  simp [concat_acceptsFrom, accepts]
 
 end concat
 
