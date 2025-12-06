@@ -47,20 +47,20 @@ def digitsAux1 (n : ℕ) : List ℕ :=
   List.replicate n 1
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
-def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
+def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ :=
+  Nat.strongRec' fun n ih ↦ match n with
   | 0 => []
   | n + 1 =>
-    ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
-decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
+    ((n + 1) % b) :: ih ((n + 1) / b) (Nat.div_lt_self (Nat.succ_pos _) h)
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := by rw [digitsAux]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := rfl
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
   cases n
   · cases w
-  · rw [digitsAux]
+  · rw [digitsAux, Nat.strongRec'_spec]; rfl
 
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
