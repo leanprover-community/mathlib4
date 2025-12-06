@@ -103,7 +103,7 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
-    simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
+    simpa [Pi.single_apply, -smul_eq_mul]
   split <;> simp
 
 private lemma ofTensorProduct_eq :
