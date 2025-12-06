@@ -105,7 +105,8 @@ theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
   induction y <;> simp [unbotD_eq_iff, or_comm]
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
-@[to_dual]
+@[to_dual
+/-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/]
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
 
@@ -161,7 +162,11 @@ theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithBot.ma
 `WithBot α → WithBot β → WithBot γ`.
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-@[to_dual]
+@[to_dual
+/-- The image of a binary function `f : α → β → γ` as a function
+`WithTop α → WithTop β → WithTop γ`.
+
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/]
 def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
 
 @[to_dual] lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
@@ -196,7 +201,8 @@ theorem exists_ne_bot {p : WithBot α → Prop} : (∃ x ≠ ⊥, p x) ↔ ∃ x
   simp [ne_bot_iff_exists]
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
-@[to_dual]
+@[to_dual
+/-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/]
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 
 @[to_dual (attr := simp)]
@@ -262,7 +268,8 @@ end WithBot
 namespace Equiv
 
 /-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithBot e`. -/
-@[to_dual (attr := simps apply)]
+@[to_dual (attr := simps apply)
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithTop e`. -/]
 def withBotCongr (e : α ≃ β) : WithBot α ≃ WithBot β where
   toFun := WithBot.map e
   invFun := WithBot.map e.symm
