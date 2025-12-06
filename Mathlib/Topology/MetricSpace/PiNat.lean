@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -675,7 +677,6 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
 end PiNat
 
 open PiNat
-
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
@@ -1081,6 +1082,67 @@ lemma TopologicalSpace.MetrizableSpace.of_countable_separating (f : ∀ i, X →
   (Metric.PiNatEmbed.toPiNatHomeo X Y f continuous_f separating_f).isEmbedding.metrizableSpace
 
 end CompactSpace
+
+open TopologicalSpace Filter unitInterval
+
+variable [MetricSpace X] [SeparableSpace X]
+
+variable (X) in
+/-- Embedding function into 1 direction of countable cube -/
+noncomputable abbrev hCubeEmbedding (n : ℕ) (x : X) : I :=
+  have : Nonempty X := ⟨x⟩
+  projIcc _ _ zero_le_one <| dist x (denseSeq X n)
+
+lemma continuous_hCubeEmbedding (n : ℕ) : Continuous (hCubeEmbedding X n) := by
+  cases isEmpty_or_nonempty X
+  · exact continuous_of_discreteTopology
+  refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
+  convert continuous_const (y := denseSeq X n)
+
+lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
+    ∃ (n : ℕ), C ∈ (𝓝 (hCubeEmbedding X n x)).comap (hCubeEmbedding X n) := by
+  let ε : ℝ := min (infDist x (closure Cᶜ)) 1
+  obtain hC | hC := (closure Cᶜ).eq_empty_or_nonempty
+  · simp_all
+  have : Nonempty X := ⟨x⟩
+  obtain ⟨n, hn⟩ := denseRange_iff.mp (denseRange_denseSeq X) x (ε / 2)
+    (by simp_all [ε, ← IsClosed.notMem_iff_infDist_pos, mem_interior_iff_mem_nhds])
+  refine ⟨n, ball 0 (ε / 2), isOpen_ball.mem_nhds ?_, ?_⟩
+  · simp [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, hn]
+  · intro y hy
+    replace hy : dist y (denseSeq X n) < ε / 2 := by
+      simpa [Subtype.dist_eq, abs_eq_self.mpr, coe_projIcc, not_lt_of_ge, ε, div_le_iff₀] using hy
+    have : dist x y < infDist x (closure Cᶜ) :=
+      ((dist_triangle_right x y (denseSeq X n)).trans_lt (add_lt_add hn hy)).trans_le (by simp [ε])
+    simpa using notMem_of_notMem_closure (mt infDist_le_dist_of_mem this.not_ge)
+
+lemma injective_hCubeEmbedding (x y : X) (hxy : x ≠ y) :
+    ∃ n, hCubeEmbedding X n x ≠ hCubeEmbedding X n y := by
+  obtain ⟨n, hn⟩ := separation ((isOpen_compl_singleton (x := y)).mem_nhds hxy)
+  exact ⟨n, fun e ↦ by simp +contextual [e, ← exists_prop, mem_of_mem_nhds] at hn⟩
+
+variable (A : Type*) [TopologicalSpace A]
+
+lemma continuous_hCubeEmbedding_inv :
+    Continuous (ofPiNat : PiNatEmbed X (fun _ => I) (hCubeEmbedding X) → X) := by
+  refine continuous_iff_continuousAt.mpr fun x s hs ↦ ?_
+  obtain ⟨i, t, ht, hts⟩ := separation hs
+  rw [(isUniformEmbedding_embed injective_hCubeEmbedding).isEmbedding.nhds_eq_comap, nhds_pi]
+  exact ⟨_, Filter.mem_pi_of_mem _ ht, fun x hx ↦ hts hx⟩
+
+theorem exists_embedding_to_hilbert_cube : ∃ F : X → ℕ → I, IsEmbedding F := by
+  let firststep : X ≃ₜ PiNatEmbed X (fun i => I) (hCubeEmbedding X) := {
+    toFun := toPiNat
+    invFun := ofPiNat
+    left_inv _ := rfl
+    right_inv _ := rfl
+    continuous_toFun := continuous_toPiNat <| fun i ↦ continuous_hCubeEmbedding i
+    continuous_invFun := continuous_hCubeEmbedding_inv}
+  let secondstep : PiNatEmbed X (fun i => I) (hCubeEmbedding X) → ℕ → I := embed _ _ _
+  let isEmbedding_secondstep : IsEmbedding secondstep :=
+      (isUniformEmbedding_embed injective_hCubeEmbedding).isEmbedding
+  exact ⟨_, isEmbedding_secondstep.comp firststep.isEmbedding⟩
+
 end MetricSpace
 end PiNatEmbed
 end Metric
