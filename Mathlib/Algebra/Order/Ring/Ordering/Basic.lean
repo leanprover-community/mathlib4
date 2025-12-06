@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.Semireal.Defs
-public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Ring orderings
