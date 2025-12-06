@@ -331,6 +331,13 @@ theorem Splits.map_roots {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
 
+theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
+    (hf : f.Splits) (hf0 : f ≠ 0) {i : R →+* S} {x : S} (hx : (f.map i).IsRoot x) :
+    x ∈ i.range := by
+  rw [← mem_roots (map_ne_zero hf0), hf.map_roots, Multiset.mem_map] at hx
+  obtain ⟨x, -, hx⟩ := hx
+  exact ⟨x, hx⟩
+
 omit [IsDomain R] in
 theorem Splits.image_rootSet {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
     [IsSimpleRing A] [Algebra R A] [Algebra R B] (hf : (f.map (algebraMap R A)).Splits)
@@ -488,6 +495,10 @@ theorem Splits.degree_eq_one_of_irreducible {f : R[X]} (hf : Splits f)
 theorem Splits.natDegree_eq_one_of_irreducible {f : R[X]} (hf : Splits f)
     (h : Irreducible f) : natDegree f = 1 :=
   natDegree_eq_of_degree_eq_some (hf.degree_eq_one_of_irreducible h)
+
+theorem Splits.mem_subfield_of_isRoot (F : Subfield R) {f : F[X]} (hf : Splits f) (hf0 : f ≠ 0)
+    {x : R} (hx : (f.map F.subtype).IsRoot x) : x ∈ F := by
+  simpa using hf.mem_range_of_isRoot hf0 hx
 
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name.

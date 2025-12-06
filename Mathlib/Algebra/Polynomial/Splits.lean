@@ -188,13 +188,6 @@ alias degree_eq_card_roots := Splits.degree_eq_card_roots
 @[deprecated (since := "2025-12-02")]
 alias roots_map := Splits.map_roots
 
-theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
-    (hf : Splits f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
-    x ∈ F := by
-  obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
-    (hf.map_roots F.subtype ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
-  exact x.2
-
 @[deprecated (since := "2025-12-02")]
 alias image_rootSet := Splits.image_rootSet
 
