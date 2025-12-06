@@ -175,6 +175,15 @@ noncomputable abbrev Cells.ιSigmaStdSimplex {j : ι} (c : f.Cells j) :
 noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
 
+instance (j : ι) : Mono (f.m j) :=
+  have : (MorphismProperty.monomorphisms
+    SSet.{u}).IsStableUnderCoproductsOfShape (f.Cells j) := sorry
+  MorphismProperty.colimitsOfShape_le (W := .monomorphisms _) _
+    (MorphismProperty.colimitsOfShape_colimMap _ (fun ⟨c⟩ ↦ by
+      dsimp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+      simp only [MorphismProperty.monomorphisms.iff]
+      infer_instance))
+
 @[reassoc (attr := simp)]
 lemma Cells.ιSigmaHorn_m {j : ι} (c : f.Cells j) :
     c.ιSigmaHorn ≫ f.m j = c.horn.ι ≫ c.ιSigmaStdSimplex := by
@@ -220,8 +229,21 @@ lemma isPullback (j : ι) (hj : ¬ IsMax j) :
     IsPullback (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
   w := f.w j
-  isLimit' := ⟨sorry⟩
+  isLimit' := ⟨evaluationJointlyReflectsLimits _ (fun ⟨d⟩ ↦ by
+    refine (isLimitMapConePullbackConeEquiv _ _).2
+      (IsPullback.isLimit ?_)
+    induction d using SimplexCategory.rec with | _ d
+    rw [Types.isPullback_iff]
+    dsimp
+    refine ⟨congr_app (f.w j) (op ⦋d⦌), ?_, ?_⟩
+    · intro a₁ a₂ ⟨ht, hm⟩
+      have : Mono (f.m j) := inferInstance
+      rw [NatTrans.mono_iff_mono_app] at this
+      exact (mono_iff_injective _).1 (this _) hm
+    · sorry
+    )⟩
 
+#exit
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
