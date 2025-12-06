@@ -545,7 +545,7 @@ instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSp
 
 section Homeomorph
 
-@[measurability]
+@[fun_prop]
 protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 
@@ -569,7 +569,7 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
 
 end Homeomorph
 
-@[measurability]
+@[fun_prop]
 theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
   f.continuous.measurable
 
