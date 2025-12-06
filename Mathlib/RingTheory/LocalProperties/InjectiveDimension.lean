@@ -37,7 +37,7 @@ instance [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
     let _ : Small.{v, u} (Localization S) := small_of_surjective Localization.mkHom_surjective
     rw [← Module.injective_iff_injective_object] at inj ⊢
     simpa [ModuleCat.localizedModule_functor] using
-      Module.injective_of_isLocalizedModule S (X.localizedModule_mkLinearMap S)
+      Module.injective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
 
 lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) : injectiveDimension M =
@@ -53,7 +53,7 @@ lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoeth
         let _ : Module.Injective R M := Module.injective_module_of_injective_object R M
         rw [← Module.injective_iff_injective_object]
         exact Module.injective_of_isLocalizedModule p.1.primeCompl
-          (M.localizedModule_mkLinearMap p.1.primeCompl)
+          (M.localizedModuleMkLinearMap p.1.primeCompl)
       · rw [← Module.injective_iff_injective_object]
         apply Module.injective_of_localization_maximal (fun p hp ↦ ?_)
         let _ : Small.{v} (Localization.AtPrime p) :=
@@ -65,7 +65,7 @@ lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoeth
         rw [← Module.Baer.iff_injective] at this ⊢
         exact Module.Baer.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
           (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl
-          (M.localizedModule_mkLinearMap p.primeCompl)
+          (M.localizedModuleMkLinearMap p.primeCompl)
           (LocalizedModule.mkLinearMap p.primeCompl M))) this
     · rename_i n ih
       have ei : EnoughInjectives (ModuleCat.{v} R) := inferInstance
@@ -77,9 +77,9 @@ lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoeth
       have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) :=
         (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mp S_exact.1
       have Sp_exact' (p : PrimeSpectrum R) := IsLocalizedModule.map_exact p.1.primeCompl
-        (S.X₁.localizedModule_mkLinearMap p.1.primeCompl)
-        (S.X₂.localizedModule_mkLinearMap p.1.primeCompl)
-        (S.X₃.localizedModule_mkLinearMap p.1.primeCompl)
+        (S.X₁.localizedModuleMkLinearMap p.1.primeCompl)
+        (S.X₂.localizedModuleMkLinearMap p.1.primeCompl)
+        (S.X₃.localizedModuleMkLinearMap p.1.primeCompl)
         _ _ S_exact'
       let Sp (p : PrimeSpectrum R) := S.map (ModuleCat.localizedModule_functor p.1.primeCompl)
       have Sp_exact (p : PrimeSpectrum R) : (Sp p).ShortExact :=
@@ -121,7 +121,7 @@ lemma injectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoe
         let _ : Module.Injective R M := Module.injective_module_of_injective_object R M
         rw [← Module.injective_iff_injective_object]
         exact Module.injective_of_isLocalizedModule p.1.primeCompl
-          (M.localizedModule_mkLinearMap p.1.primeCompl)
+          (M.localizedModuleMkLinearMap p.1.primeCompl)
       · rw [← Module.injective_iff_injective_object]
         apply Module.injective_of_localization_maximal (fun p hp ↦ ?_)
         let _ : Small.{v} (Localization.AtPrime p) :=
@@ -132,7 +132,7 @@ lemma injectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoe
         rw [← Module.Baer.iff_injective] at this ⊢
         exact Module.Baer.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
           (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl
-          (M.localizedModule_mkLinearMap p.primeCompl)
+          (M.localizedModuleMkLinearMap p.primeCompl)
           (LocalizedModule.mkLinearMap p.primeCompl M))) this
     · rename_i n ih
       have ei : EnoughInjectives (ModuleCat.{v} R) := inferInstance
@@ -144,9 +144,9 @@ lemma injectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoe
       have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) :=
         (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mp S_exact.1
       have Sp_exact' (p : MaximalSpectrum R) := IsLocalizedModule.map_exact p.1.primeCompl
-        (S.X₁.localizedModule_mkLinearMap p.1.primeCompl)
-        (S.X₂.localizedModule_mkLinearMap p.1.primeCompl)
-        (S.X₃.localizedModule_mkLinearMap p.1.primeCompl)
+        (S.X₁.localizedModuleMkLinearMap p.1.primeCompl)
+        (S.X₂.localizedModuleMkLinearMap p.1.primeCompl)
+        (S.X₃.localizedModuleMkLinearMap p.1.primeCompl)
         _ _ S_exact'
       let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModule_functor p.1.primeCompl)
       have Sp_exact (p : MaximalSpectrum R) : (Sp p).ShortExact :=
@@ -186,7 +186,7 @@ lemma injectiveDimension_le_injectiveDimension_of_isLocalizedModule [Small.{v, u
     · simp only [HasInjectiveDimensionLE, zero_add, ← injective_iff_hasInjectiveDimensionLT_one]
       rw [← Module.injective_iff_injective_object, ← Module.injective_iff_injective_object]
       intro _
-      exact Module.injective_of_isLocalizedModule S (M.localizedModule_mkLinearMap S)
+      exact Module.injective_of_isLocalizedModule S (M.localizedModuleMkLinearMap S)
     · rename_i n ih
       have ei : EnoughInjectives (ModuleCat.{v} R) := inferInstance
       rcases ei.1 M with ⟨I, inj, f, monof⟩
@@ -197,9 +197,9 @@ lemma injectiveDimension_le_injectiveDimension_of_isLocalizedModule [Small.{v, u
       have T_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) :=
         (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mp T_exact.1
       have TS_exact' := IsLocalizedModule.map_exact S
-        (T.X₁.localizedModule_mkLinearMap S)
-        (T.X₂.localizedModule_mkLinearMap S)
-        (T.X₃.localizedModule_mkLinearMap S)
+        (T.X₁.localizedModuleMkLinearMap S)
+        (T.X₂.localizedModuleMkLinearMap S)
+        (T.X₃.localizedModuleMkLinearMap S)
         _ _ T_exact'
       let TS := T.map (ModuleCat.localizedModule_functor S)
       have TS_exact : TS.ShortExact :=
