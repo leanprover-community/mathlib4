@@ -52,7 +52,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 /-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
 function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
 lemma StieltjesFunction.measurable_measure {α : Type*} {_ : MeasurableSpace α}
-    {f : α → StieltjesFunction} (hf : ∀ q, Measurable fun a ↦ f a q)
+    {f : α → StieltjesFunction ℝ} (hf : ∀ q, Measurable fun a ↦ f a q)
     (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
     (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
     Measurable fun a ↦ (f a).measure :=
@@ -344,7 +344,7 @@ lemma IsMeasurableRatCDF.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x
 
 /-- Extend a function `f : α → ℚ → ℝ` with property `IsMeasurableRatCDF` from `ℚ` to `ℝ`,
 to a function `α → StieltjesFunction`. -/
-noncomputable def IsMeasurableRatCDF.stieltjesFunction (a : α) : StieltjesFunction where
+noncomputable def IsMeasurableRatCDF.stieltjesFunction (a : α) : StieltjesFunction ℝ where
   toFun := stieltjesFunctionAux f a
   mono' := monotone_stieltjesFunctionAux hf a
   right_continuous' x := continuousWithinAt_stieltjesFunctionAux_Ici hf a x
@@ -443,7 +443,7 @@ variable {f : α → ℚ → ℝ} [MeasurableSpace α]
 /-- Turn a measurable function `f : α → ℚ → ℝ` into a measurable function `α → StieltjesFunction`.
 Composition of `toRatCDF` and `IsMeasurableRatCDF.stieltjesFunction`. -/
 noncomputable
-def stieltjesOfMeasurableRat (f : α → ℚ → ℝ) (hf : Measurable f) : α → StieltjesFunction :=
+def stieltjesOfMeasurableRat (f : α → ℚ → ℝ) (hf : Measurable f) : α → StieltjesFunction ℝ :=
   (isMeasurableRatCDF_toRatCDF hf).stieltjesFunction
 
 lemma stieltjesOfMeasurableRat_eq (hf : Measurable f) (a : α) (r : ℚ) :
