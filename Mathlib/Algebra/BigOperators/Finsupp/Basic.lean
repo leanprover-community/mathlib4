@@ -648,12 +648,10 @@ end MulOpposite
 namespace AddOpposite
 variable {ι M N : Type*} [CommMonoid M] [Zero N]
 
-@[to_additive self (dont_translate := M), simp]
-lemma op_finsuppProd (f : ι →₀ N) (g : ι → N → M) :
+@[simp] lemma op_finsuppProd (f : ι →₀ N) (g : ι → N → M) :
     op (f.prod g) = f.prod fun i n ↦ op (g i n) := op_prod ..
 
-@[to_additive self (dont_translate := M), simp]
-lemma unop_finsuppProd (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+@[simp] lemma unop_finsuppProd (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
     unop (f.prod g) = f.prod fun i n ↦ unop (g i n) := unop_prod ..
 
 end AddOpposite
