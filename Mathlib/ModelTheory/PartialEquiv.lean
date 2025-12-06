@@ -306,7 +306,7 @@ namespace DirectLimit
 
 open PartialEquiv
 
-variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
 variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)

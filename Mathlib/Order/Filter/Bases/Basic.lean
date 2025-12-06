@@ -656,7 +656,7 @@ protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
   ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
 
-lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
   ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
 
