@@ -3,8 +3,10 @@ Copyright (c) 2025 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.MvPolynomial.Equiv
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Multivariate polynomials over `NoZeroDivisors`
@@ -36,6 +38,9 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 nonzero multivariate polynomials is the sum of their total degrees.
 
 -/
+
+@[expose] public section
+
 
 noncomputable section
 
