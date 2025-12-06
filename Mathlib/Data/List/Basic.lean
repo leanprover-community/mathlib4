@@ -33,7 +33,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l l₁ l₂ : List α}
 
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
@@ -369,6 +369,18 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
 
 theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
     x ∈ (l₁ ++ l₂).getLast? := by grind
+
+theorem mem_dropLast_of_mem_of_ne_getLast {a : α} (ha : a ∈ l)
+    (ha' : a ≠ l.getLast (ne_nil_of_mem ha)) : a ∈ l.dropLast := by
+  grind [dropLast_concat_getLast]
+
+theorem mem_dropLast_of_mem_of_ne_getLastD {a d : α} (ha : a ∈ l) (ha' : a ≠ l.getLastD d) :
+    a ∈ l.dropLast :=
+  mem_dropLast_of_mem_of_ne_getLast ha <| by grind
+
+theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ l.getLast?) :
+    a ∈ l.dropLast :=
+  mem_dropLast_of_mem_of_ne_getLast ha <| by grind
 
 /-! ### head(!?) and tail -/
 
