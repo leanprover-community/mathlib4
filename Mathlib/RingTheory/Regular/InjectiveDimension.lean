@@ -36,14 +36,6 @@ public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 section ENat
 
-lemma ENat.add_le_add_right_iff' (a b : ℕ∞) (c : ℕ) :
-    a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | top => simpa only [_root_.top_add, top_le_iff] using WithTop.add_coe_eq_top_iff
-  | coe a => induction b with
-    | top => simp
-    | coe b => simp [← Nat.cast_add]
-
 lemma WithBot.add_le_add_right_iff' (a b : WithBot ℕ∞) (c : ℕ) :
     a + c ≤ b + c ↔ a ≤ b := by
   induction a with
@@ -53,7 +45,7 @@ lemma WithBot.add_le_add_right_iff' (a b : WithBot ℕ∞) (c : ℕ) :
     | bot => simp
     | coe b =>
       norm_cast
-      exact ENat.add_le_add_right_iff' a b c
+      exact WithTop.add_le_add_iff_right (ENat.coe_ne_top c)
 
 lemma WithBot.add_one_le_zero_iff_eq_bot' (a : WithBot ℕ∞) :
     a + 1 ≤ 0 ↔ a = ⊥ := by
@@ -63,7 +55,7 @@ lemma WithBot.add_one_le_zero_iff_eq_bot' (a : WithBot ℕ∞) :
 
 end ENat
 
-universe w v u
+universe v u
 
 variable (R : Type u) [CommRing R]
 
@@ -109,21 +101,16 @@ open CategoryTheory Abelian Module
 
 section
 
-variable {R} [IsLocalRing R] [IsNoetherianRing R]
-
-variable [Small.{v} R] [UnivLE.{v, w}]
-
-instance hasExt_of_small''' : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
+variable {R} [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
 
 omit [IsLocalRing R] in
 lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.Finite R N] (n : ℕ)
-    (h : support R N ⊆ {p | Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)}) :
-    Subsingleton (Ext.{w} N M n) := by
+    (h : support R N ⊆ {p | Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)}) :
+    Subsingleton (Ext N M n) := by
   refine (IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
     (motive := fun L ↦ (support R L ⊆ {p | Subsingleton
-      (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)} →
-      Subsingleton (Ext.{w} (ModuleCat.of R L) M n))) R Nfin) ?_ ?_ ?_ h
+      (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p.1))) M n)} →
+      Subsingleton (Ext (ModuleCat.of R L) M n))) R Nfin) ?_ ?_ ?_ h
   · intro N _ _ _ sub _
     let _ : HasProjectiveDimensionLT (ModuleCat.of R N) 0 :=
       (ModuleCat.isZero_of_iff_subsingleton.mpr sub).hasProjectiveDimensionLT_zero
@@ -133,7 +120,7 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       rw [e.support_eq, Module.mem_support_iff_of_finite, Ideal.annihilator_quotient]
     let e' : ModuleCat.of R N ≅ ModuleCat.of R (Shrink.{v, u} (R ⧸ p.asIdeal)) :=
       (e.trans (Shrink.linearEquiv R _).symm).toModuleIso
-    have := (((extFunctor.{w} n).mapIso e'.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr
+    have := (((extFunctor n).mapIso e'.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr
     simp only [extFunctor, extFunctorObj_obj_coe] at this
     simpa [← this] using h mem
   · intro N₁ _ _ _ N₂ _ _ _ N₃ _ _ _ f g inj surj exac h1 h3 h2
@@ -155,8 +142,8 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
 
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
     (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
-      Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
-    Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ p))) M n) := by
+      Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
+    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p))) M n) := by
   have plt : p < maximalIdeal R :=  lt_of_le_of_ne (le_maximalIdeal_of_isPrime p) ne
   obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ p := Set.exists_of_ssubset plt
   let _ : Small.{v} (QuotSMulTop x (R ⧸ p)) :=
@@ -200,8 +187,8 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
   simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
 
 lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
-    (h : ∀ i ≥ n, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
-    ∀ i ≥ n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M i) := by
+    (h : ∀ i ≥ n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)) :
+    ∀ i ≥ n, ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M i) := by
   intro i hi N
   apply ext_subsingleton_of_quotients
   intro I
@@ -243,7 +230,7 @@ lemma ext_vanish_of_residueField_vanish (M : ModuleCat.{v} R) (n : ℕ) [Module.
 
 lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] :
     injectiveDimension M = sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i →
-      Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
+      Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i)} := by
   simp only [injectiveDimension]
   congr! 3
   rename_i n
@@ -252,14 +239,14 @@ lemma injectiveDimension_eq_sInf_of_finite (M : ModuleCat.{v} R) [Module.Finite 
     exact HasInjectiveDimensionLT.subsingleton M i i (le_refl i) _
   · rw [hasInjectiveDimensionLT_iff]
     intro j hj N e
-    apply @Subsingleton.eq_zero _ _ ?_ e
+    refine @Subsingleton.eq_zero _ _ ?_ e
     apply ext_vanish_of_residueField_vanish M i _ j hj N
     intro k hk
     exact h k (lt_of_lt_of_le hi (Nat.cast_le.mpr hk))
 
 lemma injectiveDimension_lt_iff_of_finite (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ) :
     injectiveDimension M < n ↔ ∀ (i : ℕ), n ≤ i →
-      Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) := by
+      Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M i) := by
   rw [injectiveDimension_eq_sInf_of_finite]
   refine ⟨fun h i hi ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
   · have : sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < ↑i →
@@ -358,7 +345,7 @@ lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)⟩
   exact S_exact.hasProjectiveDimensionLT_X₃ 1 inferInstance inferInstance
 
-variable [Small.{v} R] [UnivLE.{v, w}]
+variable [Small.{v} R]
 
 open Limits in
 lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
@@ -378,8 +365,6 @@ lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
       Ext.comp_smul, Ext.comp_smul, ← Ext.smul_comp, ← Ext.mk₀_smul]
     simp [ann]
 
-set_option maxHeartbeats 220000 in
---The map just is too complicated with lots of rfl
 /-- The map `Ext N (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)) n →+
   Ext ((ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj N) M (n + 1)`
   is bijective. -/
@@ -401,38 +386,16 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       apply Functor.FullyFaithful.map_bijective
       exact ModuleCat.restrictScalars_fullyFaithful_of_surjective _ Ideal.Quotient.mk_surjective
   · rename_i n ih
-    let e : Basis N (R ⧸ Ideal.span {x}) (N →₀ Shrink.{v} (R ⧸ Ideal.span {x})) :=
-      ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv (R ⧸ Ideal.span {x}) (R ⧸ Ideal.span {x}))⟩
-    let f := e.constr ℕ _root_.id
-    have surjf : Function.Surjective f :=
-      fun m ↦ ⟨Finsupp.single m 1, by simp [f, e, Basis.constr_apply]⟩
-    let S : ShortComplex (ModuleCat.{v} (R ⧸ Ideal.span {x})) :=
-    { X₃ := N
-      f := ModuleCat.ofHom (LinearMap.ker f).subtype
-      g := ModuleCat.ofHom f
-      zero := by
-        ext
-        simp }
-    have S_exact : S.ShortExact :=
-    { exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
-        (LinearMap.exact_subtype_ker_map f)
-      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).subtype_injective
-      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf }
-    let _ : Projective S.X₂ := ModuleCat.projective_of_free e
-    have projdim : HasProjectiveDimensionLE (Fr.obj S.X₂) 1 :=
+    let S := N.projective_shortComplex
+    have S_exact : S.ShortExact := N.projective_shortComplex_shortExact
+    let _ : HasProjectiveDimensionLT (S.map Fr).X₂ 2 :=
       hasProjectiveDimensionLE_finsupp_quotient_regular N regR
-    let _ : HasProjectiveDimensionLT (S.map Fr).X₂ 2 := projdim
     let MxM := (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M))
     let f : Ext S.X₂ MxM n →+ Ext S.X₁ MxM n := (Ext.mk₀ S.f).precomp MxM (zero_add n)
     let g : Ext S.X₁ MxM n →+ Ext S.X₃ MxM (n + 1) := S_exact.extClass.precomp MxM (add_comm 1 n)
     have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
       (Ext.contravariant_sequence_exact₁' S_exact MxM n (n + 1) (add_comm 1 n))
-    have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext S.X₂ MxM (n + 1))) :=
-      @AddCommGrpCat.isZero_of_subsingleton _
-        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective)
-    have surj1 : Function.Surjective g := (AddCommGrpCat.epi_iff_surjective _).mp
-      ((Ext.contravariant_sequence_exact₃' S_exact MxM n (n + 1) (add_comm 1 n)).epi_f
-      (isz1.eq_zero_of_tgt _))
+    have surj1 : Function.Surjective g := extClass_precomp_surjective_of_projective_X₂ MxM S_exact n
     let f' : Ext (S.map Fr).X₂ M (n + 1) →+ Ext (S.map Fr).X₁ M (n + 1) :=
       (Ext.mk₀ (S.map Fr).f).precomp M (zero_add (n + 1))
     let g' : Ext (S.map Fr).X₁ M (n + 1) →+ Ext (S.map Fr).X₃ M (n + 2) :=
@@ -442,7 +405,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
       (S_exact.map_of_exact Fr) M (n + 1) (n + 2) (add_comm 1 (n + 1)))
     have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext (S.map Fr).X₂ M (n + 2))) :=
       @AddCommGrpCat.isZero_of_subsingleton _ (HasProjectiveDimensionLT.subsingleton (S.map Fr).X₂
-        (1 + 1) (n + 2) (Nat.le_add_left _ n) M)
+        2 (n + 2) (Nat.le_add_left _ n) M)
     have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
       ((Ext.contravariant_sequence_exact₃' (S_exact.map_of_exact Fr) M (n + 1) (n + 2)
         (add_comm 1 (n + 1))).epi_f (isz2.eq_zero_of_tgt _))
@@ -477,7 +440,7 @@ variable {R} [IsLocalRing R]
 
 section
 
-variable [Small.{v} R] [UnivLE.{v, w}]
+variable [Small.{v} R]
 
 lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     (regR : IsSMulRegular R x) (regM : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) (n : ℕ) :
@@ -487,8 +450,8 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
       have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
-    Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M (n + 1)) ↔
-    Subsingleton (Ext.{w} (ModuleCat.of (R ⧸ Ideal.span {x})
+    Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M (n + 1)) ↔
+    Subsingleton (Ext (ModuleCat.of (R ⧸ Ideal.span {x})
     (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
     (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) n) := by
   let _ : Nontrivial (R ⧸ Ideal.span {x}) :=
@@ -511,7 +474,7 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
   let e : (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) ≅
     (ModuleCat.restrictScalars (Ideal.Quotient.mk (Ideal.span {x}))).obj k' :=
     (((Shrink.linearEquiv.{v} R _).trans e').trans (Shrink.linearEquiv.{v} R _).symm).toModuleIso
-  exact (Iff.trans (extClass_comp_mapExt_bijective regR regM k' n).subsingleton_congr
+  exact ((extClass_comp_mapExt_bijective regR regM k' n).subsingleton_congr.trans
     (((extFunctor (n + 1)).mapIso e.op).app M).addCommGroupIsoToAddEquiv.subsingleton_congr).symm
 
 end
@@ -573,15 +536,13 @@ theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] 
       · rw [← ext_residueField_subsingleton_iff regR regM mem i]
         exact h (i + 1) (Nat.add_le_add_right hi 1)
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp [eqbot, injectiveDimension_eq_bot_iff, ModuleCat.isZero_of_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp [injectiveDimension_eq_bot_iff, ModuleCat.isZero_of_iff_subsingleton,
       ModuleCat.isZero_of_iff_subsingleton (M := M), sub]
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
 
 end
