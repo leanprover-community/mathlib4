@@ -397,8 +397,8 @@ theorem isPWO_iUnion_support_prod_smul {s : α → HahnSeries Γ R} {t : β → 
     intro ab
     refine Set.Subset.trans (fun x hx => ?_) (support_vaddAntidiagonal_subset_vadd
       (hs := (s ab.1).isPWO_support) (ht := (t ab.2).isPWO_support))
+    simp only [Set.mem_setOf_eq]
     contrapose! hx
-    simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
     rw [mem_support, not_not, HahnModule.coeff_smul, hx, sum_empty]
   refine Set.Subset.trans (Set.iUnion_mono fun a => (hsupp a)) ?_
   simp_all only [Set.iUnion_subset_iff, Prod.forall]
@@ -751,7 +751,7 @@ theorem embDomain_succ_smul_powers :
   · simp [hx]
   · -- FIXME: smul_eq_mul introduces type confusion between HahnModule and HahnSeries.
     simp [embDomain_apply, of_symm_smul_of_eq_mul, powers_of_orderTop_pos hx, pow_succ',
-      -smul_eq_mul, -Algebra.id.smul_eq_mul]
+      -smul_eq_mul]
 
 include hx in
 theorem one_sub_self_mul_hsum_powers : (1 - x) * (powers x).hsum = 1 := by

@@ -64,7 +64,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
   obtain ⟨p, hp𝒢, hpp, hpc⟩ := hc
   refine ⟨_, 𝒢.smul_mem_pointwise_smul _ _ hp𝒢, ?_, ?_⟩
   · simpa [ConjAct.toConjAct_smul] using hpp
-  · simp [ConjAct.toConjAct_smul, MulAction.mul_smul, hpc]
+  · simp [ConjAct.toConjAct_smul, SemigroupAction.mul_smul, hpc]
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
@@ -131,7 +131,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
       simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
-      simp [OnePoint.map_smul, MulAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
+      simp [OnePoint.map_smul, SemigroupAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
 
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
@@ -183,7 +183,7 @@ noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAr
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
-      simp [MulAction.mul_smul])
+      simp [SemigroupAction.mul_smul])
 
 @[simp]
 lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.IsArithmetic] (g : SL(2, ℤ)) :
@@ -403,6 +403,14 @@ lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
   rw [strictWidthInfty_pos_iff]
   simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
     using ⟨_, OnePoint.map_infty _⟩
+
+variable {𝒢} in
+lemma isCusp_of_mem_strictPeriods {h : ℝ} (hh : 0 < h) (h𝒢 : h ∈ 𝒢.strictPeriods)
+    [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
+    IsCusp OnePoint.infty 𝒢 := by
+  rw [Subgroup.strictPeriods_eq_zmultiples_strictWidthInfty] at h𝒢
+  refine 𝒢.strictWidthInfty_pos_iff.mp <| 𝒢.strictWidthInfty_nonneg.lt_of_ne' fun h0 ↦ hh.ne' ?_
+  simp_all
 
 variable {𝒢} in
 lemma widthInfty_pos_iff [DiscreteTopology 𝒢.periods] [𝒢.HasDetPlusMinusOne] :

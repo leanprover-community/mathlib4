@@ -78,6 +78,11 @@ lemma isUniquelyCodimOneFace [P.IsProper] (x : P.II) :
     S.IsUniquelyCodimOneFace x.1.toS (P.p x).1.toS :=
   IsProper.isUniquelyCodimOneFace x
 
+@[simp]
+lemma dim_p [P.IsProper] (x : P.II) :
+    (P.p x).1.dim = x.1.dim + 1 :=
+  (P.isUniquelyCodimOneFace x).dim_eq
+
 /-- The condition that a pairing only involves inner horns. -/
 class IsInner [P.IsProper] : Prop where
   ne_zero (x : P.II) {d : ℕ} (hd : x.1.dim = d) :

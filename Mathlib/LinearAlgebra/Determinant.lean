@@ -557,7 +557,7 @@ nonrec def det : M [⋀^ι]→ₗ[R] R where
       (fun v i x y ↦ by
         simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
       (fun u i c x ↦ by
-        simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, map_smul]
+        simp only [e.toMatrix_update, smul_eq_mul, map_smul]
         apply det_updateCol_smul)
   map_eq_zero_of_eq' := by
     intro v i j h hij
@@ -708,7 +708,7 @@ theorem det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent 
   apply (Basis.mk hli hsp).ext
   intro k
   rcases eq_or_ne k i with (rfl | hik) <;>
-    simp only [Algebra.id.smul_eq_mul, coe_mk, LinearMap.smul_apply,
+    simp only [smul_eq_mul, coe_mk, LinearMap.smul_apply,
       MultilinearMap.toLinearMap_apply]
   · rw [mk_coord_apply_eq, mul_one, update_eq_self]
     congr
