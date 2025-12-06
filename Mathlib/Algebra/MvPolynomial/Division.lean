@@ -303,6 +303,7 @@ theorem X_dvd_mul_iff [IsCancelMulZero R] :
     · exact dvd_mul_of_dvd_left h q
     · exact dvd_mul_of_dvd_right h p
 
+-- TODO rename prime_X
 theorem X_prime [IsCancelMulZero R] [Nontrivial R] : Prime (X i : MvPolynomial σ R) := by
   refine ⟨X_ne_zero i, ?_, fun p q ↦ X_dvd_mul_iff.mp⟩
   intro h

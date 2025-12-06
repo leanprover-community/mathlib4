@@ -536,6 +536,7 @@ Let `P` be a predicate on a polynomial.
 If `R → S` injective implies `(∀ p : S[X], P p) → (∀ p : R[X], P p)`,
 and if `R → S` surjective implies `(∀ p : R[X], P p) → (∀ p : S[X], P p)`,
 then we may reduce to the case where `R` is a field and `p` splits. -/
+-- TODO: rename
 nonrec lemma induction_of_Splits_of_injective_of_surjective.{u}
     {R : Type u} [CommRing R] (p : R[X])
     (P : ∀ {R : Type u} [CommRing R], R[X] → Prop)
