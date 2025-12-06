@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Defs
 
 /-!
@@ -19,10 +19,9 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 `End K V ≃ₐ[K] End K V` is surjective.
 -/
 
-namespace Module.End
-variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Free K V]
+open Module End Projective LinearMap LinearEquiv
 
-open Module End Free LinearMap LinearEquiv
+variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
 
 /-- Given an algebra automorphism `f` in `End K V`, there exists a linear isomorphism `T`
 such that `f` is given by `x ↦ T ∘ₗ x ∘ₗ T.symm`. -/
@@ -38,25 +37,23 @@ public theorem AlgEquiv.eq_linearEquivAlgConj (f : End K V ≃ₐ[K] End K V) :
   set T := applyₗ z ∘ₗ f.toLinearMap ∘ₗ smulRightₗ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← mul_apply, ← map_mul]
+    simp only [hT, ← Module.End.mul_apply, ← map_mul]
     congr; ext; simp
   have surj : Function.Surjective T := fun w ↦ by
     obtain ⟨d, hd⟩ := exists_dual_eq_one K hz
     exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
-      apply f.injective <| ext fun z ↦ ?_
+      apply f.injective <| LinearMap.ext fun z ↦ ?_
       obtain ⟨w, rfl⟩ := surj z
       simp_rw [← this, smulRightₗ_apply_apply, _root_.map_smul, hxy]
     simpa [huv.isUnit.smul_left_cancel] using congr((fun f ↦ f u) $h_smul)
   exact ⟨.ofBijective T ⟨inj, surj⟩, fun A ↦ (LinearMap.ext <| this A).symm⟩
 
 /-- Alternate statement of `eq_linearEquivAlgConj`. -/
-public theorem mulSemiringActionToAlgEquiv_conjAct_surjective :
+public theorem Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective :
     Function.Surjective
       (MulSemiringAction.toAlgEquiv (G := ConjAct (GeneralLinearGroup K V)) K (End K V)) := by
   intro f
   have ⟨T, hT⟩ := f.eq_linearEquivAlgConj
   exact ⟨.ofLinearEquiv T, hT.symm⟩
-
-end Module.End

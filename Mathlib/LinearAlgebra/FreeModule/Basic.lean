@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Logic.Small.Basic
 
 /-!
@@ -167,22 +166,7 @@ lemma of_subsingleton' [Subsingleton R] : Module.Free R N :=
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N
 
-variable {M} in
-/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a vector space. -/
-theorem exists_dual_ne_zero {x : M} (hx : x ≠ 0) :
-    ∃ f : Dual R M, f x ≠ 0 :=
-  let b := chooseBasis R M
-  have ⟨i, hi⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr hx <| Finsupp.ext h
-  ⟨b.coord i, hi⟩
-
 end Semiring
-
-variable {M} in
-/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a vector space. -/
-theorem exists_dual_eq_one (K : Type*) [Semifield K] [AddCommMonoid M] [Module K M] [Free K M]
-    {x : M} (hx : x ≠ 0) : ∃ f : Dual K M, f x = 1 :=
-  have ⟨f, hf⟩ := exists_dual_ne_zero K hx
-  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 
 end Free
 
