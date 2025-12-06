@@ -1,0 +1,14 @@
+[
+  // Prevent Enter from accepting suggestions when suggestion widget is visible.
+  // This removes the default binding that accepts the selected suggestion.
+  {
+    "key": "enter",
+    "command": "-acceptSelectedSuggestion",
+    "when": "suggestWidgetVisible"
+  },
+  {
+    "key": "enter",
+    "command": "-editor.action.acceptSelectedSuggestion",
+    "when": "suggestWidgetVisible"
+  }
+]

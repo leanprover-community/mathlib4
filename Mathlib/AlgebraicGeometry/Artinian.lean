@@ -85,7 +85,7 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : x ∈ (⊤ : X.Opens) := trivial
   obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset this
   have _ : IsAffine W := hW1
-  have : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
+  have _ : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
   have : IsOpen ({(⟨x, hW2⟩)} : Set W) := by
     apply discreteTopology_iff_forall_isOpen.mp
     exact IsLocallyArtinian.discreteTopology_of_isAffine W
@@ -100,29 +100,32 @@ theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
   apply isArtinianRing_iff_krullDimLE_zero.mpr
   exact (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp h).2
 
-lemma IsLocallyNoetherian.isLocallyArtinian_discreteTopology
-    [IsLocallyNoetherian X] [DiscreteTopology X] :
+lemma IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero
+    {X : Scheme} [IsLocallyNoetherian X] (h : topologicalKrullDim X ≤ 0) :
     IsLocallyArtinian X := by
   refine { component_artinian := ?_ }
   intro U
   have _ : IsNoetherianRing Γ(X,U) := IsLocallyNoetherian.component_noetherian U
-  have _ : DiscreteTopology (PrimeSpectrum Γ(X,U)) := by
-    change DiscreteTopology (Spec Γ(X,U))
-    have F := AlgebraicGeometry.IsAffineOpen.isoSpec U.2
-    apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mp
-    exact instDiscreteTopologySubtype
-  exact IsNoetherianRing.discreteTopololgy_of_isArtinianRing Γ(X, U)
+  apply isArtinianRing_iff_krullDimLE_zero.mpr
+  rw [Ring.KrullDimLE, Order.krullDimLE_iff, ← ringKrullDim, Nat.cast_zero,
+  ← PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim Γ(X, U)]
+  have Ft := Scheme.Hom.homeomorph (AlgebraicGeometry.IsAffineOpen.isoSpec U.2).hom
+  change topologicalKrullDim (Spec Γ(X, U)) ≤ 0
+  rw[← IsHomeomorph.topologicalKrullDim_eq Ft Ft.isHomeomorph]
+  exact (topologicalKrullDim_subspace_le X U).trans h
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩,
-  fun ⟨_,_⟩ => IsLocallyNoetherian.isLocallyArtinian_discreteTopology X⟩
+  fun ⟨_,_⟩ => by
+    have h : topologicalKrullDim X ≤ 0 := topologicalKrullDim_zero_of_discreteTopology X
+    exact IsLocallyNoetherian.isLocallyArtinian_topologicalKrullDim_zero h⟩
 
 /-- A scheme is Artinian if it is locally Artinian and quasi-compact -/
 @[mk_iff]
 class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
 
-instance IsArtinianScheme.finite [h : IsArtinianScheme X] :
+instance IsArtinianScheme.finite [IsArtinianScheme X] :
     Finite X := @finite_of_compact_of_discrete X _ _ _
 
 instance IsArtinianScheme.isNoetherianScheme [IsArtinianScheme X] :
@@ -134,18 +137,16 @@ theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
     IsArtinianScheme X ↔ IsNoetherian X ∧ DiscreteTopology X :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩,
   fun ⟨_,_⟩ =>
-    {toIsLocallyArtinian := IsLocallyNoetherian.isLocallyArtinian_discreteTopology X,
+    {toIsLocallyArtinian := (IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology X).mpr
+      ⟨inferInstance, inferInstance⟩,
       toCompactSpace := inferInstance}⟩
 
 /-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
 theorem IsArtinianRing.iff_isArtinianScheme (R : Type*) [CommRing R] :
-    IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := by
-  constructor
-  · intro _
-    apply (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
-    exact ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩
-  intro _
-  have F := (AlgebraicGeometry.Scheme.ΓSpecIso (CommRingCat.of R)).commRingCatIsoToRingEquiv
-  exact RingEquiv.isArtinianRing F
+    IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := ⟨fun _ =>
+    (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
+    ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩,
+  fun _ => RingEquiv.isArtinianRing
+    (AlgebraicGeometry.Scheme.ΓSpecIso (CommRingCat.of R)).commRingCatIsoToRingEquiv⟩
 
 end AlgebraicGeometry

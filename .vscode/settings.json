@@ -20,4 +20,13 @@
     "**/.elan/**": true,
     "**/.lake/**": true
   }
+  ,
+  "editor.acceptSuggestionOnEnter": "off",
+  "editor.suggestSelection": "recentlyUsedByPrefix",
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.tabCompletion": "on",
+  "[lean]": {
+    "editor.acceptSuggestionOnEnter": "off"
+  }
 }
