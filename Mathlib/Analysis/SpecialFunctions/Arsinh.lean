@@ -13,6 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 In this file we prove that sinh is bijective and hence has an
 inverse, arsinh.
+We also define a principal inverse of cosh, arcosh.
 
 ## Main definitions
 
@@ -50,7 +51,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
+/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + √(1 + x^2))`. -/
 @[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
