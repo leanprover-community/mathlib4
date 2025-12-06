@@ -638,6 +638,15 @@ theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
 
 alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
+theorem adjoint_innerₛₗ_apply (x : E) :
+    adjoint (innerₛₗ 𝕜 x) = toSpanSingleton 𝕜 E x :=
+  have := FiniteDimensional.complete 𝕜 E
+  ext fun _ ↦ congr($(ContinuousLinearMap.adjoint_innerSL_apply x) _)
+
+theorem adjoint_toSpanSingleton (x : E) :
+    adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
+  simp [← adjoint_innerₛₗ_apply]
+
 end LinearMap
 
 section Unitary
@@ -671,6 +680,14 @@ lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
     _ = e.symm := by
       rw [← comp_assoc, norm_map_iff_adjoint_comp_self e' |>.mp e.norm_map]
       exact (e.symm : K →L[𝕜] H).id_comp
+
+omit [CompleteSpace H] [CompleteSpace K] in
+theorem _root_.LinearIsometryEquiv.adjoint_toLinearMap_eq_symm
+    [FiniteDimensional 𝕜 H] [FiniteDimensional 𝕜 K] (e : H ≃ₗᵢ[𝕜] K) :
+    LinearMap.adjoint e.toLinearMap = e.symm.toLinearMap :=
+  have := FiniteDimensional.complete 𝕜 H
+  have := FiniteDimensional.complete 𝕜 K
+  congr($e.adjoint_eq_symm)
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.star_eq_symm (e : H ≃ₗᵢ[𝕜] H) :
