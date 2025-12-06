@@ -261,6 +261,10 @@ theorem nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast {l : List α} {a : α} (ha
     rw [idxOf_cons_ne _ <| Ne.symm hx, nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast]
     grind
 
+theorem nextOr_eq_getElem_idxOf_succ_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast)
+    (d : α) : l.nextOr a d = l[l.idxOf a + 1]'(succ_idxOf_lt_length_of_mem_dropLast ha) :=
+  Option.some_injective _ <| nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast ha d ▸ getElem?_pos ..
+
 theorem nextOr_infix_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast) (d : α) :
     [a, l.nextOr a d] <:+: l := by
   refine infix_iff_getElem?.mpr ⟨l.idxOf a, ?_, fun i hi ↦ ?_⟩
@@ -314,6 +318,11 @@ theorem prev_eq_getElem?_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a �
   | x :: y :: tail =>
     have ih := (y :: tail).prev_eq_getElem?_idxOf_pred_of_ne_head (a := a)
     grind [prev]
+
+theorem prev_eq_getElem_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
+    (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) :
+    l.prev a ha = l[l.idxOf a - 1]'(by grind [idxOf_lt_length_of_mem]) :=
+  Option.some_injective _ <| prev_eq_getElem?_idxOf_pred_of_ne_head ha ha₀ ▸ getElem?_pos ..
 
 theorem prev_infix_of_mem_tail {l : List α} {a : α} (ha : a ∈ l)
     (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : [l.prev a ha, a] <:+: l := by

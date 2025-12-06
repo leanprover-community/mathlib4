@@ -559,6 +559,11 @@ theorem IsSuffix.idxOf_add_length_le (hl : l₁ <:+ l₂) (a : α) :
   obtain ⟨l₃, rfl⟩ := hl
   grind
 
+theorem succ_idxOf_lt_length_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast) :
+    l.idxOf a + 1 < l.length := by
+  have := idxOf_lt_length_of_mem ha
+  grind [IsPrefix.idxOf_eq_of_mem]
+
 end IndexOf
 
 /-! ### nth element -/
