@@ -1,0 +1,151 @@
+/-
+Copyright (c) 2025 Brian Nugent. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Brian Nugent
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.RingTheory.HopkinsLevitzki
+
+/-!
+# Artinian and Locally Artinian Schemes
+
+We define and prove basic properties about Artinian and locally Artinian Schemes.
+
+## Main definitions
+
+* `AlgebraicGeometry.IsLocallyArtinian`: A scheme is locally Artinian if for all open affines,
+  the section ring is an Artinian ring.
+
+* `AlgebraicGeometry.IsArtinianScheme`: A scheme is Artinian if it is locally Artinian and
+  quasi-compact.
+
+## Main results
+
+* `AlgebraicGeometry.IsLocallyArtinian_iff_IsLocallyNoetherian_and_DiscreteTopology`: A scheme is
+  locally Artinian if and only if it is LocallyNoetherian and it has the discrete topology.
+
+* `AlgebraicGeometry.IsArtinianScheme_iff_IsNoetherian_and_Finite`: A scheme is Artinian if and
+  only if it is Noetherian and has the discrete topology.
+
+* `IsLocallyArtinian.Opens_IsLocallyArtinian`: An open subset of a locally Artinian scheme is
+  locally Artinian (when considered as a scheme in the natural way)
+
+* `inst_IsArtinianScheme_Finite`: An Artinian scheme is finite.
+
+* `AlgebraicGeometry.IsArtinianRing_iff_IsArtinianScheme`: A commutative ring R is Artinian if
+  and only if Spec R is Artinian.
+
+TODO(Brian-Nugent): Show that all Artinian schemes are affine.
+
+-/
+
+@[expose] public section
+
+noncomputable section
+
+namespace AlgebraicGeometry
+
+variable (X : Scheme)
+
+/-- A scheme `X` is locally Artinian if `𝒪ₓ(U)` is Artinian for all affine `U`. -/
+class IsLocallyArtinian : Prop where
+  component_artinian : ∀ (U : X.affineOpens),
+    IsArtinianRing Γ(X, U) := by infer_instance
+
+attribute [instance] IsLocallyArtinian.component_artinian
+
+instance IsLocallyArtinian.isLocallyNoetherian [h : IsLocallyArtinian X] :
+    IsLocallyNoetherian X where
+
+instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
+    IsArtinianRing Γ(X, ⊤) :=
+  h.1 ⟨⊤, isAffineOpen_top X⟩
+
+lemma IsLocallyArtinian.discreteTopology_of_isAffine [IsLocallyArtinian X] [IsAffine X] :
+    DiscreteTopology X := by
+  have F := AlgebraicGeometry.Scheme.isoSpec X
+  apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mpr
+  exact inferInstanceAs (DiscreteTopology (PrimeSpectrum Γ(X,⊤)))
+
+instance [h : IsLocallyArtinian X] {U : X.Opens} :
+    IsLocallyArtinian U := by
+  refine { component_artinian := ?_ }
+  intro W
+  have F := (Scheme.Hom.appIso U.ι ↑W).commRingCatIsoToRingEquiv
+  have _ : IsArtinianRing Γ(X, U.ι ''ᵁ W) :=
+    h.1 ⟨(U.ι ''ᵁ W), AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion W.2 U.ι⟩
+  exact RingEquiv.isArtinianRing F
+
+instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian X] :
+    DiscreteTopology X := by
+  apply discreteTopology_iff_isOpen_singleton.mpr
+  intro x
+  have : x ∈ (⊤ : X.Opens) := trivial
+  obtain ⟨W, hW1, hW2, _⟩ := exists_isAffineOpen_mem_and_subset this
+  have _ : IsAffine W := hW1
+  have : DiscreteTopology W := IsLocallyArtinian.discreteTopology_of_isAffine W
+  have : IsOpen ({(⟨x, hW2⟩)} : Set W) := by
+    apply discreteTopology_iff_forall_isOpen.mp
+    exact IsLocallyArtinian.discreteTopology_of_isAffine W
+  have _ := IsOpen.trans this W.2
+  have : Subtype.val '' {⟨x, hW2⟩} = {x} := Set.image_singleton
+  rw[← this]
+  assumption
+
+theorem IsNoetherianRing.discreteTopololgy_of_isArtinianRing
+(R : Type*) [CommRing R] [IsNoetherianRing R] [h : DiscreteTopology (PrimeSpectrum R)] :
+    IsArtinianRing R := by
+  apply isArtinianRing_iff_krullDimLE_zero.mpr
+  exact (PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero.mp h).2
+
+lemma IsLocallyNoetherian.isLocallyArtinian_discreteTopology
+    [IsLocallyNoetherian X] [DiscreteTopology X] :
+    IsLocallyArtinian X := by
+  refine { component_artinian := ?_ }
+  intro U
+  have _ : IsNoetherianRing Γ(X,U) := IsLocallyNoetherian.component_noetherian U
+  have _ : DiscreteTopology (PrimeSpectrum Γ(X,U)) := by
+    change DiscreteTopology (Spec Γ(X,U))
+    have F := AlgebraicGeometry.IsAffineOpen.isoSpec U.2
+    apply (Homeomorph.discreteTopology_iff (AlgebraicGeometry.Scheme.Hom.homeomorph F.hom)).mp
+    exact instDiscreteTopologySubtype
+  exact IsNoetherianRing.discreteTopololgy_of_isArtinianRing Γ(X, U)
+
+theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
+    IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩,
+  fun ⟨_,_⟩ => IsLocallyNoetherian.isLocallyArtinian_discreteTopology X⟩
+
+/-- A scheme is Artinian if it is locally Artinian and quasi-compact -/
+@[mk_iff]
+class IsArtinianScheme : Prop extends IsLocallyArtinian X, CompactSpace X
+
+instance IsArtinianScheme.finite [h : IsArtinianScheme X] :
+    Finite X := @finite_of_compact_of_discrete X _ _ _
+
+instance IsArtinianScheme.isNoetherianScheme [IsArtinianScheme X] :
+    IsNoetherian X :=
+      { toIsLocallyNoetherian := inferInstance,
+        toCompactSpace := inferInstance}
+
+theorem IsArtinianScheme.iff_isNoetherian_and_discreteTopology :
+    IsArtinianScheme X ↔ IsNoetherian X ∧ DiscreteTopology X :=
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩,
+  fun ⟨_,_⟩ =>
+    {toIsLocallyArtinian := IsLocallyNoetherian.isLocallyArtinian_discreteTopology X,
+      toCompactSpace := inferInstance}⟩
+
+/-- A commutative ring `R` is Artinian if and only if `Spec R` is an Artinian scheme -/
+theorem IsArtinianRing.iff_isArtinianScheme (R : Type*) [CommRing R] :
+    IsArtinianRing R ↔ IsArtinianScheme (Spec (CommRingCat.of R)) := by
+  constructor
+  · intro _
+    apply (IsArtinianScheme.iff_isNoetherian_and_discreteTopology (Spec (CommRingCat.of R))).mpr
+    exact ⟨inferInstance, inferInstanceAs (DiscreteTopology (PrimeSpectrum R))⟩
+  intro _
+  have F := (AlgebraicGeometry.Scheme.ΓSpecIso (CommRingCat.of R)).commRingCatIsoToRingEquiv
+  exact RingEquiv.isArtinianRing F
+
+end AlgebraicGeometry
