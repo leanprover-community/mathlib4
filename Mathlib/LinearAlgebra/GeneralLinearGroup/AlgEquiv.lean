@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Ring.Action.ConjAct
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 /-!
 # Algebra automorphisms in `End K V` are inner
