@@ -185,11 +185,11 @@ def functorCompInverseIso : functor X Y ⋙ inverse X Y ≅ 𝟭 _ :=
 
 @[simp]
 lemma functorCompInverseIso_hom_app (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
-    (functorCompInverseIso X Y).hom.app (mk (x ,y)) = 𝟙 _ := rfl
+    (functorCompInverseIso X Y).hom.app (mk (x, y)) = 𝟙 _ := rfl
 
 @[simp]
 lemma functorCompInverseIso_inv_app (x : X _⦋0⦌₂) (y : Y _⦋0⦌₂) :
-    (functorCompInverseIso X Y).inv.app (mk (x ,y)) = 𝟙 _ := rfl
+    (functorCompInverseIso X Y).inv.app (mk (x, y)) = 𝟙 _ := rfl
 
 variable (X Y) in
 /-- Auxiliary definition for `equivalence`. -/
