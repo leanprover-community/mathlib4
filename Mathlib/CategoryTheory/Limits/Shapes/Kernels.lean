@@ -978,10 +978,7 @@ def cokernel.zeroCokernelCofork : CokernelCofork f where
 /-- The morphism to the zero object is a cokernel of an epimorphism -/
 def cokernel.isColimitCoconeZeroCocone [Epi f] : IsColimit (cokernel.zeroCokernelCofork f) :=
   Cofork.IsColimit.mk _ (fun _ => 0)
-    (fun s => by
-      erw [zero_comp]
-      refine (zero_of_epi_comp f ?_).symm
-      exact CokernelCofork.condition _)
+    fun _ => by simp [zero_of_epi_comp f _]
     fun _ _ _ => zero_of_from_zero _
 
 /-- The cokernel of an epimorphism is isomorphic to the zero object -/
