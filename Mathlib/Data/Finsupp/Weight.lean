@@ -247,4 +247,12 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
+lemma range_single_one :
+    Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
+  refine subset_antisymm ?_ ?_
+  · simp [Set.range_subset_iff]
+  · intro p (hp : p.sum (fun a k ↦ k) = 1)
+    obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
+    use a
+
 end Finsupp
