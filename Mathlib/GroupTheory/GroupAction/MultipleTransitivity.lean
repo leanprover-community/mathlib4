@@ -33,6 +33,20 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
+## Results for `SubMulAction`.
+
+* `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
+  that for `a`, `b` and `g` such that `g • a = b`, the actions
+  of `stabilizer G a` and of `stabilizer G b` are equivalently `n`-pretransitive for all `n : ℕ`.
+
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows the
+  same result for `n`-transitivity.
+
+
+* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
+  is pretransitive, then it is `n.succ` pretransitive if and only if
+  the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
+
 ## Results for permutation groups
 
 * The permutation group is pretransitive, is multiply pretransitive,
@@ -307,6 +321,19 @@ namespace SubMulAction.ofStabilizer
 variable {G α : Type*} [Group G] [MulAction G α]
 
 open scoped BigOperators Pointwise Cardinal
+
+@[to_additive]
+theorem isPretransitive_iff_of_conj {a b : α} {g : G} (hg : b = g • a) :
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  isPretransitive_congr (MulEquiv.surjective _) (ofStabilizer.conjMap_bijective hg)
+
+@[to_additive]
+theorem isPretransitive_iff [IsPretransitive G α] {a b : α} :
+    IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
+      IsPretransitive (stabilizer G b) (ofStabilizer G b) :=
+  let ⟨_, hg⟩ := exists_smul_eq G a b
+  isPretransitive_iff_of_conj hg.symm
 
 @[to_additive]
 theorem isMultiplyPretransitive_iff_of_conj

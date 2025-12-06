@@ -158,19 +158,19 @@ variable {E α β : Type*} [Pow α E] [Pow β E]
 @[to_additive existing instSMul]
 instance instPow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_fst]
+@[to_additive existing (attr := simp) smul_fst]
 lemma pow_fst (p : α × β) (c : E) : (p ^ c).fst = p.fst ^ c := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_snd]
+@[to_additive existing (attr := simp) smul_snd]
 lemma pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7 8) smul_mk]
+@[to_additive existing (attr := simp) smul_mk]
 lemma pow_mk (a : α) (b : β) (c : E) : Prod.mk a b ^ c = Prod.mk (a ^ c) (b ^ c) := rfl
 
-@[to_additive existing (reorder := 6 7) smul_def]
+@[to_additive existing smul_def]
 lemma pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) := rfl
 
-@[to_additive existing (attr := simp) (reorder := 6 7) smul_swap]
+@[to_additive existing (attr := simp) smul_swap]
 lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c := rfl
 
 end Pow

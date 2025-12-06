@@ -409,6 +409,27 @@ theorem unitCoeff_spec {x : ℤ_[p]} (hx : x ≠ 0) :
   · simp
   · exact NeZero.ne _
 
+theorem isUnit_den {p : ℕ} [hp_prime : Fact p.Prime] (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
+    IsUnit (r.den : ℤ_[p]) := by
+  rw [isUnit_iff]
+  apply le_antisymm (r.den : ℤ_[p]).2
+  rw [← not_lt, coe_natCast]
+  intro norm_denom_lt
+  have hr : ‖(r * r.den : ℚ_[p])‖ = ‖(r.num : ℚ_[p])‖ := by
+    congr
+    rw_mod_cast [@Rat.mul_den_eq_num r]
+  rw [padicNormE.mul] at hr
+  have key : ‖(r.num : ℚ_[p])‖ < 1 := by
+    calc
+      _ = _ := hr.symm
+      _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
+      _ = 1 := mul_one 1
+  have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
+    simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_e_of_padicInt]
+    exact ⟨key, norm_denom_lt⟩
+  apply hp_prime.1.not_dvd_one
+  rwa [← r.reduced.gcd_eq_one, Nat.dvd_gcd_iff, ← Int.natCast_dvd, ← Int.natCast_dvd_natCast]
+
 end Units
 
 section NormLeIff

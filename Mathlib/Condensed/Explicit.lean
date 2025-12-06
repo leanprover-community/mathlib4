@@ -18,7 +18,7 @@ We give the following three explicit descriptions of condensed objects:
 * `Condensed.ofSheafProfinite`: A finite-product-preserving presheaf on `Profinite`, satisfying
   `EqualizerCondition`.
 
-* `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `CompHaus`, satisfying
+* `Condensed.ofSheafCompHaus`: A finite-product-preserving presheaf on `CompHaus`, satisfying
   `EqualizerCondition`.
 
 The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularSheaves.lean`
