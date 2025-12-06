@@ -101,7 +101,7 @@ theorem opNorm_mulLeftRight_le :
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
 a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addition, so is every
 C⋆-algebra, non-unital included (see `CStarRing.instRegularNormedAlgebra`), but there are yet other
-examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regular.
+examples. Any algebra with an approximate identity (e.g., `L¹`) is also regular.
 
 This is a useful class because it gives rise to a nice norm on the unitization; in particular it is
 a C⋆-norm when the norm on `A` is a C⋆-norm. -/
