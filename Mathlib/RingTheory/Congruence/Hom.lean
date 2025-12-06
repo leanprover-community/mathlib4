@@ -556,10 +556,9 @@ theorem coe_quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     (quotientKerEquivRangeₐ f x : P) = f x := by
   rfl
 
-theorem _root_.AlgHom.quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
-    ((RingCon.quotientKerEquivRangeₐ φ).toAlgHom.comp
-      ((RingCon.ker φ.toRingHom).mkₐ R)) =
-        φ.rangeRestrict :=
+@[simp]
+theorem quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
+    ((quotientKerEquivRangeₐ φ).toAlgHom.comp ((ker φ.toRingHom).mkₐ R)) = φ.rangeRestrict :=
   rfl
 
 /-- The **second isomorphism theorem for algebras**. -/
