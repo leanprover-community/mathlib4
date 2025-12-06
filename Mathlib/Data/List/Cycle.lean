@@ -286,7 +286,7 @@ theorem next_getLast_eq_head_of_notMem_dropLast {l : List α} (hl : l ≠ [])
     (h : l.getLast hl ∉ l.dropLast) : l.next (l.getLast hl) (getLast_mem hl) = l.head hl :=
   nextOr_getLast_of_notMem_dropLast hl h _ |>.trans <| by grind
 
-theorem next_eq_getElem?_idxOf_succ_of_mem {l : List α} {a : α} (ha : a ∈ l) :
+theorem next_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
     l.next a ha = l[(l.idxOf a + 1) % l.length]'(Nat.mod_lt _ <| by grind) := by
   apply Option.some_injective
   rw [← getElem?_pos]
@@ -304,40 +304,8 @@ theorem next_eq_getElem?_idxOf_succ_of_mem {l : List α} {a : α} (ha : a ∈ l)
 
 theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     next l l[i] (get_mem _ _) =
-      (l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi))) :=
-  match l, h, i, hi with
-  | [], _, i, hi => by simp at hi
-  | [_], _, _, _ => by simp
-  | x::y::l, _h, 0, h0 => by
-    have h₁ : (x :: y :: l)[0] = x := by simp
-    rw [next_cons_cons_eq' _ _ _ _ _ h₁]
-    simp
-  | x::y::l, hn, i+1, hi => by
-    have hx' : (x :: y :: l)[i+1] ≠ x := by
-      intro H
-      suffices (i + 1 : ℕ) = 0 by simpa
-      rw [nodup_iff_injective_get] at hn
-      refine Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ ?_)
-      simpa using H
-    have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
-    rcases hi'.eq_or_lt with (hi' | hi')
-    · subst hi'
-      rw [next_getLast_cons]
-      · simp
-      · rw [getElem_cons_succ]; exact get_mem _ _
-      · exact hx'
-      · simp [getLast_eq_getElem]
-      · exact hn.of_cons
-    · rw [next_cons_eq_next_of_mem_dropLast _ _ _ _ hx']
-      · simp only [getElem_cons_succ]
-        rw [next_getElem (y::l), ← getElem_cons_succ (a := x)]
-        · congr
-          dsimp
-          rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
-            Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
-        · exact hn.of_cons
-      · grind [dropLast_concat_getLast]
+      (l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi))) := by
+  grind [next_eq_getElem, idxOf_getElem]
 
 theorem prev_eq_getElem?_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
     (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : l.prev a ha = l[l.idxOf a - 1]? := by
@@ -356,7 +324,7 @@ theorem prev_infix_of_mem_tail {l : List α} {a : α} (ha : a ∈ l)
     grind
   grind [prev_eq_getElem?_idxOf_pred_of_ne_head]
 
-theorem prev_eq_getElem?_idxOf_pred_of_mem {l : List α} {a : α} (ha : a ∈ l) :
+theorem prev_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
     l.prev a ha = l[(l.idxOf a + (l.length - 1)) % l.length]'(Nat.mod_lt _ <| by grind) := by
   cases l with | nil => grind | cons head tail =>
   by_cases ha₀ : a = head
@@ -373,43 +341,8 @@ theorem prev_eq_getElem?_idxOf_pred_of_mem {l : List α} {a : α} (ha : a ∈ l)
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia))) :=
-  match l with
-  | [] => by simp at hi
-  | x::l => by
-    induction l generalizing i x with
-    | nil => simp
-    | cons y l hl =>
-      rcases i with (_ | _ | i)
-      · simp [getLast_eq_getElem]
-      · simp only [mem_cons, nodup_cons] at h
-        push_neg at h
-        simp only [zero_add, getElem_cons_succ, getElem_cons_zero,
-          List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, length, add_comm,
-          Nat.add_sub_cancel_left, Nat.mod_self]
-      · rw [prev_ne_cons_cons]
-        · convert hl i.succ y h.of_cons (Nat.le_of_succ_le_succ hi) using 1
-          have : ∀ k hk, (y :: l)[k] = (x :: y :: l)[k + 1]'(Nat.succ_lt_succ hk) := by
-            simp
-          rw [this]
-          congr
-          simp only [Nat.add_succ_sub_one, add_zero, length]
-          simp only [length, Nat.succ_lt_succ_iff] at hi
-          set k := l.length
-          rw [Nat.succ_add, ← Nat.add_succ, Nat.add_mod_right, Nat.succ_add, ← Nat.add_succ _ k,
-            Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.mod_eq_of_lt]
-          · exact Nat.lt_succ_of_lt hi
-          · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hi)
-        · intro H
-          suffices i.succ.succ = 0 by simpa
-          suffices Fin.mk _ hi = ⟨0, by omega⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at h
-          apply h; rw [← H]; simp
-        · intro H
-          suffices i.succ.succ = 1 by simpa
-          suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
-          rw [nodup_iff_injective_get] at h
-          apply h; rw [← H]; simp
+      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia))) := by
+  grind [prev_eq_getElem, idxOf_getElem]
 
 @[simp]
 theorem next_getLast_eq_head (l : List α) (h : l ≠ []) (hn : l.Nodup) :
