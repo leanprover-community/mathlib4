@@ -44,7 +44,7 @@ variable [CommSemiring R]
 
 /-- The generating function of `Nat.Partition.restricted n p` is
 $$
-\prod_{i \mem p} \sum_{j = 0}^{\infty} X^{ij}
+\prod_{i \in p} \sum_{j = 0}^{\infty} X^{ij}
 $$ -/
 theorem hasProd_powerSeriesMk_card_restricted [IsTopologicalSemiring R]
     (p : ℕ → Prop) [DecidablePred p] :
