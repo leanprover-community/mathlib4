@@ -412,6 +412,53 @@ theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L
       iff_of_false ((Sentence.realize_not M).1 (hφn.realize_sentence M))
         ((h.models_not_iff φ).1 hφn)
 
+/-- A complete theory is the `completeTheory` Th(M) of one of its models. -/
+theorem eq_complete_theory (h : T.IsComplete) (M : Type*) [L.Structure M] [M ⊨ T] [Nonempty M] :
+    {φ | T ⊨ᵇ φ} = L.completeTheory M := by
+  ext φ
+  simp only [Set.mem_setOf_eq, L.mem_completeTheory]
+  refine ⟨fun h_models => h_models.realize_sentence M, fun h_realize => ?_⟩
+  cases h.2 φ with
+  | inl hT => exact hT
+  | inr hT =>
+      have : M ⊨ φ.not := hT.realize_sentence M
+      rw [Sentence.realize_not] at this
+      contradiction
+
+/-- A theory is complete iff it is satisfiable and all its models are elementarily equivalent. -/
+theorem isComplete_iff_models_elementarily_equivalent :
+    T.IsComplete ↔
+    T.IsSatisfiable ∧ ∀ (M N : ModelType.{u, v, max u v} T), ElementarilyEquivalent L M N := by
+  rw [IsComplete]
+  refine and_congr_right fun hsat =>
+    ⟨fun h M N => elementarilyEquivalent_iff.2 fun φ => ?_, fun h φ => ?_⟩
+  · rcases h φ with (h | h)
+    · exact iff_of_true (h.realize_sentence M) (h.realize_sentence N)
+    · exact iff_of_false ((Sentence.realize_not M).1 (h.realize_sentence M))
+        ((Sentence.realize_not N).1 (h.realize_sentence N))
+  · obtain ⟨M⟩ := hsat
+    by_cases hφ : M ⊨ φ
+    · left
+      exact models_sentence_iff.2 fun N => (elementarilyEquivalent_iff.1 (h M N) φ).1 hφ
+    · right
+      exact models_sentence_iff.2 fun N => (Sentence.realize_not N).2
+        (mt (elementarilyEquivalent_iff.1 (h M N) φ).2 hφ)
+
+/-- If a theory is complete all its models are elementarily equivalent. -/
+theorem models_elementarily_equivalent
+    (h : T.IsComplete)
+    (M N : Type*) [L.Structure M] [L.Structure N]
+    [M ⊨ T] [N ⊨ T] [Nonempty M] [Nonempty N] :
+    ElementarilyEquivalent L M N := by
+  rcases h with ⟨_, hCompl⟩
+  refine (elementarilyEquivalent_iff (L := L) (M := M) (N := N)).2 ?_
+  intro φ
+  rcases hCompl φ with hφ | hφ
+  · exact iff_of_true (hφ.realize_sentence M) (hφ.realize_sentence N)
+  · exact iff_of_false
+      ((Sentence.realize_not M).1 (hφ.realize_sentence M))
+      ((Sentence.realize_not N).1 (hφ.realize_sentence N))
+
 end IsComplete
 
 /-- A theory is maximal when it is satisfiable and contains each sentence or its negation.
