@@ -1,11 +1,10 @@
 /-
-Copyright (c) 2017 Bolton Bailey. All rights reserved.
+Copyright (c) 2025 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
 import Mathlib.Algebra.MvPolynomial.Variables
-
-#align_import data.mv_polynomial.comm_ring from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
+import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Multivariate polynomials over `NoZeroDivisors`
@@ -33,8 +32,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 ## TODOs
 
-This file should be extended to include `=` versions of all the `≤` lemmas about degree-related
-definitions.
+* Add a `totalDegree_mul_eq` theorem, which states that the total degree of a product of two
+nonzero multivariate polynomials is the sum of their total degrees.
 
 -/
 
@@ -56,29 +55,34 @@ variable [CommSemiring R] [NoZeroDivisors R]
 
 variable {p q : MvPolynomial σ R}
 
-section Degrees
-
-lemma degrees_mul' (hp : p ≠ 0) (hq : q ≠ 0) : degrees (p * q) = degrees p + degrees q := by
-  sorry
-
-end Degrees
-
 section DegreeOf
 
-lemma degreeOf_mul : degreeOf n (p * q) = degreeOf n p + degreeOf n q := by
-  sorry
+lemma degreeOf_mul (hp : p ≠ 0) (hq : q ≠ 0) :
+    degreeOf n (p * q) = degreeOf n p + degreeOf n q := by
+  classical
+  simp_rw [degreeOf_eq_natDegree]
+  simp only [ne_eq, map_mul]
+  rw [Polynomial.natDegree_mul] <;> simpa [← renameEquiv_apply, EmbeddingLike.map_eq_zero_iff]
 
 theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ≠ 0) :
-    MvPolynomial.degreeOf j (MvPolynomial.C c * p) = MvPolynomial.degreeOf j p := by sorry
+    MvPolynomial.degreeOf j (MvPolynomial.C c * p) = MvPolynomial.degreeOf j p := by
+  by_cases hp : p = 0
+  · simp [hp]
+  rw [degreeOf_mul (C_eq_zero.not.mpr hc) hp, degreeOf_C, zero_add]
 
 end DegreeOf
 
-section TotalDegree
+section Degrees
 
-lemma totalDegree_mul' (hp : p ≠ 0) (hq : q ≠ 0) : totalDegree (p * q) = totalDegree p + totalDegree q := by
-  sorry
+lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
+    degrees (p * q) = degrees p + degrees q := by
+  classical
+  apply Multiset.ext'
+  intro s
+  simp only [Multiset.count_add, ← degreeOf_def]
+  rw [degreeOf_mul hp hq]
 
-end TotalDegree
+end Degrees
 
 end NoZeroDivisors
 
