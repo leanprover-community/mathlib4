@@ -292,23 +292,14 @@ theorem next_getLast_eq_head_of_notMem_dropLast {l : List α} (hl : l ≠ [])
 
 theorem next_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
     l.next a ha = l[(l.idxOf a + 1) % l.length]'(Nat.mod_lt _ <| by grind) := by
-  apply Option.some_injective
-  rw [← getElem?_pos]
-  nth_rw 3 [← dropLast_concat_getLast <| ne_nil_of_mem ha]
-  rw [idxOf_append]
-  split_ifs with ha'
-  · obtain ⟨_, hl⟩ := l.dropLast_prefix
-    rw [Nat.mod_eq_of_lt <| by grind, ← (hl ▸ idxOf_append_of_mem ha' :)]
-    exact nextOr_eq_getElem?_idxOf_succ_of_mem_dropLast ha' _
-  have := mem_append.mp <| (dropLast_concat_getLast <| ne_nil_of_mem ha) ▸ ha
-  have := eq_of_mem_singleton <| this.resolve_left ha'
-  simp [← this]
-  have := next_getLast_eq_head_of_notMem_dropLast (ne_nil_of_mem ha) (this ▸ ha')
-  grind [Nat.mod_self]
+  have hl := ne_nil_of_mem ha
+  by_cases ha' : a ∈ l.dropLast
+  · simp [next, nextOr_eq_getElem_idxOf_succ_of_mem_dropLast ha',
+      Nat.mod_eq_of_lt <| succ_idxOf_lt_length_of_mem_dropLast ha']
+  grind [dropLast_append_getLast, next_getLast_eq_head_of_notMem_dropLast, Nat.mod_self]
 
 theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
-    next l l[i] (get_mem _ _) =
-      (l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi))) := by
+    l.next l[i] (get_mem ..) = l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi)) := by
   grind [next_eq_getElem, idxOf_getElem]
 
 theorem prev_eq_getElem?_idxOf_pred_of_ne_head {l : List α} {a : α} (ha : a ∈ l)
@@ -340,17 +331,14 @@ theorem prev_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
   · subst ha₀
     simp
     grind
-  apply Option.some_injective
-  rw [prev_eq_getElem?_idxOf_pred_of_ne_head ha ha₀, ← getElem?_pos]
+  rw [prev_eq_getElem_idxOf_pred_of_ne_head ha ha₀]
   congr
   rw [idxOf_cons_ne _ <| Ne.symm ha₀, Nat.succ_add_eq_add_succ]
-  change _ = (_ + (head :: tail).length) % _
-  rw [Nat.add_mod_right, Nat.mod_eq_of_lt <| by grind]
-  grind
+  change _ = (_ + (head :: _).length) % _
+  rw [Nat.add_mod_right, Nat.mod_eq_of_lt <| by grind, Nat.add_one_sub_one]
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
-    prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia))) := by
+    l.prev l[i] (get_mem ..) = l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia)) := by
   grind [prev_eq_getElem, idxOf_getElem]
 
 @[simp]

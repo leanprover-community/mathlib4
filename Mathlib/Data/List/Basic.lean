@@ -549,6 +549,13 @@ theorem IsPrefix.idxOf_eq_of_mem (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁)
   obtain ⟨l₃, rfl⟩ := hl
   exact idxOf_append_of_mem ha |>.symm
 
+theorem IsPrefix.mem_iff_idxOf_lt_length (hl : l₁ <+: l₂) (a : α) :
+    a ∈ l₁ ↔ l₂.idxOf a < l₁.length := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact hl.idxOf_eq_of_mem h ▸ idxOf_lt_length_of_mem h
+  · have := hl.idxOf_le a
+    grind [List.idxOf_lt_length_iff]
+
 theorem IsSuffix.idxOf_le (hl : l₁ <:+ l₂) (a : α) :
     l₂.idxOf a ≤ l₂.length - l₁.length + l₁.idxOf a := by
   obtain ⟨l₃, rfl⟩ := hl
@@ -559,10 +566,25 @@ theorem IsSuffix.idxOf_add_length_le (hl : l₁ <:+ l₂) (a : α) :
   obtain ⟨l₃, rfl⟩ := hl
   grind
 
+theorem mem_take_iff_idxOf_lt {a : α} {n : ℕ} {l : List α} (ha : a ∈ l) :
+    a ∈ l.take n ↔ l.idxOf a < n := by
+  rw [l.take_prefix n |>.mem_iff_idxOf_lt_length]
+  grind
+
+theorem mem_dropLast_iff_idxOf_lt {l : List α} {a : α} (ha : a ∈ l) :
+    a ∈ l.dropLast ↔ l.idxOf a < l.length - 1 := by
+  rw [dropLast_eq_take, mem_take_iff_idxOf_lt ha]
+
 theorem succ_idxOf_lt_length_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast) :
     l.idxOf a + 1 < l.length := by
   have := idxOf_lt_length_of_mem ha
   grind [IsPrefix.idxOf_eq_of_mem]
+
+theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dropLast) :
+    l.idxOf (l.getLast hl) = l.length - 1 :=
+  Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
+    contrapose! hl'
+    rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
 
 end IndexOf
 
