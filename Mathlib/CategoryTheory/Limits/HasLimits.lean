@@ -948,8 +948,7 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
 @[reassoc (attr := simp)]
 theorem colimit.ι_post (j : J) :
     colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.post]
 
 @[simp]
 theorem colimit.post_desc (c : Cocone F) :
