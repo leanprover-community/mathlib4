@@ -62,8 +62,8 @@ This is a structure around `Functor` to prevent defeq-abuse
 -/
 @[ext]
 structure Hom (C D : Cat.{v, u}) where
-private ofFunctor ::
-/-- The Functor underlying a 1-morphism in Cat -/
+  private ofFunctor ::
+  /-- The Functor underlying a 1-morphism in Cat -/
   toFunctor : C ⥤ D
 
 instance : Quiver (Cat.{v, u}) where
@@ -122,10 +122,10 @@ def _root_.CategoryTheory.NatTrans.toCatHom₂ {C D : Type u} [Category.{v} C]
 instance instCategory {X Y : Cat.{v, u}} : Category (X ⟶ Y) where
   id F := NatTrans.toCatHom₂ (𝟙 F.toFunctor)
   comp η₁ η₂ := NatTrans.toCatHom₂ (η₁.toNatTrans ≫ η₂.toNatTrans)
-  id_comp η := congrArg (Hom₂.ofNatTrans) (Category.id_comp η.toNatTrans)
-  comp_id η := congrArg (Hom₂.ofNatTrans) (Category.comp_id η.toNatTrans)
+  id_comp η := congrArg (NatTrans.toCatHom₂) (Category.id_comp η.toNatTrans)
+  comp_id η := congrArg (NatTrans.toCatHom₂) (Category.comp_id η.toNatTrans)
   assoc η₁ η₂ η₃ :=
-    congrArg (Hom₂.ofNatTrans) (Category.assoc η₁.toNatTrans η₂.toNatTrans η₃.toNatTrans)
+    congrArg (NatTrans.toCatHom₂) (Category.assoc η₁.toNatTrans η₂.toNatTrans η₃.toNatTrans)
 
 @[simp, push_cast]
 lemma _root_.CategoryTheory.NatTrans.toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
@@ -201,7 +201,7 @@ instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
 @[simp, push_cast]
-lemma Hom.id_toFunctor {C : Cat.{v, u}} : (𝟙 C : C ⟶ C).toFunctor = Functor.id C := rfl
+lemma Hom.id_toFunctor {C : Cat.{v, u}} : (𝟙 C : C ⟶ C).toFunctor = 𝟭 C := rfl
 
 @[simp]
 theorem Hom.id_obj {C : Cat.{v, u}} (X : C) : (𝟙 C : C ⟶ C).toFunctor.obj X = X := by
