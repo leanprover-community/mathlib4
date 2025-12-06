@@ -176,7 +176,6 @@ variable (M) in
 theorem nil_mem_acceptsFrom {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
   simp only [mem_acceptsFrom, evalFrom_nil]; tauto
 
-variable (M) in
 @[simp]
 theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
@@ -185,7 +184,7 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
-  ext x; simp [cons_mem_acceptsFrom M]
+  ext x; simp [cons_mem_acceptsFrom (M:=M)]
 
 variable (M) in
 @[simp]
@@ -509,7 +508,7 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
     simp only [cons_mem_acceptsFrom, ↓concat_stepSet_inl, stepSet, acceptsFrom_union,
       concat_acceptsFrom_inr, acceptsFrom_iUnion, add_eq_sup, max, SemilatticeSup.sup,
       Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
-    simp_rw [↑mem_acceptsFrom_sep_fact]
+    simp_rw [↑mem_acceptsFrom_sep]
     constructor
     · rintro (⟨x, hx, ⟨y, hy, rfl⟩⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
       · exists (a :: x)
