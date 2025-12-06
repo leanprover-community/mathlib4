@@ -205,6 +205,20 @@ omit [TopologicalSpace R] in
     grind
   · simp
 
+omit [TopologicalSpace R] in
+lemma notMem_someBot_of_lt {x y : R} (h : x < y) : y ∉ someBot := by
+  simp only [someBot]
+  split_ifs with h'
+  · simp only [mem_singleton_iff]
+    exact (lt_of_le_of_lt (h'.choose_spec x) h).ne'
+  · simp
+
+omit [TopologicalSpace R] in
+lemma measurableSet_someBot [MeasurableSpace R] [MeasurableSingletonClass R] :
+    MeasurableSet (someBot (R := R)) := by
+  simp only [someBot]
+  split_ifs <;> simp
+
 open scoped Classical in
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
@@ -247,6 +261,11 @@ theorem length_mono {s₁ s₂ : Set R} (h : s₁ ⊆ s₂) : f.length s₁ ≤ 
   simp only [length_eq]
   exact iInf_mono fun a => biInf_mono fun b h' => (diff_subset_diff_left h).trans h'
 
+theorem length_diff_someBot {s : Set R} : f.length (s \ someBot) = f.length s := by
+  rcases isEmpty_or_nonempty R with hR | hR
+  · simp [length_eq_of_isEmpty]
+  · simp [length_eq]
+
 open MeasureTheory
 
 /-- The Stieltjes outer measure associated to a Stieltjes function. -/
@@ -256,21 +275,41 @@ protected def outer : OuterMeasure R :=
 theorem outer_le_length (s : Set R) : f.outer s ≤ f.length s :=
   OuterMeasure.ofFunction_le _
 
+open scoped Classical in
+def Iotop (a b : R) : Set R := if IsTop b then Ioc a b else Ioo a b
+
+lemma isOpen_Iotop [OrderTopology R] (a b : R) : IsOpen (Iotop a b) := by
+  simp only [Iotop]
+  split_ifs with h
+  · have : Ioc a b = Ioi a := Subset.antisymm (fun x hx ↦ hx.1) (fun x hx ↦ by exact ⟨hx, h _⟩)
+    simp [this, isOpen_Ioi]
+  · simp [isOpen_Ioo]
+
+omit [TopologicalSpace R] in
+lemma Iotop_subset_Ioc {a b : R} : Iotop a b ⊆ Ioc a b := by
+  simp only [Iotop]
+  split_ifs with h <;> simp [Ioo_subset_Ioc_self]
+
+omit [TopologicalSpace R] in
+lemma Ioo_subset_Iotop {a b : R} : Ioo a b ⊆ Iotop a b := by
+  simp only [Iotop]
+  split_ifs with h <;> simp [Ioo_subset_Ioc_self]
+
 variable [OrderTopology R]
 
 /-- If a compact interval `[a, b]` is covered by a union of open interval `(c i, d i)`, then
 `f b - f a ≤ ∑ f (d i) - f (c i)`. This is an auxiliary technical statement to prove the same
 statement for half-open intervals, the point of the current statement being that one can use
 compactness to reduce it to a finite sum, and argue by induction on the size of the covering set. -/
-theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆ ⋃ i, Ioo (c i) (d i)) :
+theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆ ⋃ i, Iotop (c i) (d i)) :
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
   suffices
-    ∀ (s : Finset ℕ) (b), Icc a b ⊆ (⋃ i ∈ (s : Set ℕ), Ioo (c i) (d i)) →
+    ∀ (s : Finset ℕ) (b), Icc a b ⊆ (⋃ i ∈ (s : Set ℕ), Iotop (c i) (d i)) →
       (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i ∈ s, ofReal (f (d i) - f (c i)) by
     rcases isCompact_Icc.elim_finite_subcover_image
-        (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Ioo _ _ _ _ (c i) (d i)) (by simpa using ss) with
+        (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Iotop _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
-    have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Ioo (c i) (d i) = ⋃ i ∈ s, Ioo (c i) (d i) := by
+    have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Iotop (c i) (d i) = ⋃ i ∈ s, Iotop (c i) (d i) := by
       simp only [Finset.set_biUnion_coe,
         Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
@@ -281,19 +320,19 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
   rcases le_total b a with ab | ab
   · rw [ENNReal.ofReal_eq_zero.2 (sub_nonpos.2 (f.mono ab))]
     exact zero_le _
-  have := cv ⟨ab, le_rfl⟩
-  simp only [Finset.mem_coe, mem_iUnion, mem_Ioo, exists_and_left,
-    exists_prop] at this
-  rcases this with ⟨i, cb, is, bd⟩
+  obtain ⟨i, is, bcd⟩ : ∃ i ∈ s, b ∈ Iotop (c i) (d i) := by
+    simpa only [SetLike.mem_coe, mem_iUnion, exists_prop] using cv ⟨ab, le_rfl⟩
   rw [← Finset.insert_erase is] at cv ⊢
   rw [Finset.coe_insert, biUnion_insert] at cv
   rw [Finset.sum_insert (Finset.notMem_erase _ _)]
+  replace bcd : b ∈ Ioc (c i) (d i) := Iotop_subset_Ioc bcd
   grw [← IH _ (Finset.erase_ssubset is) (c i), ← ENNReal.ofReal_add_le]
   · gcongr
     rw [sub_add_sub_cancel]
-    exact sub_le_sub_right (f.mono bd.le) _
+    exact sub_le_sub_right (f.mono bcd.2) _
   · rintro x ⟨h₁, h₂⟩
-    exact (cv ⟨h₁, le_trans h₂ (le_of_lt cb)⟩).resolve_left (mt And.left (not_lt_of_ge h₂))
+    apply (cv ⟨h₁, le_trans h₂ (le_of_lt bcd.1)⟩).resolve_left (fun h ↦ ?_)
+    order [(Iotop_subset_Ioc h).1]
 
 @[simp]
 theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b - f a) := by
@@ -327,7 +366,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     have :  (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
     exact (((tendsto_order.1 A).2 _ B).and self_mem_nhdsWithin).exists
   have : Nonempty R := ⟨a⟩
-  have : ∀ i, ∃ p : R × R, s i ⊆ Ioo p.1 p.2 ∧
+  have : ∀ i, ∃ p : R × R, Icc a' b ∩ s i ⊆ Iotop p.1 p.2 ∧
       (ofReal (f p.2 - f p.1) : ℝ≥0∞) < f.length (s i) + ε' i := by
     intro i
     have hl :=
@@ -337,19 +376,29 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       rw [length_eq]
     simp only [iInf_lt_iff, exists_prop] at hl
     rcases hl with ⟨p, q', spq, hq'⟩
+    have A : Icc a' b ∩ s i ⊆ Ioc p q' := by
+      rintro x ⟨hx, h'x⟩
+      apply spq
+      simp [h'x, notMem_someBot_of_lt (aa'.trans_le hx.1)]
+    by_cases htq' : IsTop q'
+    · refine ⟨(p, q'), ?_, hq'⟩
+      rintro x hx
+      simp only [Iotop, htq', ↓reduceIte, mem_Ioc]
+      exact ⟨(A hx).1, htq' _⟩
+    have : (𝓝[>] q').NeBot := by simp [Filter.neBot_iff, nhdsGT_eq_bot_iff, htq', not_covBy]
     have : ContinuousWithinAt (fun r => ofReal (f r - f p)) (Ioi q') q' := by
       apply ENNReal.continuous_ofReal.continuousAt.comp_continuousWithinAt
       refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
       exact (f.right_continuous q').mono Ioi_subset_Ici_self
-
     rcases (((tendsto_order.1 this).2 _ hq').and self_mem_nhdsWithin).exists with ⟨q, hq, q'q⟩
-    exact ⟨⟨p, q⟩, spq.trans (Ioc_subset_Ioo_right q'q), hq⟩
+    exact ⟨⟨p, q⟩, A.trans ((Ioc_subset_Ioo_right q'q).trans Ioo_subset_Iotop), hq⟩
   choose g hg using this
-  have I_subset : Icc a' b ⊆ ⋃ i, Ioo (g i).1 (g i).2 :=
+  have I_subset : Icc a' b ⊆ ⋃ i, Iotop (g i).1 (g i).2 :=
     calc
-      Icc a' b ⊆ Ioc a b := fun x hx => ⟨aa'.trans_le hx.1, hx.2⟩
-      _ ⊆ ⋃ i, s i := hs
-      _ ⊆ ⋃ i, Ioo (g i).1 (g i).2 := iUnion_mono fun i => (hg i).1
+      Icc a' b ⊆ Icc a' b ∩ Ioc a b := fun x hx => ⟨hx, aa'.trans_le hx.1, hx.2⟩
+      _ ⊆ Icc a' b ∩ ⋃ i, s i := by gcongr
+      _ = ⋃ i, Icc a' b ∩ s i := inter_iUnion (Icc a' b) s
+      _ ⊆ ⋃ i, Iotop (g i).1 (g i).2 := iUnion_mono fun i => (hg i).1
   calc
     ofReal (f b - f a) = ofReal (f b - f a' + (f a' - f a)) := by rw [sub_add_sub_cancel]
     _ ≤ ofReal (f b - f a') + ofReal (f a' - f a) := ENNReal.ofReal_add_le
@@ -362,11 +411,15 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
+omit [OrderTopology R] in
 theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
   have : Nonempty R := ⟨c⟩
   simp only [length_eq]
   refine le_iInf fun a => le_iInf fun b => le_iInf fun h => ?_
+  simp only [← length_eq]
+  rw [← length_diff_someBot, inter_diff_right_comm, ← length_diff_someBot (s := t \ Ioi c),
+    diff_diff_comm]
   refine
     le_trans
       (add_le_add (f.length_mono <| inter_subset_inter_left _ h)
@@ -383,7 +436,7 @@ theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) 
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
-theorem outer_trim [MeasurableSpace R] [BorelSpace R] :
+theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
     f.outer.trim = f.outer := by
   refine le_antisymm (fun s => ?_) (OuterMeasure.le_trim _)
   rw [OuterMeasure.trim_eq_iInf]
@@ -394,15 +447,27 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] :
   choose g hg using
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
       intro i
+      rcases isEmpty_or_nonempty R with hR | hR
+      · refine ⟨∅, ?_, MeasurableSet.empty, by simp⟩
+        simpa using eq_empty_of_isEmpty (t i)
       have hl :=
         ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>
         lhs
-        rw [length]
+        rw [length_eq]
       simp only [iInf_lt_iff] at hl
       rcases hl with ⟨a, b, h₁, h₂⟩
       rw [← f.outer_Ioc] at h₂
-      exact ⟨_, h₁, measurableSet_Ioc, le_of_lt <| by simpa using h₂⟩
+      rw [diff_subset_iff] at h₁
+      refine ⟨_, h₁, measurableSet_someBot.union measurableSet_Ioc, le_of_lt ?_⟩
+      calc f.outer (someBot ∪ Ioc a b)
+      _ ≤ f.outer someBot + f.outer (Ioc a b) := measure_union_le _ _
+      _ ≤ f.length someBot + f.outer (Ioc a b) := by gcongr; apply outer_le_length
+      _ = 0 + f.outer (Ioc a b) := by
+        simp only [← length_diff_someBot, sdiff_self, bot_eq_empty, empty_diff, outer_Ioc, zero_add]
+        simp [empty_diff]
+      _ = f.outer (Ioc a b) := by simp
+      _ < f.length (t i) + ofReal ↑(ε' i) := by simpa using h₂
   simp only [ofReal_coe_nnreal] at hg
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
@@ -435,9 +500,23 @@ theorem measure_Ioc (a b : R) : f.measure (Ioc a b) = ofReal (f b - f a) := by
 
 @[simp]
 theorem measure_singleton (a : R) : f.measure {a} = ofReal (f a - leftLim f a) := by
+  by_cases ha : IsBot a
+  · have : leftLim f a = f a := by
+      apply leftLim_eq_of_eq_bot
+      simp [nhdsLT_eq_bot_iff, ha]
+    simp only [this, sub_self, ofReal_zero]
+    apply eq_bot_iff.2
+    rw [StieltjesFunction.measure]
+    apply (outer_le_length _ _).trans
+    rw [← length_diff_someBot]
+    have : ∃ x, IsBot x := ⟨a, ha⟩
+    have : someBot = {a} := by simpa [someBot, this] using subsingleton_isBot _ this.choose_spec ha
+    simp [this]
+  obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
-    ∃ u : ℕ → R, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
-    exists_seq_strictMono_tendsto a
+    ∃ u : ℕ → R, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
+    exists_seq_strictMono_tendsto' hb
+  replace u_lt_a n : u n < a := (u_lt_a n).2
   have A : {a} = ⋂ n, Ioc (u n) a := by
     refine Subset.antisymm (fun x hx => by simp [mem_singleton_iff.1 hx, u_lt_a]) fun x hx => ?_
     replace hx : ∀ (i : ℕ), u i < x ∧ x ≤ a := by simpa using hx
@@ -581,10 +660,31 @@ lemma isProbabilityMeasure [NoMinOrder R]
     (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
-instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
-  ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
+/- To move -/
+lemma exists_Icc_mem_nhds {R : Type*} [LinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    (x : R) : ∃ a b, Icc a b ∈ 𝓝 x := by
+  by_cases hb : IsBot x <;> by_cases ht : IsTop x
+  · refine ⟨x, x, ?_⟩
+    have : Icc x x = univ := eq_univ_iff_forall.2 (fun y ↦ by exact ⟨hb y, ht y⟩)
+    simp only [this, univ_mem]
+  · obtain ⟨M, xM⟩ : ∃ M, x < M := by simpa [IsTop] using ht
+    refine ⟨x, M, ?_⟩
+    filter_upwards [Iio_mem_nhds xM] with z hz
+    exact ⟨hb z, le_of_lt hz⟩
+  · obtain ⟨m, mx⟩ : ∃ m, m < x := by simpa [IsBot] using hb
+    refine ⟨m, x, ?_⟩
+    filter_upwards [Ioi_mem_nhds mx] with z hz
+    exact ⟨le_of_lt hz, ht z⟩
+  · obtain ⟨M, xM⟩ : ∃ M, x < M := by simpa [IsTop] using ht
+    obtain ⟨m, mx⟩ : ∃ m, m < x := by simpa [IsBot] using hb
+    exact ⟨m, M, Icc_mem_nhds mx xM⟩
 
-lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
+instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure := by
+  refine ⟨fun x ↦ ?_⟩
+  rcases exists_Icc_mem_nhds x with ⟨a, b, hab⟩
+  exact ⟨Icc a b, hab, by simp⟩
+
+lemma eq_of_measure_of_tendsto_atBot [NoMinOrder R] (g : StieltjesFunction R) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
     f = g := by
   ext x
@@ -619,11 +719,11 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
       exact f.mono hxy
 
 @[simp]
-lemma measure_zero : StieltjesFunction f.measure 0 = 0 :=
+lemma measure_zero : (0 : StieltjesFunction R).measure = 0 :=
   Measure.ext_of_Ioc _ _ (by simp)
 
 @[simp]
-lemma measure_const (c : ℝ) : (StieltjesFunction.const c).measure = 0 :=
+lemma measure_const (c : ℝ) : (StieltjesFunction.const R c).measure = 0 :=
   Measure.ext_of_Ioc _ _ (by simp)
 
 @[simp]
