@@ -380,12 +380,12 @@ protected theorem IsRegular.compl {T : Type u} {L : Language T} (h : L.IsRegular
   have ⟨σ, _, M, hM⟩ := h
   ⟨σ, inferInstance, Mᶜ, by simp [DFA.accepts_compl, hM]⟩
 
-protected theorem IsRegular.from_compl {T : Type u} {L : Language T} (h : Lᶜ.IsRegular) :
+protected theorem IsRegular.of_compl {T : Type u} {L : Language T} (h : Lᶜ.IsRegular) :
   L.IsRegular :=
   L.compl_compl ▸ h.compl
 
 /-- Regular languages are closed under complement. -/
-theorem IsRegular_compl_iff {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L.IsRegular :=
+theorem IsRegular_compl {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L.IsRegular :=
   ⟨.from_compl, .compl⟩
 
 /-- Regular languages are closed under union. -/
