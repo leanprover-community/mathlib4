@@ -258,14 +258,15 @@ theorem Projective.exists_dual_ne_zero [Projective R M] {x : M} (hx : x ≠ 0) :
   have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
   ⟨b.coord j ∘ₗ i, hj⟩
 
+end Ring
+
 variable (R) in
 /-- This is a linear map version of `SeparatingDual.exists_eq_one` in a projective module. -/
-theorem Projective.exists_dual_eq_one (K : Type*) [Semifield K] [Module K M] [Projective K M]
-    {x : M} (hx : x ≠ 0) : ∃ f : Dual K M, f x = 1 :=
+theorem Projective.exists_dual_eq_one (K : Type*) {M : Type*} [Semifield K]
+    [AddCommMonoid M] [Module K M] [Projective K M] {x : M} (hx : x ≠ 0) :
+    ∃ f : Dual K M, f x = 1 :=
   have ⟨f, hf⟩ := exists_dual_ne_zero K hx
   ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
-
-end Ring
 
 section OfLiftingProperty
 
