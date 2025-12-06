@@ -143,7 +143,7 @@ variable (S)
 abbrev toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S
-  isLocalizationMap := IsLocalization'.toIsLocalizationMap
+  isLocalizationMap' := IsLocalization'.toIsLocalizationMap
 
 @[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
 
