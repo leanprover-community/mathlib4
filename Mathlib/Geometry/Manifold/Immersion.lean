@@ -47,6 +47,8 @@ This shortens the overall argument, as the definition of submersions has the sam
   replacing the complement `F` by an isomorphic copy
 * `IsOpen.isImmersionAtOfComplement` and `IsOpen.isImmersionAt`:
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
+* `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
+  is an immersion (at a point).
 
 ## Implementation notes
 
@@ -68,7 +70,6 @@ This shortens the overall argument, as the definition of submersions has the sam
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
-* `IsImmersionAt.prodMap`: the product of two immersions is an immersion.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` splitting implies `f` is an
   immersion at `x`. (This requires the inverse function theorem.)
@@ -363,6 +364,28 @@ lemma _root_.IsOpen.isImmersionAtOfComplement :
   simp_rw [IsImmersionAtOfComplement_def]
   exact .liftSourceTargetPropertyAt
 
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (hf : IsImmersionAtOfComplement F I J n f x) (hg : IsImmersionAtOfComplement F' I' J' n g x') :
+    IsImmersionAtOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') := by
+  rw [IsImmersionAtOfComplement_def]
+  apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
+  rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
+  use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
+  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
+  set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
+    Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
+  have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
+      ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
+    ext x <;> simp [C]
+  set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
+    (equiv₁.prodCongr equiv₂)) ∘ (·, 0))
+  have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
+  rw [hC, hΦ]
+  exact hfprop.prodMap hgprop
+
 /-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
@@ -530,6 +553,15 @@ lemma _root_.IsOpen.isImmersionAt :
     fun y hy ↦ hy.isImmersionAt, .isImmersionAtOfComplement,
     by simp [hx.isImmersionAtOfComplement_complement]⟩
 
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (hf : IsImmersionAt I J n f x) (hg : IsImmersionAt I' J' n g x') :
+    IsImmersionAt (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
+  hf.isImmersionAtOfComplement_complement.prodMap hg.isImmersionAtOfComplement_complement
+    |>.isImmersionAt
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -581,6 +613,14 @@ lemma trans_F (h : IsImmersionOfComplement F I J n f) (e : F ≃L[𝕜] F') :
 lemma congr_F (e : F ≃L[𝕜] F') :
     IsImmersionOfComplement F I J n f ↔ IsImmersionOfComplement F' I J n f :=
   ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'` (w.r.t. `F` and `F'`),
+respectively, then `f × g: M × N → M' × N'` is an immersion at `(x, x')` w.r.t. `F × F'`. -/
+theorem prodMap {f : M → N} {g : M' → N'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (h : IsImmersionOfComplement F I J n f) (h' : IsImmersionOfComplement F' I' J' n g) :
+    IsImmersionOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
+  fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
 /-- If `f` is an immersion w.r.t. some complement `F`, it is an immersion.
 
@@ -636,6 +676,14 @@ lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
   heq ▸ h
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'}
+    [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
+    (hf : IsImmersion I J n f) (hg : IsImmersion I' J' n g) :
+    IsImmersion (I.prod I') (J.prod J') n (Prod.map f g) :=
+  (hf.isImmersionOfComplement_complement.prodMap hg.isImmersionOfComplement_complement ).isImmersion
 
 end IsImmersion
 
