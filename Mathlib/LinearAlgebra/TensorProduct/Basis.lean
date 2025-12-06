@@ -169,7 +169,7 @@ lemma TensorProduct.eq_repr_basis_left :
 
 omit [DecidableEq ι] in
 /-- Given a finite basis `ℬ` for `M`, any tensor `x ∈ M ⊗ N` decomposes as `∑ᵢ ℬᵢ ⊗ₜ nᵢ`
-where the `N`-component `nᵢ` is obtained by applying `ℬ.dualBasis i ⊗ id` to `x` and then
+where the `N`-component `nᵢ` is obtained by applying `ℬ.coord i ⊗ id` to `x` and then
 identifying `R ⊗ N ≃ N` via `lid`. -/
 lemma TensorProduct.eq_sum_basis_tmul_dualBasis_apply [Fintype ι] :
     x = ∑ i, ℬ i ⊗ₜ[R] (TensorProduct.lid R N)
@@ -188,7 +188,7 @@ lemma TensorProduct.eq_sum_basis_tmul_dualBasis_apply [Fintype ι] :
 
 omit [DecidableEq κ] in
 /-- Given a finite basis `𝒞` for `N`, any tensor `x ∈ M ⊗ N` decomposes as `∑ⱼ mⱼ ⊗ₜ 𝒞ⱼ`
-where the `M`-component `mⱼ` is obtained by applying `id ⊗ 𝒞.dualBasis j` to `x` and then
+where the `M`-component `mⱼ` is obtained by applying `id ⊗ 𝒞.coord j` to `x` and then
 identifying `M ⊗ R ≃ M` via `rid`. -/
 lemma TensorProduct.eq_sum_dualBasis_apply_tmul_basis [Fintype κ] :
     x = ∑ j, (TensorProduct.rid R M)
