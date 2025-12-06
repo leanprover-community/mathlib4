@@ -713,19 +713,15 @@ lemma quotient_regular_isGorenstein_iff_isGorenstein (rs : List R) (reg : IsRegu
       exact ⟨fun h ↦ IsGorensteinLocalRing.of_ringEquiv e',
         fun h ↦ IsGorensteinLocalRing.of_ringEquiv e'.symm⟩
 
+end
+
 section
 
 section
 
 --`Ext` iso quotient regular sequence
 
-variable {R}
-
-omit [IsLocalRing R] [IsNoetherianRing R]
-
-universe w
-
-variable [Small.{v} R] [UnivLE.{v, w}]
+variable [Small.{v} R]
 
 lemma extClass_postcomp_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
     (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b) :
@@ -736,7 +732,7 @@ lemma extClass_postcomp_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMul
 
 lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N)
-    (n : ℕ) (hn : n < rs.length) : Subsingleton (Ext.{w} N M n) := by
+    (n : ℕ) (hn : n < rs.length) : Subsingleton (Ext N M n) := by
   induction n generalizing M rs
   · match rs with
     | [] => simp at hn
@@ -774,7 +770,7 @@ lemma extClass_postcomp_bijective_of_lt (M N : ModuleCat.{v} R) (x : R) (reg : I
 long exact sequence of `Ext`. -/
 noncomputable def QuotientRegularSequenceToExt (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
-    (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) →ₗ[R] Ext.{w} N M rs.length :=
+    (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) →ₗ[R] Ext N M rs.length :=
   match rs with
   | [] => List.length_nil ▸
     ((Submodule.quotEquivOfEqBot (Ideal.ofList [] • ⊤ : Submodule R M) (by simp)).congrRight.trans
@@ -810,7 +806,7 @@ lemma quotientRegularSequenceToExt_bijective (M N : ModuleCat.{v} R) {rs : List 
 /-- The linear equivalence obtained from the bijectivity of `QuotientRegularSequenceToExt`. -/
 noncomputable def ExtEquivQuotientRegularSequence (M N : ModuleCat.{v} R) {rs : List R}
     (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ Module.annihilator R N) :
-    Ext.{w} N M rs.length ≃ₗ[R] (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) :=
+    Ext N M rs.length ≃ₗ[R] (N →ₗ[R] M ⧸ (Ideal.ofList rs • ⊤ : Submodule R M)) :=
   (LinearEquiv.ofBijective (QuotientRegularSequenceToExt M N reg mem)
     (quotientRegularSequenceToExt_bijective M N reg mem)).symm
 
@@ -818,14 +814,11 @@ end
 
 section
 
-variable {R}
-
 /-- An ideal `I` is irreducible if intersection of two ideals equals `I`
 implies one of them exactly being `I`. -/
 class Ideal.isIrreducible (I : Ideal R) : Prop where
   irr : ∀ {J₁ J₂ : Ideal R}, J₁ ⊓ J₂ = I → (J₁ = I ∨ J₂ = I)
 
-omit [IsLocalRing R] [IsNoetherianRing R] in
 lemma Ideal.irreducible_iff_bot_irreducible (J : Ideal R) :
     J.isIrreducible ↔ (⊥ : Ideal (R ⧸ J)).isIrreducible := by
   refine ⟨fun h ↦ ⟨fun {I₁ I₂} eq ↦ ?_⟩, fun h ↦ ⟨fun {I₁ I₂} eq ↦ ?_⟩⟩
@@ -848,8 +841,9 @@ lemma Ideal.irreducible_iff_bot_irreducible (J : Ideal R) :
     <;> simp only [map_eq_bot_iff_le_ker, mk_ker] at eq'
     <;> simp [le_antisymm eq' (by simp [← eq])]
 
+variable [IsLocalRing R]
+
 variable (R) in
-omit [IsNoetherianRing R] in
 lemma quotient_maximal_hom_nontrivial [IsArtinianRing R] :
     Nontrivial (R ⧸ maximalIdeal R →ₗ[R] R) := by
   have : maximalIdeal R ∈ associatedPrimes R R := by
@@ -869,7 +863,6 @@ lemma exist_linearMap_range_le_of_ne_bot [IsArtinianRing R] {I : Ideal R} (ne : 
   use I.subtype.comp f
   simpa [hf] using (le_of_le_of_eq (LinearMap.range_comp_le_range _ _) I.range_subtype)
 
-omit [IsNoetherianRing R] in
 lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
     (⊥ : Ideal R).isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal := by
   let _ := quotient_maximal_hom_nontrivial R
@@ -939,9 +932,9 @@ lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
 
 end
 
-variable {R} in
-lemma generators_toList_isRegular_of_spanFinrank_eq [IsCohenMacaulayLocalRing R] (J : Ideal R)
-    (h : maximalIdeal R ∈ J.minimalPrimes) (rank : J.spanFinrank = ringKrullDim R) :
+lemma generators_toList_isRegular_of_spanFinrank_eq [IsNoetherianRing R]
+    [IsCohenMacaulayLocalRing R] (J : Ideal R) (h : maximalIdeal R ∈ J.minimalPrimes)
+    (rank : J.spanFinrank = ringKrullDim R) :
     ∃ (rs : List R), rs.length = ringKrullDim R ∧ Ideal.ofList rs = J ∧ IsRegular R rs := by
   have fg : J.FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› J
   let _ : Fintype J.generators := (Submodule.FG.finite_generators fg).fintype
@@ -954,16 +947,12 @@ lemma generators_toList_isRegular_of_spanFinrank_eq [IsCohenMacaulayLocalRing R]
   rw [← gen] at h
   exact ⟨len, gen, isRegular_of_maximalIdeal_mem_ofList_minimalPrimes _ h len⟩
 
-local instance hasExt_self : CategoryTheory.HasExt.{u} (ModuleCat.{u} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{u} (ModuleCat.{u} R)
-
-omit [IsNoetherianRing R] in
-lemma ext_isPrincipal_iff (rs : List R) (reg : IsRegular R rs)
+lemma ext_isPrincipal_iff [IsLocalRing R] (rs : List R) (reg : IsRegular R rs)
     (mem : ∀ x ∈ rs, x ∈ maximalIdeal R) :
     (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
       rs.length)).IsPrincipal ↔
     (⊤ : Submodule R ((R ⧸ maximalIdeal R) →ₗ[R] R ⧸ Ideal.ofList rs)).IsPrincipal := by
-  let e' := (ExtEquivQuotientRegularSequence.{u, u, u} (ModuleCat.of R R)
+  let e' := (ExtEquivQuotientRegularSequence (ModuleCat.of R R)
     (ModuleCat.of R (R ⧸ maximalIdeal R)) reg.1 (by simpa [Ideal.annihilator_quotient] using mem))
   let e := e'.trans
     (Submodule.quotEquivOfEq _ (Ideal.ofList rs) (by rw [smul_eq_mul, Ideal.mul_top])).congrRight
@@ -971,7 +960,9 @@ lemma ext_isPrincipal_iff (rs : List R) (reg : IsRegular R rs)
     (by simpa using h), fun h ↦ @Submodule.IsPrincipal.of_comap _ _ _ _ _ _ _ _
     e.symm.toLinearMap e.symm.surjective ⊤ (by simpa using h)⟩
 
-lemma hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero
+variable [IsLocalRing R]
+
+lemma hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero [IsNoetherianRing R]
     (h1 : injectiveDimension (ModuleCat.of R R) = 0) (h2 : ringKrullDim R = 0) :
     (⊤ : Submodule R ((R ⧸ maximalIdeal R) →ₗ[R] R)).IsPrincipal := by
   have inj : Module.Injective R R := by
@@ -990,8 +981,6 @@ lemma hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero
   ext
   simp [hh]
 
-variable {R} in
-omit [IsNoetherianRing R] in
 lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
     letI : IsLocalRing (R ⧸ J) :=
       have : Nontrivial (R ⧸ J) := Ideal.Quotient.nontrivial_iff.mpr hJ
@@ -1032,7 +1021,7 @@ lemma linearMap_isPrincipal_iff (J : Ideal R) (hJ : J ≠ ⊤) :
     change ((Ideal.Quotient.mk J) r' • f) (e x) = _
     simp [hr', hr]
 
-lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
+lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R] (n : ℕ)
     (h1 : injectiveDimension (ModuleCat.of R R) = n) (h2 : ringKrullDim R = n) :
     (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R))
       (ModuleCat.of R R) n)).IsPrincipal := by
@@ -1050,16 +1039,16 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim (n : ℕ)
   let _ := (quotient_regular_isGorenstein_iff_isGorenstein R rs reg).mp ‹_›
   have netop : Ideal.ofList rs ≠ ⊤ :=
     (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') (Ideal.span_le.mpr mem))
-  rw [← Nat.cast_inj.mp len, ext_isPrincipal_iff R rs reg mem, linearMap_isPrincipal_iff _ netop]
+  rw [← Nat.cast_inj.mp len, ext_isPrincipal_iff rs reg mem, linearMap_isPrincipal_iff _ netop]
   have h2' : ringKrullDim (R ⧸ Ideal.ofList rs) = 0 := by
     apply (WithBot.add_natCast_cancel _ _ rs.length).mp
     rw [ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg]
     simp [Nat.cast_inj.mp len, h2]
   have h1' : injectiveDimension (ModuleCat.of (R ⧸ Ideal.ofList rs) (R ⧸ Ideal.ofList rs)) = 0 := by
     rw [injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing, h2']
-  exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero _ h1' h2'
+  exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero h1' h2'
 
-omit [IsNoetherianRing R] in
+variable (R) in
 lemma injective_of_isPrincipal [IsArtinianRing R]
     (h : (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal) :
     Injective (ModuleCat.of R R) := by
@@ -1141,8 +1130,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
     rw [LinearMap.lcomp_apply'] at hf'
     use Ext.mk₀ (ModuleCat.ofHom f')
     simp [← he', ← ModuleCat.ofHom_comp, hf']
-  apply injective_of_subsingleton_ext_quotient_one.{u, u, u} _ (fun I ↦ ?_)
-  let _ : Module.Finite R (Shrink.{u} (R ⧸ I)) := Module.Finite.equiv (Shrink.linearEquiv R _).symm
+  apply injective_of_subsingleton_ext_quotient_one _ (fun I ↦ ?_)
   apply ext_subsingleton_of_support_subset
   intro p _
   rw [Set.mem_setOf_eq, Ring.KrullDimLE.eq_maximalIdeal_of_isPrime p.1]
@@ -1152,7 +1140,7 @@ lemma injective_of_isPrincipal [IsArtinianRing R]
     HasProjectiveDimensionLT.subsingleton (ModuleCat.of R R) 1 1 (le_refl 1) (ModuleCat.of R R)
   exact inj.subsingleton
 
-lemma isGorensteinLocalRing_iff_exists :
+lemma isGorensteinLocalRing_iff_exists [IsNoetherianRing R] :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
     (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
   have (a : WithBot ℕ∞) : a ≠ ⊤ ↔ ∃ (n : ℕ), a < n := by
@@ -1164,12 +1152,12 @@ lemma isGorensteinLocalRing_iff_exists :
       | coe a => simpa using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
   simp only [isGorensteinLocalRing_def, this, ge_iff_le]
   apply exists_congr (fun n ↦ ?_)
-  rw [injectiveDimension_lt_iff_of_finite.{u, u, u} (ModuleCat.of R R) n]
+  rw [injectiveDimension_lt_iff_of_finite (ModuleCat.of R R) n]
   congr! 2
   exact (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
     (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr
 
-theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
+theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrullDim R = n) :
     [IsGorensteinLocalRing R, injectiveDimension (ModuleCat.of R R) = n,
      (∀ i ≠ n, Subsingleton (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i)) ∧
      (⊤ : Submodule R (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R)
@@ -1196,7 +1184,7 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
       rw [isGorensteinLocalRing_def, injdim]
       exact WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)
     let _ : IsCohenMacaulayLocalRing R := isCohenMacaulayLocalRing_of_isGorensteinLocalRing R
-    refine ⟨fun i hi ↦ ?_, ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim R n injdim h⟩
+    refine ⟨fun i hi ↦ ?_, ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim n injdim h⟩
     rcases hi.lt_or_gt with lt|gt
     · have lt' : i < IsLocalRing.depth (ModuleCat.of R R) := by
         apply lt_of_lt_of_eq (ENat.coe_lt_coe.mpr lt)  (WithBot.coe_inj.mp _)
@@ -1239,7 +1227,7 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
     have len' : rs.length = n := Nat.cast_inj.mp (len.trans h)
     have mem : ∀ x ∈ rs, x ∈ maximalIdeal R := fun x hx ↦
       le_of_eq_of_le gen maxmin.1.2 ((Ideal.mem_span x).mpr fun p a ↦ a hx)
-    rw [← len', ext_isPrincipal_iff R rs reg mem, gen,
+    rw [← len', ext_isPrincipal_iff rs reg mem, gen,
       linearMap_isPrincipal_iff J (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') maxmin.1.2)] at prin
     rw [Ideal.irreducible_iff_bot_irreducible, Ideal.bot_isIrreducible_iff_isPrincipal]
     exact prin
