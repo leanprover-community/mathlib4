@@ -6,8 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.NhdsWithin
+public import Mathlib.Topology.NhdsWithin
 
 /-! # Hemicontinuity
 

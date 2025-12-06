@@ -6,17 +6,9 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Order.Filter.Extr
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Topology.Order.Basic
-public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Topology.Algebra.InfiniteSum.Defs
-public import Mathlib.Order.LiminfLimsup
-public import Mathlib.Data.ENNReal.Basic
-public import Mathlib.Topology.Order.Real
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Lower and Upper Semicontinuity maps
