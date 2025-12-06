@@ -91,21 +91,19 @@ lemma injectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoeth
         (ModuleCat.localizedModule_functor.{v} p.1.primeCompl).injective_obj _
       exact (forall_congr' (fun p ↦ (Sp_exact p).hasInjectiveDimensionLT_X₃_iff n (injp p)))
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
       iSup_eq_bot, ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
     refine ⟨fun h p ↦ LocalizedModule.instSubsingleton _, fun h ↦ ?_⟩
     apply Module.subsingleton_of_localization_maximal (R := R)
       (fun p ↦ LocalizedModule p.primeCompl M) (fun p ↦ LocalizedModule.mkLinearMap p.primeCompl M)
     intro p hp
     exact h ⟨p, hp.isPrime⟩
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
 
 lemma injectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) : injectiveDimension M =
@@ -158,21 +156,19 @@ lemma injectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoe
         (ModuleCat.localizedModule_functor.{v} p.1.primeCompl).injective_obj _
       exact (forall_congr' (fun p ↦ (Sp_exact p).hasInjectiveDimensionLT_X₃_iff n (injp p)))
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
       iSup_eq_bot, ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
     refine ⟨fun h p ↦ LocalizedModule.instSubsingleton _, fun h ↦ ?_⟩
     apply Module.subsingleton_of_localization_maximal (R := R)
       (fun p ↦ LocalizedModule p.primeCompl M) (fun p ↦ LocalizedModule.mkLinearMap p.primeCompl M)
     intro p hp
     exact h ⟨p, hp⟩
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
 
 open Limits in
 lemma injectiveDimension_le_injectiveDimension_of_isLocalizedModule [Small.{v, u} R]
@@ -210,15 +206,13 @@ lemma injectiveDimension_le_injectiveDimension_of_isLocalizedModule [Small.{v, u
       exact (TS_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mp
         (ih T.X₃ ((T_exact.hasInjectiveDimensionLT_X₃_iff n ‹_›).mpr h))
   refine le_of_forall_ge (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
       ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
     intro _
     apply LocalizedModule.instSubsingleton _
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
