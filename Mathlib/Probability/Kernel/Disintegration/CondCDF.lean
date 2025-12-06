@@ -240,7 +240,7 @@ lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] 
 /-! ### Conditional cdf -/
 
 /-- Conditional cdf of the measure given the value on `α`, as a Stieltjes function. -/
-noncomputable def condCDF (ρ : Measure (α × ℝ)) (a : α) : StieltjesFunction :=
+noncomputable def condCDF (ρ : Measure (α × ℝ)) (a : α) : StieltjesFunction ℝ :=
   stieltjesOfMeasurableRat (fun a r ↦ (preCDF ρ r a).toReal) measurable_preCDF' a
 
 lemma condCDF_eq_stieltjesOfMeasurableRat_unit_prod (ρ : Measure (α × ℝ)) (a : α) :
