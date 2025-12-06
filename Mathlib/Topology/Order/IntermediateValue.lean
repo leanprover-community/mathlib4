@@ -122,53 +122,53 @@ theorem IsPreconnected.intermediate_value₂_eventually₂ {s : Set X} (hs : IsP
 /-- **Intermediate Value Theorem** for continuous functions on connected sets. -/
 theorem IsPreconnected.intermediate_value {s : Set X} (hs : IsPreconnected s) {a b : X} (ha : a ∈ s)
     (hb : b ∈ s) {f : X → α} (hf : ContinuousOn f s) : Icc (f a) (f b) ⊆ f '' s := fun _x hx =>
-  hs.intermediate_value₂ ha hb hf continuousOn_const hx.1 hx.2
+  hs.intermediate_value₂ ha hb hf ContinuousOn.const hx.1 hx.2
 
 theorem IsPreconnected.intermediate_value_Ico {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s) {v : α}
     (ht : Tendsto f l (𝓝 v)) : Ico (f a) v ⊆ f '' s := fun _ h =>
-  hs.intermediate_value₂_eventually₁ ha hl hf continuousOn_const h.1 (ht.eventually_const_le h.2)
+  hs.intermediate_value₂_eventually₁ ha hl hf ContinuousOn.const h.1 (ht.eventually_const_le h.2)
 
 theorem IsPreconnected.intermediate_value_Ioc {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s) {v : α}
     (ht : Tendsto f l (𝓝 v)) : Ioc v (f a) ⊆ f '' s := fun _ h =>
-  (hs.intermediate_value₂_eventually₁ ha hl continuousOn_const hf h.2
+  (hs.intermediate_value₂_eventually₁ ha hl ContinuousOn.const hf h.2
     (ht.eventually_le_const h.1)).imp fun _ h => h.imp_right Eq.symm
 
 theorem IsPreconnected.intermediate_value_Ioo {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v₁ v₂ : α} (ht₁ : Tendsto f l₁ (𝓝 v₁)) (ht₂ : Tendsto f l₂ (𝓝 v₂)) :
     Ioo v₁ v₂ ⊆ f '' s := fun _ h =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf ContinuousOn.const
     (ht₁.eventually_le_const h.1) (ht₂.eventually_const_le h.2)
 
 theorem IsPreconnected.intermediate_value_Ici {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     (ht : Tendsto f l atTop) : Ici (f a) ⊆ f '' s := fun y h =>
-  hs.intermediate_value₂_eventually₁ ha hl hf continuousOn_const h (tendsto_atTop.1 ht y)
+  hs.intermediate_value₂_eventually₁ ha hl hf ContinuousOn.const h (tendsto_atTop.1 ht y)
 
 theorem IsPreconnected.intermediate_value_Iic {s : Set X} (hs : IsPreconnected s) {a : X}
     {l : Filter X} (ha : a ∈ s) [NeBot l] (hl : l ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     (ht : Tendsto f l atBot) : Iic (f a) ⊆ f '' s := fun y h =>
-  (hs.intermediate_value₂_eventually₁ ha hl continuousOn_const hf h (tendsto_atBot.1 ht y)).imp
+  (hs.intermediate_value₂_eventually₁ ha hl ContinuousOn.const hf h (tendsto_atBot.1 ht y)).imp
     fun _ h => h.imp_right Eq.symm
 
 theorem IsPreconnected.intermediate_value_Ioi {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v : α} (ht₁ : Tendsto f l₁ (𝓝 v)) (ht₂ : Tendsto f l₂ atTop) : Ioi v ⊆ f '' s := fun y h =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf ContinuousOn.const
     (ht₁.eventually_le_const h) (ht₂.eventually_ge_atTop y)
 
 theorem IsPreconnected.intermediate_value_Iio {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     {v : α} (ht₁ : Tendsto f l₁ atBot) (ht₂ : Tendsto f l₂ (𝓝 v)) : Iio v ⊆ f '' s := fun y h =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (ht₁.eventually_le_atBot y)
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf ContinuousOn.const (ht₁.eventually_le_atBot y)
     (ht₂.eventually_const_le h)
 
 theorem IsPreconnected.intermediate_value_Iii {s : Set X} (hs : IsPreconnected s) {l₁ l₂ : Filter X}
     [NeBot l₁] [NeBot l₂] (hl₁ : l₁ ≤ 𝓟 s) (hl₂ : l₂ ≤ 𝓟 s) {f : X → α} (hf : ContinuousOn f s)
     (ht₁ : Tendsto f l₁ atBot) (ht₂ : Tendsto f l₂ atTop) : univ ⊆ f '' s := fun y _ =>
-  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf continuousOn_const (ht₁.eventually_le_atBot y)
+  hs.intermediate_value₂_eventually₂ hl₁ hl₂ hf ContinuousOn.const (ht₁.eventually_le_atBot y)
     (ht₂.eventually_ge_atTop y)
 
 /-- **Intermediate Value Theorem** for continuous functions on connected spaces. -/
