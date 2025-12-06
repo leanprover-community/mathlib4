@@ -379,7 +379,7 @@ def changeNumeral : Expr → Expr
   | e                => e
 
 /--
-`applyReplacementFun e` replaces the expression `e` with its tranlsation.
+`applyReplacementFun e` replaces the expression `e` with its translation.
 It translates each identifier (inductive type, defined function etc) in an expression, unless
 * The identifier occurs in an application with first argument `arg`; and
 * `test arg` is false.
