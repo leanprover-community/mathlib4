@@ -24,22 +24,19 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DFinsupp`s 
 
 namespace PiTensorProduct
 
-open PiTensorProduct LinearMap
-
+open LinearMap
 open scoped TensorProduct
 
-variable (R : Type*) [CommSemiring R]
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-variable {κ : ι → Type*} [(i : ι) → DecidableEq (κ i)]
-variable (M : (i : ι) → κ i → Type*) (M' : Type*)
+variable {R ι M' : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
+variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
 variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
 variable [Π i (j : κ i), Module R (M i j)] [Module R M']
 
 /-- The `ι`-ary tensor product distributes over `κ i`-ary finitely supported functions. -/
-protected def dfinsupp :
+noncomputable def dFinsuppEquiv :
     (⨂[R] i, (Π₀ j : κ i, M i j)) ≃ₗ[R] Π₀ p : Π i, κ i, ⨂[R] i, M i (p i) :=
-  LinearEquiv.ofLinear (R := R) (R₂ := R)
-    (lift <| MultilinearMap.fromDFinsuppEquiv R (κ := κ) (M := M)
+  LinearEquiv.ofLinear
+    (lift <| MultilinearMap.fromDFinsuppEquiv κ R
       fun p ↦ (DFinsupp.lsingle p).compMultilinearMap (tprod R))
     (DFinsupp.lsum R fun p ↦ lift <|
       (PiTensorProduct.map fun i ↦ DFinsupp.lsingle (p i)).compMultilinearMap (tprod R))
@@ -48,35 +45,43 @@ protected def dfinsupp :
 
 @[simp]
 theorem dfinsupp_tprod_single (p : Π i, κ i) (x : Π i, M i (p i)) :
-    PiTensorProduct.dfinsupp R M (⨂ₜ[R] i, DFinsupp.single (p i) (x i)) =
+    dFinsuppEquiv (⨂ₜ[R] i, DFinsupp.single (p i) (x i)) =
       DFinsupp.single p (⨂ₜ[R] i, x i) := by
-  simp [PiTensorProduct.dfinsupp]
+  simp [dFinsuppEquiv]
 
 @[simp]
 theorem dfinsupp_symm_single_tprod (p : Π i, κ i) (x : Π i, M i (p i)) :
-    (PiTensorProduct.dfinsupp R M).symm (DFinsupp.single p (tprod R x)) =
+    dFinsuppEquiv.symm (DFinsupp.single p (tprod R x)) =
       (⨂ₜ[R] i, DFinsupp.single (p i) (x i)) := by
-  simp [PiTensorProduct.dfinsupp]
+  simp [dFinsuppEquiv]
 
 @[simp]
 theorem dfinsupp_tprod_apply (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
-    PiTensorProduct.dfinsupp R M (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
-  -- restate with bundled morphisms, to let `ext` fire
-  let appLHS := DFinsupp.lapply (R := R) (M := fun p : Π i, κ i => ⨂[R] i, M i (p i)) p
-  let appRHS (i : ι) : (Π₀ j, M i j) →ₗ[R] M i (p i) := DFinsupp.lapply (p i)
+    dFinsuppEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
   suffices
-      (appLHS ∘ₗ (PiTensorProduct.dfinsupp R M).toLinearMap).compMultilinearMap (tprod R) =
-      (tprod R).compLinearMap appRHS by
+    (DFinsupp.lapply p ∘ₗ dFinsuppEquiv.toLinearMap).compMultilinearMap (tprod R) =
+    (tprod R).compLinearMap (fun i => DFinsupp.lapply (p i)) by
     exact congr($this x)
   ext p' x
-  -- clean up
   simp only [MultilinearMap.compLinearMap_apply, DFinsupp.lsingle_apply, compMultilinearMap_apply,
     coe_comp, LinearEquiv.coe_coe, Function.comp_apply, dfinsupp_tprod_single,
-    DFinsupp.lapply_apply, appLHS, appRHS]
+    DFinsupp.lapply_apply]
   obtain rfl | hp := eq_or_ne p p'
   · simp only [DFinsupp.single_eq_same]
   · obtain ⟨i, hi⟩ := Function.ne_iff.1 hp
     rw [DFinsupp.single_eq_of_ne hp, ((tprod R).map_coord_zero i ?_).symm]
     rw [DFinsupp.single_eq_of_ne hi]
+
+@[simp]
+theorem dfinsupp_tprod_apply' (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
+    dFinsuppEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
+  haveI := fun i j => Classical.typeDecidableEq (M i j)
+  simp only [dFinsuppEquiv, LinearEquiv.ofLinear_apply, lift.tprod,
+    MultilinearMap.fromDFinsuppEquiv_apply, compMultilinearMap_apply, DFinsupp.lsingle_apply,
+    DFinsupp.finset_sum_apply, DFinsupp.single_apply, ne_eq, Finset.sum_dite_eq',
+    Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ite_eq_left_iff, not_forall,
+    Decidable.not_not, forall_exists_index]
+  intro i hi
+  rw [(tprod R).map_coord_zero i hi]
 
 end PiTensorProduct
