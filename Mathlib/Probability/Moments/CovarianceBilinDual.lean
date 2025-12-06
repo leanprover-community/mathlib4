@@ -42,7 +42,7 @@ The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in th
 
 
 open MeasureTheory ProbabilityTheory Complex NormedSpace
-open scoped ENNReal NNReal Real Topology
+open scoped ENNReal NNReal Real Topology InnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] {mE : MeasurableSpace E} {μ : Measure E} {p : ℝ≥0∞}
 
@@ -148,12 +148,63 @@ lemma toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : StrongDual 𝕜 E)
     L.toLp μ p = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := by
   simp [toLp, h_Lp]
 
+lemma toLp_apply_ae [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : StrongDual 𝕜 E) :
+    L.toLp μ p =ᵐ[μ] L := by
+  rw [toLp_apply h_Lp L]
+  exact MemLp.coeFn_toLp (h_Lp.continuousLinearMap_comp L)
+
 @[simp]
 lemma toLp_of_not_memLp [Fact (1 ≤ p)] (h_Lp : ¬ MemLp id p μ) (L : StrongDual 𝕜 E) :
     L.toLp μ p = 0 := by
   simp [toLp, h_Lp]
 
 end ContinuousLinearMap
+
+section CenteredToLp
+
+variable [NormedSpace ℝ E] [OpensMeasurableSpace E] [Fact (1 ≤ p)]
+
+/-- The Bochner integral as a continuous linear map from the StrongDual to `ℝ`.
+This is well defined if the measure has a first moment. If not, it is uniformly zero (since
+`Dual.toLp` is zero in that case). -/
+noncomputable
+def integralDualCLM (μ : Measure E) : StrongDual ℝ E →L[ℝ] ℝ :=
+  L1.integralCLM.comp (StrongDual.toLp μ 1)
+
+/-- The function `L ↦ L (x - μ[id])` as a continuous linear map from the StrongDual to `Lp ℝ p μ`.
+This definition takes meaningful values only if the measure has a moment of order `p`
+(`MemLp id p μ`). -/
+noncomputable
+def centeredToLp (μ : Measure E) [IsFiniteMeasure μ] (p : ℝ≥0∞) [Fact (1 ≤ p)] :
+    StrongDual ℝ E →L[ℝ] Lp ℝ p μ :=
+  StrongDual.toLp μ p - (Lp.constL p μ ℝ).comp (integralDualCLM μ)
+
+variable [CompleteSpace E]
+
+lemma centeredToLp_apply [IsFiniteMeasure μ] (hμp : MemLp id p μ) (L : StrongDual ℝ E) :
+    centeredToLp μ p L =ᵐ[μ] fun x ↦ L (x - ∫ z, z ∂μ) := by
+  have hμ1 : MemLp id 1 μ := MemLp.mono_exponent hμp (Fact.out (p := 1 ≤ p))
+  by_cases hμ_zero : μ = 0
+  · simp only [hμ_zero, ae_zero, integral_zero_measure, sub_zero]
+    exact trivial
+  replace hμ_zero : NeZero μ := ⟨hμ_zero⟩
+  simp only [centeredToLp, ContinuousLinearMap.coe_sub', Pi.sub_apply,
+    AddSubgroupClass.coe_sub, map_sub]
+  filter_upwards [toLp_apply_ae hμp L,
+    Lp.coeFn_sub (toLp μ p L) ((Lp.constL p μ ℝ).comp (integralDualCLM μ) L)]
+    with x hx₁ hx₂
+  simp only [AddSubgroupClass.coe_sub, Pi.sub_apply] at hx₂
+  rw [← hx₁, hx₂]
+  congr
+  simp only [integralDualCLM, ContinuousLinearMap.coe_comp', Function.comp_apply,
+    Lp.constL_apply, Lp.const_val, AEEqFun.coeFn_const_eq]
+  have h_int_eq := L.integral_comp_comm (hμ1.integrable le_rfl)
+  simp only [id_eq] at h_int_eq
+  rw [← L1.integral_eq, L1.integral_eq_integral, ← h_int_eq]
+  refine integral_congr_ae ?_
+  exact StrongDual.toLp_apply_ae hμ1 L
+
+end CenteredToLp
 
 end StrongDual
 
@@ -228,9 +279,6 @@ lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     rw [← integral_const_mul]
     congr with x
     ring
-
-@[deprecated (since := "2025-10-10")] alias norm_uncenteredCovarianceBilin_le :=
-  norm_uncenteredCovarianceBilinDual_le
 
 end Centered
 
@@ -360,3 +408,28 @@ lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual �
 end Covariance
 
 end ProbabilityTheory
+
+namespace StrongDual
+
+variable [NormedSpace ℝ E] [BorelSpace E] [CompleteSpace E]
+
+lemma centeredToLp_two_inner [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
+    ⟪centeredToLp μ 2 L₁, centeredToLp μ 2 L₂⟫_ℝ
+      = covarianceBilinDual μ L₁ L₂ := by
+  rw [real_inner_comm, L2.inner_def, covarianceBilinDual_apply' hμ]
+  refine integral_congr_ae ?_
+  filter_upwards [centeredToLp_apply hμ L₁, centeredToLp_apply hμ L₂]
+    with x hx₁ hx₂
+  simp [hx₁, hx₂]
+
+lemma norm_centeredToLp_two [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L : StrongDual ℝ E) :
+    ‖centeredToLp μ 2 L‖ = √Var[L; μ] := by
+  rw [norm_eq_sqrt_real_inner, centeredToLp_two_inner hμ,
+    covarianceBilinDual_self_eq_variance hμ]
+
+lemma sq_norm_centeredToLp_two [IsFiniteMeasure μ] (hμ : MemLp id 2 μ) (L : StrongDual ℝ E) :
+    ‖centeredToLp μ 2 L‖ ^ 2 = Var[L; μ] := by
+  rw [← real_inner_self_eq_norm_sq, centeredToLp_two_inner hμ,
+    covarianceBilinDual_self_eq_variance hμ]
+
+end StrongDual

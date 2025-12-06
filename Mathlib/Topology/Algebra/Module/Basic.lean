@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.LinearAlgebra.Pi
@@ -130,9 +131,25 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] (s : Submodule R M) :
+    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
+
 instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
+
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousConstSMul R M] (s : Submodule R M) :
+    ContinuousConstSMul R s where
+  continuous_const_smul r :=
+    ((continuous_const_smul r).comp continuous_subtype_val).subtype_mk _
+
+instance {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [UniformSpace M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
+    UniformContinuousConstSMul R s where
+  uniformContinuous_const_smul r :=
+    ((uniformContinuous_const_smul r).comp uniformContinuous_subtype_val).subtype_mk _
 
 end Submodule
 
@@ -157,6 +174,18 @@ a submodule. -/
 def Submodule.topologicalClosure (s : Submodule R M) : Submodule R M :=
   { s.toAddSubmonoid.topologicalClosure with
     smul_mem' := s.mapsTo_smul_closure }
+
+@[simp]
+lemma Submodule.mem_topologicalClosure_iff (s : Submodule R M) (x : M) :
+    x ∈ s.topologicalClosure ↔ x ∈ closure s := by
+  simp only [Submodule.topologicalClosure, AddSubmonoid.topologicalClosure,
+    Submodule.coe_toAddSubmonoid, Submodule.mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk]
+
+lemma Submodule.mem_topologicalClosure (s : Submodule R M) (L : s) :
+    (L : M) ∈ s.topologicalClosure := by
+  rw [Submodule.mem_topologicalClosure_iff]
+  exact subset_closure L.2
 
 @[simp, norm_cast]
 theorem Submodule.topologicalClosure_coe (s : Submodule R M) :
@@ -205,7 +234,91 @@ theorem Submodule.isClosed_or_dense_of_isCoatom (s : Submodule R M) (hs : IsCoat
   refine (hs.le_iff.mp s.le_topologicalClosure).symm.imp ?_ dense_iff_topologicalClosure_eq_top.mpr
   exact fun h ↦ h ▸ isClosed_closure
 
+/-- Coercion from a submodule to its topological closure. -/
+@[coe] def coeClosure {s : Submodule R M} :
+    s → s.topologicalClosure := fun L ↦ ⟨L, Submodule.mem_topologicalClosure s L⟩
+
+instance {s : Submodule R M} : Coe s s.topologicalClosure := ⟨coeClosure⟩
+
+@[simp, norm_cast]
+lemma coeClosure_add {s : Submodule R M} (x y : s) :
+    ((x + y : s) : s.topologicalClosure)
+      = (x : s.topologicalClosure) + (y : s.topologicalClosure) := by
+  simp [coeClosure]
+
+@[simp, norm_cast]
+lemma coeClosure_sub {M R : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (x y : s) :
+    ((x - y : s) : s.topologicalClosure)
+      = (x : s.topologicalClosure) - (y : s.topologicalClosure) := by
+  simp only [coeClosure, AddSubgroupClass.coe_sub]
+  norm_cast
+
+@[simp, norm_cast]
+lemma coeClosure_smul {s : Submodule R M} (r : R) (x : s) :
+    ((r • x : s) : s.topologicalClosure) = r • (x : s.topologicalClosure) := by
+  simp [coeClosure]
+
+@[fun_prop, continuity]
+lemma continuous_coeClosure (s : Submodule R M) :
+    Continuous (coeClosure : s → s.topologicalClosure) := by
+  unfold coeClosure
+  fun_prop
+
+lemma denseRange_coeClosure (s : Submodule R M) : DenseRange (coeClosure (s := s)) := by
+  rw [DenseRange, Subtype.dense_iff]
+  refine closure_mono fun x hx ↦ ?_
+  simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe] at hx
+  simpa [subset_closure hx] using ⟨x, hx, rfl⟩
+
 end closure
+
+section Completion
+
+-- todo: move elsewhere
+/-- The closure of a set in a complete space as an abstract completion. -/
+def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
+    (s : Set α) :
+    AbstractCompletion s where
+  space := closure s
+  coe x := ⟨x, subset_closure x.2⟩
+  uniformStruct := inferInstance
+  complete := isClosed_closure.isComplete.completeSpace_coe
+  separation := inferInstance
+  isUniformInducing := by
+    constructor
+    simp only [uniformity_subtype, Filter.comap_comap]
+    congr
+  dense := by
+    rw [DenseRange, Subtype.dense_iff]
+    exact closure_mono fun x hx ↦ by simp [hx, subset_closure hx]
+
+variable {M R F : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [UniformSpace M] [T0Space M] [ContinuousAdd M] [UniformContinuousConstSMul R M]
+    [CompleteSpace M]
+    [UniformSpace F] [T0Space F]
+    {s : Submodule R M}
+
+@[elab_as_elim]
+theorem induction_topologicalClosure {p : s.topologicalClosure → Prop} (a : s.topologicalClosure)
+    (hp : IsClosed { a | p a }) (ih : ∀ a : s, p a) :
+    p a :=
+  AbstractCompletion.induction_on (abstractCompletionClosure s.carrier) a hp ih
+
+@[elab_as_elim]
+lemma induction_topologicalClosure₂
+    {p : s.topologicalClosure → s.topologicalClosure → Prop} (a b : s.topologicalClosure)
+    (hp : IsClosed { x : s.topologicalClosure × s.topologicalClosure | p x.1 x.2 })
+    (ih : ∀ (a b : s), p a b) :
+    p a b :=
+  AbstractCompletion.induction_on₂ (abstractCompletionClosure s.carrier)
+    (abstractCompletionClosure s.carrier) a b hp ih
+
+lemma funext_topologicalClosure {f g : s.topologicalClosure → F} (hf : Continuous f)
+    (hg : Continuous g) (h : ∀ a : s, f a = g a) : f = g :=
+  funext fun a ↦ induction_topologicalClosure a (isClosed_eq hf hg) h
+
+end Completion
 
 namespace Submodule
 
