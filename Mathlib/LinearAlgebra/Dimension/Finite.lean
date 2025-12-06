@@ -25,7 +25,7 @@ noncomputable section
 universe u v v' w
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M₁]
 variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
@@ -56,16 +56,16 @@ theorem rank_le {n : ℕ}
 section RankZero
 
 /-- See `rank_zero_iff` for a stronger version with `NoZeroSMulDivisor R M`. -/
-lemma rank_eq_zero_iff :
-    Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+lemma rank_eq_zero_iff' :
+    Module.rank R M = 0 ↔ ∀ x : M, ∃ a b : R, a ≠ b ∧ a • x = b • x := by
   nontriviality R
   constructor
   · contrapose!
     rintro ⟨x, hx⟩
     rw [← Cardinal.one_le_iff_ne_zero]
     have : LinearIndependent R (fun _ : Unit ↦ x) :=
-      linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
-        hx _ H ((Finsupp.linearCombination_unique _ _ _).symm.trans hl))
+      fun l₁ l₂ hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
+          hx _ _ H (by simpa [Finsupp.linearCombination_unique] using hl)
     simpa using this.cardinal_lift_le_rank
   · intro h
     rw [← le_zero_iff, Module.rank_def]
@@ -73,9 +73,19 @@ lemma rank_eq_zero_iff :
     intro ⟨s, hs⟩
     rw [nonpos_iff_eq_zero, Cardinal.mk_eq_zero_iff, ← not_nonempty_iff]
     rintro ⟨i : s⟩
-    obtain ⟨a, ha, ha'⟩ := h i
+    obtain ⟨a, b, ha, ha'⟩ := h i
     apply ha
-    simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+    simpa using DFunLike.congr_fun (@hs (.single i a) (.single i b) (by simpa using ha')) i
+
+/-- See `rank_zero_iff` for a stronger version with `NoZeroSMulDivisor R M`. -/
+lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+  rw [rank_eq_zero_iff']
+  congr! 1 with x
+  conv_lhs =>
+    enter [1, a, 1, b]
+    rw [← sub_eq_zero, ← sub_smul, ← sub_ne_zero]
+  refine ⟨fun ⟨a, b, h⟩ => ⟨a - b, h⟩, fun ⟨a, h⟩ => ⟨a, 0, h.imp ?_ ?_⟩⟩ <;> simp
 
 variable [Nontrivial R]
 
@@ -84,7 +94,7 @@ variable [NoZeroSMulDivisors R M]
 
 theorem rank_zero_iff_forall_zero :
     Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
-  simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
+  simp_rw [rank_eq_zero_iff', smul_eq_zero, and_or_left, not_and_self_iff, false_or,
     exists_and_right, and_iff_right (exists_ne (0 : R))]
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
