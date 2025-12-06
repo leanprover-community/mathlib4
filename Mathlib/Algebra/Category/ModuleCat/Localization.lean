@@ -53,21 +53,21 @@ instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
 
 /-- The linear map `M →ₗ[R] (M.localizedModule S)` which
 exhibits `M.localizedModule S` as a localized module of `M`. -/
-noncomputable def localizedModule_mkLinearMap [Small.{v} R] (M : ModuleCat.{v} R)
+noncomputable def localizedModuleMkLinearMap [Small.{v} R] (M : ModuleCat.{v} R)
     (S : Submonoid R) : M →ₗ[R] (M.localizedModule S) :=
   (Shrink.linearEquiv.{v} R _).symm.toLinearMap.comp (LocalizedModule.mkLinearMap S M)
 
 instance localizedModule_isLocalizedModule [Small.{v} R] (M : ModuleCat.{v} R)
-    (S : Submonoid R) : IsLocalizedModule S (M.localizedModule_mkLinearMap S) := by
-  dsimp only [localizedModule_mkLinearMap]
+    (S : Submonoid R) : IsLocalizedModule S (M.localizedModuleMkLinearMap S) := by
+  dsimp only [localizedModuleMkLinearMap]
   infer_instance
 
 /-- `IsLocalizedModule.mapExtendScalars` as a morphism in `ModuleCat`. -/
 @[simps!]
 noncomputable def localizedModuleMap [Small.{v} R] {M N : ModuleCat.{v} R}
     (S : Submonoid R) (f : M ⟶ N) : (M.localizedModule S) ⟶ (N.localizedModule S) :=
-  ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModule_mkLinearMap S)
-    (N.localizedModule_mkLinearMap S) (Localization S) f.hom
+  ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModuleMkLinearMap S)
+    (N.localizedModuleMkLinearMap S) (Localization S) f.hom
 
 /-- The functor `ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S)` sending
 `M` to `M.localizedModule S` and `f : M1 ⟶ M2` to
@@ -79,7 +79,7 @@ noncomputable def localizedModule_functor [Small.{v} R] (S : Submonoid R) :
   map := ModuleCat.localizedModuleMap S
   map_comp {X Y Z} f g := by
     ext
-    simp [localizedModuleMap, IsLocalizedModule.map_comp' S _ (Y.localizedModule_mkLinearMap S)]
+    simp [localizedModuleMap, IsLocalizedModule.map_comp' S _ (Y.localizedModuleMkLinearMap S)]
 
 instance [Small.{v} R] (S : Submonoid R) : (ModuleCat.localizedModule_functor S).Additive where
 
@@ -87,8 +87,8 @@ lemma localizedModule_functor_map_exact [Small.{v} R] (S : Submonoid R)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.Exact) :
     (T.map (ModuleCat.localizedModule_functor S)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
-  exact IsLocalizedModule.map_exact S (T.X₁.localizedModule_mkLinearMap S)
-    (T.X₂.localizedModule_mkLinearMap S) (T.X₃.localizedModule_mkLinearMap S) _ _ h
+  exact IsLocalizedModule.map_exact S (T.X₁.localizedModuleMkLinearMap S)
+    (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S) _ _ h
 
 instance [Small.{v} R] (S : Submonoid R) :
     Limits.PreservesFiniteLimits (ModuleCat.localizedModule_functor.{v} S) := by
