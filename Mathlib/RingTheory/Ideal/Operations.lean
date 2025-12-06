@@ -1377,6 +1377,7 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
     (congr_arg (map · I) <| LinearMap.ext (f.left_inv ·)).trans (map_id I)
   right_inv I := (map_comp _ _ I).symm.trans <|
     (congr_arg (map · I) <| LinearMap.ext (f.right_inv ·)).trans (map_id I)
+  map_smul' := by simp
 
 end Submodule
 

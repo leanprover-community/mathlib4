@@ -184,6 +184,7 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   left_inv P  := by simp [taylor, comp_assoc]
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
+  map_smul' := by simp
 
 @[simp, norm_cast] lemma toAlgHom_taylorEquiv : taylorEquiv r = taylorAlgHom r := rfl
 

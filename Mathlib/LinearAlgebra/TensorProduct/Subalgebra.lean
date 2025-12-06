@@ -58,7 +58,7 @@ This generalizes `Algebra.TensorProduct.lid` as `i(R)` is not necessarily isomor
 
 This is the `Subalgebra` version of `Submodule.lTensorOne` -/
 def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
-  refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_ ?_
+  refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_
   · rintro x y a b
     obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
@@ -69,7 +69,6 @@ def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
       (toSubmodule A).lTensorOne_tmul y' b,
       (toSubmodule A).lTensorOne_tmul (x' * y') (a * b)]
     rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
-  · exact Submodule.lTensorOne_one_tmul _
 
 variable {A}
 
@@ -91,7 +90,7 @@ This generalizes `Algebra.TensorProduct.rid` as `i(R)` is not necessarily isomor
 
 This is the `Subalgebra` version of `Submodule.rTensorOne` -/
 def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
-  refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_ ?_
+  refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_
   · rintro a b x y
     obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
     replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
@@ -102,7 +101,6 @@ def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
       (toSubmodule A).rTensorOne_tmul y' b,
       (toSubmodule A).rTensorOne_tmul (x' * y') (a * b)]
     rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
-  · exact Submodule.rTensorOne_tmul_one _
 
 @[simp]
 theorem rTensorBot_tmul (x : R) (a : A) : A.rTensorBot (a ⊗ₜ[R] algebraMap R _ x) = x • a :=
@@ -178,7 +176,7 @@ theorem linearEquivIncludeRange_symm_tmul (x y) :
 def algEquivIncludeRange :
     S ⊗[R] T ≃ₐ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
       (includeRight : T →ₐ[R] S ⊗[R] T).range :=
-  algEquivOfLinearEquivTensorProduct (linearEquivIncludeRange R S T) (by simp) rfl
+  algEquivOfLinearEquivTensorProduct (linearEquivIncludeRange R S T) (by simp)
 
 theorem algEquivIncludeRange_toAlgHom :
     (algEquivIncludeRange R S T).toAlgHom =

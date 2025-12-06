@@ -373,6 +373,7 @@ def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X 
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapₐ R ⟨_, e.symm.continuous⟩
+  map_smul' _ _ := rfl
 
 end Comap
 
@@ -433,6 +434,7 @@ def congrRightₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semir
     (e : Y ≃ₐ[R] Z) : LocallyConstant X Y ≃ₐ[R] LocallyConstant X Z where
   toEquiv := congrRight e
   __ := mapₐ R e.toAlgHom
+  map_smul' _ _ := by ext; simp
 
 end Map
 

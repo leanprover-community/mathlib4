@@ -25,7 +25,7 @@ attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] :
     Module.Finite R A :=
   (Finite.equiv_iff <|
-    (AlgEquiv.ofRingEquiv (f := IsArtinianRing.equivPi A) fun _ ↦ rfl).toLinearEquiv).mpr <|
+    (AlgEquiv.ofRingEquiv (f := IsArtinianRing.equivPi A) fun _ _ ↦ rfl).toLinearEquiv).mpr <|
   have (I : MaximalSpectrum A) := finite_of_finite_type_of_isJacobsonRing R (A ⧸ I.asIdeal)
   Finite.pi
 

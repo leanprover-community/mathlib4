@@ -285,7 +285,7 @@ theorem FiniteDimensional.of_finite_intermediateField
   have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
     le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
   rw [htop] at hfin
-  exact topEquiv.toLinearEquiv.finiteDimensional
+  exact (topEquiv (F := F) (E := E)).toLinearEquiv.finiteDimensional
 
 theorem exists_primitive_element_of_finite_intermediateField
     [Finite (IntermediateField F E)] (K : IntermediateField F E) : ∃ α : E, F⟮α⟯ = K := by
@@ -303,7 +303,7 @@ theorem FiniteDimensional.of_exists_primitive_element [Algebra.IsAlgebraic F E]
   obtain ⟨α, hprim⟩ := h
   have hfin := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) α)
   rw [hprim] at hfin
-  exact topEquiv.toLinearEquiv.finiteDimensional
+  exact (topEquiv (F := F) (E := E)).toLinearEquiv.finiteDimensional
 
 -- A finite simple extension has only finitely many intermediate fields
 theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebraic F E]

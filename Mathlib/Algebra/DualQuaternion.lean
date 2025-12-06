@@ -49,7 +49,7 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
   map_add' := by
     intros
     rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
 

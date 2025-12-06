@@ -520,9 +520,9 @@ The equivalence between `RatFunc K` and the field of fractions of `K[X]`
 -/
 @[simps! apply]
 def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
-    RatFunc K ≃ₐ[R] FractionRing K[X] where
-  __ := RatFunc.toFractionRingRingEquiv K
-  commutes' r := by
+    RatFunc K ≃ₐ[R] FractionRing K[X] :=
+  .ofCommutes (RatFunc.toFractionRingRingEquiv K)
+  fun r => by
     change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
     rw [mk_one']; rfl
 

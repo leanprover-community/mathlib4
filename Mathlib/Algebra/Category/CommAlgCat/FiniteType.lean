@@ -99,7 +99,7 @@ def FGAlgCat.equivUnder (R : CommRingCat.{u}) :
   inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.1, A.2⟩
   inverse.map {A B} f := (commAlgCatEquivUnder R).inverse.map f.hom
   unitIso := NatIso.ofComponents fun A ↦
-    ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.1, commutes' _ := rfl })
+    ObjectProperty.isoMk _ (CommAlgCat.isoMk <| .ofCommutes (.refl A.1) fun _ => rfl)
   counitIso := .refl _
 
 variable {Q : MorphismProperty CommRingCat.{u}}

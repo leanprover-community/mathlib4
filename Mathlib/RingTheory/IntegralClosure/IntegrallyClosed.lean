@@ -222,7 +222,7 @@ theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Alg
 
 theorem of_equiv (f : R ≃+* S) [h : IsIntegrallyClosed R] : IsIntegrallyClosed S := by
   let _ : Algebra S R := f.symm.toRingHom.toAlgebra
-  let f : S ≃ₐ[S] R := AlgEquiv.ofRingEquiv fun _ ↦ rfl
+  let f : S ≃ₐ[S] R := AlgEquiv.ofCommutes _ fun _ ↦ rfl
   let g : FractionRing S ≃ₐ[S] FractionRing R := IsFractionRing.algEquivOfAlgEquiv f
   refine (isIntegrallyClosed_iff (FractionRing S)).mpr (fun hx ↦ ?_)
   rcases (isIntegrallyClosed_iff _).mp h ((isIntegral_algEquiv g).mpr hx).tower_top with ⟨z, hz⟩
