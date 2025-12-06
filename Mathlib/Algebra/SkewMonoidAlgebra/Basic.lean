@@ -457,7 +457,7 @@ theorem induction_on {p : SkewMonoidAlgebra k G → Prop} (f : SkewMonoidAlgebra
   rw [← sum_single f, sum_def']
   exact Finset.sum_induction _ _ add zero (by simp_all)
 
-/-- Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_linear`. -/
+/-- Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`. -/
 @[induction_eliminator]
 theorem induction_on' [instNonempty : Nonempty G] {p : SkewMonoidAlgebra k G → Prop}
     (f : SkewMonoidAlgebra k G) (single : ∀ g a, p (single g a)) (add : ∀ f g :
@@ -469,7 +469,7 @@ then they are equal. -/
 @[ext high]
 theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : SkewMonoidAlgebra k G →+ M}
     (h : ∀ a b, f (single a b) = g (single a b)) : f = g := by
-  ext p; induction p using SkewMonoidAlgebra.induction_linear <;> simp_all
+  ext p; induction p using SkewMonoidAlgebra.induction_on <;> simp_all
 
 end sum
 

@@ -224,7 +224,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
     (m : RestrictScalars k (MonoidAlgebra k G) M) :
     ((ofModule M).asAlgebraHom r) m =
       (RestrictScalars.addEquiv _ _ _).symm (r • RestrictScalars.addEquiv _ _ _ m) := by
-  apply MonoidAlgebra.induction_linear r
+  apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_symm_apply, MonoidAlgebra.of_apply,
       Representation.asAlgebraHom_single, Representation.ofModule,
@@ -487,7 +487,7 @@ noncomputable instance :
 
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : MonoidAlgebra k G) := by
-  induction x using MonoidAlgebra.induction_linear with
+  induction x using MonoidAlgebra.induction_on with
   | hM g =>
     change asAlgebraHom (ofMulAction k G G) _ _ = _
     ext
