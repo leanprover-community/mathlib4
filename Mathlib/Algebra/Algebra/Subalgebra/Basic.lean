@@ -569,9 +569,8 @@ This is the bundled version of `Set.rangeFactorization`. -/
 abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
-@[simp]
 theorem val_comp_rangeRestrict :
-    (Subalgebra.val _).comp φ.rangeRestrict = φ := by aesop
+    (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
 
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
