@@ -48,7 +48,7 @@ values on the functions `single a 1`. -/]
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   NonUnitalAlgHom.to_distribMulActionHom_injective <|
-    Finsupp.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
+    MonoidAlgebra.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -63,7 +63,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (G →ₙ* A) ≃ (MonoidAlgebra k G →ₙₐ[k] A) where
   toFun f :=
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
-      toFun := fun a => a.sum fun m t => t • f m
+      toFun a := a.coeff.sum fun m t => t • f m
       map_smul' := fun t' a => by
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]
@@ -115,11 +115,11 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
   smul_def' := fun r a => by
     ext
     dsimp
-    rw [single_one_mul_apply, Algebra.smul_def]
+    rw [coeff_single_one_mul_apply, Algebra.smul_def]
   commutes' := fun r f => by
     ext
     dsimp
-    rw [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
+    rw [coeff_single_one_mul_apply, coeff_mul_single_one_apply, Algebra.commutes]
 
 /-- `Finsupp.single 1` as an `AlgHom` -/
 @[to_additive (dont_translate := k A) (attr := simps! apply) /--
@@ -205,11 +205,11 @@ def lift : (G →* A) ≃ (MonoidAlgebra k G →ₐ[k] A) where
     simp [liftNCAlgHom, liftNCRingHom]
 
 theorem lift_apply' (F : G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.sum fun a b => algebraMap k A b * F a :=
+    lift k G A F f = f.coeff.sum fun a b => algebraMap k A b * F a :=
   rfl
 
 theorem lift_apply (F : G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
+    lift k G A F f = f.coeff.sum fun a b => b • F a := by simp only [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : G →* A) : ⇑(lift k G A F) = liftNC ((algebraMap k A : k →+* A) : k →+ A) F :=
   rfl
@@ -232,7 +232,7 @@ theorem lift_unique' (F : MonoidAlgebra k G →ₐ[k] A) :
 /-- Decomposition of a `k`-algebra homomorphism from `MonoidAlgebra k G` by
 its values on `F (single a 1)`. -/
 theorem lift_unique (F : MonoidAlgebra k G →ₐ[k] A) (f : MonoidAlgebra k G) :
-    F f = f.sum fun a b => b • F (single a 1) := by
+    F f = f.coeff.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
@@ -509,11 +509,11 @@ def lift : (Multiplicative G →* A) ≃ (k[G] →ₐ[k] A) where
       toFun := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _ }
 
 theorem lift_apply' (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.sum fun a b => algebraMap k A b * F (Multiplicative.ofAdd a) :=
+    lift k G A F f = f.coeff.sum fun a b => algebraMap k A b * F (Multiplicative.ofAdd a) :=
   rfl
 
 theorem lift_apply (F : Multiplicative G →* A) (f : MonoidAlgebra k G) :
-    lift k G A F f = f.sum fun a b => b • F (Multiplicative.ofAdd a) := by
+    lift k G A F f = f.coeff.sum fun a b => b • F (Multiplicative.ofAdd a) := by
   simp only [lift_apply', Algebra.smul_def]
 
 theorem lift_def (F : Multiplicative G →* A) :
@@ -544,7 +544,7 @@ theorem lift_unique' (F : k[G] →ₐ[k] A) :
 /-- Decomposition of a `k`-algebra homomorphism from `MonoidAlgebra k G` by
 its values on `F (single a 1)`. -/
 theorem lift_unique (F : k[G] →ₐ[k] A) (f : MonoidAlgebra k G) :
-    F f = f.sum fun a b => b • F (single a 1) := by
+    F f = f.coeff.sum fun a b => b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]

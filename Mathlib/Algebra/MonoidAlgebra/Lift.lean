@@ -47,7 +47,7 @@ and the range of either `f` or `g` is in center of `R`, then the result is a rin
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
+  (liftAddHom fun x ↦ .comp (.mulRight (g x)) f).comp coeffAddEquiv.toAddMonoidHom
 
 @[simp]
 theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
@@ -62,9 +62,9 @@ variable [Semiring k] [Mul G] [Semiring R]
 
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) (a b : MonoidAlgebra k G)
-    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
+    (h_comm : ∀ {x y}, y ∈ a.coeff.support → Commute (f (b.coeff x)) (g y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
-  conv_rhs => rw [← sum_single a, ← sum_single b]
+  conv_rhs => rw [← sum_coeff_single a, ← sum_coeff_single b]
   simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
   refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
   simp [mul_assoc, (h_comm hy).left_comm]
@@ -100,13 +100,15 @@ lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : 
   liftNC_single _ _ _ _
 
 variable (M) in
-/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
+/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings.
+
+See also `RingEquiv.monoidAlgebraCongrLeft`. -/
 noncomputable def mapRangeRingHom (f : R →+* S) : MonoidAlgebra R M →+* MonoidAlgebra S M :=
   liftNCRingHom (singleOneRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
 
 @[simp]
-lemma mapRangeRingHom_apply (f : R →+* S) (x : MonoidAlgebra R M) (m : M) :
-    mapRangeRingHom M f x m = f (x m) := by
+lemma mapRangeRingHom_coeff_apply (f : R →+* S) (x : MonoidAlgebra R M) (m : M) :
+    (mapRangeRingHom M f x).coeff m = f (x.coeff m) := by
   classical
   induction x using induction_linear
   · simp
@@ -146,7 +148,7 @@ is a ring homomorphism and the range of either `f` or `g` is in center of `R`, t
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
 homomorphism called `AddMonoidAlgebra.lift`. -/
 def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f
+  (liftAddHom fun x ↦ .comp (.mulRight (g <| .ofAdd x)) f).comp coeffAddEquiv.toAddMonoidHom
 
 @[simp]
 theorem liftNC_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
@@ -162,9 +164,12 @@ variable [Semiring k] [Add G] [Semiring R]
 theorem liftNC_mul {g_hom : Type*}
     [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
     (f : k →+* R) (g : g_hom) (a b : k[G])
-    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
-    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  MonoidAlgebra.liftNC_mul f g _ _ @h_comm
+    (h_comm : ∀ {x y}, y ∈ a.coeff.support → Commute (f (b.coeff x)) (g <| .ofAdd y)) :
+    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
+  conv_rhs => rw [← sum_coeff_single a, ← sum_coeff_single b]
+  simp_rw [mul_def, map_finsuppSum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
+  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
+  simp [mul_assoc, (h_comm hy).left_comm]
 
 end Mul
 
@@ -198,13 +203,15 @@ lemma liftNCRingHom_single (f : k →+* R) (g : Multiplicative G →* R) (h_comm
   liftNC_single _ _ _ _
 
 variable (M) in
-/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
+/-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings.
+
+See also `RingEquiv.addMonoidAlgebraCongrLeft`. -/
 noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] :=
   liftNCRingHom (singleZeroRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
 
 @[simp]
-lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
-    mapRangeRingHom M f x m = f (x m) := by
+lemma mapRangeRingHom_coeff_apply (f : R →+* S) (x : R[M]) (m : M) :
+    (mapRangeRingHom M f x).coeff m = f (x.coeff m) := by
   classical
   induction x using induction_linear
   · simp
@@ -227,7 +234,7 @@ lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
 -- we have to tag these declarations with `to_additive existing`
 set_option linter.existingAttributeWarning false in
 attribute [to_additive existing]
-  MonoidAlgebra.mapRangeRingHom MonoidAlgebra.mapRangeRingHom_apply
+  MonoidAlgebra.mapRangeRingHom MonoidAlgebra.mapRangeRingHom_coeff_apply
   MonoidAlgebra.mapRangeRingHom_single MonoidAlgebra.mapRangeRingHom_id
   MonoidAlgebra.mapRangeRingHom_comp
 
