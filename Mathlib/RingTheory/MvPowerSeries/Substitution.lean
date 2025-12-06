@@ -388,8 +388,7 @@ section
 
 variable (w : τ → ℕ)
 
-theorem le_weightedOrder_subst (ha : HasSubst a)
-    (f : MvPowerSeries σ R) :
+theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     ⨅ (d : σ →₀ ℕ) (_ : coeff d f ≠ 0), d.weight (weightedOrder w ∘ a) ≤
       (f.subst a).weightedOrder w := by
   classical
