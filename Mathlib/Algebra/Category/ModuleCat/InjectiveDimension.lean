@@ -40,7 +40,7 @@ lemma hasInjectiveDimensionLT_of_linearEquiv [Small.{v} R] [Small.{v'} R]
   apply ext_subsingleton_of_quotients N i (fun I ↦ ?_)
   let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ I))) ≃ₗ[R] (ModuleCat.of R (Shrink.{v'} (R ⧸ I))) :=
     (Shrink.linearEquiv.{v} R (R ⧸ I)).trans (Shrink.linearEquiv.{v'} R (R ⧸ I)).symm
-  rw [← (ModuleCat.extLinearEquivOfLinearEquiv.{v, v'} e'' e' i).subsingleton_congr]
+  rw [← (ModuleCat.extLinearEquivOfLinearEquiv e'' e' i).subsingleton_congr]
   exact HasInjectiveDimensionLT.subsingleton.{v} M n i hi _
 
 lemma injectiveDimension_eq_of_linearEquiv [Small.{v} R] [Small.{v'} R]
@@ -82,7 +82,7 @@ lemma hasInjectiveDimensionLT_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
   let e'' : (ModuleCat.of R (Shrink.{v} (R ⧸ (I.comap e)))) ≃ₛₗ[RingHomClass.toRingHom e]
     (ModuleCat.of R' (Shrink.{v', u'} (R' ⧸ I))) :=
     ((Shrink.linearEquiv.{v} R _).trans e''').trans (Shrink.linearEquiv.{v'} R' _).symm
-  rw [(ModuleCat.extSemiLinearEquivOfSemiLinearEquiv.{v, v'} e e'' e' i).subsingleton_congr]
+  rw [(ModuleCat.extSemiLinearEquivOfSemiLinearEquiv e e'' e' i).subsingleton_congr]
   exact HasInjectiveDimensionLT.subsingleton.{v} M n i hi _
 
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
