@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
 # Quasicoherent sheaves
@@ -56,6 +58,91 @@ attribute [instance] Presentation.IsFinite.isFiniteType_generators
 
 end
 
+noncomputable section
+
+variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat}
+  [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)] {ι σ : Type u}
+
+/-- Given two morphism of sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
+satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, then this sequence defines
+a `Presentation M`. -/
+def presentationOfIsCokernelFree {M : SheafOfModules.{u} R}
+    (f : free ι ⟶ free σ) (g : free σ ⟶ M) (H : f ≫ g = 0)
+    (H' : IsColimit (CokernelCofork.ofπ g H)) : Presentation M :=
+  letI gen : M.GeneratingSections :=
+    { I := σ
+      s := M.freeHomEquiv g
+      epi := by simpa using epi_of_isColimit_cofork H'}
+  haveI eq_aux : gen.π = g := Equiv.symm_apply_apply M.freeHomEquiv g
+  haveI comp_zero : f ≫ gen.π = 0 := eq_aux ▸ H
+  { generators := gen
+    relations :=
+      { I := ι
+        s := (kernel gen.π).freeHomEquiv <| kernel.lift gen.π f comp_zero
+        epi := by
+          let h : cokernel f ≅ M := (H'.coconePointUniqueUpToIso (colimit.isColimit _)).symm
+          let h' : Abelian.image f ≅ kernel gen.π :=
+            kernel.mapIso (cokernel.π f) gen.π (Iso.refl _) h (by simp [h, eq_aux])
+          have comp_aux : Abelian.factorThruImage f ≫ h'.hom =
+            (kernel.lift gen.π f comp_zero) := equalizer.hom_ext <| by simp [h']
+          rw [← comp_aux, Equiv.symm_apply_apply]
+          infer_instance }}
+
+/-- Given a sheaf of `R`-module `M` and a `Presentation M`, there is two morphism of
+sheaf of `R`-module `f : free ι ⟶ free σ` and `g : free σ ⟶ M`  satisfying `H : f ≫ g = 0`
+and `IsColimit (CokernelCofork.ofπ g H)`. -/
+def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
+    IsColimit (CokernelCofork.ofπ
+      (f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _))
+      P.generators.π (by simp)) :=
+  isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
+      (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
+
+variable {C' : Type u'} [Category.{v'} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat}
+  [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
+  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
+`Presentation (F.obj M)`. -/
+@[simps! generators_I relations_I]
+def Presentation.map {M : SheafOfModules.{u'} R} (P : Presentation M)
+    (F : SheafOfModules.{u'} R ⥤ SheafOfModules.{u'} S) [PreservesColimits F]
+    (hf' : F.obj (unit R) ≅ unit S) :
+    Presentation (F.obj M) :=
+  letI f := (freeHomEquiv _).symm P.relations.s ≫ (kernel.ι _)
+  letI g := P.generators.π
+  have H : f ≫ g = 0 := by simp [f, g]
+  letI f_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map f ≫
+    (PreservesCoproduct.iso F _).hom ≫ (Sigma.mapIso fun b ↦ hf').hom
+  letI g_new := (Sigma.mapIso fun b ↦ hf').inv ≫ (PreservesCoproduct.iso F _).inv ≫ F.map g
+  haveI H' : f_new ≫ g_new = 0 := by
+    simp_rw [f_new, g_new, Category.assoc, Iso.hom_inv_id_assoc,
+      Preadditive.IsIso.comp_left_eq_zero, IsHomLift.eq_of_isHomLift F (F.map f ≫ F.map g) (f ≫ g),
+      H, Functor.map_zero]
+  letI h' : IsColimit (CokernelCofork.ofπ g_new H') := by
+    refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv
+      (parallelPair.ext ?_ ?_ ?_ ?_) _).symm (isColimitCoforkMapOfIsColimit' F _ P.isColimit))
+      (Cocones.ext ?_ ?_) <;> dsimp
+    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ (PreservesCoproduct.iso F _).symm
+    · exact (Sigma.mapIso fun b ↦ hf').symm ≪≫ (PreservesCoproduct.iso F _).symm
+    · apply Sigma.hom_ext
+      intro i
+      simp [f, f_new, Category.assoc, ← Functor.map_comp_assoc, -Functor.map_comp, -colim_map,
+        -PreservesCoproduct.inv_hom]
+    · simp
+    · exact Iso.refl _
+    · intro j
+      have : (F.map f ≫ F.map g) = 0 := by
+        simp_rw [IsHomLift.eq_of_isHomLift F (F.map f ≫ F.map g) (f ≫ g)]
+        aesop
+      cases j <;> dsimp
+      · aesop
+      · aesop
+  presentationOfIsCokernelFree f_new g_new H' h'
+
+end
 
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
