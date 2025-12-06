@@ -85,6 +85,52 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}\nwhich \
   {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
 
+-- Could cache visited exprs like `collectFVars` does; could try inverting and using `forEachWhere`
+def collectFVarsOutsideOfProofs (e : Expr) :
+    StateRefT FVarIdSet MetaM Unit :=
+  e.forEach' fun subExpr =>
+    -- If it doesn't have an fvar, or it's a sorry, or it's a proof, don't go further.
+    pure (subExpr.hasFVar && !subExpr.isSorry) <&&> notM (Meta.isProof subExpr) <&&> do
+      -- Every free variable is a free variable of concern, by design
+      let .fvar fvarId := subExpr | return true
+      -- Note many fvarIds will be encountered. Not much need to
+      modifyThe FVarIdSet (·.insert fvarId)
+      return false
+
+structure InstanceOfConcern where
+  fvarId : FVarId
+  idx : Nat
+
+
+def go (p : Expr → Bool)
+    (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
+    StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
+  let e := e.cleanupAnnotations
+  if h : e.isForall then
+    collectFVarsOutsideOfProofs (e.forallDomain h)
+    if e.binderInfo.isInstImplicit && p (e.forallDomain h) then
+      forallBoundedTelescope e (some 1) fun fvar e =>
+        let fvarId := fvar[0]!.fvarId! -- wish we didn't have to do this...
+        go p e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
+    else
+      letI e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
+      go p e (currentBinderIdx + 1) currentFVars
+  else
+    match e with
+    | .letE _ type value body _ =>
+      collectFVarsOutsideOfProofs type
+      collectFVarsOutsideOfProofs value
+      let e := body.instantiate1 (← mkSorry type false)
+      -- do not increment binder index
+      go p e currentBinderIdx currentFVars
+    | e =>
+      collectFVarsOutsideOfProofs e
+      return currentFVars
+
+def _root_.Lean.Expr.collectUnusedInstanceIdxsOf (p : Expr → Bool) (e : Expr) : MetaM (Array Nat) := do
+  let (instances, fvarIdSet) ← go p e 0 #[] |>.run {}
+  return instances.filterMap fun i => if fvarIdSet.contains i.fvarId then none else some i.idx
+
 /--
 Gathers instance hypotheses in the type of `decl` that are unused in the remainder of the type and
 whose types satisfy `p`. (Does not consider the body of the declaration.) Collects them into an
@@ -99,19 +145,19 @@ have loose bound variables.
 def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     CommandElabM Unit := do
-  let _ ← pure <| decl.type.hasInstanceBinderOf p
-  let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
-  if let some maxIdx := unusedInstances.back? then liftTermElabM do
-    unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
-      forallBoundedTelescope decl.type (some <| maxIdx + 1)
-        (cleanupAnnotations := true) fun fvars _ => do
-          let unusedInstances : Array Parameter ← unusedInstances.mapM fun idx =>
-            return {
-                fvar? := fvars[idx]?
-                type? := ← fvars[idx]?.mapM (inferType ·)
-                idx
-              }
-          logOnUnused unusedInstances
+  if decl.type.hasInstanceBinderOf p then liftTermElabM do
+    let unusedInstances ← decl.type.collectUnusedInstanceIdxsOf p
+    if let some maxIdx := unusedInstances.back? then
+      unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
+        forallBoundedTelescope decl.type (some <| maxIdx + 1)
+          (cleanupAnnotations := true) fun fvars _ => do
+            let unusedInstances : Array Parameter ← unusedInstances.mapM fun idx =>
+              return {
+                  fvar? := fvars[idx]?
+                  type? := ← fvars[idx]?.mapM (inferType ·)
+                  idx
+                }
+            logOnUnused unusedInstances
 
 /--
 Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
