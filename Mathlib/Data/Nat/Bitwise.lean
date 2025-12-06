@@ -301,6 +301,9 @@ theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
 @[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
 theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
+theorem xor_def {m n : ℕ} : m ^^^ n = bitwise bne m n := by
+  dsimp only [HXor.hXor, instXorOp, xor]
+
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
   set v := a ^^^ b ^^^ c with hv
@@ -355,7 +358,7 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
   cases n with
   | zero => rfl
   | succ n =>
-    simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
+    simp [xor_def, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
 
 @[simp]
 theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
@@ -363,7 +366,7 @@ theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
   | zero =>
     exact not_odd_zero h |>.elim
   | succ n =>
-    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    simp only [xor_def, bitwise, reduceDiv, bitwise_zero_right]
     grind
 
 /-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
@@ -378,16 +381,16 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
     | 0 =>
       rw [Fin.zero_add, ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
       rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
-      rfl
+      simp
     | 1 =>
       rw [Nat.xor_comm]
       refine xor_one_of_even <| even_iff.mpr ?_
       rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
-      rfl
+      simp
     | 2 =>
-      apply Nat.xor_self
+      simp
     | 3 =>
-      apply zero_xor
+      simp
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> lia
