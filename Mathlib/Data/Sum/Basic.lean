@@ -68,6 +68,30 @@ theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
 @[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
   grind
 
+@[simp]
+lemma getLeft?_comp_inl {α β : Type*} :
+    Sum.getLeft? ∘ @Sum.inl α β = Option.some := by
+  ext
+  simp
+
+@[simp]
+lemma getLeft?_comp_inr {α β : Type*} :
+    Sum.getLeft? ∘ @Sum.inr α β = fun _ ↦ Option.none := by
+  ext
+  simp
+
+@[simp]
+lemma getRight?_comp_inl {α β : Type*} :
+    Sum.getRight? ∘ @Sum.inl α β = fun _ ↦ Option.none := by
+  ext
+  simp
+
+@[simp]
+lemma getRight?_comp_inr {α β : Type*} :
+    Sum.getRight? ∘ @Sum.inr α β = Option.some := by
+  ext
+  simp only [Function.comp_apply, Sum.getRight?_inr, Option.some.injEq]
+
 end get
 
 open Function (update update_eq_iff update_comp_eq_of_injective update_comp_eq_of_forall_ne)
