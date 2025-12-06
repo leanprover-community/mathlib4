@@ -6,6 +6,7 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Equivalences on embeddings
