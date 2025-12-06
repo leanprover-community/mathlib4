@@ -102,21 +102,19 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
       rw [S_exact.hasProjectiveDimensionLT_X₃_iff n proj, ih']
       exact (forall_congr' (fun p ↦ (Sp_exact p).hasProjectiveDimensionLT_X₃_iff n (projp p))).symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
       iSup_eq_bot, ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
     refine ⟨fun h p ↦ LocalizedModule.instSubsingleton _, fun h ↦ ?_⟩
     apply Module.subsingleton_of_localization_maximal (R := R)
       (fun p ↦ LocalizedModule p.primeCompl M) (fun p ↦ LocalizedModule.mkLinearMap p.primeCompl M)
     intro p hp
     exact h ⟨p, hp.isPrime⟩
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
 
 lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
@@ -177,21 +175,19 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNo
       rw [S_exact.hasProjectiveDimensionLT_X₃_iff n proj, ih']
       exact (forall_congr' (fun p ↦ (Sp_exact p).hasProjectiveDimensionLT_X₃_iff n (projp p))).symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
       iSup_eq_bot, ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
     refine ⟨fun h p ↦ LocalizedModule.instSubsingleton _, fun h ↦ ?_⟩
     apply Module.subsingleton_of_localization_maximal (R := R)
       (fun p ↦ LocalizedModule p.primeCompl M) (fun p ↦ LocalizedModule.mkLinearMap p.primeCompl M)
     intro p hp
     exact h ⟨p, hp⟩
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
 
 open Limits in
 lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
@@ -234,15 +230,13 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
       exact (TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mpr
         (ih (kernel f) ((T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp h))
   refine le_of_forall_ge (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
       ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
     intro _
     apply LocalizedModule.instSubsingleton _
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => simpa using aux n
