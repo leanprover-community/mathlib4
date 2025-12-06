@@ -228,11 +228,8 @@ lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
 
 @[simp]
 lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by
-  ext i'
-  by_cases hi' : ∃ i, e.f i = i'
-  · obtain ⟨i, hi⟩ := hi'
-    simp [extendMap_f _ e hi]
-  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+  ext
+  simpa using extendMap_id_f _ _ _
 
 @[simp]
 lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
