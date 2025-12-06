@@ -198,11 +198,8 @@ theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0
 @[deprecated (since := "2025-12-02")]
 alias image_rootSet := Splits.image_rootSet
 
-theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
-    (h : (p.map (algebraMap R K)).Splits) (f : K →ₐ[R] L) :
-    Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
-  rw [← h.image_rootSet f, Algebra.adjoin_image, ← Algebra.map_top]
-  exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
+@[deprecated (since := "2025-12-06")]
+alias adjoin_rootSet_eq_range := Splits.adjoin_rootSet_eq_range
 
 @[deprecated (since := "2025-11-25")]
 alias eq_prod_roots_of_splits := Splits.eq_prod_roots

@@ -339,6 +339,14 @@ theorem Splits.image_rootSet {A B : Type*} [CommRing A] [CommRing B] [IsDomain A
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
     ← hf.map_roots, map_map, g.comp_algebraMap, ← rootSet]
 
+omit [IsDomain R] in
+theorem Splits.adjoin_rootSet_eq_range {A B : Type*} [CommRing A] [CommRing B]
+    [IsDomain A] [IsDomain B] [IsSimpleRing A] [Algebra R A] [Algebra R B]
+    (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
+    Algebra.adjoin R (f.rootSet B) = g.range ↔ Algebra.adjoin R (f.rootSet A) = ⊤ := by
+  rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
+  exact (Subalgebra.map_injective g.injective).eq_iff
+
 theorem splits_X_sub_C_mul_iff {a : R} : Splits ((X - C a) * f) ↔ Splits f := by
   refine ⟨fun hf ↦ ?_, ((Splits.X_sub_C _).mul ·)⟩
   by_cases hf₀ : f = 0
