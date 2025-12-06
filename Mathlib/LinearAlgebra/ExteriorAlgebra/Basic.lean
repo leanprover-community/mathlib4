@@ -438,7 +438,7 @@ lemma map_surjective_iff {f : M →ₗ[R] N} :
   obtain ⟨x, hx⟩ := h (ι R y)
   existsi ιInv x
   rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]
-  erw [hx, ExteriorAlgebra.ι_leftInverse]
+  simp [hx, ιInv]
 
 variable {K E F : Type*} [Field K] [AddCommGroup E]
   [Module K E] [AddCommGroup F] [Module K F]
