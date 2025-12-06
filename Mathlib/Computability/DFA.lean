@@ -269,25 +269,19 @@ section compl
 
 /-- DFAs are closed under complement:
 Given a DFA `M`, `Mᶜ` is also a DFA such that `L(Mᶜ) = {x ∣ x ∉ L(M)}`. -/
-@[simps]
-def compl : DFA α σ where
-  step := M.step
-  start := M.start
-  accept := M.acceptᶜ
-
 instance : HasCompl (DFA α σ) where
-  compl M := M.compl
+  compl M := ⟨M.step, M.start, M.acceptᶜ⟩
 
-theorem compl_def : Mᶜ = M.compl :=
+theorem compl_def : Mᶜ = ⟨M.step, M.start, M.acceptᶜ⟩ :=
   rfl
 
-theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ := by
-  simp [compl_def, acceptsFrom, evalFrom, DFA.compl,
-    Set.compl_setOf (p:=(fun y ↦ List.foldl M.step s y ∈ M.accept))]
+@[simp]
+theorem acceptsFrom_compl (s : σ) : (Mᶜ).acceptsFrom s = (M.acceptsFrom s)ᶜ :=
+  rfl
 
-theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ := by
-  simp only [accepts, acceptsFrom_compl]
-  simp [compl_def]
+@[simp]
+theorem accepts_compl : (Mᶜ).accepts = (M.accepts)ᶜ :=
+  rfl
 
 end compl
 
@@ -295,33 +289,28 @@ section union
 
 variable {σ1 σ2 : Type v}
 
-/-- DFAs are closed under union. We denote union of DFAs `M1` and `M2` via `M1 + M2`, corresponding
-to `Language` and regular expression union. -/
+/-- DFAs are closed under union. -/
 @[simps]
 def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   step (s : σ1 × σ2) (a : α) : σ1 × σ2 := (M1.step s.1 a, M2.step s.2 a)
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
-instance : HAdd (DFA α σ1) (DFA α σ2) (DFA α (σ1 × σ2)) :=
-  ⟨union⟩
-
-theorem hadd_eq_union (M1 : DFA α σ1) (M2 : DFA α σ2) : M1 + M2 = M1.union M2 :=
-  rfl
-
+@[simp]
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
-    (M1 + M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
+    (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
   ext x
   simp only [acceptsFrom]
-  rw [hadd_eq_union, Language.add_def, Set.mem_union]
+  rw [Language.add_def, Set.mem_union]
   simp_rw [↑Set.mem_setOf]
   induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, union_step, ih]
 
+@[simp]
 theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
-    (M1 + M2).accepts = M1.accepts + M2.accepts := by
-  simp only [accepts, ←acceptsFrom_union]; rfl
+    (M1.union M2).accepts = M1.accepts + M2.accepts := by
+  simp [accepts]
 
 end union
 
@@ -336,6 +325,7 @@ def inter : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
+@[simp]
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
@@ -345,8 +335,9 @@ theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
 
+@[simp]
 theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by
-  simp [accepts, acceptsFrom_inter]
+  simp [accepts]
 
 end inter
 
@@ -378,28 +369,29 @@ theorem isRegular_iff {T : Type u} {L : Language T} :
 
 protected theorem IsRegular.compl {T : Type u} {L : Language T} (h : L.IsRegular) : Lᶜ.IsRegular :=
   have ⟨σ, _, M, hM⟩ := h
-  ⟨σ, inferInstance, Mᶜ, by simp [DFA.accepts_compl, hM]⟩
+  ⟨σ, inferInstance, Mᶜ, by simp [hM]⟩
 
 protected theorem IsRegular.of_compl {T : Type u} {L : Language T} (h : Lᶜ.IsRegular) :
   L.IsRegular :=
   L.compl_compl ▸ h.compl
 
 /-- Regular languages are closed under complement. -/
+@[simp]
 theorem IsRegular_compl {T : Type u} {L : Language T} : Lᶜ.IsRegular ↔ L.IsRegular :=
-  ⟨.from_compl, .compl⟩
+  ⟨.of_compl, .compl⟩
 
 /-- Regular languages are closed under union. -/
 theorem IsRegular.add {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
     (L1 + L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
-  ⟨σ1 × σ2, inferInstance, M1 + M2, by rw [DFA.accepts_union, hM1, hM2]⟩
+  ⟨σ1 × σ2, inferInstance, M1.union M2, by simp [hM1, hM2]⟩
 
 /-- Regular languages are closed under intersection. -/
 theorem IsRegular.inf {T : Type u} {L1 L2 : Language T} (h1 : L1.IsRegular) (h2 : L2.IsRegular) :
     (L1 ⊓ L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
-  ⟨σ1 × σ2, inferInstance, M1.inter M2, by rw [DFA.accepts_inter, hM1, hM2]⟩
+  ⟨σ1 × σ2, inferInstance, M1.inter M2, by simp [hM1, hM2]⟩
 
 end Language
