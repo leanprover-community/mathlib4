@@ -235,24 +235,21 @@ theorem irreducible_smul_X_add_C {a : R} (b : R) (ha : a ≠ 0) (hab : IsRelPrim
     · push_neg at H
       rw [mul_comm] at h
       exact (this g f h H.le).symm
-    have hd := congr(degree $h)
-    have aux : (a • (X : R[X]) + C b).degree = 1 := by compute_degree!
-    rw [degree_mul, aux, eq_comm, Nat.WithBot.add_eq_one_iff] at hd
-    obtain ⟨hf, -⟩ : f.degree = 0 ∧ g.degree = 1 := by
-      apply hd.resolve_right
-      rintro ⟨hf0, hfg⟩
-      simp_all [(zero_lt_one' (WithBot ℕ)).not_ge]
     left
+    have hd : (f * g).degree = 1 := by
+      rw [← h]; compute_degree!
+    rw [degree_mul, Nat.WithBot.add_eq_one_iff] at hd
+    rcases hd with ⟨hf, hg⟩ | ⟨hf, hg⟩; swap
+    · simp [← not_lt, hf, hg] at H
     replace hf := f.eq_C_of_degree_eq_zero hf
-    suffices IsUnit (f.coeff 0) by
-      rw [isUnit_iff]
-      exact ⟨f.coeff 0, this, hf.symm⟩
+    rw [hf]
+    apply IsUnit.map C
     rw [hf, ← smul_eq_C_mul] at h
     apply hab
     · use g.coeff 1
-      simpa using congr(coeff $h 1)
+      simpa using congr_arg (fun f ↦ coeff f 1) h
     · use g.coeff 0
-      simpa using congr(coeff $h 0)
+      simpa using congr_arg (fun f ↦ coeff f 0) h
 
 lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
