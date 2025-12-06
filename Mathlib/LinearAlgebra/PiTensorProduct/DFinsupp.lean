@@ -57,23 +57,6 @@ theorem ofDFinsuppEquiv_symm_single_tprod (p : Π i, κ i) (x : Π i, M i (p i))
 @[simp]
 theorem ofDFinsuppEquiv_tprod_apply (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
     ofDFinsuppEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
-  suffices
-    (DFinsupp.lapply p ∘ₗ ofDFinsuppEquiv.toLinearMap).compMultilinearMap (tprod R) =
-    (tprod R).compLinearMap (fun i => DFinsupp.lapply (p i)) by
-    exact congr($this x)
-  ext p' x
-  simp only [MultilinearMap.compLinearMap_apply, DFinsupp.lsingle_apply, compMultilinearMap_apply,
-    coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ofDFinsuppEquiv_tprod_single,
-    DFinsupp.lapply_apply]
-  obtain rfl | hp := eq_or_ne p p'
-  · simp only [DFinsupp.single_eq_same]
-  · obtain ⟨i, hi⟩ := Function.ne_iff.1 hp
-    rw [DFinsupp.single_eq_of_ne hp, ((tprod R).map_coord_zero i ?_).symm]
-    rw [DFinsupp.single_eq_of_ne hi]
-
-@[simp]
-theorem ofDFinsuppEquiv_tprod_apply' (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
-    ofDFinsuppEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) := by
   haveI := fun i j => Classical.typeDecidableEq (M i j)
   simp only [ofDFinsuppEquiv, LinearEquiv.ofLinear_apply, lift.tprod,
     MultilinearMap.fromDFinsuppEquiv_apply, compMultilinearMap_apply, DFinsupp.lsingle_apply,
