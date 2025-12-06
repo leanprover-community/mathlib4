@@ -221,14 +221,16 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
 
 section Monotone
 
-/-- A monotone, bounded above sequence `f : ℕ → ℝ` has the finite limit `iSup f`. -/
-theorem _root_.Real.tendsto_ciSup_of_bddAbove_monotone {f : ℕ → ℝ}
+variable {ι : Type*} [Preorder ι] [Nonempty ι]
+
+/-- A monotone, bounded above function `f : ι → ℝ` has the finite limit `iSup f`. -/
+theorem _root_.Real.tendsto_ciSup_of_bddAbove_monotone {f : ι → ℝ}
     (h_bdd : BddAbove (range f)) (h_mon : Monotone f) :
     Tendsto f atTop (𝓝 (iSup f)) :=
   tendsto_atTop_isLUB h_mon <| Real.isLUB_sSup (range_nonempty f) h_bdd
 
-/-- An antitone, bounded below sequence `f : ℕ → ℝ` has the finite limit `iInf f`. -/
-theorem _root_.Real.tendsto_ciInf_of_bddBelow_antitone {f : ℕ → ℝ}
+/-- An antitone, bounded below function `f : ι → ℝ` has the finite limit `iInf f`. -/
+theorem _root_.Real.tendsto_ciInf_of_bddBelow_antitone {f : ι → ℝ}
     (h_bdd : BddBelow (range f)) (h_ant : Antitone f) :
     Tendsto f atTop (𝓝 (iInf f)) :=
   tendsto_atTop_isGLB h_ant <| Real.isGLB_sInf (range_nonempty f) h_bdd
