@@ -531,8 +531,8 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by cutsat), mul_assoc]
+    rw [npowRec'_succ (by lia), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by lia), mul_assoc]
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
