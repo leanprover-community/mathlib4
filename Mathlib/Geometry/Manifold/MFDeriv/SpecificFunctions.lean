@@ -835,35 +835,35 @@ theorem mfderiv_add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
 section sum
 variable {ι : Type} {t : Finset ι} {f : ι → M → E'} {f' : ι → TangentSpace I z →L[𝕜] E'}
 
-lemma HasMFDerivWithinAt.finset_sum (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, E') (f i) s z (f' i)) :
+lemma HasMFDerivWithinAt.sum (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, E') (f i) s z (f' i)) :
     HasMFDerivWithinAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) s z (∑ i ∈ t, f' i) := by
   classical
   induction t using Finset.induction_on with
   | empty => simpa using hasMFDerivWithinAt_const ..
   | insert i s hi IH => grind [HasMFDerivWithinAt.add]
 
-lemma HasMFDerivAt.finset_sum (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, E') (f i) z (f' i)) :
+lemma HasMFDerivAt.sum (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, E') (f i) z (f' i)) :
     HasMFDerivAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) z (∑ i ∈ t, f' i) := by
   simp_all only [← hasMFDerivWithinAt_univ]
-  exact HasMFDerivWithinAt.finset_sum hf
+  exact HasMFDerivWithinAt.sum hf
 
-lemma MDifferentiableWithinAt.finset_sum
+lemma MDifferentiableWithinAt.sum
     (hf : ∀ i ∈ t, MDifferentiableWithinAt I 𝓘(𝕜, E') (f i) s z) :
     MDifferentiableWithinAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) s z :=
-  (HasMFDerivWithinAt.finset_sum fun i hi ↦ (hf i hi).hasMFDerivWithinAt).mdifferentiableWithinAt
+  (HasMFDerivWithinAt.sum fun i hi ↦ (hf i hi).hasMFDerivWithinAt).mdifferentiableWithinAt
 
-lemma MDifferentiableAt.finset_sum (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, E') (f i) z) :
+lemma MDifferentiableAt.sum (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, E') (f i) z) :
     MDifferentiableAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) z := by
   simp_all only [← mdifferentiableWithinAt_univ]
-  exact .finset_sum hf
+  exact .sum hf
 
-lemma MDifferentiableOn.finset_sum (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, E') (f i) s) :
+lemma MDifferentiableOn.sum (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, E') (f i) s) :
     MDifferentiableOn I 𝓘(𝕜, E') (∑ i ∈ t, f i) s :=
-  fun z hz ↦ .finset_sum fun i hi ↦ hf i hi z hz
+  fun z hz ↦ .sum fun i hi ↦ hf i hi z hz
 
-lemma MDifferentiable.finset_sum (hf : ∀ i ∈ t, MDifferentiable I 𝓘(𝕜, E') (f i)) :
+lemma MDifferentiable.sum (hf : ∀ i ∈ t, MDifferentiable I 𝓘(𝕜, E') (f i)) :
     MDifferentiable I 𝓘(𝕜, E') (∑ i ∈ t, f i) :=
-  fun z ↦ .finset_sum fun i hi ↦ hf i hi z
+  fun z ↦ .sum fun i hi ↦ hf i hi z
 
 end sum
 
@@ -994,7 +994,7 @@ theorem HasMFDerivAt.mul (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
 section prod
 variable {ι : Type} {t : Finset ι} {f : ι → M → F'} {f' : ι → TangentSpace I z →L[𝕜] F'}
 
-lemma HasMFDerivWithinAt.finset_prod [DecidableEq ι]
+lemma HasMFDerivWithinAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, F') (f i) s z (f' i)) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z
       (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
@@ -1010,31 +1010,31 @@ lemma HasMFDerivWithinAt.finset_prod [DecidableEq ι]
       rw [t.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
     · simp
 
-lemma HasMFDerivAt.finset_prod [DecidableEq ι]
+lemma HasMFDerivAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, F') (f i) z (f' i)) :
     HasMFDerivAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
   simp_all only [← hasMFDerivWithinAt_univ]
-  exact HasMFDerivWithinAt.finset_prod hf
+  exact HasMFDerivWithinAt.prod hf
 
-lemma MDifferentiableWithinAt.finset_prod
+lemma MDifferentiableWithinAt.prod
     (hf : ∀ i ∈ t, MDifferentiableWithinAt I 𝓘(𝕜, F') (f i) s z) :
     MDifferentiableWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z := by
   -- `by classical exact` to avoid needing a `DecidableEq` argument
-  classical exact (HasMFDerivWithinAt.finset_prod
+  classical exact (HasMFDerivWithinAt.prod
     fun i hi ↦ (hf i hi).hasMFDerivWithinAt).mdifferentiableWithinAt
 
-lemma MDifferentiableAt.finset_prod (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, F') (f i) z) :
+lemma MDifferentiableAt.prod (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, F') (f i) z) :
     MDifferentiableAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z := by
   simp_all only [← mdifferentiableWithinAt_univ]
-  exact MDifferentiableWithinAt.finset_prod hf
+  exact MDifferentiableWithinAt.prod hf
 
-lemma MDifferentiableOn.finset_prod (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, F') (f i) s) :
+lemma MDifferentiableOn.prod (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, F') (f i) s) :
     MDifferentiableOn I 𝓘(𝕜, F') (∏ i ∈ t, f i) s :=
-  fun z hz ↦ .finset_prod fun i hi ↦ hf i hi z hz
+  fun z hz ↦ .prod fun i hi ↦ hf i hi z hz
 
-lemma MDifferentiable.finset_prod (hf : ∀ i ∈ t, MDifferentiable I 𝓘(𝕜, F') (f i)) :
+lemma MDifferentiable.prod (hf : ∀ i ∈ t, MDifferentiable I 𝓘(𝕜, F') (f i)) :
     MDifferentiable I 𝓘(𝕜, F') (∏ i ∈ t, f i) :=
-  fun z ↦ .finset_prod fun i hi ↦ hf i hi z
+  fun z ↦ .prod fun i hi ↦ hf i hi z
 
 end prod
 
