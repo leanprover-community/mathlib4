@@ -58,7 +58,7 @@ def galRestrict' (f : L →ₐ[K] L₂) : (B →ₐ[A] B₂) :=
 @[simp]
 lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] L₂) (x : B) :
     algebraMap B₂ L₂ (galRestrict' A B B₂ σ x) = σ (algebraMap B L x) := by
-  simp [galRestrict', galRestrict', Subalgebra.algebraMap_eq]
+  simp [galRestrict', galRestrict']
 
 @[simp]
 theorem galRestrict'_id : galRestrict' A B B (.id K L) = .id A B := by
@@ -71,7 +71,7 @@ theorem galRestrict'_comp (σ : L →ₐ[K] L₂) (σ' : L₂ →ₐ[K] L₃) :
   ext x
   apply (IsIntegralClosure.equiv A (integralClosure A L₃) L₃ B₃).symm.injective
   ext
-  simp [galRestrict', Subalgebra.algebraMap_eq]
+  simp [galRestrict']
 
 end galRestrict'
 
@@ -126,7 +126,7 @@ theorem galLift_galRestrict' (σ : L →ₐ[K] L₂) :
   have := (IsFractionRing.injective A K).isDomain
   have := IsIntegralClosure.isLocalization A K L B
   AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext (Algebra.algebraMapSubmonoid B A⁰)
-    <| RingHom.ext fun x ↦ by simp [galRestrict', Subalgebra.algebraMap_eq, galLift]
+    <| RingHom.ext fun x ↦ by simp [galRestrict', galLift]
 
 @[simp]
 theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
@@ -134,7 +134,7 @@ theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
   have := (IsFractionRing.injective A K).isDomain
   have := IsIntegralClosure.isLocalization A K L B
   AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B₂ A L₂
-    (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
+    (by simp [galRestrict', galLift])
 
 /--
 A version of `galLift` for `AlgEquiv`.
