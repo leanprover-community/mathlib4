@@ -749,33 +749,21 @@ theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
 
 instance instIsCountablyGenerated_atTop [SecondCountableTopology α] :
     IsCountablyGenerated (atTop : Filter α) := by
-  by_cases h : ∃ (x : α), IsTop x
-  · rcases h with ⟨x, hx⟩
-    rw [atTop_eq_pure_of_isTop hx]
-    exact isCountablyGenerated_pure x
+  obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
   · rcases exists_countable_basis α with ⟨b, b_count, b_ne, hb⟩
-    have : Countable b := by exact Iff.mpr countable_coe_iff b_count
-    have A : ∀ (s : b), ∃ (x : α), x ∈ (s : Set α) := by
-      intro s
-      have : (s : Set α) ≠ ∅ := by
-        intro H
-        apply b_ne
-        convert s.2
-        exact H.symm
-      exact Iff.mp notMem_singleton_empty this
+    have A (s : b) : s.1.Nonempty := by aesop (add simp [nonempty_iff_ne_empty])
     choose a ha using A
-    have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
-      apply atTop_eq_generate_of_not_bddAbove
-      intro ⟨x, hx⟩
-      simp only [IsTop, not_exists, not_forall, not_le] at h
+    have : atTop = generate (Ici '' range a) := by
+      refine atTop_eq_generate_of_not_bddAbove fun ⟨x, hx⟩ ↦ ?_
+      simp only [eq_empty_iff_forall_notMem, IsTop, mem_setOf_eq, not_forall, not_le] at h
       rcases h x with ⟨y, hy⟩
-      obtain ⟨s, sb, -, hs⟩ : ∃ s, s ∈ b ∧ y ∈ s ∧ s ⊆ Ioi x :=
-        hb.exists_subset_of_mem_open hy isOpen_Ioi
-      have I : a ⟨s, sb⟩ ≤ x := hx (mem_range_self _)
-      have J : x < a ⟨s, sb⟩ := hs (ha ⟨s, sb⟩)
-      exact lt_irrefl _ (I.trans_lt J)
+      obtain ⟨s, sb, -, hs⟩ := hb.exists_subset_of_mem_open hy isOpen_Ioi
+      exact ((hx (mem_range_self _)).trans_lt (hs (ha ⟨s, sb⟩))).false
     rw [this]
+    have := countable_coe_iff.2 b_count
     exact ⟨_, (countable_range _).image _, rfl⟩
+  · rw [atTop_eq_pure_of_isTop hx]
+    exact isCountablyGenerated_pure x
 
 instance instIsCountablyGenerated_atBot [SecondCountableTopology α] :
     IsCountablyGenerated (atBot : Filter α) :=
