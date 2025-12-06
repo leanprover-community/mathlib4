@@ -93,6 +93,19 @@ def StrictMonoOn (f : α → β) (s : Set α) : Prop :=
 def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b < f a
 
+attribute [to_dual_dont_unfold]
+  Monotone Antitone MonotoneOn AntitoneOn StrictMono StrictAnti StrictMonoOn StrictAntiOn
+
+set_option linter.style.longLine false
+@[to_dual existing eq_def] theorem Monotone.eq_def_dual (f : α → β) : Monotone f = ∀ ⦃a b⦄, b ≤ a → f b ≤ f a := by grind [Monotone.eq_def]
+@[to_dual existing eq_def] theorem Antitone.eq_def_dual (f : α → β) : Antitone f = ∀ ⦃a b⦄, b ≤ a → f a ≤ f b := by grind [Antitone.eq_def]
+@[to_dual existing eq_def] theorem MonotoneOn.eq_def_dual (f : α → β) (s : Set α) : MonotoneOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b ≤ a → f b ≤ f a := by grind [MonotoneOn.eq_def]
+@[to_dual existing eq_def] theorem AntitoneOn.eq_def_dual (f : α → β) (s : Set α) : AntitoneOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b ≤ a → f a ≤ f b := by grind [AntitoneOn.eq_def]
+@[to_dual existing eq_def] theorem StrictMono.eq_def_dual (f : α → β) : StrictMono f = ∀ ⦃a b⦄, b < a → f b < f a := by grind [StrictMono.eq_def]
+@[to_dual existing eq_def] theorem StrictAnti.eq_def_dual (f : α → β) : StrictAnti f = ∀ ⦃a b⦄, b < a → f a < f b := by grind [StrictAnti.eq_def]
+@[to_dual existing eq_def] theorem StrictMonoOn.eq_def_dual (f : α → β) (s : Set α) : StrictMonoOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b < a → f b < f a := by grind [StrictMonoOn.eq_def]
+@[to_dual existing eq_def] theorem StrictAntiOn.eq_def_dual (f : α → β) (s : Set α) : StrictAntiOn f s = ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), b < a → f a < f b := by grind [StrictAntiOn.eq_def]
+
 end MonotoneDef
 
 section Decidable
@@ -126,6 +139,7 @@ section Preorder
 
 variable [Preorder α]
 
+@[to_dual self]
 theorem Monotone.comp_le_comp_left
     [Preorder β] {f : β → α} {g h : γ → β} (hf : Monotone f) (le_gh : g ≤ h) :
     LE.le.{max w u} (f ∘ g) (f ∘ h) :=
@@ -167,16 +181,19 @@ when you do not want to apply a `Monotone` assumption (i.e. your goal is `a ≤ 
 However if you find yourself writing `hf.imp h`, then you should have written `hf h` instead.
 -/
 
-
+@[to_dual self]
 theorem Monotone.imp (hf : Monotone f) (h : a ≤ b) : f a ≤ f b :=
   hf h
 
+@[to_dual self]
 theorem Antitone.imp (hf : Antitone f) (h : a ≤ b) : f b ≤ f a :=
   hf h
 
+@[to_dual self]
 theorem StrictMono.imp (hf : StrictMono f) (h : a < b) : f a < f b :=
   hf h
 
+@[to_dual self]
 theorem StrictAnti.imp (hf : StrictAnti f) (h : a < b) : f b < f a :=
   hf h
 
@@ -224,19 +241,23 @@ section PartialOrder
 
 variable [PartialOrder α] [Preorder β] {f : α → β} {s : Set α}
 
+@[to_dual monotone_iff_forall_lt']
 theorem monotone_iff_forall_lt : Monotone f ↔ ∀ ⦃a b⦄, a < b → f a ≤ f b :=
   forall₂_congr fun _ _ ↦
     ⟨fun hf h ↦ hf h.le, fun hf h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) hf⟩
 
+@[to_dual antitone_iff_forall_lt']
 theorem antitone_iff_forall_lt : Antitone f ↔ ∀ ⦃a b⦄, a < b → f b ≤ f a :=
   forall₂_congr fun _ _ ↦
     ⟨fun hf h ↦ hf h.le, fun hf h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).ge) hf⟩
 
+@[to_dual monotoneOn_iff_forall_lt']
 theorem monotoneOn_iff_forall_lt :
     MonotoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a ≤ f b :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
    fun hf _ ha _ hb h ↦ h.eq_or_lt.elim (fun H ↦ (congr_arg _ H).le) (hf ha hb)⟩
 
+@[to_dual antitoneOn_iff_forall_lt']
 theorem antitoneOn_iff_forall_lt :
     AntitoneOn f s ↔ ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b ≤ f a :=
   ⟨fun hf _ ha _ hb h ↦ hf ha hb h.le,
@@ -318,6 +339,7 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f y ≤ f x) : StrictAnti f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 
+@[to_dual injective_of_lt_imp_ne']
 theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
   intro x y hf
@@ -440,16 +462,20 @@ variable [Preorder β] {f : α → β} {s : Set α}
 
 open Ordering
 
+@[to_dual self]
 theorem Monotone.reflect_lt (hf : Monotone f) {a b : α} (h : f a < f b) : a < b :=
   lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
+@[to_dual self]
 theorem Antitone.reflect_lt (hf : Antitone f) {a b : α} (h : f a < f b) : b < a :=
   lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem MonotoneOn.reflect_lt (hf : MonotoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : a < b :=
   lt_of_not_ge fun h' ↦ h.not_ge <| hf hb ha h'
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem AntitoneOn.reflect_lt (hf : AntitoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : b < a :=
   lt_of_not_ge fun h' ↦ h.not_ge <| hf ha hb h'
