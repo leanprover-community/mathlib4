@@ -156,7 +156,7 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
         · ext ⟨⟩
-          simp [← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op)]}
+          simp [← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op)] }
 
 variable [HasLimitsOfShape Jᵒᵖ C]
 
