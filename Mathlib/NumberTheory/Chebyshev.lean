@@ -317,11 +317,9 @@ theorem integral_theta_div_log_sq_isBigO :
     rw [Set.uIcc_of_le (by linarith)] at ht
     have : 1 < t := by linarith [ht.1]
     positivity
-  apply IsBigO.const_mul_left
-  apply IsBigO.add
+  refine IsBigO.const_mul_left (IsBigO.add ?_ ?_) _
   · simp_rw [mul_div_assoc]
-    apply IsBigO.const_mul_left
-    apply isBigO_refl
+    apply isBigO_const_mul_self
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
   apply IsBigO.const_mul_left sqrt_isBigO
 
@@ -346,9 +344,7 @@ theorem primeCounting_sub_theta_div_log_isBigO :
 
 theorem eventually_primeCounting_le {c : ℝ} (hc : log 4 < c) :
     ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ c * x / log x := by
-  have := integral_theta_div_log_sq_isLittleO
-  replace this := this.bound
-  specialize this (by linarith :  0 < c - log 4)
+  have := integral_theta_div_log_sq_isLittleO.bound (by linarith :  0 < c - log 4)
   filter_upwards [eventually_ge_atTop 2, this] with x hx hx2
   rw [primeCounting_eq hx, (by ring : c * x / log x = log 4 * x / log x + (c - log 4) * x / log x)]
   grw [theta_le_log4_mul_x (by linarith)]
