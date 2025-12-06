@@ -54,7 +54,7 @@ noncomputable section PolynomialLaw
 
 open scoped TensorProduct
 
-open LinearMap TensorProduct AlgHom
+open LinearMap TensorProduct AlgHom RingCon
 
 /-- A polynomial law `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
 `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
@@ -316,10 +316,9 @@ def toFun : S ⊗[R] M → S ⊗[R] N := Function.extend (π R M S) (f.toFunLift
 
 variable {S}
 
--- delete?
-theorem Subalgebra.FG.exists_range_eq {B : Subalgebra R S} (hB : Subalgebra.FG B) :
+theorem exists_range_φ_eq_of_fg {B : Subalgebra R S} (hB : Subalgebra.FG B) :
     ∃ s : Finset S, (φ R s).range = B :=
-  ⟨hB.choose, by simp only [φ_range, hB.choose_spec]⟩
+  ⟨hB.choose, by simp only [range_φ, hB.choose_spec]⟩
 
 section diagrams
 
@@ -329,16 +328,6 @@ variable
     {B : Type u} [CommSemiring B] [Algebra R B] {ψ : B →ₐ[R] T} (q : B ⊗[R] M)
     (g : A →ₐ[R] B) (h : S →ₐ[R] T)
 
---MI: I added this, but I am not sure whether it will be useful.
-theorem toFun'_eq_of_diagram'
-    (hψ : Function.Injective (rTensor (R := R) (N := B) (P := T) M ψ))
-    (hgh : ψ.comp g = h.comp φ)
-    (hpq : (h.comp φ).toLinearMap.rTensor M p = ψ.toLinearMap.rTensor M q) :
-    (h.comp φ).toLinearMap.rTensor N (f.toFun' A p) = ψ.toLinearMap.rTensor N (f.toFun' B q) := by
-  rw [← hgh, comp_toLinearMap, rTensor_comp, LinearMap.coe_comp, Function.comp_apply]
-    at hpq ⊢
-  rw [f.isCompat_apply', hψ hpq]
-
 /-- Compare the values of `PolynomialLaw.toFun' in a square diagram -/
 theorem toFun'_eq_of_diagram
     (h : S →ₐ[R] T) (h' : φ.range →ₐ[R] ψ.range)
@@ -347,14 +336,14 @@ theorem toFun'_eq_of_diagram
       ψ.rangeRestrict.toLinearMap.rTensor M q) :
     (h.comp φ).toLinearMap.rTensor N (f.toFun' A p) =
       ψ.toLinearMap.rTensor N (f.toFun' B q) := by
-  let θ := (RingCon.quotientKerEquivRangeₐ (R := R) ψ).symm.toAlgHom.comp
-    (h'.comp (RingCon.quotientKerEquivRangeₐ φ).toAlgHom)
-  have ht : (h.comp φ.range.val).comp (RingCon.quotientKerEquivRangeₐ φ).toAlgHom =
-      ψ.range.val.comp ((RingCon.quotientKerEquivRangeₐ ψ).toAlgHom.comp  θ) := by
+  let θ := (quotientKerEquivRangeₐ (R := R) ψ).symm.toAlgHom.comp
+    (h'.comp (quotientKerEquivRangeₐ φ).toAlgHom)
+  have ht : (h.comp φ.range.val).comp (quotientKerEquivRangeₐ φ).toAlgHom =
+      ψ.range.val.comp ((quotientKerEquivRangeₐ ψ).toAlgHom.comp  θ) := by
     simp only [θ, ← AlgHom.comp_assoc, ← hh']
     simp [AlgHom.comp_assoc]
-  rw [← φ.comp_rangeRestrict, ← φ.quotientKerEquivRangeₐ_comp_mkₐ,
-    ← ψ.comp_rangeRestrict, ← ψ.quotientKerEquivRangeₐ_comp_mkₐ,
+  rw [← φ.val_comp_rangeRestrict, ← quotientKerEquivRangeₐ_comp_mkₐ φ,
+    ← ψ.val_comp_rangeRestrict, ← quotientKerEquivRangeₐ_comp_mkₐ ψ,
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc _, ht]
   simp only [AlgHom.comp_toLinearMap, rTensor_comp_apply]
   apply congr_arg
@@ -363,9 +352,9 @@ theorem toFun'_eq_of_diagram
     isCompat_apply']
   apply congr_arg
   simp only [θ, ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap, AlgHom.comp_assoc]
-  rw [φ.quotientKerEquivRangeₐ_comp_mkₐ, comp_toLinearMap,
+  rw [quotientKerEquivRangeₐ_comp_mkₐ, comp_toLinearMap,
     rTensor_comp_apply, hpq, ← rTensor_comp_apply, ← comp_toLinearMap,
-    ← ψ.quotientKerEquivRangeₐ_comp_mkₐ, ← AlgHom.comp_assoc]
+    ← quotientKerEquivRangeₐ_comp_mkₐ, ← AlgHom.comp_assoc]
   simp
 
 /-- Compare the values of `PolynomialLaw.toFun' in a square diagram,
@@ -396,10 +385,10 @@ theorem factorsThrough_toFunLifted_π :
     rTensor M (Subalgebra.val _).toLinearMap u' := by
     simp only [π] at h
     simp only [hu, hu', ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap,
-      comp_rangeRestrict, h]
+      val_comp_rangeRestrict, h]
   obtain ⟨B, hAB, hA'B, ⟨t, hB⟩, h⟩ :=
     TensorProduct.Algebra.eq_of_fg_of_subtype_eq' (R := R) uFG u'FG huu'
-  rw [← φ_range R t, eq_comm] at hB
+  rw [← range_φ R t, eq_comm] at hB
   have hAB' : (φ R s).range ≤ (φ R t).range := le_trans hAB (le_of_eq hB)
   have hA'B' : (φ R s').range ≤ (φ R t).range := le_trans hA'B (le_of_eq hB)
   have : ∃ q : MvPolynomial (Fin t.card) R ⊗[R] M, rTensor M (toLinearMap (φ R t).rangeRestrict) q =
@@ -418,7 +407,7 @@ theorem factorsThrough_toFunLifted_π :
 theorem toFun_eq_toFunLifted_apply {t : S ⊗[R] M} {s : Finset S}
     {p : MvPolynomial (Fin s.card) R ⊗[R] M} (ha : π R M S (⟨s, p⟩ : lifts R M S) = t) :
     f.toFun S t = (φ R s).toLinearMap.rTensor N (f.toFun' _ p) := by
-  rw [PolynomialLaw.toFun, ← ha, (toFunLifted_factorsThrough_π f).extend_apply, toFunLifted]
+  rw [PolynomialLaw.toFun, ← ha, (factorsThrough_toFunLifted_π f).extend_apply, toFunLifted]
 
 theorem exists_lift_of_le_rTensor_range
     {T : Type*} [CommSemiring T] [Algebra R T]
@@ -440,7 +429,7 @@ theorem π_surjective : Function.Surjective (π R M S) := by
   classical
   intro t
   obtain ⟨B : Subalgebra R S, hB : B.FG, ht : t ∈ range _⟩ := TensorProduct.Algebra.exists_of_fg t
-  obtain ⟨s : Finset S, hs : (PolynomialLaw.φ R s).range = B⟩ := Subalgebra.FG.exists_range_eq hB
+  obtain ⟨s : Finset S, hs : (PolynomialLaw.φ R s).range = B⟩ := exists_range_φ_eq_of_fg hB
   obtain ⟨p, hp⟩ := exists_lift_of_le_rTensor_range B (le_of_eq hs.symm) ht
   exact ⟨⟨s, p⟩, hp⟩
 
@@ -458,7 +447,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
   obtain ⟨A, hA, ht⟩ := TensorProduct.Algebra.exists_of_fg t
   have hB : Subalgebra.FG (A ⊔ Algebra.adjoin R ({s} : Finset S)) :=
     Subalgebra.FG.sup hA (Subalgebra.fg_adjoin_finset _)
-  obtain ⟨gen, hgen⟩ := Subalgebra.FG.exists_range_eq hB
+  obtain ⟨gen, hgen⟩ := exists_range_φ_eq_of_fg hB
   have hAB : A ≤ A ⊔ Algebra.adjoin R ({s} : Finset S) := le_sup_left
   rw [← hgen] at hAB
   obtain ⟨p, hp⟩ := exists_lift_of_le_rTensor_range _ hAB ht
@@ -492,7 +481,7 @@ theorem isCompat_apply {T : Type w} [CommSemiring T] [Algebra R T] (h : S →ₐ
   let h' : (φ R s).range →ₐ[R] (φ R s').range :=
     (h.comp (Subalgebra.val _)).codRestrict (φ R s').range (by
     rintro ⟨x, hx⟩
-    simp only [φ_range] at hx ⊢
+    simp only [range_φ] at hx ⊢
     simp only [AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply, Finset.coe_image,
       Algebra.adjoin_image, s']
     exact ⟨x, hx, rfl⟩)
