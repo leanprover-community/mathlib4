@@ -516,9 +516,9 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 
 /-- The order isomorphism between ordinals less than `o` and `o.ToType`. -/
 @[simps! -isSimp]
-def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
-  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
-  invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
+def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
+  toFun x := enum (α := o.ToType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
+  invFun x := ⟨typein (α := o.ToType) (· < ·) x, typein_lt_self x⟩
   left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
@@ -526,7 +526,7 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.toType where
 @[deprecated (since := "2025-12-04")] noncomputable alias enumIsoToType := ToType.mk
 
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
-abbrev toType.toOrd {o : Ordinal} (α : o.toType) : Set.Iio o := ToType.mk.symm α
+abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
 
 instance (o : Ordinal) : Coe o.ToType (Set.Iio o) where
   coe := ToType.toOrd
