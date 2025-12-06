@@ -189,6 +189,7 @@ section L2
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Plancherel's theorem for Schwartz functions. -/
+@[simp]
 theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
     ∫ ξ, ⟪𝓕 f ξ, 𝓕 g ξ⟫ = ∫ x, ⟪f x, g x⟫ :=
   integral_sesq_fourier_fourier f g (innerSL ℂ)
@@ -199,11 +200,10 @@ theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
     integral_inner_fourier_fourier f f
 
-theorem inner_fourier_toL2_eq (f : 𝓢(V, H)) :
-    ⟪(𝓕 f).toLp 2, (𝓕 f).toLp 2⟫ =
-    ⟪f.toLp 2, f.toLp 2⟫ := by
+theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
+    ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by
   simp only [inner_toL2_toL2_eq]
-  exact integral_sesq_fourier_fourier f f (innerSL ℂ)
+  exact integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 @[deprecated (since := "2025-11-13")]
 alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
