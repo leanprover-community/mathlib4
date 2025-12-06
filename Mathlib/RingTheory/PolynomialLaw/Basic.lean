@@ -291,9 +291,9 @@ variable {S}
 
 /-- The lift of `f.toFun to the type `lifts` -/
 def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
-  aeval  (R := R) (fun n ↦ (s.equivFin.symm n : S))
+  aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
-theorem φ_range (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
+theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   simp only [φ]
   rw [← Algebra.adjoin_range_eq_range_aeval]
   congr
@@ -309,7 +309,7 @@ variable {R M N}
 
 /-- The auxiliary lift of `PolynomialLaw.toFun'` on `PolynomialLaw.lifts` -/
 def toFunLifted : lifts R M S → S ⊗[R] N :=
-  fun ⟨s,p⟩ ↦ rTensor N (φ R s).toLinearMap (f.toFun' (MvPolynomial (Fin s.card) R) p)
+  fun ⟨s, p⟩ ↦ rTensor N (φ R s).toLinearMap (f.toFun' (MvPolynomial (Fin s.card) R) p)
 
 /-- The extension of `PolynomialLaw.toFun'` to all universes. -/
 def toFun : S ⊗[R] M → S ⊗[R] N := Function.extend (π R M S) (f.toFunLifted S) (fun _ ↦ 0)
@@ -369,7 +369,7 @@ theorem toFun'_eq_of_diagram
   simp
 
 /-- Compare the values of `PolynomialLaw.toFun' in a square diagram,
-  when one of the maps is an algebra inclusion. -/
+  when one of the maps is a subalgebra inclusion. -/
 theorem toFun'_eq_of_inclusion {ψ : B →ₐ[R] S} (h : φ.range ≤ ψ.range)
     (hpq : ((Subalgebra.inclusion h).comp
       φ.rangeRestrict).toLinearMap.rTensor M p = ψ.rangeRestrict.toLinearMap.rTensor M q) :
@@ -378,7 +378,7 @@ theorem toFun'_eq_of_inclusion {ψ : B →ₐ[R] S} (h : φ.range ≤ ψ.range)
 
 end diagrams
 
-theorem toFunLifted_factorsThrough_π :
+theorem factorsThrough_toFunLifted_π :
     Function.FactorsThrough (f.toFunLifted S) (π R M S) := by
   rintro ⟨s, p⟩ ⟨s', p'⟩ h
   simp only [toFunLifted]
@@ -590,7 +590,7 @@ theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : 
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 theorem isCompat_apply_ground (x : M) :
-    1 ⊗ₜ (f.ground x) = (f.toFun S) (1 ⊗ₜ x) := by
+    1 ⊗ₜ f.ground x = f.toFun S (1 ⊗ₜ x) := by
   simp only [ground, ← toFun_eq_toFun']
   convert f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
