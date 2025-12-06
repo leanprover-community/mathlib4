@@ -46,7 +46,7 @@ lemma quotientIsBaseChangeMap_isBaseChange (S : Type*) [CommRing S] [Algebra R S
 
 lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
     IsGorensteinLocalRing R ↔ ∃ n, ∀ i ≥ n, Subsingleton
-    (Ext.{u} (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
+    (Ext (ModuleCat.of R (R ⧸ maximalIdeal R)) (ModuleCat.of R R) i) := by
   have (a : WithBot ℕ∞) : a ≠ ⊤ ↔ ∃ (n : ℕ), a < n := by
     induction a with
     | bot => simp
@@ -56,7 +56,7 @@ lemma isGorensteinLocalRing_iff_exists [IsLocalRing R] [IsNoetherianRing R] :
       | coe a => simpa using ⟨a + 1, Nat.cast_lt.mpr (lt_add_one a)⟩
   simp only [isGorensteinLocalRing_def, this, ge_iff_le]
   apply exists_congr (fun n ↦ ?_)
-  rw [injectiveDimension_lt_iff_of_finite.{u, u, u} (ModuleCat.of R R) n]
+  rw [injectiveDimension_lt_iff_of_finite (ModuleCat.of R R) n]
   congr! 2
   exact (((extFunctor _).mapIso (Shrink.linearEquiv.{u} R (R ⧸ maximalIdeal R)).toModuleIso.op).app
     (ModuleCat.of R R)).symm.addCommGroupIsoToAddEquiv.subsingleton_congr
@@ -107,11 +107,11 @@ lemma Polynomial.localization_at_comap_maximal_isGorenstein_of_isGorenstein [IsN
   let g : ModuleCat.of R R →ₗ[R] ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p) :=
     Algebra.linearMap R (Localization.AtPrime p)
   rcases (isGorensteinLocalRing_iff_exists R).mp ‹_› with ⟨n, hn⟩
-  have subsing (i : ℕ) (hi : i ≥ n) : Subsingleton (Ext.{u} (ModuleCat.of (Localization.AtPrime p)
+  have subsing (i : ℕ) (hi : i ≥ n) : Subsingleton (Ext (ModuleCat.of (Localization.AtPrime p)
     ((Localization.AtPrime p) ⧸ (maximalIdeal R).map (algebraMap R (Localization.AtPrime p))))
     (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p)) i) := by
     let _ := hn i hi
-    apply (Ext.isBaseChange'.{u, u, u, u, u, u} (Localization.AtPrime p)
+    apply (Ext.isBaseChange' (Localization.AtPrime p)
       _ _ f isb1 g (IsBaseChange.linearMap R (Localization.AtPrime p)) i).equiv.symm.subsingleton
   have lep : (maximalIdeal R).map C ≤ p := by simpa [← max] using map_comap_le
   have Ker : RingHom.ker (Polynomial.mapRingHom (residue R)) = (maximalIdeal R).map C := by
@@ -168,7 +168,7 @@ lemma Polynomial.localization_at_comap_maximal_isGorenstein_of_isGorenstein [IsN
     intro i hi
     have : 1 + (i - 1) = i := by omega
     rw [maxeq]
-    apply AddCommGrpCat.subsingleton_of_isZero <| (Ext.contravariant_sequence_exact₃'.{u} S_exact
+    apply AddCommGrpCat.subsingleton_of_isZero <| (Ext.contravariant_sequence_exact₃' S_exact
       (ModuleCat.of RXp RXp) (i - 1) i this).isZero_of_both_zeros
       (IsZero.eq_zero_of_src ?_ _) (IsZero.eq_zero_of_tgt ?_ _)
     · exact @AddCommGrpCat.isZero_of_subsingleton _ (subsing (i - 1) (Nat.le_sub_one_of_lt hi))
