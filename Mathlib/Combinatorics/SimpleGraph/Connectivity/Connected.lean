@@ -718,7 +718,7 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
   Sym2.lift ⟨fun v w => ¬ (G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
 
 theorem isBridge_iff {u v : V} :
-    G.IsBridge s(u, v) ↔ ¬(G.deleteEdges {s(u, v)}).Reachable u v := Iff.rfl
+    G.IsBridge s(u, v) ↔ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
 theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
@@ -734,8 +734,8 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
 
 theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
-    G.IsBridge s(v, w) ↔ G.Adj v w ∧ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
-  rw [isBridge_iff, and_congr_right']
+    G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
+  rw [isBridge_iff]
   rw [reachable_delete_edges_iff_exists_walk, not_exists_not]
 
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
