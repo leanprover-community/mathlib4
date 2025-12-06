@@ -6,7 +6,6 @@ Authors: Kevin Buzzard, Antoine Labelle
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.Logic.UnivLE
 
@@ -245,25 +244,7 @@ instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Proj
   · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (linearCombination R₀ id))
   · ext; simp [hsN _]
 
-variable (R) in
-/-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a projective module. -/
-theorem Projective.exists_dual_ne_zero [Projective R M] {x : M} (hx : x ≠ 0) :
-    ∃ f : Dual R M, f x ≠ 0 :=
-  have ⟨M', _, _, _, ⟨i, s, his⟩⟩ := Projective.iff_split.mp ‹Projective R M›
-  let b := Free.chooseBasis R M'
-  have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
-  have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| ext h
-  ⟨b.coord j ∘ₗ i, hj⟩
-
 end Ring
-
-variable (R) in
-/-- This is a linear map version of `SeparatingDual.exists_eq_one` in a projective module. -/
-theorem Projective.exists_dual_eq_one (K : Type*) {M : Type*} [Semifield K]
-    [AddCommMonoid M] [Module K M] [Projective K M] {x : M} (hx : x ≠ 0) :
-    ∃ f : Dual K M, f x = 1 :=
-  have ⟨f, hf⟩ := exists_dual_ne_zero K hx
-  ⟨(f x)⁻¹ • f, inv_mul_cancel₀ hf⟩
 
 section OfLiftingProperty
 
