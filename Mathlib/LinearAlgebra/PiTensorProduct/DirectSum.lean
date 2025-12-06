@@ -26,10 +26,8 @@ namespace PiTensorProduct
 
 open PiTensorProduct DirectSum TensorProduct
 
-variable (R : Type*) [CommSemiring R]
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-variable {κ : ι → Type*} [(i : ι) → DecidableEq (κ i)]
-variable (M : (i : ι) → κ i → Type*) (M' : Type*)
+variable {R ι M' : Type*} {κ : ι → Type*} {M : (i : ι) → κ i → Type*}
+variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
 variable [Π i (j : κ i), AddCommMonoid (M i j)] [AddCommMonoid M']
 variable [Π i (j : κ i), Module R (M i j)] [Module R M']
 
@@ -40,19 +38,19 @@ def ofDirectSumEquiv :
 
 @[simp]
 theorem ofDirectSumEquiv_tprod_lof (p : Π i, κ i) (x : Π i, M i (p i)) :
-    ofDirectSumEquiv R M (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) =
+    ofDirectSumEquiv (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) =
       DirectSum.lof R _ _ p (⨂ₜ[R] i, x i) :=
   ofDFinsuppEquiv_tprod_single _ _
 
 @[simp]
 theorem ofDirectSumEquiv_symm_lof_tprod (p : Π i, κ i) (x : Π i, M i (p i)) :
-    (ofDirectSumEquiv R M).symm (DirectSum.lof R _ _ p (tprod R x)) =
+    ofDirectSumEquiv.symm (DirectSum.lof R _ _ p (tprod R x)) =
       (⨂ₜ[R] i, DirectSum.lof R _ _ (p i) (x i)) :=
   ofDFinsuppEquiv_symm_single_tprod _ _
 
 @[simp]
 theorem ofDirectSumEquiv_tprod_apply (x : Π i, ⨁ j, M i j) (p : Π i, κ i) :
-    ofDirectSumEquiv R M (tprod R x) p = ⨂ₜ[R] i, x i (p i) :=
+    ofDirectSumEquiv (tprod R x) p = ⨂ₜ[R] i, x i (p i) :=
   ofDFinsuppEquiv_tprod_apply _ _
 
 end PiTensorProduct

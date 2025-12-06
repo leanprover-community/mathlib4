@@ -5,8 +5,8 @@ Authors: Daniel Morrison
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Finsupp
-public import Mathlib.LinearAlgebra.PiTensorProduct.DirectSum
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.LinearAlgebra.PiTensorProduct.DFinsupp
 public import Mathlib.RingTheory.PiTensorProduct
 
 /-!
@@ -24,10 +24,9 @@ open PiTensorProduct BigOperators TensorProduct
 
 attribute [local ext] TensorProduct.ext
 
-variable (R : Type*) [CommSemiring R]
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-variable (κ : ι → Type*) [(i : ι) → DecidableEq (κ i)]
-variable (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+variable {R ι : Type*} {κ M : ι → Type*}
+variable [CommSemiring R] [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
+variable [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, DecidableEq (M i)]
 
 /-- If `ι` is a `Fintype`, `κ i` is a family of types indexed by `ι` and `M i` is a family
 of modules indexed by `ι`, then the tensor product of the family `κ i →₀ M i` is linearly
@@ -35,44 +34,43 @@ equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 -/
 noncomputable def ofFinsuppEquiv :
   (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) → κ i) →₀ ⨂[R] i, M i :=
-  PiTensorProduct.congr (fun i ↦ finsuppLEquivDirectSum R (M i) (κ i)) ≪≫ₗ
-    (ofDirectSumEquiv R (fun (i : ι) (_ : κ i) ↦ M i)) ≪≫ₗ
-    (finsuppLEquivDirectSum R (⨂[R] i, M i) ((i : ι) → κ i)).symm
+  haveI := Classical.typeDecidableEq (⨂[R] (i : ι), M i)
+  PiTensorProduct.congr (fun _ ↦ finsuppLequivDFinsupp R) ≪≫ₗ
+    ofDFinsuppEquiv ≪≫ₗ
+    (finsuppLequivDFinsupp R).symm
 
 @[simp]
 theorem ofFinsuppEquiv_tprod_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
-    ofFinsuppEquiv R κ M (⨂ₜ[R] i, Finsupp.single (p i) (m i)) =
+    ofFinsuppEquiv (⨂ₜ[R] i, Finsupp.single (p i) (m i)) =
     Finsupp.single p (⨂ₜ[R] i, m i) := by
   simp [ofFinsuppEquiv]
 
 @[simp]
 theorem ofFinsuppEquiv_apply (f : (i : ι) → (κ i →₀ M i)) (p : (i : ι) → κ i) :
-    ofFinsuppEquiv R κ M (⨂ₜ[R] i, f i) p = ⨂ₜ[R] i, f i (p i) := by
-  simp only [ofFinsuppEquiv, finsuppLEquivDirectSum, LinearEquiv.trans_apply, congr_tprod]
-  erw [ofDirectSumEquiv_tprod_apply R (M := fun i _ => M i) _ p]
-  rfl
+    ofFinsuppEquiv (⨂ₜ[R] i, f i) p = ⨂ₜ[R] i, f i (p i) := by
+  simp [ofFinsuppEquiv]
 
 @[simp]
 theorem ofFinsuppEquiv_symm_single_tprod (p : (i : ι) → κ i) (m : (i : ι) → M i) :
-    (ofFinsuppEquiv R κ M).symm (Finsupp.single p (⨂ₜ[R] i, m i)) =
+    ofFinsuppEquiv.symm (Finsupp.single p (⨂ₜ[R] i, m i)) =
     ⨂ₜ[R] i, Finsupp.single (p i) (m i) :=
-  (LinearEquiv.symm_apply_eq _).2 (ofFinsuppEquiv_tprod_single _ _ _ _ _).symm
+  (LinearEquiv.symm_apply_eq _).2 (ofFinsuppEquiv_tprod_single _ _).symm
+
+variable [DecidableEq R]
 
 /-- A variant of `ofFinsuppEquiv` where all modules `M i` are the ground ring. -/
 noncomputable def ofFinsuppEquiv' : (⨂[R] i, (κ i →₀ R)) ≃ₗ[R] ((i : ι) → κ i) →₀ R :=
-  ofFinsuppEquiv R κ (fun _ ↦ R) ≪≫ₗ
+  ofFinsuppEquiv ≪≫ₗ
   Finsupp.lcongr (Equiv.refl ((i : ι) → κ i)) (constantBaseRingEquiv ι R).toLinearEquiv
 
 @[simp]
 theorem ofFinsuppEquiv'_apply_apply (f : (i : ι) → κ i →₀ R) (p : (i : ι) → κ i) :
-    ofFinsuppEquiv' R κ (⨂ₜ[R] i, f i) p = ∏ i, f i (p i) := by
-  simp only [ofFinsuppEquiv', LinearEquiv.trans_apply, Finsupp.lcongr_apply_apply,
-    Equiv.refl_symm, Equiv.refl_apply, ofFinsuppEquiv_apply, AlgEquiv.toLinearEquiv_apply,
-    constantBaseRingEquiv_tprod]
+    ofFinsuppEquiv' (⨂ₜ[R] i, f i) p = ∏ i, f i (p i) := by
+  simp [ofFinsuppEquiv']
 
 @[simp]
 theorem ofFinsuppEquiv'_tprod_single (p : (i : ι) → κ i) (r : ι → R) :
-    ofFinsuppEquiv' R κ (⨂ₜ[R] i, Finsupp.single (p i) (r i)) =
+    ofFinsuppEquiv' (⨂ₜ[R] i, Finsupp.single (p i) (r i)) =
     Finsupp.single p (∏ i, r i) := by
   simp [ofFinsuppEquiv']
 
