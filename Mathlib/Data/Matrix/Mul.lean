@@ -1228,6 +1228,7 @@ instance [IsStablyFiniteRing R] : IsDedekindFiniteMonoid (Matrix n n R) :=
     fun _ _ ↦ (submatrix_mul_equiv ..).symm
   MonoidHom.isDedekindFiniteMonoid_of_injective f (reindex e e).injective
 
+variable {m n R} in
 /-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
 theorem mul_eq_one_comm_of_equiv [IsStablyFiniteRing R] {A : Matrix m n R} {B : Matrix n m R}
     (e : m ≃ n) : A * B = 1 ↔ B * A = 1 :=
