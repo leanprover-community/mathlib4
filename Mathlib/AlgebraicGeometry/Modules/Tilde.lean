@@ -85,14 +85,25 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
 
 /- M_x is an O_SpecR(U)-module when x is in U -/
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
-    Module ((Spec.structureSheaf R).val.obj U) (Localizations M x):=
+    Module ((Spec.structureSheaf R).val.obj U) (Localizations M x) :=
   Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
     ((StructureSheaf.openToLocalization R U.unop x x.2).hom)
 
+instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
+    IsScalarTower R (Localization.AtPrime x.1.asIdeal) (Localizations M x) :=
+  OreLocalization.instIsScalarTower_1 ..
+
+instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop) :
+    IsScalarTower R ((Spec.structureSheaf R).val.obj U) (Localizations M x) :=
+  .of_algebraMap_smul fun r m ↦
+    IsScalarTower.algebraMap_smul (Localization.AtPrime x.1.asIdeal) r m
+
 @[simp]
-lemma sections_smul_localizations_def {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
-    (r : (Spec.structureSheaf R).val.obj U) (m : Localizations M ↑x) :
-    r • m = r.1 x • m := rfl
+lemma sections_smul_localizations_def
+    {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
+    (r : (Spec.structureSheaf R).val.obj U)
+    (m : Localizations M ↑x) :
+  r • m = (by exact r.1 x : Localization.AtPrime _) • m := rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
@@ -130,7 +141,8 @@ noncomputable def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     · simp only [Pi.smul_apply, LinearMapClass.map_smul, Opens.apply_def] at wa wr ⊢
       rw [mul_comm, ← Algebra.smul_def] at wr
       rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr, mul_smul,
-        wr, mul_comm rr, Algebra.smul_def, ← map_mul]
+        wr, mul_comm rr, Algebra.smul_def,
+        ← IsScalarTower.algebraMap_smul (R := R) (Localization.AtPrime y.1.asIdeal), map_mul]
       rfl
 
 end Tilde
@@ -188,16 +200,16 @@ theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
 
 lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
     (s : (tildeInModuleCat M).obj (op U)) (x : U) :
-    (r • s).1 x = r • (s.1 x) := rfl
+    (r • s).1 x = r • (s.1 x) :=
+  IsScalarTower.algebraMap_smul ((Spec.structureSheaf R).val.obj (op U)) r (s.1 x)
 
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
-    st = 0 := by
-  refine Limits.Concrete.colimit_no_zero_smul_divisor
-    _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.ext <| funext fun pt ↦ ?_⟩
-    _ hst
-  apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
-    (congr_fun (Subtype.ext_iff.1 hs) pt)
+    st = 0 :=
+  Limits.Concrete.colimit_no_zero_smul_divisor _ _ _
+    ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.ext <| funext fun pt ↦
+    LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
+    (by simpa [← smul_section_apply] using congr(($hs).1 pt))⟩ _ hst
 
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
@@ -213,9 +225,10 @@ noncomputable def toOpen (U : Opens (PrimeSpectrum.Top R)) :
       ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
     map_add' := fun f g => Subtype.ext <| funext fun x ↦ map_add _ _ _
     map_smul' := fun r m => by
+      apply Subtype.val_injective
+      ext x
       simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
-        RingHom.id_apply]
-      rfl }
+        RingHom.id_apply, smul_section_apply] }
 
 @[simp]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
@@ -244,7 +257,8 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
           germ_ext (C := ModuleCat R) (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
             (iWV := homOfLE inf_le_left) _ <|
-          Subtype.ext <| funext fun y ↦ smul_eq_iff_of_mem (S := y.1.1.primeCompl) r _ _ _ |>.2 rfl⟩
+          Subtype.ext <| funext fun y ↦ by
+            simp [smul_section_apply, ← smul_assoc, Localization.smul_mk]; rfl⟩
   obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
   obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
@@ -277,7 +291,7 @@ noncomputable def openToLocalization
     (Y := ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M))
   { toFun := fun s => (s.1 ⟨x, hx⟩ :)
     map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_smul' := fun _ _ => by simp [smul_section_apply] }
 
 /--
 The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization of `M` at the
@@ -374,12 +388,11 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   · exact homOfLE le_top
   · exact 𝟙 _
   refine Subtype.ext <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    added this refine hack to be able to add type hint in `change` -/
-  refine (?_ : @Eq ?ty _ _)
-  change LocalizedModule.mk f 1 = (s.1 • LocalizedModule.mk f _ : ?ty)
-  rw [LocalizedModule.smul'_mk, LocalizedModule.mk_eq]
-  exact ⟨1, by simp⟩
+  dsimp
+  simp only [CategoryTheory.Functor.map_id, hom_id, map_smul, LinearMap.id_coe, id_eq,
+    smul_section_apply, isLocallyFraction_pred, Opens.val_apply, LocalizedModule.mkLinearMap_apply,
+    const_apply, LocalizedModule.smul'_mk]
+  exact (LocalizedModule.mk_cancel ⟨s.1, _⟩ f).symm
 
 /--
 The isomorphism of `R`-modules from the stalk of `M^~` at `x` to the localization of `M` at the
