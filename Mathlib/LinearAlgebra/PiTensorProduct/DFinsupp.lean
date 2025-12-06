@@ -16,7 +16,7 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DFinsupp`s 
 
 ## Main results
 
-* `PiTensorProduct.dfinsupp`: the linear equivalence between a `PiTensorProduct` of `DFinsupp`s
+* `ofDFinsuppEquiv`: the linear equivalence between a `PiTensorProduct` of `DFinsupp`s
   and the `DFinsupp` of the `PiTensorProduct`s.
 -/
 

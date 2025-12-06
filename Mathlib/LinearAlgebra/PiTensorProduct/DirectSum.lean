@@ -16,7 +16,7 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DirectSum`s
 
 ## Main results
 
-* `PiTensorProduct.directSum`: the linear equivalence between a `PiTensorProduct` of `DirectSum`s
+* `ofDirectSumEquiv`: the linear equivalence between a `PiTensorProduct` of `DirectSum`s
   and the `DirectSum` of the `PiTensorProduct`s.
 -/
 

@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.PiTensorProduct
 /-!
 # Results on finitely supported functions.
 
-* `finsuppPiTensorProduct`, the tensor product of the family `κ i →₀ M i` indexed by `ι` is linearly
+* `ofFinsuppEquiv`, the tensor product of the family `κ i →₀ M i` indexed by `ι` is linearly
   equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 -/
 
