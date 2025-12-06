@@ -339,7 +339,7 @@ subset of `card α` vertices and a "right" subset of `card β` vertices such tha
 in the "left" subset is adjacent to every vertex in the "right" subset. -/
 theorem completeBipartiteGraph_isContained_iff :
     completeBipartiteGraph α β ⊑ G ↔
-      ∃ (left right : Finset V), #left = (card α) ∧ #right = (card β)
+      ∃ (left right : Finset V), #left = card α ∧ #right = card β
         ∧ G.IsCompleteBetween left right where
   mp := by
     refine fun ⟨f⟩ ↦ ⟨univ.map ⟨f ∘ Sum.inl, f.injective.comp Sum.inl_injective⟩,
@@ -351,7 +351,7 @@ theorem completeBipartiteGraph_isContained_iff :
     rw [← hl, ← hr]
     exact f.toHom.map_adj (by simp)
   mpr := fun ⟨left, right, card_left, card_right, h⟩ ↦
-    ⟨Copy.completeBipartiteGraph left right card_left card_right h⟩
+    ⟨.completeBipartiteGraph left right card_left card_right h⟩
 
 end Copy
 
