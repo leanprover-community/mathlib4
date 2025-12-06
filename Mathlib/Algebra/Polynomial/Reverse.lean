@@ -58,7 +58,7 @@ def revAt (N : ℕ) : Function.Embedding ℕ ℕ where
 theorem revAtFun_eq (N i : ℕ) : revAtFun N i = revAt N i :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
   revAtFun_invol
 
@@ -93,7 +93,7 @@ theorem reflect_support (N : ℕ) (f : R[X]) :
   ext1
   simp only [reflect, support_ofFinsupp, support_embDomain, Finset.mem_map, Finset.mem_image]
 
-@[simp]
+@[simp, grind =]
 theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
   simp only [reflect, coeff]
@@ -122,14 +122,8 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
-  rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
-  split_ifs with h
-  · rw [h, revAt_invol, coeff_X_pow_self]
-  · rw [notMem_support_iff.mp]
-    intro a
-    rw [← one_mul (X ^ n), ← C_1] at a
-    apply h
-    rw [← mem_support_C_mul_X_pow a, revAt_invol]
+  grind
+
 
 @[simp]
 theorem reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
