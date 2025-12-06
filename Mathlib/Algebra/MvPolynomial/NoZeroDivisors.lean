@@ -36,17 +36,40 @@ variable {p q : MvPolynomial σ R}
 
 section DegreeOf
 
-lemma degreeOf_mul (hp : p ≠ 0) (hq : q ≠ 0) :
+lemma degreeOf_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
     degreeOf n (p * q) = degreeOf n p + degreeOf n q := by
   classical
   simp_rw [degreeOf_eq_natDegree, map_mul]
   rw [Polynomial.natDegree_mul] <;> simpa [← renameEquiv_apply, EmbeddingLike.map_eq_zero_iff]
 
+lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R)
+    (h : ∀ i ∈ s, f i ≠ 0) :
+    degreeOf n (∏ i ∈ s, f i) = ∑ i ∈ s, degreeOf n (f i) := by
+  by_cases nontrivial : Nontrivial (MvPolynomial σ R)
+  · haveI : Nontrivial (MvPolynomial σ R) := nontrivial
+    classical
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert a s a_not_mem ih =>
+      simp only [Finset.mem_insert, ne_eq, forall_eq_or_imp] at h
+      obtain ⟨ha, hs⟩ := h
+      specialize ih hs
+      simp only [a_not_mem, not_false_eq_true, Finset.prod_insert, Finset.sum_insert]
+      rw [degreeOf_mul_eq ha (by rw [Finset.prod_ne_zero_iff]; exact hs), ih]
+  · push_neg at nontrivial
+    have (x : MvPolynomial σ R) : x = 0 := Subsingleton.eq_zero x
+    simp only [degreeOf_zero, Finset.sum_const_zero, this]
+
 theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ≠ 0) :
     MvPolynomial.degreeOf j (MvPolynomial.C c * p) = MvPolynomial.degreeOf j p := by
   by_cases hp : p = 0
   · simp [hp]
-  rw [degreeOf_mul (C_eq_zero.not.mpr hc) hp, degreeOf_C, zero_add]
+  rw [degreeOf_mul_eq (C_eq_zero.not.mpr hc) hp, degreeOf_C, zero_add]
+
+theorem degreeOf_pow_eq (i : σ) (p : MvPolynomial σ R) (n : ℕ) (hp : p ≠ 0) :
+    degreeOf i (p ^ n) = n * degreeOf i p := by
+  rw [Finset.pow_eq_prod_const, degreeOf_prod_eq (Finset.range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
+  simp
 
 end DegreeOf
 
@@ -57,7 +80,7 @@ lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
   classical
   apply Multiset.ext'
   intro s
-  simp_rw [Multiset.count_add, ← degreeOf_def, degreeOf_mul hp hq]
+  simp_rw [Multiset.count_add, ← degreeOf_def, degreeOf_mul_eq hp hq]
 
 end Degrees
 
