@@ -30,7 +30,7 @@ theorem isLocalizationMap [PartialOrder G] [AddLeftMono G] [Archimedean G]
     have ⟨n, le⟩ := arch (-g) (p.2.lt_of_ne <| Subtype.coe_ne_coe.mpr hp0.symm)
     ⟨⟨n • p + g, by simpa using add_le_add_left le g⟩, _, nsmul_mem hpS n, by simp⟩
 
-instance isLocalizationMap_top [LinearOrder G] [AddLeftMono G] [Archimedean G] :
+theorem isLocalizationMap_top [LinearOrder G] [AddLeftMono G] [Archimedean G] :
     (⊤ : AddSubmonoid {g : G // 0 ≤ g}).IsLocalizationMap Subtype.val := by
   cases subsingleton_or_nontrivial G
   · exact AddSubmonoid.isLocalizationMap_of_addGroup Subtype.val_injective
