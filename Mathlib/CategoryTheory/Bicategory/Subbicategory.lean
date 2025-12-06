@@ -91,10 +91,10 @@ variable {P' : ObjectProperty B}
 an induced strict pseudofunctor `FullSubbicategory P ⥤ᵖ FullSubbicategory P'`. -/
 @[simps!]
 def ιOfLE (h : P ≤ P') : StrictPseudofunctor (FullSubbicategory P) (FullSubbicategory P') :=
-  StrictPseudofunctor.mk' {
-    obj X := ⟨X.1, h _ X.2⟩
-    map f := mkHom f.hom
-    map₂ η := mkHom₂ η.hom }
+  StrictPseudofunctor.mk'
+    { obj X := ⟨X.1, h _ X.2⟩
+      map f := mkHom f.hom
+      map₂ η := mkHom₂ η.hom }
 
 end
 
