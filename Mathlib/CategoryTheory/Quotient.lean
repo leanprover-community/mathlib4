@@ -157,7 +157,6 @@ instance groupoid : Groupoid (Quotient r) where
 
 end
 
-
 /-- The functor from a category to its quotient. -/
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
