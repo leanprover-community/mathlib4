@@ -564,6 +564,38 @@ lemma Module.finrank_bot_le_finrank_of_isScalarTower (S T : Type*) [Semiring S] 
   finrank_le_finrank_of_rank_le_rank (lift_rank_bot_le_lift_rank_of_isScalarTower R S T)
     (Module.rank_lt_aleph0 _ _)
 
+omit [StrongRankCondition R]
+
+theorem not_strongRankCondition_iff_aleph0_le_rank_fin_fun [Nontrivial R] :
+    ¬ StrongRankCondition R ↔ ∃ n, ℵ₀ ≤ Module.rank R (Fin n → R) := by
+  refine not_strongRankCondition_iff_succ.trans ⟨fun ⟨n, f, inj⟩ ↦ ⟨n, ?_⟩, fun ⟨n, le⟩ ↦
+    ⟨n, le_rank_iff_exists_linearMap.mp ((nat_lt_aleph0 _).le.trans le)⟩⟩
+  have ⟨g, hg⟩ := f.exists_finsupp_nat_of_fin_fun_injective inj
+  convert (Finsupp.basisSingleOne.linearIndependent.map_injOn _ hg.injOn).cardinal_lift_le_rank
+  simp
+
+theorem not_strongRankCondition_iff_finrank_fin_fun_eq_zero [Nontrivial R] :
+    ¬ StrongRankCondition R ↔ ∃ n, finrank R (Fin (n + 1) → R) = 0 := by
+  simp_rw [not_strongRankCondition_iff_aleph0_le_rank_fin_fun, finrank, toNat_eq_zero]
+  refine ⟨fun ⟨n, le⟩ ↦ ⟨n, ?_⟩, fun ⟨n, eq⟩ ↦ ⟨n + 1, ?_⟩⟩
+  · exact .inr <| le.trans <| LinearMap.rank_le_of_injective
+      (ExtendByZero.linearMap R _) <| extend_injective (Fin.castSucc_injective n) _
+  · rw [or_iff_not_imp_left, ← Ne, ← one_le_iff_ne_zero, one_le_rank_iff] at eq
+    exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
+
+/-- If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
+Not an instance for performance reasons.
+
+If `R` is a ring, the assumption is equivalent to `R` being a left-Noetherian ring, but this
+is not necessarily the case for semirings: `ℕ` is a Noetherian semiring but `ℕ²` is not a
+Noetherian `ℕ`-module. (`ℕ` does satisfy the strong rank condition.) -/
+theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian R (Fin n → R)] :
+    StrongRankCondition R :=
+  (strongRankCondition_iff_succ R).2 fun n f hf ↦
+    have e := LinearEquiv.piCongrLeft R (fun _ ↦ R) (finSuccEquiv n) ≪≫ₗ .piOptionEquivProd _
+    not_isNoetherian_of_linearMap_prod_injective
+      (f := f ∘ₗ e.symm.toLinearMap) (hf.comp e.symm.injective) inferInstance
+
 end StrongRankCondition
 
 namespace Submodule
