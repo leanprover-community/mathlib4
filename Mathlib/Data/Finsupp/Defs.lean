@@ -169,7 +169,7 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
   mod_cast @Function.support_eq_empty_iff _ _ _ f
 
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
-  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
+  contrapose!; exact support_eq_empty
 
 theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
@@ -342,7 +342,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     grind
 
-/-- `Finsupp.mapRange` of a injective function is injective. -/
+/-- `Finsupp.mapRange` of an injective function is injective. -/
 lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
     Injective (Finsupp.mapRange (α := α) e he₀) := by
   intro a b h
