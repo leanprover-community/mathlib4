@@ -146,7 +146,7 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing 
     let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
     exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
       p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
-      ((ModuleCat.of R Mp).localizedModule_mkLinearMap p.1.primeCompl)
+      ((ModuleCat.of R Mp).localizedModuleMkLinearMap p.1.primeCompl)
       LinearMap.id)).symm.toModuleIso)
 
 lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRing R] :
@@ -169,7 +169,7 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRin
     let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
     exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
       p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
-      ((ModuleCat.of R Mp).localizedModule_mkLinearMap p.1.primeCompl)
+      ((ModuleCat.of R Mp).localizedModuleMkLinearMap p.1.primeCompl)
       LinearMap.id)).symm.toModuleIso)
 
 end GlobalDimension
