@@ -351,10 +351,10 @@ theorem prev_infix_of_mem_tail {l : List α} {a : α} (ha : a ∈ l)
     (ha₀ : a ≠ l.head (ne_nil_of_mem ha)) : [l.prev a ha, a] <:+: l := by
   have := cons_head_tail (ne_nil_of_mem ha) ▸ idxOf_cons_ne _ <| Ne.symm ha₀
   refine infix_iff_getElem?.mpr ⟨l.idxOf a - 1, by grind, fun i hi ↦ ?_⟩
-  by_cases hi₀ : i = 0
-  · subst hi₀
-    rwa [zero_add, getElem_cons_zero, prev_eq_getElem?_idxOf_pred_of_ne_head]
-  grind [getElem?_idxOf]
+  by_cases hi₁ : i = 1
+  · subst hi₁
+    grind
+  grind [prev_eq_getElem?_idxOf_pred_of_ne_head]
 
 theorem prev_eq_getElem?_idxOf_pred_of_mem {l : List α} {a : α} (ha : a ∈ l) :
     l.prev a ha = l[(l.idxOf a + (l.length - 1)) % l.length]'(Nat.mod_lt _ <| by grind) := by
