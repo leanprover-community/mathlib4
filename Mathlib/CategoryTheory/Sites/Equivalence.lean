@@ -301,6 +301,33 @@ instance : PreservesSheafification J F :=
   PreservesSheafification.transport (A := A) J
     ((equivSmallModel C).inverse.inducedTopology J) (equivSmallModel C).inverse B F
 
+variable [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J]
+
+instance : e.functor.IsDenseSubsite J K where
+  functorPushforward_mem_iff {X S} := by
+    constructor
+    · intro H
+      refine J.superset_covering ?_ (e.functor.cover_lift J K H)
+      intro Y f ⟨Z, g, h, hg, H⟩
+      apply_fun e.inverse.map at H
+      simp only [Equivalence.inv_fun_map, Functor.comp_obj, Functor.id_obj, Functor.map_comp] at H
+      simp only [← Category.assoc, cancel_mono, ← IsIso.eq_inv_comp] at H
+      exact H ▸ S.downward_closed hg _
+    · intro H
+      refine K.superset_covering ?_
+        (e.inverse.cover_lift K J (J.pullback_stable (inv <| e.unit.app X) H))
+      intro Y f (H : S _)
+      refine ⟨_, _, inv (e.counit.app Y), H, ?_⟩
+      simp only [Functor.comp_obj, Functor.id_obj, Functor.map_comp, Equivalence.fun_inv_map,
+        Functor.map_inv, Category.assoc, IsIso.inv_hom_id_assoc]
+      rw [← Category.assoc, IsIso.eq_comp_inv, ← IsIso.comp_inv_eq]
+      simp
+
+instance : e.inverse.IsDenseSubsite K J :=
+  have : e.symm.functor.IsCocontinuous K J := inferInstanceAs (e.inverse.IsCocontinuous _ _)
+  have : e.symm.inverse.IsCocontinuous J K := inferInstanceAs (e.functor.IsCocontinuous _ _)
+  inferInstanceAs (e.symm.functor.IsDenseSubsite _ _)
+
 end GrothendieckTopology
 
 end CategoryTheory
