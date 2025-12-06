@@ -124,6 +124,7 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
     -- These files are transitively imported by `Mathlib.Init`.
     |>.erase `Mathlib.Tactic.DeclarationNames
+    |>.erase `Mathlib.Lean.Linter
     |>.erase `Mathlib.Lean.Elab.Tactic.Meta
     |>.erase `Mathlib.Lean.ContextInfo
     |>.erase `Mathlib.Tactic.Lia
@@ -141,8 +142,9 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
   -- Now, it only remains to check that every module (except for the Header linter itself)
   -- imports some file in Mathlib.
   let missing := modulesWithoutMathlibImports.erase `Mathlib.Tactic.Linter.Header
-    -- This file is imported by `Mathlib/Tactic/Linter/Header.lean`.
+    -- These files are transitively imported by `Mathlib/Tactic/Linter/Header.lean`.
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
+    |>.erase `Mathlib.Lean.Linter
   if missing.size > 0 then
     IO.eprintln s!"error: the following {missing.size} module(s) do not import Mathlib.Init: \
       {missing}"
