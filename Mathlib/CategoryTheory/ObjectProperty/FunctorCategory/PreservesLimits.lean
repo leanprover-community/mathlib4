@@ -38,12 +38,12 @@ abbrev preservesLimit (F : K ⥤ J) : ObjectProperty (J ⥤ C) := PreservesLimit
 lemma preservesLimit_iff (F : K ⥤ J) (G : J ⥤ C) :
     preservesLimit F G ↔ PreservesLimit F G := Iff.rfl
 
-lemma congr_preservesLimit {F F' : K ⥤ J} (e : F ≅ F'):
+lemma congr_preservesLimit {F F' : K ⥤ J} (e : F ≅ F') :
     preservesLimit (C := C) F = preservesLimit (C := C) F' := by
   ext G
   simp_rw [preservesLimit_iff]
-  exact ⟨fun h => preservesLimit_of_iso_diagram _ e,
-    fun h => preservesLimit_of_iso_diagram _ e.symm⟩
+  exact ⟨fun h ↦ preservesLimit_of_iso_diagram _ e,
+    fun h ↦ preservesLimit_of_iso_diagram _ e.symm⟩
 
 variable {K} in
 /-- The property of objects in the functor category `J ⥤ C`
@@ -53,6 +53,13 @@ abbrev preservesColimit (F : K ⥤ J) : ObjectProperty (J ⥤ C) := PreservesCol
 @[simp]
 lemma preservesColimit_iff (F : K ⥤ J) (G : J ⥤ C) :
     preservesColimit F G ↔ PreservesColimit F G := Iff.rfl
+
+lemma congr_preservesColimit {F F' : K ⥤ J} (e : F ≅ F') :
+    preservesColimit (C := C) F = preservesColimit (C := C) F' := by
+  ext G
+  simp_rw [preservesColimit_iff]
+  exact ⟨fun h ↦ preservesColimit_of_iso_diagram _ e,
+    fun h ↦ preservesColimit_of_iso_diagram _ e.symm⟩
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves limits of shape `K`. -/
