@@ -523,12 +523,41 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
+theorem idxOf_eq_zero_iff_eq_nil_or_head_eq {l : List α} (a : α) :
+    l.idxOf a = 0 ↔ l = [] ∨ l.head? = a := by
+  cases l
+  · simp
+  · grind
+
+theorem idxOf_eq_zero_iff_head_eq {l : List α} (hl : l ≠ []) {a : α} :
+    l.idxOf a = 0 ↔ l.head hl = a := by
+  simp [hl, idxOf_eq_zero_iff_eq_nil_or_head_eq, head?_eq_some_head]
+
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by grind
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
+
+theorem IsPrefix.idxOf_le (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsPrefix.idxOf_eq_of_mem (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁) :
+    l₁.idxOf a = l₂.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  exact idxOf_append_of_mem ha |>.symm
+
+theorem IsSuffix.idxOf_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a ≤ l₂.length - l₁.length + l₁.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsSuffix.idxOf_add_length_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a + l₁.length ≤ l₁.idxOf a + l₂.length := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
 
 end IndexOf
 
