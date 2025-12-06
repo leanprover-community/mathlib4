@@ -32,7 +32,7 @@ namespace Truncated
 
 namespace Edge
 
-variable {X Y X' Y' : Truncated.{u} 2}
+variable {X Y X' Y' Z : Truncated.{u} 2}
 
 /-- The external product of edges of `2`-truncated simplicial sets. -/
 @[simps]
@@ -69,6 +69,12 @@ lemma map_whiskerLeft {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0�
     (e₂ : Edge y y') (g : Y ⟶ Y') :
     (e₁.tensor e₂).map (_ ◁ g) =
       e₁.tensor (e₂.map g) := rfl
+
+@[simp]
+lemma map_associator_hom {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂} (e₂ : Edge y y')
+    {z z' : Z _⦋0⦌₂} (e₃ : Edge z z') :
+    ((e₁.tensor e₂).tensor e₃).map (α_ _ _ _).hom = e₁.tensor (e₂.tensor e₃) :=
+  rfl
 
 @[simp]
 lemma map_fst {x x' : X _⦋0⦌₂} (e₁ : Edge x x') {y y' : Y _⦋0⦌₂}
@@ -162,11 +168,6 @@ lemma inverse_map_mkHom_homMk_id {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁
 @[simp]
 lemma inverse_map_mkHom_id_homMk (x : X _⦋0⦌₂) {y₀ y₁ : Y _⦋0⦌₂} (e : Edge y₀ y₁) :
     (inverse X Y).map (Prod.mkHom (𝟙 (mk x)) (homMk e)) = homMk ((Edge.id x).tensor e) := rfl
-
-lemma inverse_map_mkHom_homMk_homMkxxx {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁)
-    {y₀ y₁ : Y _⦋0⦌₂} (e' : Edge y₀ y₁) :
-    (inverse X Y).map (Prod.mkHom (homMk e) (homMk e')) =
-      homMk (e.tensor (.id y₀)) ≫ homMk ((Edge.id x₁).tensor e') := rfl
 
 lemma inverse_map_mkHom_homMk_homMk {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x₁)
     {y₀ y₁ : Y _⦋0⦌₂} (e' : Edge y₀ y₁) :
@@ -329,25 +330,26 @@ def associativity'Iso :
        Functor.prod (𝟭 _) (inverse Y Z) ⋙
         inverse X (Y ⊗ Z) :=
   Functor.fullyFaithfulCurry₃.preimageIso
-    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _) (fun z₀ z₁ e ↦ by
-      dsimp
-      rw [Category.comp_id, Category.id_comp, ← prod_id,
-        inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
-        CategoryTheory.Functor.map_id]
-      rfl)) (fun y₀ y₁ e ↦ by
-      ext z
-      obtain ⟨z, rfl⟩ := z.mk_surjective
-      dsimp
-      rw [Category.comp_id, Category.id_comp]
-      erw [inverse_map_mkHom_id_homMk]
-      rfl)) (fun x₀ x₁ e ↦ by
-      ext y z
-      obtain ⟨y, rfl⟩ := y.mk_surjective
-      obtain ⟨z, rfl⟩ := z.mk_surjective
-      dsimp
-      simp only [Category.comp_id, Category.id_comp]
-      erw [inverse_map_mkHom_homMk_id]
-      rfl))
+    (mkNatIso (fun x ↦ mkNatIso (fun y ↦ mkNatIso (fun z ↦ Iso.refl _)
+      (fun z₀ z₁ e ↦ by
+        dsimp
+        rw [Category.comp_id, Category.id_comp, ← prod_id,
+          inverse_map_mkHom_id_homMk, inverse_map_mkHom_id_homMk,
+          CategoryTheory.Functor.map_id]
+        dsimp [← Edge.id_tensor_id]))
+      (fun y₀ y₁ e ↦ by
+        ext z
+        obtain ⟨z, rfl⟩ := z.mk_surjective
+        dsimp
+        rw [Category.comp_id, Category.id_comp,
+          inverse_map_mkHom_homMk_id, inverse_map_mkHom_id_homMk]))
+      (fun x₀ x₁ e ↦ by
+        ext y z
+        obtain ⟨y, rfl⟩ := y.mk_surjective
+        obtain ⟨z, rfl⟩ := z.mk_surjective
+        dsimp
+        simp only [Category.comp_id, Category.id_comp, ← prod_id',
+          CategoryTheory.Functor.map_id, inverse_obj, inverse_map_mkHom_homMk_id]))
 
 variable {X Y Z} in
 lemma associativity'Iso_hom_app (xyz) :
