@@ -21,15 +21,15 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is 
 
 `condCDF` is build from the more general tools about kernel CDFs developed in the file
 `Mathlib/Probability/Kernel/Disintegration/CDFToKernel.lean`. In that file, we build a function
-`α × β → StieltjesFunction` (which is `α × β → ℝ → ℝ` with additional properties) from a function
+`α × β → StieltjesFunction ℝ` (which is `α × β → ℝ → ℝ` with additional properties) from a function
 `α × β → ℚ → ℝ`. The restriction to `ℚ` allows to prove some properties like measurability more
 easily. Here we apply that construction to the case `β = Unit` and then drop `β` to build
-`condCDF : α → StieltjesFunction`.
+`condCDF : α → StieltjesFunction ℝ`.
 
 ## Main definitions
 
-* `ProbabilityTheory.condCDF ρ : α → StieltjesFunction`: the conditional cdf of
-  `ρ : Measure (α × ℝ)`. A `StieltjesFunction` is a function `ℝ → ℝ` which is monotone and
+* `ProbabilityTheory.condCDF ρ : α → StieltjesFunction ℝ`: the conditional cdf of
+  `ρ : Measure (α × ℝ)`. A `StieltjesFunction ℝ` is a function `ℝ → ℝ` which is monotone and
   right-continuous.
 
 ## Main statements
