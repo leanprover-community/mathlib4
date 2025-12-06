@@ -11,7 +11,9 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 # The Yoneda functor for locally small categories
 
 Let `C` be a locally `w`-small category. We define the Yoneda
-embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`.
+embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`. (See the
+file `CategoryTheory.Yoneda` for the other variants `yoneda` and
+`uliftYoneda`.)
 
 -/
 
