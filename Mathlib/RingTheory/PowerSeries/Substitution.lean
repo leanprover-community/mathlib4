@@ -264,12 +264,9 @@ theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeri
   refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ (PowerSeries.hasSubst_iff.mp ha) _)
   simp only [ne_eq, Function.comp_const, le_iInf_iff]
   intro i hi
-  simp only [MvPowerSeries.weightedOrder, ne_eq, Finsupp.weight_apply, smul_eq_mul, zero_mul,
-    implies_true, mul_dite, Function.const_apply, smul_dite, nsmul_eq_mul, CharP.cast_eq_zero,
-    dite_eq_ite, ite_self, Finsupp.sum_fintype, Finset.univ_unique, PUnit.default_eq_unit,
-    Finset.sum_dite_irrel, Finset.sum_singleton]
-  split_ifs with _
-  <;> apply mul_le_mul_left (f.order_le _ (by delta PowerSeries.coeff; convert hi; aesop))
+  trans i () * MvPowerSeries.weightedOrder w a
+  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert hi; aesop)) _
+  · simp [Finsupp.weight_apply, Finsupp.sum_fintype]
 
 theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
     a.order * f.order ≤ (f.subst a).order := by
