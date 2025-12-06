@@ -69,6 +69,13 @@ def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H
   slash_mul k g gg a := by simp only [map_mul, SlashAction.slash_mul]
   add_slash _ g _ _ := SlashAction.add_slash _ (h g) _ _
 
+@[simp]
+lemma SlashAction.slash_eq_zero_iff {β G α : Type*} [Group G] [AddGroup α] [SlashAction β G α]
+    (k : β) (g : G) (a : α) : a ∣[k] g = 0 ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  apply_fun (· ∣[k] g⁻¹) at h
+  simpa [← SlashAction.slash_mul] using h
+
 namespace ModularForm
 
 noncomputable section
