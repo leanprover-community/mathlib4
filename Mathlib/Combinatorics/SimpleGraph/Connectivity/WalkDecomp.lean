@@ -5,7 +5,8 @@ Authors: Kyle Miller, Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 /-!
 # Decomposing walks
@@ -93,6 +94,12 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     · simp!
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
+
+theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
+  ⟨nil, p.dropUntil w h, by simp⟩
+
+theorem isSubwalk_dropUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
+  ⟨p.takeUntil w h, nil, by simp⟩
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
@@ -256,7 +263,7 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
-  cutsat
+  lia
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_support_takeUntil_support_takeUntil_subset :=
@@ -272,6 +279,11 @@ theorem support_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
   simp only [rotate, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
+
+@[simp]
+theorem mem_support_rotate_iff (c : G.Walk v v) (h : u ∈ c.support) :
+    w ∈ (c.rotate h).support ↔ w ∈ c.support := by
+  grind [rotate, take_spec, mem_support_append_iff]
 
 theorem rotate_darts {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).darts ~r c.darts := by
