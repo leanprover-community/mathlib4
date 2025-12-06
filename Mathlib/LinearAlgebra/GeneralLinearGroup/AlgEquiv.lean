@@ -19,7 +19,7 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 `End K V ≃ₐ[K] End K V` is surjective.
 -/
 
-open Module End Projective LinearMap LinearEquiv
+open Module LinearMap LinearEquiv
 
 variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Projective K V]
 
@@ -30,17 +30,17 @@ public theorem AlgEquiv.eq_linearEquivAlgConj (f : End K V ≃ₐ[K] End K V) :
   nontriviality V
   simp_rw [AlgEquiv.ext_iff, algConj_apply, ← comp_assoc, eq_comp_toLinearMap_symm]
   obtain ⟨u, hu⟩ := exists_ne (0 : V)
-  obtain ⟨v, huv⟩ := exists_dual_ne_zero K hu
+  obtain ⟨v, huv⟩ := Projective.exists_dual_ne_zero K hu
   obtain ⟨z, hz⟩ : ∃ z : V, ¬ f (smulRight v u) z = (0 : End K V) z := by
     rw [← not_forall, ← LinearMap.ext_iff, EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff]
     exact not_forall.mpr ⟨u, huv.isUnit.smul_eq_zero.not.mpr hu⟩
   set T := applyₗ z ∘ₗ f.toLinearMap ∘ₗ smulRightₗ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← Module.End.mul_apply, ← map_mul]
+    simp only [hT, ← End.mul_apply, ← map_mul]
     congr; ext; simp
   have surj : Function.Surjective T := fun w ↦ by
-    obtain ⟨d, hd⟩ := exists_dual_eq_one K hz
+    obtain ⟨d, hd⟩ := Projective.exists_dual_eq_one K hz
     exact ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩
   have inj : Function.Injective T := fun x y hxy ↦ by
     have h_smul : smulRightₗ v x = smulRightₗ v y := by
