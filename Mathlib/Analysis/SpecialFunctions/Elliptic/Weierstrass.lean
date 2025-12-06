@@ -143,8 +143,7 @@ def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
 
 lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
-  simp [latticeEquivProd, Finsupp.linearCombination]
-  rfl
+  simp [latticeEquivProd, Finsupp.linearCombination_apply]
 
 open Topology Filter in
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
