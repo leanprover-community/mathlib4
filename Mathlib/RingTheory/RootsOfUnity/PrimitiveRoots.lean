@@ -694,6 +694,57 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
+/-- Equivalence of coprime powers of primitive roots. -/
+def equivPrimitiveRootsOfCoprimePow {e r: ℕ} [NeZero r] (h : e.Coprime r) :
+    (primitiveRoots r R) ≃ (primitiveRoots r R) := by
+  -- Show that the exponent is positive.
+  have pos_exp : 0 ≤ ((r : ℤ) * Nat.gcdA e r + 1) * Nat.gcdA e r := by
+    cases le_or_gt 0 (e.gcdA r) with
+    | inl hc =>
+      positivity
+    | inr hc =>
+      have hr : (0 : ℤ) < r := by exact_mod_cast r.pos_of_neZero
+      apply Int.mul_nonneg_of_nonpos_of_nonpos _ (Int.le_of_lt hc)
+      rw [Int.add_le_zero_iff_le_neg', Int.neg_mul_eq_mul_neg]
+      exact one_le_mul_of_one_le_of_one_le hr (Int.neg_pos_of_neg hc)
+  have exp_cancel (a : R) (ha: a ∈ primitiveRoots r R) : a ^ (e * ((r * e.gcdA r + 1) *
+      e.gcdA r).toNat) = a := by
+    rw [mem_primitiveRoots] at ha
+    swap; exact Nat.pos_of_neZero r
+    lift a to Rˣ using ha.isUnit NeZero.out
+    rw [← Units.val_pow_eq_pow_val, Units.ext_iff.mp]
+    rw [← zpow_natCast]
+    push_cast
+    have h1 : (↑e * ((r * e.gcdA r + 1) * e.gcdA r)) = r * (e * (e.gcdA r) ^ 2) + e * e.gcdA r := by
+      ring
+    rw [Int.toNat_of_nonneg pos_exp, h1, zpow_add, zpow_mul, IsPrimitiveRoot.zpow_eq_one, one_zpow,
+      one_mul, eq_sub_of_add_eq (Nat.gcd_eq_gcd_ab e r).symm, zpow_sub, zpow_mul]
+    swap; exact IsPrimitiveRoot.coe_units_iff.mp ha
+    rw [← Nat.isCoprime_iff_coprime, Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast] at h
+    have last: ((a ^ r) ^ e.gcdB r)⁻¹ = 1 := by
+      grind [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.pow_eq_one, one_zpow, inv_one]
+    simp [h, last]
+  refine Equiv.mk (fun μ => ⟨ μ ^ e , ?_ ⟩ )
+    (fun ν => ⟨ ν.1 ^ (( r * (Nat.gcdA e r) + 1) * (Nat.gcdA e r)).toNat , ?_ ⟩ ) ?_ ?_
+  · have primr := μ.2
+    rw [mem_primitiveRoots] at *
+    refine IsPrimitiveRoot.pow_of_coprime primr e h
+    repeat exact Nat.pos_of_neZero r
+  · have primr := ν.2
+    rw[mem_primitiveRoots] at *
+    refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
+    · rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib, one_mul,
+        mul_assoc, Int.isCoprime_iff_gcd_eq_one]
+      simp only [dvd_mul_right, Int.gcd_add_left_left_of_dvd, ← Int.isCoprime_iff_gcd_eq_one]
+      exact Int.isCoprime_gcdA (Nat.Coprime.isCoprime h)
+    repeat exact Nat.pos_of_neZero r
+  · simp only [Function.LeftInverse, Subtype.forall, Subtype.mk.injEq]
+    intro a ha
+    rw [← pow_mul, exp_cancel a ha]
+  · simp only [Function.RightInverse, Function.LeftInverse, Subtype.forall, Subtype.mk.injEq]
+    intro a ha
+    rw [← pow_mul, mul_comm, exp_cancel a ha]
+
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
   Finset.disjoint_left.2 fun _ hk hl ↦
