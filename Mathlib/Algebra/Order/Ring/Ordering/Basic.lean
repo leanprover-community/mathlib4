@@ -278,6 +278,7 @@ section comap
 variable (f : A →+* B) (P : RingPreordering B)
 
 /-- The preimage of a preordering along a ring homomorphism is a preordering. -/
+@[simps toSubsemiring]
 def comap : RingPreordering A where
   __ := P.toSubsemiring.comap f
   mem_of_isSquare' := by aesop
@@ -327,6 +328,7 @@ variable {f : A →+* B} {P : RingPreordering A} (hf : Function.Surjective f)
 variable (f P) in
 /-- The image of a preordering `P` along a surjective ring homomorphism
 with kernel contained in the support of `P` is a preordering. -/
+@[simps toSubsemiring]
 def map : RingPreordering B where
   __ := P.toSubsemiring.map f
   mem_of_isSquare' hx := by
