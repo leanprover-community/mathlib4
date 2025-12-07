@@ -184,7 +184,7 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
-  ext x; simp [cons_mem_acceptsFrom (M:=M)]
+  ext x; simp [M.cons_mem_acceptsFrom]
 
 variable (M) in
 @[simp]
@@ -194,8 +194,8 @@ theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
 
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
-    (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
-  ext y; simp [append_mem_acceptsFrom M]
+    (x ++ ·) ⁻¹'  M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
+  ext y; simp [M.append_mem_acceptsFrom]
 
 variable (M) in
 @[simp]
@@ -346,7 +346,7 @@ theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
   | nil => tauto
   | cons a s ih =>
     rw [List.foldl, List.foldl,
-      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
+      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet] ]
     tauto
 
 @[simp]
@@ -414,10 +414,10 @@ open Sum
 ### Declarations about `NFA.concat`
 
 We provide a direct construction of concatenated NFAs without ε-transitions: if `M1` accepts
-language `L1` and `M2` accepts language `L2` then `M1 * M2` (`M1.concat M2`) accepts language
-`L1 * L2`. In order to construct `M1 * M2`, we must create transitions from accepting states in `M1`
+language `L1` and `M2` accepts language `L2` then `M1.concat M2` accepts language `L1 * L2`.
+In order to construct `M1.concat M2`, we must create transitions from accepting states in `M1`
 to states immediatately reachable after a single transition from states in `M2.start`. Furthermore,
-we must include states of `M1.accept` in `(M1 * M2).accept` if `[] ∈ M2.accepts`.
+we must include states of `M1.accept` in `(M1.concat M2).accept` if `[] ∈ M2.accepts`.
 
 Traditionally, concatenation is constructed for `εNFA`, not plain `NFA`, by adding ε-transitions
 from states in `M1.accept` to `M2.start`. Since `NFA` does not include ε-transitions, we must
@@ -430,48 +430,35 @@ analogue for `NFA` is different from the weighted analogue for `εNFA`.
 
 variable {σ1 σ2 : Type v} (M1 : NFA α σ1) (M2 : NFA α σ2)
 
-/-- `M1.concat M2` is `M1 * M2`, the concatenation of `M1` and `M2` achieved without ε-transitions. -/
+/-- `M1.concat M2` is the concatenation of `M1` and `M2` achieved without ε-transitions. -/
 @[simps]
 def concat : NFA α (σ1 ⊕ σ2) where
   step
-  | .inl s1, a => inl '' M1.step s1 a ∪ inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
+  | .inl s1, a =>
+    inl '' M1.step s1 a ∪ inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
   | .inr s2, a => inr '' M2.step s2 a
   start := inl '' M1.start
   accept := inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ inr '' M2.accept
 
-instance : HMul (NFA α σ1) (NFA α σ2) (NFA α (σ1 ⊕ σ2)) :=
-  ⟨concat⟩
-
-lemma hmul_eq_conat : M1 * M2 = concat M1 M2 := rfl
-
-@[simp]
-lemma hmul_concatStart : (M1 * M2).start = concatStart M1 := rfl
-
-@[simp]
-lemma hmul_concatAccept : (M1 * M2).accept = concatAccept M1 M2 := rfl
-
-@[simp]
-lemma hmul_concatStep : (M1 * M2).step = concatStep M1 M2 := rfl
-
 lemma concat_stepSet_inr {S2 : Set σ2} {a : α} :
-    (M1 * M2).stepSet (inr '' S2) a = inr '' M2.stepSet S2 a := by
+    (M1.concat M2).stepSet (inr '' S2) a = inr '' M2.stepSet S2 a := by
   ext (s1 | s2) <;> simp [stepSet]
 
 lemma concat_stepSet_inl {S1 : Set σ1} {a : α} :
-    (M1 * M2).stepSet (inl '' S1) a =
+    (M1.concat M2).stepSet (inl '' S1) a =
       inl '' M1.stepSet S1 a ∪
       inr '' ⋃ s1 ∈ S1, ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept } := by
   ext (s1 | s2) <;> simp [stepSet]
 
 lemma concat_acceptsFrom_inr {S2 : Set σ2} :
-    (M1 * M2).acceptsFrom (inr '' S2) = M2.acceptsFrom S2 := by
+    (M1.concat M2).acceptsFrom (inr '' S2) = M2.acceptsFrom S2 := by
   ext y
   induction y generalizing S2 with
   | nil => simp
   | cons a y ih => simp [←ih, concat_stepSet_inr]
 
 theorem concat_acceptsFrom {S1 : Set σ1} :
-    (M1 * M2).acceptsFrom (inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
+    (M1.concat M2).acceptsFrom (inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
   ext z
   rw [Language.mul_def, Set.mem_image2]
   induction z generalizing S1 with
@@ -488,15 +475,15 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
     · rintro (⟨x, hx, ⟨y, hy, rfl⟩⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
       · exists (a :: x)
         constructor
-        · simpa [cons_mem_acceptsFrom (M:=M1), stepSet,
+        · simpa [M1.cons_mem_acceptsFrom, stepSet,
             Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
         · tauto
       · exists []
         constructor
-        · simp only [nil_mem_acceptsFrom (M:=M1)]
+        · simp only [M1.nil_mem_acceptsFrom]
           tauto
         · exists (a :: z)
-          simp only [accepts, cons_mem_acceptsFrom (M:=M2), stepSet,
+          simp only [accepts, M2.cons_mem_acceptsFrom, stepSet,
             acceptsFrom_iUnion₂,
             Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))]
           tauto
@@ -506,18 +493,18 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
         rw [nil_mem_acceptsFrom] at hx
         obtain ⟨s1, hs1, haccept1⟩ := hx
         simp only [List.nil_append] at heq; subst y
-        simp only [accepts, cons_mem_acceptsFrom (M:=M2), stepSet,
+        simp only [accepts, M2.cons_mem_acceptsFrom, stepSet,
           acceptsFrom_iUnion₂, Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))] at hy
         tauto
       | cons b x =>
         obtain ⟨rfl, rfl⟩ := heq
-        simp only [cons_mem_acceptsFrom (M:=M1), stepSet, acceptsFrom_iUnion₂,
+        simp only [M1.cons_mem_acceptsFrom, stepSet, acceptsFrom_iUnion₂,
           Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))] at hx
         left; tauto
 
-/-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of `M1 * M2`
-(`M1.concat M2`) is exactly equal to `L = L1 * L2`. -/
-theorem concat_accepts : (M1 * M2).accepts = M1.accepts * M2.accepts := by
+/-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of
+`M1.concat M2` is exactly equal to `L = L1 * L2`. -/
+theorem concat_accepts : (M1.concat M2).accepts = M1.accepts * M2.accepts := by
   simp [concat_acceptsFrom, accepts]
 
 end concat
@@ -543,6 +530,6 @@ theorem IsRegular.mul {L1 L2 : Language α}
   (h1 : L1.IsRegular) (h2 : L2.IsRegular) : (L1 * L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
-  ⟨_, inferInstance, (M1.toNFA * M2.toNFA).toDFA, by simp [NFA.concat_accepts, hM1, hM2]⟩
+  ⟨_, inferInstance, (M1.toNFA.concat M2.toNFA).toDFA, by simp [NFA.concat_accepts, hM1, hM2]⟩
 
 end Language
