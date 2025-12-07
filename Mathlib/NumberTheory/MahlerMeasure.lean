@@ -15,9 +15,10 @@ public import Mathlib.Data.Pi.Interval
 The main purpose of this file is to prove Northcott's Theorem for the Mahler measure.
 
 ## Main results
-
+- `Polynomial.finite_card_mahlerMeasure`: Northcott's Theorem: the set of integer polynomials of
+  degree at most `n` and Mahler measure at most `B` is finite.
 - `Polynomial.card_mahlerMeasure_le_prod`: an upper bound on the number of integer polynomials
-  of degree at most `n` and Mahler measure at most `B`, also known as Northcott's Theorem.
+  of degree at most `n` and Mahler measure at most `B`.
 -/
 
 namespace Polynomial
