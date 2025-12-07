@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 /-!
 # The pretriangulated structure on the opposite category
 
-In this file, we shall construct the pretriangulated structure
+In this file, we construct the pretriangulated structure
 on the opposite category `Cᵒᵖ` of a pretriangulated category `C`.
 
 The shift on `Cᵒᵖ` was constructed in `Mathlib.CategoryTheory.Triangulated.Opposite.Basic`,
