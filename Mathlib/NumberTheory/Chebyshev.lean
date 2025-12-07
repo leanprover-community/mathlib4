@@ -134,18 +134,18 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   exact floor_le hx
 
 /-!
-# Relating `ψ` and `θ`
+## Relating `ψ` and `θ`
 
 We isolate the contributions of different prime powers to `ψ` and use this to show that `ψ` and `θ`
 are close.
 -/
 
-theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
-    ψ x = ∑ n ∈ Icc 1 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
-  unfold psi
-  simp_rw [vonMangoldt_apply, ← sum_filter]
+/-- A sum over prime powers may be written as a double sum over powers and then primes. -/
+theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
+    ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n 
+      = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
   trans ∑ ⟨k, p⟩ ∈ Icc 1 ⌊log x / log 2⌋₊ ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
-    with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, log p
+    with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f ( p ^ k)
   · symm
     apply sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k )
     · intro ⟨k, p⟩ h
@@ -202,9 +202,7 @@ theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
         apply rpow_le_rpow (by bound) _ (by bound)
         rw_mod_cast [hpk]
         exact le_floor_iff hx |>.mp hn.1.2
-    · simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, and_imp, Prod.forall]
-      intro _ _ _ _ _ _ p_prime _
-      rw [p_prime.pow_minFac (by linarith)]
+    · simp
   rw [sum_filter, sum_product]
   refine sum_congr rfl fun k hk ↦ ?_
   simp only [sum_ite, not_le, sum_const_zero, add_zero]
@@ -218,6 +216,13 @@ theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
   have := one_le_floor_iff _|>.mp <| le_trans (one_le_cast.mp h.2.one_le) h.1.2
   contrapose! this
   apply rpow_lt_one hx this (by bound)
+
+theorem psi_eq_sum_theta {x : ℝ} (hx : 0 ≤ x) :
+    ψ x = ∑ n ∈ Icc 1 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
+  simp_rw [psi, vonMangoldt_apply, ← sum_filter, sum_PrimePow_eq_sum_sum _ hx]
+  apply sum_congr rfl fun _ hk ↦ sum_congr rfl fun _ _ ↦ ?_
+  rw [Nat.Prime.pow_minFac _ (by linarith [mem_Icc.mp hk])]
+  simp_all
 
 theorem psi_eq_theta_add_sum_theta {x : ℝ} (hx : 2 ≤ x) :
     ψ x = θ x + ∑ n ∈ Icc 2 ⌊log x / log 2⌋₊, θ (x ^ ((1 : ℝ) / n)) := by
