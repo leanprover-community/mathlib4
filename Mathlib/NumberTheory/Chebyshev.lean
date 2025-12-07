@@ -142,7 +142,7 @@ are close.
 
 /-- A sum over prime powers may be written as a double sum over powers and then primes. -/
 theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x : ℝ} (hx : 0 ≤ x) :
-    ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n 
+    ∑ n ∈ Ioc 0 ⌊x⌋₊ with IsPrimePow n, f n
       = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
   trans ∑ ⟨k, p⟩ ∈ Icc 1 ⌊log x / log 2⌋₊ ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
     with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f ( p ^ k)
