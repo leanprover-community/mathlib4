@@ -17,6 +17,9 @@ In this file, we provide the instance that any integral extension of `R ⊆ S` s
 if `R` is integrally closed.
 
 -/
+
+@[expose] public section
+
 open Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
