@@ -44,7 +44,7 @@ theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : 
     grind
   have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by
     by_contra hq
-    simp only [ne_eq, not_or, not_not] at hq
+    simp at hq
     rw [hq.1] at h₁
     rw [hq.2.1] at h₂
     grind [angle_self_left]
