@@ -3,9 +3,11 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Topology.UniformSpace.OfFun
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
 # Uniform structure induced by an absolute value
@@ -23,6 +25,8 @@ follows exactly the same path.
 
 absolute value, uniform spaces
 -/
+
+@[expose] public section
 
 open Set Function Filter Uniformity
 

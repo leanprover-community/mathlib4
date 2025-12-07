@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Curry
-import Mathlib.Data.Set.Countable
+module
+
+public import Mathlib.Order.Filter.Curry
+public import Mathlib.Data.Set.Countable
 
 /-!
 # Filters with countable intersection property
@@ -27,6 +29,8 @@ preferred spelling; it has the advantage of not requiring the user to import the
 ## Tags
 filter, countable
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -206,7 +210,7 @@ instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter 
 instance CountableInterFilter.curry {α β : Type*} {l : Filter α} {m : Filter β}
     [CountableInterFilter l] [CountableInterFilter m] : CountableInterFilter (l.curry m) := ⟨by
   intro S Sct hS
-  simp_rw [mem_curry_iff, mem_sInter, eventually_countable_ball (p := fun _ _ _ => (_ ,_) ∈ _) Sct,
+  simp_rw [mem_curry_iff, mem_sInter, eventually_countable_ball (p := fun _ _ _ => (_, _) ∈ _) Sct,
     eventually_countable_ball (p := fun _ _ _ => ∀ᶠ (_ : β) in m, _)  Sct, ← mem_curry_iff]
   exact hS⟩
 
@@ -227,11 +231,7 @@ inductive CountableGenerateSets : Set α → Prop
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
-
--- The `ContableInterFilter` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : CountableInterFilter (countableGenerate g) := by
-  delta countableGenerate; infer_instance
+deriving CountableInterFilter
 
 variable {g}
 

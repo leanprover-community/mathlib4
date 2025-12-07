@@ -3,8 +3,10 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Algebra.GradedMulAction
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Algebra.GradedMulAction
 
 /-!
 # Homogeneous submodules of a graded module
@@ -26,12 +28,14 @@ the module. However, most interesting properties of homogeneous submodules do re
 being a graded ring. For technical reasons, we make `HomogeneousSubmodule` depend on a graded ring.
 For example, if the definition of a homogeneous submodule does not depend on a graded ring, the
 instance that `HomogeneousSubmodule` is a complete lattice cannot be synthesized due to
-synthesation order.
+synthesization order.
 
 ## Tags
 
 graded algebra, homogeneous
 -/
+
+@[expose] public section
 
 open SetLike DirectSum Pointwise Set
 

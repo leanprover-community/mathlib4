@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.FourFunctions
-import Mathlib.Data.Nat.Squarefree
+module
+
+public import Mathlib.Combinatorics.SetFamily.FourFunctions
+public import Mathlib.Data.Nat.Squarefree
 
 /-!
 # The Marica-Schönheim special case of Graham's conjecture
@@ -17,6 +19,8 @@ squarefree as a corollary of the Marica-Schönheim inequality.
 
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
+
+@[expose] public section
 
 open Finset
 open scoped FinsetFamily
@@ -47,7 +51,7 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
     _ < n := tsub_lt_self hn.bot_lt zero_lt_one
   · rw [Finset.card_image_of_injOn, card_Iio]
     simpa using prod_primeFactors_invOn_squarefree.2.injOn.comp hf.injOn hf'
-  · simp only [𝒜, forall_mem_diffs, forall_mem_image, mem_Ioo, mem_Iio]
+  · simp only [𝒜, forall_mem_diffs, forall_mem_image, mem_Ioo, mem_Iio, Set.MapsTo, mem_coe]
     rintro i hi j hj
     rw [← primeFactors_div_gcd (hf' _ hi) (hf' _ hj).ne_zero,
       prod_primeFactors_of_squarefree <| hf'' _ hi _]

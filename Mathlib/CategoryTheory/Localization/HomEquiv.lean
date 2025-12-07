@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.HomCongr
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -21,6 +22,8 @@ The definition `Localization.homEquiv` is obtained by applying the construction
 to the identity localizer morphism.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -52,12 +55,11 @@ noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
 lemma homMap_map (f : X ⟶ Y) :
     Φ.homMap L₁ L₂ (L₁.map f) = L₂.map (Φ.functor.map f) := by
   dsimp [homMap]
-  erw [← NatTrans.naturality_assoc]
   simp
 
 variable (X) in
 @[simp]
-lemma homMap_id  :
+lemma homMap_id :
     Φ.homMap L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj (Φ.functor.obj X)) := by
   simpa using Φ.homMap_map L₁ L₂ (𝟙 X)
 
@@ -75,12 +77,8 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
   have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
-    ext X
-    dsimp [α]
-    rw [Localization.liftNatTrans_app]
-    erw [id_comp]
-    rw [Iso.hom_inv_id_app_assoc]
-    rfl
+    ext
+    simp [α, this]
   simp [this]
 
 @[simp]

@@ -3,10 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Order.DirectedInverseSystem
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Order.DirectedInverseSystem
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of algebraic structures
@@ -40,6 +42,8 @@ but for the other algebraic structures the constructions and proofs will be easy
 the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
 equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -442,6 +446,7 @@ variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
+@[simps -isSimp]
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
@@ -451,7 +456,15 @@ def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
+@[simp]
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
+    (h : ∀ i, g₁ ∘ₗ of R ι G f i = g₂ ∘ₗ of R ι G f i) : g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
 
 end Module
 
@@ -488,6 +501,13 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
 
 end Ring
 

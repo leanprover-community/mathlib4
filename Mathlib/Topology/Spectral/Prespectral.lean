@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.Spectral.Hom
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.Spectral.Hom
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.Topology.Spectral.Hom
 In this file, we define prespectral spaces as spaces whose lattice of compact opens forms a basis.
 
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 
@@ -37,7 +41,7 @@ This is the variant with an indexed basis instead. -/
 lemma PrespectralSpace.of_isTopologicalBasis' {ι : Type*} {b : ι → Set X}
     (basis : IsTopologicalBasis (Set.range b)) (isCompact_basis : ∀ i, IsCompact (b i)) :
     PrespectralSpace X :=
-  .of_isTopologicalBasis basis (by aesop)
+  .of_isTopologicalBasis basis (by simp_all)
 
 instance (priority := low) [NoetherianSpace X] : PrespectralSpace X :=
   .of_isTopologicalBasis isTopologicalBasis_opens fun _ _ ↦ NoetherianSpace.isCompact _
@@ -135,7 +139,7 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
     exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
   · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
     convert_to ⋃ i ∈ t, f '' i.1 = U
-    · aesop
+    · simp
     · refine subset_antisymm (fun x ↦ ?_) ht
       simp_rw [Set.mem_iUnion]
       rintro ⟨i, hi, x, hx, rfl⟩

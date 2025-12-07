@@ -3,11 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Data.Set.Function
 
 /-!
 # Monotone functions over sets
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 
@@ -190,7 +194,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [Li
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
-  rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  rcases le_total (ψ x) (ψ y) with (ψxy | ψyx)
   · exact ψxy
   · have := hφ (ψts ys) (ψts xs) ψyx
     rw [φψs.eq ys, φψs.eq xs] at this

@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
+module
+
+public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 
 /-!
 # Vitali families
@@ -21,9 +23,9 @@ differentiations of measure that apply in both contexts.
 This file gives the basic definition of Vitali families. More interesting developments of this
 notion are deferred to other files:
 * constructions of specific Vitali families are provided by the Besicovitch covering theorem, in
-`Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
+  `Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
 * The main theorem on differentiation of measures along a Vitali family is proved in
-`VitaliFamily.ae_tendsto_rnDeriv`.
+  `VitaliFamily.ae_tendsto_rnDeriv`.
 
 ## Main definitions
 
@@ -44,6 +46,8 @@ Let `v` be such a Vitali family.
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996]
   (Vitali families are called Vitali relations there)
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure

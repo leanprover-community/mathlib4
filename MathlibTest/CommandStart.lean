@@ -1,7 +1,24 @@
+module
+
 import Aesop.Frontend.Attribute
-import Mathlib.Tactic.Linter.CommandStart
+import all Mathlib.Tactic.Linter.CommandStart
+import Mathlib.Tactic.Lemma
 
 set_option linter.style.commandStart true
+
+/--
+warning: missing space in the source
+
+This part of the code
+  'example: True'
+should be written as
+  'example : True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+example: True := trivial
 
 -- Constructs that are ignored by the linter, and (former) false positives.
 section noFalsePositives
@@ -82,6 +99,9 @@ Note: This linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 instance   {R} : Add R := sorry
+
+-- TODO: right now, defining a second private `Add` instance causes an error
+-- Once the fix for lean4#11385 lands in mathlib; revert this to an `Add` instance
 /--
 warning: declaration uses 'sorry'
 ---
@@ -96,7 +116,7 @@ should be written as
 Note: This linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-instance   {R} : Add R := sorry
+instance   {R} : Sub R := sorry
 
 -- Strings are ignored by the linter.
 variable (a : String := "  ")
@@ -155,6 +175,20 @@ example : True := trivial
 -- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
 def Prop.Hello := 0
 def Type.Hello := 0
+
+/--
+warning: extra space in the source
+
+This part of the code
+  'F  : True'
+should be written as
+  'F : True'
+
+
+Note: This linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+lemma F  : True := trivial
 
 namespace List
 

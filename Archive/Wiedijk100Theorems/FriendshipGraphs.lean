@@ -188,7 +188,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
   · rw [sq, ← mulVec_mulVec]
     simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
       card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
-      mul_one, sum_const, Set.toFinset_card, Algebra.id.smul_eq_mul, Nat.cast_id]
+      mul_one, sum_const, Set.toFinset_card, smul_eq_mul, Nat.cast_id]
 
 open scoped Classical in
 include hG in
@@ -245,7 +245,7 @@ include hG in
 theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : False := by
   -- get a prime factor of d - 1
   let p : ℕ := (d - 1).minFac
-  have p_dvd_d_pred := (ZMod.natCast_zmod_eq_zero_iff_dvd _ _).mpr (d - 1).minFac_dvd
+  have p_dvd_d_pred := (ZMod.natCast_eq_zero_iff _ _).mpr (d - 1).minFac_dvd
   have dpos : 1 ≤ d := by omega
   have d_cast : ↑(d - 1) = (d : ℤ) - 1 := by norm_cast
   haveI : Fact p.Prime := ⟨Nat.minFac_prime (by omega)⟩
@@ -265,7 +265,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   dsimp only [Fintype.card] at Vmod
   simp only [Matrix.trace, Matrix.diag, mul_one, nsmul_eq_mul, sum_const,
     of_apply, Ne]
-  rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_zmod_eq_zero_iff_dvd,
+  rw [Vmod, ← Nat.cast_one (R := ZMod (Nat.minFac (d - 1))), ZMod.natCast_eq_zero_iff,
     Nat.dvd_one, Nat.minFac_eq_one_iff]
   omega
 

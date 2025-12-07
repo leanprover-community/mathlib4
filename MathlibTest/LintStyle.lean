@@ -7,7 +7,7 @@ import Mathlib.Order.SetNotation
 section setOption
 set_option linter.style.setOption true
 
--- All types of options are supported: boolean, numeric and string-valued.
+-- All types of options are supported: Boolean, numeric and string-valued.
 -- On the top level, i.e. as commands.
 
 /--

@@ -3,9 +3,16 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimber multiplication and division
@@ -23,6 +30,8 @@ uses mutual induction and mimics the definition for the surreal inverse. This de
 
 - Show the nimbers are algebraically closed.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -187,10 +196,10 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
 termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_left ha)
-  mul_right_cancel_of_ne_zero ha h := by
+  mul_right_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_right ha)
 
@@ -266,14 +275,14 @@ theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
 private def List.toNimber {a : Nimber} : List a.toOrdinal.toType → Nimber
   | [] => 0
   | x :: l =>
-    let a' := ∗((Ordinal.enumIsoToType a.toOrdinal).symm x)
+    let a' := ∗(x)
     invAux a' * (1 + (a + a') * toNimber l)
 
 instance (a : Nimber.{u}) : Small.{u} (invSet a) := by
   refine @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@List.toNimber a))
   refine fun x hx ↦ invSet_recOn a ⟨[], rfl⟩ ?_ x hx
   rintro a' ha _ _ ⟨l, rfl⟩
-  use Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩ :: l
+  use .mk ⟨toOrdinal a', ha⟩ :: l
   rw [List.toNimber]
   simp
 

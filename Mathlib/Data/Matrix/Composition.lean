@@ -3,9 +3,10 @@ Copyright (c) 2024 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yunzhou Xie, Eric Wieser
 -/
+module
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Basis
 
 /-!
 # Composition of matrices
@@ -23,6 +24,8 @@ Semiring, and Algebra over a CommSemiring K.
 
 -/
 
+@[expose] public section
+
 namespace Matrix
 
 variable (I J K L R R' : Type*)
@@ -38,7 +41,7 @@ section Basic
 variable {R I J K L}
 
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
-  comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
+    comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
 @[simp]
 theorem comp_single_single
@@ -93,13 +96,13 @@ theorem comp_symm_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I × J 
   (comp I I J J R).symm_apply_eq.2 <| (comp_diagonal_diagonal fun i j => d (i, j)).symm
 
 theorem comp_transpose (M : Matrix I J (Matrix K L R)) :
-  comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl
+    comp J I K L R Mᵀ = (comp _ _ _ _ R <| M.map (·ᵀ))ᵀ := rfl
 
 theorem comp_map_transpose (M : Matrix I J (Matrix K L R)) :
-  comp I J L K R (M.map (·ᵀ)) = (comp _ _ _ _ R Mᵀ)ᵀ := rfl
+    comp I J L K R (M.map (·ᵀ)) = (comp _ _ _ _ R Mᵀ)ᵀ := rfl
 
 theorem comp_symm_transpose (M : Matrix (I × K) (J × L) R) :
-  (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
+    (comp J I L K R).symm Mᵀ = (((comp I J K L R).symm M).map (·ᵀ))ᵀ := rfl
 
 end Basic
 

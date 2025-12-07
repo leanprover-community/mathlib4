@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.AlgebraicGeometry.StructureSheaf
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
-import Mathlib.Topology.Sheaves.Functors
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.AlgebraicGeometry.StructureSheaf
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+public import Mathlib.Topology.Sheaves.Functors
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -31,6 +33,8 @@ a forgetful functor.
 The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaSpecAdjunction.lean`.
 
 -/
+
+@[expose] public section
 
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
@@ -167,10 +171,9 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     apply (StructureSheaf.to_basicOpen_epi R r).1
     simpa using h r
 
--- Porting note: `simps!` generate some garbage lemmas, so choose manually,
+-- `simps!` generates some garbage lemmas, so choose manually,
 -- if more is needed, add them here
-/-- The spectrum of a commutative ring, as a `LocallyRingedSpace`.
--/
+/-- The spectrum of a commutative ring, as a `LocallyRingedSpace`. -/
 @[simps! toSheafedSpace presheaf]
 def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with
@@ -244,8 +247,6 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
-      #adaptation_note /-- nightly-2024-04-01
-      It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply' f p a] at ha
       have : IsLocalHom (stalkIso (↑S) p).inv.hom := isLocalHom_of_isIso _
       replace ha := (isUnit_map_iff (stalkIso S p).inv.hom _).mp ha
@@ -298,28 +299,28 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1} (fun R =>
-    -- Porting note: In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
     asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 
 end SpecΓ
 
 /-- The stalk map of `Spec M⁻¹R ⟶ Spec R` is an iso for each `p : Spec M⁻¹R`. -/
-theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
+theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid R)
     (x : PrimeSpectrum (Localization M)) :
     IsIso
       ((Spec.toPresheafedSpace.map
         (CommRingCat.ofHom (algebraMap R (Localization M))).op).stalkMap x) := by
   dsimp only [Spec.toPresheafedSpace_map, Quiver.Hom.unop_op]
   rw [← localRingHom_comp_stalkIso]
-  -- Porting note: replaced `apply (config := { instances := false })`.
-  -- See https://github.com/leanprover/lean4/issues/2273
   refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
   change
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
       x.asIdeal).toRingEquiv.toCommRingCatIso.hom
   infer_instance
+
+@[deprecated (since := "2025-10-11")]
+alias Spec_map_localization_isIso := isIso_SpecMap_stakMap_localization
 
 namespace StructureSheaf
 

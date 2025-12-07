@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 
@@ -13,6 +15,8 @@ If a functor `L : C ⥤ D` is a localization functor for `W : MorphismProperty C
 is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization functor.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -77,7 +81,7 @@ end Functor
 
 namespace Localization
 
-lemma isoOfHom_unop  {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
+lemma isoOfHom_unop {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
     (isoOfHom L.op W.op w hw).unop = (isoOfHom L W w.unop hw) := by ext; rfl
 
 lemma isoOfHom_op_inv {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
