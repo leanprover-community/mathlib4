@@ -21,11 +21,9 @@ public import Mathlib.RingTheory.Unramified.Locus
   If `A` is (essentially) of finite type over `R`, then the etale locus is open.
 -/
 
-universe u
+@[expose] public section
 
 namespace Algebra
-
-section
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
     [Algebra R B] [IsScalarTower R A B]
@@ -51,12 +49,6 @@ lemma IsEtaleAt.comp
   have : FormallyEtale (Localization.AtPrime p) (Localization.AtPrime P) :=
     .localization_base p.primeCompl
   exact FormallyEtale.comp R (Localization.AtPrime p) _
-
-end
-
-section
-
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 lemma etaleLocus_eq_unramfiedLocus_inter_smoothLocus :
     etaleLocus R A = unramifiedLocus R A ∩ smoothLocus R A :=
@@ -118,7 +110,5 @@ lemma exists_etale_of_isEtaleAt [FinitePresentation R A]
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
       (show ⟨P, ‹_›⟩ ∈ etaleLocus R A by assumption) isOpen_etaleLocus
   exact ⟨r, hpr, ⟨basicOpen_subset_etaleLocus_iff.mp hr, .of_isLocalization r⟩⟩
-
-end
 
 end Algebra
