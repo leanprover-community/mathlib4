@@ -174,7 +174,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
       simp only [mem_filter, mem_Ioc] at hn
       simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, exists_prop, Prod.exists]
       obtain ⟨p, k, hp, hk, hpk⟩ := isPrimePow_def _ |>.mp hn.2
-      refine ⟨k, p, ⟨⟨⟨(by linarith), ?_⟩, ?_, hp.nat_prime⟩, ?_⟩, hpk⟩
+      refine ⟨k, p, ⟨⟨⟨hk, ?_⟩, ?_, hp.nat_prime⟩, ?_⟩, hpk⟩
       · have : log (p ^ k) = log n := by rw_mod_cast [hpk]
         rw [Real.log_pow] at this
         have log_ne : log p ≠ 0 := by
@@ -187,10 +187,9 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
         · apply log_nonneg
           trans (n : ℝ)
           · rw_mod_cast [← hpk]
-            exact one_le_pow _ _ hp.nat_prime.pos
+            linarith
           · apply le_floor_iff hx |>.mp hn.1.2
-        · rw_mod_cast [← hpk]
-          apply pow_pos <| hp.nat_prime.pos
+        · simp_all
         · apply le_floor_iff hx |>.mp hn.1.2
         · norm_cast
           apply hp.nat_prime.two_le
@@ -257,10 +256,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
   · apply sum_le_sum fun i hi ↦ ?_
     apply le_trans (theta_le_log4_mul_x (rpow_nonneg (by linarith) _))
     rw [sqrt_eq_rpow]
-    gcongr
-    · linarith
-    · simp only [mem_Icc] at hi
-      exact_mod_cast hi.1
+    gcongr <;> simp_all
   simp only [sum_const, card_Icc, reduceSubDiff, nsmul_eq_mul]
   calc
   _ ≤ (log x / log 2) * (log 4 * √x) := by
@@ -285,10 +281,7 @@ theorem psi_le {x : ℝ} (hx : 1 ≤ x) :
   _ = ψ x - θ x + θ x := by ring
   _ ≤ 2 * x.sqrt * x.log + log 4 * x := by
     gcongr
-    · apply le_trans _ <| abs_psi_sub_theta_le_sqrt_mul_log hx
-      apply le_abs.mpr
-      left
-      rfl
+    · exact le_trans (le_abs_self _) (abs_psi_sub_theta_le_sqrt_mul_log hx)
     · exact theta_le_log4_mul_x (by linarith)
   _ = _ := by ring
 
