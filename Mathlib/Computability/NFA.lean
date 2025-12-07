@@ -457,7 +457,7 @@ lemma concat_acceptsFrom_inr {S2 : Set σ2} :
   | nil => simp
   | cons a y ih => simp [←ih, concat_stepSet_inr]
 
-theorem concat_acceptsFrom {S1 : Set σ1} :
+theorem acceptsFrom_concat_inl {S1 : Set σ1} :
     (M1.concat M2).acceptsFrom (inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
   ext z
   rw [Language.mul_def, Set.mem_image2]
@@ -472,9 +472,8 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
       Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
     simp_rw [↑mem_acceptsFrom_sep]
     constructor
-    · rintro (⟨x, hx, ⟨y, hy, rfl⟩⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
-      · exists (a :: x)
-        constructor
+    · rintro (⟨x, hx, y, hy, rfl⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
+      · refine ⟨a :: x, ?_, ?_⟩
         · simpa [M1.cons_mem_acceptsFrom, stepSet,
             Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
         · tauto
@@ -504,7 +503,7 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
 
 /-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of
 `M1.concat M2` is exactly equal to `L = L1 * L2`. -/
-theorem concat_accepts : (M1.concat M2).accepts = M1.accepts * M2.accepts := by
+theorem accepts_concat : (M1.concat M2).accepts = M1.accepts * M2.accepts := by
   simp [concat_acceptsFrom, accepts]
 
 end concat
