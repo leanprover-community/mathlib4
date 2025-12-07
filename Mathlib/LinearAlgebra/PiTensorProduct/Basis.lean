@@ -40,22 +40,15 @@ noncomputable def Basis.piTensorProduct (b : Π i, Basis (κ i) R (M i)) :
       Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R).toLinearEquiv).symm
 
 @[simp]
-theorem Basis.piTensorProduct_apply (b : Π i, Basis (κ i) R (M i)) (p : Π i, κ i) :
-    Basis.piTensorProduct b p = ⨂ₜ[R] i, (b i) (p i) := by
-  simp only [piTensorProduct, LinearEquiv.trans_symm, Finsupp.lcongr_symm, Equiv.refl_symm,
-    Basis.map_apply, Finsupp.coe_basisSingleOne, LinearEquiv.trans_apply, Finsupp.lcongr_single,
-    Equiv.refl_apply, AlgEquiv.coe_symm_toLinearEquiv, map_one]
-  apply LinearEquiv.injective (PiTensorProduct.congr (fun i ↦ (b i).repr))
-  simp only [LinearEquiv.apply_symm_apply, congr_tprod, Basis.repr_self]
-  apply LinearEquiv.injective ofFinsuppEquiv
-  simp only [LinearEquiv.apply_symm_apply, ofFinsuppEquiv_tprod_single]
-  rfl
-
-@[simp]
 theorem Basis.piTensorProduct_repr_tprod_apply (b : Π i, Basis (κ i) R (M i)) (x : Π i, M i)
     (p : Π i, κ i) :
     (Basis.piTensorProduct b).repr (tprod R x) p = ∏ i : ι, (b i).repr (x i) (p i) := by
   simp [piTensorProduct]
 
+@[simp]
+theorem Basis.piTensorProduct_apply (b : Π i, Basis (κ i) R (M i)) (p : Π i, κ i) :
+    Basis.piTensorProduct b p = ⨂ₜ[R] i, (b i) (p i) := by
+  refine (Basis.piTensorProduct b).ext_elem (fun q ↦ ?_)
+  simp [Finsupp.single_apply, Fintype.prod_ite_zero, ← funext_iff]
 
 end PiTensorProduct
