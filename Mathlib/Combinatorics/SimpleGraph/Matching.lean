@@ -613,4 +613,34 @@ lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM
 
+section maximal_matching
+open scoped Cardinal
+
+/-- A subgraph `M` is a *maximum matching* if it is a matching and no other matching
+has strictly more edges. -/
+def Subgraph.IsMaxSizeMatching (M : Subgraph G) : Prop :=
+  M.IsMatching ∧ ∀ M' : Subgraph G, M'.IsMatching → #M'.edgeSet ≤ #M.edgeSet
+
+/-- A subgraph `M` is a *maximal matching* if it is a matching and it is not properly
+contained in any strictly larger matching. -/
+def Subgraph.IsMaximalMatching (M : Subgraph G) : Prop :=
+  M.IsMatching ∧ ∀ M' : Subgraph G, M'.IsMatching → M' ≥ M → M' = M
+
+lemma exists_maximal_matching : ∃ M : Subgraph (G := G), M.IsMaximalMatching := by classical
+  let ℳ := {M : G.Subgraph // M.IsMatching}
+  refine Exists.imp' (fun m : {M : G.Subgraph // M.IsMatching} => m.val) ?imp (zorn_le ?exist_max)
+  · rintro ⟨M, hM⟩ hmax
+    refine ⟨hM, fun M' hM' hge => le_antisymm ?_ hge⟩
+    simpa using hmax (b := ⟨M', hM'⟩) hge
+  · intro ch hch
+    let ι : ch → Subgraph G := fun m => m.val.val
+    have hchain : ∀ c₁ c₂ : ch, (ι c₁) ≤ (ι c₂) ∨ (ι c₂) ≤ (ι c₁) := fun c₁ c₂ =>
+      by simpa [ι] using hch.total c₁.property c₂.property
+    obtain ⟨hM, hSup, hColim⟩ := Subgraph.IsMatching.sSup_range_of_chain (fun i ↦ i.val.prop) hchain
+    use ⟨sSup (Set.range ι), hM⟩
+    intro M' hM'
+    exact hSup ⟨M', hM'⟩
+
+end maximal_matching
+
 end SimpleGraph
