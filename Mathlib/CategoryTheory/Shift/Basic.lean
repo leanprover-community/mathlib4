@@ -670,7 +670,7 @@ lemma shiftFunctorComm_hom_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C
 lemma shiftFunctorComm_inv_app_of_add_eq_zero (m n : A) (hmn : m + n = 0) (X : C) :
     (shiftFunctorComm C m n).inv.app X =
       (shiftFunctorCompIsoId C n m (by rw [add_comm, hmn])).hom.app X ≫
-      (shiftFunctorCompIsoId C m n hmn).inv.app X := by
+        (shiftFunctorCompIsoId C m n hmn).inv.app X := by
   simp [shiftFunctorCompIsoId, shiftFunctorComm_eq C m n 0 hmn]
 
 end AddCommMonoid
