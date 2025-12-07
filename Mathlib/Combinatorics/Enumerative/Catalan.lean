@@ -327,18 +327,13 @@ theorem smallSchroder_sum_range (n : ℕ) (hn : 1 < n) :
         show n - 2 + 1 = n - 1 by omega, show n - 1 - 1 = n - 2 by omega]
       simp only [largeSchroder_zero, tsub_zero, one_mul, tsub_self, mul_one]
       rw [add_assoc, ← two_mul, add_comm]
-      congr 1
-      apply sum_congr rfl
-      intro x hx
-      simp at hx
+      congr 1; apply sum_congr rfl; intro x hx; simp at hx
       rw [add_comm x 1]
     rw [sum_eq] at h_largeSchroder_succ
     have sum_eq' : ∑ i ∈ Ico 1 (n - 1), largeSchroder i * largeSchroder (n - 1 - i) =
       4 * ∑ i ∈ Ico 1 (n - 1), smallSchroder (i + 1) * smallSchroder (n - i) := by
       rw [mul_sum]
-      apply sum_congr rfl
-      intro x hx
-      simp at hx
+      apply sum_congr rfl; intro x hx; simp at hx
       rw [largeSchroder_eq_smallSchroder_succ_mul_two (by omega),
         largeSchroder_eq_smallSchroder_succ_mul_two (by omega), show n - 1 - x + 1 = n - x by omega]
       linarith
