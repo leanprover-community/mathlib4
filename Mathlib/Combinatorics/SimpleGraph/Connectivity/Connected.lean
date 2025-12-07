@@ -785,7 +785,8 @@ theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.Adj v w ∧ G.IsB
 alias isBridge_iff_adj_and_forall_cycle_not_mem := isBridge_iff_adj_and_forall_cycle_notMem
 
 theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
-    G.Adj (Sym2.ind e) ∧ G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
+    e ∈ G.edgeSet ∧ G.IsBridge e ↔
+    e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
 @[deprecated (since := "2025-05-23")]
@@ -808,7 +809,7 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
-/-- If `e` is an adge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
+/-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
 theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
     (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
   isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
