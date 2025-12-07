@@ -306,7 +306,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      cutsat
+      lia
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
@@ -321,6 +321,7 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
   | zero => simp
   | succ b_n b_ih => exact b_ih.trans (choose_le_succ (a + b_n) c)
 
+@[gcongr]
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
