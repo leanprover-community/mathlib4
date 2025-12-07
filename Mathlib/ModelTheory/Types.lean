@@ -245,7 +245,7 @@ lemma finite_inter {n : ℕ} : FiniteInter (α := T.CompleteType (Fin n)) basis 
 
 lemma basic_open_compl {n : ℕ} (T : L.Theory) (φ : L[[Fin n]].Sentence) :
                        BasicOpen (T := T) φ.not = (BasicOpen φ)ᶜ := by
-                          ext p ; exact p.not_mem_iff φ
+                          ext p; exact p.not_mem_iff φ
 
 instance (n : ℕ) : TopologicalSpace (T.CompleteType (Fin n)) := generateFrom basis
 
@@ -257,7 +257,7 @@ instance {n : ℕ} : T0Space (T.CompleteType (Fin n)) := by
   replace h := inseparable_iff_forall_isOpen.1 a
   have b : IsOpen (X := (T.CompleteType (Fin n))) (BasicOpen φ) := by
     apply TopologicalSpace.GenerateOpen.basic
-    use φ ; trivial
+    use φ; trivial
   exact h (BasicOpen φ) b
 
 instance {n : ℕ} : TotallySeparatedSpace (T.CompleteType (Fin n)) := by
@@ -265,7 +265,7 @@ instance {n : ℕ} : TotallySeparatedSpace (T.CompleteType (Fin n)) := by
   have a := isTopologicalBasis_of_subbasis_of_finiteInter
             (α := T.CompleteType (Fin n)) (s := basis) (by trivial) finite_inter
   apply IsTopologicalBasis.of_isOpen_of_subset
-  · intro _ h ; exact h.2
+  · intro _ h; exact h.2
   · exact a
   · intro s ⟨φ, b⟩
     constructor
@@ -276,7 +276,7 @@ instance {n : ℕ} : TotallySeparatedSpace (T.CompleteType (Fin n)) := by
         exact ⟨φ.not, by trivial⟩
       rw[←compl_compl s]
       exact isClosed_compl_iff.2 h
-    · apply TopologicalSpace.GenerateOpen.basic ; use φ
+    · apply TopologicalSpace.GenerateOpen.basic; use φ
 
 instance {n : ℕ} : T2Space (T.CompleteType (Fin n)) := TotallySeparatedSpace.t2Space
 
