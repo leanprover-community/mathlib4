@@ -794,5 +794,3 @@ theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) 
       rw [Submodule.mkQ_apply, ← W.mapQ_apply , ← Submodule.mkQ_apply, basisSum_inr]
 
 end
-
-
