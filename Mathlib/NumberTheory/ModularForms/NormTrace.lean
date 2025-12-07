@@ -80,7 +80,7 @@ variable (ℋ) [𝒢.IsFiniteRelIndex ℋ]
 @[simps! -fullyApplied]
 protected def ModularForm.trace [ModularFormClass F 𝒢 k] : ModularForm ℋ k where
   __ := SlashInvariantForm.trace ℋ f
-  holo' := .finset_sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f r⁻¹).holo')
+  holo' := .sum (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f r⁻¹).holo')
   bdd_at_cusps' h γ := by
     rintro rfl
     rw [SlashInvariantForm.trace, IsBoundedAtImInfty, Filter.BoundedAtFilter,
@@ -107,7 +107,7 @@ protected def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
 protected def ModularForm.norm [ℋ.HasDetPlusMinusOne] [ModularFormClass F 𝒢 k] :
     ModularForm ℋ (k * Nat.card 𝒬) where
   __ := SlashInvariantForm.norm ℋ f
-  holo' := .finset_prod (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f r⁻¹).holo')
+  holo' := .prod (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ (translate f r⁻¹).holo')
   bdd_at_cusps' h γ := by
     rintro rfl
     simp_rw [SlashInvariantForm.norm, IsBoundedAtImInfty, Filter.BoundedAtFilter]
