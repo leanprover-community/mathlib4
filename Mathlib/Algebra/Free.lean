@@ -12,6 +12,8 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.AdaptationNote
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Free constructions
 
