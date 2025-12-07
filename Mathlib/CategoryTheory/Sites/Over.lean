@@ -361,52 +361,28 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
 
 end
 
-instance {X : C} (f : Over X) :
-    f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) where
-  cover_lift {g s} hs := by
-    refine J.superset_covering ?_ hs
-    dsimp [Sieve.overEquiv]
-    simp_rw [← Over.iteratedSliceBackward_forget_forget f, Sieve.functorPushforward_comp]
-    have : Sieve.functorPushforward f.iteratedSliceBackward (Sieve.functorPullback
-        f.iteratedSliceBackward s) = s :=
-      (Sieve.essSurjFullFunctorGaloisInsertion f.iteratedSliceEquiv.inverse _).l_u_eq s
-    rw [this]
-
-instance {X : C} (f : Over X) :
-    f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) where
-  cover_lift {g s} hs := by
-    refine J.superset_covering ?_ hs
-    simp only [GrothendieckTopology.mem_over_iff, Sieve.overEquiv] at hs ⊢
-    intro Y g₀ h₁
-    suffices ∃ (Z : _) (Z_1 : Over f) (g_1 : _), s.arrows (f.iteratedSliceForward.map g_1) ∧
-        ∃ (x : Z ⟶ Z_1.left) (x_1 : _), g₀ = x_1 ≫ x.left ≫ g_1.left.left by
-      simpa [Presieve.functorPushforward]
-    let Z : Over X := Over.mk ((g₀ ≫ g.hom.left) ≫ f.hom)
-    let Z₁ : Over f := Over.mk (Over.homMk (g₀ ≫ g.hom.left) : Z ⟶ f)
-    refine ⟨Z, Z₁, Over.homMk (Over.homMk g₀), ?_, 𝟙 _, 𝟙 _, by simp⟩
-    simp only [Over.iteratedSliceForward, Over.homMk_left]
-    simp only [Sieve.functorPushforward, Over.forget_obj, Equiv.coe_fn_mk,
-      Presieve.functorPushforward, Over.forget_map, exists_and_left] at h₁
-    obtain ⟨W, g₂, hg, x, hx⟩ := h₁
-    simp_rw [hx]
-    have h : g₂.left ≫ g.hom.left = W.hom := by simpa using g₂.w
-    rw [Over.homMk_comp _ _ (by simp [Z₁, hx, h]) (by simpa)]
-    exact s.downward_closed hg _
-
-instance {X : C} (f : Over X) :
-    f.iteratedSliceEquiv.functor.IsCocontinuous ((J.over _).over _) (J.over _) :=
-  inferInstanceAs (f.iteratedSliceForward.IsCocontinuous _ _)
-
-instance {X : C} (f : Over X) :
-    f.iteratedSliceEquiv.inverse.IsCocontinuous (J.over _) ((J.over _).over _) :=
-  inferInstanceAs (f.iteratedSliceBackward.IsCocontinuous _ _)
+instance {X : C} (f : Over X) : f.iteratedSliceEquiv.inverse.IsDenseSubsite
+    (J.over _) ((J.over _).over _) where
+  functorPushforward_mem_iff := by
+    simp [GrothendieckTopology.mem_over_iff, Sieve.overEquiv,
+      ← Over.iteratedSliceBackward_forget_forget f, Sieve.functorPushforward_comp]
 
 instance {X : C} (f : Over X) :
     f.iteratedSliceForward.IsContinuous ((J.over _).over _) (J.over _) :=
   inferInstanceAs (f.iteratedSliceEquiv.functor.IsContinuous _ _)
 
 instance {X : C} (f : Over X) :
+    f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.functor.IsCocontinuous _ _)
+
+instance {X : C} (f : Over X) :
     f.iteratedSliceBackward.IsContinuous (J.over _) ((J.over _).over _) :=
   inferInstanceAs (f.iteratedSliceEquiv.inverse.IsContinuous _ _)
 
+instance {X : C} (f : Over X) :
+    f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) :=
+  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
+
 end CategoryTheory
+
+#min_imports
