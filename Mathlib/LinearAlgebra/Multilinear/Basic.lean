@@ -403,6 +403,34 @@ theorem comp_linearEquiv_eq_zero_iff (g : MultilinearMap R M₁' M₂) (f : ∀ 
   set f' := fun i => (f i : M₁ i →ₗ[R] M₁' i)
   rw [← zero_compLinearMap f', compLinearMap_inj f' fun i => (f i).surjective]
 
+
+section compMultilinear
+
+variable {β : ι → Type*}
+variable {N : (i : ι) → (b : β i) → Type*}
+variable [∀ i, ∀ b, AddCommMonoid (N i b)] [∀ i, ∀ b, Module R (N i b)]
+
+/-- Composition of multilinear maps. If `g` is multilinear, and if for every `i : ι`, we have a
+multilinear map `f i` with index type `β i`, then `m ↦ g (f₁ m_11 m_12 ...) (f₂ m_21 m_22 ...) ...`
+is multilinear with index type `(Σ i, β i)`. -/
+@[simps]
+def compMultilinearMap [DecidableEq ι] [∀ i : ι, DecidableEq (β i)]
+    (g : MultilinearMap R M₁ M₂) (f : (i : ι) → MultilinearMap R (N i) (M₁ i)) :
+    MultilinearMap R (fun j : Σ i, β i ↦ N j.fst j.snd) M₂ where
+  toFun m := g fun i ↦ f i (Sigma.curry m i)
+  map_update_add' := by
+    intro hDecEqSigma m j
+    rw [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma]
+    simp_rw [funext (fun i ↦ Sigma.apply_curry_update (fun i' ↦ f i') m j _ i), Sigma.curry_update]
+    simp
+  map_update_smul' := by
+    intro hDecEqSigma m j
+    rw [Subsingleton.elim hDecEqSigma Sigma.instDecidableEqSigma]
+    simp_rw [funext (fun i ↦ Sigma.apply_curry_update (fun i' ↦ f i') m j _ i), Sigma.curry_update]
+    simp
+
+end compMultilinear
+
 end
 
 /-- If one adds to a vector `m'` another vector `m`, but only for coordinates in a finset `t`, then
