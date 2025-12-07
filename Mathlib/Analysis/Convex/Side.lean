@@ -834,9 +834,7 @@ end Normed
 
 end AffineSubspace
 
-namespace Affine
-
-namespace Simplex
+namespace Affine.Simplex
 
 open AffineSubspace
 
