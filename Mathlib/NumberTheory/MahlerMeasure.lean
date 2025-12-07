@@ -56,10 +56,10 @@ theorem card_eq_of_natDegree_le_of_coeff_le (h_B : ∀ i, ⌈B₁ i⌉ ≤ ⌊B�
   norm_cast
   grind [Pi.card_Icc, card_Icc]
 
-open Nat NNReal in
-/-- An upper bound on the number of integer polynomials of degree at most `n` and Mahler measure at
-most `B`, also known as Northcott's Theorem. -/
-theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
+open Nat NNReal
+
+private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
+    Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ∧
     Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ≤
     ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := by
   simp_rw [← Nat.lt_add_one_iff (n := n)]
@@ -77,11 +77,11 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
     rw [toNat_of_nonneg (by positivity), ← Int.natCast_floor_eq_floor (by positivity)]
     norm_cast
   rw [← h_card]
-  gcongr with p hp
-  · apply Set.finite_of_ncard_ne_zero
-    rw [h_card, Finset.prod_ne_zero_iff]
-    grind
-  · intro hB d
+  have h_subset :
+      {p : ℤ[X] | p.natDegree < n + 1 ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ⊆
+      {p : ℤ[X] | p.natDegree < n + 1 ∧ ∀ i : Fin (n + 1), ‖p.coeff i‖ ≤ n.choose i * B} := by
+    gcongr with p hp
+    intro hB d
     rw [show ‖p.coeff d‖ = ‖(p.map (Int.castRingHom ℂ)).coeff d‖ by aesop]
     apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_choose_mul_mahlerMeasure d
     gcongr
@@ -89,6 +89,27 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
     · have : (p.map (Int.castRingHom ℂ)).natDegree = p.natDegree :=
           p.natDegree_map_eq_of_injective <| (Int.castRingHom ℂ).injective_int
       exact choose_le_choose _ <| by rw [this]; grind
+  have h_finite : {p : ℤ[X]| p.natDegree < n + 1 ∧
+      ∀ (i : Fin (n + 1)), ‖p.coeff ↑i‖ ≤ ↑(n.choose ↑i) * ↑B}.Finite := by
+    apply Set.finite_of_ncard_ne_zero
+    rw [h_card, Finset.prod_ne_zero_iff]
+    grind
+  constructor
+  · exact Set.Finite.subset h_finite h_subset
+  · gcongr
+    exact h_finite
+
+/-- Northcott's Theorem: the cardinality of the set of integer polynomials of degree at most `n` and
+Mahler measure at most `B` is finite. -/
+theorem finite_card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
+    Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} :=
+  (card_mahlerMeasure n B).1
+
+/-- An upper bound on the number of integer polynomials of degree at most `n` and Mahler measure at
+most `B`. -/
+theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
+    Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} ≤
+    ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := (card_mahlerMeasure n B).2
 
 end Northcott
 
