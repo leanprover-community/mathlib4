@@ -344,11 +344,11 @@ theorem primeCounting_sub_theta_div_log_isBigO :
   rw [primeCounting_eq hx]
   simp
 
-theorem eventually_primeCounting_le {c : ℝ} (hc : log 4 < c) :
-    ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ c * x / log x := by
-  have := integral_theta_div_log_sq_isLittleO.bound (by linarith :  0 < c - log 4)
+theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
+    ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ (log 4 + ε) * x / log x := by
+  have := integral_theta_div_log_sq_isLittleO.bound εpos
   filter_upwards [eventually_ge_atTop 2, this] with x hx hx2
-  rw [primeCounting_eq hx, (by ring : c * x / log x = log 4 * x / log x + (c - log 4) * x / log x)]
+  rw [primeCounting_eq hx, mul_div_assoc, add_mul, ← mul_div_assoc, ← mul_div_assoc]
   grw [theta_le_log4_mul_x (by linarith)]
   · gcongr
     rw [norm_eq_abs, norm_eq_abs] at hx2
