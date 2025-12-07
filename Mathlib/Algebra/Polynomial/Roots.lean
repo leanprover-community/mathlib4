@@ -278,6 +278,12 @@ theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).
     rintro ⟨a, -, h⟩
     exact X_sub_C_ne_zero a h
 
+theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
+  simp
+
+theorem ofMultiset_injective : Function.Injective (ofMultiset (R := R)) :=
+  (fun x y h => (roots_ofMultiset x) ▸ (roots_ofMultiset y) ▸ (congrArg roots h))
+
 theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
     Multiset.card (roots ((X : R[X]) ^ n - C a)) ≤ n :=
   WithBot.coe_le_coe.1 <|
