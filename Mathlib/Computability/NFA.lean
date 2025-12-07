@@ -477,11 +477,10 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
         · simpa [M1.cons_mem_acceptsFrom, stepSet,
             Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
         · tauto
-      · refine ⟨[], ?_, ?_⟩
+      · refine ⟨[], ?_, a :: z, ?_⟩
         · simp only [M1.nil_mem_acceptsFrom]
           tauto
-        · exists (a :: z)
-          simp only [accepts, M2.cons_mem_acceptsFrom, stepSet,
+        · simp only [accepts, M2.cons_mem_acceptsFrom, stepSet,
             acceptsFrom_iUnion₂,
             Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))]
           tauto
