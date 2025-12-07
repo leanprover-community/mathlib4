@@ -228,12 +228,12 @@ variable (A B)
 /-- We can construct an instance of invertible A if A has a left inverse. -/
 @[deprecated invertibleOfLeftInverse (since := "2025-12-06")]
 protected def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
-  invertibleOfMulEqOneRight _ _ h
+  invertibleOfLeftInverse _ _ h
 
 /-- We can construct an instance of invertible A if A has a right inverse. -/
 @[deprecated invertibleOfRightInverse (since := "2025-12-06")]
 protected def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
-  invertibleOfMulEqOne _ _ h
+  invertibleOfRightInverse _ _ h
 
 variable {A B}
 
