@@ -31,6 +31,8 @@ monoids, expressing that an element is a primitive root of unity.
   a primitive `k`-th root of unity is equal to the `k`-th roots of unity.
 * `IsPrimitiveRoot.card_primitiveRoots`: if an integral domain
   has a primitive `k`-th root of unity, then it has `φ k` of them.
+* `equiv_primitiveRoots_of_coprimePow`: An equivalence between `primitiveRoots k R` that takes
+  each root to a coprime power `e`.
 
 ## Implementation details
 
