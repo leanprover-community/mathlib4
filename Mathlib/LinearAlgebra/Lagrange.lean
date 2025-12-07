@@ -456,7 +456,7 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
 open scoped Classical in
 theorem interpolate_poly_eq_poly
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    (interpolate s v) (fun (i : ι) => P.eval (v i)) = P := by
+    interpolate s v (fun i => P.eval (v i)) = P := by
   let t : Finset F := s.image v
   have ht : t.card = s.card := Finset.card_image_iff.mpr hvs
   apply eq_of_degrees_lt_of_eval_finset_eq t
