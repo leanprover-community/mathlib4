@@ -119,15 +119,13 @@ lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
     exact h_acyc H hH (p.transfer H hpH) <| Walk.IsCycle.transfer hp hpH
 
 /-- Every acyclic subgraph `H ≤ G` is contained in a maximal such subgraph. -/
-theorem exists_maximal_acyclic_extension {H : SimpleGraph V} (hHG : H ≤ G) (hH : H.IsAcyclic) :
+theorem exists_maximal_isAcyclic_of_le_isAcyclic
+    {H : SimpleGraph V} (hHG : H ≤ G) (hH : H.IsAcyclic) :
     ∃ H' : SimpleGraph V, H ≤ H' ∧ Maximal (fun H => H ≤ G ∧ H.IsAcyclic) H' := by
-  let s : Set (SimpleGraph V) := {H : SimpleGraph V | H ≤ G ∧ H.IsAcyclic}
-  apply zorn_le_nonempty₀ s
-  · intro c hcs hc y hy
-    refine ⟨sSup c, ⟨?_, ?_⟩, CompleteLattice.le_sSup c⟩
-    · grind [sSup_le_iff]
-    · exact sSup_acyclic_of_directed_of_acyclic c (by grind) hc.directedOn
-  · grind
+  refine zorn_le_nonempty₀ {H | H ≤ G ∧ H.IsAcyclic} (fun c hcs hc y hy ↦ ?_) _ ⟨hHG, hH⟩
+  refine ⟨sSup c, ⟨?_, ?_⟩, CompleteLattice.le_sSup c⟩
+  · grind [sSup_le_iff]
+  · exact isAcyclic_sSup_of_isAcyclic_directedOn c (by grind) hc.directedOn
 
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
