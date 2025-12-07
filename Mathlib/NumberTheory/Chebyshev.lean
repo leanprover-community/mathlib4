@@ -148,11 +148,10 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
     with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f ( p ^ k)
   · symm
     apply sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k )
-    · simp +contextual only [mem_filter, mem_product, mem_Icc, mem_Ioc, and_imp, Prod.forall,
+    · simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, and_imp, Prod.forall,
         Nat.le_floor_iff, hx, rpow_nonneg, Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, cast_pow]
       exact fun k p hk0 hk hp0 hpx hp hpxk ↦ ⟨⟨pow_pos hp0 _, (pow_le_pow_left₀ (cast_nonneg _)
         hpxk _).trans_eq (rpow_inv_natCast_pow hx hk0.ne')⟩, p, k, hp.prime, hk0, rfl⟩
-      · exact isPrimePow_def _ |>.mpr ⟨p, k, h.1.2.2.prime, zero_lt_of_ne_zero k_ne, rfl⟩
     · intro ⟨k1, p1⟩ h1 ⟨k2, p2⟩ h2
       simp only [Prod.mk.injEq]
       simp only [mem_filter, mem_product, mem_Icc, mem_Ioc] at *
