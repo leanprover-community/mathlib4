@@ -403,6 +403,13 @@ lemma shift_distinguished (n : ℤ) :
     | zero => exact H_neg_one
     | succ n hn => exact H_add hn H_neg_one rfl
 
+omit hT in
+lemma shift_distinguished_iff (n : ℤ) :
+    (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C :=
+  ⟨fun hT ↦ isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
+      ((shiftEquiv (Triangle C) n).unitIso.app T),
+    fun hT ↦ shift_distinguished T hT n⟩
+
 end Triangle
 
 instance : SplitEpiCategory C where
