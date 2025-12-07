@@ -141,6 +141,29 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     simp only [Set.disjoint_left] at this
     simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
 
+lemma IsMatching.sSup_range_of_chain {α : Type*} {ι : α → SimpleGraph.Subgraph G}
+    (hmatch : ∀ i, (ι i).IsMatching) (hch : ∀ i j, (ι i) ≤ (ι j) ∨ (ι j) ≤ (ι i)) :
+    (sSup (Set.range ι)).IsMatching ∧ (∀ i, ι i ≤ sSup (Set.range ι)) ∧
+    (∀ M', M'.IsMatching → (∀ i, ι i ≤ M') → sSup (Set.range ι) ≤ M') := by
+  and_intros
+  · rintro v ⟨V', ⟨⟨M', hun⟩, hvV'⟩⟩
+    obtain ⟨V'', ⟨⟨i, hi⟩, _⟩, hv⟩ := hun ▸ hvV'
+    have : v ∈ M'.verts := by simp_all
+    obtain ⟨w, hvw, hw⟩ := hmatch i (hi ▸ this)
+    simp
+    refine ⟨w, And.intro ⟨i, hvw⟩ ?_⟩
+    rintro w' ⟨j, hvw'⟩
+    rcases hch i j with h | h
+    · have : (ι j).Adj v w := h.2 hvw
+      exact (hmatch j).eq_of_adj_left hvw' this
+    · have : (ι i).Adj v w' := h.2 hvw'
+      exact (hmatch i).eq_of_adj_left this hvw
+  · intro i; exact le_sSup_of_le ⟨i, rfl⟩ le_rfl
+  · intro M' _ hle
+    refine sSup_le ?_
+    rintro H ⟨i', hi'⟩
+    exact hi' ▸ hle i'
+
 lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
   intro _ hv
   rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
