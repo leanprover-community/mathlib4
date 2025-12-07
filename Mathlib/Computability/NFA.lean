@@ -512,8 +512,7 @@ theorem mem_acceptsFrom_impl_mem_acceptsFrom_kstar {S : Set σ} {x : List α} :
   | nil =>
     simp only [nil_mem_acceptsFrom]
     rintro ⟨s, hs, haccept⟩
-    exists (some s)
-    apply (fun x ↦ And.intro x (by simpa))
+    refine ⟨some s, ?_, by simpa⟩
     rw [kstarStates, Function.Injective.mem_set_image (Option.some_injective _)]
     tauto
   | cons a x ih =>
@@ -669,20 +668,16 @@ theorem Forall_mem_accepts_impl_mem_flatten_kstar_acceptsFrom {s : σ} {zs : Lis
     simp_rw [mem_evalFrom_iff_exists (S:=M.kstar.evalFrom {some s} z)]
     simp_rw [mem_evalFrom_iff_exists (S:=M.kstar.evalFrom (some '' M.start) z)]
     rcases (ih hq hzs) with ⟨t, ht, hflatten⟩
-    exists t
-    apply (fun x ↦ And.intro ht x)
-    right
+    refine ⟨t, ht, .inr ?_⟩
     rcases hflatten with (hflatten | hflatten)
-    · exists q
-      constructor
+    · refine ⟨q, ?_, ?_⟩
       · apply mem_evalFrom_impl_mem_evalFrom_kstar
         assumption
       · assumption
     · rw [mem_evalFrom_iff_exists] at hflatten
       simp_rw [Set.mem_image] at hflatten
       obtain ⟨so', ⟨s', hs', rfl⟩, hflatten⟩ := hflatten
-      exists s'
-      constructor
+      refine ⟨s', ?_, ?_⟩
       · apply mem_evalFrom_impl_mem_evalFrom_kstar_start hznil hq hz hs'
       · assumption
 
@@ -762,12 +757,10 @@ theorem mem_acceptsFrom_kstar_impl_exists_flatten {S : Set σ} {x : List α} :
     simp only [acceptsFrom_union, Language.add_def, mem_union (x:=y)] at hy
     rcases hy with (hy | hy)
     · exists (a :: y), zs
-    · exists [a],  (y :: zs)
+    · exists [a], (y :: zs)
       simp only [acceptsFrom_iUnion, Set.mem_iUnion₂, exists_prop, mem_inter_iff] at hy
       obtain ⟨s, hs, s', ⟨hstep, hs'⟩, hy⟩ := hy
-      constructor
-      any_goals rfl
-      constructor
+      refine ⟨rfl, ?_, ?_⟩
       · suffices Membership.mem (γ:=Language α) (⋃ i ∈ S, M.acceptsFrom (M.step i a)) [] by
          simpa [stepSet]
         rw [Set.mem_iUnion₂]
@@ -776,6 +769,7 @@ theorem mem_acceptsFrom_kstar_impl_exists_flatten {S : Set σ} {x : List α} :
         tauto
 
 /-- If the language of `M` is `L`, then the language of `M.kstar` is `L∗`. -/
+@[simp]
 theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
   ext x
   rw [accepts_eq_acceptsFrom_start, kstar_start]
@@ -824,6 +818,6 @@ theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRe
 /-- Regular languages are closed under Kleene star. -/
 theorem IsRegular.kstar {L : Language α} (h : L.IsRegular) : L∗.IsRegular :=
   have ⟨σ, _, M, hM⟩ := h
-  ⟨_, inferInstance, M.toNFA.kstar.toDFA, by simp [hM, NFA.accepts_kstar]⟩
+  ⟨_, inferInstance, M.toNFA.kstar.toDFA, by simp [hM]⟩
 
 end Language
