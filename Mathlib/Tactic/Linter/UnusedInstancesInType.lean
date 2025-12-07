@@ -85,81 +85,85 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}\nwhich \
   {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
 
--- TODO: surely this exists somewhere, under some name?
-def _root_.Lean.Expr.isSorryAx : Expr → Bool
-  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
-  | _ => false
-
--- -- Could cache visited exprs like `collectFVars` does; could try inverting and using `forEachWhere`
--- def collectFVarsOutsideOfProofs (e : Expr) :
---     StateRefT FVarIdSet MetaM Unit :=
---   withTraceNode `debug (fun _ => pure m!"collecting {e}") do
---   Meta.forEachExpr' e fun subExpr => do
---     trace[debug] "{← do
---       let mut msg := m!"{subExpr}"
---       if !subExpr.hasFVar then msg :=  m!"{msg}{crossEmoji}no fvars"
---       else if subExpr.isSorry then msg :=  m!"{msg}{crossEmoji}is sorry"
---       else if (← Meta.isProof subExpr) then msg :=  m!"{msg}{crossEmoji}is proof"
---       else if subExpr.isFVar then msg :=  m!"{msg}{checkEmoji}is fvar! ({subExpr.fvarId!.1})"
---       pure msg}"
---     -- If it doesn't have an fvar, or it's a sorry, or it's a proof, don't go further.
---     pure (subExpr.hasFVar && !subExpr.isSorryAx) <&&> notM (Meta.isProof subExpr) <&&> do
---       -- Every free variable is a free variable of concern, by design
---       let .fvar fvarId := subExpr | return true
---       -- Note many fvarIds will be encountered. Not much need to
---       modifyThe FVarIdSet (·.insert fvarId)
---       return false
-
--- Could cache visited exprs like `collectFVars` does; could try inverting and using `forEachWhere`
-def collectFVarsOutsideOfProofs (e : Expr) :
-    StateRefT FVarIdSet MetaM Unit :=
+/- Perf note: could cache visited exprs like `collectFVars` does; could try inverting and using
+`forEachWhere`. -/
+/-- Collects free variables that do not appear in proofs. Ignores `sorry`s (and their types). -/
+def collectFVarsOutsideOfProofs (e : Expr) : StateRefT FVarIdSet MetaM Unit :=
   Meta.forEachExpr' e fun subExpr =>
-    -- If it doesn't have an fvar, or it's a sorry, or it's a proof, don't go further.
+    -- If it doesn't have an fvar, or it's a sorry, or it's a proof, don't descend further.
     pure (subExpr.hasFVar && !subExpr.isSorryAx) <&&> notM (Meta.isProof subExpr) <&&> do
-      -- Every free variable is a free variable of concern, by design
-      let .fvar fvarId := subExpr | return true
-      -- Note many fvarIds will be encountered. Not much need to
+      let .fvar fvarId := subExpr | return true -- not an fvar, but there's one below us; continue
       modifyThe FVarIdSet (·.insert fvarId)
+      /- Note: return value is irrelevant here (`false` says "do not visit the children of this
+      fvar", but fvars are atomic anyway) -/
       return false
 
+/-- The information we keep track of when encountering a binder for an instance of concern. -/
 structure InstanceOfConcern where
+  /-- The `FVarId` of the instance of concern within the current telescope. -/
   fvarId : FVarId
+  /-- The index of the binder that this instance came from. The first binder is `0`, and we do not
+  increment this index when seeing through `let`s. -/
   idx : Nat
 
-def go (p : Expr → Bool)
-    (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
-    StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
-  let e := e.cleanupAnnotations
-  -- trace[debug] "looking at {e}"
-  if h : e.isForall then
-    collectFVarsOutsideOfProofs (e.forallDomain h)
-    if e.binderInfo.isInstImplicit && p (e.forallDomain h) then
-      forallBoundedTelescope e (some 1) fun fvar e => do
-        -- trace[debug] "after tele: {e}"
-        let fvarId := fvar[0]!.fvarId! -- wish we didn't have to do this...
-        go p e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
-    else
-      -- Could do better by taking a forallTelescope-like approach and going as many foralls forward as possible before instantiating, instantiating the bindong domains separately along the way.
-      let e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
-      -- trace[debug] "after instantiation: {e}"
-      go p e (currentBinderIdx + 1) currentFVars
-  else
-    match e with
-    | .letE _ type value body _ =>
-      collectFVarsOutsideOfProofs type
-      collectFVarsOutsideOfProofs value
-      let e := body.instantiate1 (← mkSorry type false)
-      -- do not increment binder index
-      go p e currentBinderIdx currentFVars
-    | e =>
-      -- trace[debug] "end: {e}"
-      collectFVarsOutsideOfProofs e
-      return currentFVars
+/--
+Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
+`(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
+- the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
+-  `p Aᵢ` is `true`
+- The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ` outside of proofs.
 
-def _root_.Lean.Expr.collectUnusedInstanceIdxsOf (p : Expr → Bool) (e : Expr) : MetaM (Array Nat) := do
-  let (instances, fvarIdSet) ← go p e 0 #[] |>.run {}
+This is like `getForallUnusedInstanceBinderIdxsWhere`, but ignores dependence that arises from
+within proof terms.
+
+The indices start at 0, and do not count `let`s.
+-/
+def _root_.Lean.Expr.collectUnusedInstanceIdxsOf (p : Expr → Bool) (e : Expr) :
+    MetaM (Array Nat) := do
+  let (instances, fvarIdSet) ← go e 0 #[] |>.run {}
   return instances.filterMap fun i => if fvarIdSet.contains i.fvarId then none else some i.idx
+where
+  /-- Enter foralls recursively, creating a telescope for binders which are instances of concern
+  and instantiating all other bvars with `sorry`. The only free variables therefore arise from
+  instances of concern which we want to track the usage of.
 
+  Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
+  returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
+  used or not. -/
+  go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
+      StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
+    let e := e.cleanupAnnotations
+    if h : e.isForall then
+      -- Collect instances in the forall domain.
+      collectFVarsOutsideOfProofs (e.forallDomain h)
+      if e.binderInfo.isInstImplicit && p (e.forallDomain h) then
+        -- This forall introduces an instance of concern; make it an fvar.
+        forallBoundedTelescope e (some 1) fun fvar e => do
+          let fvarId := fvar[0]!.fvarId!
+          go e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
+      else
+        -- This forall does not introduce a binder of concern. Instantiate the bvar with `sorry`.
+        /- Perf note: Could possibly do better by taking a `forallTelescope`-like approach and going
+        as many foralls forward as possible before instantiating, and instantiating the binding
+        domains separately along the way. Not worth the complexity yet. -/
+        let e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
+        go e (currentBinderIdx + 1) currentFVars
+    else
+      match e with
+      | .letE _ type value body _ =>
+        -- See through `let`s
+        collectFVarsOutsideOfProofs type
+        collectFVarsOutsideOfProofs value
+        /- Note: we could instantiate with `value`, but we risk redoing work if it has an fvar.
+        The `let` value may in the future be necessary for certain purposes; if so, we could
+        instantiate with `← mkExpectedTypeHint type value` plus metadata, and check for (and avoid)
+        this metadata in `collectFVarsOutsideOfProofs`. -/
+        let e := body.instantiate1 (← mkSorry type false)
+        -- do not increment binder index, to retain compatibility with `forallTelescope` and friends
+        go e currentBinderIdx currentFVars
+      | e =>
+        collectFVarsOutsideOfProofs e
+        return currentFVars
 /--
 Gathers instance hypotheses in the type of `decl` that are unused in the remainder of the type and
 whose types satisfy `p`. (Does not consider the body of the declaration.) Collects them into an
@@ -173,8 +177,8 @@ have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
-    CommandElabM Unit := liftTermElabM do
-  -- if decl.type.hasInstanceBinderOf p then liftTermElabM do
+    CommandElabM Unit := do
+  if decl.type.hasInstanceBinderOf p then liftTermElabM do
     let unusedInstances ← decl.type.collectUnusedInstanceIdxsOf p
     if let some maxIdx := unusedInstances.back? then
       unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
@@ -230,8 +234,8 @@ def _root_.Lean.Syntax.logUnusedInstancesInDeclsWhere (_cmd : Syntax)
     (declFilter : ConstantVal → Bool := fun _ => true) :
     CommandElabM Unit := do
   for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter declFilter
-    for thm in thms do
+    for thm in t.getTheorems (← getEnv) do
+      unless declFilter thm do continue
       thm.onUnusedInstancesInTypeWhere instanceTypeFilter
         fun unusedParams =>
           -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
@@ -294,21 +298,20 @@ def unusedDecidableInType : Linter where
         | _ => pure () -- invalid option value, should be caught during elaboration
     unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
-    -- let opts := (← getOptions).setNat `profiler.threshold 50 |>.setBool `profiler true
-    -- profileitM Exception "uiit" opts do
-    cmd.logUnusedInstancesInDeclsWhere
-      /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
-      on decidable instances without using them in the type. -/
-      (declFilter := (!(`Decidable).isPrefixOf ·.name))
-      isDecidableVariant
-      fun _ thm unusedParams => do
-        logLint linter.unusedDecidableInType (← getRef) m!"\
-          {thm.name.unusedInstancesMsg unusedParams}\n\n\
-          Consider removing \
-          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
-          and using `classical` in the proof instead. \
-          For terms, consider using `open scoped Classical in` at the term level (not the command \
-          level)."
+    profileitM Exception "unusedInst" (← getOptions) do
+      cmd.logUnusedInstancesInDeclsWhere
+        /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
+        on decidable instances without using them in the type. -/
+        (declFilter := (!(`Decidable).isPrefixOf ·.name))
+        isDecidableVariant
+        fun _ thm unusedParams => do
+          logLint linter.unusedDecidableInType (← getRef) m!"\
+            {thm.name.unusedInstancesMsg unusedParams}\n\n\
+            Consider removing \
+            {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
+            and using `classical` in the proof instead. \
+            For terms, consider using `open scoped Classical in` at the term level (not the
+            command level)."
 
 initialize addLinter unusedDecidableInType
 
