@@ -258,7 +258,7 @@ lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
   classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
 /--
-Note that `degreeOf_mul_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
+Note that `degreeOf_prod_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
 -/
 theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
     degreeOf i (f * g) ≤ degreeOf i f + degreeOf i g := by
