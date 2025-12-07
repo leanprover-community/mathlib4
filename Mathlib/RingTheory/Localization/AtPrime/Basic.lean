@@ -364,7 +364,7 @@ theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := b
   convert congr_arg (Ideal.map (algebraMap R Rₚ)) (comap_maximalIdeal Rₚ p).symm
   rw [map_comap p.primeCompl]
 
-theorem map_isMaximal : (p.map (algebraMap R Rₚ)).IsMaximal := by
+instance isMaximal_map : (p.map (algebraMap R Rₚ)).IsMaximal := by
   rw [map_eq_maximalIdeal]
   exact maximalIdeal.isMaximal Rₚ
 
@@ -457,7 +457,7 @@ variable (S Sₚ) in
 The isomorphism `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
 the complement of `p`
 -/
-noncomputable def equivQuotMapMaximalIdeal [p.IsMaximal] :
+noncomputable def equivQuotientMapMaximalIdeal [p.IsMaximal] :
     S ⧸ pS ≃+* Sₚ ⧸ pSₚ := by
   haveI h : pSₚ = Ideal.map (algebraMap S Sₚ) pS := by
     rw [← map_eq_maximalIdeal p, Ideal.map_map,
@@ -493,7 +493,7 @@ noncomputable def equivQuotMapMaximalIdeal [p.IsMaximal] :
       hβ, ← map_sub, add_smul, one_smul, add_comm x, add_sub_cancel_right]
 
 @[deprecated (since := "2025-07-31")] alias
-    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotMapMaximalIdeal
+    _root_.quotMapEquivQuotMapMaximalIdealOfIsLocalization := equivQuotientMapMaximalIdeal
 
 end isomorphisms
 
