@@ -22,7 +22,7 @@ This file constructs continuous `ℚ`-algebra` isomorphisms between the two, as 
 
 Isomorphisms are provided in both directions, allowing traversal of the following diagram:
 ```
-HeighrtOneSpectrum (𝓞 ℚ) <--------->  Nat.Primes
+HeightOneSpectrum (𝓞 ℚ) <--------->  Nat.Primes
           |                               |
           |                               |
           v                               v
