@@ -697,7 +697,7 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
 /-- Equivalence of coprime powers of primitive roots. -/
-def equivPrimitiveRootsOfCoprimePow {e r: ℕ} [NeZero r] (h : e.Coprime r) :
+def equivPrimitiveRootsOfCoprimePow {e r : ℕ} [NeZero r] (h : e.Coprime r) :
     (primitiveRoots r R) ≃ (primitiveRoots r R) := by
   -- Show that the exponent is positive.
   have pos_exp : 0 ≤ ((r : ℤ) * Nat.gcdA e r + 1) * Nat.gcdA e r := by
@@ -709,7 +709,7 @@ def equivPrimitiveRootsOfCoprimePow {e r: ℕ} [NeZero r] (h : e.Coprime r) :
       apply Int.mul_nonneg_of_nonpos_of_nonpos _ (Int.le_of_lt hc)
       rw [Int.add_le_zero_iff_le_neg', Int.neg_mul_eq_mul_neg]
       exact one_le_mul_of_one_le_of_one_le hr (Int.neg_pos_of_neg hc)
-  have exp_cancel (a : R) (ha: a ∈ primitiveRoots r R) : a ^ (e * ((r * e.gcdA r + 1) *
+  have exp_cancel (a : R) (ha : a ∈ primitiveRoots r R) : a ^ (e * ((r * e.gcdA r + 1) *
       e.gcdA r).toNat) = a := by
     rw [mem_primitiveRoots] at ha
     swap; exact Nat.pos_of_neZero r
@@ -735,8 +735,8 @@ def equivPrimitiveRootsOfCoprimePow {e r: ℕ} [NeZero r] (h : e.Coprime r) :
   · have primr := ν.2
     rw[mem_primitiveRoots] at *
     refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
-    · rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib, one_mul,
-        mul_assoc, Int.isCoprime_iff_gcd_eq_one]
+    · rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib,
+        one_mul, mul_assoc, Int.isCoprime_iff_gcd_eq_one]
       simp only [dvd_mul_right, Int.gcd_add_left_left_of_dvd, ← Int.isCoprime_iff_gcd_eq_one]
       exact Int.isCoprime_gcdA (Nat.Coprime.isCoprime h)
     repeat exact Nat.pos_of_neZero r
