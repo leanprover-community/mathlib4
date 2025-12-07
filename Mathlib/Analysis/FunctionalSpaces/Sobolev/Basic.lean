@@ -212,6 +212,28 @@ namespace HasWTaylorSeriesUpTo
 
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
 
+-- TODO: add a version assuming just finite-dimensionality of `E`, without the hypothesis on `μ`
+/-- If `f` has weak Taylor series `g` on `Ω`, then `f` is locally integrable on `Ω`.
+This version assumes `p ≥ 1` and `μ` having locally finite measure on `Ω`. -/
+lemma locallyIntegrableOn_zero [IsLocallyFiniteMeasure (μ.restrict Ω)]
+    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hp : 1 ≤ p) :
+    LocallyIntegrableOn (g · 0) Ω μ :=
+  locallyIntegrableOn_of_locallyIntegrable_restrict <|
+    (hf.memLp _ (by positivity)).locallyIntegrable hp
+
+lemma locallyIntegrableOn_succ [IsLocallyFiniteMeasure (μ.restrict Ω)]
+    (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (n : ℕ) (hn : (n + 1) < k) (hp : 1 ≤ p) :
+    LocallyIntegrableOn (fun x ↦ g x (n + 1)) Ω μ := by
+  have aux : n < k := by
+    apply lt_trans ?_ hn
+    norm_cast
+    omega
+  have := hf.hasWeakDeriv n aux
+  have := this.locallyIntegrable -- almost what we want:
+  sorry
+  -- need to translate some currying
+  -- have (x) : (fun x ↦ g x (n + 1)) = (fun x ↦ (g x n.succ).curryLeft) := sorry
+
 lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
     (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
     (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
@@ -260,6 +282,8 @@ namespace MemSobolev
 
 variable {c : ℝ}
 
+section monotonicity
+
 lemma memLp (hf : MemSobolev Ω f 0 p μ) : MemLp f p (μ.restrict Ω) := by
   obtain ⟨g, hg⟩ := hf
   have aux' : (fun x ↦ (g x 0).curry0) = f := by
@@ -290,39 +314,43 @@ lemma memSobolev_zero :
       sorry -- similar to the step above: hf should imply this...
   }
 
-lemma add (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
+-- TODO: add proofs of monotonicity in `k` and (if `Ω` is bounded) in `p`
+
+end monotonicity
+
+lemma add [IsLocallyFiniteMeasure (μ.restrict Ω)] -- TODO: does on `μ` also suffice?
+    (hp : 1 ≤ p) (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  refine ⟨g + g', hg.add hg' ?_  sorry⟩ -- second sorry should be similar
-  intro m hm
-  cases m with
-  | zero =>
-    have := hg.zero_eq
-    have := hg.memLp 0 hm.le
-    sorry -- issue: we know g x 0 is in L^p on Ω, but want LocallyIntegrableOn (i.e. L¹_loc)
-    -- If Ω is open, L¹_loc follows from L¹; if Ω is bounded, being L¹ follows from being L^p
-  | succ n =>
-    have aux : n < k := by
-      push_cast at hm
-      apply lt_trans ?_ hm
-      norm_cast
-      omega
-    have := hg.hasWeakDeriv n aux
-    have := this.locallyIntegrable -- almost what we want:
-    sorry
-    -- need to translate some currying
-    -- have (x) : (fun x ↦ g x (n + 1)) = (fun x ↦ (g x n.succ).curryLeft) := sorry
+  refine ⟨g + g', hg.add hg' ?_ ?_⟩
+  · intro m hm
+    cases m with
+    | zero => exact hg.locallyIntegrableOn_zero hp
+    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp
+  · intro m hm
+    cases m with
+    | zero => exact hg'.locallyIntegrableOn_zero hp
+    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
   obtain ⟨g, hg⟩ := hf
   exact ⟨-g, hg.neg⟩
 
-lemma sub (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
+lemma sub [IsLocallyFiniteMeasure (μ.restrict Ω)] -- TODO: does on `μ` also suffice?
+    (hp : 1 ≤ p) (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f - f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
-  exact ⟨g - g', hg.sub hg' sorry sorry⟩ -- TODO: think if these are required!
+  refine ⟨g - g', hg.sub hg' ?_ ?_⟩
+  · intro m hm
+    cases m with
+    | zero => exact hg.locallyIntegrableOn_zero hp
+    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp
+  · intro m hm
+    cases m with
+    | zero => exact hg'.locallyIntegrableOn_zero hp
+    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp
 
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
   obtain ⟨g, hg⟩ := hf
