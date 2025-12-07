@@ -43,7 +43,7 @@ variable
 
 /-- The assertion that the short complex `S : ShortComplex C` is exact. -/
 structure Exact : Prop where
-  /-- the condition that there exists an homology data whose `left.H` field is zero -/
+  /-- the condition that there exists a homology data whose `left.H` field is zero -/
   condition : ∃ (h : S.HomologyData), IsZero h.left.H
 
 variable {S}
@@ -400,6 +400,16 @@ lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
   rw [exact_iff_mono_fromOpcycles]
   refine (MorphismProperty.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by cat_disch)
+
+variable {S} in
+lemma Exact.mono_cokernelDesc [S.HasHomology] [HasCokernel S.f] (hS : S.Exact) :
+    Mono (Limits.cokernel.desc S.f S.g S.zero) :=
+  S.exact_iff_mono_cokernel_desc.1 hS
+
+variable {S} in
+lemma Exact.epi_kernelLift [S.HasHomology] [HasKernel S.g] (hS : S.Exact) :
+    Epi (Limits.kernel.lift S.g S.f S.zero) :=
+  S.exact_iff_epi_kernel_lift.1 hS
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
