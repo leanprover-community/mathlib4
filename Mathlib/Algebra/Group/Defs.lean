@@ -748,7 +748,7 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-@[to_additive] instance (priority := high) (M) [CommMonoid M] :
+@[to_additive] instance (priority := low) (M) [CommMonoid M] :
     IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
