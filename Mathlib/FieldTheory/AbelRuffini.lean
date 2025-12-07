@@ -145,8 +145,8 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   have hn' : 0 < n := pos_iff_ne_zero.mpr hn
   have hn'' : (X ^ n - C a).degree ≠ 0 :=
     ne_of_eq_of_ne (degree_X_pow_sub_C hn' a) (mt WithBot.coe_eq_coe.mp hn)
-  obtain ⟨b, hb⟩ := exists_root_of_splits i h hn''
-  rw [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at hb
+  obtain ⟨b, hb⟩ := Splits.exists_eval_eq_zero h (by rwa [degree_map])
+  rw [eval_map, eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at hb
   have hb' : b ≠ 0 := by
     intro hb'
     rw [hb', zero_pow hn] at hb
@@ -156,7 +156,8 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   rw [leadingCoeff_map, leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
   have hs' : Multiset.card s = n := by
     rw [← h.natDegree_eq_card_roots, natDegree_map, natDegree_X_pow_sub_C]
-  apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
+  rw [splits_iff_exists_multiset, leadingCoeff_map]
+  use (s.map fun c ↦ c / b)
   rw [leadingCoeff_X_pow_sub_one hn', map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
     rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
