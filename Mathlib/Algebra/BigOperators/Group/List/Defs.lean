@@ -105,17 +105,3 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 end Monoid
 
 end List
-
--- This can also be moved to `Algebra/BigOperators/Group/Vector/Defs.lean`.
-namespace List.Vector
-
-section Mul
-
-variable [Mul M] [One M] {n} {v : List.Vector M n} {a : M}
-
-@[to_additive (attr := simp)]
-theorem prod_cons : (cons a v).toList.prod = a * v.toList.prod := rfl -- or `List.prod_cons`
-
-end Mul
-
-end List.Vector
