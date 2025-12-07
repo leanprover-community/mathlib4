@@ -219,6 +219,7 @@ variable {T : L.Theory}
 /-- Defines the basis for the Type Space and defines a function from formulas to basic
   clopen sets -/
 def basis {n : ℕ} : Set (Set (T.CompleteType (Fin n))) := {U | ∃ φ, U = {s | φ ∈ s}}
+/-- Clopen balls indexed by the sentence φ -/
 def BasicOpen {n : ℕ} (φ : L[[Fin n]].Sentence) : Set (T.CompleteType (Fin n)) :=
   {s : T.CompleteType (Fin n) | φ ∈ s}
 
