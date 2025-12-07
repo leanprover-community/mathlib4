@@ -483,69 +483,79 @@ lemma Set.EqOn.ae_eq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure
   h.ae_eq <| (Measure.restrict_apply_eq_zero' hs).mpr (by simp)
 
 variable (Ω F) in
-def Sobolev (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) :
+def Sobolev (k : ℕ∞) {p : ℝ≥0∞} (hp : 1 ≤ p) (μ : Measure E := by volume_tac)
+    [IsLocallyFiniteMeasure (μ.restrict Ω)] :
     AddSubgroup (E →ₘ[μ.restrict Ω] F) where
   carrier := {f | MemSobolev Ω f k p μ}
   zero_mem' := by simp [memSobolev_congr_ae AEEqFun.coeFn_zero, MemSobolev.zero]
-  add_mem' {f g} hf hg := by simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g), hf.add hg]
+  add_mem' {f g} hf hg := by simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g), hf.add hp hg]
   neg_mem' {f} hf := by simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f), hf.neg]
 
 open AEEqFun
 
 variable {g : E → F}
 namespace MemSobolev
+
+variable [IsLocallyFiniteMeasure (μ.restrict Ω)]
+
 -- AEStronglyMeasurable f (μ.restrict Ω)
 /-- make an element of Lp from a function verifying `MemSobolev` -/
-def toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) : Sobolev Ω F k p μ :=
+def toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) (hp : 1 ≤ p) : Sobolev Ω F k hp μ :=
   ⟨AEEqFun.mk f hf.aestronglyMeasurable, hf.ae_eq (coeFn_mk f hf.aestronglyMeasurable).symm⟩
 
-theorem toSobolev_val {f : E → F} (hf : MemSobolev Ω f k p μ) :
-    (toSobolev f hf).1 = AEEqFun.mk f hf.aestronglyMeasurable := rfl
+theorem toSobolev_val {f : E → F} (hf : MemSobolev Ω f k p μ) (hp : 1 ≤ p) :
+    (toSobolev f hf hp).1 = AEEqFun.mk f hf.aestronglyMeasurable := rfl
 
-theorem coeFn_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) :
-    hf.toSobolev f =ᵐ[μ.restrict Ω] f :=
+theorem coeFn_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) (hp : 1 ≤ p) :
+    hf.toSobolev f hp =ᵐ[μ.restrict Ω] f :=
   coeFn_mk f hf.aestronglyMeasurable
 
 theorem toSobolev_congr (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ)
-    (hfg : f =ᵐ[μ.restrict Ω] g) : hf.toSobolev f = hg.toSobolev g := by simp [toSobolev, hfg]
+    (hfg : f =ᵐ[μ.restrict Ω] g) (hp : 1 ≤ p) : hf.toSobolev f hp = hg.toSobolev g hp := by
+  simp [toSobolev, hfg]
 
 @[simp]
-theorem toSobolev_eq_toSobolev_iff (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
-    hf.toSobolev f = hg.toSobolev g ↔ f =ᵐ[μ.restrict Ω] g := by simp [toSobolev]
+theorem toSobolev_eq_toSobolev_iff
+    (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) (hp : 1 ≤ p) :
+    hf.toSobolev f hp = hg.toSobolev g hp ↔ f =ᵐ[μ.restrict Ω] g := by simp [toSobolev]
 
 @[simp]
-theorem toSobolev_zero (h : MemSobolev Ω (0 : E → F) k p μ) : h.toSobolev 0 = 0 :=
+theorem toSobolev_zero (h : MemSobolev Ω (0 : E → F) k p μ) (hp : 1 ≤ p) : h.toSobolev 0 hp = 0 :=
   rfl
 
-theorem toSobolev_add {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
-    (hf.add hg).toSobolev (f + g) = hf.toSobolev f + hg.toSobolev g :=
+theorem toSobolev_add {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ)
+    (hp : 1 ≤ p) :
+    (hf.add hp hg).toSobolev (f + g) hp = hf.toSobolev f hp + hg.toSobolev g hp :=
   rfl
 
-theorem toSobolev_neg {f : E → F} (hf : MemSobolev Ω f k p μ) :
-    hf.neg.toSobolev (-f) = -hf.toSobolev f :=
+theorem toSobolev_neg {f : E → F} (hf : MemSobolev Ω f k p μ) (hp : 1 ≤ p) :
+    hf.neg.toSobolev (-f) hp = -hf.toSobolev f hp :=
   rfl
 
-theorem toSobolev_sub {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
-    (hf.sub hg).toSobolev (f - g) = hf.toSobolev f - hg.toSobolev g :=
+theorem toSobolev_sub {f g : E → F}
+    (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) (hp : 1 ≤ p) :
+    (hf.sub hp hg).toSobolev (f - g) hp = hf.toSobolev f hp - hg.toSobolev g hp :=
   rfl
 
 end MemSobolev
 
 namespace Sobolev
 
-instance instCoeFun : CoeFun (Sobolev Ω F k p μ) (fun _ => E → F) :=
+variable [IsLocallyFiniteMeasure (μ.restrict Ω)]
+
+instance instCoeFun (hp : 1 ≤ p) : CoeFun (Sobolev Ω F k hp μ) (fun _ => E → F) :=
   ⟨fun f => ((f : E →ₘ[μ.restrict Ω] F) : E → F)⟩
 
 @[ext high]
-theorem ext {f g : Sobolev Ω F k p μ} (h : f =ᵐ[μ.restrict Ω] g) : f = g := by
+theorem ext (hp : 1 ≤ p) {f g : Sobolev Ω F k hp μ} (h : f =ᵐ[μ.restrict Ω] g) : f = g := by
   ext
   exact h
 
-theorem mem_sobolev_iff_memSobolev {f : E →ₘ[μ.restrict Ω] F} :
-    f ∈ Sobolev Ω F k p μ ↔ MemSobolev Ω f k p μ := by rfl
+theorem mem_sobolev_iff_memSobolev {f : E →ₘ[μ.restrict Ω] F} (hp : 1 ≤ p) :
+    f ∈ Sobolev Ω F k hp μ ↔ MemSobolev Ω f k p μ := by rfl
 
-theorem mem_sobolev_iff_sobolevNorm_lt_top {f : E →ₘ[μ.restrict Ω] F} :
-    f ∈ Sobolev Ω F k p μ ↔ sobolevNorm Ω f k p μ < ∞ := by
+theorem mem_sobolev_iff_sobolevNorm_lt_top {f : E →ₘ[μ.restrict Ω] F} (hp : 1 ≤ p) :
+    f ∈ Sobolev Ω F k hp μ ↔ sobolevNorm Ω f k p μ < ∞ := by
   rw [mem_sobolev_iff_memSobolev, sobolevNorm_lt_top_iff]
 
 -- protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ q) :
@@ -553,21 +563,21 @@ theorem mem_sobolev_iff_sobolevNorm_lt_top {f : E →ₘ[μ.restrict Ω] F} :
 --   fun f hf => (MemSobolev.mono_exponent ⟨f.aestronglyMeasurable, hf⟩ hpq).2
 
 @[simp]
-theorem coeFn_mk {f : E →ₘ[μ.restrict Ω] F} (hf : MemSobolev Ω f k p μ) :
-    ((⟨f, hf⟩ : Sobolev Ω F k p μ) : E → F) = f := by
+theorem coeFn_mk {f : E →ₘ[μ.restrict Ω] F} (hf : MemSobolev Ω f k p μ) (hp : 1 ≤ p) :
+    ((⟨f, hf⟩ : Sobolev Ω F k hp μ) : E → F) = f := by
   rfl
 
 -- not @[simp] because dsimp can prove this
-theorem coe_mk {f : E →ₘ[μ.restrict Ω] F} (hf : MemSobolev Ω f k p μ) :
-    ((⟨f, hf⟩ : Sobolev Ω F k p μ) : E →ₘ[μ.restrict Ω] F) = f := by
+theorem coe_mk {f : E →ₘ[μ.restrict Ω] F} (hf : MemSobolev Ω f k p μ) (hp : 1 ≤ p) :
+    ((⟨f, hf⟩ : Sobolev Ω F k hp μ) : E →ₘ[μ.restrict Ω] F) = f := by
   rfl
 
 @[simp]
-theorem toSobolev_coeFn (f : Sobolev Ω F k p μ) (hf : MemSobolev Ω f k p μ) :
-    hf.toSobolev f = f := by
+theorem toSobolev_coeFn (hp : 1 ≤ p) (f : Sobolev Ω F k hp μ) (hf : MemSobolev Ω f k p μ) :
+    hf.toSobolev f hp = f := by
   simp [MemSobolev.toSobolev]
 
-theorem memSobolev (f : Sobolev Ω F k p μ) : MemSobolev Ω f k p μ :=
+theorem memSobolev (hp : 1 ≤ p) (f : Sobolev Ω F k hp μ) : MemSobolev Ω f k p μ :=
   f.prop
 
 -- theorem sobolevNorm_lt_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ < ∞ :=
