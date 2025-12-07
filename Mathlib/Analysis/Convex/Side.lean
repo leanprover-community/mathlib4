@@ -990,6 +990,4 @@ lemma wOppSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw�
       · rw [sign_pos h', eq_comm, neg_eq_iff_eq_neg, sign_eq_neg_one_iff] at h
         exact (s.sOppSide_affineSpan_faceOpposite_of_pos_of_neg hw₁ hw₂ h' h).wOppSide
 
-end Simplex
-
-end Affine
+end Affine.Simplex
