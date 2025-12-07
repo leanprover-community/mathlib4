@@ -468,7 +468,7 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
     tauto
   | cons a z ih =>
     simp only [cons_mem_acceptsFrom, ↓stepSet_concat_inl, stepSet, acceptsFrom_union,
-      acceptsFrom_concat_inr, acceptsFrom_iUnion, add_eq_sup, max, SemilatticeSup.sup,
+      acceptsFrom_concat_inr, acceptsFrom_iUnion, Language.add_def,
       Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
     simp_rw [↑mem_acceptsFrom_sep]
     constructor
