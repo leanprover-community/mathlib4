@@ -232,7 +232,7 @@ theorem largeSchroder_two : largeSchroder 2 = 6 := by
 
 theorem largeSchroder_succ (n : ℕ) :
   largeSchroder (n + 1) = largeSchroder n +
-    ∑ i ∈ Iic n, largeSchroder i * largeSchroder (n - i) := by
+    ∑ i \le n, largeSchroder i * largeSchroder (n - i) := by
   rw [largeSchroder, Iic_eq_Icc]
   simp only [succ_eq_add_one, Nat.bot_eq_zero, Nat.add_left_cancel_iff]
   rw [Icc_eq_range', ← Ico_eq_range']
