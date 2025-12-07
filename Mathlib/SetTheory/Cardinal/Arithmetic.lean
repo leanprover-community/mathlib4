@@ -479,32 +479,26 @@ theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤
 lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
   rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
-  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
+  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> simpa
   · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
     apply lt_of_le_of_lt
-    · exact (add_le_add_iff_of_lt_aleph0 (lt_trans hμ hfin_.right)).mpr <| le_of_lt hκ
+    · exact (add_le_add_iff_of_lt_aleph0 (lt_trans hμ hfin_.right)).mpr <| hκ.le
     · simpa [add_comm] using (add_lt_add_iff_of_lt_aleph0 hfin_.left).mpr hμ
 
-lemma mul_lt_mul_of_nat {n : ℕ} {κ μ : Cardinal} {hneq0 : n ≠ 0} (hlt : κ < μ) : n * κ < n * μ := by
-  cases n with
-  | zero => contradiction
-  | succ m =>
+lemma mul_nat_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun κ : Cardinal ↦ n * κ := by
+  match n, hneq0 with
+  | 1, _ => simpa using strictMono_id
+  | (n + 1) + 1, hneq1 =>
+    intro κ μ hlt
     push_cast
-    rw [add_mul, one_mul, add_mul, one_mul]
-    cases m with
-    | zero => simpa
-    | succ k =>
-      have : ↑(k + 1) * κ < ↑(k + 1) * μ := mul_lt_mul_of_nat (hneq0 := Nat.succ_ne_zero k) hlt
-      exact Cardinal.add_lt_add_of_lt_of_lt this hlt
-
+    conv_lhs => rw [add_mul, one_mul]
+    conv_rhs => rw [add_mul, one_mul]
+    refine Cardinal.add_lt_add_of_lt_of_lt ?_  hlt
+    simpa using (mul_nat_strictMono (Nat.succ_ne_zero n) hlt)
 
 lemma mul_left_cancel_of_nat {n : ℕ} {κ μ : Cardinal} {hneq0 : n ≠ 0} (h : n * κ = n * μ) :
-  κ = μ := by
-  contrapose! h
-  rcases lt_or_gt_of_ne h with hlt | hlt <;>
-  have := ne_of_lt <| mul_lt_mul_of_nat (hneq0 := hneq0) hlt <;>
-  symm_saturate <;>
-  assumption
+    κ = μ := by
+  exact (mul_nat_strictMono hneq0).injective h
 
 end aleph
 
