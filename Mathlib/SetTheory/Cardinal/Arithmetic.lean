@@ -479,7 +479,7 @@ theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤
 lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
   rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
-  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> simpa
+  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
   · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
     apply lt_of_le_of_lt
     · exact (add_le_add_iff_of_lt_aleph0 (lt_trans hμ hfin_.right)).mpr <| hκ.le
