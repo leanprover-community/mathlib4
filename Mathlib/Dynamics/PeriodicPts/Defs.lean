@@ -508,6 +508,8 @@ end Function
 
 namespace Function
 
+section Prod
+
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 @[simp]
@@ -527,6 +529,28 @@ theorem isPeriodicPt_prodMap (x : α × β) :
 theorem IsPeriodicPt.prodMap (ha : IsPeriodicPt f n a) (hb : IsPeriodicPt g n b) :
     IsPeriodicPt (Prod.map f g) n (a, b) :=
   (isPeriodicPt_prodMap _).mpr ⟨ha, hb⟩
+
+end Prod
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i} {n : ℕ}
+
+@[simp]
+theorem isFixedPt_piMap : IsFixedPt (Pi.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) :=
+  funext_iff
+
+theorem IsFixedPt.piMap (h : ∀ i, IsFixedPt (f i) (x i)) : IsFixedPt (Pi.map f) x :=
+  isFixedPt_piMap.mpr h
+
+@[simp]
+theorem isPeriodicPt_piMap : IsPeriodicPt (Pi.map f) n x ↔ ∀ i, IsPeriodicPt (f i) n (x i) := by
+  simp [IsPeriodicPt]
+
+theorem IsPeriodicPt.piMap (h : ∀ i, IsPeriodicPt (f i) n (x i)) : IsPeriodicPt (Pi.map f) n x :=
+  isPeriodicPt_piMap.mpr h
+
+end Pi
 
 end Function
 
