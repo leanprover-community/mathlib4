@@ -54,13 +54,6 @@ lemma etaleLocus_eq_unramfiedLocus_inter_smoothLocus :
     etaleLocus R A = unramifiedLocus R A ∩ smoothLocus R A :=
   Set.ext fun _ ↦ FormallyEtale.iff_formallyUnramified_and_formallySmooth
 
-lemma formallyEtale_iff' (R A : Type u)
-    [CommRing R] [CommRing A] [Algebra R A] :
-    FormallyEtale R A ↔ Subsingleton Ω[A⁄R] ∧ Subsingleton (H1Cotangent R A) := by
-  rw [Algebra.FormallyEtale.iff_formallyUnramified_and_formallySmooth, formallyUnramified_iff,
-    formallySmooth_iff]
-  exact ⟨by aesop, fun ⟨_, _⟩ ↦ ⟨inferInstance, inferInstance, inferInstance⟩⟩
-
 lemma etaleLocus_eq_compl_support :
     etaleLocus R A = (Module.support A Ω[A⁄R])ᶜ ∩ (Module.support A (H1Cotangent R A))ᶜ := by
   ext p
