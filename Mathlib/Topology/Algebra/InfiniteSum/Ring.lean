@@ -328,9 +328,7 @@ theorem tprod_one_add_ordered [ContinuousAdd α]
   convert ha.comp tendsto_finset_Iic_atTop_atTop using 2 with s
   refine sum_congr rfl (fun i hi ↦ ?_)
   congr
-  ext j
-  suffices j < i → j ≤ s by simpa
-  exact fun hj ↦ (hj.trans_le (by simpa using hi)).le
+  grind
 
 omit [CommSemiring α] in
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
