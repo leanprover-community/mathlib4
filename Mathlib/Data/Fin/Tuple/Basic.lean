@@ -965,6 +965,7 @@ theorem insertNth_succ_cons {α} (i : Fin (n + 1)) (x a : α) (p : Fin n → α)
   cases j using Fin.succAboveCases i.succ with
   | x => simp
   | p j =>
+    simp only [insertNth_apply_succAbove]
     cases j using Fin.cases <;> simp
 
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
