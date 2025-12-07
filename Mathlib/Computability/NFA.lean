@@ -430,37 +430,14 @@ analogue for `NFA` is different from the weighted analogue for `εNFA`.
 
 variable {σ1 σ2 : Type v} (M1 : NFA α σ1) (M2 : NFA α σ2)
 
-/-- `M1.concatStart` is `(M1 * M2).start`, merely including `M1.start`. -/
-@[simp]
-def concatStart : Set (σ1 ⊕ σ2) := inl '' M1.start
-
-/-- `concatAccept M1 M2` is `(M1 * M2).accept`, including `M2.accepts`, and if `[] ∈ M2.accepts`
-then also `M1.accepts`. If [] ∈ M2.accepts`, then without including `M1.accepts`, a final state in
-`M2.accept` is unreachable in `M1 * M2`. -/
-@[simp]
-def concatAccept : Set (σ1 ⊕ σ2) :=
-  inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ inr '' M2.accept
-
-/-- `concatStep M1 M2 s a` is `(M1 * M2).step s a`, the set of states available in `M1 * M2` by a
-transition from state `s` via character `a`. We include all transitions from `M1.step` and
-`M2.step`. In order to "concatenate" `M1` and `M2`, for `(M1 * M2).step (inl s1) a` when
-`s1 ∈ M1.accept`, we must also include states reachable from a state in `M2.start` via `a`,
-`⋃ s2 ∈ M2.start, M2.step s2 a`. -/
-@[simp]
-def concatStep : σ1 ⊕ σ2 → α → Set (σ1 ⊕ σ2)
-| .inl s1, a =>
-  inl '' M1.step s1 a ∪ inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
-| .inr s2, a =>
-  inr '' M2.step s2 a
-
-/-- `M1.concat M2` is `M1 * M2`, the concatenation of `M1` and `M2` achieved without ε-transitions.
-We decline to attatch a `@[simp]` nor `@[simps]` attribute in order to avoid unfolding the entire
-construction, and instead prefer the `M1 * M2` notation, and only simplify the projections for
-`M1 * M2`. -/
+/-- `M1.concat M2` is `M1 * M2`, the concatenation of `M1` and `M2` achieved without ε-transitions. -/
+@[simps]
 def concat : NFA α (σ1 ⊕ σ2) where
-  step := concatStep M1 M2
-  start := concatStart M1
-  accept := concatAccept M1 M2
+  step
+  | .inl s1, a => inl '' M1.step s1 a ∪ inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
+  | .inr s2, a => inr '' M2.step s2 a
+  start := inl '' M1.start
+  accept := inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ inr '' M2.accept
 
 instance : HMul (NFA α σ1) (NFA α σ2) (NFA α (σ1 ⊕ σ2)) :=
   ⟨concat⟩
