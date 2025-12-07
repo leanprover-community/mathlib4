@@ -843,7 +843,8 @@ variable [AddTorsor V P] {n : ℕ} [NeZero n] (s : Simplex R P n)
 
 lemma sSameSide_affineSpan_faceOpposite_of_sign_eq {w₁ w₂ : Fin (n + 1) → R} (hw₁ : ∑ j, w₁ j = 1)
     (hw₂ : ∑ j, w₂ j = 1) {i : Fin (n + 1)} (hs : SignType.sign (w₁ i) = SignType.sign (w₂ i))
-    (h0 : w₁ i ≠ 0) : (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide
+    (h0 : w₁ i ≠ 0) :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide
       (Finset.univ.affineCombination R s.points w₁)
       (Finset.univ.affineCombination R s.points w₂) := by
   have h0' : w₂ i ≠ 0 := by intro h; simp_all
