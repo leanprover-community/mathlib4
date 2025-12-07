@@ -178,7 +178,7 @@ private lemma prod_insertNth_go :
     have i_lt := Nat.lt_of_succ_lt_succ h
     let i_fin : Fin (n + 1) := ⟨i, i_lt⟩
     rw [show ⟨i + 1, h⟩ = i_fin.succ from rfl]
-    simp [insertNth_succ_cons]
+    simp only [insertNth_succ_cons, prod_cons]
     rw [prod_insertNth_go n i i_lt x tl, mul_left_comm]
 
 @[to_additive (attr := simp)]

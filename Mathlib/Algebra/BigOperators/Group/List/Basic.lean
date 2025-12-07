@@ -206,7 +206,8 @@ theorem prod_insertIdx {i} (hlen : i ≤ l.length) (hcomm : ∀ a' ∈ l.take i,
   case zero => rfl
   case succ i ih =>
     obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt hlen)
-    simp [ih (Nat.le_of_lt_succ hlen) (fun a' a'_mem => hcomm a' (mem_of_mem_tail a'_mem))]
+    simp only [insertIdx_succ_cons, prod_cons,
+      ih (Nat.le_of_lt_succ hlen) (fun a' a'_mem => hcomm a' (mem_of_mem_tail a'_mem))]
     exact Commute.left_comm (hcomm hd (mem_of_mem_head? rfl)).symm tl.prod
 
 @[to_additive (attr := simp)]
