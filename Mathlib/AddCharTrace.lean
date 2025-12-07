@@ -100,7 +100,7 @@ theorem addCharTrace_ne_one [P.LiesOver 𝒑] [𝒑.IsMaximal] [P.IsMaximal]
 theorem addCharTrace_frob [hp : Fact (p.Prime)] [P.IsMaximal] [P.LiesOver 𝒑] [Finite (A ⧸ P)]
     (x : A ⧸ P) :
     addCharTrace P hζ (x ^ p) = addCharTrace P hζ x := by
-  have : CharP (A ⧸ P) p := ringChar.of_eq <| by simp [Int.ringChar_idealQuot, ← over_def P 𝒑]
+  have : CharP (A ⧸ P) p := ringChar.of_eq <| by simp [Ideal.ringChar_quot, ← over_def P 𝒑]
   have : Fintype (ℤ ⧸ 𝒑) := Fintype.ofFinite (ℤ ⧸ 𝒑)
   have : x ^ p = FiniteField.frobeniusAlgEquiv (ℤ ⧸ 𝒑) (A ⧸ P) p x := by
     rw [FiniteField.frobeniusAlgEquiv_apply, ← Nat.card_eq_fintype_card, Int.card_ideal_quot]

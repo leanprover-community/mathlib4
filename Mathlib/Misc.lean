@@ -1,9 +1,182 @@
 module
 
-public import Mathlib
-public import Batteries.Tactic.Instances
+-- public import Mathlib.Algebra.AffineMonoid.Basic
+public import Mathlib.Algebra.Group.NatPowAssoc
+-- public import Mathlib.Algebra.Lie.OfAssociative
+-- public import Mathlib.Data.FunLike.Fintype
+public import Mathlib.NumberTheory.JacobiSum.Basic
+public import Mathlib.NumberTheory.NumberField.Units.Basic
+-- public import Mathlib.Order.BourbakiWitt
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+-- public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+-- public import Mathlib.RingTheory.SimpleRing.Principal
 
 @[expose] public section
+
+
+open Nat List
+
+/--
+The list of digits of `n` in base `b` with `0` appended so that its length is `l`.
+...
+-/
+abbrev Nat.digitsFixedLength (b l n : ℕ) : List ℕ :=
+  b.digits n ++ replicate (l - (b.digits n).length) 0
+
+theorem Nat.digitsFixedLength_length {b l n : ℕ} (hb : 1 < b) (hn : n < b ^ l) :
+    (digitsFixedLength b l n).length = l := sorry
+
+theorem Nat.digitsFixedLength_mem_lt {b l n : ℕ} (hb : 1 < b) :
+  ∀ x ∈ Nat.digitsFixedLength b l n, x < b := sorry
+
+example (b l : ℕ) (hb : 1 < b) : Set.InvOn (ofDigits b) (digitsFixedLength b l) {n | n < b ^ l}
+    {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b}  := by
+  refine ⟨?_, ?_⟩
+  · intro n hn
+    rw [ofDigits_append_replicate_zero, ofDigits_digits]
+  · intro L hL
+    apply injOn_ofDigits hb l
+    · refine ⟨?_, ?_⟩
+      · rw [digitsFixedLength_length hb]
+        -- Follows from maptsto (ofDigits)
+        sorry
+      · intro i hi
+        exact digitsFixedLength_mem_lt hb i hi
+    · exact hL
+    · rw [ofDigits_append_replicate_zero, ofDigits_digits]
+
+example (n r : ℤ) (m : ℕ) (h₁ : n % m = r) :
+    Int.fract ((n : ℚ) / (m : ℚ)) = (r : ℚ) / (m : ℚ) := by
+  rw [Int.fract_div_intCast_eq_div_intCast_mod, h₁]
+
+example {f : ℕ} [NeZero f] (p : ℚ) (hp : p ≠ 1) (j : Fin f) :
+    ∑ i ∈ Finset.range f, p ^ ((i + j.val) % f) = (p ^ f - 1) / (p - 1) := by
+  rw [Finset.sum_range]
+  let e := Equiv.addRight j
+  have {i : Fin f} : (i.val + j.val)%f = (e i).val := by
+    simp only [Equiv.coe_addRight, e]
+    exact rfl
+  simp_rw [this]
+  rw [Equiv.sum_comp e (fun x ↦ p ^ x.val)]
+  rw [← Finset.sum_range]
+  rw [geom_sum_eq]
+  exact hp
+
+theorem zap (b l : ℕ) [NeZero l] (h : b ^ l ≠ 1) (L : Fin l → ℕ) :
+    ∑ i, L i =  (b - 1 : ℚ) *
+        ∑ i : Fin l, Int.fract ((b : ℚ) ^ i.val *
+          (∑ j, L j * b ^ j.val) / (b ^ l - 1)) := by
+  have {i : Fin l} : Int.fract ((b : ℚ) ^ i.val * (∑ j, L j * b ^ j.val) / (b ^ l - 1)) =
+      (∑ j, L j * b ^ (Equiv.addRight j i).val) / (b ^ l - 1) := by
+    refine Int.fract_eq_iff.mpr ⟨?_, ?_, ?_⟩
+    · sorry
+    · sorry
+    · simp_rw [eq_comm]
+      change _ ∈ (Int.castRingHom ℚ).range
+      rw [Nat.cast_sum, Nat.cast_sum, Finset.mul_sum, ← sub_div, ← Finset.sum_sub_distrib,
+        Finset.sum_div]
+      refine Subring.sum_mem _ fun j _ ↦ ?_
+      simp only [Nat.cast_mul, Nat.cast_mul, Nat.cast_pow, Equiv.coe_addRight]
+      rw [mul_rotate', ← mul_sub, mul_div_assoc]
+      refine Subring.mul_mem _ (natCast_mem _ _) ?_
+      sorry
+      -- rw [ ← pow_add, ← Nat.mod_add_div (j + i) l, Fin.val_add, pow_add, pow_mul, ← mul_sub_one,
+      --   mul_div_assoc, ← geom_sum_eq _]
+      -- refine Subring.mul_mem _ ?_ ?_
+      -- · exact Subring.pow_mem _ (natCast_mem _ _) _
+      -- · refine Subring.sum_mem _ fun k _ ↦ ?_
+      --   refine Subring.pow_mem _ ?_ _
+      --   refine Subring.pow_mem _ (natCast_mem _ _) _
+      -- rwa [← Rat.natCast_pow, Nat.cast_ne_one]
+  simp_rw [this, Nat.cast_sum, Nat.cast_mul, Nat.cast_pow, Finset.sum_div]
+  rw [Finset.sum_comm]
+  simp_rw [← Finset.sum_div, ← Finset.mul_sum] -- , Equiv.sum_comp (Equiv.addRight _)]
+  conv_rhs =>
+    enter [2, 1, 2, j, 2]
+    rw [Equiv.sum_comp (Equiv.addRight j) fun i : Fin l ↦ (b : ℚ) ^ i.val]
+    rw [← Finset.sum_range]
+    rw [geom_sum_eq sorry]
+  rw [← Finset.sum_mul, mul_div_assoc]
+  rw [div_div_cancel_left', mul_comm, inv_mul_cancel_right₀]
+  sorry
+  sorry
+
+theorem zap' (b l : ℕ) [NeZero l] (h : b ^ l ≠ 1) (L : List ℕ) :
+    L.sum = (b - 1 : ℚ) *
+        ∑ i : Fin l, Int.fract ((b : ℚ) ^ i.val *
+          (Nat.ofDigits b L) / (b ^ l - 1)) := by
+  have {i : Fin l} : Int.fract ((b : ℚ) ^ i.val *
+      (Nat.ofDigits b L) / (b ^ l - 1)) =
+        (∑ j, L.getD j.val 0 * b ^ (Equiv.addRight j i).val) / (b ^ l - 1) := by
+    refine Int.fract_eq_iff.mpr ⟨?_, ?_, ?_⟩
+    · sorry
+    · sorry
+    · simp_rw [eq_comm]
+      change _ ∈ (Int.castRingHom ℚ).range
+      rw [Nat.ofDigits_eq_sum_mapIdx]
+
+      rw [Nat.cast_sum, Nat.cast_sum, Finset.mul_sum, ← sub_div, ← Finset.sum_sub_distrib,
+        Finset.sum_div]
+      refine Subring.sum_mem _ fun j _ ↦ ?_
+      simp only [Nat.cast_mul, Nat.cast_mul, Nat.cast_pow, Equiv.coe_addRight]
+      rw [mul_rotate', ← mul_sub, mul_div_assoc]
+      refine Subring.mul_mem _ (natCast_mem _ _) ?_
+      sorry
+      -- rw [ ← pow_add, ← Nat.mod_add_div (j + i) l, Fin.val_add, pow_add, pow_mul, ← mul_sub_one,
+      --  mul_div_assoc, ← geom_sum_eq _]
+      -- refine Subring.mul_mem _ ?_ ?_
+      -- · exact Subring.pow_mem _ (natCast_mem _ _) _
+      -- · refine Subring.sum_mem _ fun k _ ↦ ?_
+      --   refine Subring.pow_mem _ ?_ _
+      --   refine Subring.pow_mem _ (natCast_mem _ _) _
+      -- rwa [← Rat.natCast_pow, Nat.cast_ne_one]
+  simp_rw [this, Nat.cast_sum, Nat.cast_mul, Nat.cast_pow, Finset.sum_div]
+  rw [Finset.sum_comm]
+  simp_rw [← Finset.sum_div, ← Finset.mul_sum] -- , Equiv.sum_comp (Equiv.addRight _)]
+  conv_rhs =>
+    enter [2, 1, 2, j, 2]
+    rw [Equiv.sum_comp (Equiv.addRight j) fun i : Fin l ↦ (b : ℚ) ^ i.val]
+    rw [← Finset.sum_range]
+    rw [geom_sum_eq sorry]
+  rw [← Finset.sum_mul, mul_div_assoc]
+  rw [div_div_cancel_left', mul_comm, inv_mul_cancel_right₀]
+  sorry
+  sorry
+
+example (a b l : ℕ) (ha : a < b ^ l) [NeZero l] :
+    (b.digits a).sum =
+      (b - 1 : ℚ) * ∑ i ∈ Finset.range l, Int.fract ((b : ℚ) ^ i * a / (b ^ l - 1)) := by
+  have : (b.digits a).sum =  ∑ j : Fin l, (b.digits a).getD j.val 0 := sorry
+  rw [this]
+  have : a = ∑ j : Fin l, (b.digits a).getD j.val 0 * b ^ j.val := sorry
+  have := zap b l sorry (fun j : Fin l ↦ (b.digits a).getD j.val 0)
+  rw [this, Finset.sum_range]
+  congr!
+  
+
+
+
+  have : (b.digits a).sum =
+    (b.digits a ++ replicate (l - (b.digits a).length) 0).sum := sorry
+  rw [this]
+  obtain ⟨L, hL, rfl⟩ := (Nat.bijOn_ofDigits (b := b) sorry l).surjOn ha
+  -- have h (i : Fin l) : i.val < L.length := sorry
+
+  convert zap' b l sorry L
+  ·
+    sorry
+  · rw [Finset.sum_range]
+    -- rw [Nat.ofDigits_eq_sum_mapIdx]
+    congr! with i
+    sorry
+
+
+
+
+
+
 
 theorem Nat.Prime.three_le_of_odd {p : ℕ} (h₁ : Nat.Prime p) (h₂ : Odd p) : 3 ≤ p :=
   Nat.lt_of_le_of_ne h₁.two_le (by grind)
@@ -403,28 +576,28 @@ variable {A B₁ B₂ : Type*} (K L₁ L₂ C M) [CommRing A] [CommRing B₁] [A
   [IsScalarTower K L₂ M] [Normal K M] [Algebra A C] [Algebra A M] [IsScalarTower A K M]
   [Algebra C M] [IsScalarTower A C M] [IsIntegralClosure C A M]
 
-/-- Docstring. -/
-def AlgEquiv.liftNormal' (σ : B₁ ≃ₐ[A] B₂) : C ≃ₐ[A] C :=
-  galRestrict A K M C ((galLiftEquiv K L₁ L₂ σ).liftNormal M)
+-- /-- Docstring. -/
+-- def AlgEquiv.liftNormal' (σ : B₁ ≃ₐ[A] B₂) : C ≃ₐ[A] C :=
+--   galRestrict A K M C ((galLiftEquiv K L₁ L₂ σ).liftNormal M)
 
-variable [Algebra B₁ C] [Algebra B₂ C] [Algebra B₁ M] [IsScalarTower B₁ C M]
-  [IsScalarTower B₁ L₁ M] [Algebra B₂ M] [IsScalarTower B₂ C M] [IsScalarTower B₂ L₂ M]
+-- variable [Algebra B₁ C] [Algebra B₂ C] [Algebra B₁ M] [IsScalarTower B₁ C M]
+--   [IsScalarTower B₁ L₁ M] [Algebra B₂ M] [IsScalarTower B₂ C M] [IsScalarTower B₂ L₂ M]
 
-@[simp]
-theorem AlgEquiv.liftNormal'_commutes (σ : B₁ ≃ₐ[A] B₂) (x : B₁) :
-    (σ.liftNormal' K L₁ L₂ C M) (algebraMap B₁ C x) = algebraMap B₂ C (σ x) := by
-  unfold liftNormal'
-  apply IsIntegralClosure.algebraMap_injective C A M
-  rw [algebraMap_galRestrict_apply, ← IsScalarTower.algebraMap_apply,
-    ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B₁ L₁ M,
-    AlgEquiv.liftNormal_commutes, galLiftEquiv_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+-- @[simp]
+-- theorem AlgEquiv.liftNormal'_commutes (σ : B₁ ≃ₐ[A] B₂) (x : B₁) :
+--     (σ.liftNormal' K L₁ L₂ C M) (algebraMap B₁ C x) = algebraMap B₂ C (σ x) := by
+--   unfold liftNormal'
+--   apply IsIntegralClosure.algebraMap_injective C A M
+--   rw [algebraMap_galRestrict_apply, ← IsScalarTower.algebraMap_apply,
+--     ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B₁ L₁ M,
+--     AlgEquiv.liftNormal_commutes, galLiftEquiv_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
-@[simp]
-theorem AlgEquiv.restrict_liftNormal' [FaithfulSMul B₁ C] [Normal K L₁] (σ : B₁ ≃ₐ[A] B₁) :
-    (σ.liftNormal' K L₁ L₁ C M).restrictNormal' K B₁ L₁ M M = σ := by
-  ext
-  apply FaithfulSMul.algebraMap_injective B₁ C
-  rw [AlgEquiv.restrictNormal'_commutes, AlgEquiv.liftNormal'_commutes]
+-- @[simp]
+-- theorem AlgEquiv.restrict_liftNormal' [FaithfulSMul B₁ C] [Normal K L₁] (σ : B₁ ≃ₐ[A] B₁) :
+--     (σ.liftNormal' K L₁ L₁ C M).restrictNormal' K B₁ L₁ M M = σ := by
+--   ext
+--   apply FaithfulSMul.algebraMap_injective B₁ C
+--   rw [AlgEquiv.restrictNormal'_commutes, AlgEquiv.liftNormal'_commutes]
 
 end AlgEquiv.liftNormal'
 
@@ -590,23 +763,23 @@ theorem Ideal.card_primesOverFinset_eq_sum_card_primesOverFinset (A B C : Type*)
     have := hQ.2
     exact ⟨IsPrime.under B Q, under_liesOver_of_liesOver B Q p⟩
 
-theorem Ideal.ncard_primesOver_eq_sum_ncard_primesOver (A B C : Type*) [CommRing A] [Nontrivial A]
-    [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]
-    [NoZeroSMulDivisors A B] [Algebra A C] [NoZeroSMulDivisors A C] [Algebra B C]
-    [NoZeroSMulDivisors B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
-    [Algebra.IsIntegral A B] [Algebra.IsIntegral B C] (p : Ideal A) [p.IsMaximal] :
-    (p.primesOver C).ncard = ∑ P : p.primesOver B, (P.1.primesOver C).ncard := by
-  by_cases hp : p = ⊥
-  · simp [hp, primesOver_bot]
-    let _ : Unique (p.primesOver B) := by
-      rw [hp, primesOver_bot]
-      exact Set.uniqueSingleton ⊥
-    rw [Fintype.sum_subsingleton _  ⟨⊥, Ideal.bot_prime, hp ▸ Ideal.bot_liesOver_bot A B⟩,
-      primesOver_bot, Set.ncard_singleton]
-  have (P : p.primesOver B) : P.1 ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
-  simp_rw [← coe_primesOverFinset hp C, ← coe_primesOverFinset (this _) C, Set.ncard_coe_finset]
-  rw [card_primesOverFinset_eq_sum_card_primesOverFinset A B C, Finset.sum_subtype]
-  exact fun  _ ↦ by rw [mem_primesOverFinset_iff hp]
+-- theorem Ideal.ncard_primesOver_eq_sum_ncard_primesOver (A B C : Type*) [CommRing A] [Nontrivial A]
+--     [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]
+--     [NoZeroSMulDivisors A B] [Algebra A C] [NoZeroSMulDivisors A C] [Algebra B C]
+--     [NoZeroSMulDivisors B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
+--     [Algebra.IsIntegral A B] [Algebra.IsIntegral B C] (p : Ideal A) [p.IsMaximal] :
+--     (p.primesOver C).ncard = ∑ P : p.primesOver B, (P.1.primesOver C).ncard := by
+--   by_cases hp : p = ⊥
+--   · simp [hp, primesOver_bot]
+--     let _ : Unique (p.primesOver B) := by
+--       rw [hp, primesOver_bot]
+--       exact Set.uniqueSingleton ⊥
+--     rw [Fintype.sum_subsingleton _  ⟨⊥, Ideal.bot_prime, hp ▸ Ideal.bot_liesOver_bot A B⟩,
+--       primesOver_bot, Set.ncard_singleton]
+--   have (P : p.primesOver B) : P.1 ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
+--   simp_rw [← coe_primesOverFinset hp C, ← coe_primesOverFinset (this _) C, Set.ncard_coe_finset]
+--   rw [card_primesOverFinset_eq_sum_card_primesOverFinset A B C, Finset.sum_subtype]
+--   exact fun  _ ↦ by rw [mem_primesOverFinset_iff hp]
 
 end primesOverRestrict
 

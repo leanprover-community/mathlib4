@@ -5,6 +5,8 @@ public import Mathlib.AddCharTrace
 public import Mathlib.Misc
 public import Mathlib.Cyclotomic
 public import Mathlib.Teichmuller
+public import Mathlib.NumberTheory.NumberField.Ideal.Basic
+public import Mathlib.NumberTheory.MulChar.Duality
 
 @[expose] public section
 
@@ -313,6 +315,13 @@ local instance : Fintype (𝓞 K ⧸ P) := by
 theorem card_quot [P.LiesOver 𝒑] : Fintype.card (𝓞 K ⧸ P) = p ^ f := by
   rw [← absNorm_eq p f P, absNorm_apply, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
 
+omit [NeZero (p ^ f - 1)] [NeZero f] hp in
+theorem not_dvd_of_le (a : ℕ) (ha₀ : 0 < a) (ha₂ : a ≤ p ^ f - 2) :
+    ¬ p ^ f - 1 ∣ a := by
+  intro h
+  have := (Nat.le_of_dvd ha₀ h).trans ha₂
+  grind
+
 -- @[simps! apply]
 -- def omega' [P.LiesOver 𝒑] : (rootsOfUnity (p ^ f - 1) (𝓞 K)) ≃* (𝓞 K ⧸ P)ˣ := by
 --   classical
@@ -508,6 +517,17 @@ theorem orderOf_Omega [P.LiesOver 𝒑] :
   refine orderOf_injective (MulChar.ringHomCompMonoidHom (𝓞 K ⧸ P) (algebraMap (𝓞 K) (𝓞 L))) ?_ _
   exact MulChar.injective_ringHomComp (FaithfulSMul.algebraMap_injective (𝓞 K) (𝓞 L))
 
+theorem orderOf_Omega_comp_mk [P.LiesOver 𝒑] [𝓟.LiesOver P] :
+    orderOf ((Omega p f P L).ringHomComp (Ideal.Quotient.mk 𝓟)) = p ^ f - 1 := by
+  have hζ := (IsCyclotomicExtension.zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot
+  rw [Omega, MulChar.ringHomComp_comp, ← Ideal.Quotient.algebraMap_mk_of_liesOver' 𝓟 P,
+    ← MulChar.ringHomComp_comp]
+  have : Function.Injective (MulChar.ringHomCompMonoidHom (𝓞 K ⧸ P)
+      (algebraMap (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟))) :=
+    MulChar.injective_ringHomComp <| FaithfulSMul.algebraMap_injective _ _
+  rw [← MulChar.ringHomCompMonoidHom_apply, orderOf_injective _ this]
+  exact orderOf_teichmuller_comp_mk (mapQuot_bij p f P) hζ
+
 abbrev GaussSum [P.LiesOver 𝒑] (a : ℤ) : (𝓞 L) :=
   gaussSum (Omega p f P L ^ (-a)) (addCharTrace P hζ)
 
@@ -563,80 +583,73 @@ theorem GaussSum_mul_gaussSum [P.LiesOver 𝒑] {a b : ℤ} (h : ¬ ↑(p ^ f - 
   rwa [← zpow_add, ← neg_add, ne_eq, zpow_eq_one_iff_modEq, ← neg_zero, Int.neg_modEq_neg,
     orderOf_Omega, Int.modEq_zero_iff_dvd]
 
--- set_option synthInstance.maxHeartbeats 300000 in
-set_option trace.profiler.useHeartbeats true in
-set_option trace.profiler true in
-set_option trace.Meta.synthInstance true in
-set_option trace.Meta.isDefEq true in
-set_option trace.profiler.threshold 10000 in
-theorem GaussSum_one_mk_sq_eq [P.LiesOver 𝒑] [(𝓟 ^ 2).LiesOver 𝒑] (h : p ^ f ≠ 2)
-    (h' : ζ - 1 ∈ 𝓟) :
-    Ideal.Quotient.mk (𝓟 ^ 2) (GaussSum p f P L hζ 1) = -Ideal.Quotient.mk (𝓟 ^ 2) (ζ - 1) := by
+theorem GaussSum_one_mk_sq_eq_aux₀ [P.LiesOver 𝒑] :
+    Ideal.Quotient.mk (𝓟 ^ 2) (GaussSum p f P L hζ 1) =
+      ∑ x, (Ideal.Quotient.mk (𝓟 ^ 2)) ((Omega p f P L)⁻¹ x * (addCharTrace P hζ) x) := by
   have : AddMonoidHomClass (𝓞 L →+* 𝓞 L ⧸ 𝓟 ^ 2) (𝓞 L) (𝓞 L ⧸ 𝓟 ^ 2) :=
     RingHomClass.toNonUnitalRingHomClass.toAddMonoidHomClass
-  rw [GaussSum, gaussSum]
-  rw [map_sum]
-  simp_rw [map_mul]
-  simp_rw [addCharTrace_mk_sq _ _ h', mul_add, mul_one]
-  
-  unfold Omega
+  rw [GaussSum, gaussSum, map_sum]
+  simp_rw [zpow_neg_one]
 
-  simp_rw [MulChar.ringHomComp_zpow, MulChar.ringHomComp_apply]
-  have := Ideal.Quotient.algebraMap_mk_of_liesOver (𝓟 ^ 2) P
+theorem GaussSum_one_mk_sq_eq_aux₁ [P.LiesOver 𝒑] (h : p ^ f ≠ 2) :
+    ∑ x, (Ideal.Quotient.mk P) ((teichmuller (mapQuot_bij p f P))⁻¹ x) = 0 := by
+  have hμ := (IsCyclotomicExtension.zeta_spec (p ^ f - 1) ℚ K).toInteger_isPrimitiveRoot
+  simp_rw [← MulChar.ringHomComp_apply, ← MulChar.ringHomComp_inv]
+  apply MulChar.sum_eq_zero_of_ne_one
+  rwa [inv_ne_one, ne_eq, ← orderOf_eq_one_iff,
+    orderOf_teichmuller_comp_mk (mapQuot_bij p f P) hμ, Nat.pred_eq_succ_iff, zero_add]
 
-  sorry
+theorem GaussSum_one_mk_sq_eq_aux₂ {s : ℕ} (hs : s < f) [P.LiesOver 𝒑] :
+    ∑ x : 𝓞 K ⧸ P, x⁻¹ * x ^ p ^ s = if s = 0 then -1 else 0 := by
+  classical
+  rw [← Finset.univ.sum_erase (a := 0) (by simp),
+    Finset.sum_subtype (p := fun x ↦ x ≠ 0) _ (by grind), ← unitsEquivNeZero.sum_comp]
+  simp_rw [unitsEquivNeZero_apply_coe, ← Units.val_inv_eq_inv_val, ← Units.val_pow_eq_pow_val,
+    ← Units.val_mul, ← zpow_neg_one, ← zpow_natCast, ← zpow_add, neg_add_eq_sub,
+      ← Nat.cast_pred (NeZero.pos _), zpow_natCast, Units.val_pow_eq_pow_val]
+  rw [FiniteField.sum_pow_units, card_quot p f]
+  by_cases h : s = 0
+  · simp [h]
+  · rw [if_neg h, if_neg]
+    have : 1 < p :=  hp.out.one_lt
+    refine (Nat.le_of_dvd (by aesop)).mt (not_le.mpr ?_)
+    exact Nat.sub_lt_sub_right NeZero.one_le <| Nat.pow_lt_pow_right hp.out.one_lt hs
 
+omit [Algebra K L] in
+include f in
+theorem GaussSum_one_mk_sq_eq_aux₃ [P.LiesOver 𝒑] [Algebra (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2)] :
+    ∑ x,
+      (algebraMap (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2))
+        (x⁻¹ * (algebraMap (ℤ ⧸ 𝒑) (𝓞 K ⧸ P) (Algebra.trace (ℤ ⧸ 𝒑) (𝓞 K ⧸ P) x))) = -1 := by
+  have : AddMonoidHomClass (𝓞 K ⧸ P →+* 𝓞 L ⧸ 𝓟 ^ 2) (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2) :=
+    RingHomClass.toNonUnitalRingHomClass.toAddMonoidHomClass
+  rw [← map_sum]
+  simp_rw [FiniteField.algebraMap_trace_eq_sum_pow, Finset.mul_sum, Int.card_ideal_quot,
+    ← Ideal.inertiaDeg_algebraMap, inertiaDeg_eq p f]
+  rw [Finset.sum_comm, ← Nat.sub_one_add_one (NeZero.ne f), Finset.sum_range_succ',
+    GaussSum_one_mk_sq_eq_aux₂ p f P (NeZero.pos f), if_pos rfl]
+  rw [Finset.sum_congr rfl (fun x hx ↦ by rw [GaussSum_one_mk_sq_eq_aux₂ p f P (by grind),
+    if_neg (Nat.add_one_ne_zero _)]), Finset.sum_const_zero, zero_add, map_neg, map_one]
 
-#exit
-
-omit [𝓟.IsMaximal] in
-set_option synthInstance.maxHeartbeats 40000 in
-set_option maxHeartbeats 1500000 in
+set_option maxHeartbeats 300000 in
+-- Quotient are slow
 theorem GaussSum_one_mk_sq_eq [P.LiesOver 𝒑] [(𝓟 ^ 2).LiesOver P] (h : p ^ f ≠ 2)
     (h' : ζ - 1 ∈ 𝓟) :
-    Ideal.Quotient.mk (𝓟 ^ 2) (GaussSum p f P L hζ 1) = -(Ideal.Quotient.mk (𝓟 ^ 2)) (ζ - 1) := by
-  classical
+    Ideal.Quotient.mk (𝓟 ^ 2) (GaussSum p f P L hζ 1) = -Ideal.Quotient.mk (𝓟 ^ 2) (ζ - 1) := by
   have : AddMonoidHomClass (𝓞 K ⧸ P →+* 𝓞 L ⧸ 𝓟 ^ 2) (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2) :=
     RingHomClass.toNonUnitalRingHomClass.toAddMonoidHomClass
   have : (𝓟 ^ 2).LiesOver 𝒑 := LiesOver.trans (𝓟 ^ 2) P 𝒑
   have : IsScalarTower (ℤ ⧸ 𝒑) (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2) := by
     refine IsScalarTower.to₂₃₄ ℤ (ℤ ⧸ 𝒑) (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2) ?_
     simpa only [zsmul_eq_mul, mul_one, eq_intCast] using (Ideal.Quotient.mk_surjective (I := 𝒑))
-  rw [GaussSum, gaussSum, map_sum]
-  simp_rw [map_mul]
-  simp_rw [addCharTrace_mk_sq _ _ h', mul_add, mul_one]
---  simp_rw [map_mul, Psi_quot_mk_sq _ _ _ h', mul_add, mul_one]
-  rw [Finset.sum_add_distrib, ← map_sum, MulChar.sum_eq_zero_of_ne_one, map_zero, zero_add]
-  · simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_apply (ℤ ⧸ 𝒑) (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2),
-      FiniteField.algebraMap_trace_eq_sum_pow, ← mul_assoc, zpow_neg_one, Omega_inv_mk_eq,
-      ← map_mul, Finset.mul_sum, map_sum, ← Finset.sum_mul]
-    rw [Finset.sum_comm]
-    simp_rw [← map_sum, Int.card_ideal_quot p]
-    have hsum₀ : ∑ a : 𝓞 K ⧸ P,  a⁻¹ * a = -1 := by
-      rw [← Finset.univ.sum_erase (by rw [mul_zero]),
-        Finset.sum_subtype (p := fun x ↦ x ≠ 0) _ (by grind), ← unitsEquivNeZero.sum_comp,
-        Fintype.sum_congr _ (fun x ↦ x.val ^ 0) (by simp),
-        FiniteField.sum_pow_units, if_pos (Nat.dvd_zero _)]
-    have hsum₁ {s : Fin (f - 1)} : ∑ a : 𝓞 K ⧸ P,  a⁻¹ * a ^ (p ^ (s + 1 : ℕ)) = 0 := by
-      rw [← FiniteField.sum_pow_lt_card_sub_one (𝓞 K ⧸ P) (p ^ (s + 1 : ℕ) - 1)]
-      · refine Fintype.sum_congr _ _ fun x ↦ ?_
-        by_cases hx : x = 0
-        · rw [hx, inv_zero, zero_mul, zero_pow]
-          exact Nat.sub_ne_zero_iff_lt.mpr <| lt_of_lt_of_le hp.out.one_lt (Nat.le_pow (by bound))
-        · rw [inv_mul_eq_iff_eq_mul₀ hx, ← pow_succ', Nat.sub_add_cancel NeZero.one_le]
-      · rw [card_quot p f, Nat.sub_lt_sub_iff_right NeZero.one_le]
-        exact Nat.pow_lt_pow_right hp.out.one_lt (by grind)
-    rw [← Ideal.inertiaDeg_algebraMap, inertiaDeg_eq p f,
-      show f = f - 1 + 1 by rw [Nat.sub_add_cancel NeZero.one_le], Finset.sum_range_succ',
-      Finset.sum_range]
-    simp_rw [hsum₁, pow_zero, pow_one]
-    rw [Finset.sum_const_zero, zero_add, hsum₀]
-    rw [map_neg, map_one, neg_one_mul]
-  apply Omega_pow_ne_one
-  rw [Int.dvd_neg, Int.natCast_dvd_ofNat, Nat.dvd_one]
-  rwa [Nat.pred_eq_succ_iff, zero_add]
+  rw [GaussSum_one_mk_sq_eq_aux₀]
+  simp_rw [map_mul, addCharTrace_mk_sq _ _ h', mul_add, mul_one, MulChar.ringHomComp_inv,
+    MulChar.ringHomComp_apply, ← Ideal.Quotient.algebraMap_mk_of_liesOver (𝓟 ^ 2) P]
+  rw [Finset.sum_add_distrib, ← map_sum, GaussSum_one_mk_sq_eq_aux₁ _ _ _ h, map_zero, zero_add]
+  simp_rw [Algebra.smul_def, IsScalarTower.algebraMap_apply (ℤ ⧸ 𝒑) (𝓞 K ⧸ P) (𝓞 L ⧸ 𝓟 ^ 2),
+    ← mul_assoc, ← map_mul, MulChar.inv_apply', teichmuller_mk_eq]
+  rw [← Finset.sum_mul, GaussSum_one_mk_sq_eq_aux₃ p f, neg_one_mul]
 
-omit [𝓟.IsMaximal] in
 open IntermediateField in
 theorem Jac_exists_eq_algebraMap [NeZero 𝓟] [P.LiesOver 𝒑] (a b : ℤ) :
     ∃ α : 𝓞 K, Jac p f P L a b = algebraMap (𝓞 K) (𝓞 L) α := by
@@ -650,10 +663,12 @@ theorem Jac_exists_eq_algebraMap [NeZero 𝓟] [P.LiesOver 𝒑] (a b : ℤ) :
       Algebra.adjoin ℤ (algebraMap (𝓞 K) (𝓞 L) '' {μ}) by simp, Algebra.adjoin_algebraMap] at hj
     obtain ⟨α, _, hα⟩ := hj
     exact ⟨α, by rwa [IsScalarTower.coe_toAlgHom, eq_comm] at hα⟩
-  · rw [← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast, Omega_pow_eq_one, one_zpow]
-  · rw [← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast, Omega_pow_eq_one, one_zpow]
+  · rw [← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast, ← orderOf_Omega p f P L,
+      pow_orderOf_eq_one, one_zpow]
+  · rw [← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast, ← orderOf_Omega p f P L,
+      pow_orderOf_eq_one, one_zpow]
 
-variable [NumberField L]
+variable [NumberField L] [𝓟.IsMaximal]
 
 open IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
@@ -677,8 +692,9 @@ abbrev Val₀ [NeZero P] : Valuation (𝓞 K) (WithZero (Multiplicative ℤ)) :=
 theorem Val_Omega_pow [NeZero 𝓟] [P.LiesOver 𝒑] (a : ℕ) (x : (𝓞 K ⧸ P)ˣ) :
     Val L 𝓟 ((Omega p f P L ^ a) x) = 1 := by
   rw [← pow_left_inj₀ (n := p ^ f - 1) (WithZero.zero_le _) zero_le_one (NeZero.ne _), one_pow,
-    ← Valuation.map_pow, MulChar.pow_apply_coe, ← pow_mul', pow_mul, Omega_apply_pow_eq_one,
-    one_pow, Valuation.map_one]
+    ← Valuation.map_pow, MulChar.pow_apply_coe, ← pow_mul', pow_mul,
+    ← MulChar.pow_apply_coe, ← orderOf_Omega p f P L, pow_orderOf_eq_one, MulChar.one_apply_coe,
+    one_pow, map_one]
 
 -- theorem Val₀_Omega_pow [P.LiesOver 𝒑] (a : ℕ) (x : (𝓞 K ⧸ P)ˣ) :
 --     Val₀ L 𝓟 ((Omega p f P L ^ a) x) = 0 := by
@@ -705,7 +721,7 @@ abbrev GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : WithZero (Multiplicat
 theorem GSV_eq_one_of_dvd [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (h : ↑(p ^ f - 1) ∣ a) :
     GSV f P 𝓟 hζ a = 1 := by
   unfold GSV GaussSum
-  rw [orderOf_dvd_iff_zpow_eq_one.mp (by rwa [Omega_orderOf, Int.dvd_neg]), gaussSum_one_left]
+  rw [orderOf_dvd_iff_zpow_eq_one.mp (by rwa [orderOf_Omega, Int.dvd_neg]), gaussSum_one_left]
   by_cases h : addCharTrace P hζ = 0
   · rw [if_pos h, ← Nat.card_eq_fintype_card, ← Submodule.cardQuot_apply,
       ← Ideal.absNorm_apply, Ideal.absNorm_eq_pow_inertiaDeg' P hp.out, Nat.cast_pow]
@@ -817,18 +833,22 @@ theorem zeta_sub_one_not_mem_sq [𝓟.LiesOver 𝒑] : ζ - 1 ∉ 𝓟 ^ 2 := by
   have hμ : IsPrimitiveRoot μ p := IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ'
   let F := ℚ⟮(ζ : L)⟯
   have : IsCyclotomicExtension {p} ℚ F := hζ'.intermediateField_adjoin_isCyclotomicExtension ℚ
-  let Q := Ideal.comap (algebraMap (𝓞 F) (𝓞 L)) 𝓟
-  have : Q.IsPrime := IsPrime.under (𝓞 ↥F) 𝓟
-  rw [show ζ - 1 = algebraMap (𝓞 F) (𝓞 L) (hμ.toInteger - 1) by rfl, ← Ideal.mem_comap,
-    ← Ideal.dvd_span_singleton,
-    ← IsCyclotomicExtension.Rat.eq_span_zeta_sub_one_of_liesOver' p F hμ Q, Ideal.dvd_iff_le,
-    ← Ideal.map_le_iff_le_comap, ← Ideal.ramificationIdx_ne_one_iff map_comap_le, not_ne_iff]
-  have := Ideal.ramificationIdx_algebra_tower (p := 𝒑) (P := Q) (Q := 𝓟) ?_ ?_ map_comap_le
-  · rwa [ramificationIdx_eq_sub_one p f, IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime,
-      left_eq_mul₀] at this
-    exact Nat.sub_ne_zero_iff_lt.mpr hp.out.one_lt
-  · exact map_ne_bot_of_ne_bot <| sorry -- IsMaximal.ne_bot_of_isIntegral_int Q
-  · exact map_ne_bot_of_ne_bot <| Int.ideal_span_ne_bot p
+  have h₁ : Ideal.map (algebraMap (𝓞 ↥F) (𝓞 L)) (span {hμ.toInteger - 1}) ≤ 𝓟 := by
+    rw [Ideal.map_span, Set.image_singleton, map_sub, map_one, Ideal.span_singleton_le_iff_mem]
+    exact zeta_sub_one_mem p L 𝓟 hζ
+  intro h
+  have : Ideal.ramificationIdx (algebraMap (𝓞 F) (𝓞 L)) (span {hμ.toInteger - 1}) 𝓟 = 1 := by
+    have := ramificationIdx_algebra_tower (p := 𝒑) (P := span {hμ.toInteger - 1}) (Q := 𝓟)
+      ?_ ?_ h₁
+    · rwa [IsCyclotomicExtension.Rat.ramificationIdx_span_zeta_sub_one' p hμ,
+        ramificationIdx_eq_sub_one p f, eq_comm, Nat.mul_eq_left] at this
+      exact Nat.sub_ne_zero_iff_lt.mpr hp.out.one_lt
+    · apply map_ne_bot_of_ne_bot
+      rw [ne_eq, span_singleton_eq_bot, sub_eq_zero]
+      exact hμ.toInteger_isPrimitiveRoot.ne_one <| hp.out.one_lt
+    · exact map_ne_bot_of_ne_bot <| by simpa using hp.out.ne_zero
+  refine (Ideal.ramificationIdx_ne_one_iff h₁).mpr ?_ <| this
+  rwa [Ideal.map_span, Set.image_singleton, map_sub, map_one, Ideal.span_singleton_le_iff_mem]
 
 omit [NeZero (p ^ f - 1)] in
 include hL in
@@ -945,8 +965,8 @@ theorem GaussSum_mem [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(
   · have : 𝓟.LiesOver 𝒑 := LiesOver.trans 𝓟 P 𝒑
     rw [← Quotient.eq_zero_iff_mem, gaussSum_map, addCharTrace_comp_mk_eq_one _ _
       (zeta_sub_one_mem p L 𝓟 hζ), gaussSum_one_right]
-    apply Omega_comp_ideal_quot_ne_one
-    rwa [Int.dvd_neg]
+    rwa [← MulChar.ringHomComp_zpow, ne_eq, ← orderOf_dvd_iff_zpow_eq_one, Int.dvd_neg,
+      orderOf_Omega_comp_mk]
 
 theorem GSV_lt_one [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1) ∣ a) :
     GSV f P 𝓟 hζ a < 1 := by
@@ -957,8 +977,8 @@ theorem GSV_lt_one [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p 
     unfold GSV Val GaussSum
     rw [intValuation_lt_one_iff_dvd, dvd_span_singleton, ← Quotient.eq_zero_iff_mem, gaussSum_map,
       addCharTrace_comp_mk_eq_one _ _ (zeta_sub_one_mem p L 𝓟 hζ), gaussSum_one_right]
-    apply Omega_comp_ideal_quot_ne_one
-    rwa [Int.dvd_neg]
+    rwa [← MulChar.ringHomComp_zpow, ne_eq, ← orderOf_dvd_iff_zpow_eq_one, Int.dvd_neg,
+      orderOf_Omega_comp_mk]
 
 theorem GSV_one_eq [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) :
     GSV f P 𝓟 hζ 1 = WithZero.exp (-1 : ℤ) := by
@@ -992,13 +1012,6 @@ theorem le_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) :
       gcongr
       · rw [GSV_one_eq p f _ _ _ _ h]
 
-omit [NeZero (p ^ f - 1)] [NeZero f] hp in
-theorem not_dvd_of_le (a : ℕ) (ha₀ : 0 < a) (ha₂ : a ≤ p ^ f - 2) :
-    ¬ p ^ f - 1 ∣ a := by
-  intro h
-  have := (Nat.le_of_dvd ha₀ h).trans ha₂
-  grind
-
 theorem two_dvd_sub_mul_pow_sub : 2 ∣ ((p : ℤ) - 1) * ((p : ℤ) ^ f - 2) := by
   sorry
 
@@ -1028,7 +1041,7 @@ theorem GSV_eq_of_lt [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : 
   refine le_antisymm hk₁ ?_
   have : WithZero.exp (-↑(p - 1)) < k ^ (p - 1) := by
     refine lt_of_lt_of_le (WithZero.exp_lt_exp.mpr <| neg_lt_neg <| Nat.cast_lt.mpr ha) ?_
-    have := mul_le_mul_right' (GSV_le_one p f P L 𝓟 hζ a) (k ^ (p - 1))
+    have := mul_le_mul_left (GSV_le_one p f P L 𝓟 hζ a) (k ^ (p - 1))
     rwa [one_mul, hk₂] at this
   rwa [← WithZero.exp_log hk₀, ← WithZero.exp_nsmul, WithZero.exp_lt_exp, Int.nsmul_eq_mul,
     mul_comm, ← Int.ediv_lt_iff_lt_mul hp₀, Int.neg_ediv_self _ hp₀.ne', ← Int.add_one_le_iff,
@@ -1051,7 +1064,7 @@ theorem GSV_p_sub_one_eq_of_le [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f �
         tsub_add_eq_add_tsub (hp.out.one_le)]
     exact lt_self_pow₀ hp.out.one_lt h'
   have h₄ : 0 < GSV f P 𝓟 hζ ↑(p - 1) := GSV_pos _ _ _ _ _ _ _ <| Int.natCast_dvd_natCast.not.mpr h₃
-  have hb₀ := mul_le_mul_right' (GSV_le_one p f P L 𝓟 hζ ↑(p - 1)) (k ^ (p - 1))
+  have hb₀ := mul_le_mul_left (GSV_le_one p f P L 𝓟 hζ ↑(p - 1)) (k ^ (p - 1))
   rw [hk₂, one_mul, ← WithZero.le_log_iff_exp_le (pow_ne_zero (p - 1) hk₀), WithZero.log_pow,
     Int.nsmul_eq_mul, ← Int.ediv_le_iff_of_dvd_of_pos (Int.natCast_pos.mpr h₁)
     (by rw [Int.dvd_neg]), Int.neg_ediv_self _ (Int.ofNat_ne_zero.mpr h₂)] at hb₀
@@ -1081,7 +1094,7 @@ theorem sum_digits_le_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) 
   convert sum_le_GSV_ofDigits p f P L 𝓟 hζ _ h
   exact (Nat.ofDigits_digits p a).symm
 
-example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a < p ^ f - 1) :
+theorem GSV_eq [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a < p ^ f - 1) :
     GSV f P 𝓟 hζ a = WithZero.exp (-(Nat.digits p a).sum : ℤ) := by
   rw [GSV_eq_GSV₀, WithZero.exp, WithZero.coe_inj, eq_comm]
   revert a
@@ -1123,5 +1136,55 @@ example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a 
           rw [Nat.ofNat_le_cast]
           exact hp.out.two_le
     · exact hp.out.one_lt
+
+example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a < p ^ f - 1) :
+      WithZero.log (GSV f P 𝓟 hζ a) =
+        -(p - 1 : ℚ) * ∑ i ∈ Finset.range f, Int.fract ((p ^ i * a : ℚ) / (p ^ f - 1)) := by
+  rw [GSV_eq p f P L 𝓟 hζ h _ ha, WithZero.log_exp, Finset.sum_range]
+  
+--  have {i : Fin f}
+#exit
+
+  simp_rw [Int.fract, mul_div_assoc]
+  rw [Finset.sum_sub_distrib, ← Finset.sum_mul, geom_sum_eq, div_mul_div_cancel₀',
+    mul_sub, neg_mul, mul_div_cancel₀, neg_mul, sub_neg_eq_add, Int.cast_neg_natCast,
+    eq_neg_add_iff_add_eq, ← sub_eq_add_neg, ← Nat.cast_sub,
+    ← Nat.sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.cast_mul, Nat.cast_sub, Nat.cast_one,
+    Nat.cast_sum, Finset.sum_range (n := f)] -- , ← Fin.revPerm.sum_comp]
+  · rw [Finset.sum_subset (s₁ := Finset.range (Nat.log p a).succ) (s₂ := Finset.range f),
+      Finset.sum_range (n := f)]
+
+    congr with i
+    rw [Nat.succ_eq_add_one]
+    -- rw [Fin.revPerm_apply, Fin.val_rev]
+    rw [← Rat.intCast_natCast, Int.cast_inj]
+    rw [eq_comm, Int.floor_eq_iff]
+    refine ⟨?_, ?_⟩
+    ·
+      sorry
+    · sorry
+
+--      ← Int.floor_natCast (R := ℚ), Int.cast_inj]
+
+    --- , div_eq_inv_mul, ← zpow_natCast,
+    ---  ← zpow_natCast]
+
+    · refine Finset.range_subset_range.mpr ?_
+      rw [Nat.succ_le_iff, Nat.log_lt_iff_lt_pow]
+      sorry
+      sorry
+      sorry
+    · intro x hx₁ hx₂
+      refine Rat.natCast_eq_zero_iff.mpr ?_
+      refine Nat.div_eq_of_lt ?_
+      rw [← Nat.log_lt_iff_lt_pow]
+      rw [Finset.mem_range] at hx₂
+      rw [Nat.not_gt_eq] at hx₂
+      rw [Nat.succ_le_iff] at hx₂
+      grind
+      exact hp.out.one_lt
+      sorry
+
+
 
 end GaussSums

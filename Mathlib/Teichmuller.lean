@@ -92,12 +92,17 @@ theorem teichmuller_pow_ne_one [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot ζ n) 
     teichmuller h ^ a ≠ 1 := by
   rwa [ne_eq, ← orderOf_dvd_iff_zpow_eq_one, orderOf_teichmuller h hζ]
 
-theorem teichmuller_mk_unit_eq (x : (R ⧸ I)ˣ) :
+theorem teichmuller_mk_eq_of_unit (x : (R ⧸ I)ˣ) :
     Ideal.Quotient.mk I (teichmuller h x) = x := by
   set y := (MulEquiv.ofBijective _ h).symm x
   have : x = MulEquiv.ofBijective _ h y := by rw [← MulEquiv.symm_apply_eq]
   rw [teichmuller_apply_unit, this, MulEquiv.symm_apply_apply, MulEquiv.ofBijective_apply,
     rootsOfUnity._coe_mapQuot]
+
+attribute [local instance] Ideal.Quotient.field in
+theorem teichmuller_mk_zpow_eq_of_unit [I.IsMaximal] (a : ℤ) (x : (R ⧸ I)ˣ) :
+    Ideal.Quotient.mk I ((teichmuller h ^ a) x) = (x ^ a : (R ⧸ I)ˣ) := by
+  rw [MulChar.zpow_apply_coe (teichmuller h), teichmuller_mk_eq_of_unit]
 
 attribute [local instance] Ideal.Quotient.field in
 theorem teichmuller_mk_eq [I.IsMaximal] (x : R ⧸ I) :
@@ -109,7 +114,7 @@ theorem teichmuller_mk_eq [I.IsMaximal] (x : R ⧸ I) :
   by_cases hx : x = 0
   · rw [hx, teichmuller_zero _ hI, map_zero]
   lift x to (R ⧸ I)ˣ using Ne.isUnit hx
-  exact teichmuller_mk_unit_eq h x
+  exact teichmuller_mk_eq_of_unit h x
 
 theorem orderOf_teichmuller_comp_mk [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot ζ n) :
     orderOf ((teichmuller h).ringHomComp (Ideal.Quotient.mk I)) = n := by
@@ -119,7 +124,7 @@ theorem orderOf_teichmuller_comp_mk [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot �
     obtain ⟨x, hx⟩ := hζ.exists_teichmuller_eq h
     rw [teichmuller_apply_unit] at hx
     refine ⟨x, ?_⟩
-    rw [MulChar.ringHomComp_apply, MulChar.pow_apply_coe, map_pow, teichmuller_mk_unit_eq]
+    rw [MulChar.ringHomComp_apply, MulChar.pow_apply_coe, map_pow, teichmuller_mk_eq_of_unit]
     set y := (MulEquiv.ofBijective _ h).symm x with y_def
     have : x = MulEquiv.ofBijective _ h y := by rw [← MulEquiv.symm_apply_eq]
     rw [this, ne_eq, ← Units.val_pow_eq_pow_val, Units.val_eq_one,

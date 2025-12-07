@@ -344,6 +344,14 @@ theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ 
   | zero => rw [pow_zero, pow_zero, one_apply_coe]
   | succ n ih => rw [pow_succ, pow_succ, mul_apply, ih]
 
+/-- If `a` is a unit and `n : ℤ`, then `(χ ^ n) a = χ (a ^ n`. -/
+theorem zpow_apply_coe {R : Type*} [CommGroupWithZero R] (χ : MulChar R R') (n : ℤ) (a : Rˣ) :
+    (χ ^ n) a = χ (a ^ n : Rˣ) := by
+  obtain ⟨n, (rfl | rfl)⟩ := Int.eq_nat_or_neg n
+  · simp [pow_apply_coe]
+  · rw [zpow_neg, zpow_natCast, inv_apply', ← Units.val_inv_eq_inv_val, pow_apply_coe, ← inv_zpow',
+      zpow_natCast, Units.val_pow_eq_pow_val, map_pow]
+
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ n) a = χ a ^ n := by
   by_cases ha : IsUnit a
@@ -421,6 +429,11 @@ def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
 lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 := by
   ext1
   simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
+
+lemma ringHomComp_comp {R₃ : Type*} [CommRing R₃] (χ : MulChar R R') (f : R' →+* R'')
+    (g : R'' →+* R₃) : (χ.ringHomComp f).ringHomComp g = χ.ringHomComp (g.comp f) := by
+  ext
+  simp
 
 lemma ringHomComp_inv {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
