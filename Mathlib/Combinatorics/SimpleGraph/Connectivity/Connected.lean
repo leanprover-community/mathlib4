@@ -822,9 +822,11 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
 /-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
 theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
     (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
-  isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
-    isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
-      (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
+  have e_edge_in_G': e ∈ G'.edgeSet :=
+    edgeSet_subset_edgeSet.mpr hle h
+  (isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
+    isBridge_iff_mem_and_forall_cycle_notMem.mp (And.intro e_edge_in_G' h') |>.right
+      (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩).right
 
 end BridgeEdges
 
