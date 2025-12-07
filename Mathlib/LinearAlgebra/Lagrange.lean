@@ -454,9 +454,10 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
   exact insert_subset_iff.mpr ⟨hi, singleton_subset_iff.mpr hj⟩
 
 open scoped Classical in
-theorem interpolate_poly_eq_poly
+theorem interpolate_poly_eq_self
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
     interpolate s v (fun i => P.eval (v i)) = P := by
+  classical
   let t : Finset F := s.image v
   have ht : t.card = s.card := Finset.card_image_iff.mpr hvs
   apply eq_of_degrees_lt_of_eval_finset_eq t
@@ -468,8 +469,7 @@ theorem interpolate_poly_eq_poly
     obtain ⟨i, hi, hx⟩ := Finset.mem_image.mp hx
     rw [← hx, eval_interpolate_at_node _ hvs hi]
 
-open scoped Classical in
-theorem leadingCoeff_interpolate
+theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
   have P_degree : P.degree = ↑(s.card - 1) := by
@@ -486,7 +486,7 @@ theorem leadingCoeff_interpolate
     omega
   have hP' : P.degree < s.card := by rw [P_degree, Nat.cast_lt]; omega
   rw [leadingCoeff, P_natDegree]
-  rw (occs := [1]) [← interpolate_poly_eq_poly hvs hP']
+  rw (occs := [1]) [← interpolate_poly_eq_self hvs hP']
   rw [interpolate_apply, finset_sum_coeff]
   congr! with i hi
   rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
