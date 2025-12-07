@@ -175,7 +175,7 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
-def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
+def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     TermElabM Unit := do
   let unusedInstances ← decl.type.collectUnusedInstanceIdxsOf p
@@ -227,7 +227,7 @@ Note: This linter can be disabled with `set_option {linter.fooLinter.name} false
 pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
-def _root_.Lean.Syntax.logUnusedInstancesInDeclsWhere (_cmd : Syntax)
+def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
     (declFilter : ConstantVal → Bool := fun _ => true) :
@@ -237,7 +237,7 @@ def _root_.Lean.Syntax.logUnusedInstancesInDeclsWhere (_cmd : Syntax)
       declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
     -- use `liftTermElabM` on the outside in the hopes of sharing a cache
     unless thms.isEmpty do liftTermElabM do for thm in thms do
-      thm.onUnusedInstancesInTypeWhere instanceTypeFilter
+      thm.onUnusedInstancesWhere instanceTypeFilter
         fun unusedParams =>
           -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
           -- t.withDeclSigRef cmd thm.name do
@@ -300,7 +300,7 @@ def unusedDecidableInType : Linter where
     unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     profileitM Exception "unusedInst" (← getOptions) do
-      cmd.logUnusedInstancesInDeclsWhere
+      cmd.logUnusedInstancesInTheoremsWhere
         /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
         on decidable instances without using them in the type. -/
         (declFilter := (!(`Decidable).isPrefixOf ·.name))
