@@ -121,20 +121,18 @@ lemma mdifferentiable_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
 
 lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     {τ : ℍ} (hτ : ∃ᶠ z in 𝓝[≠] τ, f z = 0) : f = 0 := by
-  let F : ℂ → ℂ := f ∘ .ofComplex
   rw [UpperHalfPlane.mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
-  have := this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_
-  · ext w
-    convert this w.property
-    rw [Function.comp_apply, ofComplex_apply_of_im_pos]
+  ext w
+  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.property
+  · rw [Function.comp_apply, ofComplex_apply_of_im_pos w.property]
     rfl
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ
     rw [eventually_nhdsWithin_iff, ← isOpenEmbedding_coe.map_nhds_eq, eventually_map] at hτ
     rw [eventually_nhdsWithin_iff]
     filter_upwards [hτ] with a ha
-    simp_all
+    simpa using ha
 
 lemma mul_eq_zero_iff {f g : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     (hg : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) g) : f * g = 0 ↔ f = 0 ∨ g = 0 :=
