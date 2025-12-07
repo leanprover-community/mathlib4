@@ -141,9 +141,7 @@ We relate `θ` to the prime counting function `π`.-/
 
 lemma deriv_log_inv {x : ℝ} (h0 : x ≠ 0) (h1 : x ≠ 1) (h2 : x ≠ -1) :
     deriv (fun x => (log x)⁻¹) x = -x⁻¹ / (log x ^ 2) := by
-  rw [deriv_fun_inv'', deriv_log]
-  · fun_prop (disch := assumption)
-  exact log_ne_zero.mpr ⟨h0, h1, h2⟩
+  simp_all
 
 open Asymptotics Filter MeasureTheory
 
@@ -230,8 +228,7 @@ theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
         apply mul_ne_zero this <| pow_ne_zero _ <| log_ne_zero.mpr ⟨_, _, _⟩
         all_goals linarith [hz.1]
       fun_prop (disch := assumption)
-    · apply this
-    · apply this z hz
+    all_goals simp_all
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
@@ -338,7 +335,6 @@ theorem integral_theta_div_log_sq_isLittleO :
       field
     simp_rw [one_div]
     apply Tendsto.inv_tendsto_atTop tendsto_log_atTop
-  filter_upwards with x
   simp
 
 theorem primeCounting_sub_theta_div_log_isBigO :
