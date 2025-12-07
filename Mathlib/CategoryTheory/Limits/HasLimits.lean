@@ -361,8 +361,7 @@ def limit.pre : limit F ⟶ limit (E ⋙ F) :=
 
 @[reassoc (attr := simp)]
 theorem limit.pre_π (k : K) : limit.pre F E ≫ limit.π (E ⋙ F) k = limit.π F (E.obj k) := by
-  erw [IsLimit.fac]
-  rfl
+  simp [limit.pre]
 
 @[simp]
 theorem limit.lift_pre (c : Cone F) :
@@ -401,8 +400,7 @@ def limit.post : G.obj (limit F) ⟶ limit (F ⋙ G) :=
 
 @[reassoc (attr := simp)]
 theorem limit.post_π (j : J) : limit.post F G ≫ limit.π (F ⋙ G) j = G.map (limit.π F j) := by
-  erw [IsLimit.fac]
-  rfl
+  simp [limit.post]
 
 @[simp]
 theorem limit.lift_post (c : Cone F) :
@@ -948,8 +946,7 @@ def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
 @[reassoc (attr := simp)]
 theorem colimit.ι_post (j : J) :
     colimit.ι (F ⋙ G) j ≫ colimit.post F G = G.map (colimit.ι F j) := by
-  erw [IsColimit.fac]
-  rfl
+  simp [colimit.post]
 
 @[simp]
 theorem colimit.post_desc (c : Cocone F) :
