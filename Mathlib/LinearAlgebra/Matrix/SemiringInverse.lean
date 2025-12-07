@@ -226,13 +226,13 @@ instance (priority := low) instIsStablyFiniteRingOfCommSemiring : IsStablyFinite
 variable (A B)
 
 /-- We can construct an instance of invertible A if A has a left inverse. -/
-@[deprecated invertibleOfMulEqOneRight (since := "2025-12-06")]
-def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
+@[deprecated invertibleOfLeftInverse (since := "2025-12-06")]
+protected def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
   invertibleOfMulEqOneRight _ _ h
 
 /-- We can construct an instance of invertible A if A has a right inverse. -/
-@[deprecated invertibleOfMulEqOne (since := "2025-12-06")]
-def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
+@[deprecated invertibleOfRightInverse (since := "2025-12-06")]
+protected def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
   invertibleOfMulEqOne _ _ h
 
 variable {A B}
