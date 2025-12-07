@@ -536,7 +536,6 @@ section Pi
 
 variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i} {n : ℕ}
 
--- TODO: make `x` explicit similar to `isFixedPt_prodMap`?
 @[simp]
 theorem isFixedPt_piMap : IsFixedPt (Pi.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) :=
   funext_iff
