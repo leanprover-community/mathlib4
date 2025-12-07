@@ -14,6 +14,8 @@ public import Mathlib.Logic.Nontrivial.Defs
 public import Batteries.Tactic.Init
 public import Mathlib.Order.Defs.Unbundled
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Miscellaneous function constructions and lemmas
 -/
