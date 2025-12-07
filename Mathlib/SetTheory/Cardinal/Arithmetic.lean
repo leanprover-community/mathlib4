@@ -499,7 +499,7 @@ lemma mul_lt_mul_of_nat {n : ℕ} {κ μ : Cardinal} {hneq0 : n ≠ 0} (hlt : κ
 
 
 lemma mul_left_cancel_of_nat {n : ℕ} {κ μ : Cardinal} {hneq0 : n ≠ 0} (h : n * κ = n * μ) :
-    κ = μ := by
+  κ = μ := by
   contrapose! h
   rcases lt_or_gt_of_ne h with hlt | hlt <;>
   have := ne_of_lt <| mul_lt_mul_of_nat (hneq0 := hneq0) hlt <;>
