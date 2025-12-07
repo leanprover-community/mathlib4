@@ -281,8 +281,13 @@ theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).
 theorem roots_ofMultiset (s : Multiset R) : (ofMultiset s).roots = s := by
   simp
 
+variable (R) in
+theorem rightInverse_ofMultiset_roots : Function.RightInverse (α := R[X]) ofMultiset roots :=
+  roots_ofMultiset
+
+variable (R) in
 theorem ofMultiset_injective : Function.Injective (ofMultiset (R := R)) :=
-  (fun x y h => (roots_ofMultiset x) ▸ (roots_ofMultiset y) ▸ (congrArg roots h))
+  rightInverse_ofMultiset_roots R |>.injective
 
 theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
     Multiset.card (roots ((X : R[X]) ^ n - C a)) ≤ n :=
