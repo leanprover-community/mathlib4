@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Finset.Lattice.Lemmas
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
@@ -26,6 +28,8 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 * `Finset.eraseInduction`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -322,7 +326,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     _ = n := card_range n
   apply card_image_of_injective
   intro ⟨i, hi⟩ ⟨j, hj⟩ eq
-  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
+  exact Subtype.ext <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 
 variable {t : Finset β}
 
@@ -413,7 +417,7 @@ lemma card_le_card_of_injOn (f : α → β) (hf : Set.MapsTo f s t) (f_inj : (s 
   classical
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
-    _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
+    _ ≤ #t := card_le_card <| image_subset_iff.2 hf
 
 lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
@@ -445,6 +449,16 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
   intro x hx y hy
   contrapose
   exact hz x hx y hy
+
+/-- a special case of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` where `t` is `s.image f` -/
+theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y :=
+  exists_ne_map_eq_of_card_lt_of_maps_to hc (coe_image (β := β) ▸ Set.mapsTo_image f s)
+
+/-- a variant of `Finset.exists_ne_map_eq_of_card_image_lt` using `Set.InjOn` -/
+theorem not_injOn_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
+    ¬ Set.InjOn f s :=
+  mt card_image_of_injOn hc.ne
 
 /--
 See also `Finset.card_le_card_of_injOn`, which is a more general version of this lemma.
@@ -495,7 +509,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
-  cutsat
+  lia
 
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
@@ -630,7 +644,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
   intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
-  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos]; grind
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by grind
   exact ⟨u.erase a, by grind⟩
 
 /-- We can shrink a set to any smaller size. -/
@@ -645,7 +659,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
     (hXY : 2 * n < #(X ∪ Y)) : ∃ C : Finset α, n < #C ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : #(X ∩ (Y \ X)) = 0 := Finset.card_eq_zero.mpr (by grind)
   have h₂ : #(X ∪ Y) = #X + #(Y \ X) := by grind
-  obtain h | h : n < #X ∨ n < #(Y \ X) := by cutsat
+  obtain h | h : n < #X ∨ n < #(Y \ X) := by lia
   · exact ⟨X, by grind⟩
   · exact ⟨Y \ X, by grind⟩
 
@@ -698,9 +712,7 @@ theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : #s ≤ 1
   Finset.card_le_one_iff.2 fun {_ _ _ _} => Subsingleton.elim _ _
 
 theorem one_lt_card : 1 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
-  rw [← not_iff_not]
-  push_neg
-  exact card_le_one
+  contrapose!; exact card_le_one
 
 theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]

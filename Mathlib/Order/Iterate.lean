@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Monotone.Basic
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Inequalities on iterates
@@ -15,6 +17,8 @@ two self-maps that commute with each other.
 Current selection of inequalities is motivated by formalization of the rotation number of
 a circle homeomorphism.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -88,9 +92,8 @@ open Function
 
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
-  apply hf.seq_le_seq n <;> intros <;>
-    simp [iterate_succ', -iterate_succ, comp_apply, id_eq, le_refl]
-  case hx => exact H _
+  apply hf.seq_le_seq n <;>
+    aesop (add simp [iterate_succ']) (erase simp [iterate_succ])
 
 theorem iterate_comp_le_of_le (hf : Monotone f) (H : f ∘ h ≤ h ∘ g) (n : ℕ) :
     f^[n] ∘ h ≤ h ∘ g^[n] :=

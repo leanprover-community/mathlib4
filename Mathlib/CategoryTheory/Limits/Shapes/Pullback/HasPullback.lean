@@ -3,14 +3,16 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
-pullacks.
+pullbacks.
 
-# Main definitions
+## Main definitions
 
 * `HasPullback f g`: this is an abbreviation for `HasLimit (cospan f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pullback.
@@ -45,7 +47,7 @@ pullback.snd f g                       f
       Z ---pushout.inr f g---> pushout f g
 ```
 
-# Main results & API
+## Main results & API
 * The following API is available for using the universal property of `pullback f g`:
   `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
@@ -63,6 +65,8 @@ pullback.snd f g                       f
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -124,11 +128,21 @@ abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g]
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 
+lemma pullback.exists_lift {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
+    (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) :
+    ∃ (l : W ⟶ pullback f g), l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k :=
+  ⟨pullback.lift h k, by simp⟩
+
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
 `pushout.desc : pushout f g ⟶ W`. -/
 abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
+
+lemma pushout.exists_desc {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
+    (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k := by cat_disch) :
+    ∃ (l : pushout f g ⟶ W), pushout.inl f g ≫ l = h ∧ pushout.inr f g ≫ l = k :=
+  ⟨pushout.desc h k, by simp⟩
 
 /-- The cone associated to a pullback is a limit cone. -/
 abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
@@ -394,7 +408,7 @@ theorem pullbackComparison_comp_fst (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
 @[reassoc (attr := simp)]
 theorem pullbackComparison_comp_snd (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] :
-    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g):=
+    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g) :=
   pullback.lift_snd _ _ _
 
 @[reassoc (attr := simp)]
@@ -552,13 +566,21 @@ def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
 -- see Note [lower instance priority]
 /-- Having wide pullback at any universe level implies having binary pullbacks. -/
 instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
-    [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
+    [HasWidePullbacks.{w} D] : HasPullbacks.{v, u} D :=
   hasWidePullbacks_shrink WalkingPair
 
 -- see Note [lower instance priority]
 /-- Having wide pushout at any universe level implies having binary pushouts. -/
 instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
-    [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=
+    [HasWidePushouts.{w} D] : HasPushouts.{v, u} D :=
   hasWidePushouts_shrink WalkingPair
+
+theorem hasPullback_symmetry_of_hasPullbacksAlong {S X Y : C} {f : X ⟶ S} [HasPullbacksAlong f]
+    {g : Y ⟶ S} : HasPullback f g :=
+  hasPullback_symmetry g f
+
+theorem hasPushouts_symmetry_of_hasPushoutsAlong {S X Y : C} {f : S ⟶ X} [HasPushoutsAlong f]
+    {g : S ⟶ Y} : HasPushout f g :=
+  hasPushout_symmetry g f
 
 end CategoryTheory.Limits

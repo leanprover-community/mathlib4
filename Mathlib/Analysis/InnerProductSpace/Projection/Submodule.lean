@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
 # Subspaces associated with orthogonal projections
@@ -16,6 +18,8 @@ orthogonal projections; the lemma
 stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]

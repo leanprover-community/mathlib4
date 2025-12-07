@@ -3,10 +3,12 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.VectorField
-import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+module
+
+public import Mathlib.Analysis.Calculus.VectorField
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-!
 # Vector fields in manifolds
@@ -35,6 +37,8 @@ Note that a smoothness assumption for a vector field is written by seeing the ve
 a function from `M` to its tangent bundle through a coercion, as in:
 `MDifferentiableWithinAt I I.tangent (fun y ↦ (V y : TangentBundle I M)) s x`.
 -/
+
+@[expose] public section
 
 open Set Function Filter
 open scoped Topology Manifold ContDiff

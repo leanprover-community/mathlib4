@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Hull
+module
+
+public import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Convex cones
@@ -35,6 +37,8 @@ While `Convex R` is a predicate on sets, `ConvexCone R M` is a bundled convex co
 * [Stephen P. Boyd and Lieven Vandenberghe, *Convex Optimization*][boydVandenberghe2004]
 * [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace Real Cardinal
 
@@ -334,13 +338,9 @@ def toPartialOrder (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) : 
 /-- A pointed and salient cone defines an `IsOrderedAddMonoid`. -/
 lemma to_isOrderedAddMonoid (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) :
     let _ := toPartialOrder C h₁ h₂
-    IsOrderedAddMonoid G :=
-  let _ := toPartialOrder C h₁ h₂
-  { add_le_add_left := by
-      intro a b hab c
-      change c + b - (c + a) ∈ C
-      rw [add_sub_add_left_eq_sub]
-      exact hab }
+    IsOrderedAddMonoid G where
+  __ := toPartialOrder C h₁ h₂
+  add_le_add_left a b hab c := show b + c - (a + c) ∈ C by rwa [add_sub_add_right_eq_sub]
 
 @[deprecated (since := "2025-06-11")] alias toIsOrderedAddMonoid := to_isOrderedAddMonoid
 
@@ -379,7 +379,6 @@ instance instAddZeroClass : AddZeroClass (ConvexCone R M) where
   add_zero _ := by ext; simp
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone R M) where
-  add := Add.add
   add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 

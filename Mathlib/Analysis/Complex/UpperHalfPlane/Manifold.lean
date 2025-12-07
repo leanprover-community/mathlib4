@@ -3,17 +3,21 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Geometry.Manifold.Algebra.Structures
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Manifold structure on the upper half plane.
 
 In this file we define the complex manifold structure on the upper half-plane.
 -/
+
+@[expose] public section
 
 open Filter
 

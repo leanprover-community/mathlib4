@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Opposite
+module
+
+public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Calculus of fractions
@@ -25,6 +27,8 @@ Similar results are obtained when `W` has a right calculus of fractions.
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

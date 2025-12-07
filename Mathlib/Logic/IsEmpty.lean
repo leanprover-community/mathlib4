@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relator
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Relator
 
 /-!
 # Types that are empty
@@ -15,6 +17,8 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
+
+@[expose] public section
 
 variable {α β γ : Sort*}
 
@@ -233,3 +237,7 @@ theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
 
 theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
   simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
+
+lemma Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
+  have := f.isEmpty
+  ⟨injective_of_subsingleton _, IsEmpty.elim ‹_›⟩

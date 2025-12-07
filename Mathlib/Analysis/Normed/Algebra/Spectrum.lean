@@ -3,14 +3,16 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Analysis.Real.Spectrum
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Analysis.Real.Spectrum
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -33,6 +35,8 @@ Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can 
 * `spectrum.spectralRadius_le_nnnorm`: the spectral radius is bounded above by the norm.
 
 -/
+
+@[expose] public section
 
 assert_not_exists ProbabilityTheory.cond
 assert_not_exists HasFDerivAt
@@ -258,7 +262,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
   by_cases h : ε = 0
-  · simp only [h, zero_mul, zero_le']
+  · simp [h]
   simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
     liminf_eq_iSup_iInf_of_nat', ENNReal.iSup_mul]
   conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul (by simp [h])]
@@ -270,7 +274,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
-  exact mul_le_mul_left' (hN (n + N + 1) (by cutsat)) _
+  grw [hN (n + N + 1) (by lia)]
 
 end SpectrumCompact
 
@@ -326,11 +330,9 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       rcases n with - | n
       · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
-      · refine
-          le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
-            (le_max_left _ _)
+      · grw [nnnorm_pow_le' a n.succ_pos, ← le_max_left]
         by_cases h : ‖a‖₊ = 0
-        · simp only [h, zero_mul, zero_le', pow_succ']
+        · simp [h, pow_succ']
         · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
           simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top

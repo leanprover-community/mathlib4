@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
-import Mathlib.Topology.Sheaves.PUnit
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.Sheaves.Functors
+module
+
+public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Skyscraper (pre)sheaves
@@ -30,6 +32,8 @@ of `p₀`, i.e. if `p₀ ⤳ x` then `𝓕ₓ ≅ A` and if `¬ p₀ ⤳ x` then
 
 TODO: generalize universe level when calculating stalks, after generalizing universe level of stalk.
 -/
+
+@[expose] public section
 
 noncomputable section
 
