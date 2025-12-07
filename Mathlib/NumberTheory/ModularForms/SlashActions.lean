@@ -216,10 +216,9 @@ lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ →
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp
-    have : 0 < t.card := by aesop
     simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ,
       mul_add, mul_one, add_comm]
-    simp [IH ht, mul_slash, show t.card + 1 - 1 = t.card - 1 + 1 by omega, pow_succ,
+    simp [IH ht, mul_slash, show t.card + 1 - 1 = t.card - 1 + 1 by grind, pow_succ,
       ← mul_smul, mul_comm]
 
 lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}

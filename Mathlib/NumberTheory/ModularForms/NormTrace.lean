@@ -139,7 +139,7 @@ open scoped MatrixGroups
 
 lemma ModularForm.isZero_of_neg_weight [𝒢.IsArithmetic]
     {k : ℤ} (hk : k < 0) (f : ModularForm 𝒢 k) : f = 0 := by
-  suffices ModularForm.norm 𝒮ℒ f = 0 by simp_all [ModularForm.norm_eq_zero_iff]
+  suffices ModularForm.norm 𝒮ℒ f = 0 by simpa [ModularForm.norm_eq_zero_iff]
   ext
   -- some friction here because `levelOne_neg_weight_eq_zero` uses `Γ(1)` for the level
   rw [@ModularFormClass.levelOne_neg_weight_eq_zero (f := ModularForm.norm 𝒮ℒ f) _ _ _]
@@ -148,8 +148,8 @@ lemma ModularForm.isZero_of_neg_weight [𝒢.IsArithmetic]
     infer_instance
   · exact mul_neg_of_neg_of_pos hk <| mod_cast Nat.pos_of_ne_zero 𝒢.relIndex_ne_zero
 
-private lemma ModularForm.weight_zero_const₀ [𝒢.IsArithmetic] [𝒢.HasDetOne] (f : ModularForm 𝒢 0) :
-    ∃ c, (f : ℍ → ℂ) = Function.const ℍ c := by
+private lemma ModularForm.eq_const_of_weight_zero₀ [𝒢.IsArithmetic] [𝒢.HasDetOne]
+    (f : ModularForm 𝒢 0) : ∃ c, (f : ℍ → ℂ) = Function.const ℍ c := by
   -- Consider the norm of `f - (f I)`. This must be a constant, since it's a weight 0 level 1 form.
   obtain ⟨c, hc⟩ : ∃ c, (ModularForm.norm 𝒮ℒ (f - .const (f I)) : ℍ → ℂ) = Function.const ℍ c := by
     convert @ModularFormClass.levelOne_weight_zero_const
@@ -163,9 +163,9 @@ private lemma ModularForm.weight_zero_const₀ [𝒢.IsArithmetic] [𝒢.HasDetO
   simp only [Function.const_zero, coe_eq_zero_iff, norm_eq_zero_iff, sub_eq_zero] at hc
   exact ⟨f I, by rw [hc, ModularForm.coe_const, Function.const_apply]⟩
 
-lemma ModularForm.weight_zero_const [𝒢.IsArithmetic] (f : ModularForm 𝒢 0) :
+lemma ModularForm.eq_const_of_weight_zero [𝒢.IsArithmetic] (f : ModularForm 𝒢 0) :
     ∃ c, (f : ℍ → ℂ) = Function.const ℍ c :=
-  weight_zero_const₀ (𝒢 := 𝒢 ⊓ 𝒮ℒ) {
+  eq_const_of_weight_zero₀ (𝒢 := 𝒢 ⊓ 𝒮ℒ) {
     toFun := f
     holo' := f.holo'
     bdd_at_cusps' hc := f.bdd_at_cusps' (hc.mono inf_le_left)
