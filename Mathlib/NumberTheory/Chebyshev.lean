@@ -271,23 +271,6 @@ theorem integral_one_div_log_sq_le_one_div_log_sq {x : ℝ} (hx : 4 ≤ x) :
     gcongr <;> linarith
   all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
-theorem integral_theta_div_log_sq_le {x : ℝ} (hx : 4 ≤ x) :
-    ∫ t in 2..x, θ t / (t * log t ^ 2) ≤ log 4 * (4 * x / log x ^ 2 + √x / log 2 ^ 2) := by
-  trans ∫ t in 2..x, log 4 * (1 / log t ^ 2)
-  · apply intervalIntegral.integral_mono_on (by linarith)
-    · apply intervalIntegrable_iff.mpr
-      rw [Set.uIoc_of_le (by linarith), ← integrableOn_Icc_iff_integrableOn_Ioc]
-      apply integrable_theta_div
-    · apply IntervalIntegrable.const_mul
-      apply intervalIntegrable_one_div_log_sq <;> linarith
-    · intro x hx
-      grw [theta_le_log4_mul_x (by linarith [hx.1])]
-      · field_simp [(by linarith [hx.1] : x ≠ 0)]
-        rfl
-      · have : 1 < x := by linarith [hx.1]
-        positivity
-  grw [intervalIntegral.integral_const_mul, integral_one_div_log_sq_le_one_div_log_sq hx]
-
 theorem sqrt_isBigO :
     Real.sqrt =O[atTop] (fun x ↦ x / log x ^2) := by
   apply isBigO_mul_iff_isBigO_div _|>.mp
@@ -301,27 +284,50 @@ theorem sqrt_isBigO :
   filter_upwards [eventually_gt_atTop 1] with x hx
   apply pow_ne_zero _ <| log_ne_zero.mpr ⟨_, _, _⟩ <;> linarith
 
-theorem integral_theta_div_log_sq_isBigO :
-    (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by
-  trans (fun x ↦ log 4 * (4 * x / log x ^ 2 + √x / log 2 ^ 2))
-  · rw [isBigO_iff]
-    use 1
+theorem integral_one_div_log_sq_isBigO :
+    (fun x ↦ ∫ t in 2..x, 1 / log t ^ 2) =O[atTop] (fun x ↦ x / log x ^ 2) := by
+  trans (fun x ↦  4 * x / log x ^ 2 + √x / log 2 ^ 2)
+  · apply IsBigO.of_bound'
     filter_upwards [eventually_ge_atTop 4] with x hx
     apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)
-    rw [intervalIntegral.integral_congr (g := (fun t ↦ θ t / (t * log t ^2)))]
-    · grw [integral_theta_div_log_sq_le hx, norm_of_nonneg, one_mul]
+    rw [intervalIntegral.integral_congr (g := (fun t ↦ 1 / log t ^2))]
+    · grw [integral_one_div_log_sq_le_one_div_log_sq hx, norm_of_nonneg]
       positivity
     intro t ht
     simp only [abs_eq_self]
-    apply div_nonneg <| theta_nonneg _
-    rw [Set.uIcc_of_le (by linarith)] at ht
-    have : 1 < t := by linarith [ht.1]
     positivity
-  refine IsBigO.const_mul_left (IsBigO.add ?_ ?_) _
+  refine IsBigO.add ?_ ?_
   · simp_rw [mul_div_assoc]
     apply isBigO_const_mul_self
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
   apply IsBigO.const_mul_left sqrt_isBigO
+
+theorem integral_theta_div_log_sq_isBigO :
+    (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by
+  apply IsBigO.trans _ integral_one_div_log_sq_isBigO
+  apply IsBigO.of_bound (log 4)
+  filter_upwards [eventually_ge_atTop 4] with x hx
+  simp_rw [norm_eq_abs]
+  apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)
+  apply le_trans (intervalIntegral.integral_mono_on (g := (fun t ↦ log 4 * (1 / log t ^ 2)))
+    (by linarith) ..)
+  · rw [intervalIntegral.integral_const_mul, abs_of_nonneg]
+    apply intervalIntegral.integral_nonneg (by linarith) fun u hu ↦ ?_
+    positivity
+  · apply IntervalIntegrable.abs
+    apply intervalIntegrable_iff.mpr
+    rw [Set.uIoc_of_le (by linarith), ← integrableOn_Icc_iff_integrableOn_Ioc]
+    apply integrable_theta_div
+  · apply IntervalIntegrable.const_mul
+    apply intervalIntegrable_one_div_log_sq <;> linarith
+  · intro t ht
+    have : 1 ≤ t := by linarith [ht.1]
+    rw [abs_of_nonneg]
+    · grw [theta_le_log4_mul_x (by linarith)]
+      field_simp
+      rfl
+    apply div_nonneg <| theta_nonneg _
+    positivity
 
 theorem integral_theta_div_log_sq_isLittleO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =o[atTop] (fun x ↦ x / log x) := by
