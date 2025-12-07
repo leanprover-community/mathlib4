@@ -317,25 +317,4 @@ initialize addLinter unusedDecidableInType
 
 end Decidable
 
-def erase (e : Expr) : MetaM (Array Nat) := do
-  let e ← e.eraseProofs
-  return e.getUnusedForallInstanceBinderIdxsWhere isDecidableVariant
-
-def instantiate (e : Expr) : MetaM (Array Nat) := do
-  e.collectUnusedInstanceIdxsOf isDecidableVariant
-
-def test : Linter where
-  run stx := do
-    if stx.isOfKind ``Parser.Command.eoi then
-      let opts := (← getOptions).setBool `profiler true
-      let consts := (← getEnv).constants.map₂
-      profileitM Exception "instantiate" opts do
-        for (_,c) in consts do
-          let _ ← liftTermElabM do instantiate c.type
-      profileitM Exception "erase" opts do
-        for (_,c) in consts do
-          let _ ← liftTermElabM do erase c.type
-
-initialize addLinter test
-
 end Mathlib.Linter.UnusedInstancesInType
