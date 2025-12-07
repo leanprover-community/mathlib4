@@ -682,7 +682,7 @@ theorem Indep.exists_insert_of_not_maximal (M : Matroid α) ⦃I B : Set α⦄ (
 
 theorem Indep.isBase_of_forall_insert (hB : M.Indep B)
     (hBmax : ∀ e ∈ M.E \ B, ¬ M.Indep (insert e B)) : M.IsBase B := by
-  refine by_contra fun hnb ↦ ?_
+  by_contra hnb
   obtain ⟨B', hB'⟩ := M.exists_isBase
   obtain ⟨e, he, h⟩ := hB.exists_insert_of_not_isBase hnb hB'
   exact hBmax e ⟨hB'.subset_ground he.1, he.2⟩ h

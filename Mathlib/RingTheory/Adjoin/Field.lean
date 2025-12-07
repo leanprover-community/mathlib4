@@ -87,7 +87,8 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
       refine Splits.splits_of_dvd H2 (map_ne_zero (minpoly.ne_zero H1)) ?_
       rw [IsScalarTower.algebraMap_eq F Ks L, ← map_map, map_dvd_map']
       exact minpoly.dvd_map_of_isScalarTower F Ks a
-    obtain ⟨y, hy⟩ := Polynomial.exists_root_of_splits _ H6 (minpoly.degree_pos H5).ne'
+    obtain ⟨y, hy⟩ := H6.exists_eval_eq_zero (by simp [(minpoly.degree_pos H5).ne'])
+    rw [eval_map] at hy
     exact ⟨Subalgebra.ofRestrictScalars F _ <| Algebra.adjoin.liftSingleton Ks a y hy⟩
 
 end Embeddings
@@ -102,7 +103,7 @@ theorem IsIntegral.mem_range_algHom_of_minpoly_splits
     (int : IsIntegral R x) (h : Splits ((minpoly R x).map (algebraMap R K))) (f : K →ₐ[R] L) :
     x ∈ f.range :=
   show x ∈ Set.range f from Set.image_subset_range _ ((minpoly R x).rootSet K) <| by
-    rw [image_rootSet h f, mem_rootSet']
+    rw [h.image_rootSet, mem_rootSet']
     exact ⟨((minpoly.monic int).map _).ne_zero, minpoly.aeval R x⟩
 
 theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScalarTower R K L]
