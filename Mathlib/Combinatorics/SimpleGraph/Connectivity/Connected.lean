@@ -653,6 +653,12 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 
 @[deprecated (since := "2025-05-08")] alias connected_induce_supp := connected_toSimpleGraph
 
+theorem maximal_connected_induce_supp (C : G.ConnectedComponent) :
+    Maximal (G.induce · |>.Connected) C.supp := by
+  refine C.ind fun v ↦ ?_
+  refine ⟨connected_toSimpleGraph _, fun s hconn hle u hu ↦ ConnectedComponent.sound ?_⟩
+  exact hconn.preconnected ⟨u, hu⟩ ⟨v, hle rfl⟩ |>.map <| Embedding.induce s |>.toHom
+
 end ConnectedComponent
 
 /-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph

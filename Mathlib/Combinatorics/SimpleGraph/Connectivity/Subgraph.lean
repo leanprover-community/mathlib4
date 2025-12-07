@@ -150,6 +150,22 @@ lemma spanningCoe_toSubgraph : C.toSubgraph.spanningCoe = C.toSimpleGraph.spanni
 lemma connected_toSubgraph : C.toSubgraph.Connected :=
   ⟨C.coe_toSubgraph ▸ C.connected_toSimpleGraph⟩
 
+theorem maximal_connected_toSubgraph (C : G.ConnectedComponent) :
+    Maximal Subgraph.Connected C.toSubgraph := by
+  refine C.ind fun v ↦ ⟨connected_toSubgraph _, fun G' hconn hle ↦ ?_⟩
+  refine le_trans Subgraph.le_induce_top_verts <| Subgraph.induce_mono_right fun u hu ↦ ?_
+  exact ConnectedComponent.sound <| hconn.coe.preconnected ⟨u, hu⟩ ⟨v, hle.left rfl⟩ |>.map G'.hom
+
+theorem maximal_subgraph_connected_iff (G' : G.Subgraph) :
+    Maximal Subgraph.Connected G' ↔ ∃ C : G.ConnectedComponent, C.toSubgraph = G' := by
+  refine ⟨fun ⟨hconn, h⟩ ↦ ?_, fun ⟨C, h⟩ ↦ ?_⟩
+  · have ⟨v, hv⟩ := hconn.nonempty
+    suffices G' ≤ (G.connectedComponentMk v).toSubgraph from
+      ⟨G.connectedComponentMk v, le_antisymm (h (connected_toSubgraph _) this) this⟩
+    exact le_trans Subgraph.le_induce_top_verts <| Subgraph.induce_mono_right fun u hu ↦
+      ConnectedComponent.sound <| hconn.coe.preconnected ⟨u, hu⟩ ⟨v, hv⟩ |>.map G'.hom
+  · exact h ▸ maximal_connected_toSubgraph _
+
 end ConnectedComponent
 
 /-! ### Walks as subgraphs -/
