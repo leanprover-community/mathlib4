@@ -502,6 +502,7 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
 
 /-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of
 `M1.concat M2` is exactly equal to `L = L1 * L2`. -/
+@[simp]
 theorem accepts_concat : (M1.concat M2).accepts = M1.accepts * M2.accepts := by
   simp [acceptsFrom_concat_inl, accepts]
 
@@ -528,6 +529,6 @@ theorem IsRegular.mul {L1 L2 : Language α}
   (h1 : L1.IsRegular) (h2 : L2.IsRegular) : (L1 * L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
-  ⟨_, inferInstance, (M1.toNFA.concat M2.toNFA).toDFA, by simp [NFA.accepts_concat, hM1, hM2]⟩
+  ⟨_, inferInstance, (M1.toNFA.concat M2.toNFA).toDFA, by simp [hM1, hM2]⟩
 
 end Language
