@@ -795,4 +795,4 @@ theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) 
 
 end
 
-
+end
