@@ -3,9 +3,11 @@ Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.GaussLemma
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -15,16 +17,18 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 ## Main results
 
 * `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
-    polynomial over the ring is the same as the minimal polynomial over the fraction field.
+  polynomial over the ring is the same as the minimal polynomial over the fraction field.
 
-* `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
-    any primitive polynomial that has the integral element as root.
+* `minpoly.isIntegrallyClosed_dvd`: For integrally closed domains, the minimal polynomial divides
+  any primitive polynomial that has the integral element as root.
 
-* `IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
-    uniquely characterized by its defining property: if there is another monic polynomial of minimal
-    degree that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
+* `IsIntegrallyClosed.Minpoly.unique`: The minimal polynomial of an element `x` is uniquely
+  characterized by its defining property: if there is another monic polynomial of minimal degree
+  that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
+
+@[expose] public section
 
 open Polynomial Set Function minpoly
 
@@ -70,7 +74,6 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   let K := FractionRing R
   let L := FractionRing S
   let _ : Algebra K L := FractionRing.liftAlgebra R L
-  have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
     · refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
@@ -101,11 +104,25 @@ theorem ker_eval {s : S} (hs : IsIntegral R s) :
 /-- If an element `x` is a root of a nonzero polynomial `p`, then the degree of `p` is at least the
 degree of the minimal polynomial of `x`. See also `minpoly.degree_le_of_ne_zero` which relaxes the
 assumptions on `S` in exchange for stronger assumptions on `R`. -/
-theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p : R[X]}
+theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} {p : R[X]}
     (hp0 : p ≠ 0) (hp : Polynomial.aeval s p = 0) : degree (minpoly R s) ≤ degree p := by
+  by_cases! hs : ¬IsIntegral R s
+  · simp [minpoly, hs]
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
+
+/-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral
+iff the leading coefficient of `p` is a unit. -/
+theorem IsIntegrallyClosed.isIntegral_iff_isUnit_leadingCoeff {x : S} {p : R[X]}
+    (hirr : Irreducible p) (hp : p.aeval x = 0) :
+    IsIntegral R x ↔ IsUnit p.leadingCoeff where
+  mp int_x := by
+    obtain ⟨p, rfl⟩ := isIntegrallyClosed_dvd int_x hp
+    rw [leadingCoeff_mul, monic int_x, one_mul]
+    exact ((of_irreducible_mul hirr).resolve_left (not_isUnit R x)).map leadingCoeffHom
+  mpr isUnit := by
+    simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
@@ -118,10 +135,37 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_gt ?_
+  refine IsIntegrallyClosed.degree_le_of_ne_zero (s := s) hnz (by simp [hP]) |>.not_gt ?_
   refine degree_sub_lt ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
+
+theorem IsIntegrallyClosed.unique_of_degree_le_degree_minpoly {s : S} {p : R[X]} (hmo : p.Monic)
+    (hp : p.aeval s = 0) (pmin : p.degree ≤ (minpoly R s).degree) : p = minpoly R s :=
+  IsIntegrallyClosed.minpoly.unique hmo hp fun _ qm hq ↦ pmin.trans <| min _ _ qm hq
+
+theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_dvd {s : S} {p : R[X]} (hp : p.aeval s = 0)
+    (h₀ : p ≠ 0) (pmin : ∀ q : R[X], q.Monic → q.aeval s = 0 → p.degree ≤ q.degree) :
+    IsIntegral R s ↔ C p.leadingCoeff ∣ p := by
+  refine ⟨fun hInt ↦ ?_, fun ⟨q, hMul⟩ ↦ minpoly.ne_zero_iff.mp ?_⟩
+  · use minpoly R s
+    have ⟨q, hMul⟩ := isIntegrallyClosed_dvd hInt hp
+    suffices q.degree ≤ 0 by simp [degree_le_zero_iff.mp this ▸ hMul, minpoly.monic hInt, mul_comm]
+    apply WithBot.le_of_add_le_add_left <| Polynomial.degree_ne_bot.mpr <| minpoly.ne_zero hInt
+    convert pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
+    · rw [hMul, degree_mul]
+    · rw [add_zero]
+  · convert right_ne_zero_of_mul <| hMul ▸ h₀
+    refine IsIntegrallyClosed.minpoly.unique ?_ ?_ ?_ |>.symm
+    · have := hMul ▸ leadingCoeff_mul .. |>.symm
+      simp only [leadingCoeff_C, ne_eq, leadingCoeff_eq_zero, h₀, not_false_eq_true, mul_eq_left₀]
+        at this
+      exact this
+    · have := congrArg (Polynomial.aeval s) hMul
+      simp only [hp, h₀, map_mul, aeval_C, zero_eq_mul, FaithfulSMul.algebraMap_eq_zero_iff,
+        leadingCoeff_eq_zero, false_or] at this
+      exact this
+    · exact (hMul ▸ degree_C_mul <| by simp [h₀]) ▸ pmin
 
 theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine
@@ -141,14 +185,20 @@ variable {x : S}
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
-  rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
-    isIntegrallyClosed_dvd_iff hx, ← AdjoinRoot.mk_eq_zero] at hP₁
+  simpa [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx, ← aeval_def] using hP₁
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
-@[simps!]
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
   AlgEquiv.ofBijective (Minpoly.toAdjoin R x)
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
+
+@[simp]
+theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) : equivAdjoin hx = Minpoly.toAdjoin R x := rfl
+
+@[simp]
+theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.toAdjoin R x := rfl
+
+@[deprecated (since := "2025-07-21")] alias equivAdjoin_apply := coe_equivAdjoin
 
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/
@@ -164,25 +214,44 @@ theorem _root_.Algebra.adjoin.powerBasis'_dim (hx : IsIntegral R x) :
 theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
     (adjoin.powerBasis' hx).gen = ⟨x, SetLike.mem_coe.1 <| subset_adjoin <| mem_singleton x⟩ := by
   rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
-    AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftHom_root]
+    AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftAlgHom_root]
 
-/-- The power basis given by `x` if `B.gen ∈ adjoin R {x}`. -/
-noncomputable def _root_.PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) : PowerBasis R S :=
-  (Algebra.adjoin.powerBasis' hint).map <|
-    (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
-      Subalgebra.topEquiv
+/--
+If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
+See `PowerBasis.ofAdjoinEqTop` for a version over a field.
+-/
+noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
+    (hx' : adjoin R {x} = ⊤) :
+    PowerBasis R S :=
+  (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
+
+example {x : S} (B : PowerBasis R S)
+    (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
+    PowerBasis R S := by
+  apply PowerBasis.ofAdjoinEqTop' hint
+  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin' :=
+  _root_.PowerBasis.ofAdjoinEqTop'
 
 @[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_dim (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
-    (B.ofGenMemAdjoin' hint hx).dim = (minpoly R x).natDegree := rfl
+theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
+    (hx' : adjoin R {x} = ⊤) :
+    (PowerBasis.ofAdjoinEqTop' hx hx').dim = (minpoly R x).natDegree := rfl
 
 @[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
-    (B.ofGenMemAdjoin' hint hx).gen = x := by
-  simp [PowerBasis.ofGenMemAdjoin']
+theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
+    (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
+  simp [PowerBasis.ofAdjoinEqTop']
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_dim :=
+   _root_.PowerBasis.ofAdjoinEqTop'_dim
+
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_gen :=
+  _root_.PowerBasis.ofAdjoinEqTop'_gen
 
 end AdjoinRoot
 

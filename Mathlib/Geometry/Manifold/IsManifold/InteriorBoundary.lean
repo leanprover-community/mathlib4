@@ -3,8 +3,9 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 
 /-!
 # Interior and boundary of a manifold
@@ -51,6 +52,8 @@ this requires a definition of submanifolds
 
 -/
 
+@[expose] public section
+
 open Set
 open scoped Topology
 
@@ -79,7 +82,7 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 lemma isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
   ⟨fun h ↦ (chartAt H x).mem_interior_extend_target (mem_chart_target H x) h,
-    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
+    fun h ↦ OpenPartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
 
 variable (M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
@@ -176,7 +179,7 @@ instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
 lemma Boundaryless.iff_boundary_eq_empty : I.boundary M = ∅ ↔ BoundarylessManifold I M := by
   refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty⟩
   intro x
-  show x ∈ I.interior M
+  change x ∈ I.interior M
   rw [← compl_interior, compl_empty_iff] at h
   rw [h]
   trivial
@@ -206,7 +209,7 @@ lemma interior_prod :
   · replace hp : (I.prod J).IsInteriorPoint p := hp
     rw [IsInteriorPoint, ← aux] at hp
     exact hp
-  · show (I.prod J).IsInteriorPoint p
+  · change (I.prod J).IsInteriorPoint p
     rw [IsInteriorPoint, ← aux, mem_prod]
     obtain h := Set.mem_prod.mp hp
     rw [ModelWithCorners.interior] at h

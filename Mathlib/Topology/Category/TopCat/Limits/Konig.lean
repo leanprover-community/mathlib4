@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Topological Kőnig's lemma
@@ -28,6 +30,8 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -120,10 +124,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
       partialSections.closed F _
   use u
   intro X Y f
-  let G : FiniteDiagram J :=
-    ⟨{X, Y},
-      {⟨X, Y, by simp only [true_or, eq_self_iff_true, Finset.mem_insert], by
-          simp only [eq_self_iff_true, or_true, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
+  let G : FiniteDiagram J := ⟨{X, Y}, {⟨X, Y, by grind, by grind, f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
 
 end TopologicalKonig

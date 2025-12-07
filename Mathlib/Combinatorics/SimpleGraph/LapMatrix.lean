@@ -3,8 +3,10 @@ Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 
 /-!
 # Laplacian Matrix
@@ -23,8 +25,9 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 
 -/
 
+@[expose] public section
 
-open Finset Matrix
+open Finset Matrix Module
 
 namespace SimpleGraph
 
@@ -177,7 +180,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   intro g h0
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
-    simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk, AddSubmonoid.coe_finset_sum]
+    simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk]
     repeat rw [AddSubmonoid.coe_finset_sum]
     ext i
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,

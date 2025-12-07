@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Prime
+module
+
+public import Mathlib.RingTheory.Ideal.Prime
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type
@@ -20,6 +22,8 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 * `PrimeSpectrum R`: The prime spectrum of a commutative (semi)ring `R`,
   i.e., the set of all prime ideals of `R`.
 -/
+
+@[expose] public section
 
 /-- The prime spectrum of a commutative (semi)ring `R` is the type of all prime ideals of `R`.
 
@@ -62,8 +66,6 @@ variable (R) in
 def equivSubtype : PrimeSpectrum R ≃o {I : Ideal R // I.IsPrime} where
   toFun I := ⟨I.asIdeal, I.2⟩
   invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := .rfl
 
 end PrimeSpectrum

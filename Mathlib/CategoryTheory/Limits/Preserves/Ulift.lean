@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `ULift` creates small (co)limits
@@ -19,6 +21,8 @@ As this functor is fully faithful, we also deduce that it creates `u`-small limi
 colimits.
 
 -/
+
+@[expose] public section
 
 universe v w w' u
 
@@ -33,8 +37,6 @@ def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
@@ -65,9 +67,10 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
   preservesColimitsOfShape {J _} :=
   { preservesColimit := fun {F} ↦
     { preserves := fun {c} hc ↦ by
-        rw [isColimit_iff_bijective_desc, ← Function.Bijective.of_comp_iff _
-          (quotQuotUliftEquiv F).bijective, Quot.desc_quotQuotUliftEquiv]
-        exact ULift.up_bijective.comp ((isColimit_iff_bijective_desc c).mp (Nonempty.intro hc)) } }
+        rw [isColimit_iff_coconeTypesIsColimit]
+        exact (((isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩).precompose
+          (G := F ⋙ uliftFunctor.{v}) (fun _ ↦ Equiv.ulift)
+          (fun _ ↦ rfl)).of_equiv Equiv.ulift.symm (fun _ _ ↦ rfl) } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimits.

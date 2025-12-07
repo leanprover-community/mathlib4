@@ -3,11 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Bind
+module
+
+public import Mathlib.Data.Multiset.Bind
 
 /-!
 # Sections of a multiset
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -41,7 +45,7 @@ theorem coe_sections :
   | a :: l => by
     simp only [List.map_cons, List.sections]
     rw [← cons_coe, sections_cons, bind_map_comm, coe_sections l]
-    simp [List.sections, Function.comp_def, List.flatMap]
+    simp [Function.comp_def, List.flatMap]
 
 @[simp]
 theorem sections_add (s t : Multiset (Multiset α)) :

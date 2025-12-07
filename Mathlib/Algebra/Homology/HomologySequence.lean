@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # The homology sequence
@@ -28,6 +30,8 @@ the Liquid Tensor Experiment.
 * https://stacks.math.columbia.edu/tag/0111
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
@@ -110,15 +114,10 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  dsimp
+  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
+  dsimp [-Fin.reduceFinMk]
   infer_instance
 
 include hij in
@@ -152,12 +151,6 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -165,7 +158,8 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    (homologyMap φ j) (by simp) (by simp) (by simp)
+    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
+    (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
 
 end HomologySequence
 
@@ -282,7 +276,7 @@ namespace ShortComplex
 
 namespace ShortExact
 
-/-- The connecting homoomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
+/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
 short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 
@@ -343,6 +337,22 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.X₃.X i) (hx₃ : x₃ ≫ S.X₃.d i j = 0
       (by rw [← cancel_mono (S.X₂.iCycles j), HomologicalComplex.liftCycles_comp_cyclesMap,
         HomologicalComplex.liftCycles_i, assoc, assoc, opcyclesToCycles_iCycles,
         HomologicalComplex.p_fromOpcycles, hx₁])
+
+theorem mono_δ (hi : IsZero (S.X₂.homology i)) : Mono (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).mono_δ hi
+
+theorem epi_δ (hj : IsZero (S.X₂.homology j)) : Epi (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).epi_δ hj
+
+theorem isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    IsIso (hS.δ i j hij) :=
+  (HomologicalComplex.HomologySequence.snakeInput _ _ _ _).isIso_δ hi hj
+
+/-- If `c.Rel i j` and `Hᵢ(X₂), Hⱼ(X₂)` are trivial, `δ` defines an isomorphism
+`Hᵢ(X₃) ≅ Hⱼ(X₁)`. -/
+noncomputable def δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
+    S.X₃.homology i ≅ S.X₁.homology j :=
+  @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
 
 end ShortExact
 

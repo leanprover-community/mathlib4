@@ -3,13 +3,17 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.Subgroup.Center
-import Mathlib.GroupTheory.Submonoid.Centralizer
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.GroupTheory.Submonoid.Centralizer
 
 /-!
 # Centralizers of subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -21,7 +25,7 @@ variable {H K : Subgroup G}
 
 /-- The `centralizer` of `s` is the subgroup of `g : G` commuting with every `h : s`. -/
 @[to_additive
-      "The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`."]
+/-- The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`. -/]
 def centralizer (s : Set G) : Subgroup G :=
   { Submonoid.centralizer s with
     carrier := Set.centralizer s
@@ -69,7 +73,13 @@ theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
   rw [← map_mul, ← map_mul, hg h hh]
 
 @[to_additive]
-instance Centralizer.characteristic [hH : H.Characteristic] :
+instance normal_centralizer [H.Normal] : (centralizer H : Subgroup G).Normal where
+  conj_mem g hg i h hh := by
+    simpa [-mul_left_inj, -mul_right_inj, mul_assoc]
+      using congr(i * $(hg _ <| ‹H.Normal›.conj_mem _ hh i⁻¹) * i⁻¹)
+
+@[to_additive]
+instance characteristic_centralizer [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
   refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
   rw [map_mul, map_mul]
@@ -79,11 +89,6 @@ instance Centralizer.characteristic [hH : H.Characteristic] :
 theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
   ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
     fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
-
-@[deprecated (since := "2025-04-09")] alias le_centralizer_iff_isCommutative :=
-  le_centralizer_iff_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.le_centralizer_iff_isCommutative :=
-  AddSubgroup.le_centralizer_iff_isAddCommutative
 
 variable (H)
 
@@ -97,10 +102,29 @@ lemma closure_le_centralizer_centralizer (s : Set G) :
     closure s ≤ centralizer (centralizer s) :=
   closure_le _ |>.mpr Set.subset_centralizer_centralizer
 
+@[to_additive]
+theorem centralizer_closure (s : Set G) : centralizer (closure s) = centralizer s :=
+  le_antisymm (centralizer_le subset_closure)
+    (le_centralizer_iff.mp (closure_le_centralizer_centralizer s))
+
+@[to_additive]
+theorem centralizer_eq_iInf (s : Set G) : centralizer s = ⨅ g ∈ s, centralizer {g} :=
+  le_antisymm (le_iInf₂ fun g hg ↦ centralizer_le (Set.singleton_subset_iff.mpr hg)) fun x hx ↦ by
+    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using hx
+
+@[to_additive]
+theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
+    center G = ⨅ g ∈ s, centralizer {g} := by
+  rw [← centralizer_univ, ← coe_top, ← hs, centralizer_closure, centralizer_eq_iInf]
+
+@[to_additive]
+theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
+    center G = ⨅ g : s, centralizer {(g : G)} := by
+  rw [center_eq_iInf hs, ← iInf_subtype'']
+
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
-      "If all the elements of a set `s` commute, then `closure s` is an additive
-      commutative group."]
+/-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
 abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
     CommGroup (closure k) :=
   { (closure k).toGroup with

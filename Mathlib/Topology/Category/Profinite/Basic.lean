@@ -3,10 +3,12 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Profinite
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -37,11 +39,14 @@ profinite
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Topology CompHausLike
 
 /-- The type of profinite topological spaces. -/
+@[to_additive self]
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
@@ -105,7 +110,6 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     { toFun := Continuous.connectedComponentsLift g.hom.2
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.2 }
   left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
-  right_inv _ := TopCat.ext fun _ => rfl
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.

@@ -3,13 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Multiset.ZeroCons
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Counting multiplicity in a multiset
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -180,7 +184,7 @@ theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x :
 
 theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => Quotient.eq.trans <| by
-    simp only [quot_mk_to_coe, mem_coe, coe_count, decide_eq_true_eq]
+    simp only [quot_mk_to_coe, coe_count]
     apply perm_iff_count
 
 @[ext]
@@ -208,7 +212,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   | cons y s ih =>
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
-    simp only [decide_eq_true_eq, Nat.add_right_inj]
+    simp only [Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 
 end Rel
@@ -219,7 +223,7 @@ variable {s : Multiset α} {a : α}
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
-    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    simp only [quot_mk_to_coe'', coe_nodup, coe_count]
     exact List.nodup_iff_count_le_one
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=

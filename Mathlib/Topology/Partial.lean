@@ -3,15 +3,19 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Partial
-import Mathlib.Topology.Neighborhoods
+module
+
+public import Mathlib.Order.Filter.Partial
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Partial functions and topological spaces
 
-In this file we prove properties of `Filter.PTendsto` etc in topological spaces. We also introduce
+In this file we prove properties of `Filter.PTendsto` etc. in topological spaces. We also introduce
 `PContinuous`, a version of `Continuous` for partially defined functions.
 -/
+
+@[expose] public section
 
 
 open Filter
@@ -20,15 +24,15 @@ open Topology
 
 variable {X Y : Type*} [TopologicalSpace X]
 
-theorem rtendsto_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+theorem rtendsto_nhds {r : SetRel Y X} {l : Filter Y} {x : X} :
     RTendsto r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.core s ∈ l :=
   all_mem_nhds_filter _ _ (fun _s _t => id) _
 
-theorem rtendsto'_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+theorem rtendsto'_nhds {r : SetRel Y X} {l : Filter Y} {x : X} :
     RTendsto' r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
-  apply Rel.preimage_mono
+  apply SetRel.preimage_mono
 
 theorem ptendsto_nhds {f : Y →. X} {l : Filter Y} {x : X} :
     PTendsto f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.core s ∈ l :=
@@ -68,7 +72,7 @@ theorem pcontinuous_iff' {f : X →. Y} :
     have : PTendsto' f (𝓝 x) (𝓝 y) := hf fxy
     rw [ptendsto'_def] at this
     exact this s hs
-  show f.preimage s ∈ 𝓝 x
+  change f.preimage s ∈ 𝓝 x
   apply h'
   rw [mem_nhds_iff]
   exact ⟨s, Set.Subset.refl _, os, ys⟩

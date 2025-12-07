@@ -13,10 +13,11 @@ jobs:
   build:
     name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
@@ -24,7 +25,7 @@ jobs:
 
     # Checkout the master branch into a subdirectory
     - name: Checkout master branch
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       with:
         # When testing the scripts, comment out the "ref: master"
         ref: master
@@ -59,7 +60,7 @@ jobs:
         fi
 
     - name: Set up Python
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
       with:
         python-version: 3.12
 
@@ -85,7 +86,7 @@ jobs:
         git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
         echo "Checking for renamed files..."
 
-        # Shows the `R`enamed files, in human readable format
+        # Shows the `R`enamed files, in human-readable format
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
@@ -110,23 +111,32 @@ jobs:
       run: |
         cd pr-branch
         touch moved_without_deprecation.txt
+        touch extraneous_deprecated_module.txt
         git checkout ${{ github.base_ref }}
         while IFS= read -r file
         do
           if grep ^deprecated_module "${file}" ; then
-            printf 'info: removed file %s contains a deprecation\n' "${file}"
+            # shellcheck disable=SC2016
+            printf '\n⚠️ **warning**: removed file `%s` contains a module deprecation: please add this in a follow-up PR instead\n' "${file}" |
+              tee -a extraneous_deprecated_module.txt
           else
             # shellcheck disable=SC2016
-            printf '\n⚠️ **warning**: file `%s` was removed without a module deprecation\n' "${file}" |
+            printf '\nnote: file `%s` was removed.\nPlease create a follow-up pull request adding a module deprecation. Thanks!\n' "${file}" |
               tee -a moved_without_deprecation.txt
           fi
         done < removed_files.txt
         IFS=$'\n'
         while IFS= read -r file
         do
-          # shellcheck disable=SC2016
-          printf '\n⚠️ **warning**: file %s without a module deprecation\n' "${file}" |
-            tee -a moved_without_deprecation.txt
+          if grep ^deprecated_module "${file}" ; then
+            # shellcheck disable=SC2016
+            printf '\n⚠️ **warning**: renamed file `%s` contains a module deprecation: please add this in a follow-up PR instead\n' "${file}" |
+              tee -a extraneous_deprecated_module.txt
+          else
+            # shellcheck disable=SC2016
+            printf '\nnote: file `%s` without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
+              tee -a moved_without_deprecation.txt
+          fi
         done < renamed_files.txt
 
         # we return to the PR branch, since the next step wants it!
@@ -209,11 +219,17 @@ jobs:
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
 
-        echo "Include any errors about removed or renamed files without deprecation."
+        echo "Include any errors about removed or renamed files without deprecation,"
+        echo "as well as errors about extraneous deprecated_module additions."
         if [ -s moved_without_deprecation.txt ]
         then
           printf '\n\n---\n\n' >> please_merge_master.md
           cat moved_without_deprecation.txt >> please_merge_master.md
+        fi
+        if [ -s extraneous_deprecated_module.txt ]
+        then
+          printf '\n\n---\n\n' >> please_merge_master.md
+          cat extraneous_deprecated_module.txt >> please_merge_master.md
         fi
 
         cat please_merge_master.md
