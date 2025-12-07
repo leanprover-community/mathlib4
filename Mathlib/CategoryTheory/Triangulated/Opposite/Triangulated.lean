@@ -10,6 +10,10 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 /-!
 # The opposite of a triangulated category is triangulated
 
+The pretriangulated structure on `Cᵒᵖ` was constructed in the file
+`CategoryTheory.Triangulated.Opposite.Pretriangulated`. Here, we show
+that `Cᵒᵖ` is triangulated if `C` is triangulated.
+
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
