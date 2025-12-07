@@ -299,8 +299,8 @@ lemma opShiftFunctorEquivalenceSymmHomEquiv_left_inv
 @[reassoc]
 lemma shift_opShiftFunctorEquivalenceSymmHomEquiv_unop
     {n : ℤ} {X Y : Cᵒᵖ} (f : Opposite.op (X.unop⟦n⟧) ⟶ Y) :
-      (opShiftFunctorEquivalenceSymmHomEquiv f).unop⟦n⟧' =
-        ((opShiftFunctorEquivalence C n).unitIso.hom.app Y).unop ≫ f.unop := by
+    (opShiftFunctorEquivalenceSymmHomEquiv f).unop⟦n⟧' =
+      ((opShiftFunctorEquivalence C n).unitIso.hom.app Y).unop ≫ f.unop := by
   rw [← opShiftFunctorEquivalenceSymmHomEquiv_left_inv]
   simp
 
