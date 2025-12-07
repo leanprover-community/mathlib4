@@ -40,6 +40,10 @@ two technical definitions:
 
 These definitions are just handy tools for some proofs of this file, so they are only included
 there, and not exported.
+
+Note that the theory of Stieltjes measures is not completely satisfactory when there is a bot
+element `x`: any Stieljes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
+is not representable as a Stieljes measure.
 -/
 
 noncomputable section
