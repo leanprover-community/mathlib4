@@ -44,60 +44,38 @@ theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : 
     grind
   have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by
     by_contra hq
-    simp at hq
+    simp only [ne_eq, not_or, not_not] at hq
     rw [hq.1] at h₁
     rw [hq.2.1] at h₂
     grind [angle_self_left]
   have h_not_col' : ¬ Collinear ℝ {a', b', c'} := by
-    by_contra hcol
-    rw [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi] at hcol
-    rcases hcol with (h1 | h2 | h3 | h4)
-    · rw [h1] at h₁ h₂
-      simp at h₁
-      have : b' ≠ c' :=by grind
-      rw [angle_self_of_ne this] at h₂
-      have := collinear_of_angle_eq_zero h₂
-      rw [Set.pair_comm, Set.insert_comm] at this
-      grind
-    · rw [h2] at h₁ h₂
-      grind [angle_self_left, angle_self_right]
-    · rw [h3] at h₁
-      grind [collinear_of_angle_eq_zero]
-    · rw [h4] at h₁
-      grind [collinear_of_angle_eq_pi]
+    grind only [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, angle_self_right,
+      angle_self_left, Set.insert_comm, Set.pair_comm]
   have h_pos1 : 0 < dist a b := by simp [dist_pos, ne₁₂_of_not_collinear h_not_col]
   have h_pos1' : 0 < dist a' b' := by simp [dist_pos, ne₁₂_of_not_collinear h_not_col']
   have h_pos2 : 0 < dist b c := by simp [dist_pos, ne₂₃_of_not_collinear h_not_col]
   have h_pos2' : 0 < dist b' c' := by simp [dist_pos, ne₂₃_of_not_collinear h_not_col']
   have h₃ : ∠ c a b = ∠ c' a' b' := by
-    have h1 := angle_add_angle_add_angle_eq_pi c (ne₁₂_of_not_collinear h_not_col)
-    have h2 := angle_add_angle_add_angle_eq_pi c' (ne₁₂_of_not_collinear h_not_col')
-    rw [← h2] at h1
-    rw [angle_comm] at h₁ h₂
-    rw [h₁, h₂, angle_comm b' c', angle_comm a' b' c'] at h1
-    simp_rw [add_left_inj] at h1
-    rw [angle_comm, angle_comm b' a' c'] at h1
-    exact h1
-  have hangle_1 : Real.sin (∠ b c a) ≠ 0 := by
-    apply sin_ne_zero_of_not_collinear
-    rw [Set.pair_comm, Set.insert_comm]
-    exact h_not_col
-  have hangle_2 : Real.sin (∠ c a b) ≠ 0 := by
-    apply sin_ne_zero_of_not_collinear
-    rw [Set.insert_comm, Set.pair_comm]
-    exact h_not_col
+    have hsum := angle_add_angle_add_angle_eq_pi c (ne₁₂_of_not_collinear h_not_col)
+    have hsum' := angle_add_angle_add_angle_eq_pi c' (ne₁₂_of_not_collinear h_not_col')
+    rw [← hsum'] at hsum
+    grind [add_left_inj, angle_comm]
+  have h_sin_ne1 : Real.sin (∠ b c a) ≠ 0 := by
+    grind only [sin_ne_zero_of_not_collinear, Set.pair_comm, Set.insert_comm]
+  have h_sin_ne2 : Real.sin (∠ c a b) ≠ 0 := by
+    grind only [sin_ne_zero_of_not_collinear, Set.pair_comm, Set.insert_comm]
   have h_sin1 := law_sin c a b
   have h_sin1' := law_sin c' a' b'
   rw [← eq_div_iff_mul_eq (by positivity)] at h_sin1 h_sin1'
   rw [← h₃, ← h₂] at h_sin1'
-  rw [h_sin1', mul_div_assoc, mul_div_assoc, mul_right_inj' hangle_1] at h_sin1
-  rw [div_eq_div_iff (by positivity) (by positivity), mul_comm] at h_sin1
+  rw [h_sin1', mul_div_assoc, mul_div_assoc, mul_right_inj' h_sin_ne1,
+    div_eq_div_iff (by positivity) (by positivity), mul_comm] at h_sin1
   have h_sin2 := law_sin a b c
   have h_sin2' := law_sin a' b' c'
   rw [← eq_div_iff_mul_eq (by positivity)] at h_sin2 h_sin2'
   rw [← h₁, ← h₃] at h_sin2'
-  rw [h_sin2', mul_div_assoc, mul_div_assoc, mul_right_inj' hangle_2] at h_sin2
-  rw [div_eq_div_iff (by positivity) (by positivity), mul_comm] at h_sin2
+  rw [h_sin2', mul_div_assoc, mul_div_assoc, mul_right_inj' h_sin_ne2,
+    div_eq_div_iff (by positivity) (by positivity), mul_comm] at h_sin2
   apply Similar.reverse_of_three
   apply Similar.comm_left
   exact similar_of_side_side (by positivity) (by positivity) h_sin2 h_sin1.symm
@@ -112,15 +90,13 @@ theorem similar_of_side_angle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
   have dist_b'c' : dist b' c' ≠ 0 := by simp [ne₂₃_of_not_collinear h_not_col']
   rw [← div_eq_div_iff dist_a'b' dist_b'c'] at hd
   set k := (dist a b / dist a' b') with hk
-  have k_ne : 0 < k := by
+  have k_pos : 0 < k := by
     rw [hk]
     apply div_pos
     · simp [dist_pos, ne₁₂_of_not_collinear h_not_col]
     · simp [dist_pos, ne₁₂_of_not_collinear h_not_col']
-  have h_ab : dist a b = k * dist a' b' := by
-    rw [hk, div_mul, div_self dist_a'b', div_one]
-  have h_bc : dist b c = k * dist b' c' := by
-    rw [hd, div_mul, div_self dist_b'c', div_one]
+  have h_ab : dist a b = k * dist a' b' := by grind
+  have h_bc : dist b c = k * dist b' c' := by grind
   have hcos := law_cos a b c
   rw [dist_comm b _ , dist_comm b' _] at h_bc
   rw [h_ab, h_bc] at hcos
@@ -129,17 +105,14 @@ theorem similar_of_side_angle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
   have hcos' := law_cos a' b' c'
   field_simp at hcos'
   rw [← hcos', ← mul_pow] at hcos
-  have dist_ac : 0 < dist a c := by
-    simp [dist_pos, ne₁₃_of_not_collinear h_not_col]
-  have dist_a'c' : 0 < dist a' c' := by
-    simp [dist_pos, ne₁₃_of_not_collinear h_not_col']
+  have dist_ac_pos : 0 < dist a c := by grind [dist_pos, ne₁₃_of_not_collinear]
   have k_dist_a'c' : 0 ≤ k * dist a' c' := by positivity
-  rw [pow_left_inj₀ (le_of_lt dist_ac) k_dist_a'c' (by norm_num)] at hcos
+  rw [pow_left_inj₀ (le_of_lt dist_ac_pos) k_dist_a'c' (by norm_num), dist_comm a _,
+    dist_comm a' _] at hcos
   rw [dist_comm c _, dist_comm c' _] at h_bc
-  rw [dist_comm a _, dist_comm a' _] at hcos
   rw [similar_iff_exists_pos_pairwise_dist_eq]
   use k
-  refine ⟨k_ne, ?_⟩
+  refine ⟨k_pos, ?_⟩
   intro i j hij
   fin_cases i <;> fin_cases j <;> try {rw [dist_self, dist_self, mul_zero]}
   all_goals simp; grind [dist_comm]
@@ -161,18 +134,15 @@ theorem _root_.Similar.angle_eq (h : ![a, b, c] ∼ ![a', b', c']) :
   by_cases heq : dist a' b' * dist c' b' * 2 = 0
   · rw [mul_eq_zero_iff_right (by norm_num), mul_eq_zero] at heq
     rcases heq with h1 | h2
-    · have h_dist_ab : dist a b = 0 := by
-        rw [h_ab, h1, mul_zero]
+    · have h_dist_ab : dist a b = 0 := by grind
       rw [dist_eq_zero] at h_dist_ab h1
       simp_rw [h_dist_ab, h1, angle_self_left]
-    · have h_dist_cb : dist c b = 0 := by
-        rw [h_cb, h2, mul_zero]
+    · have h_dist_cb : dist c b = 0 := by grind
       rw [dist_eq_zero] at h_dist_cb h2
       simp_rw [h_dist_cb, h2, angle_self_right]
   rw [mul_right_inj' heq] at h_cos
   apply Real.injOn_cos at h_cos
-  · rw [h_cos]
-  repeat exact ⟨angle_nonneg _ _ _, angle_le_pi _ _ _ ⟩
+  repeat grind [angle_nonneg, angle_le_pi]
 
 /-- In two similar triangles, all three corresponding angles are equal. -/
 theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :

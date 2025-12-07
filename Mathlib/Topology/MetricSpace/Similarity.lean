@@ -192,31 +192,22 @@ lemma similar_iff_exists_pairwise_dist_eq :
   exact_mod_cast Iff.rfl
 
 /-- Similarity holds if and only if all distances are proportional with a positive real ratio. -/
-lemma similar_iff_exists_pos_dist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ, 0 < r ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
-      r * dist (v₂ i₁) (v₂ i₂))) := by
+lemma similar_iff_exists_pos_dist_eq : Similar v₁ v₂ ↔
+    (∃ r : ℝ, 0 < r ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) := by
   rw [similar_iff_exists_dist_eq]
   constructor
   · intro h
     rcases h with ⟨r_nn, hr_ne, hdist⟩
     set r : ℝ := r_nn.toReal with hr
-    have hr_pos : r > 0 := by positivity
+    have hr_pos : 0 < r := by positivity
     use r
   · intro h
     rcases h with ⟨r, hr_pos, hdist⟩
     set r_nn : ℝ≥0 := Real.toNNReal r with hr_nn
-    have hr_ne : r_nn ≠ 0 := by
-      rw [hr_nn]
-      simp
-      linarith
-    have hr : r = r_nn.toReal := by
-      rw [hr_nn]
-      simp
-      positivity
+    have hr_ne : r_nn ≠ 0 := by grind [Real.toNNReal_eq_zero]
+    have hr : r = r_nn.toReal := by grind [Real.coe_toNNReal']
     use r_nn
-    refine ⟨hr_ne, ?_⟩
-    simp_rw [hdist]
-    simp [hr]
+    grind
 
 /-- Similarity holds iff pairwise distances are proportional with a positive ratio. -/
 lemma similar_iff_exists_pos_pairwise_dist_eq :
@@ -228,7 +219,7 @@ lemma similar_iff_exists_pos_pairwise_dist_eq :
     refine ⟨r, NNReal.coe_pos.mpr ?_, h⟩
     positivity
   · rintro ⟨r, hr0, h⟩
-    refine ⟨Real.toNNReal r, (by simp [hr0]), ?_⟩
+    refine ⟨Real.toNNReal r, by simp [hr0], ?_⟩
     intro i₁ i₂ hi
     rw [h hi, Real.coe_toNNReal]
     positivity
@@ -295,10 +286,10 @@ theorem similar_of_dist_mul_eq_dist_mul_eq (h_ne : dist a b ≠ 0) (h_ne' : dist
     (heq2 : dist a b * dist c' a' = dist c a * dist a' b') :
     Similar ![a, b, c] ![a', b', c'] := by
   set r : ℝ := (dist a b / dist a' b') with hr
-  have r_ne : r > 0 := by positivity
+  have hr_pos : 0 < r := by positivity
   apply Similar.of_exists_pos_pairwise_dist_eq
   use r
-  refine ⟨r_ne, ?_⟩
+  refine ⟨hr_pos, ?_⟩
   intro i j hij
   fin_cases i <;> fin_cases j <;> try {rw [dist_self, dist_self, mul_zero]}
   all_goals simp; grind [dist_comm]
