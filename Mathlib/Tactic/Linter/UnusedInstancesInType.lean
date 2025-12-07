@@ -311,7 +311,7 @@ def unusedDecidableInType : Linter where
             Consider removing \
             {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
             and using `classical` in the proof instead. \
-            For terms, consider using `open scoped Classical in` at the term level (not the
+            For terms, consider using `open scoped Classical in` at the term level (not the \
             command level)."
 
 initialize addLinter unusedDecidableInType
