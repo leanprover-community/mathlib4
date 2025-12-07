@@ -145,8 +145,7 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
       add_zero, Complex.mul_im, zero_mul, Complex.ofReal_re, mul_pow,
       UpperHalfPlane.coe_im]
     apply le_mul_of_one_le_left (sq_nonneg _)
-    rw [one_le_sq_iff_one_le_abs]
-    exact_mod_cast Int.one_le_abs hg
+    simpa [one_le_sq_iff_one_le_abs] using mod_cast Int.one_le_abs hg
 
 /-- A function on `ℍ` which is invariant under a finite-index subgroup of `SL(2, ℤ)`, and satisfies
 an `O((im τ) ^ t)` bound at all cusps for some `0 ≤ t`, is in fact uniformly bounded by a multiple
@@ -188,7 +187,7 @@ lemma exists_bound_of_subgroup_invariant_of_isArithmetic_of_isBigO
     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] (hf_inv : ∀ g ∈ Γ, ∀ τ, f (g • τ) = f τ) :
     ∃ C, ∀ τ, ‖f τ‖ ≤ C * max τ.im (1 / τ.im) ^ t :=
   exists_bound_of_subgroup_invariant_of_isBigO hf_cont ht hf_infinity (Γ := Γ.comap (mapGL ℝ))
-    (fun g hg ↦ hf_inv g hg)
+    (hf_inv ·)
 
 /-- A function on `ℍ` which is invariant under `SL(2, ℤ)`, and bounded at `∞`, is uniformly
 bounded. -/
@@ -252,7 +251,7 @@ lemma CuspFormClass.petersson_bounded_right
     (k : ℤ) (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.IsArithmetic] {F F' : Type*} (f : F) (f' : F')
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [CuspFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
-  simpa [petersson, mul_comm] using petersson_bounded_left k Γ f' f
+  simpa [petersson_norm_symm] using petersson_bounded_left k Γ f' f
 
 /-- A weight `k` cusp form is bounded in norm by a constant multiple of `(im τ) ^ (-k / 2)`. -/
 lemma CuspFormClass.exists_bound {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic]
@@ -327,23 +326,21 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     simp only [F]
     rw [norm_mul, norm_mul, norm_div, norm_real, norm_one, norm_div, norm_one, norm_pow,
       mul_assoc, Real.norm_of_nonneg hh.le]
-    apply mul_le_mul_of_nonneg_left _ (by positivity)
-    apply mul_le_mul
+    refine mul_le_mul_of_nonneg_left (mul_le_mul ?_ ?_ ?_ ?_) ?_
     · rw [Function.Periodic.norm_qParam, add_im, ofReal_im, zero_add, mul_I_im, ← ofReal_one,
         ← ofReal_natCast, ← ofReal_div, ofReal_re, mul_one_div, div_right_comm, ← Real.exp_nat_mul,
         mul_div_cancel₀ _ (mod_cast hn.ne')]
     · refine (hn' _ ?_).trans (le_of_eq ?_) <;>
         simp_rw [← UpperHalfPlane.coe_im, UpperHalfPlane.coe_mk_subtype, add_im, ofReal_im,
           zero_add, mul_I_im, ← ofReal_one, ← ofReal_natCast, ← ofReal_div, ofReal_re]
-      · rw [Function.comp_apply, inv_eq_one_div]
+      · simp
       · rw [one_div, Real.rpow_neg_eq_inv_rpow, inv_inv, Real.norm_of_nonneg (by positivity)]
-    · exact norm_nonneg _
-    · positivity
+    all_goals positivity
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
   · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
     · simp_rw [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
       fun_prop
-    · refine (ModularFormClass.holo f).continuous.comp (by fun_prop)
+    · refine (ModularFormClass.continuous f).comp (by fun_prop)
   · apply continuous_const.intervalIntegrable
   · rw [intervalIntegral.integral_const, sub_zero, smul_eq_mul]
     simp [← mul_assoc, mul_inv_cancel₀ (NeZero.ne (h : ℝ)),
