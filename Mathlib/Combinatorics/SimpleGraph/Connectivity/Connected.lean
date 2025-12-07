@@ -798,7 +798,8 @@ theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.Adj v w ∧ G.IsB
 
 
 theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
-    G.Adj (Sym2.ind e) ∧ G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
+    e ∈ G.edgeSet ∧ G.IsBridge e ↔
+    e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
