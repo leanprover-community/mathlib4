@@ -87,22 +87,17 @@ private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
     apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_choose_mul_mahlerMeasure d
     gcongr
     · exact mahlerMeasure_nonneg _
-    · have : (p.map (Int.castRingHom ℂ)).natDegree = p.natDegree :=
-          p.natDegree_map_eq_of_injective <| (Int.castRingHom ℂ).injective_int
-      exact choose_le_choose _ <| by rw [this]; grind
+    · grind [Polynomial.natDegree_map_le]
   have h_finite : {p : ℤ[X]| p.natDegree < n + 1 ∧
       ∀ (i : Fin (n + 1)), ‖p.coeff ↑i‖ ≤ ↑(n.choose ↑i) * ↑B}.Finite := by
     apply Set.finite_of_ncard_ne_zero
     rw [h_card, Finset.prod_ne_zero_iff]
     grind
-  constructor
-  · exact Set.Finite.subset h_finite h_subset
-  · gcongr
-    exact h_finite
+  exact ⟨h_finite.subset h_subset, Set.ncard_le_ncard h_subset h_finite⟩
 
-/-- Northcott's Theorem: the cardinality of the set of integer polynomials of degree at most `n` and
+/-- **Northcott's Theorem:** the set of integer polynomials of degree at most `n` and
 Mahler measure at most `B` is finite. -/
-theorem finite_card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
+theorem finite_mahlerMeasure_le (n : ℕ) (B : ℝ≥0) :
     Set.Finite {p : ℤ[X] | p.natDegree ≤ n ∧ (p.map (Int.castRingHom ℂ)).mahlerMeasure ≤ B} :=
   (card_mahlerMeasure n B).1
 
