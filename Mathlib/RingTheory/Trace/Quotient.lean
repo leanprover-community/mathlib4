@@ -76,13 +76,13 @@ lemma trace_quotient_eq_trace_localization_quotient (x) :
     rw [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _), IsScalarTower.algebraMap_eq R Rₚ (Sₚ ⧸ _),
       ← RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq Rₚ]
   rw [Algebra.trace_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ)
-    (equivQuotMapMaximalIdeal S p Rₚ Sₚ)]
+    (equivQuotientMapMaximalIdeal S p Rₚ Sₚ)]
   · congr
   · ext x
     simp only [equivQuotMaximalIdeal, RingHom.quotientKerEquivOfSurjective,
       RingEquiv.coe_ringHom_trans, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
       Ideal.quotEquivOfEq_mk, RingHom.quotientKerEquivOfRightInverse.apply, RingHom.kerLift_mk,
-      equivQuotMapMaximalIdeal, Ideal.Quotient.algebraMap_quotient_map_quotient]
+      equivQuotientMapMaximalIdeal, Ideal.Quotient.algebraMap_quotient_map_quotient]
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
 open nonZeroDivisors in
