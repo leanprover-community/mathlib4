@@ -211,8 +211,7 @@ combinatorial contexts.
 open Nat
 
 /-- The recursive definition of the sequence of the large Schroder numbers :
-`largeSchroder (n + 1) = largeSchroder n + `
-  `∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)` -/
+`a (n + 1) = a n + ∑ i : Fin n.succ, a i * a (n - i)` -/
 def largeSchroder : ℕ → ℕ
   | 0 => 1
   | n + 1 =>
