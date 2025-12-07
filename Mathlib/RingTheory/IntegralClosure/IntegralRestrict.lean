@@ -372,11 +372,9 @@ lemma Algebra.map_intNormAux (x : B) :
   dsimp [Algebra.intNormAux]
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
-attribute [local instance] FractionRing.liftAlgebra
-
 variable (A B)
 variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
-  [NoZeroSMulDivisors A B] [FiniteDimensional (FractionRing A) (FractionRing B)]
+  [NoZeroSMulDivisors A B]
 
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
 the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
@@ -385,7 +383,6 @@ def Algebra.intNorm : B →* A := Algebra.intNormAux A (FractionRing A) (Fractio
 
 variable {A B}
 
-omit [FiniteDimensional (FractionRing A) (FractionRing B)] in
 lemma Algebra.algebraMap_intNorm (x : B) :
     algebraMap A K (Algebra.intNorm A B x) = Algebra.norm K (algebraMap B L x) := by
   haveI := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
@@ -397,7 +394,6 @@ lemma Algebra.algebraMap_intNorm (x : B) :
   ext
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
-omit [FiniteDimensional (FractionRing A) (FractionRing B)] in
 @[simp]
 lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intNorm A B x) =
@@ -407,14 +403,13 @@ lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
 variable (A B)
 
 theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
-    [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Module.Finite A C] [Module.Finite B C]
-    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] (x : C) :
+    [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
+    [Algebra.IsIntegral B C] [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] (x : C) :
     intNorm A B (intNorm B C x) = intNorm A C x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
     algebraMap_intNorm_fractionRing, Algebra.norm_norm]
 
-omit [FiniteDimensional (FractionRing A) (FractionRing B)] in
 lemma Algebra.intNorm_eq_norm [Module.Free A B] [Module.Finite A B] :
     Algebra.intNorm A B = Algebra.norm A := by
   ext x
@@ -424,7 +419,8 @@ lemma Algebra.intNorm_eq_norm [Module.Free A B] [Module.Finite A B] :
   rw [Algebra.algebraMap_intNorm_fractionRing, Algebra.norm_localization A A⁰]
 
 @[simp]
-lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
+lemma Algebra.intNorm_zero [FiniteDimensional (FractionRing A) (FractionRing B)] :
+    Algebra.intNorm A B 0 = 0 := by
   haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   apply IsFractionRing.injective A (FractionRing A)
@@ -432,27 +428,34 @@ lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
 
 variable {A B}
 
+attribute [local instance] FractionRing.liftAlgebra
+
 @[simp]
-theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Module.Finite A B₂]
-    [NoZeroSMulDivisors A B₂] (x : B) (σ : B ≃ₐ[A] B₂) :
+theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Algebra.IsIntegral A B₂]
+    [NoZeroSMulDivisors A B₂] [Algebra.IsAlgebraic (FractionRing A) (FractionRing B)]
+    [Algebra.IsAlgebraic (FractionRing A) (FractionRing B₂)]
+     (x : B) (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
     ← galLiftEquiv_algebraMap_apply (FractionRing A) (FractionRing B), norm_eq_of_algEquiv]
 
 @[simp]
-lemma Algebra.intNorm_eq_zero {x : B} : Algebra.intNorm A B x = 0 ↔ x = 0 := by
+lemma Algebra.intNorm_eq_zero [FiniteDimensional (FractionRing A) (FractionRing B)] {x : B} :
+    Algebra.intNorm A B x = 0 ↔ x = 0 := by
   rw [← (IsFractionRing.injective A (FractionRing A)).eq_iff,
     ← (IsFractionRing.injective B (FractionRing B)).eq_iff]
   simp only [algebraMap_intNorm_fractionRing, map_zero, norm_eq_zero_iff]
 
-lemma Algebra.intNorm_ne_zero {x : B} : Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 := by simp
+lemma Algebra.intNorm_ne_zero [FiniteDimensional (FractionRing A) (FractionRing B)] {x : B} :
+    Algebra.intNorm A B x ≠ 0 ↔ x ≠ 0 := by simp
 
 variable [IsDomain Aₘ] [IsIntegrallyClosed Aₘ] [IsDomain Bₘ] [IsIntegrallyClosed Bₘ]
-variable [NoZeroSMulDivisors Aₘ Bₘ] [Module.Finite Aₘ Bₘ]
+variable [NoZeroSMulDivisors Aₘ Bₘ] [Algebra.IsIntegral Aₘ Bₘ]
 
 include M in
-lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
+lemma Algebra.intNorm_eq_of_isLocalization [FiniteDimensional (FractionRing A) (FractionRing B)]
+    (x : B) :
     algebraMap A Aₘ (Algebra.intNorm A B x) = Algebra.intNorm Aₘ Bₘ (algebraMap B Bₘ x) := by
   by_cases hM : 0 ∈ M
   · subsingleton [IsLocalization.uniqueOfZeroMem (S := Aₘ) hM]
