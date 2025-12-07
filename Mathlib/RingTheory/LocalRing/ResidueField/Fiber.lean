@@ -14,9 +14,11 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 
 ## Main results
 
-* `PrimeSpectrum.preimageOrderIsoTensorResidueField` : We show that there is an `OrderIso` between
-  fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal `p : PrimeSpectrum R` and
-  the prime spectrum of the tensor product of `S` and the residue field of `p`.
+* `Ideal.Fiber`: `p.Fiber S` is the fiber of a prime `p` of `R` in an `R`-algebra `S`,
+  defined to be `κ(p) ⊗ S`.
+* `PrimeSpectrum.preimageHomeomorphFiber` : We show that there is a homeomorphism between the
+  fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal `p` and
+  the prime spectrum of `p.Fiber S`.
 -/
 
 @[expose] public section
@@ -40,8 +42,11 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     ← IsLocalRing.ResidueField.algebraMap_eq, ← algebraMap.coe_smul,
     ← IsScalarTower.algebraMap_apply] using congr(t • $e)
 
-lemma Ideal.ResidueField.exists_smul_eq_one_tmul
-    (x : p.ResidueField ⊗[R] S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
+/-- The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`. -/
+abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] : Type _ :=
+  p.ResidueField ⊗[R] S
+
+lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
@@ -50,8 +55,8 @@ variable (R S) in
 /-- The fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
-noncomputable def PrimeSpectrum.preimageEquivTensorResidueField (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
+noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
+    (algebraMap R S).specComap ⁻¹' {p} ≃ PrimeSpectrum (p.asIdeal.Fiber S) where
   toFun q := ⟨RingHom.ker (Algebra.TensorProduct.lift
         (Ideal.ResidueField.mapₐ p.asIdeal q.1.asIdeal congr($(q.2.symm).asIdeal))
           (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ .all _ _)).toRingHom, RingHom.ker_isPrime _⟩
@@ -62,7 +67,7 @@ noncomputable def PrimeSpectrum.preimageEquivTensorResidueField (p : PrimeSpectr
   left_inv q := by ext x; simp
   right_inv q := by
     ext x
-    obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_one_tmul _ x
+    obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
     have := @PrimeSpectrum.isPrime -- times out if removed
     rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), iff_comm,
       ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
@@ -76,16 +81,16 @@ variable (R S) in
 /-- The `OrderIso` between the fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prim
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
-noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃o PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) where
-  toEquiv := preimageEquivTensorResidueField R S p
+noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
+    (algebraMap R S).specComap ⁻¹' {p} ≃o PrimeSpectrum (p.asIdeal.Fiber S) where
+  toEquiv := preimageEquivFiber R S p
   map_rel_iff' {q₁ q₂} := by
     constructor
-    · obtain ⟨q₁, rfl⟩ := (preimageEquivTensorResidueField R S p).symm.surjective q₁
-      obtain ⟨q₂, rfl⟩ := (preimageEquivTensorResidueField R S p).symm.surjective q₂
+    · obtain ⟨q₁, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₁
+      obtain ⟨q₂, rfl⟩ := (preimageEquivFiber R S p).symm.surjective q₂
       simpa using Ideal.comap_mono
     · intro H x hx
-      obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_one_tmul _ x
+      obtain ⟨r, hr, s, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ x
       rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
       · replace hx : s ∈ q₁.1.asIdeal := by simpa using hx
         simpa using H hx
@@ -96,34 +101,33 @@ variable (R S) in
 /-- The `OrderIso` between fiber of a ring homomorphism `algebraMap R S : R →+* S`
 at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
-noncomputable def PrimeSpectrum.primesOverOrderIsoTensorResidueField (R S : Type*) [CommRing R]
+noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
-    p.primesOver S ≃o PrimeSpectrum (p.ResidueField ⊗[R] S) :=
+    p.primesOver S ≃o PrimeSpectrum (p.Fiber S) :=
   .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.1.symm⟩,
     fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
-    (PrimeSpectrum.preimageOrderIsoTensorResidueField R S ⟨p, ‹_›⟩)
+    (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
 /-- The `Homeomorph` between fiber of a ring homomorphism `algebraMap R S : R →+* S`
 at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
-noncomputable def PrimeSpectrum.preimageHomeomorphTensorResidueField (R S : Type*) [CommRing R]
+noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : PrimeSpectrum R) :
-    (algebraMap R S).specComap ⁻¹' {p} ≃ₜ
-      PrimeSpectrum (p.asIdeal.ResidueField ⊗[R] S) := by
-  letI H : Topology.IsEmbedding (preimageOrderIsoTensorResidueField R S p).symm := by
+    (algebraMap R S).specComap ⁻¹' {p} ≃ₜ PrimeSpectrum (p.asIdeal.Fiber S) := by
+  letI H : Topology.IsEmbedding (preimageOrderIsoFiber R S p).symm := by
     refine (Topology.IsEmbedding.of_comp_iff .subtypeVal).mp ?_
     have := PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks _ S _
       (Ideal.surjectiveOnStalks_residueField p.asIdeal)
     exact ((Homeomorph.prodUnique _ _).isEmbedding.comp this).comp
       (homeomorphOfRingEquiv (Algebra.TensorProduct.comm _ _ _).toRingEquiv).isEmbedding
   exact
-  { __ := preimageOrderIsoTensorResidueField R S p
+  { __ := preimageOrderIsoFiber R S p
     continuous_toFun := by
       convert (H.toHomeomorphOfSurjective
-        (preimageOrderIsoTensorResidueField R S p).symm.surjective).symm.continuous
+        (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
       ext1 x
       obtain ⟨x, rfl⟩ := (H.toHomeomorphOfSurjective
-        (preimageOrderIsoTensorResidueField R S p).symm.surjective).surjective x
+        (preimageOrderIsoFiber R S p).symm.surjective).surjective x
       simp only [Equiv.toFun_as_coe, RelIso.coe_fn_toEquiv, Homeomorph.symm_apply_apply]
       simp
     continuous_invFun := H.continuous }
