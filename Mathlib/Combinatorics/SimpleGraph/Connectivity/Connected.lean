@@ -788,7 +788,8 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       ?_ (Walk.start_mem_support _)
     rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
 
-theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.Adj v w ∧ G.IsBridge s(v, w) ↔
+theorem adj_and_isBridge_iff_adj_and_forall_cycle_notMem {v w : V} :
+    G.Adj v w ∧ G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
   rw [isBridge_iff, and_congr_right_iff]
   intro h
@@ -797,10 +798,16 @@ theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.Adj v w ∧ G.IsB
   simp only [h, true_and]
 
 
-theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
+@[deprecated (since := "2025-05-23")]
+alias isBridge_iff_adj_and_forall_cycle_not_mem := adj_and_isBridge_iff_adj_and_forall_cycle_notMem
+
+theorem mem_and_isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     e ∈ G.edgeSet ∧ G.IsBridge e ↔
     e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
-  Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
+  Sym2.ind (fun _ _ => adj_and_isBridge_iff_adj_and_forall_cycle_notMem) e
+
+@[deprecated (since := "2025-05-23")]
+alias isBridge_iff_mem_and_forall_cycle_not_mem := mem_and_isBridge_iff_mem_and_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
@@ -824,8 +831,8 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
     (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
   have e_edge_in_G': e ∈ G'.edgeSet :=
     edgeSet_subset_edgeSet.mpr hle h
-  (isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
-    isBridge_iff_mem_and_forall_cycle_notMem.mp (And.intro e_edge_in_G' h') |>.right
+  (mem_and_isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
+    mem_and_isBridge_iff_mem_and_forall_cycle_notMem.mp (And.intro e_edge_in_G' h') |>.right
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩).right
 
 end BridgeEdges
