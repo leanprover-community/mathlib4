@@ -191,6 +191,12 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
       ← accPt_principal_iff_clusterPt] at h
     exact h
 
+instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
+  constructor
+  apply isPreconnected_univ.preperfect_of_nontrivial
+  rw [Set.nontrivial_univ_iff]
+  infer_instance
+
 end Preperfect
 
 section Kernel
