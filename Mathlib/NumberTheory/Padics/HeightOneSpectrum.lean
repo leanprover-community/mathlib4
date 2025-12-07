@@ -13,7 +13,7 @@ public import Mathlib.Topology.Algebra.Algebra.Equiv
 /-!
 # Isomorphisms between `adicCompletion ℚ` and `ℚ_[p]`
 
-If `v : HeightOneSpectrum ℚ`, then `v.adicCompletion ℚ` is the uniform space completion of `ℚ`
+If `v : HeightOneSpectrum (𝓞 ℚ)`, then `v.adicCompletion ℚ` is the uniform space completion of `ℚ`
 with respect to the `v`-adic valuation, which is defined more generally via Dedekind domains and
 their fields of fractions. On the other hand, `ℚ_[p]` is the `p`-adic numbers, defined as the
 completion of `ℚ` with respect to the `p`-adic norm using the completion of Cauchy sequences.
