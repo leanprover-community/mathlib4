@@ -5,12 +5,17 @@ Authors: Simon Hudon
 -/
 module
 
+public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Elab.Term.TermElabM
+public meta import Lean.Meta.AppBuilder
+public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Apply
 public meta import Lean.Meta.Tactic.Assumption
-public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Intro
-public meta import Lean.Elab.DeclarationRange
-public meta import Mathlib.Tactic.Attr.Register
+public meta import Lean.Meta.Tactic.Simp.Attr
+public meta import Lean.Meta.Tactic.Simp.SimpTheorems
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # HigherOrder attribute
