@@ -464,6 +464,10 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) 
   rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
   exact ⟨by grw [h.1], mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 
+lemma add_lt_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
+  α + γ < β + γ ↔ α < β := by
+  constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 γ₀]
+
 @[simp]
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
@@ -471,6 +475,37 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
 @[simp]
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
+
+
+lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
+    (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
+  rcases le_or_gt ℵ₀ (κ₂ + μ₂) with hinf | hfin
+  · refine add_lt_of_lt hinf ?_ ?_ <;> apply lt_of_lt_of_le <;> solve | assumption | simp
+  · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
+    apply lt_of_le_of_lt
+    · exact (add_le_add_iff_of_lt_aleph0 (lt_trans hμ hfin_.right)).mpr <| le_of_lt hκ
+    · simpa [add_comm] using (add_lt_add_iff_of_lt_aleph0 hfin_.left).mpr hμ
+
+lemma mul_lt_mul_of_nat {n : ℕ} {κ μ : Cardinal} {hneq0 : n ≠ 0} (hlt : κ < μ) : n * κ < n * μ := by
+  cases n with
+  | zero => contradiction
+  | succ m =>
+    push_cast
+    rw [add_mul, one_mul, add_mul, one_mul]
+    cases m with
+    | zero => simpa
+    | succ k =>
+      have : ↑(k + 1) * κ < ↑(k + 1) * μ := mul_lt_mul_of_nat (hneq0 := Nat.succ_ne_zero k) hlt
+      exact Cardinal.add_lt_add_of_lt_of_lt this hlt
+
+
+lemma mul_left_cancel_of_nat {n : ℕ} {κ μ : Cardinal} {hneq0 : n ≠ 0} (h : n * κ = n * μ) :
+    κ = μ := by
+  contrapose! h
+  rcases lt_or_gt_of_ne h with hlt | hlt <;>
+  have := ne_of_lt <| mul_lt_mul_of_nat (hneq0 := hneq0) hlt <;>
+  symm_saturate <;>
+  assumption
 
 end aleph
 

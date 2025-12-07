@@ -3,6 +3,7 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
+
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Clique
@@ -12,6 +13,9 @@ public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.Functor
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+
 
 /-!
 # Matchings
@@ -141,6 +145,30 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     simp only [Set.disjoint_left] at this
     simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
 
+lemma IsMatching.sSup_range_of_chain
+    {α : Type*} {ι : α → SimpleGraph.Subgraph G}
+    (hmatch : ∀ i, (ι i).IsMatching) (hch : ∀ i j, (ι i) ≤ (ι j) ∨ (ι j) ≤ (ι i)) :
+    (sSup (Set.range ι)).IsMatching ∧ (∀ i, ι i ≤ sSup (Set.range ι)) ∧
+    (∀ M', M'.IsMatching → (∀ i, ι i ≤ M') → sSup (Set.range ι) ≤ M') := by
+  and_intros
+  · rintro v ⟨V', ⟨⟨M', hun⟩, hvV'⟩⟩
+    obtain ⟨V'', ⟨⟨i, hi⟩, _⟩, hv⟩ := hun ▸ hvV'
+    have : v ∈ M'.verts := by simp_all
+    obtain ⟨w, hvw, hw⟩ := hmatch i (hi ▸ this)
+    simp
+    refine ⟨w, And.intro ⟨i, hvw⟩ ?_⟩
+    rintro w' ⟨j, hvw'⟩
+    rcases hch i j with h | h
+    · have : (ι j).Adj v w := h.2 hvw
+      exact (hmatch j).eq_of_adj_left hvw' this
+    · have : (ι i).Adj v w' := h.2 hvw'
+      exact (hmatch i).eq_of_adj_left this hvw
+  · intro i; exact le_sSup_of_le ⟨i, rfl⟩ le_rfl
+  · intro M' _ hle
+    refine sSup_le ?_
+    rintro H ⟨i', hi'⟩
+    exact hi' ▸ hle i'
+
 lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
   intro _ hv
   rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
@@ -197,6 +225,31 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
   cases hf hw'.symm
   rw [hv'.2 w' hw]
 
+lemma IsMatching.matching_restricted {G' : Subgraph G} (hM : M.IsMatching) (hle : M ≤ G') :
+    (Subgraph.restrict (G' := G') M).IsMatching := by
+  rintro ⟨v, hvG'⟩ hvM
+  obtain ⟨w, hadj, hw⟩ := hM hvM
+  suffices h : ∀ u ∈ G'.verts, G'.Adj v u → M.Adj v u → u = w from
+    ⟨⟨w, hle.left <| M.edge_vert hadj.symm⟩, ⟨⟨hle.right hadj, hadj⟩, by simpa using h⟩⟩
+  intro u _ _ hvuM
+  exact hw u hvuM
+
+lemma isMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, w} ∧ M.Adj v w) :
+    M.IsMatching := by
+  obtain ⟨v, ⟨w, ⟨hverts, hadj⟩⟩⟩ := h
+  intro a ha
+  simp_all
+  suffices he : ∃ b : V, M.Adj a b from by
+    obtain ⟨b, hadj⟩ := he
+    refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
+    have hb: b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
+    have hb': b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
+    cases hb <;> cases hb' <;> rcases ha
+    all_goals (simp_all <;> exfalso <;> exact G.loopless _ <| M.adj_sub (by assumption))
+  rcases ha with hav | haw
+  · exact ⟨w, hav ▸ hadj⟩
+  · exact ⟨v, haw ▸ hadj.symm⟩
+
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
@@ -213,6 +266,33 @@ theorem IsMatching.support_eq_verts (h : M.IsMatching) : M.support = M.verts := 
   refine M.support_subset_verts.antisymm fun v hv => ?_
   obtain ⟨w, hvw, -⟩ := h hv
   exact ⟨_, hvw⟩
+
+open scoped Cardinal
+
+lemma IsMatching.dart_card_eq_vert_card (hM : M.IsMatching) : #M.coe.Dart = #M.verts := by
+  let f : M.coe.Dart → M.verts := fun d => d.fst
+  let g : M.verts → M.coe.Dart := fun v =>
+    let w : V := (hM v.prop).choose
+    have hadj : M.Adj v w := ((hM v.property).choose_spec).left
+    ⟨⟨v, ⟨w, M.edge_vert hadj.symm⟩⟩, hadj⟩
+  refine Cardinal.mk_congr ⟨f, g, ?L, ?R⟩ <;> simp [f, g, LeftInverse, RightInverse]
+  rintro ⟨⟨v, w⟩, hadj⟩
+  simpa using Subtype.val_inj.mp ((hM v.prop).choose_spec.right w hadj).symm
+
+lemma IsMatching.edge_card_eq_double_vert_card (hM : M.IsMatching) :
+    #M.verts = 2 * #M.edgeSet := by
+  trans #M.coe.Dart
+  · exact hM.dart_card_eq_vert_card.symm
+  · apply (SimpleGraph.card_darts (G := M.coe)).trans
+    suffices h : #M.coe.edgeSet = #M.edgeSet from congr_arg _ h
+    simp
+    refine Cardinal.mk_preimage_of_injective_of_subset_range _ M.edgeSet ?inj ?range
+    · exact Sym2.map.injective Subtype.val_injective
+    · rintro e he
+      let ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
+      have hadj := Subgraph.mem_edgeSet.mp (hvw ▸ he)
+      exact ⟨s(⟨v, M.edge_vert hadj⟩, ⟨w, M.edge_vert hadj.symm⟩), by simpa using hvw⟩
+
 
 theorem isMatching_iff_forall_degree [∀ v, Fintype (M.neighborSet v)] :
     M.IsMatching ↔ ∀ v : V, v ∈ M.verts → M.degree v = 1 := by
@@ -612,5 +692,35 @@ lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     {M' : Subgraph G'} (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM
+
+section maximal_matching
+open scoped Cardinal
+
+/-- A subgraph `M` is a *maximum matching* if it is a matching and no other matching
+has strictly more edges. -/
+def Subgraph.IsMaxSizeMatching (M : Subgraph G) : Prop :=
+  M.IsMatching ∧ ∀ M' : Subgraph G, M'.IsMatching → #M'.edgeSet ≤ #M.edgeSet
+
+/-- A subgraph `M` is a *maximal matching* if it is a matching and it is not properly
+contained in any strictly larger matching. -/
+def Subgraph.IsMaximalMatching (M : Subgraph G) : Prop :=
+  M.IsMatching ∧ ∀ M' : Subgraph G, M'.IsMatching → M' ≥ M → M' = M
+
+lemma exists_maximal_matching : ∃ M : Subgraph (G := G), M.IsMaximalMatching := by classical
+  let ℳ := {M : G.Subgraph // M.IsMatching}
+  refine Exists.imp' (fun m : {M : G.Subgraph // M.IsMatching} => m.val) ?imp (zorn_le ?exist_max)
+  · rintro ⟨M, hM⟩ hmax
+    refine ⟨hM, fun M' hM' hge => le_antisymm ?_ hge⟩
+    simpa using hmax (b := ⟨M', hM'⟩) hge
+  · intro ch hch
+    let ι : ch → Subgraph G := fun m => m.val.val
+    have hchain : ∀ c₁ c₂ : ch, (ι c₁) ≤ (ι c₂) ∨ (ι c₂) ≤ (ι c₁) := fun c₁ c₂ =>
+      by simpa [ι] using hch.total c₁.property c₂.property
+    obtain ⟨hM, hSup, hColim⟩ := Subgraph.IsMatching.sSup_range_of_chain (fun i ↦ i.val.prop) hchain
+    use ⟨sSup (Set.range ι), hM⟩
+    intro M' hM'
+    exact hSup ⟨M', hM'⟩
+
+end maximal_matching
 
 end SimpleGraph

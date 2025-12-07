@@ -605,6 +605,27 @@ theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
 
+@[simp]
+lemma disjoint_iff_disjoint_verts {H H' : Subgraph G} :
+    Disjoint H.verts H'.verts ↔ Disjoint H H' := by
+  apply Iff.intro
+  · rintro hdisj M' ⟨hsub₀, _⟩ ⟨hsub₁, _⟩
+    have hnovers := hdisj hsub₀ hsub₁
+    simp
+    ext v w <;> simp <;> by_contra! hcontra
+    · exact hnovers hcontra
+    · exact hnovers (M'.edge_vert hcontra)
+  · intro hdisj S h₀ h₁
+    by_contra! hS
+    simp_all
+    obtain ⟨v, hv⟩ := Set.nonempty_iff_ne_empty.mpr hS
+    let M' : Subgraph G := {verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp}
+    have hle : ∀ {M : SimpleGraph.Subgraph G}, v ∈ M.verts → M' ≤ M := by
+      intro M h; constructor <;> simp [h, M']
+    have hbot := hdisj (hle <| h₀ hv) (hle <| h₁ hv)
+    have : v ∈ (⊥ : SimpleGraph.Subgraph G).verts := hbot.1 (by simp [M', Set.mem_singleton_iff])
+    simpa
+
 section map
 variable {G' : SimpleGraph W} {f : G →g G'}
 

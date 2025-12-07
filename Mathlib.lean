@@ -3242,6 +3242,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Init
+public import Mathlib.Combinatorics.SimpleGraph.Konig.Auxillary
+public import Mathlib.Combinatorics.SimpleGraph.Konig.Konig
+public import Mathlib.Combinatorics.SimpleGraph.Konig.KonigFin
 public import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 public import Mathlib.Combinatorics.SimpleGraph.LineGraph
 public import Mathlib.Combinatorics.SimpleGraph.Maps
@@ -3270,6 +3273,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
+public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps

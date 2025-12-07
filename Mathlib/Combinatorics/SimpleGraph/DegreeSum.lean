@@ -169,4 +169,35 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
   rw [mem_filter_univ] at hw
   exact ⟨w, hw⟩
 
+section infinite
+
+open scoped Cardinal
+
+private lemma mk_eq_sum_fiber {A B : Type _} (f : A → B) :
+    #A = Cardinal.sum (fun b : B => #{a : A // f a = b}) := by
+  have e : A ≃ Σ b : B, {a : A // f a = b} :=
+  { toFun := fun a => ⟨f a, ⟨a, rfl⟩⟩
+    invFun := fun s => s.2.1
+    left_inv := by intro a; rfl
+    right_inv := by rintro ⟨b, ⟨a, h⟩⟩; cases h; rfl }
+  simpa [Cardinal.mk_sigma] using (Cardinal.mk_congr e)
+
+theorem card_darts (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
+  let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
+  suffices fib_size : ∀ e, #{d // f d = e} = 2 from by
+    simp[mk_eq_sum_fiber f, fib_size, mul_comm]
+  rintro ⟨e, he⟩
+  obtain ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
+  have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
+  set d₀ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨v, w⟩, hadj⟩, by simpa [f]⟩
+  set d₁ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨w, v⟩, hadj.symm⟩, by simp [f]; aesop⟩
+  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨?_, ?_⟩⟩ <;> simp[d₀, d₁, f]
+  · intro heq; exact False.elim <| absurd (heq ▸ hadj) (G.loopless v)
+  · rintro ⟨⟨a, b⟩, hab⟩ hsab hnd'
+    have matchings := hvw ▸ hsab
+    simp at matchings hnd' ⊢
+    exact Or.elim matchings (fun h => (hnd' h.1 h.2).elim) (fun h => h)
+
+end infinite
+
 end SimpleGraph
