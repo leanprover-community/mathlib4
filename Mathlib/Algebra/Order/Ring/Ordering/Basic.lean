@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Ring.Ordering.Defs
 public import Mathlib.Algebra.Ring.Semireal.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
