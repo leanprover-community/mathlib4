@@ -712,7 +712,8 @@ def equivPrimitiveRootsOfCoprimePow {e r : ℕ} [NeZero r] (h : e.Coprime r) :
   have exp_cancel (a : R) (ha : a ∈ primitiveRoots r R) : a ^ (e * ((r * e.gcdA r + 1) *
       e.gcdA r).toNat) = a := by
     rw [mem_primitiveRoots] at ha
-    swap; exact Nat.pos_of_neZero r
+    swap
+    · exact Nat.pos_of_neZero r
     lift a to Rˣ using ha.isUnit NeZero.out
     rw [← Units.val_pow_eq_pow_val, Units.ext_iff.mp]
     rw [← zpow_natCast]
@@ -721,7 +722,8 @@ def equivPrimitiveRootsOfCoprimePow {e r : ℕ} [NeZero r] (h : e.Coprime r) :
       ring
     rw [Int.toNat_of_nonneg pos_exp, h1, zpow_add, zpow_mul, IsPrimitiveRoot.zpow_eq_one, one_zpow,
       one_mul, eq_sub_of_add_eq (Nat.gcd_eq_gcd_ab e r).symm, zpow_sub, zpow_mul]
-    swap; exact IsPrimitiveRoot.coe_units_iff.mp ha
+    swap
+    · exact IsPrimitiveRoot.coe_units_iff.mp ha
     rw [← Nat.isCoprime_iff_coprime, Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast] at h
     have last: ((a ^ r) ^ e.gcdB r)⁻¹ = 1 := by
       grind [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.pow_eq_one, one_zpow, inv_one]
@@ -730,16 +732,16 @@ def equivPrimitiveRootsOfCoprimePow {e r : ℕ} [NeZero r] (h : e.Coprime r) :
     (fun ν => ⟨ ν.1 ^ (( r * (Nat.gcdA e r) + 1) * (Nat.gcdA e r)).toNat , ?_ ⟩ ) ?_ ?_
   · have primr := μ.2
     rw [mem_primitiveRoots] at *
-    refine IsPrimitiveRoot.pow_of_coprime primr e h
-    repeat exact Nat.pos_of_neZero r
+    all_goals try exact Nat.pos_of_neZero r
+    exact IsPrimitiveRoot.pow_of_coprime primr e h
   · have primr := ν.2
     rw[mem_primitiveRoots] at *
+    all_goals try exact Nat.pos_of_neZero r
     refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
-    · rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib,
-        one_mul, mul_assoc, Int.isCoprime_iff_gcd_eq_one]
-      simp only [dvd_mul_right, Int.gcd_add_left_left_of_dvd, ← Int.isCoprime_iff_gcd_eq_one]
-      exact Int.isCoprime_gcdA (Nat.Coprime.isCoprime h)
-    repeat exact Nat.pos_of_neZero r
+    rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib,
+      one_mul, mul_assoc, Int.isCoprime_iff_gcd_eq_one]
+    simp only [dvd_mul_right, Int.gcd_add_left_left_of_dvd, ← Int.isCoprime_iff_gcd_eq_one]
+    exact Int.isCoprime_gcdA (Nat.Coprime.isCoprime h)
   · simp only [Function.LeftInverse, Subtype.forall, Subtype.mk.injEq]
     intro a ha
     rw [← pow_mul, exp_cancel a ha]
