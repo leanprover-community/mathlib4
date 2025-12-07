@@ -148,7 +148,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
   | zero =>
     exfalso
     have h := Fintype.card_pos_iff.2 hne
-    cutsat
+    lia
   | succ m hm =>
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
@@ -299,6 +299,11 @@ theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter
   congr
   simp only [eq_iff_true_of_subsingleton]
 
+lemma circumcenter_ne_point {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    s.circumcenter ≠ s.points i := by
+  rw [← dist_ne_zero, dist_circumcenter_eq_circumradius']
+  exact s.circumradius_pos.ne'
+
 /-- The circumcenter of a 1-simplex equals its centroid. -/
 theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
     s.circumcenter = Finset.univ.centroid ℝ s.points := by
@@ -335,6 +340,40 @@ theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 @[simp]
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
+
+@[simp] lemma circumcenter_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).circumcenter = f s.circumcenter := by
+  rw [eq_comm]
+  refine (s.map f.toAffineMap f.injective).eq_circumcenter_of_dist_eq (r := s.circumradius) ?_
+    fun i ↦ by simp
+  rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
+  exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
+
+@[simp] lemma circumradius_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).circumradius = s.circumradius := by
+  rw [eq_comm]
+  refine (s.map f.toAffineMap f.injective).eq_circumradius_of_dist_eq (p := f s.circumcenter) ?_
+    fun i ↦ by simp
+  rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
+  exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
+
+@[simp] lemma circumcenter_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).circumcenter = s.circumcenter := by
+  rw [eq_comm]
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumcenter_map S.subtypeₐᵢ
+
+@[simp] lemma circumradius_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).circumradius = s.circumradius := by
+  rw [eq_comm]
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumradius_map S.subtypeₐᵢ
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)

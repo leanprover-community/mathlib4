@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.81" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.82" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -27,10 +27,15 @@ require "leanprover-community" / "plausible" @ git "main"
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
+  -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
+  -- but we want to run this linter in files imported by `Mathlib.Init`.
+  ⟨`linter.style.header, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- Explicitly disable the flexible linter, as it gives non-actionable warnings.
+  ⟨`linter.flexible, false⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
@@ -80,6 +85,7 @@ lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
+  leanOptions := #[⟨`experimental.module, true⟩]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -134,7 +140,7 @@ lean_exe «check_title_labels» where
   srcDir := "scripts"
 
 /--
-`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+`lake exe pole` queries radar for build times for the current commit,
 and then calculates the longest pole
 (i.e. the sequence of files you would be waiting for during a infinite parallelism build).
 -/
@@ -182,9 +188,12 @@ post_update pkg do
     let toolchainVersion := match toolchainContent.trim.splitOn ":" with
       | [_, version] => version
       | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
+    -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
+    let toolchainVersion := toolchainVersion.stripPrefix "v"
     if Lean.versionString ≠ toolchainVersion then
-      IO.println s!"Not running `lake exe cache get` yet, \
-        as the `lake` version does not match the toolchain version in the project.\n\
+      IO.println s!"Not running `lake exe cache get` yet, as \
+        the `lake` version ({Lean.versionString}) does not match \
+        the toolchain version ({toolchainVersion}) in the project.\n\
         You should run `lake exe cache get` manually."
       return
     let exeFile ← runBuild cache.fetch

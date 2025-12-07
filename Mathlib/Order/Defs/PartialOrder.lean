@@ -43,13 +43,10 @@ section Preorder
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
 class Preorder (α : Type*) extends LE α, LT α where
-  le_refl : ∀ a : α, a ≤ a
-  le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
+  protected le_refl : ∀ a : α, a ≤ a
+  protected le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
-  lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
-
-attribute [to_dual self (reorder := 3 5, 6 7)] Preorder.le_trans
-attribute [to_dual self (reorder := 3 4)] Preorder.lt_iff_le_not_ge
+  protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
 instance [Preorder α] : Std.LawfulOrderLT α where
   lt_iff := Preorder.lt_iff_le_not_ge
@@ -69,32 +66,31 @@ variable [Preorder α] {a b c : α}
 lemma le_rfl : a ≤ a := le_refl a
 
 /-- The relation `≤` on a preorder is transitive. -/
-@[to_dual ge_trans] lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
+lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
 
-@[to_dual self (reorder := 3 4)]
+@[to_dual existing le_trans]
+lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := flip le_trans
+
+@[to_dual self]
 lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_ge _ _
 
 @[deprecated (since := "2025-05-11")] alias lt_iff_le_not_le := lt_iff_le_not_ge
 
-@[to_dual self (reorder := 3 4)]
+@[to_dual self]
 lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_ge.2 ⟨hab, hba⟩
 
 @[deprecated (since := "2025-05-11")] alias lt_of_le_not_le := lt_of_le_not_ge
 
-@[to_dual ge_of_eq]
-lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
-@[to_dual self (reorder := 3 4)]
-lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
-@[to_dual self (reorder := 3 4)]
-lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
-@[to_dual self (reorder := 3 4)]
-lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
+@[to_dual ge_of_eq] lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
+@[to_dual self] lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
+@[to_dual self] lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
+@[to_dual self] lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
 
 @[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
 @[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
 
-@[to_dual self (reorder := 3 4)] alias LT.lt.not_ge := not_le_of_gt
-@[to_dual self (reorder := 3 4)] alias LE.le.not_gt := not_lt_of_ge
+@[to_dual self] alias LT.lt.not_ge := not_le_of_gt
+@[to_dual self] alias LE.le.not_gt := not_lt_of_ge
 
 @[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
 @[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
@@ -119,11 +115,11 @@ lemma lt_trans : a < b → b < c → a < c := fun h₁ h₂ => lt_of_lt_of_le h�
 
 @[to_dual ne_of_gt]
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
-@[to_dual self (reorder := 3 4)]
+@[to_dual self]
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
-@[to_dual self (reorder := 3 4)]
-alias not_lt_of_gt := lt_asymm
+@[to_dual self] alias not_lt_of_gt := lt_asymm
+
 @[deprecated (since := "2025-05-11")] alias not_lt_of_lt := not_lt_of_gt
 
 @[to_dual le_of_lt_or_eq']
@@ -147,7 +143,7 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableGTOfDecidableGE /-- `<` is decidable if `≤` is. -/]
+@[to_dual decidableLT'OfDecidableLE' /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
@@ -180,17 +176,17 @@ section PartialOrder
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
 class PartialOrder (α : Type*) extends Preorder α where
-  le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
-
-attribute [to_dual self (reorder := 5 6)] PartialOrder.le_antisymm
+  protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
 instance [PartialOrder α] : Std.IsPartialOrder α where
   le_antisymm := PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 
-@[to_dual ge_antisymm]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
+
+@[to_dual existing le_antisymm]
+lemma ge_antisymm : b ≤ a → a ≤ b → a = b := flip le_antisymm
 
 @[to_dual eq_of_ge_of_le]
 alias eq_of_le_of_ge := le_antisymm
@@ -206,7 +202,7 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqofDecidableGE /-- Equality is decidable if `≤` is. -/]
+@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
