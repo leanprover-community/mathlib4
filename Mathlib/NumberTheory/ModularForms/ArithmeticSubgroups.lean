@@ -51,11 +51,21 @@ class HasDetOne : Prop where
 instance (Γ : Subgroup (SL n R)) : HasDetOne (Γ.map toGL) where
   det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
 
-instance {S : Type*} [CommRing S] [Algebra S R] (Γ : Subgroup (SL n S)) :
-    HasDetOne (Γ.map <| mapGL R) where
+instance {S : Type*} [CommRing S] [Algebra R S] (Γ : Subgroup (SL n R)) :
+    HasDetOne (Γ.map <| mapGL S) where
+  det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
+
+instance {S : Type*} [CommRing S] [Algebra R S] :
+    HasDetOne (mapGL (n := n) (R := R) S).range where
   det_eq {g} hg := by rcases hg with ⟨g, hg, rfl⟩; simp
 
 instance [HasDetOne Γ] : HasDetPlusMinusOne Γ := ⟨fun {g} hg ↦ by simp [HasDetOne.det_eq hg]⟩
+
+instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ ⊓ Γ') where
+  det_eq hg := HasDetOne.det_eq hg.1
+
+instance (Γ' : Subgroup (GL n R)) [HasDetOne Γ] : HasDetOne (Γ' ⊓ Γ) where
+  det_eq hg := HasDetOne.det_eq hg.2
 
 end det_typeclasses
 
@@ -101,6 +111,18 @@ instance {Γ : Subgroup (GL (Fin 2) ℝ)} [h : Γ.IsArithmetic] : HasDetPlusMinu
   have := congr_arg Matrix.GeneralLinearGroup.det ht.symm
   rw [Matrix.SpecialLinearGroup.det_mapGL, map_pow] at this
   simp [this]
+
+instance IsArithmetic.isFiniteRelIndexSL (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
+    𝒢.IsFiniteRelIndex 𝒮ℒ :=
+  ⟨IsArithmetic.is_commensurable.1⟩
+
+instance IsArithmetic.inter {Γ Γ'} [IsArithmetic Γ] [IsArithmetic Γ'] : IsArithmetic (Γ ⊓ Γ') := by
+  constructor
+  constructor
+  · apply relIndex_inf_ne_zero <;> exact IsArithmetic.is_commensurable.1
+  · apply relIndex_ne_zero_trans (K := Γ) IsArithmetic.is_commensurable.2
+    rw [relIndex_eq_one.mpr inf_le_left]
+    simp
 
 end SL2Z_in_GL2R
 
