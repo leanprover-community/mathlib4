@@ -542,20 +542,20 @@ theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by
 
 /-- Extension of `PolynomialLaw.add_def_apply` -/
 @[simp]
-theorem add_toFun_apply (t : S ⊗[R] M) :
+theorem toFun_add_apply (t : S ⊗[R] M) :
     (f + g).toFun S t = f.toFun S t + g.toFun S t := by
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
   simp only [Pi.add_apply, toFun_eq_rTensor_φ_toFun' _ ha, add_def, map_add]
 
 /-- Extension of `PolynomialLaw.add_def` -/
 @[simp]
-theorem add_toFun :
+theorem toFun_add :
     (f + g).toFun S = f.toFun S + g.toFun S := by
   ext t
-  simp only [Pi.add_apply, add_toFun_apply]
+  simp only [Pi.add_apply, toFun_add_apply]
 
 @[simp]
-theorem neg_toFun {R : Type u} [CommRing R]
+theorem toFun_neg {R : Type u} [CommRing R]
     {M : Type*} [AddCommGroup M] [Module R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     (f : M →ₚₗ[R] N)
@@ -568,7 +568,7 @@ theorem neg_toFun {R : Type u} [CommRing R]
 variable (S) in
 /-- Extension of `PolynomialLaw.smul_def` -/
 @[simp]
-theorem smul_toFun : (r • f).toFun S = r • (f.toFun S) := by
+theorem toFun_smul : (r • f).toFun S = r • (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
   simp only [toFun_eq_rTensor_φ_toFun' _ ha, smul_def, Pi.smul_apply, map_smul]
@@ -603,7 +603,7 @@ variable {R : Type u} [CommSemiring R]
   (f : M →ₚₗ[R] N) (g : N →ₚₗ[R] P) (h : P →ₚₗ[R] Q)
 
 /-- Extension of `MvPolynomial.comp_toFun'` -/
-theorem comp_toFun (S : Type*) [CommSemiring S] [Algebra R S] :
+theorem toFun_comp (S : Type*) [CommSemiring S] [Algebra R S] :
     (g.comp f).toFun S = (g.toFun S).comp (f.toFun S) := by
   ext t
   obtain ⟨⟨s, p⟩, ha⟩ := π_surjective t
@@ -612,9 +612,9 @@ theorem comp_toFun (S : Type*) [CommSemiring S] [Algebra R S] :
   rw [Function.comp_apply, toFun_eq_rTensor_φ_toFun' _ hb, toFun_eq_rTensor_φ_toFun' _ ha,
     comp_toFun', Function.comp_apply]
 
-theorem comp_apply (S : Type*) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
+theorem toFun_comp_apply (S : Type*) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
     (g.comp f).toFun S m = (g.toFun S) (f.toFun S m) := by
-  simp only [comp_toFun, Function.comp_apply]
+  simp only [toFun_comp, Function.comp_apply]
 
 end Comp
 
