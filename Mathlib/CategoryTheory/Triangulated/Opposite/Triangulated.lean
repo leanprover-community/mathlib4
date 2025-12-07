@@ -46,8 +46,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
     obtain ⟨Z₂₃, v₂₃, w₂₃, h₂₃⟩ := distinguished_cocone_triangle₁ u₂₃
     obtain ⟨Z₁₃, v₁₃, w₁₃, h₁₃⟩ := distinguished_cocone_triangle₁ (u₁₂ ≫ u₂₃)
     exact ⟨_, _, _, _, _, h₁₂, _, _, h₂₃, _, _, h₁₃, ⟨Triangulated.someOctahedron _ _ _ _⟩⟩
-  apply IsTriangulated.mk'
-  intros X₁ X₂ X₃ u₁₂ u₂₃
+  refine IsTriangulated.mk' (fun X₁ X₂ X₃ u₁₂ u₂₃ ↦ ?_)
   obtain ⟨Z₁₂, Z₂₃, Z₁₃, v₁₂, w₁₂, h₁₂, v₂₃, w₂₃, h₂₃, v₁₃, w₁₃, h₁₃, ⟨H⟩⟩ :=
     this u₂₃.unop u₁₂.unop
   refine ⟨X₁, X₂, X₃, _, _, _, u₁₂, u₂₃, Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
