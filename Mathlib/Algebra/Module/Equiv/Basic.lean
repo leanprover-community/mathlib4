@@ -270,6 +270,7 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+-- See note [implicit instance arguments]
 variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ M₃} (e : M ≃+ M₂)
 
 /-- An additive equivalence between commutative additive groups is a linear

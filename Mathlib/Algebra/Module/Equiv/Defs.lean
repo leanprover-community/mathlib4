@@ -136,6 +136,7 @@ variable [Semiring R] [Semiring S]
 section
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+-- See note [implicit instance arguments]
 variable {modM : Module R M} {modM₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
