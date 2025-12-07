@@ -748,8 +748,7 @@ theorem mem_acceptsFrom_kstar_impl_exists_flatten {S : Set σ} {x : List α} :
   induction x generalizing S with
   | nil =>
     obtain ⟨s, hs, haccept⟩ : ∃ s ∈ S, s ∈ M.accept := by revert hx; simp
-    exists [], []
-    tauto
+    refine ⟨[], [], by tauto⟩
   | cons a x ih =>
     simp only [cons_mem_acceptsFrom, stepSet, kstar_step, kstarStep, kstarStates,
       Set.biUnion_image, ←Set.image_iUnion₂, Set.iUnion_union_distrib] at hx
