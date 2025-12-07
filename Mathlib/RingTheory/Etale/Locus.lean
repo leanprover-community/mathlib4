@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 - `Algebra.etaleLocus_eq_univ_iff` :
   The etale locus is the whole spectrum if and only if `A` is etale over `R`.
 - `Algebra.isOpen_etaleLocus` :
-  If `A` is (essentially) of finite type over `R`, then the etale locus is open.
+  If `A` is of finite type over `R`, then the etale locus is open.
 -/
 
 @[expose] public section
