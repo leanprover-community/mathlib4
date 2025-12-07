@@ -588,8 +588,12 @@ theorem GaussSum_one_mk_sq_eq_aux₀ [P.LiesOver 𝒑] :
       ∑ x, (Ideal.Quotient.mk (𝓟 ^ 2)) ((Omega p f P L)⁻¹ x * (addCharTrace P hζ) x) := by
   have : AddMonoidHomClass (𝓞 L →+* 𝓞 L ⧸ 𝓟 ^ 2) (𝓞 L) (𝓞 L ⧸ 𝓟 ^ 2) :=
     RingHomClass.toNonUnitalRingHomClass.toAddMonoidHomClass
-  rw [GaussSum, gaussSum, map_sum]
-  simp_rw [zpow_neg_one]
+  rw [GaussSum, gaussSum]
+  rw [map_sum]
+  simp_rw [map_mul]
+  sorry
+--  simp_rw [addCharTrace_mk_sq _ _ h', mul_add, mul_one]
+--  unfold Omega
 
 theorem GaussSum_one_mk_sq_eq_aux₁ [P.LiesOver 𝒑] (h : p ^ f ≠ 2) :
     ∑ x, (Ideal.Quotient.mk P) ((teichmuller (mapQuot_bij p f P))⁻¹ x) = 0 := by
@@ -1141,7 +1145,7 @@ example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a 
       WithZero.log (GSV f P 𝓟 hζ a) =
         -(p - 1 : ℚ) * ∑ i ∈ Finset.range f, Int.fract ((p ^ i * a : ℚ) / (p ^ f - 1)) := by
   rw [GSV_eq p f P L 𝓟 hζ h _ ha, WithZero.log_exp, Finset.sum_range]
-  
+
 --  have {i : Fin f}
 #exit
 
