@@ -177,7 +177,7 @@ instance topologicalRing : IsTopologicalRing (Completion α) where
 def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
   extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
 
-theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
+@[simp] theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
 theorem coe_mapRingHom : mapRingHom f hf = Completion.map f := rfl
 
 variable {f}
@@ -198,6 +198,7 @@ theorem mapRingHom_id : mapRingHom (.id α) continuous_id = .id (Completion α) 
 
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
+@[simps!]
 def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
     Completion α ≃+* Completion β :=
   .ofRingHom (mapRingHom f.toRingHom hf) (mapRingHom f.symm.toRingHom hf')
