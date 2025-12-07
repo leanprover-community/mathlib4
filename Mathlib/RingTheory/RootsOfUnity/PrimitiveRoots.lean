@@ -728,14 +728,14 @@ def equivPrimitiveRootsOfCoprimePow {e r : ℕ} [NeZero r] (h : e.Coprime r) :
     have last: ((a ^ r) ^ e.gcdB r)⁻¹ = 1 := by
       grind [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.pow_eq_one, one_zpow, inv_one]
     simp [h, last]
-  refine Equiv.mk (fun μ => ⟨ μ ^ e , ?_ ⟩ )
-    (fun ν => ⟨ ν.1 ^ (( r * (Nat.gcdA e r) + 1) * (Nat.gcdA e r)).toNat , ?_ ⟩ ) ?_ ?_
+  refine Equiv.mk (fun μ => ⟨ μ ^ e , ?_ ⟩)
+    (fun ν => ⟨ ν.1 ^ (( r * (Nat.gcdA e r) + 1) * (Nat.gcdA e r)).toNat , ?_ ⟩) ?_ ?_
   · have primr := μ.2
     rw [mem_primitiveRoots] at *
     all_goals try exact Nat.pos_of_neZero r
     exact IsPrimitiveRoot.pow_of_coprime primr e h
   · have primr := ν.2
-    rw[mem_primitiveRoots] at *
+    rw [mem_primitiveRoots] at *
     all_goals try exact Nat.pos_of_neZero r
     refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
     rw [← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr pos_exp, right_distrib,
