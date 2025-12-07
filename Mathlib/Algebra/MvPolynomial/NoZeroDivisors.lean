@@ -18,7 +18,9 @@ This file does not define any new operations, but proves some of these stronger 
 ## TODOs
 
 * Add a `totalDegree_mul_eq` theorem, which states that the total degree of a product of two
-nonzero multivariate polynomials is the sum of their total degrees.
+nonzero multivariate polynomials is the sum of their total degrees. (See also
+`MvPolynomial.totalDegree_mul_of_isDomain`, which proves this
+under the assumption that the coefficient ring has cancellative multiplication.)
 
 -/
 
@@ -46,8 +48,7 @@ lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ 
     (h : ∀ i ∈ s, f i ≠ 0) :
     degreeOf n (∏ i ∈ s, f i) = ∑ i ∈ s, degreeOf n (f i) := by
   by_cases nontrivial : Nontrivial (MvPolynomial σ R)
-  · haveI : Nontrivial (MvPolynomial σ R) := nontrivial
-    classical
+  · classical
     induction s using Finset.induction_on with
     | empty => simp
     | insert a s a_not_mem ih =>
