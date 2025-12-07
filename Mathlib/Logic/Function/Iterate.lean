@@ -57,7 +57,6 @@ theorem iterate_zero : f^[0] = id :=
 theorem iterate_zero_apply (x : α) : f^[0] x = x :=
   rfl
 
-@[simp]
 theorem iterate_succ (n : ℕ) : f^[n.succ] = f^[n] ∘ f :=
   rfl
 
@@ -167,6 +166,7 @@ theorem Semiconj₂.iterate {f : α → α} {op : α → α → α} (hf : Semico
 
 variable (f)
 
+@[simp]
 theorem iterate_succ' (n : ℕ) : f^[n.succ] = f ∘ f^[n] := by
   rw [iterate_succ, (Commute.self_iterate f n).comp_eq]
 
