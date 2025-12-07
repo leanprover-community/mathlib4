@@ -136,7 +136,7 @@ theorem existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith (R : Type*) 
 After the first counterexample was found, Leon J. Lander, Thomas R. Parkin, and John Selfridge
 made a similar conjecture that is not amenable to the counterexamples found so far.
 The status of this conjecture is unknown.
-https://en.wikipedia.org/wiki/Lander,_Parkin,_and_Selfridge_conjecture
+https://en.wikipedia.org/wiki/Lander%2C_Parkin%2C_and_Selfridge_conjecture
 https://www.ams.org/journals/mcom/1967-21-099/S0025-5718-1967-0222008-0/S0025-5718-1967-0222008-0.pdf
 -/
 abbrev LanderParkinSelfridgeConjecture (R : Type*) [Semiring R] (k m n : ℕ) : Prop :=
