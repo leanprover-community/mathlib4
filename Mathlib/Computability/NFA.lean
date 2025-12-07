@@ -440,22 +440,22 @@ def concat : NFA α (σ1 ⊕ σ2) where
   start := inl '' M1.start
   accept := inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ inr '' M2.accept
 
-lemma concat_stepSet_inr {S2 : Set σ2} {a : α} :
+lemma stepSet_concat_inr {S2 : Set σ2} {a : α} :
     (M1.concat M2).stepSet (inr '' S2) a = inr '' M2.stepSet S2 a := by
   ext (s1 | s2) <;> simp [stepSet]
 
-lemma concat_stepSet_inl {S1 : Set σ1} {a : α} :
+lemma stepSet_concat_inl {S1 : Set σ1} {a : α} :
     (M1.concat M2).stepSet (inl '' S1) a =
       inl '' M1.stepSet S1 a ∪
       inr '' ⋃ s1 ∈ S1, ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept } := by
   ext (s1 | s2) <;> simp [stepSet]
 
-lemma concat_acceptsFrom_inr {S2 : Set σ2} :
+lemma acceptsFrom_concat_inr {S2 : Set σ2} :
     (M1.concat M2).acceptsFrom (inr '' S2) = M2.acceptsFrom S2 := by
   ext y
   induction y generalizing S2 with
   | nil => simp
-  | cons a y ih => simp [←ih, concat_stepSet_inr]
+  | cons a y ih => simp [←ih, stepSet_concat_inr]
 
 theorem acceptsFrom_concat_inl {S1 : Set σ1} :
     (M1.concat M2).acceptsFrom (inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
@@ -467,8 +467,8 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
       ↔ (∃ s ∈ S1, s ∈ M1.accept) ∧ [] ∈ M2.accepts by simpa [nil_mem_acceptsFrom M1]
     tauto
   | cons a z ih =>
-    simp only [cons_mem_acceptsFrom, ↓concat_stepSet_inl, stepSet, acceptsFrom_union,
-      concat_acceptsFrom_inr, acceptsFrom_iUnion, add_eq_sup, max, SemilatticeSup.sup,
+    simp only [cons_mem_acceptsFrom, ↓stepSet_concat_inl, stepSet, acceptsFrom_union,
+      acceptsFrom_concat_inr, acceptsFrom_iUnion, add_eq_sup, max, SemilatticeSup.sup,
       Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
     simp_rw [↑mem_acceptsFrom_sep]
     constructor
@@ -477,8 +477,7 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
         · simpa [M1.cons_mem_acceptsFrom, stepSet,
             Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
         · tauto
-      · exists []
-        constructor
+      · refine ⟨[], ?_, ?_⟩
         · simp only [M1.nil_mem_acceptsFrom]
           tauto
         · exists (a :: z)
@@ -504,7 +503,7 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
 /-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of
 `M1.concat M2` is exactly equal to `L = L1 * L2`. -/
 theorem accepts_concat : (M1.concat M2).accepts = M1.accepts * M2.accepts := by
-  simp [concat_acceptsFrom, accepts]
+  simp [acceptsFrom_concat_inl, accepts]
 
 end concat
 
@@ -529,6 +528,6 @@ theorem IsRegular.mul {L1 L2 : Language α}
   (h1 : L1.IsRegular) (h2 : L2.IsRegular) : (L1 * L2).IsRegular :=
   have ⟨σ1, _, M1, hM1⟩ := h1
   have ⟨σ2, _, M2, hM2⟩ := h2
-  ⟨_, inferInstance, (M1.toNFA.concat M2.toNFA).toDFA, by simp [NFA.concat_accepts, hM1, hM2]⟩
+  ⟨_, inferInstance, (M1.toNFA.concat M2.toNFA).toDFA, by simp [NFA.accepts_concat, hM1, hM2]⟩
 
 end Language
