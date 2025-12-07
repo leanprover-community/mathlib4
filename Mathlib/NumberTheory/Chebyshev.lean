@@ -186,8 +186,7 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
         gcongr
         · apply log_nonneg
           trans (n : ℝ)
-          · rw_mod_cast [← hpk]
-            linarith
+          · bound
           · apply le_floor_iff hx |>.mp hn.1.2
         · simp_all
         · apply le_floor_iff hx |>.mp hn.1.2
