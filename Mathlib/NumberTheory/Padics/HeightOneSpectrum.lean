@@ -204,8 +204,8 @@ theorem coe_adicCompletionIntegersEquiv_apply (p : Nat.Primes) (x : ℤ_[p]) :
     (adicCompletionIntegersEquiv p x) = adicCompletionEquiv p x := by
   simp only [adicCompletionIntegersEquiv, ContinuousAlgEquiv.trans_apply,
     adicCompletionIntegers.coe_padicIntEquiv_symm_apply,
-    adicCompletionEquiv, ContinuousAlgEquiv.trans_apply, ContinuousAlgEquiv.cast_toFun,
-    EmbeddingLike.apply_eq_iff_eq, eq_cast_iff_heq]
+    adicCompletionEquiv, ContinuousAlgEquiv.trans_apply, ContinuousAlgEquiv.cast_apply,
+    EmbeddingLike.apply_eq_iff_eq, Equiv.cast_apply, eq_cast_iff_heq]
   rw [← Subtype.heq_iff_coe_heq (by rw [primesEquiv.apply_symm_apply])
     (by rw [primesEquiv.apply_symm_apply])]
   exact cast_heq _ _
