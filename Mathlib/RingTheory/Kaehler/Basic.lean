@@ -382,6 +382,10 @@ def KaehlerDifferential.endEquivAuxEquiv :
       { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 
+set_option synthInstance.maxHeartbeats 25000 in
+-- `Module S (Derivation R S ↥(ideal R S).cotangentIdeal)` just barely times out after
+-- `SemigroupAction` was added to Mathlib. 22000 heartbeats is enough when this note was added,
+-- but we left 25000 for some buffer.
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -521,7 +525,7 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination :
       Submodule.mkQ _ := by
   apply Finsupp.lhom_ext
   intro a b
-  conv_rhs => rw [← Finsupp.smul_single_one a b, LinearMap.map_smul]
+  conv_rhs => rw [← Finsupp.smul_single_one a b, map_smul]
   simp [KaehlerDifferential.derivationQuotKerTotal_apply]
 
 theorem KaehlerDifferential.kerTotal_eq :
@@ -712,7 +716,7 @@ noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[
 @[simp]
 theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
     KaehlerDifferential.mapBaseChange R A B (x ⊗ₜ y) = x • KaehlerDifferential.map R R A B y := by
-  conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', LinearMap.map_smul]
+  conv_lhs => rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul', map_smul]
   congr 1
   exact IsBaseChange.lift_eq _ _ _
 
