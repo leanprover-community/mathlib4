@@ -26,7 +26,7 @@ We provide various useful constructors:
   give adjunctions.
 
 There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which asserts the
-existence of a adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
+existence of an adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
 adjoint can be obtained as `F.rightAdjoint`.
 
 `Adjunction.comp` composes adjunctions.

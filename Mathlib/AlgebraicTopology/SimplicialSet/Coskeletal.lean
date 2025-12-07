@@ -96,8 +96,8 @@ lemma fac_aux₁ {n : ℕ}
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
-    X.map (mkOfLe ⟨i, by cutsat⟩ ⟨j, by cutsat⟩ hij).op (lift sx s x) =
-      s.π.app (strArrowMk₂ (mkOfLe ⟨i, by cutsat⟩ ⟨j, by cutsat⟩ hij)) x := by
+    X.map (mkOfLe ⟨i, by lia⟩ ⟨j, by lia⟩ hij).op (lift sx s x) =
+      s.π.app (strArrowMk₂ (mkOfLe ⟨i, by lia⟩ ⟨j, by lia⟩ hij)) x := by
   obtain ⟨k, hk⟩ := Nat.le.dest hij
   revert i j
   induction k with
@@ -123,12 +123,12 @@ lemma fac_aux₂ {n : ℕ}
       congr
   | succ k hk =>
       intro i j hij hj hik
-      let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by cutsat⟩ ⟨i + k, by cutsat⟩
-          ⟨j, by cutsat⟩ (by simp) (by simp only [Fin.mk_le_mk]; cutsat))
-      let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by cutsat⟩ ⟨j, by cutsat⟩
-        (by simp only [Fin.mk_le_mk]; cutsat))
-      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by cutsat⟩ ⟨j, by cutsat⟩ hij)
-      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by cutsat⟩ ⟨i + k, by cutsat⟩ (by simp))
+      let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by lia⟩ ⟨i + k, by lia⟩
+          ⟨j, by lia⟩ (by simp) (by simp only [Fin.mk_le_mk]; lia))
+      let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by lia⟩ ⟨j, by lia⟩
+        (by simp only [Fin.mk_le_mk]; lia))
+      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by lia⟩ ⟨j, by lia⟩ hij)
+      let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by lia⟩ ⟨i + k, by lia⟩ (by simp))
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((SimplexCategory.δ 1).op) (Quiver.Hom.unop_inj
@@ -139,7 +139,7 @@ lemma fac_aux₂ {n : ℕ}
         subst hik
         exact fac_aux₁ _ _ _ _ hj
       have h₂ : X.map α₂.hom (lift sx s x) = s.π.app α₂ x :=
-        hk i (i + k) (by simp) (by cutsat) rfl
+        hk i (i + k) (by simp) (by lia) rfl
       change X.map α₁.hom (lift sx s x) = s.π.app α₁ x
       have : X.map α.hom (lift sx s x) = s.π.app α x := by
         apply sx.spineInjective
@@ -169,7 +169,7 @@ lemma fac_aux₃ {n : ℕ}
   obtain ⟨i, j, hij, rfl⟩ : ∃ i j hij, φ = mkOfLe i j hij :=
     ⟨φ.toOrderHom 0, φ.toOrderHom 1, φ.toOrderHom.monotone (by decide),
       Hom.ext_one_left _ _ rfl rfl⟩
-  exact fac_aux₂ _ _ _ _ _ _ (by cutsat)
+  exact fac_aux₂ _ _ _ _ _ _ (by lia)
 
 end isPointwiseRightKanExtensionAt
 
