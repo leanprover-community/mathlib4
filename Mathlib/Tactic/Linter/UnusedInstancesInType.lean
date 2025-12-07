@@ -177,20 +177,19 @@ have loose bound variables.
 -/
 def _root_.Lean.ConstantVal.onUnusedInstancesInTypeWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
-    CommandElabM Unit := do
-  if decl.type.hasInstanceBinderOf p then liftTermElabM do
-    let unusedInstances ← decl.type.collectUnusedInstanceIdxsOf p
-    if let some maxIdx := unusedInstances.back? then
-      unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
-        forallBoundedTelescope decl.type (some <| maxIdx + 1)
-          (cleanupAnnotations := true) fun fvars _ => do
-            let unusedInstances : Array Parameter ← unusedInstances.mapM fun idx =>
-              return {
-                  fvar? := fvars[idx]?
-                  type? := ← fvars[idx]?.mapM (inferType ·)
-                  idx
-                }
-            logOnUnused unusedInstances
+    TermElabM Unit := do
+  let unusedInstances ← decl.type.collectUnusedInstanceIdxsOf p
+  if let some maxIdx := unusedInstances.back? then
+    unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
+      forallBoundedTelescope decl.type (some <| maxIdx + 1)
+        (cleanupAnnotations := true) fun fvars _ => do
+          let unusedInstances : Array Parameter ← unusedInstances.mapM fun idx =>
+            return {
+                fvar? := fvars[idx]?
+                type? := ← fvars[idx]?.mapM (inferType ·)
+                idx
+              }
+          logOnUnused unusedInstances
 
 /--
 Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
@@ -234,8 +233,10 @@ def _root_.Lean.Syntax.logUnusedInstancesInDeclsWhere (_cmd : Syntax)
     (declFilter : ConstantVal → Bool := fun _ => true) :
     CommandElabM Unit := do
   for t in ← getInfoTrees do
-    for thm in t.getTheorems (← getEnv) do
-      unless declFilter thm do continue
+    let thms := t.getTheorems (← getEnv) |>.filter fun thm =>
+      declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
+    -- use `liftTermElabM` on the outside in the hopes of sharing a cache
+    unless thms.isEmpty do liftTermElabM do for thm in thms do
       thm.onUnusedInstancesInTypeWhere instanceTypeFilter
         fun unusedParams =>
           -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
