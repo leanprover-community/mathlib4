@@ -145,7 +145,8 @@ lemma deriv_log_inv {x : ℝ} (h0 : x ≠ 0) (h1 : x ≠ 1) (h2 : x ≠ -1) :
 
 open Asymptotics Filter MeasureTheory
 
-theorem integrable_theta_div (x : ℝ) :
+/-- Integrability for the integral in `Chebyshev.primeCounting_eq_theta_div_log_add_integral`. -/
+theorem integrable_theta_div_id_mul_log_sq (x : ℝ) :
     IntegrableOn (fun t ↦ (θ t) / (t * log t ^ 2)) (Set.Icc 2 x) volume := by
   conv => arg 1; ext; rw [theta, div_eq_mul_one_div, mul_comm, sum_filter]
   apply integrableOn_mul_sum_Icc _ (by norm_num)
@@ -158,7 +159,8 @@ theorem integrable_theta_div (x : ℝ) :
     apply pow_ne_zero _ <| log_ne_zero_of_pos_of_ne_one _ _ <;> linarith [hx.1]
   fun_prop (disch := assumption)
 
-theorem primeCounting_eq {x : ℝ} (hx : 2 ≤ x) :
+/-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
+theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
   simp only [primeCounting, primeCounting', count_eq_card_filter_range]
   rw [card_eq_sum_ones, range_succ_eq_Icc_zero]
@@ -238,7 +240,9 @@ theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt
   have : log x ^ 2 ≠ 0 := by simp; bound
   fun_prop (disch := assumption)
 
-theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
+/- Simple bound on the integral from monotonicity.
+We will bound the integral on 2..x by splitting into two intervals and using this result on both.-/
+private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
     ∫ x in a..b, 1 / log x  ^ 2 ≤ (b - a) / log a ^2 := by
   trans ∫ x in a..b, 1 / log a ^ 2
   · apply intervalIntegral.integral_mono_on hab
@@ -252,7 +256,9 @@ theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1 < a) :
       · linarith [hx.1]
   rw [intervalIntegral.integral_const, smul_eq_mul, mul_one_div]
 
-theorem integral_one_div_log_sq_le_one_div_log_sq {x : ℝ} (hx : 4 ≤ x) :
+/- Explicit integral bound, we expose a BigO version below since the constants and lower order term
+aren't very convenient.-/
+private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     ∫ t in 2..x, 1 / log t ^ 2 ≤ 4 * x / (log x) ^ 2 + x.sqrt / log 2 ^ 2 := by
   have two_le_sqrt : 2 ≤ x.sqrt := by
     apply Real.le_sqrt_of_sq_le
@@ -288,7 +294,7 @@ theorem integral_one_div_log_sq_isBigO :
     filter_upwards [eventually_ge_atTop 4] with x hx
     apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)
     rw [intervalIntegral.integral_congr (g := (fun t ↦ 1 / log t ^2))]
-    · grw [integral_one_div_log_sq_le_one_div_log_sq hx, norm_of_nonneg]
+    · grw [integral_one_div_log_sq_le_explicit hx, norm_of_nonneg]
       positivity
     intro t ht
     simp only [abs_eq_self]
@@ -314,7 +320,7 @@ theorem integral_theta_div_log_sq_isBigO :
   · apply IntervalIntegrable.abs
     apply intervalIntegrable_iff.mpr
     rw [Set.uIoc_of_le (by linarith), ← integrableOn_Icc_iff_integrableOn_Ioc]
-    apply integrable_theta_div
+    apply integrable_theta_div_id_mul_log_sq
   · apply IntervalIntegrable.const_mul
     apply intervalIntegrable_one_div_log_sq <;> linarith
   · intro t ht
@@ -341,14 +347,15 @@ theorem primeCounting_sub_theta_div_log_isBigO :
     (fun x ↦ π ⌊x⌋₊ - θ x / log x) =O[atTop] (fun x ↦ x / log x ^ 2) := by
   apply integral_theta_div_log_sq_isBigO.congr' _ (by rfl)
   filter_upwards [eventually_ge_atTop 2] with x hx
-  rw [primeCounting_eq hx]
+  rw [primeCounting_eq_theta_div_log_add_integral hx]
   simp
 
 theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
     ∀ᶠ x in atTop, π ⌊x⌋₊ ≤ (log 4 + ε) * x / log x := by
   have := integral_theta_div_log_sq_isLittleO.bound εpos
   filter_upwards [eventually_ge_atTop 2, this] with x hx hx2
-  rw [primeCounting_eq hx, mul_div_assoc, add_mul, ← mul_div_assoc, ← mul_div_assoc]
+  rw [primeCounting_eq_theta_div_log_add_integral hx,
+    mul_div_assoc, add_mul, ← mul_div_assoc, ← mul_div_assoc]
   grw [theta_le_log4_mul_x (by linarith)]
   · gcongr
     rw [norm_eq_abs, norm_eq_abs] at hx2
