@@ -797,10 +797,6 @@ theorem adj_and_isBridge_iff_adj_and_forall_cycle_notMem {v w : V} :
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
   simp only [h, true_and]
 
-
-@[deprecated (since := "2025-05-23")]
-alias isBridge_iff_adj_and_forall_cycle_not_mem := adj_and_isBridge_iff_adj_and_forall_cycle_notMem
-
 theorem mem_and_isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     e ∈ G.edgeSet ∧ G.IsBridge e ↔
     e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
