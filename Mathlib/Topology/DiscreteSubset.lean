@@ -111,6 +111,12 @@ lemma isDiscrete_univ_iff : IsDiscrete (Set.univ : Set X) ↔ DiscreteTopology X
   simp [isDiscrete_iff_nhdsWithin, discreteTopology_iff_isOpen_singleton,
     isOpen_singleton_iff_nhds_eq_pure]
 
+lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
+    {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
+  letI := hs.1
+  simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
+    true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
+
 section cofinite_cocompact
 
 omit [TopologicalSpace X] in
