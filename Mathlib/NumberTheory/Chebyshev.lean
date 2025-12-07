@@ -146,51 +146,23 @@ theorem sum_PrimePow_eq_sum_sum {R : Type*} [AddCommMonoid R] (f : ℕ → R) {x
       = ∑ k ∈ Icc 1 ⌊log x / log 2⌋₊, ∑ p ∈ Ioc 0 ⌊x ^ ((1 : ℝ) / k)⌋₊ with p.Prime, f (p ^ k) := by
   trans ∑ ⟨k, p⟩ ∈ Icc 1 ⌊log x / log 2⌋₊ ×ˢ (Ioc 0 ⌊x⌋₊).filter Nat.Prime
     with p ≤ ⌊x ^ (k : ℝ)⁻¹⌋₊, f ( p ^ k)
-  · symm
-    apply sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k )
-    · simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, and_imp, Prod.forall,
-        Nat.le_floor_iff, hx, rpow_nonneg, Nat.one_le_iff_ne_zero, ← Nat.pos_iff_ne_zero, cast_pow]
-      exact fun k p hk0 hk hp0 hpx hp hpxk ↦ ⟨⟨pow_pos hp0 _, (pow_le_pow_left₀ (cast_nonneg _)
-        hpxk _).trans_eq (rpow_inv_natCast_pow hx hk0.ne')⟩, p, k, hp.prime, hk0, rfl⟩
-    · intro ⟨k1, p1⟩ h1 ⟨k2, p2⟩ h2
-      simp only [Prod.mk.injEq]
-      simp only [mem_filter, mem_product, mem_Icc, mem_Ioc] at *
-      intro h
-      symm
-      rw [← Nat.sub_add_cancel (by linarith : 1 ≤ k1),
-        ← Nat.sub_add_cancel (by linarith : 1 ≤ k2)] at h
-      convert Nat.Prime.pow_inj h1.1.2.2 h2.1.2.2 h using 1
-      lia
-    · intro n hn
-      simp only [mem_filter, mem_Ioc] at hn
-      simp only [mem_filter, mem_product, mem_Icc, mem_Ioc, exists_prop, Prod.exists]
-      obtain ⟨p, k, hp, hk, hpk⟩ := isPrimePow_def _ |>.mp hn.2
-      refine ⟨k, p, ⟨⟨⟨hk, ?_⟩, ?_, hp.nat_prime⟩, ?_⟩, hpk⟩
-      · have : log (p ^ k) = log n := by rw_mod_cast [hpk]
-        rw [Real.log_pow] at this
-        have log_ne : log p ≠ 0 := by
-          apply Real.log_pos _ |>.ne.symm
-          norm_cast
-          apply hp.nat_prime.one_lt
-        apply le_floor
-        rw [eq_div_of_mul_eq log_ne this]
-        gcongr
-        · apply log_nonneg
-          trans (n : ℝ)
-          · bound
-          · apply le_floor_iff hx |>.mp hn.1.2
-        · simp_all
-        · apply le_floor_iff hx |>.mp hn.1.2
-        · norm_cast
-          apply hp.nat_prime.two_le
-      · refine ⟨hp.nat_prime.pos, ?_⟩
-        grw [← hn.1.2, ← hpk]
-        exact le_pow hk
-      · apply le_floor
-        rw [← rpow_rpow_inv (cast_nonneg p) (cast_ne_zero.mpr hk.ne.symm)]
-        apply rpow_le_rpow (by bound) _ (by bound)
-        rw_mod_cast [hpk]
-        exact le_floor_iff hx |>.mp hn.1.2
+  · refine (sum_bij (i := fun ⟨k, p⟩ _ ↦ p ^ k) ?_ ?_ ?_ ?_).symm
+    · simp +contextual [hx, rpow_nonneg, le_floor_iff, ← Nat.pos_iff_ne_zero, Prime.isPrimePow,
+        one_le_iff_ne_zero, le_rpow_inv_iff_of_pos, isPrimePow_pow_iff, Nat.prime_iff]
+    · simp +contextual only [hx, rpow_nonneg, le_floor_iff, mem_filter, mem_product, mem_Icc,
+        one_le_iff_ne_zero, Nat.pos_iff_ne_zero, mem_Ioc, and_imp, Prod.forall, Prod.mk.injEq]
+      intro k₁ p₁ hk₁ _ _ _ hp₁ _ k₂ p₂ hk₂ _ _ _ hp₂ _ H
+      exact (Nat.Prime.pow_inj' hp₁ hp₂ hk₁ hk₂ H).symm
+    · simp +contextual only [mem_filter, mem_Ioc, hx, le_floor_iff, and_assoc, rpow_nonneg,
+        mem_product, mem_Icc, succ_le_iff, exists_prop, Prod.exists, exists_and_left, and_imp]
+      rintro b hb₀ hbx ⟨p, k, hp, hk₀, rfl⟩
+      rw [cast_pow] at hbx
+      refine ⟨k, hk₀, le_floor ?_, p, hp.nat_prime.pos, ?_, hp.nat_prime, ?_, rfl⟩
+      · rw [le_div_iff₀ (log_pos (by norm_num)), ← Real.log_pow]
+        refine Real.log_le_log (by simp) (.trans ?_ hbx)
+        exact pow_le_pow_left₀ (by norm_num) (mod_cast hp.nat_prime.two_le) _
+      · exact (le_self_pow₀ (mod_cast hp.nat_prime.one_le) hk₀.ne').trans hbx
+      · simp_all [le_rpow_inv_iff_of_pos]
     · simp
   rw [sum_filter, sum_product]
   refine sum_congr rfl fun k hk ↦ ?_
