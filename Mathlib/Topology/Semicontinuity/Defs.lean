@@ -470,55 +470,52 @@ variable [TopologicalSpace β]
 
 section Definitions
 
-/-- A real function `f` is lower semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
-`x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
-preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
+/-- A function `f : α → Set β` is lower hemicontinuous at `x` within a set `s` if, whenever `t` is
+an open set intersecting `f x`, then `t` also intersects `f x'` for all `x'` sufficiently close to
+`x` within `s`. -/
 abbrev LowerHemicontinuousWithinAt (f : α → Set β) (s : Set α) (x : α) :=
-  SemicontinuousWithinAt (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty) s x
+  SemicontinuousWithinAt (fun x t ↦ IsOpen t ∧ ((f x) ∩ t).Nonempty) s x
 
-/-- A real function `f` is lower semicontinuous on a set `s` if, for any `ε > 0`, for any `x ∈ s`,
-for all `x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in
-a general preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
+/-- A function `f : α → Set β` is lower hemicontinuous on a set `s` if, whenever `x ∈ s` and `t` is
+an open set intersecting `f x`, then `t` also intersects `f x'` for all `x'` sufficiently close to
+`x` within `s`. -/
 abbrev LowerHemicontinuousOn (f : α → Set β) (s : Set α) :=
-  SemicontinuousOn (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty) s
+  SemicontinuousOn (fun x t ↦ IsOpen t ∧ ((f x) ∩ t).Nonempty) s
 
-/-- A real function `f` is lower semicontinuous at `x` if, for any `ε > 0`, for all `x'` close
-enough to `x`, then `f x'` is at least `f x - ε`. We formulate this in a general preordered space,
-using an arbitrary `y < f x` instead of `f x - ε`. -/
+/-- A function `f : α → Set β` is lower hemicontinuous at `x` if, whenever `t` is an open set
+intersecting `f x`, then `t` also intersects `f x'` for all `x'` sufficiently close to `x`. -/
 abbrev LowerHemicontinuousAt (f : α → Set β) (x : α) :=
-  SemicontinuousAt (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty) x
+  SemicontinuousAt (fun x t ↦ IsOpen t ∧ ((f x) ∩ t).Nonempty) x
 
-/-- A real function `f` is lower semicontinuous if, for any `ε > 0`, for any `x`, for all `x'` close
-enough to `x`, then `f x'` is at least `f x - ε`. We formulate this in a general preordered space,
-using an arbitrary `y < f x` instead of `f x - ε`. -/
+/-- A function `f : α → Set β` is lower hemicontinuous if, for any `x`, whenever `t` is an open set
+intersecting `f x`, then `t` also intersects `f x'` for all `x'` sufficiently close to `x`. -/
 abbrev LowerHemicontinuous (f : α → Set β) :=
-  Semicontinuous (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)
+  Semicontinuous (fun x t ↦ IsOpen t ∧ ((f x) ∩ t).Nonempty)
 
 open scoped Topology
 
-/-- A real function `f` is upper semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
-`x'` close enough to `x` in `s`, then `f x'` is at most `f x + ε`. We formulate this in a general
-preordered space, using an arbitrary `y > f x` instead of `f x + ε`. -/
+/-- A function `f : α → Set β` is upper hemicontinuous at `x` within a set `s` if, whenever `t` is
+a neighborhood of `f x`, then `t` is a neighborhood of `f x'` for all `x'` sufficiently close to
+`x` within `s`. -/
 abbrev UpperHemicontinuousWithinAt (f : α → Set β) (s : Set α) (x : α) :=
-  SemicontinuousWithinAt (fun x s ↦ s ∈ 𝓝ˢ (f x)) s x
+  SemicontinuousWithinAt (fun x t ↦ t ∈ 𝓝ˢ (f x)) s x
 
-/-- A real function `f` is upper semicontinuous on a set `s` if, for any `ε > 0`, for any `x ∈ s`,
-for all `x'` close enough to `x` in `s`, then `f x'` is at most `f x + ε`. We formulate this in a
-general preordered space, using an arbitrary `y > f x` instead of `f x + ε`. -/
+/-- A function `f : α → Set β` is upper hemicontinuous on a set `s` if, whenever `x ∈ s` and `t` is
+a neighborhood of `f x`, then `t` is a neighborhood of `f x'` for all `x'` sufficiently close to
+`x` within `s`. -/
 abbrev UpperHemicontinuousOn (f : α → Set β) (s : Set α) :=
-  SemicontinuousOn (fun x s ↦ s ∈ 𝓝ˢ (f x)) s
+  SemicontinuousOn (fun x t ↦ t ∈ 𝓝ˢ (f x)) s
 
-/-- A real function `f` is upper semicontinuous at `x` if, for any `ε > 0`, for all `x'` close
-enough to `x`, then `f x'` is at most `f x + ε`. We formulate this in a general preordered space,
-using an arbitrary `y > f x` instead of `f x + ε`. -/
+/-- A function `f : α → Set β` is upper hemicontinuous at `x` if, whenever `t` is a neighborhood of
+`f x`, then `t` is a neighborhood of `f x'` for all `x'` sufficiently close to `x`. -/
 abbrev UpperHemicontinuousAt (f : α → Set β) (x : α) :=
-  SemicontinuousAt (fun x s ↦ s ∈ 𝓝ˢ (f x)) x
+  SemicontinuousAt (fun x t ↦ t ∈ 𝓝ˢ (f x)) x
 
-/-- A real function `f` is upper semicontinuous if, for any `ε > 0`, for any `x`, for all `x'`
-close enough to `x`, then `f x'` is at most `f x + ε`. We formulate this in a general preordered
-space, using an arbitrary `y > f x` instead of `f x + ε`. -/
+/-- A function `f : α → Set β` is upper hemicontinuous if, for all `x`, whenever `t` is a
+neighborhood of `f x`, then `t` is a neighborhood of `f x'` for all `x'` sufficiently close
+to `x`. -/
 abbrev UpperHemicontinuous (f : α → Set β) :=
-  Semicontinuous (fun x s ↦ s ∈ 𝓝ˢ (f x))
+  Semicontinuous (fun x t ↦ t ∈ 𝓝ˢ (f x))
 
 lemma lowerHemicontinuousWithinAt_iff {f : α → Set β} {s : Set α} {x : α} :
     LowerHemicontinuousWithinAt f s x ↔
