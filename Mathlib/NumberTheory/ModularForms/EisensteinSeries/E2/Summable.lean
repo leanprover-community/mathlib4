@@ -35,18 +35,19 @@ private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summan
     ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) := by
   rw [sum_Icc_of_even_eq_range (e2Summand_even z), Finset.sum_range_succ', smul_add, two_mul]
   ring_nf
-  have H (a : ℕ) := EisensteinSeries.qExpansion_identity_pnat (k := 1) (by grind)
-    ⟨(a + 1) * z, by simpa [show 0 < a + (1 : ℝ) by positivity] using z.2⟩
-  simp only [coe_mk_subtype, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
-    Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one, e2Summand, eisSummand,
+  simp only [add_comm, mul_comm, Nat.cast_one, e2Summand, eisSummand,
     Nat.cast_add, Fin.isValue, Matrix.cons_val_zero, Int.cast_add, Int.cast_natCast, Int.cast_one,
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_sum, Int.cast_zero,
     zero_mul, add_zero] at *
   congr
   · simpa using (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (by grind) even_two).symm
   · ext a
+    have H2 := EisensteinSeries.qExpansion_identity_pnat (k := 1) (by grind)
+      ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.2⟩
+    simp only [coe_mk_subtype, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
+      Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one] at *
     norm_cast at *
-    simp_rw [H a, ← tsum_mul_left, ← tsum_neg,ofReal_mul, ofReal_ofNat, mul_pow, I_sq, neg_mul,
+    simp_rw [H2 , ← tsum_mul_left, ← tsum_neg,ofReal_mul, ofReal_ofNat, mul_pow, I_sq, neg_mul,
       one_mul, Nat.cast_add, Nat.cast_one, mul_neg, ofReal_pow, ← exp_nsmul, nsmul_eq_mul,
       Nat.cast_mul]
     apply tsum_congr (fun b ↦ ?_)
@@ -79,12 +80,13 @@ lemma G2_cauchySeq : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, e2Su
   apply Tendsto.cauchySeq (x := -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using aux_G2_tendsto z
 
-lemma summable_e2Summand_symmetricIcc : Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ ) := by
+lemma summable_e2Summand_symmetricIcc : Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ) := by
   simpa only [Summable, HasSum, symmetricIcc_eq_map_Icc_nat] using
     cauchySeq_tendsto_of_complete (G2_cauchySeq z)
 
 /-Do we want this and the next not to be private?
-I made it more general in case we want them elsewhere. -/
+I made it more general in case we want them elsewhere. Also any ideas on how to make this proof
+nicer are welcome. -/
 private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClass ℤ F]
     {f : ℤ → F} (hc : CauchySeq fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, f m) (hs : f.Even) :
     Tendsto f atTop (𝓝 0) := by
@@ -94,34 +96,31 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   intro ε hε
   obtain ⟨N, hN⟩ := (Hg (2 * ε) (by positivity))
   refine ⟨N + 1, fun n hn ↦ ?_⟩
-  have H2 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
-  have H22 := sum_Icc_succ_eq_add_endpoints f (N := n.natAbs - 1)
-  have H3 : ((n.natAbs - 1 : ℕ) : ℤ) = n - 1 := by
+  have h1 := (H n.natAbs (n - 1).natAbs N (by omega) (by omega))
+  have h2 := sum_Icc_succ_eq_add_endpoints f (N := n.natAbs - 1)
+  have h3 : ((n.natAbs - 1 : ℕ) : ℤ) = n - 1 := by
     omega
-  rw [H3] at H22
+  rw [h3] at h2
   simp only [Nat.cast_natAbs, Int.cast_abs, Int.cast_eq, Int.cast_sub, Int.cast_one, sub_add_cancel,
     neg_sub, gt_iff_lt] at *
-  have h1 : |n| = n := by
+  have h4 : |n| = n := by
     rw [abs_eq_self]
     omega
-  have h2 : |n - 1| = n - 1 := by
+  have h5 : |n - 1| = n - 1 := by
     rw [abs_eq_self, Int.sub_nonneg]
     omega
-  rw [h1, h2, H22] at H2
+  rw [h4, h5, h2] at h1
   have := norm_smul (2 : ℤ) (f n)
-  simp only [hs n, (two_mul (f n)).symm, neg_sub, dist_add_self_left, h1, h2, zsmul_eq_mul,
+  simp only [hs n, (two_mul (f n)).symm, neg_sub, dist_add_self_left, h4, h5, zsmul_eq_mul,
     Int.cast_ofNat, gt_iff_lt] at *
-  simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H2 (le_abs_self (g N)))
+  simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans h1 (le_abs_self (g N)))
     (hN N (by rfl))
 
 private lemma tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [NormedRing F]
-    [NormSMulClass ℤ F] {f : ℤ → F} (hs : f.Even) (hc : Summable f (symmetricIcc ℤ)) :
+    [NormSMulClass ℤ F] {f : ℤ → F} (hc : Summable f (symmetricIcc ℤ)) (hs : f.Even) :
     Tendsto f atTop (𝓝 0) := by
-  apply tendsto_zero_of_cauchySeq_sum_Icc ?_ hs
-  have H := hc.hasSum
-  apply Filter.Tendsto.cauchySeq (x := ∑'[symmetricIcc ℤ] (b : ℤ), f b)
-  rw [HasSum, symmetricIcc_eq_map_Icc_nat] at H
-  exact H
+  have := SummationFilter.hasSum_symmetricIcc_iff.mp (hc.hasSum)
+  apply tendsto_zero_of_cauchySeq_sum_Icc (this.cauchySeq) hs
 
 lemma summable_e2Summand_symmetricIco : Summable (fun m : ℤ ↦ e2Summand m z) (symmetricIco ℤ) := by
   apply summable_symmetricIco_of_multiplible_symmetricIcc (summable_e2Summand_symmetricIcc z)
