@@ -333,9 +333,8 @@ theorem prev_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
     grind
   rw [prev_eq_getElem_idxOf_pred_of_ne_head ha ha₀]
   congr
-  rw [idxOf_cons_ne _ <| Ne.symm ha₀, Nat.succ_add_eq_add_succ]
-  change _ = (_ + (head :: _).length) % _
-  rw [Nat.add_mod_right, Nat.mod_eq_of_lt <| by grind, Nat.add_one_sub_one]
+  rw [← Nat.add_sub_assoc, Nat.sub_add_comm, Nat.add_mod_right, Nat.mod_eq_of_lt]
+  all_goals grind
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     l.prev l[i] (get_mem ..) = l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia)) := by
