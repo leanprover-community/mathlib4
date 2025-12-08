@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 
 /-!
 # Free sheaves of modules
@@ -21,6 +23,8 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
   `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
 
 -/
+
+@[expose] public section
 
 universe u v' u'
 open CategoryTheory Limits

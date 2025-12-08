@@ -3,11 +3,13 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -126,6 +128,8 @@ assuming `S` is commutative.
 linearly disjoint, linearly independent, tensor product
 
 -/
+
+@[expose] public section
 
 open Module
 open scoped TensorProduct

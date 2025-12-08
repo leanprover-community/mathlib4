@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Topological Kőnig's lemma
@@ -19,7 +21,7 @@ We give this in a more general form, which is that cofiltered limits
 of nonempty compact Hausdorff spaces are nonempty
 (`nonempty_limitCone_of_compact_t2_cofiltered_system`).
 
-This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirected J (≤)]` and
+This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirectedOrder J]` and
 `F : Jᵒᵖ ⥤ TopCat`.
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
@@ -28,6 +30,8 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.PFun
-import Mathlib.Data.Vector3
-import Mathlib.NumberTheory.PellMatiyasevic
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector3
+public import Mathlib.NumberTheory.PellMatiyasevic
 
 /-!
 # Diophantine functions and Matiyasevic's theorem
@@ -48,6 +50,8 @@ Matiyasevic's theorem, Hilbert's tenth problem
 * Finish the solution of Hilbert's tenth problem.
 * Connect `Poly` to `MvPolynomial`
 -/
+
+@[expose] public section
 
 
 open Fin2 Function Nat Sum
@@ -567,7 +571,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              cutsat⟩
+              lia⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph

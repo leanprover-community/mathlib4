@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Continuous maps sending zero to zero
@@ -17,6 +19,8 @@ overly burdensome on type class synthesis.
 Of course, one could generalize to maps between pointed topological spaces, but that goes beyond
 the purpose of this type.
 -/
+
+@[expose] public section
 
 assert_not_exists StarOrderedRing
 

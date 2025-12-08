@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Vasilii Nesterov
 -/
-import Mathlib.Data.Seq.Defs
-import Mathlib.Data.ENat.Basic
-import Mathlib.Tactic.ENatToNat
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -14,6 +16,11 @@ import Mathlib.Tactic.ApplyFun
 This file provides some basic lemmas about possibly infinite lists represented by the
 type `Stream'.Seq`.
 -/
+
+-- TODO: fix the errors in this file!
+set_option linter.flexible false
+
+@[expose] public section
 
 universe u v w
 
@@ -34,7 +41,7 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
   simp [length', h]
 
 @[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
@@ -122,7 +129,7 @@ section OfStream
 
 @[simp]
 theorem ofStream_cons (a : α) (s) : ofStream (a::s) = cons a (ofStream s) := by
-  apply Subtype.eq; simp only [ofStream, cons]; rw [Stream'.map_cons]
+  apply Subtype.ext; simp only [ofStream, cons]; rw [Stream'.map_cons]
 
 end OfStream
 
@@ -186,7 +193,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [take, head_eq_some hy]
     simp
     right
-    apply ih (by cutsat)
+    apply ih (by lia)
     rwa [get?_tail]
 
 theorem length_take_le {s : Seq α} {n : ℕ} : (s.take n).length ≤ n := by
@@ -346,21 +353,21 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 
 @[simp]
 theorem map_cons (f : α → β) (a) : ∀ s, map f (cons a s) = cons (f a) (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq; dsimp [cons, map]; rw [Stream'.map_cons]; rfl
+  | ⟨s, al⟩ => by apply Subtype.ext; dsimp [cons, map]; rw [Stream'.map_cons]; rfl
 
 @[simp]
 theorem map_id : ∀ s : Seq α, map id s = s
   | ⟨s, al⟩ => by
-    apply Subtype.eq; dsimp [map]
+    apply Subtype.ext; dsimp [map]
     rw [Option.map_id, Stream'.map_id]
 
 @[simp]
 theorem map_tail (f : α → β) : ∀ s, map f (tail s) = tail (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq; dsimp [tail, map]
+  | ⟨s, al⟩ => by apply Subtype.ext; dsimp [tail, map]
 
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Seq α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
-    apply Subtype.eq; dsimp [map]
+    apply Subtype.ext; dsimp [map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 
@@ -486,7 +493,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | succ k ih =>
     simp [Seq.get?_tail, drop]
     convert ih using 2
-    cutsat
+    lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
   | 0 => rfl
@@ -722,7 +729,7 @@ theorem get?_set_of_ne (s : Seq α) {m n : ℕ} (h : n ≠ m) : (s.set m x).get?
 
 theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n = s.drop n := by
   ext1 i
-  simp [get?_set_of_ne _ _ (show n + i ≠ m by cutsat)]
+  simp [get?_set_of_ne _ _ (show n + i ≠ m by lia)]
 
 end Update
 

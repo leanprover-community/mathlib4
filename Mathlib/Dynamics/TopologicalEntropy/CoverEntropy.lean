@@ -3,10 +3,12 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Analysis.Asymptotics.ExpGrowth
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Real.ENatENNReal
-import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
+module
+
+public import Mathlib.Analysis.Asymptotics.ExpGrowth
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
 # Topological entropy via covers
@@ -58,6 +60,8 @@ cover, entropy
 ## TODO
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
+
+@[expose] public section
 
 open Set Uniformity UniformSpace
 open scoped SetRel
@@ -335,8 +339,7 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : SetRel X X} 
     ∀ x ∈ s, (F ∩ ball x (dynEntourage T U n)).Nonempty := by
   -- Otherwise, there is a ball which does not intersect `F`. Removing it yields a smaller cover.
   classical
-  by_contra! hypo
-  obtain ⟨x, x_s, ball_empt⟩ := hypo
+  by_contra! ⟨x, x_s, ball_empt⟩
   have smaller_cover : IsDynCoverOf T F U n (s.erase x) := by
     intro y y_F
     specialize h y_F
@@ -522,7 +525,7 @@ lemma coverEntropyInf_empty {T : X → X} : coverEntropyInf T ∅ = ⊥ := by
 lemma coverEntropyInf_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropyInf T F :=
   (coverEntropyInfEntourage_le_coverEntropyInf T F univ_mem).trans_eq'
-    (coverEntropyInfEntourage_univ T h).symm
+    (coverEntropyInfEntourage_univ T h)
 
 lemma coverEntropy_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
     0 ≤ coverEntropy T F :=

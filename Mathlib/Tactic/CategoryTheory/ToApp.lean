@@ -3,8 +3,11 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.Util.AddRelatedDecl
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public meta import Mathlib.CategoryTheory.Category.Cat
+public meta import Mathlib.Util.AddRelatedDecl
 
 /-!
 # The `to_app` attribute
@@ -24,6 +27,8 @@ in `Cat` which contain components of 2-morphisms.
 
 There is also a term elaborator `to_app_of% t` for use within proofs.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
@@ -122,9 +127,8 @@ initialize registerBuiltinAttribute {
   | `(attr| to_app $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "_app" ref stx? fun type value levels => do
+    addRelatedDecl src "" "_app" ref stx? fun value levels => do
       let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
-      let value ← mkExpectedTypeHint value type
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ← toAppExpr (← toCatExpr value)
       let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) newValue

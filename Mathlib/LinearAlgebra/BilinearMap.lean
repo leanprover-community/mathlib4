@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Basics on bilinear maps
@@ -35,6 +37,8 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 
 bilinear
 -/
+
+@[expose] public section
 
 open Function
 
@@ -157,7 +161,7 @@ def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛ�
   map_add' _ _ := by
     simp [map_add]
   map_smul' _ _ := by
-    simp [LinearMap.map_smulₛₗ, lcompₛₗ]
+    simp [map_smulₛₗ, lcompₛₗ]
 
 @[simp]
 theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
@@ -185,6 +189,10 @@ variable {S N}
 theorem lcomp_apply (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) (x : M) : lcomp S N f g x = g (f x) := rfl
 
 theorem lcomp_apply' (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) : lcomp S N f g = g ∘ₗ f := rfl
+
+lemma lcomp_injective_of_surjective (g : M →ₗ[R] M₂) (surj : Function.Surjective g) :
+    Function.Injective (LinearMap.lcomp S N g) :=
+  surj.injective_linearMapComp_right
 
 end lcomp
 

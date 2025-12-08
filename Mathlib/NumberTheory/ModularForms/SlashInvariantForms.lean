@@ -3,8 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
-import Mathlib.NumberTheory.ModularForms.SlashActions
+module
+
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+public import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
 # Slash invariant forms
@@ -13,6 +15,8 @@ This file defines functions that are invariant under a `SlashAction` which forms
 defining `ModularForm` and `CuspForm`. We prove several instances for such spaces, in particular
 that they form a module over `ℝ`, and over `ℂ` if the group is contained in `SL(2, ℝ)`.
 -/
+
+@[expose] public section
 
 open Complex UpperHalfPlane ModularForm
 
@@ -43,6 +47,11 @@ instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+/-- See note [custom simps projection]. -/
+def SlashInvariantForm.Simps.coe (f : SlashInvariantForm Γ k) : ℍ → ℂ := f
+
+initialize_simps_projections SlashInvariantForm (toFun → coe, as_prefix coe)
 
 instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
     SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
@@ -219,12 +228,16 @@ def const [Γ.HasDetOne] (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' g hg := by ext; simp [slash_def, σ, Subgroup.HasDetOne.det_eq hg]
 
+@[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
+
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
 @[simps -fullyApplied]
 def constℝ [Γ.HasDetPlusMinusOne] (x : ℝ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' g hg := funext fun τ ↦ by simp [slash_apply,
     Subgroup.HasDetPlusMinusOne.abs_det hg, -Matrix.GeneralLinearGroup.val_det_apply]
+
+@[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
 instance [Γ.HasDetPlusMinusOne] : One (SlashInvariantForm Γ 0) where
   one := { constℝ 1 with toFun := 1 }

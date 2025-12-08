@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.Order.Basic
 
 /-! # Properties of objects which are closed under isomorphisms
 
@@ -13,6 +15,8 @@ Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
 this file introduces the type class `P.IsClosedUnderIsomorphisms`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -86,6 +90,22 @@ instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
 instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P.inverseImage F) where
   of_iso e hX := P.prop_of_iso (F.mapIso e) hX
+
+@[simp]
+lemma isoClosure_strictMap (F : C ⥤ D) :
+    (P.strictMap F).isoClosure = P.map F := by
+  refine le_antisymm ?_ ?_
+  · rw [isoClosure_le_iff]
+    exact P.strictMap_le_map F
+  · rintro X ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨F.obj Y, ⟨Y, hY⟩, ⟨e.symm⟩⟩
+
+@[simp]
+lemma map_isoClosure (F : C ⥤ D) :
+    P.isoClosure.map F = P.map F := by
+  refine le_antisymm ?_ (map_monotone P.le_isoClosure F)
+  rintro X ⟨Y, ⟨Z, hZ, ⟨e⟩⟩, ⟨e'⟩⟩
+  exact ⟨Z, hZ, ⟨F.mapIso e.symm ≪≫ e'⟩⟩
 
 end ObjectProperty
 

@@ -3,13 +3,17 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Ordered vector spaces
 -/
+
+@[expose] public section
 
 open OrderDual
 
@@ -97,7 +101,7 @@ end NoZeroSMulDivisors
 
 /-- Positivity extension for scalar multiplication. -/
 @[positivity HSMul.hSMul _ _]
-def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+meta def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"

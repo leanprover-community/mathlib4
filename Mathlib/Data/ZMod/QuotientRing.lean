@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.ZMod
-import Mathlib.Data.Nat.Factorization.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.ZMod
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -23,6 +25,8 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 zmod, quotient ring, ideal quotient
 -/
+
+@[expose] public section
 
 open QuotientAddGroup Set ZMod
 

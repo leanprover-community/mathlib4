@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.IntegralCompProd
-import Mathlib.Probability.Kernel.Disintegration.StandardBorel
+module
+
+public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
 # Lebesgue and Bochner integrals of conditional kernels
@@ -22,6 +24,8 @@ Integrals of `ProbabilityTheory.Kernel.condKernel` and `MeasureTheory.Measure.co
 Corresponding statements for the Lebesgue integral and/or without the sets `s` and `t` are also
 provided.
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory MeasurableSpace
 
