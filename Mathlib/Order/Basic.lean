@@ -402,14 +402,10 @@ theorem forall_lt_iff_le : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
 
-section ltByCases
-
 @[to_dual self (reorder := ltc gtc)]
 lemma eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt {x y x' y' : α}
     (ltc : x < y ↔ x' < y') (gtc : y < x ↔ y' < x') :
     x = y ↔ x' = y' := by grind
-
-end ltByCases
 
 /-! #### `min`/`max` recursors -/
 
