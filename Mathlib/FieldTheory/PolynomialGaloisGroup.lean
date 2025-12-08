@@ -147,7 +147,7 @@ def rootsEquivRoots [Fact ((p.map (algebraMap F E)).Splits)] :
     rootSet p p.SplittingField ≃ rootSet p E :=
   Equiv.ofBijective (mapRoots p E) (mapRoots_bijective p E)
 
-instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
+local instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
   smul ϕ := Set.MapsTo.restrict ϕ _ _ <| rootSet_mapsTo ϕ.toAlgHom
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
@@ -159,8 +159,10 @@ theorem smul_def [Fact ((p.map (algebraMap F E)).Splits)] (ϕ : p.Gal) (x : root
     ϕ • x = rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x) :=
   rfl
 
-/-- The action of `gal p` on the roots of `p` in `E`. -/
-instance galAction [Fact ((p.map (algebraMap F E)).Splits)] : MulAction p.Gal (rootSet p E) where
+/-- The action of `p.Gal` on the roots of `p` in `E`. This is not a global instance because it
+  introduces diamonds when `E = p.SplittingField`. -/
+local instance galAction [Fact ((p.map (algebraMap F E)).Splits)] :
+    MulAction p.Gal (rootSet p E) where
   one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
   mul_smul _ _ _ := by
     simp only [smul_def, Equiv.symm_apply_apply, mul_smul]
