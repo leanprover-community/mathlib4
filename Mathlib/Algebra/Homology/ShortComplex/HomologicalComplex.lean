@@ -819,9 +819,7 @@ lemma cyclesIsoSc'_hom_iCycles :
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :
     (K.cyclesIsoSc' i j k hi hk).inv ≫ K.iCycles j = (K.sc' i j k).iCycles := by
-  dsimp [cyclesIsoSc']
-  erw [ShortComplex.cyclesMap_i]
-  apply comp_id
+  simp [cyclesIsoSc', iCycles]
 
 @[reassoc (attr := simp)]
 lemma toCycles_cyclesIsoSc'_hom :
@@ -845,9 +843,7 @@ lemma pOpcycles_opcyclesIsoSc'_inv :
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_hom :
     K.pOpcycles j ≫ (K.opcyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).pOpcycles := by
-  dsimp [opcyclesIsoSc']
-  erw [ShortComplex.p_opcyclesMap]
-  apply id_comp
+  simp [opcyclesIsoSc', pOpcycles]
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoSc'_inv_fromOpcycles :
