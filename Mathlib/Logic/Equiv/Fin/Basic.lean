@@ -418,3 +418,13 @@ def Fin.appendEquiv {α : Type*} (m n : ℕ) :
 @[simps!]
 def Fin.succFunEquiv (α : Type*) (n : ℕ) : (Fin (n + 1) → α) ≃ (Fin n → α) × α :=
   (appendEquiv n 1).symm.trans (Equiv.prodCongrRight fun _ ↦ Equiv.funUnique (Fin 1) α)
+
+/-- Split off last summand of a sigma type over `Fin n.succ` -/
+def Fin.sigmaFinSuccEquiv {n : ℕ} {f : Fin n.succ → Type*} :
+  (Σ k : Fin n.succ, f k) ≃ (Σ k : Fin n, f k.castSucc) ⊕ f (Fin.last n) := {
+    toFun x := if h : x.1 = Fin.last n then .inr (h ▸ x.2) else
+      .inl ⟨⟨x.1, Fin.lt_last_iff_ne_last.mpr h⟩, x.2⟩
+    invFun := Sum.rec (fun y ↦ ⟨y.1.castSucc, y.2⟩) (⟨Fin.last n, ·⟩)
+    left_inv _ := by aesop
+    right_inv _ := by aesop
+  }
