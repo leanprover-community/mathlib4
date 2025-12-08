@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctors to Cat
@@ -13,6 +15,8 @@ for pseudofunctors to `Cat`.
 
 -/
 
+@[expose] public section
+
 universe w v v' u u'
 
 namespace CategoryTheory
@@ -21,7 +25,7 @@ open Bicategory
 
 namespace Pseudofunctor
 
-variable {B : Type u} [Bicategory.{w, v} B] (F : Pseudofunctor B Cat.{v', u'})
+variable {B : Type u} [Bicategory.{w, v} B] (F : B ⥤ᵖ Cat.{v', u'})
 
 section naturality
 
@@ -54,7 +58,7 @@ lemma mapComp'_hom_naturality :
     (F.mapComp' f g fg hfg).hom.app X ≫ (F.map g).map ((F.map f).map a) :=
   (F.mapComp' f g fg hfg).hom.naturality a
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma mapComp'_inv_naturality :
     (F.map g).map ((F.map f).map a) ≫ (F.mapComp' f g fg hfg).inv.app Y =
     (F.mapComp' f g fg hfg).inv.app X ≫ (F.map fg).map a :=

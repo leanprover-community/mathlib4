@@ -3,11 +3,13 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.Riemannian.PathELength
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.Riemannian.PathELength
+public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
 /-! # Riemannian manifolds
 
@@ -47,6 +49,8 @@ automatic instances for these cases). One can require whatever regularity one wa
 the latter from the former as it cannot guess `n`).
 -/
 
+@[expose] public section
+
 open Bundle Bornology Set MeasureTheory Manifold Filter
 open scoped ENNReal ContDiff Topology
 
@@ -82,7 +86,7 @@ end
 section
 
 /-!
-# Riemannian structure on an inner product vector space
+### Riemannian structure on an inner product vector space
 
 We endow an inner product vector space with the canonical Riemannian metric, given by the
 inner product of the vector space in each of the tangent spaces, and we show that this construction
@@ -179,7 +183,7 @@ end
 section
 
 /-!
-# Constructing a distance from a Riemannian structure
+### Constructing a distance from a Riemannian structure
 
 Let `M` be a real manifold with a Riemannian structure. We construct the associated distance and
 show that the associated topology coincides with the pre-existing topology. Therefore, one may

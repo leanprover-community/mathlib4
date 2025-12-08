@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -29,6 +31,8 @@ surjection `P →ₐ[R] R`.
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -379,8 +383,7 @@ lemma Cotangent.ker_mk : LinearMap.ker (mk (P := P)) = P.ker • ⊤ := by
 
 lemma Cotangent.span_eq_top_of_span_eq_ker {ι : Type*} (s : ι → P.Ring)
     (hs : Ideal.span (Set.range s) = P.ker) :
-    Submodule.span S
-      (.range (fun i ↦ mk ⟨s i, by simp [← hs, Ideal.mem_span_range_self]⟩)) = ⊤ := by
+    Submodule.span S (.range (fun i ↦ mk ⟨s i, hs.le (Ideal.subset_span ⟨i, rfl⟩)⟩)) = ⊤ := by
   rw [Ideal.span, ← Submodule.span_range_subtype_eq_top_iff] at hs
   · apply Submodule.span_eq_top_of_span_eq_top (R := P.Ring)
     rw [← Function.comp_def, Set.range_comp, ← Submodule.map_span, hs, Submodule.map_top,

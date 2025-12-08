@@ -3,10 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Ideal
-import Mathlib.Algebra.Lie.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Ideal
+public import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Direct sums of Lie algebras and Lie modules
@@ -17,6 +19,8 @@ Direct sums of Lie algebras and Lie modules carry natural algebra and module str
 
 lie algebra, lie module, direct sum
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -192,7 +196,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' (of L j x), toModule R ι L' f' (of L i y)⁆ by
         intro i y
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
-        simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
+        simp only [map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear x; ext j x; exact this j i x y
       intro i j y x

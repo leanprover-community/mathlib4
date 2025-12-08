@@ -3,10 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Extension.Cotangent.Basis
-import Mathlib.RingTheory.Extension.Presentation.Submersive
+module
+
+public import Mathlib.LinearAlgebra.Basis.Exact
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Computation of Jacobian of presentations from basis of Cotangent
@@ -24,6 +25,8 @@ smooth algebras (TODO @chrisflav).
   If the `fᵢ` form a basis of `I/I²` and the restricted cotangent complex
   `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective, `P` is submersive.
 -/
+
+@[expose] public section
 
 universe t₂ t₁ u v
 
@@ -129,6 +132,7 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
 
 end PreSubmersivePresentation
 
+<<<<<<< HEAD
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
 
 /-- If `Ω[S⁄R]` has a basis of the form `{d sᵢ}` where `sᵢ : S`, there exist

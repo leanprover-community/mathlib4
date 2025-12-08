@@ -3,10 +3,12 @@ Copyright (c) 2019 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Normed.Group.AddCircle
-import Mathlib.Algebra.CharZero.Quotient
-import Mathlib.Topology.Instances.Sign
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.Normed.Group.AddCircle
+public import Mathlib.Algebra.CharZero.Quotient
+public import Mathlib.Topology.Instances.Sign
 
 /-!
 # The type of angles
@@ -14,6 +16,8 @@ import Mathlib.Topology.Instances.Sign
 In this file we define `Real.Angle` to be the quotient group `ℝ/2πℤ` and prove a few simple lemmas
 about trigonometric functions and angles.
 -/
+
+@[expose] public section
 
 
 open Real
@@ -645,10 +649,11 @@ theorem cos_pos_iff_abs_toReal_lt_pi_div_two {θ : Angle} : 0 < cos θ ↔ |θ.t
   rw [lt_iff_le_and_ne, lt_iff_le_and_ne, cos_nonneg_iff_abs_toReal_le_pi_div_two, ←
     and_congr_right]
   rintro -
-  rw [Ne, Ne, not_iff_not, @eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
+  contrapose
+  rw [@eq_comm ℝ 0, abs_toReal_eq_pi_div_two_iff, cos_eq_zero_iff]
 
 theorem cos_neg_iff_pi_div_two_lt_abs_toReal {θ : Angle} : cos θ < 0 ↔ π / 2 < |θ.toReal| := by
-  rw [← not_le, ← not_le, not_iff_not, cos_nonneg_iff_abs_toReal_le_pi_div_two]
+  contrapose!; exact cos_nonneg_iff_abs_toReal_le_pi_div_two
 
 theorem abs_cos_eq_abs_sin_of_two_nsmul_add_two_nsmul_eq_pi {θ ψ : Angle}
     (h : (2 : ℕ) • θ + (2 : ℕ) • ψ = π) : |cos θ| = |sin ψ| := by
@@ -885,6 +890,44 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
 theorem sign_two_zsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℤ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   rw [two_zsmul, ← two_nsmul, sign_two_nsmul_eq_sign_iff]
+
+lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
+    (h : (2 : ℕ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
+    |θ.toReal| + |ψ.toReal| = π := by
+  rcases two_nsmul_eq_zero_iff.mp h with h | h
+  · simp_all [add_eq_zero_iff_eq_neg.mp h]
+  rw [← coe_toReal θ, ← coe_toReal ψ, ← coe_add] at h
+  suffices |θ.toReal + ψ.toReal| = π by
+    rw [← this, eq_comm, abs_add_eq_add_abs_iff]
+    have hθ := sign_toReal (sign_ne_zero_iff.1 h0).2
+    have hψ := sign_toReal (sign_ne_zero_iff.1 (hs ▸ h0)).2
+    obtain hθs | hθs : θ.sign = -1 ∨ θ.sign = 1 := by simpa [h0] using θ.sign.trichotomy
+    · rw [hθs, eq_comm, ← toReal_neg_iff_sign_neg] at hs
+      exact .inr ⟨(toReal_neg_iff_sign_neg.mpr hθs).le, hs.le⟩
+    · simp [toReal_nonneg_iff_sign_nonneg, hs.symm, hθs]
+  rw [abs_eq pi_nonneg]
+  rcases angle_eq_iff_two_pi_dvd_sub.mp h with ⟨k, hk⟩
+  rw [sub_eq_iff_eq_add] at hk
+  have hu : θ.toReal + ψ.toReal ≤ 2 * π := by linarith [toReal_le_pi θ, toReal_le_pi ψ]
+  have hn : -2 * π < θ.toReal + ψ.toReal := by linarith [neg_pi_lt_toReal θ, neg_pi_lt_toReal ψ]
+  rw [hk] at hu hn
+  have hk0 : k ≤ 0 := by
+    by_contra hk1
+    grw [← show 1 ≤ k by lia] at hu
+    simp only [Int.cast_one] at hu
+    linarith [pi_pos]
+  have hkn1 : -1 ≤ k := by
+    by_contra hkn2
+    grw [show k ≤ -2 by lia] at hn
+    simp only [Int.cast_neg, Int.cast_ofNat] at hn
+    linarith [pi_pos]
+  obtain rfl | rfl : k = -1 ∨ k = 0 := (by lia) <;> grind
+
+lemma abs_toReal_add_abs_toReal_eq_pi_of_two_zsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
+    (h : (2 : ℤ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :
+    |θ.toReal| + |ψ.toReal| = π := by
+  rw [two_zsmul, ← two_nsmul] at h
+  exact abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq h hs h0
 
 theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : ContinuousAt sign θ :=
   (continuousAt_sign_of_ne_zero (sin_ne_zero_iff.2 ⟨h0, hpi⟩)).comp continuous_sin.continuousAt

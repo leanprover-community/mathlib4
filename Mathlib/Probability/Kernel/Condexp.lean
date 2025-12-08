@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.CondDistrib
-import Mathlib.Probability.ConditionalProbability
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.CondDistrib
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Kernel associated with a conditional expectation
@@ -30,6 +32,8 @@ on `Ω` allows us to do so.
 
 -/
 
+@[expose] public section
+
 
 open MeasureTheory Set Filter TopologicalSpace
 
@@ -45,16 +49,12 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [Topologi
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
-  rw [← aestronglyMeasurable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
-  simp_rw [id] at hf ⊢
-  exact hf
+  simpa using (aestronglyMeasurable_comp_snd_map_prodMk_iff hm).mpr hf
 
-theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F] (hm : m ≤ mΩ)
+theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F]
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
-  rw [← integrable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
-  simp_rw [id] at hf ⊢
-  exact hf
+  simpa using Integrable.comp_snd_map_prodMk id hf
 
 end AuxLemmas
 
@@ -170,7 +170,7 @@ theorem _root_.MeasureTheory.Integrable.condExpKernel_ae (hf_int : Integrable f 
   rw [condExpKernel_eq]
   convert Integrable.condDistrib_ae
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
-    (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
+    hf_int.comp_snd_map_prod_id using 1
 
 theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : Integrable f μ) :
     Integrable (fun ω => ∫ y, ‖f y‖ ∂condExpKernel μ m ω) μ := by
@@ -178,7 +178,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : In
   rw [condExpKernel_eq]
   convert Integrable.integral_norm_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
-    (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
+    hf_int.comp_snd_map_prod_id using 1
 
 theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
@@ -187,7 +187,7 @@ theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace
   rw [condExpKernel_eq]
   convert Integrable.norm_integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
-    (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
+    hf_int.comp_snd_map_prod_id using 1
 
 theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
@@ -196,7 +196,7 @@ theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ 
   rw [condExpKernel_eq]
   convert Integrable.integral_condDistrib
     (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
-    (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ)) using 1
+    hf_int.comp_snd_map_prod_id using 1
 
 theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
     Integrable (fun ω => (condExpKernel μ m ω).real s) μ := by
@@ -335,7 +335,7 @@ lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
       (generateFrom_singleton_le hs) ht
   filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, measureReal_def, measureReal_def,
-    ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
+    ENNReal.toReal_eq_toReal_iff' (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
 
 end Cond
 

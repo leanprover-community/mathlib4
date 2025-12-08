@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Basis from a split exact sequence
@@ -18,6 +20,8 @@ the images of `vᵢ` for `i : κ` form a basis of `P`.
 We treat linear independence and the span condition separately. For convenience this
 is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`.
 -/
+
+@[expose] public section
 
 variable {R M K P : Type*} [Ring R] [AddCommGroup M] [AddCommGroup K] [AddCommGroup P]
 variable [Module R M] [Module R K] [Module R P]
@@ -104,8 +108,8 @@ lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
     {p q : Submodule R M} (hpq : IsCompl p q)
     (hmap : Submodule.map g q = ⊤) :
     Function.Surjective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
-  rw [Set.surjective_iff_surjOn_univ, LinearMap.coe_comp, Set.surjOn_comp_iff, Set.image_univ]
-  rw [← LinearMap.coe_range, ← Submodule.top_coe (R := R), LinearMap.surjOn_iff_le_map,
+  rw [← Set.surjOn_univ, LinearMap.coe_comp, Set.surjOn_comp_iff, Set.image_univ]
+  rw [← LinearMap.coe_range, ← Submodule.top_coe (R := R), surjOn_iff_le_map,
     ← hfg.linearMap_ker_eq]
   intro x triv
   obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]

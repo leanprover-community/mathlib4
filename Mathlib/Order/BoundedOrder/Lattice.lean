@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Bounded lattices
@@ -21,6 +23,8 @@ instances for `Prop` and `fun`.
 * Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
   Typical examples include `Prop` and `Set α`.
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
@@ -52,7 +56,7 @@ theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a :=
 theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a :=
   sup_of_le_left bot_le
 
-@[simp]
+@[simp, grind =]
 theorem sup_eq_bot_iff : a ⊔ b = ⊥ ↔ a = ⊥ ∧ b = ⊥ := by rw [eq_bot_iff, sup_le_iff]; simp
 
 end SemilatticeSupBot
@@ -65,7 +69,7 @@ lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_le_right le_top
 
 lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 
-@[simp]
+@[simp, grind =]
 theorem inf_eq_top_iff : a ⊓ b = ⊤ ↔ a = ⊤ ∧ b = ⊤ :=
   @sup_eq_bot_iff αᵒᵈ _ _ _ _
 

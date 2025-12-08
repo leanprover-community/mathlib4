@@ -3,13 +3,16 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.MonoidAlgebra.Module
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.Data.Finset.Sort
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Theory of univariate polynomials
@@ -26,6 +29,7 @@ directory.
 * `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `p.erase n` is the polynomial `p` in which one removes the `c X^n` term.
+* `ofMultiset s` is the monic polynomial `p` which has roots `s`.
 
 There are often two natural variants of lemmas involving sums, depending on whether one acts on the
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
@@ -52,6 +56,8 @@ gives an element `q` of `R[ℕ]`, and conversely `⟨q⟩` gives back `p`). The
 equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. These should
 in general not be used once the basic API for polynomials is constructed.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -404,7 +410,7 @@ theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
 theorem monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 
--- TODO: can't we just delete this one?
+@[deprecated map_add (since := "2025-11-15")]
 theorem monomial_add (n : ℕ) (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
   (monomial n).map_add _ _
 
@@ -457,6 +463,9 @@ theorem toFinsupp_C (a : R) : (C a).toFinsupp = single 0 a :=
 theorem C_0 : C (0 : R) = 0 := by simp
 
 theorem C_1 : C (1 : R) = 1 :=
+  rfl
+
+theorem C_ofNat (n : ℕ) [n.AtLeastTwo] : C ofNat(n) = (ofNat(n) : R[X]) :=
   rfl
 
 theorem C_mul : C (a * b) = C a * C b :=
@@ -1046,7 +1055,6 @@ theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
   rw [← support_nonempty] at h
   obtain ⟨n, hn⟩ := h
   rw [mem_support_iff] at hn
-  rw [← nonempty_iff_ne_empty]
   exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
 
 @[simp]
@@ -1113,10 +1121,10 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
-  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
+  rw [eq_neg_iff_add_eq_zero, ← map_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
-  rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
+  rw [sub_eq_add_neg, map_add, monomial_neg, sub_eq_add_neg]
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
@@ -1126,10 +1134,10 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 
 theorem C_neg : C (-a) = -C a :=
-  RingHom.map_neg C a
+  map_neg C a
 
 theorem C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub C a b
+  map_sub C a b
 
 end Ring
 
@@ -1197,6 +1205,12 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
     let ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
     Nontrivial.of_polynomial_ne hrs,
     fun h => @Polynomial.nontrivial _ _ h⟩
+
+/-- The map sending a collection of roots into a polynomial, as a morphism. -/
+@[simps] def ofMultiset [CommRing R] : AddChar (Multiset R) R[X] where
+  toFun s := (s.map (fun a ↦ X - C a)).prod
+  map_zero_eq_one' := by simp
+  map_add_eq_mul' := by simp
 
 section repr
 
