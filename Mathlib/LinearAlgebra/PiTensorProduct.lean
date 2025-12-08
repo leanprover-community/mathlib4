@@ -803,7 +803,7 @@ section subsingleton
 variable [Subsingleton ι] (i₀ : ι)
 
 /-- Tensor product over a singleton type with element `i₀` is equivalent to `s i₀`.
-For non-dependent case, see `PiTensorProduct.subsingletonEquiv` -/
+For non-dependent case, see `PiTensorProduct.subsingletonEquiv`. -/
 def subsingletonEquivDep : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
   LinearEquiv.ofLinear
     (lift
