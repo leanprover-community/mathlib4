@@ -44,6 +44,21 @@ instance (M : ModuleCat.{u} A) [Module.Flat A M] : PreservesFiniteLimits <| tens
   rw [ModuleCat.mono_iff_injective] at this ⊢
   exact Module.Flat.lTensor_preserves_injective_linearMap _ this
 
+lemma foo (M : ModuleCat.{u} A) : Module.Flat A M ↔ PreservesFiniteLimits (tensorLeft M) := by
+  refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
+  · have h2 := (Functor.preservesFiniteColimits_iff_forall_exact_map_and_epi (tensorLeft M)).mp
+      (inferInstanceAs <| PreservesFiniteColimits (tensorLeft M))
+    rw [Functor.preservesFiniteLimits_iff_forall_exact_map_and_mono]
+    refine fun S hS ↦ ⟨(h2 S hS).1, ?_⟩
+    have := hS.mono_f
+    rw [ModuleCat.mono_iff_injective] at this ⊢
+    exact Module.Flat.lTensor_preserves_injective_linearMap _ this
+  · constructor
+    intro P _ _ _ N hN
+    -- rw [← ModuleCat.mono_iff_injective]
+    sorry
+
+
 lemma ModuleCat.preservesFiniteLimits_tensorLeft_of_flat (hf : f.Flat) :
     PreservesFiniteLimits <| tensorLeft ((restrictScalars f).obj (ModuleCat.of B B)) := by
   algebraize [f]

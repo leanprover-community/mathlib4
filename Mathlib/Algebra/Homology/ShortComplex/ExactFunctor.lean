@@ -150,7 +150,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
 lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
     PreservesFiniteLimits F ↔
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
-  ((Functor.preservesFiniteLimits_tfae F).out 0 3).symm
+  (Functor.preservesFiniteLimits_tfae F).out 3 0
 
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
@@ -247,7 +247,7 @@ lemma exact_tfae : List.TFAE
 lemma preservesFiniteColimits_iff_forall_exact_map_and_epi :
     PreservesFiniteColimits F ↔
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g) :=
-  ((Functor.preservesFiniteColimits_tfae F).out 0 3).symm
+  (Functor.preservesFiniteColimits_tfae F).out 3 0
 
 end
 
