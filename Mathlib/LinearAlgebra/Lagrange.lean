@@ -459,11 +459,10 @@ theorem interpolate_poly_eq_self
   apply eq_of_degrees_lt_of_eval_finset_eq t
   · rw [ht]
     apply degree_interpolate_lt _ hvs
-  · rw [ht]
-    exact hP
+  · rwa [ht]
   · intro x hx
-    obtain ⟨i, hi, hx⟩ := Finset.mem_image.mp hx
-    rw [← hx, eval_interpolate_at_node _ hvs hi]
+    obtain ⟨i, hi, rfl⟩ := Finset.mem_image.mp hx
+    rw [eval_interpolate_at_node _ hvs hi]
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : s.card = P.degree + 1) :
