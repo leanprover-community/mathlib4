@@ -97,9 +97,9 @@ lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
   exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
 lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
-  wlog hx₀ : 0 < x
+  wlog! hx₀ : 0 < x
   case inr =>
-    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_gt hx₀
+    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le hx₀
   rcases le_or_gt x 1 with hxπ | hxπ
   case inl =>
     exact pow_lt_pow_left₀ (sin_lt hx₀)

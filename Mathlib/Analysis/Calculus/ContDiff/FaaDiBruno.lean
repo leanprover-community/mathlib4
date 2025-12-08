@@ -309,9 +309,9 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
         simp only [cons_succ, cases_succ, comp_apply, succ_lt_succ_iff]
         exact c.parts_strictMono (by simpa using hij)
   disjoint i hi j hj hij := by
-    wlog h : j < i generalizing i j
+    wlog! h : j < i generalizing i j
     · exact .symm
-        (this j (mem_univ j) i (mem_univ i) hij.symm (lt_of_le_of_ne (le_of_not_gt h) hij))
+        (this j (mem_univ j) i (mem_univ i) hij.symm (lt_of_le_of_ne h hij))
     induction i using Fin.induction with
     | zero => simp at h
     | succ i =>
