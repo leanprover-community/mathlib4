@@ -541,7 +541,7 @@ theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
   by_contra! ⟨_, _⟩ | ⟨_, _⟩
   · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
     simp at hc
-  · apply (h.map_units 1).ne_zero
+  · apply (h.map_units S 1).ne_zero
     rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
 
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
