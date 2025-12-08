@@ -13,7 +13,7 @@ public meta import Lake.Util.Casing
 -- benchmarked.
 set_option linter.style.header false
 
-public meta section
+meta section
 
 /-!
 ## Text-based linters
@@ -57,7 +57,7 @@ inductive StyleError where
 deriving BEq
 
 /-- How to format style errors -/
-inductive ErrorFormat
+public inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
   /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
@@ -199,7 +199,7 @@ abbrev TextbasedLinter := LinterOptions → Array String →
 section
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
-register_option linter.adaptationNote : Bool := { defValue := true }
+public register_option linter.adaptationNote : Bool := { defValue := true }
 
 @[inherit_doc linter.adaptationNote]
 def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
@@ -213,7 +213,7 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   return (errors, none)
 
 /-- Lint a collection of input strings if one of them contains trailing whitespace. -/
-register_option linter.trailingWhitespace : Bool := { defValue := true }
+public register_option linter.trailingWhitespace : Bool := { defValue := true }
 
 @[inherit_doc linter.trailingWhitespace]
 def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
@@ -229,7 +229,7 @@ def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
-register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
+public register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
 
 @[inherit_doc linter.whitespaceBeforeSemicolon]
 def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
@@ -306,7 +306,7 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
 -- TODO: these linters assume they are being run in `./scripts` and do not work on
 -- downstream projects. Fix this before re-enabling them by default.
 -- Or better yet: port them to Lean 4.
-register_option linter.pythonStyle : Bool := { defValue := false }
+public register_option linter.pythonStyle : Bool := { defValue := false }
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
@@ -317,6 +317,7 @@ Return the number of files which had new style errors.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
+public
 def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : Array Lean.Name)
     (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
@@ -356,11 +357,12 @@ def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : A
   return numberErrorFiles
 
 /-- Verify that all modules are named in `UpperCamelCase` -/
-register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
+public register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
 
 /-- Verifies that all modules in `modules` are named in `UpperCamelCase`
 (except for explicitly discussed exceptions, which are hard-coded here).
 Return the number of modules violating this. -/
+public
 def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
 
@@ -383,7 +385,7 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
   return badNames.size
 
 /-- Verify that no module name is forbidden according to Windows' filename rules. -/
-register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
+public register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
 
 /-- Verifies that no module in `modules` contains CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5,
 COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
@@ -394,7 +396,7 @@ Also verify that module names contain no forbidden characters such as `*`, `?` (
 
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
-def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
