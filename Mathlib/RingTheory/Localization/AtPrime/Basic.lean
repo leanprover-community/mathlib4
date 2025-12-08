@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.Ideal
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -31,6 +33,8 @@ See `RingTheory.Localization.Basic` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommSemiring R] (S : Type*) [CommSemiring S]
@@ -270,8 +274,8 @@ namespace AtPrime
 
 section
 
-variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
-  [Algebra R A] [Algebra R B] [IsScalarTower R A B]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C] [Algebra A B] [Algebra A C]
+  [Algebra R A] [Algebra R B] [IsScalarTower R A B] [Algebra B C] [IsScalarTower A B C]
 
 noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
@@ -283,6 +287,12 @@ instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
     simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
       Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
       IsScalarTower.algebraMap_apply R A B]
+
+instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] (Q : Ideal C)
+    [Q.IsPrime] [Q.LiesOver P] [Q.LiesOver p] :
+    IsScalarTower (Localization.AtPrime p) (Localization.AtPrime P) (Localization.AtPrime Q) :=
+  .of_algebraMap_eq' <| by
+    simp [RingHom.algebraMap_toAlgebra, ← localRingHom_comp, ← IsScalarTower.algebraMap_eq]
 
 end
 

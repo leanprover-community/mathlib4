@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 
 /-!
 # Tangency for spheres.
@@ -12,9 +14,6 @@ import Mathlib.Geometry.Euclidean.Sphere.Basic
 This file defines notions of spheres being tangent to affine subspaces and other spheres.
 
 ## Main definitions
-
-* `EuclideanGeometry.Sphere.orthRadius`: the affine subspace orthogonal to the radius vector at
-  a point (the tangent space, if that point lies in the sphere).
 
 * `EuclideanGeometry.Sphere.IsTangentAt`: the property of an affine subspace being tangent to a
   sphere at a given point.
@@ -48,76 +47,18 @@ This file defines notions of spheres being tangent to affine subspaces and other
 
 -/
 
+@[expose] public section
+
 
 namespace EuclideanGeometry
 
 namespace Sphere
 
 open AffineSubspace RealInnerProductSpace
+open scoped Affine
 
 variable {V P : Type*}
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
-
-/-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (in
-the typical cases, `p` lies in `s` and this is the tangent space). -/
-def orthRadius (s : Sphere P) (p : P) : AffineSubspace ℝ P := .mk' p (ℝ ∙ (p -ᵥ s.center))ᗮ
-
-lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
-  self_mem_mk' _ _
-
-lemma mem_orthRadius_iff_inner_left {s : Sphere P} {p x : P} :
-    x ∈ s.orthRadius p ↔ ⟪x -ᵥ p, p -ᵥ s.center⟫ = 0 := by
-  rw [orthRadius, mem_mk', Submodule.mem_orthogonal_singleton_iff_inner_left]
-
-lemma mem_orthRadius_iff_inner_right {s : Sphere P} {p x : P} :
-    x ∈ s.orthRadius p ↔ ⟪p -ᵥ s.center, x -ᵥ p⟫ = 0 := by
-  rw [mem_orthRadius_iff_inner_left, inner_eq_zero_symm]
-
-@[simp] lemma direction_orthRadius (s : Sphere P) (p : P) :
-    (s.orthRadius p).direction = (ℝ ∙ (p -ᵥ s.center))ᗮ := by
-  rw [orthRadius, direction_mk']
-
-@[simp] lemma orthRadius_center (s : Sphere P) : s.orthRadius s.center = ⊤ := by
-  simp [orthRadius]
-
-@[simp] lemma center_mem_orthRadius_iff {s : Sphere P} {p : P} :
-    s.center ∈ s.orthRadius p ↔ p = s.center := by
-  rw [mem_orthRadius_iff_inner_left, ← neg_vsub_eq_vsub_rev, inner_neg_left]
-  simp
-
-lemma orthRadius_le_orthRadius_iff {s : Sphere P} {p q : P} :
-    s.orthRadius p ≤ s.orthRadius q ↔ p = q ∨ q = s.center := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have h' := direction_le h
-    simp only [direction_orthRadius] at h'
-    have h'' := Submodule.orthogonal_le h'
-    simp only [Submodule.orthogonal_orthogonal, Submodule.span_singleton_le_iff_mem,
-      Submodule.mem_span_singleton] at h''
-    rcases h'' with ⟨r, hr⟩
-    have hp : p ∈ s.orthRadius q := h (s.self_mem_orthRadius p)
-    rw [mem_orthRadius_iff_inner_left, ← vsub_sub_vsub_cancel_right p q s.center, ← hr,
-      inner_sub_left, real_inner_smul_left, real_inner_smul_right, ← mul_assoc, ← sub_mul,
-      mul_eq_zero] at hp
-    rcases hp with hp | hp
-    · nth_rw 1 [← one_mul r] at hp
-      rw [← sub_mul, mul_eq_zero] at hp
-      rcases hp with hp | rfl
-      · rw [sub_eq_zero] at hp
-        rw [← hp, one_smul, vsub_left_cancel_iff] at hr
-        exact .inl hr
-      · rw [zero_smul, eq_comm, vsub_eq_zero_iff_eq] at hr
-        exact .inr hr
-    · simp only [inner_self_eq_zero, vsub_eq_zero_iff_eq] at hp
-      rw [hp, vsub_self, smul_zero, eq_comm, vsub_eq_zero_iff_eq] at hr
-      exact .inr hr
-  · rcases h with rfl | rfl <;> simp
-
-@[simp] lemma orthRadius_eq_orthRadius_iff {s : Sphere P} {p q : P} :
-    s.orthRadius p = s.orthRadius q ↔ p = q := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
-  have hpq := orthRadius_le_orthRadius_iff.1 h.le
-  have hqp := orthRadius_le_orthRadius_iff.1 h.symm.le
-  grind
 
 /-- The affine subspace `as` is tangent to the sphere `s` at the point `p`. -/
 structure IsTangentAt (s : Sphere P) (p : P) (as : AffineSubspace ℝ P) : Prop where
@@ -189,6 +130,23 @@ lemma IsTangentAt.dist_eq_of_mem_of_mem {s : Sphere P} {p₁ p₂ q : P}
   have h1 := dist_sq_eq_of_mem h₁ hq_mem₁
   have h2 := dist_sq_eq_of_mem h₂ hq_mem₂
   rwa [h1, add_left_cancel_iff, sq_eq_sq₀ dist_nonneg dist_nonneg] at h2
+
+lemma IsTangentAt.radius_lt_dist_center {s : Sphere P} {as : AffineSubspace ℝ P} {p q : P}
+    (h : s.IsTangentAt p as) (hq : q ∈ as) (hqp : q ≠ p) : s.radius < dist q s.center := by
+  suffices s.radius ^ 2 < dist q s.center ^ 2 by
+    simpa [sq_lt_sq, abs_of_nonneg (s.radius_nonneg_of_mem h.mem_sphere)] using this
+  rw [h.dist_sq_eq_of_mem hq]
+  simp [hqp]
+
+lemma IsTangentAt.eq_orthRadius_of_finrank_add_one_eq {s : Sphere P} {as : AffineSubspace ℝ P}
+    {p : P} (ht : s.IsTangentAt p as) (hr : s.radius ≠ 0)
+    (hfr : Module.finrank ℝ as.direction + 1 = Module.finrank ℝ V) : as = s.orthRadius p := by
+  have : FiniteDimensional ℝ V := Module.finite_of_finrank_eq_succ hfr.symm
+  have hp : p ≠ s.center := fun h ↦ (h ▸ s.center_mem_iff).not.2 hr ht.mem_sphere
+  rw [← finrank_orthRadius hp, Nat.add_right_cancel_iff] at hfr
+  exact eq_of_direction_eq_of_nonempty_of_le
+    (Submodule.eq_of_le_of_finrank_eq (direction_le ht.le_orthRadius) hfr) ⟨p, ht.mem_space⟩
+    ht.le_orthRadius
 
 /-- The affine subspace `as` is tangent to the sphere `s` at some point. -/
 def IsTangent (s : Sphere P) (as : AffineSubspace ℝ P) : Prop :=
@@ -262,6 +220,40 @@ lemma isTangent_iff_isTangentAt_orthogonalProjection {s : Sphere P} {as : Affine
     dist_orthogonalProjection_eq_radius_iff_isTangentAt]
 
 alias ⟨IsTangent.isTangentAt, _⟩ := isTangent_iff_isTangentAt_orthogonalProjection
+
+lemma IsTangent.eq_orthRadius_or_eq_orthRadius_pointReflection_of_parallel_orthRadius {s : Sphere P}
+    {as : AffineSubspace ℝ P} {p : P} (h : s.IsTangent as) (hpar : as ∥ s.orthRadius p)
+    (hp : p ∈ s) :
+    as = s.orthRadius p ∨ as = s.orthRadius (Equiv.pointReflection s.center p) := by
+  rcases h with ⟨q, hqs, hqas, hqo⟩
+  have hd := direction_le hqo
+  rw [hpar.direction_eq, direction_orthRadius_le_iff] at hd
+  obtain ⟨r, hr⟩ := hd
+  rcases eq_or_ne s.radius 0 with hrad | hrad
+  · rw [mem_sphere, hrad, dist_eq_zero] at hp hqs
+    rw [hp, orthRadius_center] at hpar ⊢
+    rw [hqs, orthRadius_center] at hqo
+    exact .inl (eq_of_direction_eq_of_nonempty_of_le hpar.direction_eq ⟨q, hqas⟩ hqo)
+  obtain rfl : as = s.orthRadius q := by
+    refine eq_of_direction_eq_of_nonempty_of_le ?_ ⟨q, hqas⟩ hqo
+    rw [hpar.direction_eq, direction_orthRadius, direction_orthRadius]
+    congr 1
+    rcases eq_or_ne r 0 with rfl | hr0
+    · simp_all
+    · rw [hr, Submodule.span_singleton_smul_eq hr0.isUnit]
+  rcases eq_or_ne r 0 with rfl | hr0
+  · simp_all
+  · have hr' : ‖q -ᵥ s.center‖ = ‖r • (p -ᵥ s.center)‖ := by
+      rw [hr]
+    simp_rw [norm_smul, Real.norm_eq_abs, ← dist_eq_norm_vsub, mem_sphere.1 hp,
+      mem_sphere.1 hqs, right_eq_mul₀ hrad] at hr'
+    rcases eq_or_eq_neg_of_abs_eq hr' with rfl | rfl
+    · simp_all
+    · right
+      convert rfl
+      rw [← eq_vadd_iff_vsub_eq] at hr
+      rw [hr]
+      simp [Equiv.pointReflection_apply]
 
 lemma IsTangentAt.eq_orthogonalProjection {s : Sphere P} {p : P} {as : AffineSubspace ℝ P}
     [Nonempty as] [as.direction.HasOrthogonalProjection] (h : s.IsTangentAt p as) :

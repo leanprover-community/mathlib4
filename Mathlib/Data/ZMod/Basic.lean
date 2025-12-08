@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Integers mod `n`
@@ -28,6 +30,8 @@ Definition of the integers mod n, and the field structure on the integers mod p.
   This is a ring hom if the ring has characteristic dividing `n`
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field Submodule TwoSidedIdeal
 
@@ -428,7 +432,7 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
+          rw [Fin.coe_cast, Fin.val_mul, Fin.val_mul, Fin.coe_cast, Fin.coe_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
@@ -904,8 +908,8 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
   { toFun := to_fun,
     invFun := inv_fun,
-    map_mul' := RingHom.map_mul _
-    map_add' := RingHom.map_add _
+    map_mul' := map_mul _
+    map_add' := map_add _
     left_inv := inv.1
     right_inv := inv.2 }
 
@@ -922,8 +926,7 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
   rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
-  ⟨by decide⟩
+instance instSubsingletonUnits : Subsingleton (ZMod 2)ˣ := ⟨by decide⟩
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
@@ -1225,7 +1228,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  cutsat
+  lia
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
@@ -1292,3 +1295,12 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
+
+-- there is a faster proof with Module.toAddMonoidEnd
+instance ZMod.instSubsingletonModule (n : ℕ) (M : Type*) [AddCommMonoid M] :
+    Subsingleton (Module (ZMod n) M) := by
+  obtain _ | n := n
+  · exact inferInstanceAs (Subsingleton (Module ℤ M))
+  refine ⟨fun m1 m2 ↦ Module.ext' _ _ fun r m ↦ ?_⟩
+  obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
+  rw [(letI := m1; Nat.cast_smul_eq_nsmul _ r m), Nat.cast_smul_eq_nsmul _ r m]

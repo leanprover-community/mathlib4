@@ -3,13 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.Seminorm
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.MetricSpace.Equicontinuity
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Topology.Algebra.Equicontinuity
+public import Mathlib.Topology.MetricSpace.Equicontinuity
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Topology induced by a family of seminorms
@@ -47,6 +49,8 @@ Neumann boundedness in terms of that seminorm family. Together with
 
 seminorm, locally convex
 -/
+
+@[expose] public section
 
 
 open NormedField Set Seminorm TopologicalSpace Filter List Bornology
@@ -495,7 +499,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
     convert hI {i}
     rw [Finset.sup_singleton]
   intro hi I
-  by_cases hI : I.Nonempty
+  by_cases! hI : I.Nonempty
   · choose r hr h using hi
     have h' : 0 < I.sup' hI r := by
       rcases hI with ⟨i, hi⟩
@@ -504,7 +508,7 @@ theorem WithSeminorms.isVonNBounded_iff_seminorm_bounded {s : Set E} (hp : WithS
     refine lt_of_lt_of_le (h i x hx) ?_
     simp only [Finset.le_sup'_iff]
     exact ⟨i, hi, (Eq.refl _).le⟩
-  simp only [Finset.not_nonempty_iff_eq_empty.mp hI, Finset.sup_empty, coe_bot, Pi.zero_apply]
+  simp only [hI, Finset.sup_empty, coe_bot, Pi.zero_apply]
   exact ⟨1, zero_lt_one, fun _ _ => zero_lt_one⟩
 
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}
@@ -771,10 +775,12 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   {p : SeminormFamily 𝕜 E ι}
 
 /-- In a semi-`NormedSpace`, a continuous seminorm is zero on elements of norm `0`. -/
-lemma map_eq_zero_of_norm_zero (q : Seminorm 𝕜 F)
+lemma map_eq_zero_of_norm_eq_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
     ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
+
+@[deprecated (since := "2025-11-15")] alias map_eq_zero_of_norm_zero := map_eq_zero_of_norm_eq_zero
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
@@ -792,7 +798,7 @@ lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
   refine ⟨‖c‖ / ε, this, fun x ↦ ?_⟩
   by_cases hx : ‖x‖ = 0
   · rw [hx, mul_zero]
-    exact le_of_eq (map_eq_zero_of_norm_zero q hq hx)
+    exact le_of_eq (map_eq_zero_of_norm_eq_zero q hq hx)
   · refine (normSeminorm 𝕜 F).bound_of_shell q ε_pos hc (fun x hle hlt ↦ ?_) hx
     refine (le_of_lt <| show q x < _ from hε hlt).trans ?_
     rwa [← div_le_iff₀' this, one_div_div]

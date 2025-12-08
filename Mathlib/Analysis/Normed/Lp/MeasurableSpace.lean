@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurable space structure on `WithLp`
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 If `X` is a measurable space, we set the measurable space structure on `WithLp p X` to be the
 same as the one on `X`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 
@@ -22,10 +26,10 @@ namespace WithLp
 instance measurableSpace : MeasurableSpace (WithLp p X) :=
   MeasurableSpace.comap ofLp inferInstance
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_ofLp : Measurable (@ofLp p X) := comap_measurable _
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_toLp : Measurable (@toLp p X) := fun s hs ↦ by
   obtain ⟨t, ht, rfl⟩ := hs
   simpa [Set.preimage_preimage]

@@ -3,13 +3,17 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.GroupTheory.Sylow
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

@@ -3,10 +3,12 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.Portmanteau
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+module
+
+public import Mathlib.MeasureTheory.Measure.Portmanteau
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # The Lévy-Prokhorov distance on spaces of finite measures and probability measures
@@ -32,6 +34,8 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 finite measure, probability measure, weak convergence, convergence in distribution, metrizability
 -/
+
+@[expose] public section
 
 open Topology Metric Filter Set ENNReal NNReal
 
@@ -265,7 +269,7 @@ open Lean.PrettyPrinter.Delaborator in
 /-- This prevents `ofMeasure x` being printed as `{ toMeasure := x }` by `delabStructureInstance`.
 -/
 @[app_delab LevyProkhorov.ofMeasure]
-def LevyProkhorov.delabOfMeasure : Delab := delabApp
+meta def LevyProkhorov.delabOfMeasure : Delab := delabApp
 
 namespace LevyProkhorov
 
@@ -640,7 +644,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
-      exact disjoint_left.mp (Es_disjoint (show j ≠ i by cutsat)) ω_in_Esj ω_in_Esi
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by lia)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]

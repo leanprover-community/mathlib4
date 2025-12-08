@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
 /-!
 # Day functors
@@ -23,6 +25,8 @@ that for every monoidal category `W` with suitable colimits,
 colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
 to monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

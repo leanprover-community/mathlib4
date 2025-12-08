@@ -3,8 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Localizing commutative monoids away from an element
@@ -16,6 +18,8 @@ We treat the special case of localizing away from an element in the sections
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

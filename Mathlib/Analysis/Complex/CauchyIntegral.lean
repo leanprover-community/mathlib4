@@ -3,15 +3,17 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+module
+
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DiffContOnCl
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula
@@ -155,6 +157,8 @@ function is analytic on the open ball.
 
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
+
+@[expose] public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 

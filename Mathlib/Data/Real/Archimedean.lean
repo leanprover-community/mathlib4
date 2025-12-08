@@ -3,16 +3,20 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Pointwise.Bounds
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Interval.Set.Disjoint
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -377,7 +381,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    cutsat
+    lia
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _

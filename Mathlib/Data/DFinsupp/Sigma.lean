@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Fintype.Quotient
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Data.Fintype.Quotient
 
 /-!
 # `DFinsupp` on `Sigma` types
@@ -19,6 +21,8 @@ import Mathlib.Data.Fintype.Quotient
   bijection.
 
 -/
+
+@[expose] public section
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l

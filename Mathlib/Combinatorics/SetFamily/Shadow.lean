@@ -3,9 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.Sups
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Data.Finset.Grade
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Shadows
@@ -40,6 +42,8 @@ are finsets, and `𝒜, ℬ : Finset (Finset α)` are finset families.
 
 shadow, set family
 -/
+
+@[expose] public section
 
 
 open Finset Nat
@@ -292,7 +296,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
       rfl
     · rintro ⟨t, ht, hts, hcard⟩
       obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
-        (by cutsat)
+        (by lia)
       refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
       rw [hu, ← hcard, add_right_comm]
       rfl
