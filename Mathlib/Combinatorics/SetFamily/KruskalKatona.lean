@@ -214,7 +214,7 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
     rwa [a, union_empty] at uA
   rw [familyMeasure, familyMeasure, sum_union compress_disjoint]
   conv_rhs => rw [← uA]
-  rw [sum_union (disjoint_filter_filter_neg _ _ _), add_lt_add_iff_left, filter_image,
+  rw [sum_union (disjoint_filter_filter_not _ _ _), add_lt_add_iff_left, filter_image,
     sum_image compress_injOn]
   refine sum_lt_sum_of_nonempty ne₂ fun A hA ↦ ?_
   simp_rw [← sum_image Fin.val_injective.injOn]

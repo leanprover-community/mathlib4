@@ -565,6 +565,14 @@ lemma card_union_eq_card_add_card : #(s ∪ t) = #s + #t ↔ Disjoint s t := by
 
 @[simp] alias ⟨_, card_union_of_disjoint⟩ := card_union_eq_card_add_card
 
+omit [DecidableEq α] in
+theorem card_filter_add_card_filter_not (p : α → Prop) [DecidablePred p] :
+    #(s.filter p) + #(s.filter (fun a => ¬p a)) = #s := by
+  classical
+  rw [←  card_union_of_disjoint (disjoint_filter_filter_not s s p)]
+  congr
+  grind
+
 @[grind =]
 theorem card_sdiff_of_subset (h : s ⊆ t) : #(t \ s) = #t - #s := by
   suffices #(t \ s) = #(t \ s ∪ s) - #s by rwa [sdiff_union_of_subset h] at this
@@ -636,7 +644,7 @@ theorem filter_card_add_filter_neg_card_eq_card
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
     #(s.filter p) + #(s.filter fun a ↦ ¬ p a) = #s := by
   classical
-  rw [← card_union_of_disjoint (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
+  rw [← card_union_of_disjoint (disjoint_filter_filter_not _ _ _), filter_union_filter_neg_eq]
 
 /-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
 set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/

@@ -197,7 +197,7 @@ theorem compression_idem (u v : α) (s : Finset α) : 𝓒 u v (𝓒 u v s) = �
 @[simp]
 theorem card_compression (u v : α) (s : Finset α) : #(𝓒 u v s) = #s := by
   rw [compression, card_union_of_disjoint compress_disjoint, filter_image,
-    card_image_of_injOn compress_injOn, ← card_union_of_disjoint (disjoint_filter_filter_neg s _ _),
+    card_image_of_injOn compress_injOn, ← card_union_of_disjoint (disjoint_filter_filter_not s _ _),
     filter_union_filter_neg_eq]
 
 theorem le_of_mem_compression_of_notMem (h : a ∈ 𝓒 u v s) (ha : a ∉ s) : u ≤ a := by

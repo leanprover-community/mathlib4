@@ -324,10 +324,13 @@ theorem disjoint_filter_filter' (s t : Finset α)
   rw [Pi.disjoint_iff] at h
   simpa [hp, hq] using h a
 
-theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
+theorem disjoint_filter_filter_not (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
+
+@[deprecated (since := "2025-12-08")]
+alias disjoint_filter_filter_neg := disjoint_filter_filter_not
 
 theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=

@@ -319,7 +319,7 @@ theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=
-  disjoint_filter_filter_neg (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
+  disjoint_filter_filter_not (s ×ˢ s) (s ×ˢ s) (fun a => a.1 = a.2)
 
 theorem product_sdiff_diag : s ×ˢ s \ s.diag = s.offDiag := by grind
 
