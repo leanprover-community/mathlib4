@@ -598,7 +598,8 @@ def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g 
     right_inv := fun x =>
       Subtype.ext <|
         let ⟨x', hx'⟩ := f.mem_range.mp x.prop
-        show f (g x) = x by rw [← hx', h x'] }
+        show f (g x) = x by rw [← hx', h x']
+    map_smul' := by simp }
 
 @[simp]
 theorem ofLeftInverse_apply {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) (x : A) :
@@ -628,8 +629,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
-  { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by ext; exact e.commutes r }
+  .ofCommutes (e.toRingEquiv.subsemiringMap S.toSubsemiring) (fun r => by ext; exact e.commutes r)
 
 end AlgEquiv
 
@@ -716,7 +716,7 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.2⟩
   invFun x := ⟨x, h.symm ▸ x.2⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :

@@ -279,7 +279,7 @@ end NonUnitalStarAlgHom
 namespace StarAlgEquiv
 
 variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
-variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
+variable [AlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by

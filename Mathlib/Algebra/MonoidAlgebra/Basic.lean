@@ -277,7 +277,6 @@ variable (k A)
 def domCongr (e : G ≃* H) : A[G] ≃ₐ[k] A[H] :=
   AlgEquiv.ofLinearEquiv
     (Finsupp.domLCongr e : (G →₀ A) ≃ₗ[k] (H →₀ A))
-    ((equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_one e)
     (fun f g => (equivMapDomain_eq_mapDomain _ _).trans <| (mapDomain_mul e f g).trans <|
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
@@ -347,14 +346,15 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
 
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
-@[to_additive (attr := simps apply)
+@[to_additive (dont_translate := R) (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
 noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
-  __ := mapRangeAlgHom M e
+  __ := mapRangeAlgHom (R := R) M e
   invFun := mapRangeAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
+  map_smul' _ _ := by aesop
 
 @[simp] lemma symm_mapRangeAlgEquiv (e : A ≃ₐ[R] B) :
     (mapRangeAlgEquiv R M e).symm = mapRangeAlgEquiv R M e.symm := rfl
@@ -547,12 +547,12 @@ variable (k G) in
 `Multiplicative`. -/
 def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMonoid G] :
     AddMonoidAlgebra k G ≃ₐ[R] MonoidAlgebra k (Multiplicative G) :=
-  { AddMonoidAlgebra.toMultiplicative k G with
-    commutes' := fun r => by simp [AddMonoidAlgebra.toMultiplicative] }
+  .ofCommutes (AddMonoidAlgebra.toMultiplicative k G)
+    fun r => by simp [AddMonoidAlgebra.toMultiplicative]
 
 variable (k G) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
     MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
-  { MonoidAlgebra.toAdditive k G with commutes' := fun r => by simp [MonoidAlgebra.toAdditive] }
+  .ofCommutes (MonoidAlgebra.toAdditive k G) fun r => by simp [MonoidAlgebra.toAdditive]

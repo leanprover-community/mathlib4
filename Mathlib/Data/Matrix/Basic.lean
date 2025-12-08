@@ -5,7 +5,6 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
 public import Mathlib.Data.Finite.Prod
@@ -694,7 +693,8 @@ def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
   { f.toAlgHom.mapMatrix,
     f.toRingEquiv.mapMatrix with
     toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    invFun := fun M => M.map f.symm
+    map_smul' _ _ := by ext; simp }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=
@@ -715,8 +715,7 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
 we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEquiv`. -/
 @[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
-  commutes' _ := MulOpposite.unop_injective <| by
-    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
+  map_smul' _ _ := MulOpposite.unop_injective <| by ext; simp
 
 end AlgEquiv
 
@@ -827,10 +826,10 @@ variable {ι : Type*} {β : ι → Type*}
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
 
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
-    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+@[simps!] def piAlgEquiv (R) [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [∀ i, SMul R (β i)]
+    [Fintype n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
-  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+  map_smul' _ _ := rfl
 
 end Pi
 
@@ -910,13 +909,12 @@ variable (R m α)
 
 /-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring -/
 @[simps]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
+def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ :=
   { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
     transposeRingEquiv m α with
-    toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
-      simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
+    toFun M := MulOpposite.op Mᵀ
+    map_smul' _ _ := by simp }
 
 variable {R m α}
 

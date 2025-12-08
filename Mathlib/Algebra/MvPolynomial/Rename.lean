@@ -162,8 +162,9 @@ def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R 
   { rename f with
     toFun := rename f
     invFun := rename f.symm
-    left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id_apply]
-    right_inv := fun p => by rw [rename_rename, f.self_comp_symm, rename_id_apply] }
+    left_inv _ := by rw [rename_rename, f.symm_comp_self, rename_id_apply]
+    right_inv _ := by rw [rename_rename, f.self_comp_symm, rename_id_apply]
+    map_smul' _ _ := by simp }
 
 @[simp]
 theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=

@@ -175,7 +175,7 @@ theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
     have : IsArtinianRing A := isArtinian_of_tower K inferInstance
     letI : Fintype (MaximalSpectrum A) := (nonempty_fintype _).some
     let v (i : MaximalSpectrum A) : A := (IsArtinianRing.equivPi A).symm (Pi.single i 1)
-    let e : A ≃ₐ[K] _ := { __ := IsArtinianRing.equivPi A, commutes' := fun r ↦ rfl }
+    let e : A ≃ₐ[K] _ := { __ := IsArtinianRing.equivPi A, map_smul' _ _ := rfl }
     have := (FormallyEtale.iff_of_equiv e).mp inferInstance
     rw [FormallyEtale.pi_iff] at this
     exact ⟨_, inferInstance, _, _, _, e, fun I ↦ (iff_isSeparable _ _).mp inferInstance⟩

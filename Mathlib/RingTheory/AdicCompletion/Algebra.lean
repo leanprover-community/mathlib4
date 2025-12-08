@@ -418,7 +418,6 @@ its `I`-adic completion is an `S`-algebra isomorphism.
 noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
   __ := ofLinearEquiv I S
   map_mul' _ _ := by ext; simp
-  commutes' _ := rfl
 
 @[simp]
 theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by

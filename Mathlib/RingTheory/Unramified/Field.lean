@@ -70,7 +70,8 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     · exact bot_ne_top
   let e : K ≃ₐ[K] A ⧸ IsLocalRing.maximalIdeal A := {
     __ := Algebra.ofId K (A ⧸ IsLocalRing.maximalIdeal A)
-    __ := Equiv.ofBijective _ IsAlgClosed.algebraMap_bijective_of_isIntegral }
+    __ := Equiv.ofBijective _ IsAlgClosed.algebraMap_bijective_of_isIntegral
+    map_smul' := by simp [smul_def] }
   let e' : A ⊗[K] (A ⧸ IsLocalRing.maximalIdeal A) ≃ₐ[A] A :=
     (Algebra.TensorProduct.congr AlgEquiv.refl e.symm).trans (Algebra.TensorProduct.rid K A A)
   let f : A ⧸ IsLocalRing.maximalIdeal A →ₗ[A] A := e'.toLinearMap.comp (sec K A _)

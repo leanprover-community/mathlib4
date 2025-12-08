@@ -178,10 +178,6 @@ lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
 noncomputable def rTensorAlgEquiv :
     (MvPolynomial σ S) ⊗[R] N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) := by
   apply AlgEquiv.ofLinearEquiv rTensor
-  · simp only [Algebra.TensorProduct.one_def]
-    apply symm
-    rw [← LinearEquiv.symm_apply_eq]
-    exact finsuppLeft_symm_apply_single (R := R) (0 : σ →₀ ℕ) (1 : S) (1 : N)
   · intro x y
     erw [← rTensorAlgHom_apply_eq (S := S)]
     simp only [map_mul, rTensorAlgHom_apply_eq]

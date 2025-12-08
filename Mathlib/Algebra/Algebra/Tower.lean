@@ -231,10 +231,10 @@ namespace AlgEquiv
 
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
-  { (f : A ≃+* B) with
-    commutes' := fun r => by
+  .ofCommutes (f : A ≃+* B)
+    fun r => by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
-      exact f.commutes (algebraMap R S r) }
+      exact f.commutes (algebraMap R S r)
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
@@ -267,9 +267,8 @@ variable {R}
 `A` and `B` factors via `R ⧸ I`. -/
 @[simps! apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
-    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
-  toRingEquiv := f
-  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+    (f : A ≃ₐ[R] B) : A ≃ₐ[S] B :=
+  .ofCommutes f (f.toAlgHom.extendScalarsOfSurjective h).commutes'
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))

@@ -113,7 +113,7 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
       (A ⧸ (Ideal.span ∅ : Ideal A)) ⊗[R] x.asIdeal.ResidueField := by
     refine Algebra.TensorProduct.congr ?f AlgEquiv.refl
     rw [Ideal.span_empty]
-    exact { __ := (RingEquiv.quotientBot A).symm, __ := Algebra.ofId _ _ }
+    exact { __ := (RingEquiv.quotientBot A).symm, map_smul' _ _ := rfl }
   rw [← IsNilpotent.map_iff e.injective, AlgEquiv.commutes,
     ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
     basicOpen_eq_zeroLocus_compl]

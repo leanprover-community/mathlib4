@@ -6,8 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.Algebra.Algebra.Opposite
-public import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -131,8 +129,9 @@ end AlgHom
 namespace AlgEquiv
 
 variable {α β R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
-variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
-variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
+variable [∀ i, NonUnitalNonAssocSemiring (A₁ i)] [∀ i, NonUnitalNonAssocSemiring (A₂ i)]
+  [∀ i, NonUnitalNonAssocSemiring (A₃ i)]
+variable [∀ i, SMul R (A₁ i)] [∀ i, SMul R (A₂ i)] [∀ i, SMul R (A₃ i)]
 
 /-- A family of algebra equivalences `∀ i, (A₁ i ≃ₐ A₂ i)` generates a
 multiplicative equivalence between `Π i, A₁ i` and `Π i, A₂ i`.
@@ -143,11 +142,9 @@ This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 @[simps apply]
 def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
   { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
-    toFun := fun x j ↦ e j (x j)
-    invFun := fun x j ↦ (e j).symm (x j)
-    commutes' := fun r ↦ by
-      ext i
-      simp }
+    toFun x j := e j (x j)
+    invFun x j := (e j).symm (x j)
+    map_smul' _ _ := by ext; simp }
 
 @[simp]
 theorem piCongrRight_refl :
@@ -169,7 +166,7 @@ variable (R A₁) in
 algebras. -/
 def piMulOpposite : (Π i, A₁ i)ᵐᵒᵖ ≃ₐ[R] Π i, (A₁ i)ᵐᵒᵖ where
   __ := RingEquiv.piMulOpposite A₁
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 variable (R A₁) in
 /--
@@ -179,7 +176,7 @@ This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
 def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) where
   __ := RingEquiv.piCongrLeft' A₁ e
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]
@@ -213,7 +210,7 @@ lemma piCongrLeft_symm_apply {ι' : Type*} (e : ι' ≃ ι) (x : Π i, A₁ i) :
 
 section
 
-variable (S : Type*) [Semiring S] [Algebra R S]
+variable (S : Type*) [NonUnitalNonAssocSemiring S] [SMul R S]
 
 variable (ι R) in
 /-- If `ι` has a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
@@ -231,17 +228,19 @@ lemma funUnique_symm_apply [Unique ι] (x : S) :
 
 variable (α β R) in
 /-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
-def sumArrowEquivProdArrow : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
-  .ofRingEquiv (f := .sumArrowEquivProdArrow α β S) (by intro; ext <;> simp)
+def sumArrowEquivProdArrow (S : Type*) [NonAssocSemiring S] [SMul R S] :
+    (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
+  .ofRingEquiv (f := .sumArrowEquivProdArrow α β S) (by intro _ _; ext <;> simp)
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]
-lemma sumArrowEquivProdArrow_apply (x : α ⊕ β → S) :
+lemma sumArrowEquivProdArrow_apply (S : Type*) [NonAssocSemiring S] [SMul R S] (x : α ⊕ β → S) :
     sumArrowEquivProdArrow α β R S x = Equiv.sumArrowEquivProdArrow α β S x := rfl
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]
-lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
+lemma sumArrowEquivProdArrow_symm_apply_inr (S : Type*) [NonAssocSemiring S] [SMul R S]
+    (x : (α → S) × (β → S)) :
     (sumArrowEquivProdArrow α β R S).symm x = (Equiv.sumArrowEquivProdArrow α β S).symm x :=
   rfl
 

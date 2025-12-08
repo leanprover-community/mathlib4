@@ -217,8 +217,9 @@ def toAlgEquiv {X Y : AlgCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with
     toFun := i.hom
     invFun := i.inv
-    left_inv := fun x ↦ by simp
-    right_inv := fun x ↦ by simp }
+    left_inv _ := by simp
+    right_inv _ := by simp
+    map_smul' _ _ := by simp }
 
 end CategoryTheory.Iso
 
@@ -233,5 +234,5 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with map_smul' _ _ := by simp }
     exact e.toAlgebraIso.isIso_hom

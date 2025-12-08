@@ -472,7 +472,7 @@ def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃�
       | zero => simp
       | add x y _ _ => simp [*, mul_add]
       | tmul x y => simp [IsBaseChange.equiv_tmul, Algebra.smul_def, mul_mul_mul_comm]
-  commutes' := by simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
+  map_smul' := by simp
 
 lemma Algebra.IsPushout.equiv_tmul [h : Algebra.IsPushout R S R' S'] (a : S) (b : R') :
     equiv R S R' S' (a ⊗ₜ b) = algebraMap _ _ a * algebraMap _ _ b :=

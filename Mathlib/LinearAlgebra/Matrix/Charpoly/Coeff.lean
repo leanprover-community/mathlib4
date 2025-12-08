@@ -304,8 +304,11 @@ lemma reverse_charpoly (M : Matrix n n R) :
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
       map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
+  -- not sure why this is needed here, it won't rewrite with `invert.map_det`
+  have : invert q = (invert.mapMatrix (1 - (scalar n) t * M.map ⇑LaurentPolynomial.C)).det :=
+    invert.map_det (1 - (scalar n) t * M.map ⇑LaurentPolynomial.C)
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
-    diagonal_one, invert.map_det]
+    diagonal_one, this]
   simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
 set_option linter.flexible false in -- simp followed by ac_rfl

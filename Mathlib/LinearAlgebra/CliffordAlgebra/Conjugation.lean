@@ -121,7 +121,8 @@ protected theorem reverse.map_mul (a b : CliffordAlgebra Q) :
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
-  AlgHom.congr_fun reverseOpEquiv.symm_comp
+  -- why is `(Q := Q)` needed here?
+  AlgHom.congr_fun (reverseOpEquiv (Q := Q)).symm_comp
 
 @[simp]
 theorem reverse_comp_reverse :
@@ -196,7 +197,7 @@ section Involute
 theorem submodule_map_involute_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
     p.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       p.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap :=
-  Submodule.map_equiv_eq_comap_symm involuteEquiv.toLinearEquiv _
+  Submodule.map_equiv_eq_comap_symm (involuteEquiv (Q := Q)).toLinearEquiv _
 
 @[simp]
 theorem ι_range_map_involute :

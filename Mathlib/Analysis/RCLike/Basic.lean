@@ -1063,7 +1063,7 @@ def conjAe : K ≃ₐ[ℝ] K :=
     invFun := conj
     left_inv := conj_conj
     right_inv := conj_conj
-    commutes' := conj_ofReal }
+    map_smul' := conj_smul }
 
 @[simp, rclike_simps]
 theorem conjAe_coe : (conjAe : K → K) = conj :=

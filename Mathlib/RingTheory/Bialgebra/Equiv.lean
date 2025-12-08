@@ -75,7 +75,7 @@ instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
 instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul
   map_add := map_add
-  commutes := AlgHomClass.commutes
+  map_smulₛₗ := map_smul
 
 end BialgEquivClass
 
@@ -99,7 +99,7 @@ def toAlgEquiv (f : A ≃ₐc[R] B) : A ≃ₐ[R] B :=
   { f.toCoalgEquiv with
     map_mul' := map_mul f.toMulEquiv
     map_add' := map_add f.toCoalgEquiv
-    commutes' := AlgHomClass.commutes f.toBialgHom }
+    map_smul' _ _ := by simp }
 
 /-- The equivalence of types underlying a bialgebra equivalence. -/
 def toEquiv : (A ≃ₐc[R] B) → A ≃ B := fun f => f.toCoalgEquiv.toEquiv
