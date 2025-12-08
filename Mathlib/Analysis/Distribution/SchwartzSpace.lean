@@ -1214,7 +1214,6 @@ theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0
   grw [hg₃, ENNReal.toReal_ofReal hε.le]
   simp
 
-
 end Lp
 
 section L2
