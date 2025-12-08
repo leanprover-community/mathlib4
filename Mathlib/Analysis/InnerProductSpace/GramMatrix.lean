@@ -80,7 +80,7 @@ variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
 theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
-  refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
+  refine posSemidef_iff_dotProduct_mulVec.mpr ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp
 
@@ -89,7 +89,7 @@ theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram �
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
   intro y hy
-  obtain ⟨h1, h2⟩ := h_gram
+  have h2 := h_gram.dotProduct_mulVec_pos
   specialize h2 y
   simp_all [star_dotProduct_gram_mulVec]
 
@@ -102,8 +102,8 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Fintype n]
 theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   rw [Fintype.linearIndependent_iff] at h_li
-  obtain ⟨h0, h1⟩ := posSemidef_gram 𝕜 v
-  refine ⟨h0, fun x hx ↦ (h1 x).lt_of_ne' ?_⟩
+  obtain ⟨h0, h1⟩ := posSemidef_iff_dotProduct_mulVec.mp <| (posSemidef_gram 𝕜 v)
+  refine posDef_iff_dotProduct_mulVec.mpr ⟨h0, fun x hx ↦ ((h1 x).lt_of_ne' ?_)⟩
   rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
   exact mt (h_li x) (mt funext hx)
 

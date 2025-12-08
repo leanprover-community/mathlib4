@@ -158,7 +158,7 @@ theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
 /-- A matrix `M : Matrix n n R` is positive definite if it is Hermitian
 and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n →₀ R, x ≠ 0 → 0 < x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * M i j * xj
+  M.IsHermitian ∧ ∀ ⦃x : n →₀ R⦄, x ≠ 0 → 0 < x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * M i j * xj
 
 namespace PosDef
 
@@ -173,7 +173,7 @@ theorem transpose {M : Matrix n n R'} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨hM.1.transpose, fun x => ?_⟩
   rw [Finsupp.sum_comm]
   simpa [star_injective, Finsupp.sum_mapRange_index, this] using
-      hM.2 (Finsupp.mapRange star (star_zero R') x)
+      hM.2 (x := x.mapRange star (star_zero R'))
 
 @[simp]
 theorem transpose_iff {M : Matrix n n R'} : Mᵀ.PosDef ↔ M.PosDef :=
@@ -185,16 +185,17 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
   left := isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le
   right x hx := by
     refine Finsupp.sum_pos' (fun _ _ ↦ Finsupp.sum_nonneg ?_) ?_
-    · simp +contextual [diagonal, apply_ite,star_left_conjugate_nonneg (le_of_lt (h _))]
-    obtain ⟨i,hxi⟩ := by simpa [Finsupp.ext_iff] using hx
+    · simp +contextual [diagonal, apply_ite, star_left_conjugate_nonneg (h _).le]
+    obtain ⟨i, hxi⟩ := by simpa [Finsupp.ext_iff] using hx
     refine ⟨i, ?_, Finsupp.sum_pos' ?_ ⟨i, ?_, ?_⟩⟩ <;> simp +contextual [diagonal,
-      apply_ite,star_left_conjugate_nonneg (le_of_lt (h _)),
-      star_left_conjugate_pos (h i),isRegular_of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
+      apply_ite, star_left_conjugate_nonneg (h _).le,
+      star_left_conjugate_pos (h i), isRegular_of_ne_zero hxi, Finsupp.mem_support_iff.mpr hxi]
 
 @[simp]
 theorem _root_.Matrix.posDef_diagonal_iff
     [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] [Nontrivial R] {d : n → R} :
-    PosDef (diagonal d) ↔ ∀ i, 0 < d i := ⟨fun h i => by simpa using h.2 (.single i 1), .diagonal⟩
+    PosDef (diagonal d) ↔ ∀ i, 0 < d i :=
+  ⟨fun h i => by simpa using h.2 (x := .single i 1), .diagonal⟩
 
 @[simp, nontriviality]
 theorem of_subsingleton (h : Subsingleton R) (M : Matrix n n R) : M.PosDef :=
@@ -238,7 +239,7 @@ protected lemma add_posSemidef [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
-    simpa [mul_add,add_mul] using add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
+    simpa [mul_add,add_mul] using add_pos_of_pos_of_nonneg (hA.2 (x := x) hx) (hB.2 x)⟩
 
 protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
@@ -265,7 +266,7 @@ protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRin
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
     {x : Matrix n n R} (hx : x.PosDef) {a : α} (ha : 0 < a) : (a • x).PosDef := by
   refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha.le) hx.1, fun y hy => ?_⟩
-  simpa [← Finsupp.smul_sum] using smul_pos ha (hx.2 _ hy)
+  simpa [← Finsupp.smul_sum] using smul_pos ha (hx.2 hy)
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
@@ -274,11 +275,9 @@ theorem _root_.Matrix.posDef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef 
   ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 lemma diag_pos [Nontrivial R] {A : Matrix n n R} (hA : A.PosDef) {i : n} : 0 < A i i := by
-  classical simpa [trace] using hA.2 <| .single i 1
-
+  classical simpa [trace] using hA.2 (x := Finsupp.single i 1)
 
 end PosDef
-
 
 /-!
 ## Finite Positive semidefinite matrices
@@ -286,23 +285,24 @@ end PosDef
 
 variable [Fintype n] [Fintype m]
 
-namespace PosSemidef
-
 /-- A finite matrix `M : Matrix n n R` is positive semidefinite iff it is
 Hermitian and `xᴴ * M * x` is nonnegative for all `x`. -/
-theorem iff_mulVec {M : Matrix n n R} :
-    M.PosSemidef ↔ M.IsHermitian ∧ ∀ x : n → R, 0 ≤ star x ⬝ᵥ (M *ᵥ x) := by
+theorem posSemidef_iff_dotProduct_mulVec {M : Matrix n n R} :
+    M.PosSemidef ↔ M.IsHermitian ∧ ∀ x, 0 ≤ star x ⬝ᵥ (M *ᵥ x) := by
   simp [PosSemidef, ← Finsupp.equivFunOnFinite.forall_congr_right, dotProduct, mulVec,
     Finsupp.sum_fintype, Finset.mul_sum, mul_assoc]
 
+namespace PosSemidef
+
 @[simp]
-theorem dotProduct_nonneg {M : Matrix n n R} (hM : M.PosSemidef) :
-    ∀ x : n → R, 0 ≤ star x ⬝ᵥ (M *ᵥ x) := (iff_mulVec.mp hM).2
+theorem dotProduct_mulVec_nonneg {M : Matrix n n R} (hM : M.PosSemidef) :
+    ∀ x : n → R, 0 ≤ star x ⬝ᵥ (M *ᵥ x) := (posSemidef_iff_dotProduct_mulVec.mp hM).2
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
-  refine iff_mulVec.mpr ⟨isHermitian_conjTranspose_mul_mul B hA.1, fun x ↦ ?_⟩
-  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.dotProduct_nonneg (B *ᵥ x)
+  refine posSemidef_iff_dotProduct_mulVec.mpr ⟨isHermitian_conjTranspose_mul_mul B hA.1, fun x ↦ ?_⟩
+  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using
+      hA.dotProduct_mulVec_nonneg (B *ᵥ x)
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
@@ -332,18 +332,15 @@ protected lemma zpow [StarOrderedRing R'] [DecidableEq n]
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
 
-
-
 lemma trace_nonneg [AddLeftMono R] {A : Matrix n n R} (hA : A.PosSemidef) : 0 ≤ A.trace :=
   Fintype.sum_nonneg fun _ ↦ hA.diag_nonneg
 
 end PosSemidef
 
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
-theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R]
-    (A : Matrix m n R) :
+theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
-  refine PosSemidef.iff_mulVec.mpr ⟨isHermitian_conjTranspose_mul_self _, fun x => ?_⟩
+  refine posSemidef_iff_dotProduct_mulVec.mpr ⟨isHermitian_conjTranspose_mul_self _, fun x => ?_⟩
   rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
@@ -351,8 +348,6 @@ theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R]
 theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
-
-
 
 section trace
 -- TODO: move these results to an earlier file
@@ -403,30 +398,33 @@ theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
 /-- The matrix `vecMulVec (star a) a` is always postive semi-definite. -/
 theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
     (vecMulVec (star a) a).PosSemidef := by
-  simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]
+simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]
 
 /-!
 ## Finite Positive definite matrices
 -/
 
+theorem posDef_iff_dotProduct_mulVec {M : Matrix n n R} :
+    M.PosDef ↔ M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x) := by
+  have (x : n →₀ R) : x = 0 ↔ Finsupp.equivFunOnFinite x = 0 :=
+    ⟨fun h1 ↦ Finsupp.coe_eq_zero.mpr h1,fun h2 ↦ Finsupp.coe_eq_zero.mp h2⟩
+  simp [PosDef, ← Finsupp.equivFunOnFinite.forall_congr_right, dotProduct, mulVec,
+    Finsupp.sum_fintype, Finset.mul_sum, mul_assoc, this]
 
 namespace PosDef
 
 /-- A matrix `M : Matrix n n R` is positive definite if it is Hermitian
 and `xᴴMx` is greater than zero for all nonzero `x`. -/
-theorem iff_mulVec {M : Matrix n n R} :
-    M.PosDef ↔ M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x) := by
-  have (x : n →₀ R) : x = 0 ↔ Finsupp.equivFunOnFinite x = 0 :=
-    ⟨fun h1 ↦ Finsupp.coe_eq_zero.mpr h1,fun h2 ↦ Finsupp.coe_eq_zero.mp h2⟩
-  simp [PosDef, ← Finsupp.equivFunOnFinite.forall_congr_right,dotProduct,mulVec,
-    Finsupp.sum_fintype, Finset.mul_sum, mul_assoc,this]
+lemma dotProduct_mulVec_pos {M : Matrix n n R} (hM : M.PosDef) :
+    ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x) := (posDef_iff_dotProduct_mulVec.mp hM).2
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
     (hB : Function.Injective B.mulVec) :
     (Bᴴ * A * B).PosDef := by
-  refine iff_mulVec.mpr ⟨Matrix.isHermitian_conjTranspose_mul_mul _ hA.1, fun x hx => ?_⟩
+  refine posDef_iff_dotProduct_mulVec.mpr
+      ⟨Matrix.isHermitian_conjTranspose_mul_mul _ hA.1, fun x hx => ?_⟩
   have : B *ᵥ x ≠ 0 := fun h => hx <| hB.eq_iff' (mulVec_zero _) |>.1 h
-  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using (iff_mulVec.mp hA).2 _ this
+  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.dotProduct_mulVec_pos _ this
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.PosDef)
     (hB : Function.Injective B.vecMul) :
@@ -449,7 +447,7 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
-  refine iff_mulVec.mpr ⟨hM, fun x hx ↦ ?_⟩
+  refine posDef_iff_dotProduct_mulVec.mpr ⟨hM, fun x hx ↦ ?_⟩
   simp only [toQuadraticMap', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
@@ -459,7 +457,7 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
   intro x hx
   simp only [Matrix.toQuadraticMap', LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply']
-  apply (iff_mulVec.mp hM).2 x hx
+  apply hM.dotProduct_mulVec_pos x hx
 
 lemma trace_pos [Nontrivial R] [IsOrderedCancelAddMonoid R] [Nonempty n] {A : Matrix n n R}
     (hA : A.PosDef) : 0 < A.trace :=
@@ -473,7 +471,7 @@ theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M := 
   obtain ⟨a, ha, ha2⟩ : ∃ a ≠ 0, M *ᵥ a = 0 := by
     obtain ⟨a, b, ha⟩ := Function.not_injective_iff.mp <| mulVec_injective_iff_isUnit.not.mpr h
     exact ⟨a - b, by simp [sub_eq_zero, ha, mulVec_sub]⟩
-  simpa [ha2] using (iff_mulVec.mp hM).2 _ ha
+  simpa [ha2] using hM.dotProduct_mulVec_pos _ ha
 
 protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻¹.PosDef := by
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
@@ -526,9 +524,9 @@ variable [StarOrderedRing R']
 theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     (B : Matrix m n R') (D : Matrix n n R') (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
-  rw [PosSemidef.iff_mulVec, IsHermitian.fromBlocks₁₁ _ _ hA.1]
+  rw [posSemidef_iff_dotProduct_mulVec, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
-  · refine fun h => PosSemidef.iff_mulVec.mpr ⟨h.1, fun x => ?_⟩
+  · refine fun h => posSemidef_iff_dotProduct_mulVec.mpr ⟨h.1, fun x => ?_⟩
     have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
     rwa [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
       zero_add, ← dotProduct_mulVec] at this
@@ -536,9 +534,9 @@ theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
     · rw [← dotProduct_mulVec]
-      apply (PosSemidef.iff_mulVec.mp hA.posSemidef).2
+      apply (posSemidef_iff_dotProduct_mulVec.mp hA.posSemidef).2
     · rw [← dotProduct_mulVec (star (x ∘ Sum.inr))]
-      apply (PosSemidef.iff_mulVec.mp h).2
+      apply (posSemidef_iff_dotProduct_mulVec.mp h).2
 
 theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (B : Matrix m n R') {D : Matrix n n R'} (hD : D.PosDef) [Invertible D] :
