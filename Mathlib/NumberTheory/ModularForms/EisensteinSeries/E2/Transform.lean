@@ -73,8 +73,8 @@ private lemma aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
 private lemma G2_S_act (z : ℍ) :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
     (𝓝 ((z.1 ^ 2)⁻¹ * G2 (S • z))) := by
-  rw [G2_eq_tsum_IcoFilter, ← tsum_mul_left]
-  have := ((Summable_IccFilter_G2_Ico (S • z)).mul_left (z.1 ^ 2)⁻¹).hasSum
+  rw [G2_eq_tsum_symmetricIco, ← tsum_mul_left]
+  have := ((summable_e2Summand_symmetricIco (S • z)).mul_left (z.1 ^ 2)⁻¹).hasSum
   simp only [HasSum, symmetricIco, tendsto_map'_iff, modular_S_smul, ← Nat.map_cast_int_atTop] at *
   apply this.congr (fun N ↦ ?_)
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk, ← mul_sum]
@@ -382,7 +382,7 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
 lemma G2_T_transform : (G2 ∣[(2 : ℤ)] T) = G2 := by
   ext z
   simp_rw [SL_slash_def, modular_T_smul z]
-  simp only [G2_q_exp, coe_vadd, ofReal_one, T, denom_apply, Fin.isValue, Matrix.of_apply,
+  simp only [G2_eq_tsum_cexp, coe_vadd, ofReal_one, T, denom_apply, Fin.isValue, Matrix.of_apply,
     Matrix.cons_val', Matrix.cons_val_zero, Matrix.empty_val', Matrix.cons_val_fin_one,
     Matrix.cons_val_one, Int.cast_zero, zero_mul, Int.cast_one, zero_add, Int.reduceNeg, zpow_neg,
     one_zpow, inv_one, mul_one, ← exp_periodic.nat_mul 1 (2 * π * I * z), Nat.cast_one, one_mul,
