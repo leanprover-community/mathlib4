@@ -45,30 +45,24 @@ class SupSet (α : Type*) where
   /-- Supremum of a set -/
   sSup : Set α → α
 
-
 /-- Class for the `sInf` operator -/
+@[to_dual existing]
 class InfSet (α : Type*) where
   /-- Infimum of a set -/
   sInf : Set α → α
-
 
 export SupSet (sSup)
 
 export InfSet (sInf)
 
 /-- Indexed supremum -/
+@[to_dual /-- Indexed infimum -/]
 def iSup [SupSet α] (s : ι → α) : α :=
   sSup (range s)
 
-/-- Indexed infimum -/
-def iInf [InfSet α] (s : ι → α) : α :=
-  sInf (range s)
-
+@[to_dual]
 instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨sInf ∅⟩
-
-instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
-  ⟨sSup ∅⟩
 
 /-- Indexed supremum. -/
 notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
@@ -142,19 +136,17 @@ namespace Set
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
+@[to_dual existing]
 instance : SupSet (Set α) :=
   ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/
+@[to_dual /-- Union of a set of sets. -/]
 def sInter (S : Set (Set α)) : Set α :=
   sInf S
 
 /-- Notation for `Set.sInter` Intersection of a set of sets. -/
 prefix:110 "⋂₀ " => sInter
-
-/-- Union of a set of sets. -/
-def sUnion (S : Set (Set α)) : Set α :=
-  sSup S
 
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
@@ -168,12 +160,9 @@ theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S,
   Iff.rfl
 
 /-- Indexed union of a family of sets -/
+@[to_dual /-- Indexed intersection of a family of sets -/]
 def iUnion (s : ι → Set α) : Set α :=
   iSup s
-
-/-- Indexed intersection of a family of sets -/
-def iInter (s : ι → Set α) : Set α :=
-  iInf s
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
 notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
@@ -253,20 +242,12 @@ theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, 
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀ S :=
   rfl
 
-@[simp]
-theorem sInf_eq_sInter (S : Set (Set α)) : sInf S = ⋂₀ S :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
-  rfl
-
-@[simp]
-theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
 
 end Set
