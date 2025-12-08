@@ -173,9 +173,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · simp_all only [mem_erase, mem_filter, mem_Icc, _root_.zero_le, true_and, mem_Ioc,
       and_true]
       exact lt_of_le_of_ne h.2.2.two_le h.1.symm
-    · simp_all only [mem_filter, mem_Ioc, mem_erase, mem_Icc, _root_.zero_le, and_self,
-      and_true]
-      exact h.1.1.ne.symm
+    · grind
   rw [sum_filter]
   let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n => log n)
   trans 1 + ∑ n ∈ Ioc 2 ⌊x⌋₊, (1 / log n) * a n
@@ -204,12 +202,9 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
       all_goals linarith [hu.1]
     rw [int_deriv]
     have : log 2 ≠ 0 := by simp; linarith
-    simp [a, Set.indicator_apply, sum_filter, show Icc 0 2 = {0, 1, 2} by ext; simp; omega,
+    simp [a, Set.indicator_apply, sum_filter, show Icc 0 2 = {0, 1, 2} by grind,
       prime_two, theta_eq_sum_Icc, this]
-    ring_nf!
-    congr
-    ext
-    ring
+    grind
   · intro z hz
     have : z ≠ 0 := by linarith [hz.1]
     have : log z ≠ 0 := by
@@ -247,8 +242,7 @@ private theorem integral_1_div_log_sq_le {a b : ℝ} (hab : a ≤ b) (one_lt : 1
   trans ∫ x in a..b, 1 / log a ^ 2
   · apply intervalIntegral.integral_mono_on hab
     · apply intervalIntegrable_one_div_log_sq <;> linarith
-    · apply intervalIntegrable_const
-      simp
+    · simp
     · intro x hx
       gcongr
       · bound
@@ -297,8 +291,7 @@ theorem integral_one_div_log_sq_isBigO :
     · grw [integral_one_div_log_sq_le_explicit hx, norm_of_nonneg]
       positivity
     intro t ht
-    simp only [abs_eq_self]
-    positivity
+    simp
   refine IsBigO.add ?_ ?_
   · simp_rw [mul_div_assoc]
     apply isBigO_const_mul_self
@@ -360,8 +353,7 @@ theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
   · gcongr
     rw [norm_eq_abs, norm_eq_abs] at hx2
     nth_rewrite 2 [abs_of_nonneg] at hx2
-    · rw [← mul_div_assoc] at hx2
-      apply le_trans (le_abs_self _) hx2
+    · grind
     · bound
   · bound
 
