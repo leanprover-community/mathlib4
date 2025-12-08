@@ -99,9 +99,9 @@ namespace Manifold
 universe u
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E E' E''' : Type*} {E'' : Type u} {F F' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
