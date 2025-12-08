@@ -19,6 +19,8 @@ by the property `(opOpEquivalence C).IsTriangulated`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Opposite Pretriangulated.Opposite Limits
