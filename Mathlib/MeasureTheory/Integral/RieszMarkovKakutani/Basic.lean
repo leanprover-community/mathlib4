@@ -3,12 +3,14 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.PartitionOfUnity
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.Topology.ContinuousMap.CompactlySupported
+public import Mathlib.Topology.PartitionOfUnity
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem
+# Riesz–Markov–Kakutani representation theorem
 
 This file prepares technical definitions and results for the Riesz-Markov-Kakutani representation
 theorem on a locally compact T2 space `X`. As a special case, the statements about linear
@@ -26,6 +28,8 @@ literature.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -253,8 +257,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     by_cases h : f x = 0
     · rw [h]
       simp only [NNReal.coe_zero, mul_zero]
-    · push_neg at h
-      simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
+    · simp only [CompactlySupportedContinuousMap.coe_add, ContinuousMap.toFun_eq_coe,
         CompactlySupportedContinuousMap.coe_toContinuousMap] at sum_g
       rw [sum_g (mem_of_subset_of_mem subset_closure (mem_support.mpr h))]
       simp only [Pi.one_apply, NNReal.coe_one, one_mul]

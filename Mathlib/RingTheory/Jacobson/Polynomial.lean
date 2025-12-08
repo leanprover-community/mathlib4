@@ -3,12 +3,16 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.RingTheory.Polynomial.Quotient
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.Polynomial.Quotient
 /-!
 # Jacobson radical of polynomial ring
 
 -/
+
+@[expose] public section
 
 namespace Ideal
 

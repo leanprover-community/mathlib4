@@ -3,10 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Presentable.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Finitely Presentable Objects
@@ -15,6 +18,8 @@ We define finitely presentable objects as a synonym for `ℵ₀`-presentable obj
 and link this definition with the preservation of filtered colimits.
 
 -/
+
+@[expose] public section
 
 
 universe w v' v u' u
@@ -45,6 +50,15 @@ lemma Functor.isFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
 /-- An object `X` is finitely presentable if `Hom(X, -)` preserves all filtered colimits. -/
 abbrev IsFinitelyPresentable (X : C) : Prop :=
   IsCardinalPresentable.{w} X ℵ₀
+
+variable (C) in
+/-- `IsFinitelyPresentable` as an `ObjectProperty` on `C`. This is sometimes called "compact". -/
+def ObjectProperty.isFinitelyPresentable : ObjectProperty C := fun X ↦ IsFinitelyPresentable.{w} X
+
+variable (C) in
+/-- A morphism `f : X ⟶ Y` is finitely presentable if it is so as an object of `Under X`. -/
+def MorphismProperty.isFinitelyPresentable : MorphismProperty C :=
+  fun _ _ f ↦ ObjectProperty.isFinitelyPresentable.{w} _ (CategoryTheory.Under.mk f)
 
 lemma isFinitelyPresentable_iff_preservesFilteredColimitsOfSize {X : C} :
     IsFinitelyPresentable.{w} X ↔ PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) :=

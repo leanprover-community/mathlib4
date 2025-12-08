@@ -3,11 +3,16 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Bits
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Basic
 
 /-! Lemmas about `size`. -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -30,7 +35,7 @@ theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => by dsimp [shiftLeft', bit]; omega
+  | succ _, _ => by dsimp [shiftLeft', bit]; lia
 
 /-! ### `size` -/
 

@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Sigma.Lex
-import Mathlib.Util.Notation3
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Util.Notation3
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Orders on a sigma type
@@ -40,6 +42,8 @@ Related files are:
 Upgrade `Equiv.sigma_congr_left`, `Equiv.sigma_congr`, `Equiv.sigma_assoc`,
 `Equiv.sigma_prod_of_equiv`, `Equiv.sigma_equiv_prod`, ... to order isomorphisms.
 -/
+
+@[expose] public section
 
 
 namespace Sigma
@@ -118,7 +122,7 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 namespace Lex
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
-notation3 "Σₗ "(...)", "r:(scoped p => _root_.Lex (Sigma p)) => r
+notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
 
 /-- The lexicographical `≤` on a sigma type. -/
 protected instance LE [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where

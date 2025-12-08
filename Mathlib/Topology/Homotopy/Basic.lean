@@ -3,10 +3,12 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Homotopy between functions
@@ -51,6 +53,8 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -389,7 +393,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
+  -- TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
     Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
@@ -523,7 +527,6 @@ namespace HomotopicWith
 
 variable {P : C(X, Y) → Prop}
 
--- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
   ⟨HomotopyWith.refl f hf⟩
 
@@ -644,7 +647,6 @@ variable {S : Set X}
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
 
--- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
 

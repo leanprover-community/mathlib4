@@ -3,16 +3,20 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Notation
-import Mathlib.Order.SetNotation
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Order.SetNotation
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Data.Set.Image
 
 /-!
 # Interactions between embeddings and sets.
 
 -/
+
+@[expose] public section
 
 assert_not_exists WithTop
 
@@ -86,7 +90,7 @@ subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, wh
 `Disjoint p q`.
 
 See also `Equiv.sumCompl`, for when `IsCompl p q`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where
   toFun := subtypeOrLeftEmbedding p q
@@ -104,8 +108,6 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
       · suffices ¬p x by simpa
         intro hp
         simpa using h.le_bot x ⟨hp, x.prop⟩
-
-attribute [grind =] subtypeOrEquiv_apply
 
 @[simp, grind =]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)

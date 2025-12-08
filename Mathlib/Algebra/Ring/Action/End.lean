@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Action.Group
-import Mathlib.Algebra.Ring.Aut
+module
+
+public import Mathlib.Algebra.Ring.Action.Group
+public import Mathlib.Algebra.Ring.Aut
 
 /-!
 # Ring automorphisms
@@ -26,6 +28,8 @@ the group structure is defined.
 ring aut
 -/
 
+@[expose] public section
+
 namespace RingAut
 variable {G R : Type*} [Group G] [Semiring R]
 
@@ -33,10 +37,10 @@ variable {G R : Type*} [Group G] [Semiring R]
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
   smul := (· <| ·)
-  smul_zero := RingEquiv.map_zero
-  smul_add := RingEquiv.map_add
-  smul_one := RingEquiv.map_one
-  smul_mul := RingEquiv.map_mul
+  smul_zero := map_zero
+  smul_add := map_add
+  smul_one := map_one
+  smul_mul := map_mul
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 

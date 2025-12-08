@@ -3,7 +3,9 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Split Equalizers
@@ -26,6 +28,8 @@ This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalize
 to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -54,7 +58,7 @@ satisfying `ι ≫ f = ι ≫ g` together with morphisms
 
 satisfying `ι ≫ r = 𝟙 W`, `g ≫ t = 𝟙 X` and `f ≫ t = r ≫ ι`.
 
-The name "equalizer" is appropriate, since any split equalizer is a equalizer, see
+The name "equalizer" is appropriate, since any split equalizer is an equalizer, see
 `CategoryTheory.IsSplitEqualizer.isEqualizer`.
 Split equalizers are also absolute, since a functor preserves all the structure above.
 -/
@@ -157,7 +161,7 @@ instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map 
 
 namespace Limits
 
-/-- If a pair has a split equalizer, it has a equalizer. -/
+/-- If a pair has a split equalizer, it has an equalizer. -/
 instance (priority := 1) hasEqualizer_of_hasSplitEqualizer [HasSplitEqualizer f g] :
     HasEqualizer f g :=
   HasLimit.mk ⟨_, (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer⟩

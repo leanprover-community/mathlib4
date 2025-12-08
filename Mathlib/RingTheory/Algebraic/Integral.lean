@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Algebraic elements and integral elements
@@ -32,6 +34,8 @@ is algebraic and that every algebraic element over a field is integral.
 * `Transcendental.extendScalars`: an element of an `R`-algebra that is transcendental over `R`
   remains transcendental over any algebraic `R`-subalgebra that has no zero divisors.
 -/
+
+@[expose] public section
 
 assert_not_exists IsLocalRing
 
@@ -636,3 +640,19 @@ open Cardinal in
 end Algebra.IsAlgebraic
 
 end Polynomial
+
+section FractionRing
+
+open Algebra Module
+open scoped nonZeroDivisors
+
+attribute [local instance] FractionRing.liftAlgebra
+
+instance [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [Module.Finite R S] :
+    FiniteDimensional (FractionRing R) (FractionRing S) := by
+  obtain ⟨_, s, hs⟩ := Module.Finite.exists_fin (R := R) (M := S)
+  exact Module.finite_def.mpr <|
+    (span_eq_top_localization_localization (FractionRing R) R⁰ (FractionRing S) hs) ▸
+      Submodule.fg_span (Set.toFinite _)
+
+end FractionRing
