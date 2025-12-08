@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Function.Conjugate
 
 /-!
