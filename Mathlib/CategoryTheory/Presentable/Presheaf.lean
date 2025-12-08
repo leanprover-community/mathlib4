@@ -62,11 +62,6 @@ lemma isStrongGenerator
         freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
     exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
 
-instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
-    LocallySmall.{w} (C ⥤ A) where
-  hom_small P Q :=
-    small_of_injective (f := NatTrans.app) (fun f g h ↦ by aesop)
-
 instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalLocallyPresentable A κ] [HasPullbacks A]
     (C : Type w) [SmallCategory C] :
