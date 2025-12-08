@@ -28,6 +28,12 @@ complex Banach algebra has nonempty spectrum.
   Banach division algebra, the natural `algebraMap ℂ A` is an algebra isomorphism whose inverse
   is given by selecting the (unique) element of `spectrum ℂ a`
 
+## Implementation notes
+
+Note that it is important here that the complex analysis files are privately imported, since the
+material proven here gets used in contexts that have nothing to do with complex analysis
+(i.e. C⋆-algebras, etc).
+
 -/
 
 @[expose] public section
