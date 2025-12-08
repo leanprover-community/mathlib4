@@ -6,7 +6,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.Tactic.Abel
 
 /-!
@@ -26,6 +25,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
 @[expose] public section
+
 
 universe u v w
 
@@ -64,11 +64,6 @@ theorem mul_mem_left : b ∈ I → a * b ∈ I :=
 theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsTwoSided]
     (h : a ∈ I) : a * b ∈ I :=
   IsTwoSided.mul_mem_of_left b h
-
-instance : NonUnitalSubsemiringClass (Ideal α) α where
-  mul_mem _ := Ideal.mul_mem_left _ _
-
-instance {α} [Ring α] : NonUnitalSubringClass (Ideal α) α where
 
 variable {a}
 
