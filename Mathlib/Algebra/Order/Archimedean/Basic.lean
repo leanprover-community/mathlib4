@@ -165,7 +165,7 @@ theorem exists_nat_ge (x : R) :
   nontriviality R
   exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 
-instance (priority := 100) : IsDirected R (· ≤ ·) :=
+instance (priority := 100) : IsDirectedOrder R :=
   ⟨fun x y ↦
     let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
     let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
@@ -207,7 +207,7 @@ theorem exists_int_ge (x : R) : ∃ n : ℤ, x ≤ n := let ⟨n, h⟩ := exists
 theorem exists_int_le (x : R) : ∃ n : ℤ, n ≤ x :=
   let ⟨n, h⟩ := exists_int_ge (-x); ⟨-n, by simpa [neg_le] using h⟩
 
-instance (priority := 100) : IsDirected R (· ≥ ·) where
+instance (priority := 100) : IsCodirectedOrder R where
   directed a b :=
     let ⟨m, hm⟩ := exists_int_le a; let ⟨n, hn⟩ := exists_int_le b
     ⟨(min m n : ℤ), le_trans (Int.cast_mono <| min_le_left _ _) hm,

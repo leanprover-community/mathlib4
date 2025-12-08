@@ -78,7 +78,7 @@ theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [LocallyFiniteOrderBot α] 
     Tendsto (Finset.Iic (α := α)) atTop atTop := by
   rcases isEmpty_or_nonempty α with _ | _
   · exact tendsto_of_isEmpty
-  by_cases h : IsDirected α (· ≤ ·)
+  by_cases h : IsDirectedOrder α
   · refine tendsto_atTop_atTop.mpr fun s ↦ ?_
     obtain ⟨a, ha⟩ := Finset.exists_le s
     exact ⟨a, fun b hb c hc ↦ by simpa using (ha c hc).trans hb⟩
