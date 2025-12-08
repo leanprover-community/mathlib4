@@ -54,10 +54,8 @@ open scoped _root_.IsSimpleOrder
 variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 
 theorem univ : (Finset.univ : Finset α) = {⊤, ⊥} := by
-  change Finset.map _ (Finset.univ : Finset Bool) = _
-  rw [Fintype.univ_bool]
-  simp only [Finset.map_insert, Function.Embedding.coeFn_mk, Finset.map_singleton]
-  rfl
+  ext
+  simpa using (eq_bot_or_eq_top _).symm
 
 theorem card : Fintype.card α = 2 :=
   (Fintype.ofEquiv_card _).trans Fintype.card_bool

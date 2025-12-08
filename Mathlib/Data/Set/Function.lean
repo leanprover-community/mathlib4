@@ -159,11 +159,8 @@ theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, 
 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
-  funext x
-  rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
-  induction n generalizing x with
-  | zero => rfl
-  | succ n ihn => simp [Nat.iterate, ihn]
+  ext
+  simpa using coe_iterate_restrict _ _ _
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
