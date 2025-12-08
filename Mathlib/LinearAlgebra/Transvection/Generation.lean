@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.Transvection.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
@@ -48,14 +49,16 @@ abbrev fixedSubmodule (e : SpecialLinearGroup R V) :
 theorem mem_fixedSubmodule_iff {e : SpecialLinearGroup R V} {v : V} :
     v ∈ e.fixedSubmodule ↔ e v = v := by simp
 
+theorem fixedSubmodule_eq_top_iff {e : SpecialLinearGroup R V} :
+    e.fixedSubmodule = ⊤ ↔ e = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by aesop⟩
+  ext v
+  suffices v ∈ e.fixedSubmodule by simpa using this
+  simp [h]
+
 theorem inf_fixedSubmodule_le_fixedSubmodule_mul (e f : SpecialLinearGroup R V) :
     e.fixedSubmodule ⊓ f.fixedSubmodule ≤ (e * f).fixedSubmodule := by
   intro; aesop
-
-/-- An element of the special linear group is exceptional if
-  it is a nontrivial homothety modulo the eigenspace for eigenvalue 1. -/
-abbrev IsExceptional (e : SpecialLinearGroup R V) : Prop :=
-  e ≠ 1 ∧ ∃ a : R, a ≠ 1 ∧ ∀ v, e v - a • v ∈ e.fixedSubmodule
 
 open scoped Pointwise
 
@@ -67,32 +70,36 @@ theorem transvections_pow_mono :
     ← LinearEquiv.toLinearMap_inj, LinearEquiv.transvection.coe_toLinearMap]
   simp [LinearMap.transvection.of_right_eq_zero]
 
-noncomputable def transvection_degree (e : SpecialLinearGroup R V) : ℕ∞ :=
+noncomputable def transvectionDegree (e : SpecialLinearGroup R V) : ℕ∞ :=
   sInf (Nat.cast '' {n | e ∈ (transvections R V) ^ n })
 
-lemma transvection_degree_eq_top_iff {e : SpecialLinearGroup R V} :
-    transvection_degree e = ⊤ ↔ {n | e ∈ transvections R V ^ n} = ∅ := by
-  simp [transvection_degree, Set.eq_empty_iff_forall_notMem]
+lemma transvectionDegree_eq_top_iff {e : SpecialLinearGroup R V} :
+    transvectionDegree e = ⊤ ↔ {n | e ∈ transvections R V ^ n} = ∅ := by
+  simp [transvectionDegree, Set.eq_empty_iff_forall_notMem]
 
-theorem transvection_degree_one :
-    transvection_degree (1 : SpecialLinearGroup R V) = 0 := by
-  simp [transvection_degree, ENat.sInf_eq_zero]
+@[simp] theorem transvectionDegree_one :
+    transvectionDegree (1 : SpecialLinearGroup R V) = 0 := by
+  simp [transvectionDegree, ENat.sInf_eq_zero]
 
-theorem transvection_degree_le_iff {e : SpecialLinearGroup R V} {n : ℕ} :
-    transvection_degree e ≤ n ↔ e ∈ (transvections R V) ^ n := by
+theorem transvectionDegree_le_iff {e : SpecialLinearGroup R V} {n : ℕ} :
+    transvectionDegree e ≤ n ↔ e ∈ (transvections R V) ^ n := by
   constructor
   · intro he
     have h : Set.Nonempty {n | e ∈ transvections R V ^ n} := by
       rw [Set.nonempty_iff_ne_empty]
       contrapose! he
-      simp [transvection_degree, he]
-    rw [transvection_degree, sInf_image, ← ENat.coe_sInf h, Nat.cast_le] at he
+      simp [transvectionDegree, he]
+    rw [transvectionDegree, sInf_image, ← ENat.coe_sInf h, Nat.cast_le] at he
     exact transvections_pow_mono he (Nat.sInf_mem h)
   · intro he
-    simp only [transvection_degree, sInf_le_iff, mem_lowerBounds, Set.mem_image, Set.mem_setOf_eq,
+    simp only [transvectionDegree, sInf_le_iff, mem_lowerBounds, Set.mem_image, Set.mem_setOf_eq,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro b hb
     exact hb n he
+
+theorem transvectionDegree_le_one_iff {e : SpecialLinearGroup R V} :
+    transvectionDegree e ≤ 1 ↔ e ∈ transvections R V := by
+  rw [← ENat.coe_one, transvectionDegree_le_iff, pow_one]
 
 end
 
@@ -100,46 +107,6 @@ open Pointwise
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
   [Module.Finite K V]
-
-example (e : V →ₗ[K] V) (W W' : Submodule K V) (he : W ≤ W'.comap e) :
-    V ⧸ W →ₗ[K] V ⧸ W' :=
-  W.liftQ (W'.mkQ ∘ₗ e) (fun v hv ↦ by simpa using he hv)
-
-example (e : V →ₗ[K] V) (W W' : Submodule K V) (he : W.map e ≤ W') :
-    V ⧸ W →ₗ[K] V ⧸ W' :=
-  W.liftQ (W'.mkQ ∘ₗ e) (fun v hv ↦ by aesop)
-
-example (e : V →ₗ[K] V) (W : Submodule K V) (he : W ≤ W.comap e) :
-    V ⧸ W →ₗ[K] V ⧸ W :=
-  W.mapQ W e he
-
-example (e : V →ₗ[K] V) (W : Submodule K V) (he : W.map e ≤ W) :
-    V ⧸ W →ₗ[K] V ⧸ W :=
-  W.mapQ W e (Submodule.map_le_iff_le_comap.mp he)
-
-example (e : V →ₗ[K] V) (W : Submodule K V) (he : W ≤ W.comap e) :
-    W →ₗ[K] W := by
-  exact e.restrict he
-
-example (e : V ≃ₗ[K] V) (W W' : Submodule K V) (he : W = W'.comap e) :
-    (V ⧸ W) ≃ₗ[K] (V ⧸ W') where
-  toLinearMap := W.liftQ (W'.mkQ ∘ₗ e) (fun v hv ↦ by
-    simpa [he] using hv)
-  invFun := W'.liftQ (W.mkQ ∘ₗe.symm) (fun v hv ↦ by
-    simpa [he] using hv)
-  left_inv v' := by
-    obtain ⟨v, rfl⟩ := W.mkQ_surjective v'
-    simp
-  right_inv v' := by
-    obtain ⟨v, rfl⟩ := W'.mkQ_surjective v'
-    simp
-
-example (e : V ≃ₗ[K] V) (W W' : Submodule K V)
-    (he : W = W'.comap e) :
-    (V ⧸ W) ≃ₗ[K] (V ⧸ W') := by
-  apply Submodule.Quotient.equiv W W' e
-  erw [Submodule.map_equiv_eq_comap_symm e W]
-  aesop
 
 omit [Module.Finite K V] in
 theorem map_eq_of_mem_fixingSubgroup
@@ -186,6 +153,11 @@ def reduce (e : SpecialLinearGroup K V) :
     SpecialLinearGroup K (V ⧸ e.fixedSubmodule) :=
   mkQ e.fixedSubmodule ⟨e, by simp [mem_fixingSubgroup_iff]⟩
 
+/-- An element of the special linear group is exceptional if
+  it is a nontrivial homothety modulo the eigenspace for eigenvalue 1. -/
+abbrev IsExceptional (e : SpecialLinearGroup K V) : Prop :=
+  e.reduce ≠ 1 ∧ ∃ a : K, e.reduce = a • (LinearMap.id (M := V ⧸ e.fixedSubmodule) (R := K))
+
 theorem finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections
     {t : SpecialLinearGroup K V} (ht : t ∈ transvections K V) :
     finrank K V ≤ 1 + finrank K t.fixedSubmodule := by
@@ -202,6 +174,86 @@ theorem finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections
   intro x hx
   simp only [LinearMap.mem_ker] at hx
   simp [ht, LinearMap.transvection.apply, hx]
+
+theorem _root_.Submodule.eq_top_iff_finrank_eq {W : Submodule K V} :
+    W = ⊤ ↔ finrank K W = finrank K V := by
+  refine ⟨fun h ↦ by rw [h, finrank_top], fun h ↦ ?_⟩
+  apply Submodule.eq_of_le_of_finrank_le le_top
+  rw [finrank_top, h]
+
+theorem _root_.Submodule.sup_span_eq_top
+    {W : Submodule K V} {v : V} (hW : finrank K (V ⧸ W) ≤ 1) (hv : v ∉ W) :
+    W ⊔ Submodule.span K {v} = ⊤ := by
+  apply Submodule.eq_top_of_disjoint
+  · rw [← W.finrank_quotient_add_finrank, add_comm, add_le_add_iff_left]
+    apply le_trans hW
+    suffices v ≠ 0 by simpa
+    aesop
+  · exact Submodule.disjoint_span_singleton_of_notMem hv
+
+
+theorem mem_transvections_iff_finrank_le_one (e : SpecialLinearGroup K V) :
+    e ∈ transvections K V ↔ finrank K (V ⧸ e.fixedSubmodule) ≤ 1 := by
+  constructor
+  · rintro ⟨f, v, hfv, he⟩
+    rw [← Nat.add_le_add_iff_right (n := finrank K e.fixedSubmodule),
+      Submodule.finrank_quotient_add_finrank]
+    suffices LinearMap.ker f ≤ e.fixedSubmodule by
+      replace this := Submodule.finrank_mono this
+      rw [← Nat.add_le_add_iff_left (n := 1)] at this
+      refine le_trans ?_ this
+      rw [← (LinearMap.ker f).finrank_quotient_add_finrank,
+          f.quotKerEquivRange.finrank_eq]
+      simp only [add_le_add_iff_right]
+      rw [← Module.finrank_self K]
+      apply Submodule.finrank_le
+    intro x hx
+    simp only [LinearMap.mem_ker] at hx
+    simp [he, LinearMap.transvection.apply, hx]
+  · intro h
+    by_cases he : e = 1
+    · use 0, 0, by simp, by aesop
+    have he' : e.fixedSubmodule ≠ ⊤ := by
+      rwa [ne_eq, fixedSubmodule_eq_top_iff]
+    obtain ⟨w : V, hw : w ∉ e.fixedSubmodule⟩ :=
+      SetLike.exists_not_mem_of_ne_top e.fixedSubmodule he' rfl
+    obtain ⟨f, hfw, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hw inferInstance
+    set v := (f w)⁻¹ • (e w - w)
+    have hf' : e.fixedSubmodule = LinearMap.ker f := by
+      apply Submodule.eq_of_le_of_finrank_le
+      · intro x hx
+        rw [LinearMap.mem_ker, ← Submodule.mem_bot K, ← hf]
+        exact Submodule.mem_map_of_mem hx
+      · suffices finrank K (V ⧸ LinearMap.ker f) = 1 by
+          have := e.fixedSubmodule.finrank_quotient_add_finrank
+          have := (LinearMap.ker f).finrank_quotient_add_finrank
+          linarith
+        rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank]
+        rw [← f.finrank_ker_add_one_of_ne_zero, add_comm]
+        aesop
+    have eq_top : e.fixedSubmodule ⊔ Submodule.span K {w} = ⊤ :=
+      Submodule.sup_span_eq_top h hw
+    suffices hfv : f v = 0 by
+      use f, v, hfv
+      rw [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj,
+        ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
+      simp only [coe_transvection, LinearEquiv.transvection.coe_toLinearMap, sup_le_iff,
+        Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
+        LinearEquiv.coe_coe]
+      constructor
+      · intro x hx
+        suffices f x = 0 by
+          simpa [this, LinearMap.transvection.apply, sub_eq_zero] using hx
+        rwa [hf', LinearMap.mem_ker] at hx
+      · simp [v, LinearMap.transvection.apply]
+        field_simp
+        aesop
+    simp [v]
+    right
+    -- il y a encore du travail, il faut voir que e.reduce = 1
+    sorry
+
+
 
 theorem finrank_le_add_finrank_fixedSubmodule
     {n : ℕ} {e : SpecialLinearGroup K V} (he : e ∈ transvections K V ^ n) :
@@ -228,19 +280,58 @@ theorem finrank_le_add_finrank_fixedSubmodule
     have := Submodule.finrank_le (f.fixedSubmodule ⊔ t.fixedSubmodule)
     linarith
 
-theorem finrank_le_transvection_degree_add (e : SpecialLinearGroup K V) :
-    finrank K V ≤ transvection_degree e + finrank K e.fixedSubmodule := by
-  induction hn : transvection_degree e with
+theorem finrank_le_transvectionDegree_add (e : SpecialLinearGroup K V) :
+    finrank K V ≤ transvectionDegree e + finrank K e.fixedSubmodule := by
+  induction hn : transvectionDegree e with
   | top => simp
   | coe n =>
     rw [← ENat.coe_add, ENat.coe_le_coe]
     apply finrank_le_add_finrank_fixedSubmodule
-    rw [← transvection_degree_le_iff, hn]
+    rw [← transvectionDegree_le_iff, hn]
 
-theorem finrank_lt_transvection_degree_add_of_isExceptional
+theorem fincorank_le_transvectionDegree (e : SpecialLinearGroup K V) :
+    finrank K (V ⧸ e.fixedSubmodule) ≤ transvectionDegree e := by
+  rw [← ENat.add_le_add_iff_right (ENat.coe_ne_top _),
+    ← ENat.coe_add, Submodule.finrank_quotient_add_finrank]
+  exact finrank_le_transvectionDegree_add e
+
+example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
+    finrank K V = transvectionDegree e + finrank K e.fixedSubmodule := by
+  suffices e.transvectionDegree ≤ finrank K (V ⧸ e.fixedSubmodule) by
+    apply le_antisymm (finrank_le_transvectionDegree_add e)
+    rw [← ENat.add_le_add_iff_right (ENat.coe_ne_top _),
+      ← ENat.coe_add, Submodule.finrank_quotient_add_finrank] at this
+    apply le_trans this (le_refl _)
+  induction h : finrank K (V ⧸ e.fixedSubmodule) with
+  | zero =>
+    suffices e = 1 by simp [this, transvectionDegree_one]
+    ext v
+    suffices v ∈ e.fixedSubmodule by simpa using this
+    suffices e.fixedSubmodule = ⊤ by simp [this]
+    apply Submodule.eq_top_of_finrank_eq
+    rw [← Nat.add_right_inj (n := 0), ← h, Submodule.finrank_quotient_add_finrank,h, zero_add]
+  | succ n hind =>
+    match n with
+    | 0 =>
+      simp only [zero_add, Nat.cast_one, transvectionDegree_le_one_iff, Set.mem_setOf_eq]
+      simp only [zero_add] at h
+      have h' : e.fixedSubmodule < ⊤ := by
+        by_contra! h'
+        simp only [not_lt_top_iff] at h'
+        apply Nat.zero_ne_one
+        convert h
+        rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank, h']
+        simp
+      obtain ⟨f, hf, hef⟩ := Submodule.exists_dual_map_eq_bot_of_lt_top h' inferInstance
+      simp only [zero_add, Nat.cast_one, ge_iff_le]
+      sorry
+    | n + 1 => sorry
+
+theorem finrank_lt_transvectionDegree_add_of_isExceptional
     (e : SpecialLinearGroup K V) (he : IsExceptional e) :
-    finrank K V < transvection_degree e +
-      finrank K (eigenspace (e : End K V) (1 : K)) := sorry
+    finrank K V < transvectionDegree e +
+      finrank K e.fixedSubmodule := by
+  sorry
 
 theorem _root_.Module.Basis.sumExtend_apply_left {ι K V : Type*}
     [DivisionRing K] [AddCommGroup V] [Module K V] {v : ι → V}
@@ -293,98 +384,6 @@ theorem exists_mem_transvections_apply_eq_of_indep'
   refine ⟨SpecialLinearGroup.transvection hvu, ⟨f, v - u, hvu, rfl⟩, ?_⟩
   simp [transvection, LinearMap.transvection.apply, hx] -/
 
-section
-
-variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
-    (W : Submodule R V)
-
-theorem linearIndependent_sum (ι κ : Type*) (b : ι → W) (c : κ → V ⧸ W)
-    (hb : LinearIndependent R b) (hc : LinearIndependent R c) :
-    LinearIndependent R
-      (Sum.elim (fun i ↦ (b i : V)) ((Function.surjInv W.mkQ_surjective) ∘ c)) := by
-  rw [linearIndependent_iff]
-  intro a ha
-  set a' := Finsupp.sumFinsuppLEquivProdFinsupp R a with ha'
-  rw [← LinearEquiv.symm_apply_eq] at ha'
-  suffices a' = 0 by rw [← ha', this, map_zero]
-  rw [Prod.ext_iff]
-  simp only [Prod.fst_zero, Prod.snd_zero]
-  rw [← ha'] at ha
-  -- nonterminal simp
-  simp [Finsupp.linearCombination_apply, Finsupp.sum_sumElim] at ha
-  suffices a'.2 = 0 by
-    simp only [this, and_true]
-    rw [linearIndependent_iff] at hb
-    specialize hb a'.1
-    apply hb
-    rw [Finsupp.linearCombination_apply]
-    rwa [this, Finsupp.sum_zero_index, add_zero,
-      Finsupp.sum_congr (g2 := (fun i a ↦ W.subtype (a • (b i)))) (by simp),
-      ← map_finsuppSum, LinearMap.map_eq_zero_iff _ W.subtype_injective] at ha
-  replace ha := LinearMap.congr_arg (f := W.mkQ) ha
-  simp only [map_add] at ha
-  suffices W.mkQ _ = 0 by
-    rw [linearIndependent_iff] at hc
-    specialize hc a'.2
-    apply hc
-    rw [Finsupp.linearCombination_apply]
-    rwa [this, zero_add, map_finsuppSum, map_zero,
-      Finsupp.sum_congr (g2 := fun k a ↦ a • (c k))] at ha
-    intro k _
-    simp [Function.surjInv_eq W.mkQ_surjective (c k)]
-  rw [map_finsuppSum]
-  convert Finsupp.sum_zero with i r
-  simp only [Function.comp_apply, Sum.elim_inl, map_smul, Submodule.mkQ_apply]
-  convert smul_zero _
-  simp
-
-
-variable [Module.Free R W]
-    [Module.Free R (V ⧸ W)] [Module.Finite R V]
-    (f : V →ₗ[R] V) (hfW : W ≤ W.comap f)
-
-example (hfW : W ≤ W.comap f) : V ⧸ W →ₗ[R] V ⧸ W :=
-  Submodule.mapQ W W f hfW
-
-example (hfW : W ≤ W.comap f) : W →ₗ[R] W :=
-  f.restrict hfW
-
-#synth Module.Finite R (V ⧸ W)
-
-
-
-
-
-noncomputable example (ι κ : Type*) (b : Basis ι R W) (c : Basis κ R (V ⧸ W)) :
-    Basis (ι ⊕ κ) R V := by
-  have : Function.Surjective W.mkQ := by
-    exact Submodule.mkQ_surjective W
-  let w : V ⧸ W → V := Function.invFun W.mkQ
-  let v : (ι ⊕ κ) → V := Sum.elim (fun i ↦ b i) (fun k ↦ Function.invFun W.mkQ (c k))
-  apply Basis.mk (v := v)
-  · sorry
-  · sorry
-
-
-example : (V ⧸ W) →ₗ[R] V := by
-  have := Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)
-    (Module.Free.chooseBasis R S.X₃))
-
-
-example : f.det = (f.restrict hfW).det * (Submodule.mapQ W W f hfW).det := by
-  sorry
-
-end
-example (W : Submodule K V) :
-    fixingSubgroup (SpecialLinearGroup K V) W.carrier →* SpecialLinearGroup K (V ⧸ W) where
-  toFun e := sorry
-  map_mul' := sorry
-  map_one' := sorry
-
-example {ι : Type*} [Fintype ι] (v : ι → V) :
-    Fintype.card ι = finrank K (Submodule.span K (Set.range v)) ↔
-      LinearIndependent K v := by
-  simp [linearIndependent_iff_card_eq_finrank_span, Set.finrank]
 
 lemma linearIndependent_of_not_mem_span {x y z : V} (hx : x ≠ 0)
     (hz : z ∉ Submodule.span K {x, y}) :
@@ -572,150 +571,106 @@ end generation
 
 end SpecialLinearGroup
 
+#exit
+
 section
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
-    {W : Submodule R V} {m n : Type*}
-    (bW : Basis m R W) (bQ : Basis n R (V ⧸ W))
+    (W : Submodule R V)
 
-/-- Given a basis `bW` of a submodule of an `R`-module `V`,
-and a basis `bQ` of the quotient `V ⧸ W`,
-this is a basis of `V` combining `bW` and a lift of `bQ`. -/
-noncomputable def basisSum :
-    Basis (m ⊕ n) R V := by
-  let b : m ⊕ n → V := Sum.elim (fun i ↦ bW i) ((Function.surjInv W.mkQ_surjective) ∘ bQ)
-  have bl : b ∘ Sum.inl = W.subtype ∘ bW := rfl
-  have br : W.mkQ ∘ b ∘ Sum.inr = bQ := by
-    ext j
-    simp only [Function.comp_apply, b, Sum.elim_inr, Function.comp_apply]
-    rw [Function.rightInverse_surjInv W.mkQ_surjective]
-  apply Basis.mk (v := b)
-  · apply  LinearIndependent.sumElim_of_quotient
-    · exact bW.linearIndependent
-    · convert bQ.linearIndependent
-  · intro x _
-    simp only [b, Set.Sum.elim_range, Submodule.span_union]
-    have := bW.span_eq
-    rw [show Set.range (fun i ↦ (bW i : V)) =
-      W.subtype '' (Set.range (fun i ↦ bW i)) from by aesop]
-    rw [← Submodule.map_span, bW.span_eq, Submodule.map_top, Submodule.range_subtype]
-    generalize_proofs hQ
-    suffices W.mkQ x ∈ Submodule.map W.mkQ
-      (Submodule.span R (Set.range (Function.surjInv hQ ∘ ⇑bQ))) by
-      obtain ⟨y, hy, hxy⟩ := this
-      rw [eq_comm, ← sub_eq_zero, ← map_sub, ← LinearMap.mem_ker, W.ker_mkQ] at hxy
-      rw [← sub_add_cancel x y]
-      exact add_mem (Submodule.mem_sup_left hxy) (Submodule.mem_sup_right hy)
-    rw [Submodule.map_span, ← Set.range_comp]
-    convert Submodule.mem_top
-    rw [← bQ.span_eq]
-    congr 2
+theorem linearIndependent_sum (ι κ : Type*) (b : ι → W) (c : κ → V ⧸ W)
+    (hb : LinearIndependent R b) (hc : LinearIndependent R c) :
+    LinearIndependent R
+      (Sum.elim (fun i ↦ (b i : V)) ((Function.surjInv W.mkQ_surjective) ∘ c)) := by
+  rw [linearIndependent_iff]
+  intro a ha
+  set a' := Finsupp.sumFinsuppLEquivProdFinsupp R a with ha'
+  rw [← LinearEquiv.symm_apply_eq] at ha'
+  suffices a' = 0 by rw [← ha', this, map_zero]
+  rw [Prod.ext_iff]
+  simp only [Prod.fst_zero, Prod.snd_zero]
+  rw [← ha'] at ha
+  -- nonterminal simp
+  simp [Finsupp.linearCombination_apply, Finsupp.sum_sumElim] at ha
+  suffices a'.2 = 0 by
+    simp only [this, and_true]
+    rw [linearIndependent_iff] at hb
+    specialize hb a'.1
+    apply hb
+    rw [Finsupp.linearCombination_apply]
+    rwa [this, Finsupp.sum_zero_index, add_zero,
+      Finsupp.sum_congr (g2 := (fun i a ↦ W.subtype (a • (b i)))) (by simp),
+      ← map_finsuppSum, LinearMap.map_eq_zero_iff _ W.subtype_injective] at ha
+  replace ha := LinearMap.congr_arg (f := W.mkQ) ha
+  simp only [map_add] at ha
+  suffices W.mkQ _ = 0 by
+    rw [linearIndependent_iff] at hc
+    specialize hc a'.2
+    apply hc
+    rw [Finsupp.linearCombination_apply]
+    rwa [this, zero_add, map_finsuppSum, map_zero,
+      Finsupp.sum_congr (g2 := fun k a ↦ a • (c k))] at ha
+    intro k _
+    simp [Function.surjInv_eq W.mkQ_surjective (c k)]
+  rw [map_finsuppSum]
+  convert Finsupp.sum_zero with i r
+  simp only [Function.comp_apply, Sum.elim_inl, map_smul, Submodule.mkQ_apply]
+  convert smul_zero _
+  simp
 
-@[simp]
-theorem basisSum_inl (i : m) :
-    basisSum bW bQ (Sum.inl i) = bW i := by
-  simp [basisSum]
 
-@[simp]
-theorem basisSum_inr (j : n) :
-    W.mkQ (basisSum bW bQ (Sum.inr j)) = bQ j := by
-  simp only [basisSum, Basis.coe_mk, Function.comp_apply, Sum.elim_inr, Function.comp_apply]
-  rw [Function.rightInverse_surjInv W.mkQ_surjective]
+variable [Module.Free R W]
+    [Module.Free R (V ⧸ W)] [Module.Finite R V]
+    (f : V →ₗ[R] V) (hfW : W ≤ W.comap f)
 
-theorem basisSum_repr_left (i : m) :
-    (basisSum bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
-  rw [← Module.Basis.apply_eq_iff, basisSum_inl]
+example (hfW : W ≤ W.comap f) : V ⧸ W →ₗ[R] V ⧸ W :=
+  Submodule.mapQ W W f hfW
 
-@[simp]
-theorem basisSum_repr_inl_of_mem (v : V) (hv : v ∈ W) (i : m) :
-    (basisSum bW bQ).repr v (Sum.inl i) = bW.repr ⟨v, hv⟩ i := by
-  suffices ∀ w : W,
-    (basisSum bW bQ).repr (W.subtype w) (Sum.inl i) = bW.repr w i by
-    exact this ⟨v, hv⟩
-  classical
-  intro w
-  simp only [← Module.Basis.coord_apply]
-  rw [← LinearMap.comp_apply]
-  revert w
-  rw [← LinearMap.ext_iff]
-  apply bW.ext
-  intro j
-  simp [basisSum_repr_left, Finsupp.single_apply]
+example (hfW : W ≤ W.comap f) : W →ₗ[R] W :=
+  f.restrict hfW
 
-@[simp]
-theorem basisSum_repr_inr_of_mem (v : V) (hv : v ∈ W) (j : n) :
-    (basisSum bW bQ).repr v (Sum.inr j) = 0 := by
-  classical
-  suffices ∀ w : W,
-    (basisSum bW bQ).repr (W.subtype w) (Sum.inr j) = 0 by
-    exact this ⟨v, hv⟩
-  intro w
-  simp only [← Module.Basis.coord_apply]
-  rw [← LinearMap.comp_apply]
-  rw [← LinearMap.zero_apply (σ₁₂ := RingHom.id R) w]
-  revert w
-  rw [← LinearMap.ext_iff]
-  apply bW.ext
-  intro i
-  simp [basisSum_repr_left]
-
-@[simp]
-theorem basisSum_repr_inr (v : V) (j : n) :
-    (basisSum bW bQ).repr v (Sum.inr j) = bQ.repr (W.mkQ v) j := by
-  simp only [← Module.Basis.coord_apply]
-  rw [← LinearMap.comp_apply]
-  revert v
-  rw [← LinearMap.ext_iff]
-  apply (basisSum bW bQ).ext
-  intro x
-  induction x with
-  | inl i =>
-    simp [basisSum_inl, LinearMap.comp_apply,
-      show W.mkQ (bW i) = 0 from by
-      rw [← LinearMap.mem_ker, Submodule.ker_mkQ]
-      exact Submodule.coe_mem (bW i)]
-  | inr i =>
-    classical
-    rw [LinearMap.comp_apply, basisSum_inr]
-    simp [Finsupp.single_apply]
-
-theorem LinearMap.det_eq_det_mul_det [Module.Finite R V]
-    (W : Submodule R V) [Module.Free R W] [Module.Finite R W] [Module.Free R (V ⧸ W)]
-    (e : V →ₗ[R] V) (he : W ≤ W.comap e) :
-    e.det = (e.restrict he).det * (W.mapQ W e he).det := by
-  let m := Module.Free.ChooseBasisIndex R W
-  let bW : Basis m R W := Module.Free.chooseBasis R W
-  let n := Module.Free.ChooseBasisIndex R (V ⧸ W)
-  let bQ : Basis n R (V ⧸ W) := Module.Free.chooseBasis R (V ⧸ W)
-  let b := basisSum bW bQ
-  let A : Matrix m m R := LinearMap.toMatrix bW bW (e.restrict he)
-  let B : Matrix m n R := Matrix.of fun i l ↦
-    ((basisSum bW bQ).repr (e ((basisSum bW bQ) (Sum.inr l)))) (Sum.inl i)
-  let D : Matrix n n R := LinearMap.toMatrix bQ bQ (W.mapQ W e he)
-  suffices LinearMap.toMatrix b b e = Matrix.fromBlocks A B 0 D by
-    rw [← LinearMap.det_toMatrix b, this, ← LinearMap.det_toMatrix bW,
-      ← LinearMap.det_toMatrix bQ, Matrix.det_fromBlocks_zero₂₁]
-  ext u v
-  cases u with
-  | inl i =>
-    cases v with
-    | inl k =>
-      simp only [b, basisSum_inl, Matrix.fromBlocks_apply₁₁, A, LinearMap.toMatrix_apply]
-      apply basisSum_repr_inl_of_mem
-    | inr l => simp [b, LinearMap.toMatrix_apply, Matrix.fromBlocks_apply₁₂, B]
-  | inr j =>
-    cases v with
-    | inl k =>
-      suffices W.mkQ (e (bW k)) = 0 by simp [LinearMap.toMatrix_apply, b, this]
-      rw [← LinearMap.mem_ker, Submodule.ker_mkQ]
-      exact he (Submodule.coe_mem (bW k))
-    | inr l =>
-      simp only [LinearMap.toMatrix_apply, basisSum_repr_inr,
-        Matrix.fromBlocks_apply₂₂, b, D]
-      rw [Submodule.mkQ_apply, ← W.mapQ_apply , ← Submodule.mkQ_apply, basisSum_inr]
 
 end
 
-
 #exit
+example (e : V →ₗ[K] V) (W W' : Submodule K V) (he : W ≤ W'.comap e) :
+    V ⧸ W →ₗ[K] V ⧸ W' :=
+  W.liftQ (W'.mkQ ∘ₗ e) (fun v hv ↦ by simpa using he hv)
+
+example (e : V →ₗ[K] V) (W W' : Submodule K V) (he : W.map e ≤ W') :
+    V ⧸ W →ₗ[K] V ⧸ W' :=
+  W.liftQ (W'.mkQ ∘ₗ e) (fun v hv ↦ by aesop)
+
+example (e : V →ₗ[K] V) (W : Submodule K V) (he : W ≤ W.comap e) :
+    V ⧸ W →ₗ[K] V ⧸ W :=
+  W.mapQ W e he
+
+example (e : V →ₗ[K] V) (W : Submodule K V) (he : W.map e ≤ W) :
+    V ⧸ W →ₗ[K] V ⧸ W :=
+  W.mapQ W e (Submodule.map_le_iff_le_comap.mp he)
+
+example (e : V →ₗ[K] V) (W : Submodule K V) (he : W ≤ W.comap e) :
+    W →ₗ[K] W := by
+  exact e.restrict he
+
+example (e : V ≃ₗ[K] V) (W W' : Submodule K V) (he : W = W'.comap e) :
+    (V ⧸ W) ≃ₗ[K] (V ⧸ W') where
+  toLinearMap := W.liftQ (W'.mkQ ∘ₗ e) (fun v hv ↦ by
+    simpa [he] using hv)
+  invFun := W'.liftQ (W.mkQ ∘ₗe.symm) (fun v hv ↦ by
+    simpa [he] using hv)
+  left_inv v' := by
+    obtain ⟨v, rfl⟩ := W.mkQ_surjective v'
+    simp
+  right_inv v' := by
+    obtain ⟨v, rfl⟩ := W'.mkQ_surjective v'
+    simp
+
+example (e : V ≃ₗ[K] V) (W W' : Submodule K V)
+    (he : W = W'.comap e) :
+    (V ⧸ W) ≃ₗ[K] (V ⧸ W') := by
+  apply Submodule.Quotient.equiv W W' e
+  erw [Submodule.map_equiv_eq_comap_symm e W]
+  aesop
+
 
