@@ -69,21 +69,21 @@ instance : ToMessageData Parameter where
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
 ```null
-`{foo}` has the hypothes(is/es):
+`{foo}` does not use the following hypothes(is/es) in its type{ outside of proofs}:
   • {p₁}
   • {p₂}
   ⋮
   • {pₙ}
-which (is/are) not used in the remainder of the type.
 ```
+where the bracketed "outside of proofs" is only included if `appearsInProofs := true`.
 -/
 def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
-    (unusedInstanceBinders : Array Parameter) : MessageData :=
+    (unusedInstanceBinders : Array Parameter) (appearsInProofs : Bool): MessageData :=
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
-  m!"`{.ofConstName declName}` has the \
-  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"}:\
-  {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}\nwhich \
-  {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
+  m!"`{.ofConstName declName}` does not use the following \
+  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"}\
+  {if appearsInProofs then "outside of proofs" else ""}:
+  {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}"
 
 /- Perf note: could cache visited exprs like `collectFVars` does. -/
 /-- Collects free variables that do not appear in proofs. Ignores `sorry`s (and their types). -/
@@ -163,6 +163,7 @@ where
       | e =>
         collectFVarsOutsideOfProofs e
         return currentFVars
+
 /--
 Gathers instance hypotheses in the type of `decl` that are unused in the remainder of the type and
 whose types satisfy `p`. (Does not consider the body of the declaration.) Collects them into an
