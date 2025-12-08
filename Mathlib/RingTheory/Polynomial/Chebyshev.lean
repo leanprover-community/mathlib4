@@ -226,9 +226,9 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
   | one => simp
   | add_two n ih1 ih2 =>
     trans (n + 2 : ℤ).negOnePow * (2 * x * (T R (n + 1)).eval x - (T R n).eval x)
-    · rw [T_add_two, eval_sub, eval_mul, eval_mul, ih1, ih2,
-        Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
-      simp; ring
+    · simp only [T_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, ih1, Int.negOnePow_add,
+        Int.negOnePow_one, Units.val_neg, Int.cast_neg, ih2, Int.negOnePow_even 2 even_two]
+      ring_nf
     · simp
   | neg n ih => rw [T_neg, ih]; simp
 
