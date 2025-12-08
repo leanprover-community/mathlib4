@@ -12,6 +12,7 @@ public meta import Mathlib.Tactic.Lemma
 public meta import Mathlib.Tactic.TypeStar
 public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!
 # Basic tactics and utilities for tactic writing
