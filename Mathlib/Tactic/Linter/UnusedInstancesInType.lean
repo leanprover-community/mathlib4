@@ -57,13 +57,19 @@ structure Parameter where
   type? : Option Expr
   /-- The index of the parameter among the `forall` binders in the type (starting at 0). -/
   idx : Nat
+  /-- Whether the parameter appears in a proof in the type. -/
+  appearsInTypeProof : Bool
 
 instance : ToMessageData Parameter where
-  toMessageData (param : Parameter) :=
-    if let some type := param.type? then
+  toMessageData (param : Parameter) := Id.run do
+    let mut msg := if let some type := param.type? then
       m!"[{type}] (#{param.idx + 1})"
     else
       m!"parameter #{param.idx + 1}"
+    if param.appearsInTypeProof then
+      msg := m!"{msg} (used in type, but only in a proof)"
+    return msg
+
 
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
@@ -75,14 +81,17 @@ Given a (full, resolvable) declaration name `foo` and an array of parameters
   ⋮
   • {pₙ}
 ```
-where the bracketed "outside of proofs" is only included if `appearsInProofs := true`.
+where the bracketed "outside of proofs" is only included if some parameter appears in a proof in
+the type.
 -/
 def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
-    (unusedInstanceBinders : Array Parameter) (appearsInProofs : Bool): MessageData :=
+    (unusedInstanceBinders : Array Parameter): MessageData :=
+  let anyAppearsInTypeProof := unusedInstanceBinders.any (·.appearsInTypeProof)
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
   m!"`{.ofConstName declName}` does not use the following \
-  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"}\
-  {if appearsInProofs then "outside of proofs" else ""}:
+  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"} \
+  in its type\
+  {if anyAppearsInTypeProof then " outside of proofs" else ""}:\
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}"
 
 /- Perf note: could cache visited exprs like `collectFVars` does. -/
@@ -183,11 +192,13 @@ def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
         (cleanupAnnotations := true) fun fvars _ => do
+          let unusedEverywhereInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
           let unusedInstances : Array Parameter ← unusedInstances.mapM fun idx =>
             return {
                 fvar? := fvars[idx]?
                 type? := ← fvars[idx]?.mapM (inferType ·)
                 idx
+                appearsInTypeProof := !unusedEverywhereInstances.contains idx
               }
           logOnUnused unusedInstances
 

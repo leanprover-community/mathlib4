@@ -7,9 +7,8 @@ section decidable
 section unused
 
 /--
-warning: `foo` has the hypothesis:
+warning: `foo` does not use the following hypothesis in its type:
   • [DecidableEq α] (#2)
-which is not used in the remainder of the type.
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -24,9 +23,8 @@ def Foo (α) [DecidableEq α] := Unit
 theorem bar {α} [DecidableEq α] (s : Foo α) : s = s := rfl
 
 /--
-warning: `foo₂` has the hypothesis:
+warning: `foo₂` does not use the following hypothesis in its type:
   • [(α : Type) → Decidable (Nonempty α)] (#2)
-which is not used in the remainder of the type.
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -37,10 +35,9 @@ theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [N
   trivial
 
 /--
-warning: `foo₃` has the hypotheses:
+warning: `foo₃` does not use the following hypotheses in its type:
   • [(α : Type) → Decidable (Nonempty α)] (#2)
   • [DecidableEq β] (#3)
-which are not used in the remainder of the type.
 
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -51,9 +48,8 @@ theorem foo₃ {β} [∀ α : Type, Decidable (Nonempty α)] [DecidableEq β] : 
 
 -- See through `let`, don't count it as an index
 /--
-warning: `foo₄` has the hypothesis:
+warning: `foo₄` does not use the following hypothesis in its type:
   • [DecidableEq β] (#2)
-which is not used in the remainder of the type.
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -87,9 +83,8 @@ def Uses {α} (_ : α) : Prop := True
 theorem UsesInProof (α : Sort u) (_ : α := by infer_instance) : True := trivial
 
 /--
-warning: `fooUsing₁'` has the hypothesis:
-  • [DecidableEq (Nat → Nat)] (#1)
-which is not used in the remainder of the type.
+warning: `fooUsing₁'` does not use the following hypothesis in its type outside of proofs:
+  • [DecidableEq (Nat → Nat)] (#1) (used in type, but only in a proof)
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -101,9 +96,8 @@ theorem fooUsing₁' [DecidableEq (Nat → Nat)] :
   fun _ => trivial
 
 /--
-warning: `fooUsing₁''` has the hypothesis:
-  • [DecidableEq (Nat → Nat)] (#1)
-which is not used in the remainder of the type.
+warning: `fooUsing₁''` does not use the following hypothesis in its type outside of proofs:
+  • [DecidableEq (Nat → Nat)] (#1) (used in type, but only in a proof)
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -115,9 +109,8 @@ theorem fooUsing₁'' [DecidableEq (Nat → Nat)]
 
 -- Should fire on parameter #1 but not parameter #2
 /--
-warning: `fooUsing₂` has the hypothesis:
+warning: `fooUsing₂` does not use the following hypothesis in its type:
   • [DecidablePred Nonempty] (#1)
-which is not used in the remainder of the type.
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
@@ -148,9 +141,8 @@ theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
 set_option linter.unusedDecidableInType false
 
 /--
-warning: `fooUsing₂''` has the hypothesis:
+warning: `fooUsing₂''` does not use the following hypothesis in its type:
   • [DecidablePred Nonempty] (#1)
-which is not used in the remainder of the type.
 
 Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
