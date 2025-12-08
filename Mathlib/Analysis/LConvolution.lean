@@ -85,7 +85,7 @@ section Measurable
 variable [MeasurableMul₂ G] [MeasurableInv G]
 
 /-- The convolution of measurable functions is measurable. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- The convolution of measurable functions is measurable. -/]
 theorem measurable_mlconvolution {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₘₗ[μ] g) := by
@@ -103,7 +103,7 @@ variable [Group G] [MeasurableMul₂ G] [MeasurableInv G]
 variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
 
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/]
 theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :

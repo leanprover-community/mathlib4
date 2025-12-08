@@ -465,6 +465,19 @@ theorem mem_sup {s t : Submonoid N} {x : N} : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃
   simp only [sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
     Subtype.exists, exists_prop]
 
+variable {P : N → Prop}
+
+@[to_additive, simp high]
+lemma forall_mem_sup {s t : Submonoid N} :
+    (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+  aesop
+
+@[to_additive, simp high]
+lemma exists_mem_sup {s t : Submonoid N} :
+    (∃ x ∈ s ⊔ t, P x) ↔ (∃ x₁ ∈ s, ∃ x₂ ∈ t, P (x₁ * x₂)) := by
+  simp [mem_sup]
+
 end Submonoid
 
 namespace AddSubmonoid
