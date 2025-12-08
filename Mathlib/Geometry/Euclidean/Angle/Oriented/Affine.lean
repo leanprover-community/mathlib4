@@ -217,14 +217,6 @@ theorem oangle_ne_zero_and_ne_pi_iff_not_collinear {p₁ p₂ p₃ : P} :
   ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ ¬ Collinear ℝ {p₁, p₂, p₃} := by
   rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent, affineIndependent_iff_not_collinear_set]
 
-/-- If two oriented angles are equal, one triple is affinely independent if and only if
-the other is. -/
-theorem affineIndependent_iff_of_oangle_eq {p₁ p₂ p₃ p₁' p₂' p₃' : P}
-  (h_eq : ∡ p₁ p₂ p₃ = ∡ p₁' p₂' p₃') :
-  AffineIndependent ℝ ![p₁, p₂, p₃] ↔ AffineIndependent ℝ ![p₁', p₂', p₃'] := by
-  rw [← oangle_ne_zero_and_ne_pi_iff_affineIndependent,
-    ← oangle_ne_zero_and_ne_pi_iff_affineIndependent, h_eq]
-
 /-- If twice the oriented angles between two triples of points are equal, one triple is affinely
 independent if and only if the other is. -/
 theorem affineIndependent_iff_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P}
