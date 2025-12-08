@@ -77,6 +77,21 @@ lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
     (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
   .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
 
+/-- Let `f : X → Y` be an open embedding of topological spaces.
+If `Y` is a prespectral space (i.e., the quasi-compact opens of `Y` form a basis),
+then `X` is also a prespectral space. -/
+lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
+    {f : X → Y} (hf : IsOpenEmbedding f) :
+    PrespectralSpace X where
+  isTopologicalBasis := by
+    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    obtain ⟨V, ⟨hoV, hcV⟩, ⟨hfx, hVf⟩⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
+      (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
+        (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩
+    refine ⟨f ⁻¹' V, ⟨hoV.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
+    · exact hf.toIsInducing.isCompact_preimage' hcV <| Set.SurjOn.subset_range hVf
+    · exact hf.injective.mem_set_image.mp (hVf hy)
+
 instance PrespectralSpace.sigma {ι : Type*} (X : ι → Type*) [∀ i, TopologicalSpace (X i)]
     [∀ i, PrespectralSpace (X i)] : PrespectralSpace (Σ i, X i) :=
   .of_isTopologicalBasis (IsTopologicalBasis.sigma fun i ↦ isTopologicalBasis) fun U hU ↦ by
@@ -145,18 +160,3 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
       rintro ⟨i, hi, x, hx, rfl⟩
       have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
       exact this
-
-/-- Let `f : X → Y` be an open embedding of topological spaces.
-If `Y` is a prespectral space (i.e., the quasi-compact opens of `Y` form a basis),
-then `X` is also a prespectral space. -/
-theorem Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
-    {f : X → Y} (hf : IsOpenEmbedding f) :
-    PrespectralSpace X where
-  isTopologicalBasis := by
-    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x S hx hS ↦ ?_
-    obtain ⟨W, ⟨hoW, hcW⟩, ⟨hfx, hWf⟩⟩ : ∃ t ∈ {S | IsOpen S ∧ IsCompact S}, f x ∈ t ∧ t ⊆ f '' S :=
-      (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
-        (hf.isOpen_iff_image_isOpen.mp hS) (f x) ⟨x, hx, rfl⟩
-    refine ⟨f ⁻¹' W, ⟨hoW.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
-    · exact hf.toIsInducing.isCompact_preimage' hcW <| Set.SurjOn.subset_range hWf
-    · exact hf.injective.mem_set_image.mp (hWf hy)
