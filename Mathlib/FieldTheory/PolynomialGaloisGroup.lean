@@ -147,7 +147,7 @@ def rootsEquivRoots [Fact ((p.map (algebraMap F E)).Splits)] :
     rootSet p p.SplittingField ≃ rootSet p E :=
   Equiv.ofBijective (mapRoots p E) (mapRoots_bijective p E)
 
-local instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
+private instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
   smul ϕ := Set.MapsTo.restrict ϕ _ _ <| rootSet_mapsTo ϕ.toAlgHom
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
