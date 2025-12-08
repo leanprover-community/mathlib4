@@ -3,10 +3,12 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.
@@ -29,6 +31,8 @@ We prove some basic facts about the category `Type`:
 * every type level `IsLawfulFunctor` gives a categorical functor `Type ⥤ Type`
   (the corresponding fact about monads is in `Mathlib/CategoryTheory/Monad/Types.lean`).
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Quotient.Card
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Isomorphism theorems for modules.
@@ -14,6 +16,8 @@ import Mathlib.LinearAlgebra.Quotient.Card
   `Submodule.quotientQuotientEquivQuotient`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -76,7 +80,7 @@ theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 
 Note that in the following declaration the type of the domain is expressed using
-``comap p.subtype p ⊓ comap p.subtype p'`
+`comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
 because the former is the simp normal form (see also `Submodule.comap_inf`). -/
@@ -102,7 +106,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
 
 Note that in the following declaration the type of the domain is expressed using
-``comap p.subtype p ⊓ comap p.subtype p'`
+`comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
 because the former is the simp normal form (see also `Submodule.comap_inf`). -/

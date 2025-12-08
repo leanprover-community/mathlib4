@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Binomial coefficients
@@ -36,6 +38,8 @@ see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 binomial coefficient, combination, multicombination, stars and bars
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -302,7 +306,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      cutsat
+      lia
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
@@ -317,10 +321,19 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
   | zero => simp
   | succ b_n b_ih => exact b_ih.trans (choose_le_succ (a + b_n) c)
 
+@[gcongr]
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
 theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choose_le_choose b
+
+theorem choose_eq_one_iff {n k : ℕ} : n.choose k = 1 ↔ k = 0 ∨ n = k := by
+  rcases lt_trichotomy k n with hk | rfl | hk
+  · have := k.choose_succ_self_right.symm.trans_le (k.choose_mono hk)
+    have := n.choose_zero_right
+    grind
+  · simp
+  · simp [choose_eq_zero_of_lt hk, hk.ne, Nat.ne_zero_of_lt hk]
 
 /-! #### Multichoose
 

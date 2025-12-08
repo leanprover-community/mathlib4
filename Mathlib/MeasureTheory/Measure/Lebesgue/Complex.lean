@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
 # Lebesgue measure on `ℂ`
@@ -16,6 +18,8 @@ used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, d
 (`MeasurableEquiv`) to both types and prove that both of them are volume preserving (in the sense
 of `MeasureTheory.measurePreserving`).
 -/
+
+@[expose] public section
 
 open MeasureTheory Module
 

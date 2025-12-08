@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+module
+
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Quaternions
@@ -36,7 +38,7 @@ We also define the following algebraic structures on `ℍ[R]`:
 The following notation is available with `open Quaternion` or `open scoped Quaternion`.
 
 * `ℍ[R,c₁,c₂,c₃]` : `QuaternionAlgebra R c₁ c₂ c₃`
-* `ℍ[R,c₁,c₂] : `QuaternionAlgebra R c₁ 0 c₂`
+* `ℍ[R,c₁,c₂]` : `QuaternionAlgebra R c₁ 0 c₂`
 * `ℍ[R]` : quaternions over `R`.
 
 ## Implementation notes
@@ -49,6 +51,8 @@ are computable.
 
 quaternion
 -/
+
+@[expose] public section
 
 open Module
 

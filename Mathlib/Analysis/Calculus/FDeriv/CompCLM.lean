@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Bilinear
-import Mathlib.Analysis.NormedSpace.Alternating.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
 
 /-!
 # Multiplicative operations on derivatives
@@ -17,6 +19,8 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * composition of continuous linear maps
 * application of continuous (multi)linear maps to a constant
 -/
+
+@[expose] public section
 
 
 open Asymptotics ContinuousLinearMap Topology

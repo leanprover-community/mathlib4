@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.MvPolynomial.Eval
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Algebra towers for multivariate polynomial
@@ -17,6 +19,8 @@ This structure itself is provided elsewhere as `MvPolynomial.isScalarTower`
 When you update this file, you can also try to make a corresponding update in
 `RingTheory.Polynomial.Tower`.
 -/
+
+@[expose] public section
 
 
 variable (R A B : Type*) {σ : Type*}

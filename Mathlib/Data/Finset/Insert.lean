@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Attr
-import Mathlib.Data.Finset.Dedup
-import Mathlib.Data.Finset.Empty
-import Mathlib.Data.Multiset.FinsetOps
+module
+
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.Finset.Dedup
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Data.Multiset.FinsetOps
 
 /-!
 # Constructing finite sets by adding one element
@@ -29,6 +31,8 @@ all ways to construct a `Finset` by adding one element.
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.

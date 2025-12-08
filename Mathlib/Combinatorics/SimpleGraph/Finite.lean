@@ -3,9 +3,11 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Sym.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Sym.Card
 
 /-!
 # Definitions for finite and locally finite graphs
@@ -37,6 +39,8 @@ or `card_verts`.
 * Given instances `DecidableRel G.Adj` and `Fintype V`, then the graph
   is locally finite, too.
 -/
+
+@[expose] public section
 
 
 open Finset Function
@@ -116,12 +120,12 @@ variable [Fintype V]
 
 @[simp]
 theorem edgeFinset_top [DecidableEq V] :
-    (⊤ : SimpleGraph V).edgeFinset = ({e | ¬e.IsDiag} : Finset _) := by simp [← coe_inj]
+    (⊤ : SimpleGraph V).edgeFinset = Sym2.diagSetᶜ.toFinset := by simp [← coe_inj]
 
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
 theorem card_edgeFinset_top_eq_card_choose_two [DecidableEq V] :
     #(⊤ : SimpleGraph V).edgeFinset = (Fintype.card V).choose 2 := by
-  simp_rw [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
+  simp_rw [Set.toFinset_card, edgeSet_top, ← Sym2.card_diagSet_compl]
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
 theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).choose 2 := by
@@ -130,18 +134,6 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
   exact card_le_card (edgeFinset_mono le_top)
 
 end EdgeFinset
-
-namespace Iso
-
-variable {G} {W : Type*} {G' : SimpleGraph W}
-
-theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    #G.edgeFinset = #G'.edgeFinset := by
-  apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
-  exact f.mapEdgeSet
-
-end Iso
 
 section FiniteAt
 
@@ -216,8 +208,7 @@ theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype 
 
 theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
     (h : G.degree v ≠ 0) : Nontrivial V := by
-  apply not_subsingleton_iff_nontrivial.mp
-  by_contra
+  by_contra!
   simp_all [degree_eq_zero_of_subsingleton]
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
@@ -493,6 +484,46 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   simp [Finset.card_sdiff, h]
 
 end Finite
+
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W}
+
+theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    #G.edgeFinset = #G'.edgeFinset := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+@[simp] theorem degree_eq (f : G ≃g G') (x : V)
+    [Fintype ↑(G.neighborSet x)] [Fintype ↑(G'.neighborSet (f x))] :
+    G'.degree (f x) = G.degree x := by
+  rw [← card_neighborSet_eq_degree, ← card_neighborSet_eq_degree,
+    ← Fintype.card_congr (mapNeighborSet f x).symm]
+
+variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
+
+theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
+  rcases isEmpty_or_nonempty V
+  · simp [f.symm.isEmpty]
+  · have : Nonempty W := f.symm.nonempty
+    apply le_antisymm
+    · obtain ⟨x', hx'⟩ := exists_minimal_degree_vertex G'
+      simpa only [hx', ← degree_eq f.symm x'] using minDegree_le_degree G (f.symm x')
+    · obtain ⟨x, hx⟩ := exists_minimal_degree_vertex G
+      simpa only [hx, ← degree_eq f x] using minDegree_le_degree G' (f x)
+
+theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
+  rcases isEmpty_or_nonempty V
+  · simp [f.symm.isEmpty]
+  · have : Nonempty W := f.symm.nonempty
+    apply le_antisymm
+    · obtain ⟨x, hx⟩ := exists_maximal_degree_vertex G
+      simpa only [hx, ← degree_eq f x] using degree_le_maxDegree G' (f x)
+    · obtain ⟨x', hx'⟩ := exists_maximal_degree_vertex G'
+      simpa only [hx', ← degree_eq f.symm x'] using degree_le_maxDegree G (f.symm x')
+
+end Iso
 
 section Support
 

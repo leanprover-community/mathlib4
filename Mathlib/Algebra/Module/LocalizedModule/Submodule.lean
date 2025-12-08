@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.Algebra.Algebra.Operations
+module
+
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Localization.Module
+public import Mathlib.Algebra.Algebra.Operations
 
 /-!
 # Localization of Submodules
@@ -16,7 +18,7 @@ Results about localizations of submodules and quotient modules are provided in t
 ## Main results
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
-  A direct consequence of this is that `Rₚ` is flat over `R, see `IsLocalization.flat`.
+  A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.
 - `Submodule.toLocalized`:
   The localization map of a submodule `M' →ₗ[R] M'.localized p`.
 - `Submodule.toLocalizedQuotient`:
@@ -26,6 +28,8 @@ Results about localizations of submodules and quotient modules are provided in t
 - Statements regarding the exactness of localization.
 
 -/
+
+@[expose] public section
 
 open nonZeroDivisors
 

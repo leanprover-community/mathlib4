@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
 -/
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Analytic.CPolynomialDef
-import Mathlib.Combinatorics.Enumerative.Composition
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Analytic.CPolynomialDef
+public import Mathlib.Combinatorics.Enumerative.Composition
 
 /-!
 # Composition of analytic functions
@@ -64,6 +66,8 @@ double sums in a careful way. The change of variables is a canonical (combinator
 in more details below in the paragraph on associativity.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -107,7 +111,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   funext v i
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
-  obtain rfl : j = 0 := by cutsat
+  obtain rfl : j = 0 := by lia
   refine congr_arg v ?_
   rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
 
