@@ -198,8 +198,8 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) ↔ BddBelow (Set.range fun n => f n ω) := by
   have hbdd' : ∀ᵐ ω ∂μ, ∀ i, |(-f) (i + 1) ω - (-f) i ω| ≤ R := by
     filter_upwards [hbdd] with ω hω i
-    erw [← abs_neg, neg_sub, sub_neg_eq_add, neg_add_eq_sub]
-    exact hω i
+    simp only [Pi.neg_apply]
+    grind
   have hup := hf.submartingale.bddAbove_iff_exists_tendsto hbdd
   have hdown := hf.neg.submartingale.bddAbove_iff_exists_tendsto hbdd'
   filter_upwards [hup, hdown] with ω hω₁ hω₂
