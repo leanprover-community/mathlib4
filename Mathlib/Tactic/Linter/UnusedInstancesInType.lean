@@ -92,6 +92,14 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   in its type{if anyAppearsInTypeProof then " outside of proofs" else ""}:\
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}"
 
+/-- Returns `true` if the provided `Expr` is of the form `sorryAx _ _`.
+
+Contrast with `Lean.Expr.isSorry`, which returns treu for any application of `sorryAx` (including
+e.g. `sorryAx α true x y z`). -/
+def isSorryAx : Expr → Bool
+  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
+  | _ => false
+
 /- Perf note: could cache visited exprs like `collectFVars` does. -/
 /-- Collects free variables that do not appear in proofs. Ignores `sorry`s (and their types). -/
 def collectFVarsOutsideOfProofs (e : Expr) : StateRefT FVarIdSet MetaM Unit :=
@@ -112,6 +120,53 @@ structure InstanceOfConcern where
   increment this index when seeing through `let`s. -/
   idx : Nat
 
+/-- Enter foralls recursively, creating a telescope for binders which are instances of concern
+and instantiating all other bvars with `sorry`. The only free variables therefore arise from
+instances of concern which we want to track the usage of.
+
+By instantiating ordinary binders with `sorry`, `collectFVarsOutsideOfProofs` can use the
+computed field accessed by `hasFVar` (in constant time) to avoid traversing any subexpressions
+that do not contain a free variable for an instance of concern, which helps performance.
+
+Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
+returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
+used or not. -/
+def go (p : Expr → Bool)
+    (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
+    StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
+  let e := e.cleanupAnnotations
+  if h : e.isForall then
+    -- Collect instances in the forall domain.
+    collectFVarsOutsideOfProofs (e.forallDomain h)
+    if e.binderInfo.isInstImplicit && p (e.forallDomain h) then
+      -- This forall introduces an instance of concern; make it an fvar.
+      forallBoundedTelescope e (some 1) fun fvar e => do
+        let fvarId := fvar[0]!.fvarId!
+        go p e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
+    else
+      -- This forall does not introduce a binder of concern. Instantiate the bvar with `sorry`.
+      /- Perf note: Could possibly do better by taking a `forallTelescope`-like approach and going
+      as many foralls forward as possible before instantiating, and instantiating the binding
+      domains separately along the way. Not worth the complexity yet. -/
+      let e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
+      go p e (currentBinderIdx + 1) currentFVars
+  else
+    match e with
+    | .letE _ type value body _ =>
+      -- See through `let`s
+      collectFVarsOutsideOfProofs type
+      collectFVarsOutsideOfProofs value
+      /- Note: we could instantiate with `value`, but we risk redoing work if it has an fvar.
+      The `let` value may in the future be necessary for certain purposes; if so, we could
+      instantiate with `← mkExpectedTypeHint type value` plus metadata, and check for (and avoid)
+      this metadata in `collectFVarsOutsideOfProofs`. -/
+      let e := body.instantiate1 (← mkSorry type false)
+      -- do not increment binder index, to retain compatibility with `forallTelescope` and friends
+      go p e currentBinderIdx currentFVars
+    | e =>
+      collectFVarsOutsideOfProofs e
+      return currentFVars
+
 /--
 Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
 `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
@@ -126,54 +181,8 @@ The indices start at 0, and do not count `let`s.
 -/
 def _root_.Lean.Expr.collectUnnecessaryInstanceBinderIdxs (p : Expr → Bool) (e : Expr) :
     MetaM (Array Nat) := do
-  let (instances, fvarIdSet) ← go e 0 #[] |>.run {}
+  let (instances, fvarIdSet) ← go p e 0 #[] |>.run {}
   return instances.filterMap fun i => if fvarIdSet.contains i.fvarId then none else some i.idx
-where
-  /-- Enter foralls recursively, creating a telescope for binders which are instances of concern
-  and instantiating all other bvars with `sorry`. The only free variables therefore arise from
-  instances of concern which we want to track the usage of.
-
-  By instantiating ordinary binders with `sorry`, `collectFVarsOutsideOfProofs` can use the
-  computed field accessed by `hasFVar` (in constant time) to avoid traversing any subexpressions
-  that do not contain a free variable for an instance of concern, which helps performance.
-
-  Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
-  returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
-  used or not. -/
-  go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
-      StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
-    let e := e.cleanupAnnotations
-    if h : e.isForall then
-      -- Collect instances in the forall domain.
-      collectFVarsOutsideOfProofs (e.forallDomain h)
-      if e.binderInfo.isInstImplicit && p (e.forallDomain h) then
-        -- This forall introduces an instance of concern; make it an fvar.
-        forallBoundedTelescope e (some 1) fun fvar e => do
-          let fvarId := fvar[0]!.fvarId!
-          go e (currentBinderIdx + 1) (currentFVars.push { fvarId, idx := currentBinderIdx })
-      else
-        -- This forall does not introduce a binder of concern. Instantiate the bvar with `sorry`.
-        /- Perf note: Could possibly do better by taking a `forallTelescope`-like approach and going
-        as many foralls forward as possible before instantiating, and instantiating the binding
-        domains separately along the way. Not worth the complexity yet. -/
-        let e := (e.forallBody h).instantiate1 (← mkSorry (e.forallDomain h) false)
-        go e (currentBinderIdx + 1) currentFVars
-    else
-      match e with
-      | .letE _ type value body _ =>
-        -- See through `let`s
-        collectFVarsOutsideOfProofs type
-        collectFVarsOutsideOfProofs value
-        /- Note: we could instantiate with `value`, but we risk redoing work if it has an fvar.
-        The `let` value may in the future be necessary for certain purposes; if so, we could
-        instantiate with `← mkExpectedTypeHint type value` plus metadata, and check for (and avoid)
-        this metadata in `collectFVarsOutsideOfProofs`. -/
-        let e := body.instantiate1 (← mkSorry type false)
-        -- do not increment binder index, to retain compatibility with `forallTelescope` and friends
-        go e currentBinderIdx currentFVars
-      | e =>
-        collectFVarsOutsideOfProofs e
-        return currentFVars
 
 /--
 Gathers instance hypotheses in the type of `decl` that are unused in the remainder of the type and

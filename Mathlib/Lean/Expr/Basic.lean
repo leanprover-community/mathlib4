@@ -376,14 +376,6 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
   else
     ty.heq?
 
-/-- Returns `true` if the provided `Expr` is of the form `sorryAx _ _`.
-
-Contrast with `Lean.Expr.isSorry`, which returns treu for any application of `sorryAx` (including
-e.g. `sorryAx α true x y z`). -/
-def isSorryAx : Expr → Bool
-  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
-  | _ => false
-
 end recognizers
 
 universe u
