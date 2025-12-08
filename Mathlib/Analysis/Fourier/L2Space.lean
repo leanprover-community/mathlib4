@@ -20,7 +20,7 @@ In this file we define the Fourier transform on `L2` as a linear isometry equiva
 
 ## Main statements
 
-* `SchwartzMap.toLp_fourierTransform_eq`: The Fourier transform on `𝓢(V, E)` agrees with the Fourier
+* `SchwartzMap.toLp_fourierTransform_eq`: The Fourier transform on `𝓢(E, F)` agrees with the Fourier
 transform on `L2`.
 
 -/
@@ -32,45 +32,46 @@ noncomputable section
 section FourierTransform
 
 variable
-  {V E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
-  [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V]
+  {E F : Type*}
+  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+  [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
 open SchwartzMap MeasureTheory FourierTransform ComplexInnerProductSpace
 
-variable [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
-variable (V E) in
+variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
-def Lp.fourierTransformLI : (Lp (α := V) E 2) ≃ₗᵢ[ℂ] (Lp (α := V) E 2) :=
-  (SchwartzMap.fourierTransformCLE ℂ (V := V) (E := E)).toLinearEquiv.extendOfIsometry
-    (SchwartzMap.toLpCLM ℂ (E := V) E 2) (SchwartzMap.toLpCLM ℂ (E := V) E 2)
+def Lp.fourierTransformLI : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
+  (SchwartzMap.fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
+    (SchwartzMap.toLpCLM ℂ (E := E) F 2) (SchwartzMap.toLpCLM ℂ (E := E) F 2)
     (by apply SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top)
     (by apply SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top)
     (by apply norm_fourier_toL2_eq) -- omitting `by apply` causes time-outs
 
-instance Lp.instFourierTransform : FourierTransform (Lp (α := V) E 2) (Lp (α := V) E 2) where
-  fourier := fourierTransformLI V E
+instance Lp.instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourier := fourierTransformLI E F
 
-instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
-  fourierInv := (fourierTransformLI V E).symm
+instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourierInv := (fourierTransformLI E F).symm
 
-instance Lp.instFourierPair : FourierPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
-  fourierInv_fourier_eq := (Lp.fourierTransformLI V E).symm_apply_apply
+instance Lp.instFourierPair : FourierPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourierInv_fourier_eq := (Lp.fourierTransformLI E F).symm_apply_apply
 
-instance Lp.instFourierPairInv : FourierInvPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
-  fourier_fourierInv_eq := (Lp.fourierTransformLI V E).apply_symm_apply
+instance Lp.instFourierPairInv : FourierInvPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourier_fourierInv_eq := (Lp.fourierTransformLI E F).apply_symm_apply
 
 /-- Plancherel's theorem for `L^2` functions. -/
 @[simp]
-theorem Lp.norm_fourier_eq (f : Lp (α := V) E 2) : ‖𝓕 f‖ = ‖f‖ :=
-  (Lp.fourierTransformLI V E).norm_map f
+theorem Lp.norm_fourier_eq (f : Lp (α := E) F 2) : ‖𝓕 f‖ = ‖f‖ :=
+  (Lp.fourierTransformLI E F).norm_map f
 
 @[simp]
-theorem Lp.inner_fourier_eq (f g : Lp (α := V) E 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
-  (Lp.fourierTransformLI V E).inner_map_map f g
+theorem Lp.inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f, g⟫ :=
+  (Lp.fourierTransformLI E F).inner_map_map f g
 
 @[simp]
-theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(V, E)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
+theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -79,7 +80,7 @@ theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(V, E)) : 𝓕 (f.toLp 2) 
   exact (norm_fourier_toL2_eq f).le
 
 @[simp]
-theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(V, E)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
+theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
