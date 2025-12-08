@@ -867,6 +867,10 @@ model with corners `I`. -/
 def maximalAtlas :=
   (contDiffGroupoid n I).maximalAtlas M
 
+lemma mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
+    e ∈ maximalAtlas I n M ↔ e ∈ (contDiffGroupoid n I).maximalAtlas M := by
+  rfl
+
 theorem subset_maximalAtlas [IsManifold I n M] : atlas H M ⊆ maximalAtlas I n M :=
   StructureGroupoid.subset_maximalAtlas _
 
@@ -937,7 +941,7 @@ lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
     {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
     {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
     e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
-  simp only [maximalAtlas, mem_maximalAtlas_iff]
+  simp only [mem_maximalAtlas_iff]
   rintro e'' ⟨f, hf, f', hf', rfl⟩
   rw [OpenPartialHomeomorph.prod_symm_trans_prod,
     OpenPartialHomeomorph.prod_symm_trans_prod]
