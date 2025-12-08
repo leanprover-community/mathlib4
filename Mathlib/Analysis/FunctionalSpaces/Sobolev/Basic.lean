@@ -857,10 +857,12 @@ end Sobolev
 
 /-
 To do:
-1. Basic lemmas (closure under `+`, `•`, ...)
+1. Basic lemmas (closure under `+`, `•`, ...)                   basically done
 2. define Sobolev spaces
+2'. relate MemSobolev and finite Sobolev norm                   TODO
 3. [Adams, Th 3.3] prove Banach space
-4. monotonicity in `k` and (if `Ω` is bounded) in `p`.
+4. monotonicity in `k` and (if `Ω` is bounded) in `p`.          basically done; μ could be added
+4'. relate W^{0,p} and L^p                                      TODO!
 5. [Adams, Cor 3.4] C^k functions are contained in W^{k, p}
 6. [Adams, Th 3.6] separable, uniform convexity
 7. [Adams, Th 3.15-3.17] density of smooth functions in W^{k, p}
