@@ -3,11 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
+
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
 
 /-!
 # Eisenstein Series E2
@@ -41,7 +44,7 @@ lemma e2Summand_zero_eq_two_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riem
 lemma e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
   intro n
   simp only [e2Summand, ← tsum_comp_neg (fun a ↦ eisSummand 2 ![-n, a] z)]
-  apply tsum_congr (fun b ↦  ?_)
+  apply tsum_congr (fun b ↦ ?_)
   simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, Int.cast_neg, neg_mul, inv_inj]
   rw_mod_cast [Int.cast_neg]
@@ -54,7 +57,7 @@ def G2 : ℍ → ℂ := fun z ↦ ∑'[symmetricIcc ℤ] m, e2Summand m z
 
 /-- The normalised Eisenstein series of weight `2` and level `1`.
 Defined as `(1 / 2 * ζ(2)) * G2 `. -/
-def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
+def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) • G2
 
 /-- This function measures the defect in `G2` being a modular form. -/
 def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z ↦ (2 * π * I * γ 1 0) / (denom γ z)
@@ -86,7 +89,7 @@ lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B :=
   simp only [Fin.isValue, pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero,
     mul_div_mul_right _ _ hde, ← hd, sub_div, Fin.isValue, this, ModularGroup.sl_moeb]
   nth_rw 3 [mul_comm]
-  rw [← mul_assoc,  mul_div_cancel_right₀]
+  rw [← mul_assoc, mul_div_cancel_right₀]
   · ring
   · exact denom_ne_zero A (B • z)
 

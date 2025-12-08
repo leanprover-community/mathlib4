@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
+module
+
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
 /-!
 # Summability of E2
