@@ -368,7 +368,7 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     convexCombo x (convexCombo y z t) s =
       convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
         (convexCombo_assoc_coeff₂ s t) := by
-  simp [convexCombo, coe_mul]
+  simp only [convexCombo, coe_mul, Subtype.mk.injEq]
   by_cases hs : (s : ℝ) = 1
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
