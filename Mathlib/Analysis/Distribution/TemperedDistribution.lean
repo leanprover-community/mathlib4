@@ -13,40 +13,35 @@ public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 
 ## Main definitions
 
-* `TemperedDistribution 𝕜 E F V`: The space `𝓢(E, F) →L[𝕜] V` equipped with the pointwise
+* `TemperedDistribution E F`: The space `𝓢(E, ℂ) →L[ℂ] F` equipped with the pointwise
 convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
 distribution.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
-* `𝓢'(𝕜, E, F, V)`: The space of tempered distributions `TemperedDistribution 𝕜 E F V` localized
+* `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` localized
 in `SchwartzSpace`
-* `𝓢'(E, V)`: A shorthand for `𝓢'(ℂ, E, ℂ, V)`, the most common use-case.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-open SchwartzMap ContinuousLinearMap
-open MeasureTheory MeasureTheory.Measure
+open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {α 𝕜 𝕜' H D E F G V W R : Type*}
-
-variable [RCLike 𝕜] [NormedAddCommGroup D] [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [NormedAddCommGroup G] [NormedAddCommGroup H] [NormedAddCommGroup V] [NormedAddCommGroup W]
+variable {E F : Type*}
 
 section definition
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
-variable (𝕜 E F V) in
+variable (E F) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
 a normed space, equipped with the topology of pointwise convergence. -/
-abbrev TemperedDistribution := 𝓢(E, F) →Lₚₜ[𝕜] V
+abbrev TemperedDistribution := 𝓢(E, ℂ) →Lₚₜ[ℂ] F
 /- Since mathlib is missing quite a few results that show that continuity of linear maps and
 convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we
 use the pointwise topology for now and not the strong topology. The pointwise topology is
@@ -54,10 +49,7 @@ conventially used in PDE texts, but has the downside that it is not barrelled, h
 boundedness principle does not hold. -/
 
 @[inherit_doc]
-scoped[SchwartzMap] notation "𝓢'(" 𝕜 ", " E ", " F ", " V ")" => TemperedDistribution 𝕜 E F V
-
-@[inherit_doc]
-scoped[SchwartzMap] notation "𝓢'(" E ", " V ")" => TemperedDistribution ℂ E ℂ V
+scoped[SchwartzMap] notation "𝓢'(" E ", " F ")" => TemperedDistribution E F
 
 end definition
 
@@ -67,21 +59,21 @@ namespace TemperedDistribution
 
 section Embeddings
 
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+
 section Measure
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
 variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 variable [BorelSpace E] [SecondCountableTopology E]
 
-variable (𝕜 F μ) in
+variable (μ) in
 /-- Every temperate growth measure defines a tempered distribution. -/
-def MeasureTheory.Measure.toTemperedDistribution : 𝓢'(𝕜, E, F, F) :=
-  toPointwiseConvergenceCLM _ _ _ _ (integralCLM 𝕜 μ)
+def MeasureTheory.Measure.toTemperedDistribution : 𝓢'(E, ℂ) :=
+  toPointwiseConvergenceCLM _ _ _ _ (integralCLM ℂ μ)
 
-variable (𝕜) in
 @[simp]
-theorem MeasureTheory.Measure.toTemperedDistribution_apply (g : 𝓢(E, F)) :
-    Measure.toTemperedDistribution 𝕜 F μ g = ∫ (x : E), g x ∂μ := by
+theorem MeasureTheory.Measure.toTemperedDistribution_apply (g : 𝓢(E, ℂ)) :
+    Measure.toTemperedDistribution μ g = ∫ (x : E), g x ∂μ := by
   rfl
 
 end Measure
@@ -94,49 +86,44 @@ section Fourier
 
 open FourierTransform
 
-variable
-  [NormedSpace ℂ E]
-  [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  [InnerProductSpace ℝ H] [FiniteDimensional ℝ H]
-  [MeasurableSpace H] [BorelSpace H]
-  [NormedSpace 𝕜 V]
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [InnerProductSpace ℝ E] [NormedSpace ℂ F]
+  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
-variable (𝕜 H E V) in
+variable (E F) in
 /-- The Fourier transform on tempered distributions as a continuous linear map. -/
-def fourierTransformCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
-  PointwiseConvergenceCLM.precomp V (SchwartzMap.fourierTransformCLM 𝕜)
+def fourierTransformCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  PointwiseConvergenceCLM.precomp F (SchwartzMap.fourierTransformCLM ℂ)
 
-instance instFourierTransform : FourierTransform 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
-  fourier := fourierTransformCLM 𝕜 H E V
-
-@[simp]
-theorem fourierTransformCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
-    fourierTransformCLM 𝕜 H E V f = 𝓕 f := rfl
+instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
+  fourier := fourierTransformCLM E F
 
 @[simp]
-theorem fourierTransform_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕 f g = f (𝓕 g) := rfl
+theorem fourierTransformCLM_apply (f : 𝓢'(E, F)) :
+    fourierTransformCLM E F f = 𝓕 f := rfl
 
-variable [CompleteSpace E]
+@[simp]
+theorem fourierTransform_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
-variable (𝕜 H E V) in
+variable (E F) in
 /-- The inverse Fourier transform on tempered distributions as a continuous linear map. -/
-def fourierTransformInvCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
-  PointwiseConvergenceCLM.precomp V (SchwartzMap.fourierTransformCLE 𝕜).symm.toContinuousLinearMap
+def fourierTransformInvCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  PointwiseConvergenceCLM.precomp F (SchwartzMap.fourierTransformCLE ℂ).symm.toContinuousLinearMap
 
-instance instFourierTransformInv : FourierTransformInv 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
-  fourierInv := fourierTransformInvCLM 𝕜 H E V
-
-@[simp]
-theorem fourierTransformInvCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
-    fourierTransformInvCLM 𝕜 H E V f = 𝓕⁻ f := rfl
+instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
+  fourierInv := fourierTransformInvCLM E F
 
 @[simp]
-theorem fourierTransformInv_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
+theorem fourierTransformInvCLM_apply (f : 𝓢'(E, F)) :
+    fourierTransformInvCLM E F f = 𝓕⁻ f := rfl
 
-instance instFourierPair : FourierPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
+@[simp]
+theorem fourierTransformInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
+
+instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv_fourier_eq f := by ext; simp
 
-instance instFourierPairInv : FourierInvPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
+instance instFourierPairInv : FourierInvPair 𝓢'(E, F) 𝓢'(E, F) where
   fourier_fourierInv_eq f := by ext; simp
 
 end Fourier
