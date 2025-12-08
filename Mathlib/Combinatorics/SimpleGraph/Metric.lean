@@ -251,13 +251,21 @@ theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
   rw [dist, ENat.toNat_eq_iff, ENat.coe_one, edist_eq_one_iff_adj]
   decide
 
-theorem Connected.diff_dist_adj (hG : G.Connected) (hadj : G.Adj v w) :
+theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  by_cases! huw : ¬G.Reachable u w
+  · grind [Reachable.trans, Adj.reachable, dist_eq_zero_of_not_reachable]
   have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
-  have : G.dist u w ≤ G.dist u v + G.dist v w := hG.dist_triangle
-  have : G.dist u v ≤ G.dist u w + G.dist w v := hG.dist_triangle
-  omega
+  have h₁ : G.edist u w ≤ G.edist u v + G.edist v w := SimpleGraph.edist_triangle
+  have h₂ : G.edist u v ≤ G.edist u w + G.edist w v := SimpleGraph.edist_triangle
+  rw [← ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr <| huw.trans hadj.symm.reachable,
+    ← ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr huw] at h₁ h₂
+  rw [← ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr hadj.reachable] at h₁
+  rw [← ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr hadj.symm.reachable] at h₂
+  have : G.dist u w ≤ G.dist u v + G.dist v w := ENat.coe_le_coe.mp h₁
+  have : G.dist u v ≤ G.dist u w + G.dist w v := ENat.coe_le_coe.mp h₂
+  lia
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
