@@ -1227,7 +1227,7 @@ theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
 
 @[to_additive]
 protected theorem IsOfFinOrder.pi [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
-  simp only [← orderOf_ne_zero_iff, Pi.orderOf_of_fintype]
+  simp only [← orderOf_ne_zero_iff, Pi.orderOf]
   simp [Finset.lcm_eq_zero_iff]
 
 end Pi
