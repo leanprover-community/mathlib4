@@ -16,19 +16,21 @@ import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Tactic.Linarith
 
 /-!
-# Schroder numbers
+# Schröder numbers
 
 The Schröder numbers (https://oeis.org/A006318) are a sequence of integers that appear in various
 combinatorial contexts.
 
 ## Main definitions
+
 * `largeSchroder n`: the `n`th large Schroder number, defined recursively as
-  `largeSchroder (n + 1) = largeSchroder n +
+  `largeSchroder (n + 1) = largeSchroder n + 
     ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)`.
 * `smallSchroder n`: the `n`th small Schroder number, defined as
   `smallSchroder n = largeSchroder n / 2` for `n ≠ 1` and `smallSchroder 1 = 1`.
 
 ## Main results
+
 * `largeSchroder_pos_even` : The large Schroder numbers are positive and even for `n ≥ 1`.
   `largeSchroder n = 2 * smallSchroder (n + 1)` for `n ≥ 1`.
 * `smallSchroder_sum_range` : A recursive formula for small Schroder numbers:
