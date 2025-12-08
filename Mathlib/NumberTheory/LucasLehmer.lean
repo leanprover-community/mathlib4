@@ -66,7 +66,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * mersenne n + 1 := by
   dsimp [mersenne]
   have := Nat.one_le_pow n 2 two_pos
-  cutsat
+  lia
 
 /-- If `2 ^ p - 1` is prime, then `p` is prime. -/
 lemma Nat.Prime.of_mersenne {p : ℕ} (h : (mersenne p).Prime) : Nat.Prime p := by
@@ -106,7 +106,7 @@ theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
 lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : mersenne n % 4 = 3 := by
   induction n, h using Nat.le_induction with
   | base => rfl
-  | succ _ _ _ => rw [mersenne_succ]; cutsat
+  | succ _ _ _ => rw [mersenne_succ]; lia
 
 lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 = 1 := by
   obtain ⟨k, rfl⟩ := odd
@@ -114,26 +114,26 @@ lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : mersenne n % 3 
   induction k, h using Nat.le_induction with
   | base => rfl
   | succ j _ _ =>
-    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by cutsat, mersenne_succ]
-    cutsat
+    rw [mersenne_succ, show 2 * (j + 1) = 2 * j + 1 + 1 by lia, mersenne_succ]
+    lia
 
 lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : mersenne n % 8 = 7 := by
   induction n, h using Nat.le_induction with
   | base => rfl
-  | succ _ _ _ => rw [mersenne_succ]; cutsat
+  | succ _ _ _ => rw [mersenne_succ]; lia
 
 /-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     legendreSym (mersenne p) 2 = 1 := by
   have := mersenne_mod_eight hp
-  rw [legendreSym.at_two (by cutsat), ZMod.χ₈_nat_eq_if_mod_eight]
-  cutsat
+  rw [legendreSym.at_two (by lia), ZMod.χ₈_nat_eq_if_mod_eight]
+  lia
 
 /-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
 lemma legendreSym_mersenne_three {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
     legendreSym (mersenne p) 3 = -1 := by
   rw [(by rfl : (3 : ℤ) = (3 : ℕ)), legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)
-    (mersenne_mod_four (by cutsat)),
+    (mersenne_mod_four (by lia)),
     legendreSym.mod]
   rw_mod_cast [mersenne_mod_three odd hp]
   simp
@@ -443,7 +443,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
     (ω : X q) ^ ((q + 1) / 2) = -1 := by
   have pow2 : (2 : ZMod q) ^ ((q + 1) / 2) = 2 := by
     obtain ⟨_, _⟩ := odd
-    rw [(by cutsat : (q + 1) / 2 = q / 2 + 1), pow_succ]
+    rw [(by lia : (q + 1) / 2 = q / 2 + 1), pow_succ]
     have leg := legendreSym.eq_pow q 2
     have : (2 : ZMod q) = ((2 : ℤ) : ZMod q) := by norm_cast
     rw [this, ← leg, leg2]
@@ -451,7 +451,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
   have := two_mul_ω_pow odd leg3
   rw [mul_pow] at this
   have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
-  rw [coe, ← RingHom.map_pow, pow2, ← coe,
+  rw [coe, ← map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
   refine (IsUnit.of_mul_eq_one (M := X q) ↑((q + 1) / 2) ?_).mul_left_cancel this
   norm_cast
@@ -524,6 +524,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   have : 1 ≤ 2 ^ (p' + 2) := Nat.one_le_pow _ _ (by decide)
   exact mod_cast h
 
+-- TODO: fix non-terminal simp (acting on two goals with different simp sets)
+set_option linter.flexible false in
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
   ext <;> simp [mersenne, q, ZMod.natCast_eq_zero_iff, -pow_pos]
@@ -589,7 +591,7 @@ open LucasLehmer
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'
-  obtain rfl : p = p' + 2 := by cutsat
+  obtain rfl : p = p' + 2 := by lia
   have w : 1 < p' + 2 := Nat.lt_of_sub_eq_succ rfl
   contrapose
   intro a t
@@ -604,11 +606,11 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime)
   have : Fact (mersenne p).Prime := ⟨‹_›⟩
   set p' := p - 2 with hp'
   clear_value p'
-  obtain rfl : p = p' + 2 := by cutsat
+  obtain rfl : p = p' + 2 := by lia
   dsimp [LucasLehmerTest, lucasLehmerResidue]
   rw [sZMod_eq_s p', ← X.fst_intCast, X.closed_form, add_tsub_cancel_right]
   have := X.ω_pow_trace (q := mersenne (p' + 2)) (by simp)
-    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by cutsat))
+    (legendreSym_mersenne_three w <| hp.of_mersenne.odd_of_ne_two (by lia))
     (legendreSym_mersenne_two w) (by simp [pow_add])
   rw [succ_mersenne, pow_add, show 2 ^ 2 = 4 by norm_num, mul_div_cancel_right₀ _ (by norm_num)]
     at this
