@@ -1213,11 +1213,11 @@ section Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
 
 @[to_additive]
-lemma Pi.orderOf_eq (x : ∀ i, α i) : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
+lemma Pi.orderOf_eq_sInf (x : ∀ i, α i) : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
   minimalPeriod_piMap
 
 @[to_additive]
-lemma Pi.orderOf_of_fintype [Fintype ι] (x : ∀ i, α i) :
+protected lemma Pi.orderOf [Fintype ι] (x : ∀ i, α i) :
     orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
   minimalPeriod_piMap_fintype
 
