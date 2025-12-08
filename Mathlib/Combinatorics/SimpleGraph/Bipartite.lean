@@ -363,21 +363,13 @@ theorem completeBipartiteGraph_isContained_iff :
 end Copy
 
 lemma isBipartiteWith_subgraph (h : G.IsBipartiteWith s t) (H : Subgraph G) :
-  H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} := by
-  have disj := h.disjoint
-  constructor
-  · suffices h : ∀ r : Set V, ↑{x : H.verts | ↑x ∈ r} ⊆ r from by
-      refine Set.disjoint_of_subset ?_ ?_ (by simpa using disj.preimage (Subtype.val : _ → V))
-      all_goals (intro x hx; simpa [Set.mem_preimage, Set.mem_setOf_eq] using hx)
-    intro _ _ hv
-    simp at hv
-    exact hv.left
-  · rintro _ _ hadj'; exact h.mem_of_adj <| H.adj_sub hadj'
+  H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} :=
+  have := h.disjoint
+  ⟨by grind, fun _ _ hadj' ↦ h.mem_of_adj <| H.adj_sub hadj'⟩
 
 lemma isBipartite.subgraph (h : G.IsBipartite) (H : Subgraph G) : H.coe.IsBipartite :=
   let ⟨_, _, hst⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
-  isBipartite_iff_exists_isBipartiteWith.mpr <| ⟨_, _, isBipartiteWith_subgraph hst H⟩
-
+  isBipartite_iff_exists_isBipartiteWith.mpr ⟨_, _, isBipartiteWith_subgraph hst H⟩
 section Between
 
 /-- The subgraph of `G` containing edges that connect a vertex in the set `s` to a vertex in the
