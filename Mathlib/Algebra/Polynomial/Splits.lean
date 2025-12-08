@@ -127,13 +127,6 @@ alias degree_eq_card_roots' := Splits.degree_eq_card_roots
 
 end CommRing
 
-theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C [CommSemiring R] [CommRing L] [Algebra R L]
-    (s : Multiset L) {x : L} (hx : x ∈ s) {p : R[X]}
-    (hp : mapAlg R L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : aeval x p = 0 := by
-  rw [← aeval_map_algebraMap L, ← mapAlg_eq_map, hp, map_multiset_prod, Multiset.prod_eq_zero]
-  rw [Multiset.map_map, Multiset.mem_map]
-  exact ⟨x, hx, by simp⟩
-
 variable [CommRing R] [Field K] [Field L] [Field F]
 variable (i : K →+* L)
 
@@ -188,21 +181,11 @@ alias degree_eq_card_roots := Splits.degree_eq_card_roots
 @[deprecated (since := "2025-12-02")]
 alias roots_map := Splits.map_roots
 
-theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
-    (hf : Splits f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
-    x ∈ F := by
-  obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
-    (hf.map_roots F.subtype ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
-  exact x.2
-
 @[deprecated (since := "2025-12-02")]
 alias image_rootSet := Splits.image_rootSet
 
-theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
-    (h : (p.map (algebraMap R K)).Splits) (f : K →ₐ[R] L) :
-    Algebra.adjoin R (p.rootSet L) = f.range ↔ Algebra.adjoin R (p.rootSet K) = ⊤ := by
-  rw [← h.image_rootSet f, Algebra.adjoin_image, ← Algebra.map_top]
-  exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
+@[deprecated (since := "2025-12-06")]
+alias adjoin_rootSet_eq_range := Splits.adjoin_rootSet_eq_range
 
 @[deprecated (since := "2025-11-25")]
 alias eq_prod_roots_of_splits := Splits.eq_prod_roots
@@ -210,36 +193,23 @@ alias eq_prod_roots_of_splits := Splits.eq_prod_roots
 @[deprecated (since := "2025-11-25")]
 alias eq_prod_roots_of_splits_id := Splits.eq_prod_roots
 
-theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
-    (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
-    aeval v p = algebraMap K L p.leadingCoeff * ((p.aroots L).map fun a ↦ v - a).prod := by
-  rw [← eval_map_algebraMap, Splits.eq_prod_roots hsplit]
-  simp [eval_multiset_prod]
+@[deprecated (since := "2025-12-06")]
+alias aeval_eq_prod_aroots_sub_of_splits := Splits.aeval_eq_prod_aroots
 
-theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
-    (hsplit : Splits p) (v : K) :
-    eval v p = p.leadingCoeff * (p.roots.map fun a ↦ v - a).prod := by
-  convert aeval_eq_prod_aroots_sub_of_splits (hsplit.map <| .id K) v
-  rw [Algebra.algebraMap_self, map_id]
+@[deprecated (since := "2025-12-06")]
+alias eval_eq_prod_roots_sub_of_splits_id := Splits.eval_eq_prod_roots
 
 @[deprecated (since := "2025-12-02")]
 alias eq_prod_roots_of_monic_of_splits_id := Splits.eq_prod_roots_of_monic
 
-theorem aeval_eq_prod_aroots_sub_of_monic_of_splits [Algebra K L] {p : K[X]} (m : Monic p)
-    (hsplit : Splits (p.map (algebraMap K L))) (v : L) :
-    aeval v p = ((p.aroots L).map fun a ↦ v - a).prod := by
-  simp [aeval_eq_prod_aroots_sub_of_splits hsplit, m]
+@[deprecated (since := "2025-12-06")]
+alias aeval_eq_prod_aroots_sub_of_monic_of_splits := Splits.aeval_eq_prod_aroots_of_monic
 
-theorem eval_eq_prod_roots_sub_of_monic_of_splits_id {p : K[X]} (m : Monic p)
-    (hsplit : Splits p) (v : K) :
-    eval v p = (p.roots.map fun a ↦ v - a).prod := by
-  simp [eval_eq_prod_roots_sub_of_splits_id hsplit, m]
+@[deprecated (since := "2025-12-06")]
+alias eval_eq_prod_roots_sub_of_monic_of_splits_id := Splits.eval_eq_prod_roots_of_monic
 
-theorem eq_X_sub_C_of_splits_of_single_root {x : K} {h : K[X]} (h_splits : Splits (h.map i))
-    (h_roots : (h.map i).roots = {i x}) : h = C h.leadingCoeff * (X - C x) := by
-  apply Polynomial.map_injective _ i.injective
-  rw [Splits.eq_prod_roots h_splits, h_roots]
-  simp
+@[deprecated (since := "2025-12-06")]
+alias eq_X_sub_C_of_splits_of_single_root := Splits.eq_X_sub_C_of_single_root
 
 variable (R) in
 theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
