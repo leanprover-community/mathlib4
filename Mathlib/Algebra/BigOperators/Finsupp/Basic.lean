@@ -627,10 +627,15 @@ end Nat
 namespace MulOpposite
 variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
 
-@[simp] lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
+-- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
+-- TODO(Jovan): Remove the annotations once unnecessary again.
+
+@[to_additive self (dont_translate := M), simp]
+lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
     op (f.sum g) = f.sum fun i n ↦ op (g i n) := op_sum ..
 
-@[simp] lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
+@[to_additive self (dont_translate := M), simp]
+lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
     unop (f.sum g) = f.sum fun i n ↦ unop (g i n) := unop_sum ..
 
 end MulOpposite
