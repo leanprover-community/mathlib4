@@ -105,7 +105,7 @@ theorem one_le_y {s : SelbergSieve} : 1 ≤ s.level := s.one_le_level
 
 variable {s : BoundingSieve}
 
-/-! Lemmas about $P$. -/
+/-! Lemmas about prodPrimes. -/
 
 theorem prodPrimes_ne_zero : s.prodPrimes ≠ 0 :=
   Squarefree.ne_zero s.prodPrimes_squarefree
@@ -274,7 +274,7 @@ variable {s : BoundingSieve}
 
 /-- These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
 
-$S = ∑_{l|P, l≤\sqrt{y}} g(l)$ -/
+$$S = \sum_{l|P, l≤\sqrt{y}} g(l)$$ -/
 def selbergTerms : ArithmeticFunction ℝ :=
   s.nu.pmul (.prodPrimeFactors fun p ↦  (1 - s.nu p)⁻¹)
 
@@ -299,7 +299,7 @@ theorem selbergTerms_isMultiplicative : ArithmeticFunction.IsMultiplicative s.se
   unfold selbergTerms
   arith_mult
 
-theorem one_div_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l)
+theorem inv_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefree l)
     (hnu_nonzero : s.nu l ≠ 0) :
     (s.selbergTerms l)⁻¹ = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (s.nu e)⁻¹ := by
   simp only [selbergTerms_apply, mul_inv, inv_inv,
@@ -312,14 +312,14 @@ theorem one_div_selbergTerms_eq_sum_divisors_moebius_nu {l : ℕ} (hl : Squarefr
     by simp_all [s.nu_mult.map_mul_of_coprime hde]
   simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
-theorem nu_inv_eq_sum_divisors_one_div_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
+theorem nu_inv_eq_sum_divisors_inv_selbergTerms {d : ℕ} (hdP : d ∣ s.prodPrimes) :
     (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then (s.selbergTerms l)⁻¹ else 0 := by
   rw [eq_comm, ←sum_filter, Nat.divisors_filter_dvd_of_dvd prodPrimes_ne_zero hdP]
   have hd_pos : 0 < d := Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero prodPrimes_ne_zero hdP
   revert hdP; revert d
   apply (ArithmeticFunction.sum_eq_iff_sum_mul_moebius_eq_on _ (fun _ _ ↦ Nat.dvd_trans)).mpr
   intro l _ hlP
-  exact one_div_selbergTerms_eq_sum_divisors_moebius_nu
+  exact inv_selbergTerms_eq_sum_divisors_moebius_nu
     (Squarefree.squarefree_of_dvd hlP s.prodPrimes_squarefree)
     (ne_of_gt <| nu_pos_of_dvd_prodPrimes hlP) |>.symm
 
@@ -341,7 +341,7 @@ theorem sum_divisors_selbergTerms_eq_selbergTerms_mul_nu_inv {d : ℕ} (hd : d �
       · apply coprime_of_squarefree_mul <|
           (Nat.div_mul_cancel hl.2).symm ▸ (squarefree_of_dvd_prodPrimes hd)
       · exact (selbergTerms_pos hl.1.1).ne'
-    _ = s.selbergTerms d * (s.nu d)⁻¹ := by rw [← nu_inv_eq_sum_divisors_one_div_selbergTerms hd]
+    _ = s.selbergTerms d * (s.nu d)⁻¹ := by rw [← nu_inv_eq_sum_divisors_inv_selbergTerms hd]
 
 end SelbergTerms
 
@@ -394,7 +394,7 @@ theorem mainSum_lambdaSquared_eq_sum_mul_sum_sq (w : ℕ → ℝ) :
     refine sum_congr rfl fun d1 hd1 ↦ sum_congr rfl fun d2 _ ↦ ?_
     have hgcd_dvd : d1.gcd d2 ∣ s.prodPrimes :=
       (Nat.gcd_dvd_left d1 d2).trans (dvd_of_mem_divisors hd1)
-    simp_rw [nu_inv_eq_sum_divisors_one_div_selbergTerms hgcd_dvd, ← sum_filter, mul_sum]
+    simp_rw [nu_inv_eq_sum_divisors_inv_selbergTerms hgcd_dvd, ← sum_filter, mul_sum]
     congr with l
     ring
   case caseB =>
