@@ -29,6 +29,8 @@ by a finite type.
 
 @[expose] public section
 
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
 
 namespace Quotient
 

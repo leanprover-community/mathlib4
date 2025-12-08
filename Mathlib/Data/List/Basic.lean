@@ -474,7 +474,7 @@ theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjec
   | some x => exact mem_iff_getElem?.mp <| h x
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; lia)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -523,12 +523,41 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
+theorem idxOf_eq_zero_iff_eq_nil_or_head_eq {l : List α} (a : α) :
+    l.idxOf a = 0 ↔ l = [] ∨ l.head? = a := by
+  cases l
+  · simp
+  · grind
+
+theorem idxOf_eq_zero_iff_head_eq {l : List α} (hl : l ≠ []) {a : α} :
+    l.idxOf a = 0 ↔ l.head hl = a := by
+  simp [hl, idxOf_eq_zero_iff_eq_nil_or_head_eq, head?_eq_some_head]
+
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by grind
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
+
+theorem IsPrefix.idxOf_le (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsPrefix.idxOf_eq_of_mem (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁) :
+    l₁.idxOf a = l₂.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  exact idxOf_append_of_mem ha |>.symm
+
+theorem IsSuffix.idxOf_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a ≤ l₂.length - l₁.length + l₁.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsSuffix.idxOf_add_length_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a + l₁.length ≤ l₁.idxOf a + l₂.length := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
 
 end IndexOf
 
@@ -573,13 +602,6 @@ then the lists are equal. -/
 theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n : ℕ, l₁[n]! = l₂[n]!) :
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
-
-@[simp]
-theorem getElem_idxOf [BEq α] [LawfulBEq α] {a : α} : ∀ {l : List α} (h : idxOf a l < l.length),
-    l[idxOf a l] = a
-  | b :: l, h => by
-    by_cases h' : b = a <;>
-    simp [h', getElem_idxOf]
 
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.

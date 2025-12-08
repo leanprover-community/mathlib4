@@ -194,7 +194,7 @@ theorem mem_bagInter {a : α} {l₁ l₂ : List α} : a ∈ l₁.bagInter l₂ �
 @[simp]
 theorem count_bagInter {a : α} {l₁ l₂ : List α} :
     count a (l₁.bagInter l₂) = min (count a l₁) (count a l₂) := by
-  fun_induction List.bagInter with grind [count_pos_iff]
+  fun_induction List.bagInter with grind
 
 theorem bagInter_sublist_left {l₁ l₂ : List α} : l₁.bagInter l₂ <+ l₁ := by
   fun_induction List.bagInter with grind
