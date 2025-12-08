@@ -6,7 +6,8 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.Dual.BaseChange
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 
 /-!
 # Transvections in a module
@@ -143,3 +144,40 @@ theorem symm_eq' {f : Module.Dual R V} {v : V}
   ext; simp [LinearEquiv.symm_apply_eq, comp_of_right_eq_apply hf]
 
 end LinearEquiv.transvection
+
+section baseChange
+
+namespace LinearMap.transvection
+
+open LinearMap LinearEquiv
+
+variable {A : Type*} [CommRing A] [Algebra R A]
+
+theorem baseChange (f : Module.Dual R V) (v : V) :
+    (transvection f v).baseChange A = transvection (f.baseChange A) (1 ⊗ₜ[R] v) := by
+  ext; simp [transvection, TensorProduct.tmul_add]
+
+theorem _root_.LinearEquiv.transvection.baseChange
+    {f : Module.Dual R V} {v : V} (h : f v = 0)
+    (hA : f.baseChange A (1 ⊗ₜ[R] v) = 0 := by simp [Algebra.algebraMap_eq_smul_one]) :
+    (LinearEquiv.transvection h).baseChange R A V V = LinearEquiv.transvection hA := by
+  simp [← toLinearMap_inj, transvection.coe_toLinearMap, transvection.baseChange]
+
+open IsBaseChange
+
+variable {W : Type*} [AddCommMonoid W] [Module R W] [Module A W]
+  [IsScalarTower R A W] {ε : V →ₗ[R] W} (ibc : IsBaseChange A ε)
+
+@[simp]
+theorem _root_.IsBaseChange.transvection (f : Module.Dual R V) (v : V) :
+    ibc.endHom (transvection f v) = transvection (ibc.toDual f) (ε v) := by
+  ext w
+  induction w using ibc.inductionOn with
+  | zero => simp
+  | add x y hx hy => simp [hx, hy]
+  | smul a w hw => simp [hw]
+  | tmul x => simp [transvection.apply, toDual_comp_apply, endHom_apply]
+
+end LinearMap.transvection
+
+end baseChange
