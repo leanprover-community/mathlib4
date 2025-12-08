@@ -3,9 +3,10 @@ Copyright (c) 2023 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Complex.PhragmenLindelof
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.PhragmenLindelof
 
 /-!
 # Hadamard three-lines Theorem
@@ -56,6 +57,8 @@ functions defined in this file.
 The proof follows from Phragmén-Lindelöf when both frontiers are not everywhere zero.
 We then use a limit argument to cover the case when either of the sides are `0`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Complex Topology
@@ -184,7 +187,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
         neg_re, Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 1)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
-/-- Proof that `F` is bounded by one one the edges. -/
+/-- Proof that `F` is bounded by one on the edges. -/
 lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ re ⁻¹' {0, 1}) :
     ‖F f ε z‖ ≤ 1 := by
@@ -259,7 +262,7 @@ lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 
 /-- Rewrite for `InterpStrip` on the open vertical strip. -/
 lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1) :
     interpStrip f z = sSupNormIm f 0 ^ (1 - z) * sSupNormIm f 1 ^ z := by
-  by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
+  by_cases! h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
   · rw [interpStrip_eq_of_zero _ z h]
     rcases h with h0 | h1
     · simp only [h0, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ne_eq, true_and, ofReal_eq_zero]
@@ -270,20 +273,18 @@ lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 
       right
       rw [eq_comm]
       simp only [Complex.ext_iff, zero_re, ne_of_lt hz.1, false_and, not_false_eq_true]
-  · push_neg at h
-    replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) :=
+  · replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) :=
       ⟨(lt_of_le_of_ne (sSupNormIm_nonneg f 0) (ne_comm.mp h.1)),
         (lt_of_le_of_ne (sSupNormIm_nonneg f 1) (ne_comm.mp h.2))⟩
     exact interpStrip_eq_of_pos f z h.1 h.2
 
 lemma diffContOnCl_interpStrip :
     DiffContOnCl ℂ (interpStrip f) (verticalStrip 0 1) := by
-  by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
+  by_cases! h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
   -- Case everywhere 0
   · eta_expand; simp_rw [interpStrip_eq_of_zero f _ h]; exact diffContOnCl_const
   -- Case nowhere 0
-  · push_neg at h
-    rcases h with ⟨h0, h1⟩
+  · rcases h with ⟨h0, h1⟩
     rw [ne_comm] at h0 h1
     apply Differentiable.diffContOnCl
     intro z
@@ -407,7 +408,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   rw [this]
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
-to the bounds for its scaled version on the strip ``re ⁻¹' [0, 1]`. -/
+to the bounds for its scaled version on the strip `re ⁻¹' [0, 1]`. -/
 lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul : l < u) (z : ℂ) : interpStrip (scale f l u)
     ((z - ↑l) / (↑u - ↑l)) = interpStrip' f l u z := by
   simp only [interpStrip, interpStrip']
@@ -500,13 +501,12 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     (ha : ∀ z ∈ re ⁻¹' {0}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {1}, ‖f z‖ ≤ b) :
     ‖f z‖ ≤ a ^ (1 - z.re) * b ^ z.re := by
   have : ‖interpStrip f z‖ ≤ sSupNormIm f 0 ^ (1 - z.re) * sSupNormIm f 1 ^ z.re := by
-    by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
+    by_cases! h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
     · rw [interpStrip_eq_of_zero f z h, norm_zero, mul_nonneg_iff]
       left
       exact ⟨Real.rpow_nonneg (sSupNormIm_nonneg f _) _,
         Real.rpow_nonneg (sSupNormIm_nonneg f _) _ ⟩
-    · push_neg at h
-      rcases h with ⟨h0, h1⟩
+    · rcases h with ⟨h0, h1⟩
       rw [ne_comm] at h0 h1
       simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
         (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]

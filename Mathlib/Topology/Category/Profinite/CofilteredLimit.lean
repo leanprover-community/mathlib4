@@ -3,11 +3,13 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.DiscreteQuotient
-import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.DiscreteQuotient
+public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered limits of profinite sets.
@@ -21,6 +23,8 @@ This file contains some theorems about cofiltered limits of profinite sets.
 - `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
 -/
+
+@[expose] public section
 
 namespace Profinite
 
@@ -185,10 +189,9 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
       refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
-      · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
-          rw [this]
-          exact isOpen_empty
-        exact @Set.eq_empty_of_isEmpty _ hj _
+      · convert isOpen_empty
+        ext x
+        exact hj.elim x
       · ext x
         exact hj.elim' (C.π.app j x)
     by_contra! h

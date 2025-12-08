@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Probability.Kernel.Composition.CompProd
-import Mathlib.Probability.Kernel.Composition.Prod
+module
+
+public import Mathlib.Probability.Kernel.Composition.CompProd
+public import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Lemmas relating different ways to compose kernels
@@ -21,6 +23,8 @@ compositions/products.
   a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy X = copy Y ∘ₖ κ`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory ProbabilityTheory
@@ -106,7 +110,7 @@ lemma parallelComp_id_right_comp_parallelComp {η : Kernel X' Z} [IsSFiniteKerne
     _ = swap Y T ∘ₖ (swap T Y ∘ₖ (ξ ∥ₖ Kernel.id) ∘ₖ (η ∥ₖ κ)) := by
       simp_rw [← comp_assoc, swap_swap, id_comp]
     _ = swap Y T ∘ₖ (swap T Y ∘ₖ ((ξ ∘ₖ η) ∥ₖ κ)) := by rw [this]
-    _ = ξ ∘ₖ η ∥ₖ κ  := by simp_rw [← comp_assoc, swap_swap, id_comp]
+    _ = ξ ∘ₖ η ∥ₖ κ := by simp_rw [← comp_assoc, swap_swap, id_comp]
   simp_rw [swap_parallelComp, comp_assoc, swap_parallelComp, ← comp_assoc,
     parallelComp_id_left_comp_parallelComp]
 

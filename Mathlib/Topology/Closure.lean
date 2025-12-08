@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Topology.Basic
 
 /-!
 # Interior, closure and frontier of a set
@@ -23,6 +25,8 @@ endowed with a topology.
 
 interior, closure, frontier
 -/
+
+@[expose] public section
 
 open Set
 
@@ -45,6 +49,7 @@ theorem interior_subset : interior s ⊆ s :=
 theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 
+@[grind =]
 theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
 

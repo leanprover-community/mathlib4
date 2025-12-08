@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Short complexes
@@ -17,16 +18,20 @@ the Liquid Tensor Experiment.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable (C D : Type*) [Category C] [Category D]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
+variable (C) in
 /-- A short complex in a category `C` with zero morphisms is the datum
 of two composable morphisms `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such that
 `f ≫ g = 0`. -/
-structure ShortComplex [HasZeroMorphisms C] where
+structure ShortComplex where
   /-- the first (left) object of a `ShortComplex` -/
   {X₁ : C}
   /-- the second (middle) object of a `ShortComplex` -/
@@ -43,9 +48,6 @@ structure ShortComplex [HasZeroMorphisms C] where
 namespace ShortComplex
 
 attribute [reassoc (attr := simp)] ShortComplex.zero
-
-variable {C}
-variable [HasZeroMorphisms C]
 
 /-- Morphisms of short complexes are the commutative diagrams of the obvious shape. -/
 @[ext]
@@ -157,14 +159,17 @@ instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso
 @[reassoc (attr := simp)]
 lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by cat_disch
 
-variable {D}
-variable [HasZeroMorphisms D]
-
 /-- The short complex in `D` obtained by applying a functor `F : C ⥤ D` to a
 short complex in `C`, assuming that `F` preserves zero morphisms. -/
 @[simps]
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
+
+@[simp] lemma map_id (S : ShortComplex C) : S.map (𝟭 C) = S := rfl
+
+@[simp] lemma map_comp (S : ShortComplex C)
+    (F : C ⥤ D) [F.PreservesZeroMorphisms] (G : D ⥤ E) [G.PreservesZeroMorphisms] :
+    S.map (F ⋙ G) = (S.map F).map G := rfl
 
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
@@ -215,6 +220,16 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
+
+/-- The first map of a short complex, as a functor. -/
+@[simps] def fFunctor : ShortComplex C ⥤ Arrow C where
+  obj S := .mk S.f
+  map {S T} f := Arrow.homMk f.τ₁ f.τ₂ f.comm₁₂
+
+/-- The second map of a short complex, as a functor. -/
+@[simps] def gFunctor : ShortComplex C ⥤ Arrow C where
+  obj S := .mk S.g
+  map {S T} f := Arrow.homMk f.τ₂ f.τ₃ f.comm₂₃
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]

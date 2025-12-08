@@ -3,9 +3,11 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Functor.Trifunctor
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Monoidal categories
@@ -51,11 +53,11 @@ performed by the `coherence` tactic.
 The simp-normal form of morphisms is defined to be an expression that has the minimal number of
 parentheses. More precisely,
 1. it is a composition of morphisms like `f₁ ≫ f₂ ≫ f₃ ≫ f₄ ≫ f₅` such that each `fᵢ` is
-  either a structural morphisms (morphisms made up only of identities, associators, unitors)
-  or non-structural morphisms, and
+  either a structural morphism (morphisms made up only of identities, associators, unitors)
+  or a non-structural morphism, and
 2. each non-structural morphism in the composition is of the form `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅`,
-  where each `Xᵢ` is a object that is not the identity or a tensor and `f` is a non-structural
-  morphisms that is not the identity or a composite.
+  where each `Xᵢ` is an object that is not the identity or a tensor and `f` is a non-structural
+  morphism that is not the identity or a composite.
 
 Note that `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅` is actually `X₁ ◁ (X₂ ◁ (X₃ ◁ ((f ▷ X₄) ▷ X₅)))`.
 
@@ -67,6 +69,8 @@ respectively, since it requires a huge refactoring. We hope to add these simp le
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -931,70 +935,25 @@ section
 
 universe v₁ v₂ u₁ u₂
 
+open Prod
+
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
 
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon
 
-@[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator]
+@[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator
+  leftUnitor rightUnitor]
 instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
-  tensorHom f g := (f.1 ⊗ₘ g.1, f.2 ⊗ₘ g.2)
-  whiskerLeft X _ _ f := (whiskerLeft X.1 f.1, whiskerLeft X.2 f.2)
-  whiskerRight f X := (whiskerRight f.1 X.1, whiskerRight f.2 X.2)
+  tensorHom f g := (f.1 ⊗ₘ g.1) ×ₘ f.2 ⊗ₘ g.2
+  whiskerLeft X _ _ f := whiskerLeft X.1 f.1 ×ₘ whiskerLeft X.2 f.2
+  whiskerRight f X := whiskerRight f.1 X.1 ×ₘ whiskerRight f.2 X.2
   tensorHom_def := by simp [tensorHom_def]
   tensorUnit := (𝟙_ C₁, 𝟙_ C₂)
   associator X Y Z := (α_ X.1 Y.1 Z.1).prod (α_ X.2 Y.2 Z.2)
   leftUnitor := fun ⟨X₁, X₂⟩ => (λ_ X₁).prod (λ_ X₂)
   rightUnitor := fun ⟨X₁, X₂⟩ => (ρ_ X₁).prod (ρ_ X₂)
-
-@[simp]
-theorem prodMonoidal_leftUnitor_hom_fst (X : C₁ × C₂) :
-    ((λ_ X).hom : 𝟙_ _ ⊗ X ⟶ X).1 = (λ_ X.1).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_leftUnitor_hom_snd (X : C₁ × C₂) :
-    ((λ_ X).hom : 𝟙_ _ ⊗ X ⟶ X).2 = (λ_ X.2).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_leftUnitor_inv_fst (X : C₁ × C₂) :
-    ((λ_ X).inv : X ⟶ 𝟙_ _ ⊗ X).1 = (λ_ X.1).inv := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_leftUnitor_inv_snd (X : C₁ × C₂) :
-    ((λ_ X).inv : X ⟶ 𝟙_ _ ⊗ X).2 = (λ_ X.2).inv := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_hom_fst (X : C₁ × C₂) :
-    ((ρ_ X).hom : X ⊗ 𝟙_ _ ⟶ X).1 = (ρ_ X.1).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_hom_snd (X : C₁ × C₂) :
-    ((ρ_ X).hom : X ⊗ 𝟙_ _ ⟶ X).2 = (ρ_ X.2).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_inv_fst (X : C₁ × C₂) :
-    ((ρ_ X).inv : X ⟶ X ⊗ 𝟙_ _).1 = (ρ_ X.1).inv := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_inv_snd (X : C₁ × C₂) :
-    ((ρ_ X).inv : X ⟶ X ⊗ 𝟙_ _).2 = (ρ_ X.2).inv := by
-  cases X
-  rfl
 
 end
 

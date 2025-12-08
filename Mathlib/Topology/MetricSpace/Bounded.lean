@@ -1,14 +1,16 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.Bornology
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.MetricSpace.Cauchy
-import Mathlib.Topology.MetricSpace.Defs
-import Mathlib.Topology.EMetricSpace.Diam
+module
+
+public import Mathlib.Topology.Order.Bornology
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.MetricSpace.Cauchy
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 ## Boundedness in (pseudo)-metric spaces
@@ -31,6 +33,8 @@ This file contains one definition, and various results on boundedness in pseudo-
 
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
@@ -487,8 +491,7 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
-    (add_le_add_right ENNReal.toReal_add_le _)
+  grw [ENNReal.toReal_le_add' (EMetric.diam_union xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
@@ -565,7 +568,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
     assertInstancesCommute
@@ -600,11 +603,11 @@ theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter
     (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
   ((tendsto_dist_right_atTop_iff _).1 h).mono_right cobounded_le_cocompact
 
-theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]
+theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} (hsd : IsDiscrete s)
     (hK : IsBounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
-  refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
+  refine (IsCompact.finite ?_ ?_).subset (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
-  · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right
+  · exact hsd.mono Set.inter_subset_right
 
 end
 
