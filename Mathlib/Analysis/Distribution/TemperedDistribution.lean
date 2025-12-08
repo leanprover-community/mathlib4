@@ -20,11 +20,11 @@ distribution.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
-* `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` localized
-in `SchwartzSpace`
+* `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` localized in
+`SchwartzSpace`
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 noncomputable section
 
