@@ -170,7 +170,7 @@ noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R
 theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF f : α → R) = f :=
   rfl
 
-theorem coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : ((RingEquiv.lpBCF).symm f : α → R) = f :=
+theorem coe_ringEquiv_lpBCF_symm (f : α →ᵇ R) : (RingEquiv.lpBCF.symm f : α → R) = f :=
   rfl
 
 variable (α)
