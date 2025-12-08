@@ -791,6 +791,7 @@ theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) 
     | inr l =>
       simp only [LinearMap.toMatrix_apply, basisSum_repr_inr,
         Matrix.fromBlocks_apply₂₂, b, D]
-      rw [Submodule.mkQ_apply, ← W.mapQ_apply , ← Submodule.mkQ_apply, basisSum_inr]
+      rw [← basisSum_inr bW bQ l, W.mapQ_apply]
+      simp
 
 end

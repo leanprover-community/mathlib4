@@ -596,10 +596,11 @@ theorem basisSum_inl (i : m) :
 
 @[simp]
 theorem basisSum_inr (j : n) :
-    W.mkQ (basisSum bW bQ (Sum.inr j)) = bQ j := by
+    Submodule.Quotient.mk (basisSum bW bQ (Sum.inr j)) = bQ j := by
   simp only [basisSum, Basis.coe_mk, Function.comp_apply, Sum.elim_inr, Function.comp_apply]
-  rw [Function.rightInverse_surjInv W.mkQ_surjective]
+  rw [← W.mkQ_apply, Function.rightInverse_surjInv W.mkQ_surjective]
 
+@[simp]
 theorem basisSum_repr_left (i : m) :
     (basisSum bW bQ).repr (bW i) = Finsupp.single (Sum.inl i) 1 := by
   rw [← Module.Basis.apply_eq_iff, basisSum_inl]
@@ -654,7 +655,6 @@ theorem basisSum_repr_inr (v : V) (j : n) :
       exact Submodule.coe_mem (bW i)]
   | inr i =>
     classical
-    rw [LinearMap.comp_apply, basisSum_inr]
-    simp [Finsupp.single_apply]
+    simp [LinearMap.comp_apply, basisSum_inr, Finsupp.single_apply]
 
 end Extend
