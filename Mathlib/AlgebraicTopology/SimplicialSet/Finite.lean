@@ -12,7 +12,7 @@ public import Mathlib.Data.Finite.Sigma
 /-!
 # Finite simplicial sets
 
-A simplicial set is finite (`Simplicial.Finite`) if it has finitely
+A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
 
 -/
