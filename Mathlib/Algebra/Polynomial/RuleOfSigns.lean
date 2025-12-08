@@ -151,8 +151,8 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {P : Polyn
 @[simp]
 theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
     signVariations (C η * P) = signVariations P := by
-  wlog hx2 : 0 < η
-  · simpa [lt_of_le_of_ne (le_of_not_gt hx2), hx] using this (η := -η) (P := -P)
+  wlog! hx2 : 0 < η
+  · simpa [lt_of_le_of_ne hx2, hx] using this (η := -η) (P := -P)
   rw [signVariations, signVariations]
   rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
   congr 5
