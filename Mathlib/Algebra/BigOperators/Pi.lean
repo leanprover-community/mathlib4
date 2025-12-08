@@ -17,8 +17,8 @@ public import Mathlib.Data.Fintype.Basic
 /-!
 # Big operators for Pi Types
 
-This file contains theorems relevant to big operators in binary and arbitrary product
-of monoids and groups
+This file contains theorems relevant to big operators in binary and arbitrary products
+of monoids and groups.
 -/
 
 @[expose] public section
@@ -47,7 +47,7 @@ theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M 
   map_prod (Pi.evalMonoidHom M a) _ _
 
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
-@[to_additive /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
+@[to_additive (attr := push ←) /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
 theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, CommMonoid (M a)] (s : Finset ι)
     (g : ι → ∀ a, M a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
