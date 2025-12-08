@@ -326,9 +326,26 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   have hφ2 : Function.Bijective φ := by
     rw [Function.Bijective, hφ.restrict_inj, hφ.restrict_surjective_iff]
     refine ⟨RingOfIntegers.coe_injective.injOn, ?_⟩
-    -- surjective
-    sorry
+    intro x hx
+    have h0 : aeval x f₀ = 0 := by
+      rwa [mem_rootSet, aeval_map_algebraMap, and_iff_right hf.ne_zero] at hx
+    let y : integralClosure ℤ K := ⟨x, f₀, hf₀, h0⟩
+    refine ⟨y, ?_, rfl⟩
+    rw [mem_rootSet, and_iff_right hf₀.ne_zero]
+    simpa using (aeval_algebraMap_apply K y f₀).symm.trans h0
   suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
+    let d := Equiv.ofBijective φ hφ2
+    let e := d.permCongrHom
+    have h2 : e.symm.toMonoidHom.comp (Gal.galActionHom f K) = (MulAction.toPermHom G (f₀.rootSet R)) := by
+      ext1 x
+      ext1 y
+      have : d (x • y) = x • d y := hφ1 x y
+      rw [← Equiv.eq_symm_apply] at this
+      simp
+      convert this.symm
+      ext
+      simp [d, e]
+      sorry
     sorry
   -- suffices Function.Bijective (Gal.galActionHom f K) by
   --   rw [switchinglemma f ℂ K]
