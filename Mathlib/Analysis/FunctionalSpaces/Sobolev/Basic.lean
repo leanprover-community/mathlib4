@@ -318,39 +318,44 @@ lemma memSobolev_zero :
 
 end monotonicity
 
-lemma add [IsLocallyFiniteMeasure (μ.restrict Ω)] -- TODO: does on `μ` also suffice?
-    (hp : 1 ≤ p) (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
+-- TODO: move to the appropriate location!
+instance [hμ : IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.restrict Ω) where
+  finiteAtNhds x := by
+    obtain ⟨s, hs, hmus⟩ := hμ.finiteAtNhds x
+    exact ⟨s, hs, lt_of_le_of_lt (Measure.restrict_apply_le Ω s) hmus⟩
+
+lemma add [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
+    (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
   refine ⟨g + g', hg.add hg' ?_ ?_⟩
   · intro m hm
     cases m with
-    | zero => exact hg.locallyIntegrableOn_zero hp
-    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp
+    | zero => exact hg.locallyIntegrableOn_zero hp.out
+    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp.out
   · intro m hm
     cases m with
-    | zero => exact hg'.locallyIntegrableOn_zero hp
-    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp
+    | zero => exact hg'.locallyIntegrableOn_zero hp.out
+    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp.out
 
 lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
   obtain ⟨g, hg⟩ := hf
   exact ⟨-g, hg.neg⟩
 
-lemma sub [IsLocallyFiniteMeasure (μ.restrict Ω)] -- TODO: does on `μ` also suffice?
-    (hp : 1 ≤ p) (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
-    MemSobolev Ω (f - f') k p μ := by
+lemma sub [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
+    (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) : MemSobolev Ω (f - f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
   refine ⟨g - g', hg.sub hg' ?_ ?_⟩
   · intro m hm
     cases m with
-    | zero => exact hg.locallyIntegrableOn_zero hp
-    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp
+    | zero => exact hg.locallyIntegrableOn_zero hp.out
+    | succ n => exact hg.locallyIntegrableOn_succ _ hm hp.out
   · intro m hm
     cases m with
-    | zero => exact hg'.locallyIntegrableOn_zero hp
-    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp
+    | zero => exact hg'.locallyIntegrableOn_zero hp.out
+    | succ n => exact hg'.locallyIntegrableOn_succ _ hm hp.out
 
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
   obtain ⟨g, hg⟩ := hf
@@ -484,11 +489,11 @@ lemma Set.EqOn.ae_eq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure
 
 variable (Ω F) in
 def Sobolev (k : ℕ∞) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
-    [IsLocallyFiniteMeasure (μ.restrict Ω)] :
+    [IsLocallyFiniteMeasure μ] :
     AddSubgroup (E →ₘ[μ.restrict Ω] F) where
   carrier := {f | MemSobolev Ω f k p μ}
   zero_mem' := by simp [memSobolev_congr_ae AEEqFun.coeFn_zero, MemSobolev.zero]
-  add_mem' {f g} hf hg := by simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g), hf.add hp.out hg]
+  add_mem' {f g} hf hg := by simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g), hf.add hg]
   neg_mem' {f} hf := by simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f), hf.neg]
 
 open AEEqFun
@@ -496,7 +501,7 @@ open AEEqFun
 variable {g : E → F}
 namespace MemSobolev
 
-variable [IsLocallyFiniteMeasure (μ.restrict Ω)] [Fact (1 ≤ p)]
+variable [IsLocallyFiniteMeasure μ] [Fact (1 ≤ p)]
 
 -- AEStronglyMeasurable f (μ.restrict Ω)
 /-- make an element of Lp from a function verifying `MemSobolev` -/
@@ -524,7 +529,7 @@ theorem toSobolev_zero (h : MemSobolev Ω (0 : E → F) k p μ) : h.toSobolev 0 
   rfl
 
 theorem toSobolev_add {f g : E → F} (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
-    (hf.add sorry hg).toSobolev (f + g) = hf.toSobolev f + hg.toSobolev g :=
+    (hf.add hg).toSobolev (f + g) = hf.toSobolev f + hg.toSobolev g :=
   rfl
 
 theorem toSobolev_neg {f : E → F} (hf : MemSobolev Ω f k p μ) :
@@ -533,14 +538,14 @@ theorem toSobolev_neg {f : E → F} (hf : MemSobolev Ω f k p μ) :
 
 theorem toSobolev_sub {f g : E → F}
     (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
-    (hf.sub sorry hg).toSobolev (f - g) = hf.toSobolev f - hg.toSobolev g :=
+    (hf.sub hg).toSobolev (f - g) = hf.toSobolev f - hg.toSobolev g :=
   rfl
 
 end MemSobolev
 
 namespace Sobolev
 
-variable [IsLocallyFiniteMeasure (μ.restrict Ω)] [Fact (1 ≤ p)]
+variable [IsLocallyFiniteMeasure μ] [Fact (1 ≤ p)]
 
 instance instCoeFun : CoeFun (Sobolev Ω F k p μ) (fun _ => E → F) :=
   ⟨fun f => ((f : E →ₘ[μ.restrict Ω] F) : E → F)⟩
