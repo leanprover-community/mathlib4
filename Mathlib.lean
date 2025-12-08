@@ -74,6 +74,7 @@ public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.BigOperators.Group.Vector.Defs
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.BigOperators.Intervals
