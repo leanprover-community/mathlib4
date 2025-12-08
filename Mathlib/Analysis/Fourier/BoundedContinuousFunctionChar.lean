@@ -140,7 +140,7 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
   refine ⟨z.embDomain f, ?_⟩
   ext1 u
   simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
-    Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
+    Finsupp.embDomain_apply_self, star_apply, star_sum, star_mul', Circle.star_addChar]
   rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
   simp [z, f]
 
