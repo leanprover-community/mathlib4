@@ -213,7 +213,6 @@ category instance on the indices. -/
       ((iSup_affineOpens_eq_top X).ge (Set.mem_univ x))
     exact ⟨U, ⟨x, hxU⟩, rfl⟩
 
-
 noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
   trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
   directed {U V} x := by
