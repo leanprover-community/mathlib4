@@ -196,25 +196,14 @@ theorem _root_.Matrix.posDef_diagonal_iff
     [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] [Nontrivial R] {d : n → R} :
     PosDef (diagonal d) ↔ ∀ i, 0 < d i := ⟨fun h i => by simpa using h.2 (.single i 1), .diagonal⟩
 
-protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
-    PosDef (1 : Matrix n n R) := ⟨isHermitian_one, fun x hx ↦ by
-    refine Finsupp.sum_pos' (fun _ _ ↦ Finsupp.sum_nonneg fun _ _ ↦ ?_) ?_
-    · simp +contextual [Matrix.one_apply,apply_ite]
-    · have : ∃i ∈ x.support, x i ≠ 0 := by
-        contrapose! hx
-        ext i
-        by_cases hi : i ∈ x.support <;> simp[hx i _, Finsupp.notMem_support_iff.mp _, *]
-      obtain ⟨i,hi,hxi⟩ := this
-      refine ⟨i, hi, Finsupp.sum_pos' (fun _ _ ↦ ?_) ⟨i, hi, ?_⟩⟩ <;> simp +contextual only [one_apply_eq,
-        mul_one]
-      have : Nontrivial R := by
-        exact nontrivial_of_ne (x i) 0 hxi
-      have := isRegular_of_ne_zero hxi
-      exact star_mul_self_pos (isRegular_of_ne_zero hxi)⟩
-
 @[simp, nontriviality]
-theorem of_Subsingelton (h : Subsingleton R) (M : Matrix n n R) : M.PosDef :=
+theorem of_subsingleton (h : Subsingleton R) (M : Matrix n n R) : M.PosDef :=
   ⟨.of_subsingleton, fun _ hx ↦ (hx <| Subsingleton.elim ..).elim⟩
+
+protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
+    PosDef (1 : Matrix n n R) := by
+  nontriviality R
+  exact .diagonal fun i ↦ zero_lt_one' R
 
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) (hd : d ≠ 0) :
