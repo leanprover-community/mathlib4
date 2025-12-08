@@ -52,12 +52,16 @@ theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace 
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
 
 /-- Every pseudo-metrizable space is first countable. -/
-instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
+instance (priority := 90) PseudoMetrizableSpace.firstCountableTopology
     [h : PseudoMetrizableSpace X] : FirstCountableTopology X := by
-  rcases h with ⟨_, hm⟩
-  rw [← hm]
-  exact @UniformSpace.firstCountableTopology X PseudoMetricSpace.toUniformSpace
-    EMetric.instIsCountablyGeneratedUniformity
+  letI : PseudoMetricSpace X := pseudoMetrizableSpacePseudoMetric X
+  infer_instance
+
+/-- Every pseudo-metrizable space is regular. -/
+instance (priority := 90) PseudoMetrizableSpace.regular
+    [h : PseudoMetrizableSpace X] : RegularSpace X := by
+  letI : PseudoMetricSpace X := pseudoMetrizableSpacePseudoMetric X
+  infer_instance
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
