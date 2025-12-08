@@ -3,12 +3,14 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Integration of specific interval integrals
@@ -30,6 +32,8 @@ This file is still being developed.
 
 integrate, integration, integrable
 -/
+
+@[expose] public section
 
 
 open Real Set Finset
@@ -267,7 +271,7 @@ lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
   · simp [hr]
   rw [sinc_of_ne_zero hr]
   norm_cast
-  field_simp
+  field
 
 /-- Helper lemma for `integral_log`: case where `a = 0` and `b` is positive. -/
 lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in 0..b, log s = b * log b - b := by
@@ -305,14 +309,14 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
-  · norm_num
+  · simp
   · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
   · exact continuousOn_sin
 
 @[simp]
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
-  · norm_num
+  · simp
   · simp only [differentiableAt_sin, implies_true]
   · exact continuousOn_cos
 
@@ -370,7 +374,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
         (Or.inl hz)).div_const (2 * (t + 1)) using 1
       simp [field]
     convert (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
-    · field_simp
+    · ring
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
     refine continuous_ofReal.mul ?_
@@ -443,19 +447,23 @@ theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * co
 
 theorem integral_sin_pow_odd :
     (∫ x in 0..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i : ℝ) + 2) / (2 * i + 3) := by
-  induction' n with k ih; · norm_num
-  rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
-  norm_cast
-  field_simp
-  simp
+  induction n with
+  | zero => norm_num
+  | succ k ih =>
+    rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
+    norm_cast
+    field_simp
+    simp
 
 theorem integral_sin_pow_even :
     (∫ x in 0..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i : ℝ) + 1) / (2 * i + 2) := by
-  induction' n with k ih; · simp
-  rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
-  norm_cast
-  field_simp
-  simp
+  induction n with
+  | zero => simp
+  | succ k ih =>
+    rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
+    norm_cast
+    field_simp
+    simp
 
 theorem integral_sin_pow_pos : 0 < ∫ x in 0..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>

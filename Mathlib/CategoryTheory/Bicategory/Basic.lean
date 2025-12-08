@@ -3,7 +3,9 @@ Copyright (c) 2021 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.NatIso
+module
+
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Bicategories
@@ -36,6 +38,8 @@ between 1-morphisms `f g : a ⟶ b` and a 1-morphism `f : b ⟶ c`, there is a 2
 `whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ`,
 which is required as an axiom in the definition here.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -187,6 +191,36 @@ theorem whiskerLeft_inv_hom (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
 @[reassoc (attr := simp)]
 theorem inv_hom_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
     η.inv ▷ h ≫ η.hom ▷ h = 𝟙 (g ≫ h) := by rw [← comp_whiskerRight, inv_hom_id, id_whiskerRight]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_whiskerLeft_hom_inv (f : a ⟶ b) (g : b ⟶ c) {h k : c ⟶ d} (η : h ≅ k) :
+    f ◁ g ◁ η.hom ≫ f ◁ g ◁ η.inv = 𝟙 (f ≫ g ≫ h) := by
+  simp [← whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+theorem hom_inv_whiskerRight_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) (k : c ⟶ d) :
+    η.hom ▷ h ▷ k ≫ η.inv ▷ h ▷ k = 𝟙 ((f ≫ h) ≫ k) := by
+  simp [← comp_whiskerRight]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_whiskerLeft_inv_hom (f : a ⟶ b) (g : b ⟶ c) {h k : c ⟶ d} (η : h ≅ k) :
+    f ◁ g ◁ η.inv ≫ f ◁ g ◁ η.hom = 𝟙 (f ≫ g ≫ k) := by
+  simp [← whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+theorem inv_hom_whiskerRight_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) (k : c ⟶ d) :
+    η.inv ▷ h ▷ k ≫ η.hom ▷ h ▷ k = 𝟙 ((g ≫ h) ≫ k) := by
+  simp [← comp_whiskerRight]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_hom_inv_whiskerRight (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) (k : c ⟶ d) :
+    f ◁ η.hom ▷ k ≫ f ◁ η.inv ▷ k = 𝟙 (f ≫ g ≫ k) := by
+  simp [← whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+theorem whiskerLeft_inv_hom_whiskerRight (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) (k : c ⟶ d) :
+    f ◁ η.inv ▷ k ≫ f ◁ η.hom ▷ k = 𝟙 (f ≫ h ≫ k) := by
+  simp [← whiskerLeft_comp]
 
 /-- The left whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps]

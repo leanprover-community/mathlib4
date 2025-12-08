@@ -3,12 +3,14 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Control.Monad.Writer
-import Mathlib.Control.Lawful
-import Batteries.Tactic.Congr
-import Batteries.Lean.Except
-import Batteries.Control.OptionT
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Control.Monad.Writer
+public import Mathlib.Control.Lawful
+public import Batteries.Tactic.Congr
+public import Batteries.Lean.Except
+import all Init.Control.Option  -- for unfolding `Option.lift`
 
 /-!
 # Continuation Monad
@@ -18,6 +20,8 @@ Haskell's `Cont`, `ContT` and `MonadCont`:
 <https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
 <https://hackage.haskell.org/package/transformers-0.6.2.0/docs/Control-Monad-Trans-Cont.html>
 -/
+
+@[expose] public section
 
 universe u v w u₀ u₁ v₀ v₁
 
@@ -158,7 +162,7 @@ def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m
 
 theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
     goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
-  rfl
+  (rfl)
 
 nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
     OptionT m α :=
@@ -166,7 +170,7 @@ nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT 
 
 @[simp]
 lemma run_callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
-    (OptionT.callCC f).run = (callCC fun x => OptionT.run <| f (OptionT.mkLabel x)) := rfl
+    (OptionT.callCC f).run = (callCC fun x => OptionT.run <| f (OptionT.mkLabel x)) := (rfl)
 
 instance [MonadCont m] : MonadCont (OptionT m) where
   callCC := OptionT.callCC
@@ -178,11 +182,9 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
       bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
-    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,
-      OptionT.run_mk, Option.elimM_map, Option.elim_some, Function.comp_apply,
-      @callCC_bind_left m _]
-    ext; rfl
-  callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
+    ext
+    simp [callCC, OptionT.goto_mkLabel, @callCC_bind_left m _]
+  callCC_dummy := by intros; ext; simp [callCC, OptionT.callCC, @callCC_dummy m _]
 
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩

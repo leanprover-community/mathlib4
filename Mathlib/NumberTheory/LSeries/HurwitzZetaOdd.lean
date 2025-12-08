@@ -3,10 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.AbstractFuncEq
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
-import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-import Mathlib.NumberTheory.LSeries.Basic
+module
+
+public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
+public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
+public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Odd Hurwitz zeta functions
@@ -40,9 +42,11 @@ various versions of the Jacobi theta function.
   the zeta functions and corresponding Dirichlet series for `1 < re s`
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Complex hiding abs_of_nonneg
+open Complex
 open CharZero Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
 

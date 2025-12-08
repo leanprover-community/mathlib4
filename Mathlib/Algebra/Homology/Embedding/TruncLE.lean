@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncGE
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncGE
 
 /-!
 # The canonical truncation
@@ -18,6 +20,8 @@ In order to achieve this, we dualize the constructions from the file
 `Embedding.TruncGE`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits ZeroObject Category
 

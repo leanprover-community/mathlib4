@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!
 # Associativity of pullbacks
@@ -12,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 This file shows that pullbacks (and pushouts) are associative up to natural isomorphism.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -305,9 +308,6 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
   ⟨⟨⟨_, pushoutAssocSymmIsPushout g₁ g₂ g₃ g₄⟩⟩⟩
-
--- Porting note: these are not propagating so moved into statements
--- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
 
 /-- The canonical isomorphism `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃ ≅ X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
 noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]

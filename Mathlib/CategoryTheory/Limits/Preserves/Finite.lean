@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Preservation of finite (co)limits.
@@ -20,6 +22,8 @@ involved are abelian, or more generally, finitely (co)complete.
   see `CategoryTheory/Functor/Flat.lean`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

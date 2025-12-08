@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # The homology sequence
@@ -28,6 +30,8 @@ the Liquid Tensor Experiment.
 * https://stacks.math.columbia.edu/tag/0111
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
@@ -112,7 +116,7 @@ instance [K.HasHomology i] [K.HasHomology j] :
 
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (#27382)
+  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
   dsimp [-Fin.reduceFinMk]
   infer_instance
 
@@ -154,7 +158,7 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (#27382)
+    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
     (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
 
 end HomologySequence

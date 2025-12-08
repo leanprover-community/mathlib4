@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.GroupTheory.OreLocalization.Basic
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 
@@ -19,6 +21,8 @@ This file contains some results on cardinality of Ore localizations.
   with `Commute` assumption removed.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -99,14 +103,7 @@ theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s
   suffices Injective j by
     have := lift_mk_le_lift_mk_of_injective this
     rwa [lift_umax.{v, u}, lift_id', mk_prod, lift_id, lift_mul, mul_eq_self (by simp)] at this
-  intro y y' heq
-  rw [← hi y, ← hi y']
-  simp_rw [j, comp_apply, Prod.ext_iff] at heq
-  simp_rw [i]
-  set x := surjInv hsurj y
-  set x' := surjInv hsurj y'
-  obtain ⟨h1, h2⟩ := heq
-  rw [← h1] at h2 ⊢
-  exact key x.1 x.2 x'.2 h2 (hc _ _)
+  intro
+  grind
 
 end OreLocalization

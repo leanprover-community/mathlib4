@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Logic.Function.Conjugate
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Iterations of a function
@@ -28,6 +30,8 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -39,7 +43,7 @@ def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
   | succ k, a => iterate op k (op a)
 
 @[inherit_doc Nat.iterate]
-notation:max f "^["n"]" => Nat.iterate f n
+notation:max f "^[" n "]" => Nat.iterate f n
 
 namespace Function
 
@@ -178,14 +182,15 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
   rw [← iterate_succ', Nat.succ_pred_eq_of_pos hn]
 
 /-- A recursor for the iterate of a function. -/
-def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
-    p (f^[n] a) :=
+@[elab_as_elim]
+def Iterate.rec (motive : α → Sort*) {a : α} (arg : motive a)
+    {f : α → α} (app : ∀ a, motive a → motive (f a)) (n : ℕ) : motive (f^[n] a) :=
   match n with
-  | 0 => ha
-  | m+1 => Iterate.rec p h (h _ ha) m
+  | 0 => arg
+  | m + 1 => Iterate.rec motive (app _ arg) app m
 
-theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
-    Iterate.rec p h ha 0 = ha :=
+theorem Iterate.rec_zero (motive : α → Sort*) {f : α → α} (app : ∀ a, motive a → motive (f a))
+    {a : α} (arg : motive a) : Iterate.rec motive arg app 0 = arg :=
   rfl
 
 variable {f} {m n : ℕ} {a : α}
@@ -241,7 +246,6 @@ namespace Pi
 
 variable {ι : Type*}
 
-/-- adapted from `Prod.map_iterate` -/
 @[simp]
 theorem map_iterate {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
     (Pi.map f)^[n] = Pi.map fun i => (f i)^[n] := by

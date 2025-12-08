@@ -3,9 +3,11 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Local graph operations
@@ -21,6 +23,8 @@ we also prove theorems about the number of edges in the modified graphs.
 * `edge s t` is the graph with a single `s-t` edge. Adding this edge to a graph `G` is then
   `G ⊔ edge s t`.
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -107,7 +111,7 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     #(G.replaceVertex s t).edgeFinset = #G.edgeFinset + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
-    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff_of_subset inc,
     ← Nat.sub_add_comm <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
@@ -117,8 +121,8 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
 theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     #(G.replaceVertex s t).edgeFinset = #G.edgeFinset + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
-  rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
-    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+  rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff_of_subset (by simp [ha]),
+    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff_of_subset inc,
     ← Nat.sub_add_comm <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
@@ -165,8 +169,8 @@ lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
 variable {s t}
 
 lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
-  rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left, Set.mem_setOf_eq,
-    Sym2.isDiag_iff_proj_eq]
+  rwa [edge, edgeSet_fromEdgeSet, sdiff_eq_left, Set.disjoint_singleton_left,
+    Sym2.mem_diagSet_iff_eq]
 
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,

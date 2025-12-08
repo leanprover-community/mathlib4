@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+module
+
+public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Periodic holomorphic functions
@@ -19,6 +21,8 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 `0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays *exponentially*
 to zero. These results are important in the theory of modular forms.
 -/
+
+@[expose] public section
 
 open Complex Filter Asymptotics
 
@@ -46,8 +50,6 @@ theorem norm_qParam (z : ℂ) : ‖𝕢 h z‖ = Real.exp (-2 * π * im z / h) :
   simp only [qParam, norm_exp, div_ofReal_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im,
     mul_zero, sub_zero, I_re, mul_im, zero_mul, add_zero, I_im, mul_one, sub_self, zero_sub,
     neg_mul]
-
-@[deprecated (since := "2025-02-17")] alias abs_qParam := norm_qParam
 
 theorem im_invQParam (q : ℂ) : im (invQParam h q) = -h / (2 * π) * Real.log ‖q‖ := by
   simp only [invQParam, ← div_div, div_I, neg_mul, neg_im, mul_im, mul_re, div_ofReal_re,
@@ -77,15 +79,13 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
 
 @[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 @[fun_prop]
 lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
-    unfold qParam
-    fun_prop
-
-@[deprecated (since := "2025-02-17")] alias abs_qParam_lt_iff := norm_qParam_lt_iff
+  unfold qParam
+  fun_prop
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
@@ -219,18 +219,25 @@ theorem tendsto_at_I_inf (hh : 0 < h) (hf : Periodic f h)
     (differentiableAt_cuspFunction_zero hh hf h_hol h_bd).continuousAt.tendsto
 
 /--
+If `f` is periodic, and holomorphic and bounded at `I∞`, then it has the form (constant) +
+(exponentially decaying term) as `z → I∞`.
+-/
+theorem exp_decay_sub_of_bounded_at_inf (hh : 0 < h) (hf : Periodic f h)
+    (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
+    (fun z ↦ f z - cuspFunction h f 0) =O[I∞] (fun z ↦ Real.exp (-2 * π * im z / h)) := by
+  simpa [comp_def, eq_cuspFunction hh.ne' hf, norm_qParam] using
+    differentiableAt_cuspFunction_zero hh hf h_hol h_bd |>.isBigO_sub.mono
+      nhdsWithin_le_nhds |>.comp_tendsto (qParam_tendsto hh) |>.norm_right
+
+/--
 If `f` is periodic, holomorphic near `I∞`, and tends to zero at `I∞`, then in fact it tends to zero
 exponentially fast.
 -/
 theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_zer : ZeroAtFilter I∞ f) :
     f =O[I∞] fun z ↦ Real.exp (-2 * π * im z / h) := by
-  suffices cuspFunction h f =O[_] id by
-    simpa only [comp_def, eq_cuspFunction hh.ne' hf, id_eq, norm_qParam]
-      using (this.comp_tendsto (qParam_tendsto hh)).norm_right
-  simpa only [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
-    (differentiableAt_cuspFunction_zero hh hf h_hol h_zer.boundedAtFilter).isBigO_sub.mono
-      nhdsWithin_le_nhds
+  simpa [cuspFunction_zero_of_zero_at_inf hh h_zer, sub_zero] using
+    exp_decay_sub_of_bounded_at_inf hh hf h_hol h_zer.boundedAtFilter
 
 end HoloAtInfC
 

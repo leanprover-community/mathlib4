@@ -3,12 +3,14 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # Commutative squares
 
-This file provide an API for commutative squares in categories.
+This file provides an API for commutative squares in categories.
 If `top`, `left`, `right` and `bottom` are four morphisms which are the edges
 of a square, `CommSq top left right bottom` is the predicate that this
 square is commutative.
@@ -21,6 +23,8 @@ as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lean`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -216,7 +220,6 @@ instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
     simp only [LiftStruct.fac_right]⟩
 
 variable (sq : CommSq f i p g)
-
 
 /-- The assertion that a square has a `LiftStruct`. -/
 class HasLift : Prop where

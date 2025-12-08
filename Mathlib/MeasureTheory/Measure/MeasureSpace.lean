@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
-import Mathlib.MeasureTheory.Measure.NullMeasurable
-import Mathlib.Order.Interval.Set.Monotone
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
+public import Mathlib.MeasureTheory.Measure.NullMeasurable
+public import Mathlib.Order.Interval.Set.Monotone
 
 /-!
 # Measure spaces
@@ -76,6 +78,8 @@ The measure is denoted `volume`.
 
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -168,7 +172,7 @@ theorem measure_sUnion {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise Di
 theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) := by
-  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype]
+  rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype (L := .unconditional s)]
   exact measure_biUnion₀ s.countable_toSet hd hm
 
 theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
@@ -329,12 +333,12 @@ theorem ae_eq_of_subset_of_measure_ge (h₁ : s ⊆ t) (h₂ : μ t ≤ μ s) (h
 theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → Set α} {t : ι → Set α}
     (hsub : ∀ i, s i ⊆ t i) (h_le : ∀ i, μ (t i) ≤ μ (s i)) : μ (⋃ i, s i) = μ (⋃ i, t i) := by
   refine le_antisymm (by gcongr; apply hsub) ?_
-  rcases Classical.em (∃ i, μ (t i) = ∞) with (⟨i, hi⟩ | htop)
-  · calc
+  by_cases! htop : ∃ i, μ (t i) = ∞
+  · rcases htop with ⟨i, hi⟩
+    calc
       μ (⋃ i, t i) ≤ ∞ := le_top
       _ ≤ μ (s i) := hi ▸ h_le i
       _ ≤ μ (⋃ i, s i) := measure_mono <| subset_iUnion _ _
-  push_neg at htop
   set M := toMeasurable μ
   have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
     refine fun b => ae_eq_of_subset_of_measure_ge inter_subset_left ?_ ?_ ?_
@@ -1001,8 +1005,8 @@ theorem lt_iff : μ < ν ↔ μ ≤ ν ∧ ∃ s, MeasurableSet s ∧ μ s < ν 
 theorem lt_iff' : μ < ν ↔ μ ≤ ν ∧ ∃ s, μ s < ν s :=
   lt_iff_le_not_ge.trans <| and_congr Iff.rfl <| by simp only [le_iff', not_forall, not_le]
 
-instance instAddLeftMono {_ : MeasurableSpace α} : AddLeftMono (Measure α) :=
-  ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
+instance instIsOrderedAddMonoid {_ : MeasurableSpace α} : IsOrderedAddMonoid (Measure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
 
 protected theorem le_add_left (h : μ ≤ ν) : μ ≤ ν' + ν := fun s => le_add_left (h s)
 
@@ -1173,6 +1177,10 @@ lemma nonempty_of_neZero (μ : Measure α) [NeZero μ] : Nonempty α :=
   (isEmpty_or_nonempty α).resolve_left fun h ↦ by
     simpa [eq_empty_of_isEmpty] using NeZero.ne (μ univ)
 
+theorem measure_support_eq_zero_iff {E : Type*} [Zero E] (μ : Measure α := by volume_tac)
+    {f : α → E} : μ f.support = 0 ↔ f =ᵐ[μ] 0 := by
+  rfl
+
 section Sum
 variable {f : ι → Measure α}
 
@@ -1323,6 +1331,10 @@ instance cofinite.instIsMeasurablyGenerated : IsMeasurablyGenerated μ.cofinite 
     · rwa [compl_mem_cofinite, measure_toMeasurable]
     · rw [compl_subset_comm]
       apply subset_toMeasurable
+
+theorem cofinite_le_ae : μ.cofinite ≤ ae μ := by
+  intro s hs
+  simp_all [mem_cofinite, mem_ae_iff]
 
 end Measure
 

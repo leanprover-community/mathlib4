@@ -3,12 +3,14 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FinallySmall
-import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Filtered.Small
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+module
+
+public import Mathlib.CategoryTheory.Limits.FinallySmall
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Filtered.Small
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # Ind-objects
@@ -39,6 +41,8 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

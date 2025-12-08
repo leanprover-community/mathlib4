@@ -3,13 +3,15 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.PartialHomeomorph
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Topology on the upper half plane
@@ -17,6 +19,8 @@ import Mathlib.Topology.PartialHomeomorph
 In this file we introduce a `TopologicalSpace` structure on the upper half plane and provide
 various instances.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -33,12 +37,15 @@ theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   isEmbedding_coe.continuous
 
+@[fun_prop]
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
 
+@[fun_prop]
 theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 
@@ -125,15 +132,15 @@ end strips
 
 section ofComplex
 
-/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
-def ofComplex : PartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toPartialHomeomorph _).symm
+/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as an `OpenPartialHomeomorph`. -/
+def ofComplex : OpenPartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toOpenPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
 @[simp]
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
-  IsOpenEmbedding.toPartialHomeomorph_left_inv ..
+  IsOpenEmbedding.toOpenPartialHomeomorph_left_inv ..
 
 lemma ofComplex_apply_eq_ite (w : ℂ) :
     ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Fintype.Quotient
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.Data.Fintype.Quotient
 
 /-!
 # `DFinsupp` on `Sigma` types
@@ -19,6 +21,8 @@ import Mathlib.Data.Fintype.Quotient
   bijection.
 
 -/
+
+@[expose] public section
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
@@ -84,7 +88,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
   rw [sigmaCurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
-    obtain rfl | hj := eq_or_ne j j'
+    obtain rfl | hj := eq_or_ne j' j
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne, single_eq_of_ne hj]
       simpa using hj
@@ -143,7 +147,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
   rw [sigmaUncurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
-    obtain rfl | hj := eq_or_ne j j'
+    obtain rfl | hj := eq_or_ne j' j
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne hj, single_eq_of_ne]
       simpa using hj

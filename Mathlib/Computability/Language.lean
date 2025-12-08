@@ -3,10 +3,13 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Martin Dvorak
 -/
-import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Algebra.Order.Kleene
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Languages
@@ -23,13 +26,14 @@ with respect to other language operations.
 ## Notation
 
 * `l + m`: union of languages `l` and `m`
+* `l - m`: difference of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
-* `1`: language consisting of only the empty string.
-  This is because it is the unit of the `*` operator.
-* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
-  members of `l` concatenated together
-  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+* `1`: language consisting of only the empty string. This is because it is the unit of the `*`
+  operator.
+* `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
+  concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
+  to the more common ASCII asterisk `*`.
 
 ## Main definitions
 
@@ -44,6 +48,8 @@ with respect to other language operations.
   then `l` is the language `m∗ * n`
 
 -/
+
+@[expose] public section
 
 
 open List Set Computability
@@ -80,6 +86,10 @@ instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 instance : Add (Language α) :=
   ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
+/-- The subtraction of two languages is their difference. -/
+instance : Sub (Language α) where
+  sub := SDiff.sdiff
+
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
 instance : Mul (Language α) :=
@@ -92,6 +102,9 @@ theorem one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
 
 theorem add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
+  rfl
+
+theorem sub_def (l m : Language α) : l - m = (l \ m : Set (List α)) :=
   rfl
 
 theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
@@ -123,6 +136,9 @@ theorem nil_mem_one : [] ∈ (1 : Language α) :=
 theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
   Iff.rfl
 
+theorem mem_sub (l m : Language α) (x : List α) : x ∈ l - m ↔ x ∈ l ∧ x ∉ m :=
+  Iff.rfl
+
 theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
 
@@ -138,18 +154,17 @@ theorem join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.flatt
 theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 
+instance : OrderedSub (Language α) where
+  tsub_le_iff_right _ _ _ := sdiff_le_iff'
+
 instance instSemiring : Semiring (Language α) where
-  add := (· + ·)
   add_assoc := union_assoc
-  zero := 0
   zero_add := empty_union
   add_zero := union_empty
   add_comm := union_comm
-  mul := (· * ·)
   mul_assoc _ _ _ := image2_assoc append_assoc
   zero_mul _ := image2_empty_left
   mul_zero _ := image2_empty_right
-  one := 1
   one_mul l := by simp [mul_def, one_def]
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1
@@ -196,13 +211,15 @@ theorem kstar_def_nonempty (l : Language α) :
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
-  intro h₁ h₂ x hx
-  simp only [mul_def, mem_image2] at hx ⊢
-  tauto
+instance : MulLeftMono (Language α) where
+  elim _ _ _ := image2_subset_left
 
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
-  sup_le_sup
+instance : MulRightMono (Language α) where
+  elim _ _ _ := image2_subset_right
+
+@[deprecated mul_le_mul' (since := "2025-10-26")]
+theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ :=
+  mul_le_mul'
 
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
@@ -222,6 +239,14 @@ theorem iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
+
+theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
+    (⨆ i, l i) - m = ⨆ i, l i - m :=
+  iUnion_diff _ _
+
+theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+    (m - ⨆ i, l i) = ⨅ i, m - l i :=
+  diff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -259,28 +284,27 @@ theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ 
 theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 
-instance : KleeneAlgebra (Language α) :=
-  { instSemiring, instCompleteAtomicBooleanAlgebra with
-    kstar := fun L ↦ L∗,
-    one_le_kstar := fun a _ hl ↦ ⟨[], hl, by simp⟩,
-    mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
-    kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
-    kstar_mul_le_self := fun l m h ↦ by
-      rw [kstar_eq_iSup_pow, iSup_mul]
-      refine iSup_le (fun n ↦ ?_)
-      induction n with
-      | zero => simp
-      | succ n ih =>
-        rw [pow_succ, mul_assoc (l^n) l m]
-        exact le_trans (le_mul_congr le_rfl h) ih,
-    mul_kstar_le_self := fun l m h ↦ by
-      rw [kstar_eq_iSup_pow, mul_iSup]
-      refine iSup_le (fun n ↦ ?_)
-      induction n with
-      | zero => simp
-      | succ n ih =>
-        rw [pow_succ, ← mul_assoc m (l^n) l]
-        exact le_trans (le_mul_congr ih le_rfl) h }
+instance : KleeneAlgebra (Language α) where
+  __ : OrderBot (Language α) := inferInstance
+  one_le_kstar a _ hl := ⟨[], hl, by simp⟩
+  mul_kstar_le_kstar a := (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_kstar a := (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right
+  kstar_mul_le_self l m h := by
+    rw [kstar_eq_iSup_pow, iSup_mul]
+    refine iSup_le fun n ↦ ?_
+    induction n with
+    | zero => simp
+    | succ n ih => grw [pow_succ, mul_assoc, h, ih]
+  mul_kstar_le_self l m h := by
+    rw [kstar_eq_iSup_pow, mul_iSup]
+    refine iSup_le fun n ↦ ?_
+    induction n with
+    | zero => simp
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l^n) l, ih, h]
+
+@[deprecated add_le_add (since := "2025-10-26")]
+theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
+  add_le_add
 
 /-- **Arden's lemma** -/
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
@@ -306,8 +330,8 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
         rw [pow_zero, one_mul, add_comm]
         exact le_self_add
       | succ _ ih =>
-        rw [add_comm, pow_add, pow_one, mul_assoc]
-        exact le_add_right (mul_le_mul_left' ih _)
+        grw [add_comm, pow_add, pow_one, mul_assoc, ih]
+        exact le_self_add
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
@@ -320,7 +344,7 @@ lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, List.reverse_reverse]
 
 lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
-  ((List.reverse_involutive.toPerm _).image_eq_preimage _).symm
+  ((List.reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
 
 @[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
