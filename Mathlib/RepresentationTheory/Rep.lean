@@ -25,7 +25,7 @@ Also `V.ρ` gives the homomorphism `G →* (V →ₗ[k] V)`.
 Conversely, given a homomorphism `ρ : G →* (V →ₗ[k] V)`,
 you can construct the bundled representation as `Rep.of ρ`.
 
-We construct the categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k G)`.
+We construct the categorical equivalence `Rep k G ≌ ModuleCat k[G]`.
 We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category with all (co)limits.
 -/
 
@@ -33,11 +33,10 @@ We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category wit
 
 suppress_compilation
 
+open CategoryTheory Limits
+open scoped MonoidAlgebra
+
 universe u
-
-open CategoryTheory
-
-open CategoryTheory.Limits
 
 /-- The category of `k`-linear representations of a monoid `G`. -/
 abbrev Rep (k G : Type u) [Ring k] [Monoid G] :=
@@ -828,7 +827,7 @@ theorem repOfTprodIso_inv_apply (x : TensorProduct k V W) : (repOfTprodIso ρ τ
 end Representation
 
 /-!
-### The categorical equivalence `Rep k G ≌ Module.{u} (MonoidAlgebra k G)`.
+### The categorical equivalence `Rep k G ≌ Module.{u} k[G]`.
 -/
 
 
@@ -847,9 +846,9 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
-    (r : MonoidAlgebra k G) (x : V) :
-    f ((((MonoidAlgebra.lift k G (V →ₗ[k] V)) ρ) r) x) =
-      (((MonoidAlgebra.lift k G (W →ₗ[k] W)) σ) r) (f x) := by
+    (r : k[G]) (x : V) :
+    f (MonoidAlgebra.lift k G (V →ₗ[k] V) ρ r x) =
+      MonoidAlgebra.lift k G (W →ₗ[k] W) σ r (f x) := by
   apply MonoidAlgebra.induction_on r
   · intro g
     simp only [one_smul, MonoidAlgebra.lift_single, MonoidAlgebra.of_apply]
@@ -860,19 +859,19 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
 
 /-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
-    ModuleCat.of (MonoidAlgebra k G) V.ρ.asModule ⟶ ModuleCat.of (MonoidAlgebra k G) W.ρ.asModule :=
+    ModuleCat.of k[G] V.ρ.asModule ⟶ ModuleCat.of k[G] W.ρ.asModule :=
   ModuleCat.ofHom
     { f.hom.hom with
       map_smul' := fun r x => to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ f.hom.hom
         (fun g => ModuleCat.hom_ext_iff.mp (f.comm g)) r x }
 
-/-- Functorially convert a representation of `G` into a module over `MonoidAlgebra k G`. -/
-def toModuleMonoidAlgebra : Rep k G ⥤ ModuleCat.{u} (MonoidAlgebra k G) where
+/-- Functorially convert a representation of `G` into a module over `k[G]`. -/
+def toModuleMonoidAlgebra : Rep k G ⥤ ModuleCat.{u} k[G] where
   obj V := ModuleCat.of _ V.ρ.asModule
   map f := toModuleMonoidAlgebraMap f
 
-/-- Functorially convert a module over `MonoidAlgebra k G` into a representation of `G`. -/
-def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
+/-- Functorially convert a module over `k[G]` into a representation of `G`. -/
+def ofModuleMonoidAlgebra : ModuleCat.{u} k[G] ⥤ Rep k G where
   obj M := Rep.of (Representation.ofModule M)
   map f :=
     { hom := ModuleCat.ofHom
@@ -880,20 +879,20 @@ def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
           map_smul' := fun r x => f.hom.map_smul (algebraMap k _ r) x }
       comm := fun g => by ext; apply f.hom.map_smul }
 
-theorem ofModuleMonoidAlgebra_obj_coe (M : ModuleCat.{u} (MonoidAlgebra k G)) :
-    (ofModuleMonoidAlgebra.obj M : Type u) = RestrictScalars k (MonoidAlgebra k G) M :=
+theorem ofModuleMonoidAlgebra_obj_coe (M : ModuleCat.{u} k[G]) :
+    (ofModuleMonoidAlgebra.obj M : Type u) = RestrictScalars k k[G] M :=
   rfl
 
-theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
+theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} k[G]) :
     (ofModuleMonoidAlgebra.obj M).ρ = Representation.ofModule M :=
   rfl
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
-def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
+def counitIsoAddEquiv {M : ModuleCat.{u} k[G]} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
   exact (Representation.ofModule M).asModuleEquiv.toAddEquiv.trans
-    (RestrictScalars.addEquiv k (MonoidAlgebra k G) _)
+    (RestrictScalars.addEquiv k k[G] _)
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
@@ -901,7 +900,7 @@ def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMo
   exact V.ρ.asModuleEquiv.symm.toAddEquiv.trans (RestrictScalars.addEquiv _ _ _).symm
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
-def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
+def counitIso (M : ModuleCat.{u} k[G]) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
   LinearEquiv.toModuleIso
     { counitIsoAddEquiv with
@@ -925,14 +924,14 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
           rfl })
     fun g => by ext; apply unit_iso_comm
 
-/-- The categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k G)`. -/
-def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where
+/-- The categorical equivalence `Rep k G ≌ ModuleCat k[G]`. -/
+def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} k[G] where
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
   unitIso := NatIso.ofComponents (fun V => unitIso V) (by cat_disch)
   counitIso := NatIso.ofComponents (fun M => counitIso M) (by cat_disch)
 
--- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
+-- TODO Verify that the equivalence with `ModuleCat k[G]` is a monoidal functor.
 
 instance : EnoughProjectives (Rep k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{u}
@@ -941,7 +940,7 @@ instance free_projective {G α : Type u} [Group G] :
     Projective (free k G α) :=
   equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
-      (ModuleCat.of (MonoidAlgebra k G) (Representation.free k G α).asModule)
+      (ModuleCat.of k[G] (Representation.free k G α).asModule)
       _ (Representation.freeAsModuleBasis k G α)
 
 section
