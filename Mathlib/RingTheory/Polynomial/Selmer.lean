@@ -278,13 +278,6 @@ open Equiv Pointwise
 
 open IntermediateField
 
-theorem heinglemma {F : Type*} [Field F] (p : F[X]) (E : Type*) [Field E] [Algebra F E]
-    [Fact (p.map (algebraMap F E)).Splits] :
-    Gal.galActionHom p E =
-      ((Polynomial.Gal.rootsEquivRoots p E)).permCongrHom.toMonoidHom.comp
-        (MulAction.toPermHom p.Gal (p.rootSet p.SplittingField)) := by
-  ext; simp [Gal.galActionHom, Polynomial.Gal.smul_def]
-
 attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
 
 attribute [-instance] Gal.smul Gal.galAction -- todo: redefine in more general semiring context
@@ -304,7 +297,9 @@ theorem _root_.Polynomial.Splits.of_splits_map_of_injective {R : Type*} [CommRin
   simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
 
 
-theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀) :
+theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
+    (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
+      f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
     -- condition on at most on root collision mod p :
     Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
   classical
@@ -318,9 +313,6 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀) 
   let R := 𝓞 K
   let G := f.Gal
   have h_transitive := Gal.galAction_isPretransitive f ℂ hf'
-  have h_faithful : FaithfulSMul G (f.rootSet K) := by
-    -- might not actually be necessary
-    sorry
   let e := Polynomial.Gal.rootsEquivRoots f ℂ
   have he : Gal.galActionHom f ℂ = e.permCongrHom.toMonoidHom.comp
       (MulAction.toPermHom G (f.rootSet K)) := by
@@ -368,9 +360,6 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀) 
     specialize he (e (e' x))
     simp at he
     exact he.symm
-  replace h_faithful : FaithfulSMul G (f₀.rootSet R) := by
-    -- might not actually be necessary
-    sorry
   have h1 : (f₀.map (algebraMap ℤ R)).Splits := by
     have h : (f.map (algebraMap ℚ K)).Splits := SplittingField.splits f
     rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ R K, ← map_map] at h
@@ -385,9 +374,17 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀) 
     exact ⟨y, Subtype.ext_iff.mp hy⟩
   have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
   refine tada' (S := R) f₀ hf₀ h1 G (genthm₀ K G) ?_
-  sorry
-
-#check roots_map
+  intro m
+  let := Ideal.Quotient.field m.asIdeal
+  have h' : (f₀.rootSet R).ncard ≤ f₀.natDegree := by
+    -- this should be a lemma
+    rw [rootSet, Set.ncard_coe_finset]
+    grw [Multiset.toFinset_card_le]
+    rw [aroots_def]
+    exact f₀.card_roots_map_le_natDegree
+  refine le_trans h' (h (R ⧸ m.asIdeal) ?_)
+  rw [IsScalarTower.algebraMap_eq ℤ R (R ⧸ m.asIdeal), ← Polynomial.map_map]
+  exact h1.map _
 
 end Moore
 
@@ -463,8 +460,15 @@ theorem X_pow_sub_X_sub_one_gal :
   have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
     simp only [trinomial, C_neg, C_1]; ring
   have h := tada'' (X ^ n - X - 1) (hp ▸ trinomial_monic zero_lt_one hn)
-    (X_pow_sub_X_sub_one_irreducible hn.ne')
-  rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
-    Polynomial.map_X] at h
+    (X_pow_sub_X_sub_one_irreducible hn.ne') ?_
+  · rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
+      Polynomial.map_X] at h
+  · classical
+    intro F _ hF
+    have := hF.natDegree_eq_card_roots
+    rw [Monic.natDegree_map (hp ▸ trinomial_monic zero_lt_one hn)] at this
+    rw [this]
+    rw [rootSet_def, aroots_def, Set.ncard_coe_finset]
+    sorry
 
 end Polynomial
