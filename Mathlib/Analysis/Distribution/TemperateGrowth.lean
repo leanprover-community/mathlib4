@@ -228,7 +228,7 @@ variable (H) in
 theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
   apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
   · rw [fderiv_norm_sq]
-    convert (2 • (innerSL ℝ)).hasTemperateGrowth
+    convert (2 • innerSL ℝ).hasTemperateGrowth
   · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
   · intro x
     rw [norm_pow, norm_norm, one_mul, add_pow_two]
