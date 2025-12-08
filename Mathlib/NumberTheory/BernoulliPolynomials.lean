@@ -63,13 +63,8 @@ theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
   simp only [bernoulli, finset_sum_coeff, coeff_monomial]
   split_ifs with h
-  · rw [Finset.sum_eq_single (n - i)]
-    · rw [if_pos (by grind), choose_symm h]
-    · grind
-    · grind
-  · apply Finset.sum_eq_zero fun j hj => ?_
-    rw [if_neg]
-    grind
+  · convert sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
+  · exact Finset.sum_eq_zero <| by grind
 
 /-
 ### examples
@@ -207,9 +202,8 @@ theorem bernoulli_comp_one_add_X (n : ℕ) :
   cases d with
   | zero => simp
   | succ d =>
-  have nz : (d + 2 : ℕ) ≠ 0 := by norm_cast
-  rw [← smul_right_inj nz, ← smul_comp, smul_add, bernoulli_eq_sub_sum', sub_comp, sum_comp]
-  simp only [add_assoc, one_add_one_eq_two, smul_smul]
+  rw [← smul_right_inj (show d + 2 ≠ 0 by positivity), ← smul_comp, smul_add] 
+  simp only [bernoulli_eq_sub_sum', sub_comp, sum_comp, add_assoc, one_add_one_eq_two, smul_smul]
   conv_lhs =>
     enter [2]
     apply_congr
@@ -255,8 +249,7 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
 
 theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (-x) = (-1) ^ n * ((bernoulli n).eval x + n * x ^ (n - 1)) := by
-  have := bernoulli_comp_neg_X n
-  simpa [mul_add] using congr(Polynomial.eval x $this)
+  simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)
 
 theorem bernoulli_comp_one_sub_X (n : ℕ) :
     (Polynomial.bernoulli n).comp (1 - Polynomial.X) = (-1) ^ n * Polynomial.bernoulli n := by
@@ -265,10 +258,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
   | succ n =>
     trans ((bernoulli (n + 1)).comp (1 + X)).comp (-X)
     · simp [Polynomial.comp_assoc, sub_eq_add_neg]
-    simp only [bernoulli_comp_one_add_X, add_tsub_cancel_right, nsmul_eq_mul, Nat.cast_add,
-      Nat.cast_one, add_comp, bernoulli_comp_neg_X, Int.reduceNeg, smul_add, zsmul_eq_mul,
-      Int.cast_pow, Int.cast_neg, Int.cast_one, mul_comp, natCast_comp, one_comp, pow_comp, X_comp,
-      neg_pow (X : Polynomial ℚ), add_assoc, add_eq_left]
+    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ), add_assoc]
     ring
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :

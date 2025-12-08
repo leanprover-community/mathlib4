@@ -95,8 +95,7 @@ theorem contDiff_bernoulliFun : ContDiff ℝ ⊤ (bernoulliFun k) := by
   simp +unfoldPartialApp [bernoulliFun, Polynomial.eval_map_algebraMap, Polynomial.contDiff_aeval]
 
 @[continuity, fun_prop]
-theorem continuous_bernoulliFun : Continuous (bernoulliFun k) :=
-  contDiff_bernoulliFun.continuous
+theorem continuous_bernoulliFun : Continuous (bernoulliFun k) := Polynomial.continuous_aeval _
 
 theorem intervalIntegrable_bernoulliFun {a b : ℝ} :
     IntervalIntegrable (bernoulliFun k) volume a b :=
@@ -128,10 +127,8 @@ theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
 theorem bernoulliFun_eq_integral (k : ℕ) (x y : ℝ) :
     bernoulliFun (k + 1) y =
       bernoulliFun (k + 1) x + ∫ t in x..y, (k + 1 : ℕ) * bernoulliFun k t := by
-  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt (f := bernoulliFun (k + 1))]
-  · abel
-  · intro y _
-    apply hasDerivAt_bernoulliFun
+  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt, add_sub_cancel]
+  · exact fun y _ ↦ hasDerivAt_bernoulliFun _ y
   · exact Continuous.intervalIntegrable (by fun_prop) _ _
 
 end Calculus
@@ -139,17 +136,15 @@ end Calculus
 /-- Reflection principle: `B_s(1 - x) = (-1)^s B_s(x)` -/
 theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
     bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
-  simp only [bernoulliFun]
-  have := Polynomial.bernoulli_comp_one_sub_X k
-  apply_fun (·.aeval x) at this
-  simpa [Polynomial.aeval_comp] using this
+  simpa [bernoulliFun, Polynomial.aeval_comp] 
+    using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
 
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
     bernoulliFun k (m * x) =
       m ^ k / m * ∑ i ∈ Finset.range m, bernoulliFun k (x + i / m) := by
   have m0' : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr m0
-  set f := fun k x ↦ bernoulliFun k (m * x) -
+  let f (k x) := bernoulliFun k (m * x) -
     m ^ k / m * ∑ i ∈ Finset.range m, bernoulliFun k (x + i / ↑m)
   suffices h : ∀ x, f k x = 0 by
     rw [← sub_eq_zero]
@@ -161,8 +156,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
       nsmul_eq_mul, mul_one, sub_eq_zero]
     rw [inv_mul_cancel₀ (Nat.cast_ne_zero.mpr m0)]
   | succ k h =>
-    have d : ∀ x, HasDerivAt (fun x ↦ f (k + 1) x) (m * (k + 1) * f k x) x := by
-      intro x
+    have d (x) : HasDerivAt (f (k + 1)) (m * (k + 1) * f k x) x := by
       simp only [f, mul_sub, Finset.mul_sum, pow_succ, mul_div_cancel_right₀ _ m0',
         ← mul_assoc, mul_comm _ (_ / _), div_mul_cancel₀ _ m0']
       apply HasDerivAt.sub
@@ -174,9 +168,8 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
         rw [← mul_one (_ * _)]
         exact (hasDerivAt_bernoulliFun _ _).comp _ ((hasDerivAt_id' _).add_const _)
     simp only [h, mul_zero] at d
-    have fc : ∀ x y, f (k + 1) x = f (k + 1) y :=
-      is_const_of_deriv_eq_zero (fun _ ↦ (d _).differentiableAt) (fun _ ↦ (d _).deriv)
-    replace fc := fun x ↦ fc x 0
+    have fc (x) : f (k + 1) x = f (k + 1) 0 :=
+      is_const_of_deriv_eq_zero (fun _ ↦ (d _).differentiableAt) (fun _ ↦ (d _).deriv) x 0
     generalize f (k + 1) 0 = c at fc
     have i : ∫ x in (0 : ℝ)..m⁻¹, f (k + 1) x = 0 := by
       simp only [f]
