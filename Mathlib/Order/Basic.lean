@@ -398,6 +398,22 @@ theorem forall_lt_iff_le : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
 @[deprecated (since := "2025-06-07")] alias le_of_forall_lt' := le_of_forall_gt
 @[deprecated (since := "2025-06-07")] alias forall_lt_iff_le' := forall_gt_iff_le
 
+@[to_dual le_of_forall_gt_imp_ne]
+theorem le_of_forall_lt_imp_ne (H : ∀ c < a, c ≠ b) : a ≤ b :=
+  le_of_not_gt fun hb ↦ H b hb rfl
+
+@[to_dual lt_of_forall_ge_imp_ne]
+theorem lt_of_forall_le_imp_ne (H : ∀ c ≤ a, c ≠ b) : a < b :=
+  lt_of_not_ge fun hb ↦ H b hb rfl
+
+@[to_dual forall_gt_imp_ne_iff_le]
+theorem forall_lt_imp_ne_iff_le : (∀ c < a, c ≠ b) ↔ a ≤ b :=
+  ⟨le_of_forall_lt_imp_ne, fun ha _ hc ↦ (hc.trans_le ha).ne⟩
+
+@[to_dual forall_ge_imp_ne_iff_lt]
+theorem forall_le_imp_ne_iff_lt : (∀ c ≤ a, c ≠ b) ↔ a < b :=
+  ⟨lt_of_forall_le_imp_ne, fun ha _ hc ↦ (hc.trans_lt ha).ne⟩
+
 @[to_dual eq_of_forall_gt_iff]
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
