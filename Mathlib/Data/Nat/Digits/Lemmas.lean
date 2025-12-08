@@ -324,11 +324,11 @@ theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 
 open List
 
 /--
-The list of digits of `n` in base `b` with some appended `0` so that its length is equal to `l`
-if its lenght is `< 0`. This is defined to be the inverse function of `Nat.ofDigits` for
-`n < b ^ l`, see `Nat.setInvOn_digitsAppend_ofDigits`.
-If `n ≥ b ^ l`, then the list of digits of `n` in base `b` is at least `l` and then this function
-just return `b.digits n`.
+The list of digits of `n` in base `b` with some `0`'s appended so that its length is equal to `l`
+if it is `< l`. This is an inverse function of `Nat.ofDigits` for `n < b ^ l`,
+see `Nat.setInvOn_digitsAppend_ofDigits`.
+If `n ≥ b ^ l`, then the list of digits of `n` in base `b` is of length at least `l` and
+this function just return `b.digits n`.
 -/
 abbrev digitsAppend (b l n : ℕ) : List ℕ :=
   b.digits n ++ replicate (l - (b.digits n).length) 0
@@ -366,7 +366,7 @@ theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
   · exact fun x hx ↦ lt_of_mem_digitsAppend hb l x hx
 
 /--
-The map `L ↦ Nat.ofDigits b L` is bijection between the set of list of natural integers of
+The map `L ↦ Nat.ofDigits b L` is bijection between the set of lists of natural integers of
 length `l` with coefficients `< b` to the set of natural integers `< b ^ l`.
 -/
 theorem bijOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
@@ -376,7 +376,7 @@ theorem bijOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
 
 /--
 The map `n ↦ Nat.digitsAppend b L` is bijection between the set of natural integers `< b ^ l`
-to the set of list of natural integers of length `l` with coefficients `< b` to .
+to the set of lists of natural integers of length `l` with coefficients `< b` to .
 -/
 theorem bijOn_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | l = L.length ∧ ∀ x ∈ L, x < b} :=
@@ -395,7 +395,7 @@ namespace List
 open Nat
 
 /--
-The set of list of natural integers of length `l` with coefficients `< b` as a `Finset`.
+The set of lists of natural integers of length `l` with coefficients `< b` as a `Finset`.
 This can be seen as the set of lists of length `l` of the digits in base `b` of
 the integers `< b ^ l`.
 Having this set as a `Finset` can be helpful for some proofs.
@@ -412,7 +412,7 @@ theorem mem_fixedLengthDigits_iff {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ
 
 /--
 The bijection `Nat.bijOn_ofDigits` stated as a bijection between `Finset`.
-This spelling can helpful for some proofs.
+This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
@@ -422,7 +422,7 @@ theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
 
 /--
 The bijection `Nat.bijOn_digitsAppend` stated as a bijection between `Finset`.
-This spelling can helpful for some proofs.
+This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l)  := by
@@ -524,7 +524,7 @@ theorem sum_fixedLengthDigits_sum {b : ℕ} (hb : 1 < b) (l : ℕ) :
 end List
 
 /--
-The formula for the sum of the sum of the digits in `b` over the natural integers `< b ^ l`.
+The formula for the sum of the sum of the digits in base `b` over the natural integers `< b ^ l`.
 -/
 theorem Nat.sum_sum_digits_eq {b : ℕ} (hb : 1 < b) (l : ℕ) :
     ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * b.choose 2 := by
