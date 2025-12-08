@@ -303,6 +303,19 @@ theorem Splits.aeval_eq_prod_aroots_of_monic {A : Type*} [CommRing A] [IsDomain 
     f.aeval x = ((f.aroots A).map (x - ·)).prod := by
   simp [hf.aeval_eq_prod_aroots, hm]
 
+theorem Splits.eval_derivative [DecidableEq R] (hf : f.Splits) (x : R) :
+    eval x f.derivative = f.leadingCoeff *
+      (f.roots.map fun a ↦ ((f.roots.erase a).map (x - ·)).prod).sum := by
+  conv_lhs => rw [hf.eq_prod_roots]
+  simp [derivative_prod, eval_multisetSum, eval_multiset_prod]
+
+/-- Let `f` be a monic polynomial over that splits. Let `x` be a root of `f`.
+Then $f'(r) = \prod_{a}(x-a)$, where the product in the RHS is taken over all roots of `f`,
+with the multiplicity of `x` reduced by one. -/
+theorem Splits.eval_root_derivative [DecidableEq R] (hf : f.Splits) (hm : f.Monic) {x : R}
+    (hx : x ∈ f.roots) : eval x f.derivative = ((f.roots.erase x).map (x - ·)).prod := by
+  rw [← eval_multiset_prod_X_sub_C_derivative hx, ← hf.eq_prod_roots_of_monic hm]
+
 theorem Splits.eq_X_sub_C_of_single_root (hf : Splits f) {x : R} (hr : f.roots = {x}) :
     f = C f.leadingCoeff * (X - C x) := by
   rw [hf.eq_prod_roots, hr]
