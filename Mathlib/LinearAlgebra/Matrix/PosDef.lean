@@ -106,7 +106,7 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
 protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulMono α R] {x : Matrix n n R}
     (hx : x.PosSemidef) {a : α} (ha : 0 ≤ a) : (a • x).PosSemidef := by
-  refine ⟨IsSelfAdjoint.smul (.of_nonneg ha) hx.1, fun y => ?_⟩
+  refine ⟨.smul (.of_nonneg ha) hx.1, fun y => ?_⟩
   simpa [mul_smul_comm, smul_mul_assoc, ← Finsupp.smul_sum] using smul_nonneg ha (hx.2 _)
 
 protected lemma zero : PosSemidef (0 : Matrix n n R) := ⟨isHermitian_zero, by simp⟩
