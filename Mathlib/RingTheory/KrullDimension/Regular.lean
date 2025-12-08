@@ -160,39 +160,29 @@ lemma _root_.ringKrullDim_le_ringKrullDim_add_card {S : Finset R}
     simp only [Finset.card_insert_of_notMem nmem, Nat.cast_add, Nat.cast_one, add_comm _ 1,
       ← add_assoc]
     apply add_le_add_left
-    let f : R ⧸ span (SetLike.coe S) →+* R ⧸ span (SetLike.coe (insert a S)) :=
-      Ideal.Quotient.factor (Ideal.span_mono (S.subset_insert a))
-    have surj : Function.Surjective f := Ideal.Quotient.factor_surjective _
-    have kereq : RingHom.ker f =
-      (Ideal.Quotient.mk (span (SetLike.coe S)) a) • (⊤ : Ideal (R ⧸ span (SetLike.coe S))) := by
-      ext x
-      rcases Ideal.Quotient.mk_surjective x with ⟨y, hy⟩
-      simp only [← hy, RingHom.mem_ker, Quotient.factor_mk, f]
-      rw [← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top,
-        Ideal.Quotient.eq_zero_iff_mem, ← mem_comap]
-      have : span {(Ideal.Quotient.mk (span (SetLike.coe S))) a} =
-        (span {a}).map (Ideal.Quotient.mk (span (SetLike.coe S))) := by simp [Ideal.map_span]
-      rw [this, Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, Ideal.mk_ker,
-        ← Ideal.span_union]
-      simp
-    let f' : (R ⧸ span (SetLike.coe S)) ⧸ (Ideal.Quotient.mk (span (SetLike.coe S)) a) •
-      (⊤ : Ideal (R ⧸ span (SetLike.coe S))) →+* R ⧸ span (SetLike.coe (insert a S)) :=
-      Ideal.Quotient.lift _ f (by simp [← kereq])
-    have bij : Function.Bijective f' := by
-      refine ⟨?_, Ideal.Quotient.lift_surjective_of_surjective _ _
-        (Ideal.Quotient.factor_surjective _)⟩
-      rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
-      intro x hx
-      rcases Ideal.Quotient.mk_surjective x with ⟨y, hy⟩
-      simp only [← hy, Ideal.Quotient.lift_mk, ← RingHom.mem_ker, kereq, f'] at hx
-      simpa [← hy, Ideal.Quotient.eq_zero_iff_mem] using hx
-    let e : (R ⧸ span (SetLike.coe S)) ⧸ (Ideal.Quotient.mk (span (SetLike.coe S)) a) •
-      (⊤ : Ideal (R ⧸ span (SetLike.coe S))) ≃+* R ⧸ span (SetLike.coe (insert a S)) :=
-      RingEquiv.ofBijective f' bij
+    have eq1 : (Ideal.Quotient.mk (span S) a) • (⊤ : Ideal (R ⧸ span (S : Set R))) =
+      (span {a}).map (Ideal.Quotient.mk (span S)) := by
+      simp [← Submodule.ideal_span_singleton_smul, Ideal.map_span]
+    have eq2 : span (((insert a S) : Finset R) : Set R) = (span S) ⊔ (span {a}) := by
+      simp [Ideal.span_insert, sup_comm]
+    let e : (R ⧸ span S) ⧸ (Ideal.Quotient.mk (span S) a) •
+      (⊤ : Ideal (R ⧸ span (S : Set R))) ≃+* R ⧸ span (((insert a S) : Finset R) : Set R) := by
+      rw [eq1, eq2]
+      exact DoubleQuot.quotQuotEquivQuotSup (span (S : Set R)) (span {a})
     rw [← ringKrullDim_eq_of_ringEquiv e]
     apply ringKrullDim_le_ringKrullDim_quotSMulTop_succ
     have := ((IsLocalRing.local_hom_TFAE _).out 0 4).mp lochom
     simpa [← mem_comap, this] using hS (Finset.mem_insert_self a S)
+
+lemma _root_.ringKrullDim_le_ringKrullDim_add_spanFinrank {I : Ideal R} (h : I ≠ ⊤)
+    (fg : I.FG) : ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  let _ : Fintype I.generators := (Submodule.FG.finite_generators fg).fintype
+  have eq : Ideal.span I.generators.toFinset = I := by
+    simpa using Submodule.span_generators I
+  rw [← Submodule.FG.generators_ncard fg, Set.ncard_eq_toFinset_card',
+    ← ringKrullDim_eq_of_ringEquiv (Ideal.quotEquivOfEq eq)]
+  apply ringKrullDim_le_ringKrullDim_add_card
+  simpa using (Submodule.FG.generators_mem I).trans (le_maximalIdeal h)
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
