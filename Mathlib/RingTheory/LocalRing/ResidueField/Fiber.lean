@@ -17,7 +17,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 * `Ideal.Fiber`: `p.Fiber S` is the fiber of a prime `p` of `R` in an `R`-algebra `S`,
   defined to be `κ(p) ⊗ S`.
 * `PrimeSpectrum.preimageHomeomorphFiber` : We show that there is a homeomorphism between the
-  fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal `p` and
+  fiber of the induced map `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal `p` and
   the prime spectrum of `p.Fiber S`.
 -/
 
@@ -42,7 +42,10 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     ← IsLocalRing.ResidueField.algebraMap_eq, ← algebraMap.coe_smul,
     ← IsScalarTower.algebraMap_apply] using congr(t • $e)
 
-/-- The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`. -/
+/-- The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`.
+
+See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
+and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
 abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R S] : Type _ :=
   p.ResidueField ⊗[R] S
 
@@ -52,7 +55,7 @@ lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, 
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
 
 variable (R S) in
-/-- The fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal
+/-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal
 `p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
 noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
@@ -78,7 +81,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap]
 
 variable (R S) in
-/-- The `OrderIso` between the fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prim
+/-- The `OrderIso` between the fiber of `PrimeSpectrum S → PrimeSpectrum R` at a prime
 ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
 noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
@@ -101,8 +104,8 @@ noncomputable def PrimeSpectrum.preimageOrderIsoFiber (p : PrimeSpectrum R) :
 alias PrimeSpectrum.preimageOrderIsoTensorResidueField := PrimeSpectrum.preimageOrderIsoFiber
 
 variable (R S) in
-/-- The `OrderIso` between fiber of a ring homomorphism `algebraMap R S : R →+* S`
-at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
+/-- The `OrderIso` between primes over a prime ideal `p : Ideal R`,
+and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
 noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing R]
     [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
@@ -111,7 +114,7 @@ noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing 
     fun q ↦ ⟨q.1.asIdeal, ⟨q.1.2, ⟨congr($(q.2).1).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
     (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
-/-- The `Homeomorph` between fiber of a ring homomorphism `algebraMap R S : R →+* S`
+/-- The `Homeomorph` between fiber of `PrimeSpectrum S → PrimeSpectrum R`
 at a prime ideal `p : PrimeSpectrum R` and the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps!]
 noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing R]
