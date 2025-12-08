@@ -3,9 +3,11 @@ Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+module
+
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 # Hamiltonian Graphs
@@ -18,6 +20,8 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 - `SimpleGraph.Walk.IsHamiltonianCycle`: Predicate for a walk to be a Hamiltonian cycle.
 - `SimpleGraph.IsHamiltonian`: Predicate for a graph to be Hamiltonian.
 -/
+
+@[expose] public section
 
 open Finset Function
 
@@ -72,7 +76,7 @@ lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card �
 /-- The length of the support of a Hamiltonian path equals the number of vertices of the graph. -/
 lemma IsHamiltonian.length_support (hp : p.IsHamiltonian) : p.support.length = Fintype.card α := by
   have : Inhabited α := ⟨a⟩
-  grind [Fintype.card_ne_zero, length_support, length_eq]
+  grind [Fintype.card_ne_zero, length_eq]
 
 end
 
@@ -138,7 +142,7 @@ lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
 lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
   rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
-  rw [Nat.succ_le, Fintype.card_pos_iff]
+  rw [Nat.succ_le_iff, Fintype.card_pos_iff]
   exact ⟨a⟩
 
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :

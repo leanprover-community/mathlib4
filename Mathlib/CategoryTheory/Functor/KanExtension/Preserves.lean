@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of Kan extensions
@@ -19,6 +21,8 @@ diagrams.
 We introduce the dual typeclass `G.PreservesRightKanExtension`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Functor
 
@@ -102,7 +106,7 @@ def LeftExtension.IsPointwiseLeftKanExtension.postcompose
     LeftExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseLeftKanExtension := fun c ↦
   (hE c).postcompose G
 
-/-- The cocone at a point of the whiskering right by `G`of an extension is isomorphic to the
+/-- The cocone at a point of the whiskering right by `G` of an extension is isomorphic to the
 action of `G` on the cocone at that point for the original extension. -/
 @[simps!]
 def LeftExtension.coconeAtWhiskerRightIso (E : LeftExtension L F) (c : C) :
@@ -354,7 +358,7 @@ def RightExtension.IsPointwiseRightKanExtension.postcompose
     RightExtension.postcompose₂ L F G |>.obj E |>.IsPointwiseRightKanExtension := fun c ↦
   (hE c).postcompose G
 
-/-- The cone at a point of the whiskering right by `G`of an extension is isomorphic to the
+/-- The cone at a point of the whiskering right by `G` of an extension is isomorphic to the
 action of `G` on the cone at that point for the original extension. -/
 @[simps!]
 def RightExtension.coneAtWhiskerRightIso (E : RightExtension L F) (c : C) :

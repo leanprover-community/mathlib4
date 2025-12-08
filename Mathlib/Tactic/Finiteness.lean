@@ -3,7 +3,9 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Positivity.Core
+module
+
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Finiteness tactic
@@ -36,6 +38,8 @@ representation that things are finite, so we do so as well.
 Improve `finiteness` to also deal with other situations, such as balls in proper spaces with
 a locally finite measure.
 -/
+
+public meta section
 
 open Aesop.BuiltinRules in
 attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
@@ -71,4 +75,4 @@ macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_c
 /-!
  We register `finiteness` with the `hint` tactic.
  -/
-register_hint finiteness
+register_hint 1000 finiteness

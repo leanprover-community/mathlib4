@@ -3,10 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Order.Filter.IndicatorFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # Indicator of a set as an element of `Lp`
@@ -19,6 +21,8 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 * `MeasureTheory.indicatorConstLp`: Indicator of a set as an element of `Lp`.
 * `MeasureTheory.Lp.const`: Constant function as an element of `Lp` for a finite measure.
 -/
+
+@[expose] public section
 
 noncomputable section
 

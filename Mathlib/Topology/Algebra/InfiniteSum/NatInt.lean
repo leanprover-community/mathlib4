@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+module
 
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.Order.Filter.AtTopBot.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.Order.Filter.AtTopBot.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
@@ -16,6 +17,8 @@ applied to the important special cases where the domain is `ℕ` or `ℤ`. For i
 formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add_tsum_nat_add`, as well as
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -287,7 +290,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 @[to_additive]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -423,12 +426,11 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
-        simp only [mem_sdiff, mem_union, mem_image, Nat.cast_eq_zero, exists_eq_right, neg_eq_zero,
-          or_self, mem_inter, and_self, and_not_self, u1, u2] at hx
+        simp [u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image] at hx
         suffices x = 0 by simp only [this, if_true]
-        cutsat
+        lia
     _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
     _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by simp [u1, u2]
     _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩

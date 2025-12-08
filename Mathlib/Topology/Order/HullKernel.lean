@@ -3,11 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Data.Set.Subset
-import Mathlib.Order.Irreducible
-import Mathlib.Topology.Order.LowerUpperTopology
-import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Order.Irreducible
+public import Mathlib.Topology.Order.LowerUpperTopology
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Hull-Kernel Topology
@@ -51,6 +52,8 @@ primitive spectrum of the lattice of M-ideals of a Banach space.
 lower topology, hull-kernel topology, Jacobson topology, structure topology, primitive spectrum
 
 -/
+
+@[expose] public section
 
 variable {α}
 

@@ -3,10 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Formal power series (in one variable) - Order
 
@@ -24,6 +25,8 @@ dividing out the largest power of X that divides `f`, that is its order. This is
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Polynomial
@@ -41,11 +44,10 @@ section OrderBasic
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine not_iff_not.mp ?_
-  push_neg
+  contrapose!
   simp
 
-/-- The order of a formal power series `φ` is the greatest `n : PartENat`
+/-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
 def order (φ : R⟦X⟧) : ℕ∞ :=
   letI := Classical.decEq R
@@ -210,7 +212,7 @@ theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
-  · rw [h, order_eq_top, LinearMap.map_zero]
+  · rw [h, order_eq_top, map_zero]
   · rw [order_eq]
     constructor <;> intro i hi
     · simp only [Nat.cast_inj] at hi
@@ -235,7 +237,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  cutsat
+  lia
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by

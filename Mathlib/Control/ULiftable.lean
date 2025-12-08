@@ -3,12 +3,14 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Monad.Basic
-import Mathlib.Control.Monad.Cont
-import Mathlib.Control.Monad.Writer
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Logic.Equiv.Functor
-import Mathlib.Control.Lawful
+module
+
+public import Mathlib.Control.Monad.Basic
+public import Mathlib.Control.Monad.Cont
+public import Mathlib.Control.Monad.Writer
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.Equiv.Functor
+public import Mathlib.Control.Lawful
 
 /-!
 # Universe lifting for type families
@@ -33,6 +35,8 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 universe polymorphism functor
 
 -/
+
+@[expose] public section
 
 
 universe v u₀ u₁ v₀ v₁ v₂ w w₀ w₁

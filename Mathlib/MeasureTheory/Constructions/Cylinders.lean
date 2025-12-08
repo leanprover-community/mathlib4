@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.MeasureTheory.PiSystem
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Topology.Constructions
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -39,6 +41,8 @@ a product set.
   product σ-algebra
 
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -436,7 +440,7 @@ lemma measurable_uniqueElim_cylinderEvents [Unique ι] :
 /-- The function `update f a : X a → Π a, X a` is always measurable.
 This doesn't require `f` to be measurable.
 This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[fun_prop]
 lemma measurable_update_cylinderEvents (f : ∀ a : ι, X a) {a : ι} [DecidableEq ι] :
     @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
   measurable_update_cylinderEvents'.comp measurable_prodMk_left

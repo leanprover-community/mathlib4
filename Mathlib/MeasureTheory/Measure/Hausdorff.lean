@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Holder
-import Mathlib.Topology.MetricSpace.MetricSeparated
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.MetricSpace.Holder
+public import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -105,6 +107,8 @@ dimension.
 
 Hausdorff measure, measure, metric measure
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal Topology
@@ -981,8 +985,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
 
 variable (ι X)
 
-theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]
-    [SecondCountableTopology X] (d : ℝ) :
+theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.funUnique ι X) μH[d] μH[d] :=
   (IsometryEquiv.funUnique ι X).measurePreserving_hausdorffMeasure _
 

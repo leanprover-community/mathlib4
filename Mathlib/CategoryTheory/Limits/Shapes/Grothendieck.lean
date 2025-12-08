@@ -3,15 +3,17 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
 
 * Shows that if a functor `G : Grothendieck F ⥤ H`, with `F : C ⥤ Cat`, has a colimit, and every
   fiber of `G` has a colimit, then so does the fiberwise colimit functor `C ⥤ H`.
-* Vice versa, if a each fiber of `G` has a colimit and the fiberwise colimit functor has a colimit,
+* Vice versa, if each fiber of `G` has a colimit and the fiberwise colimit functor has a colimit,
   then `G` has a colimit.
 * Shows that colimits of functors on the Grothendieck construction are colimits of
   "fibered colimits", i.e. of applying the colimit to each fiber of the functor.
@@ -19,6 +21,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
   on each fiber shape `F.obj X` and on the base category `C`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -77,6 +81,8 @@ def fiberwiseColimit : C ⥤ H where
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z))]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
+-- TODO: find a good way to fix the linter; simp cannot be combined with the subsequent apply
+set_option linter.flexible false in
 variable (H) (F) in
 /-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor
 `(Grothendieck F ⥤ H) ⥤ (C ⥤ H)` between functor categories. -/

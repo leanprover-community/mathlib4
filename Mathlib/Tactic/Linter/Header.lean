@@ -3,9 +3,11 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
-import Lean.Elab.Command
-import Lean.Elab.ParseImportsFast
-import Mathlib.Tactic.Linter.DirectoryDependency
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
+public meta import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -48,6 +50,8 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
+meta section
+
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
@@ -72,8 +76,8 @@ It returns the array of all `import` identifiers in `s`. -/
 --   to Mathlib.Init (where this linter is imported)
 -- - that function does not return the Syntax corresponding to each import,
 --   which we use to log more precise warnings.
-partial
-def getImportIds (s : Syntax) : Array Syntax :=
+-- This function is public as the `DeprecatedModule` linter also uses it.
+public partial def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
   if let `(Lean.Parser.Module.import| import $n) := s then
     rest.push n
@@ -97,7 +101,7 @@ In conclusion, either the parsing is successful, and the linter can continue wit
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
 def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Syntax := do
-  let upToHere : Substring := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
+  let upToHere : Substring.Raw := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
@@ -105,8 +109,8 @@ def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Sy
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) (offset : String.Pos.Raw := 0) : Syntax :=
-  let beg := ((s.splitOn pattern).getD 0 "").endPos.offsetBy offset
-  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos.offsetBy offset
+  let beg := ((s.splitOn pattern).getD 0 "").rawEndPos.offsetBy offset
+  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).rawEndPos.offsetBy offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
 /-- Return if `line` looks like a correct authors line in a copyright header.
@@ -156,7 +160,7 @@ The linter checks that
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
-def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
+public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
@@ -209,7 +213,7 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     -- If the list of authors spans multiple lines, all but the last line should end with a trailing
     -- comma. This excludes e.g. other comments in the copyright header.
     let authorsLine := "\n".intercalate authorsLines
-    let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
+    let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).rawEndPos
     if authorsLines.length > 1 && !authorsLines.dropLast.all (·.endsWith ",") then
       output := output.push ((toSyntax copyright authorsLine),
         "If an authors line spans multiple lines, \
@@ -265,7 +269,7 @@ It emits a warning if
 
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 -/
-register_option linter.style.header : Bool := {
+public register_option linter.style.header : Bool := {
   defValue := false
   descr := "enable the header style linter"
 }

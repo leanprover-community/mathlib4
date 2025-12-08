@@ -3,7 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Meromorphic functions
@@ -15,6 +17,8 @@ Main statements:
   `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
   and `g` analytic at `z₀`.
 -/
+
+@[expose] public section
 
 open Filter
 
@@ -313,7 +317,7 @@ lemma fun_pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   cases n with
-  | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
+  | ofNat m => simpa only [Int.ofNat_eq_natCast, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
 @[fun_prop]
