@@ -158,7 +158,14 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
+  have h : (∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w)) ↔
+      ∀ ⦃v w : V⦄, G.Adj v w → G.Adj v w ∧ G.IsBridge s(v, w) :=
+    Iff.intro
+      (fun h₁ : ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) =>
+        fun ⦃v w : V⦄ => (fun h₂ : G.Adj v w => And.intro h₂ (h₁ h₂)))
+      (fun h₃ : ∀ ⦃v w : V⦄, G.Adj v w → G.Adj v w ∧ G.IsBridge s(v, w) =>
+        fun ⦃v w : V⦄ => (fun h₄ : G.Adj v w => (h₃ h₄).right))
+  simp_rw [h, adj_and_isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw
