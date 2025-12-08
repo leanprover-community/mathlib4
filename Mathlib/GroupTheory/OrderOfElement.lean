@@ -1236,16 +1236,16 @@ lemma Pi.fintype_orderOf_eq [Fintype ι] (x : ∀ i, α i) :
 
 -- alternative name: `Pi.orderOf_single_dvd_orderOf`
 @[to_additive]
-theorem orderOf_single_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
+theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
   minimalPeriod_single_dvd_minimalPeriod_piMap
 
 @[to_additive]
-theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
+protected theorem IsOfFinOrder.apply {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
   hx.mono (orderOf_single_dvd_orderOf i)
 
 -- alternative names: `IsOfFinOrder.fintype_pi_mk`, `IsOfFinOrder.pi_mk_fintype`
 @[to_additive]
-theorem IsOfFinOrder.pi_mk [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+protected theorem IsOfFinOrder.pi [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
   simp only [← orderOf_ne_zero_iff, Pi.fintype_orderOf_eq]
   simp [Finset.lcm_eq_zero_iff]
 
