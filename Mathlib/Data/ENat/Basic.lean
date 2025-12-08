@@ -307,7 +307,7 @@ theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n =
   WithTop.le_coe_iff
 
 @[deprecated not_neg (since := "2025-12-03")]
-lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_neg
+protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
