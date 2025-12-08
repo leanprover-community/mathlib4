@@ -176,7 +176,7 @@ instance isCentralScalar [SMulZeroClass N R] [SMulZeroClass Nᵐᵒᵖ R] [IsCen
 end SMul
 
 @[to_additive (attr := simp, norm_cast)]
-lemma coe_add (f g : MonoidAlgebra R G) : ⇑(f + g) = f + g := rfl
+lemma coe_add (f g : R[G]) : ⇑(f + g) = f + g := rfl
 
 @[to_additive]
 lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
@@ -512,18 +512,15 @@ section Group
 variable [Group G]
 
 @[to_additive (attr := simp) (dont_translate := R) mul_single_apply]
-lemma mul_single_apply (x : MonoidAlgebra R G) (r : R) (g h : G) :
-    (x * single g r) h = x (h * g⁻¹) * r :=
+lemma mul_single_apply (x : R[G]) (r : R) (g h : G) : (x * single g r) h = x (h * g⁻¹) * r :=
   mul_single_apply_aux <| by simp [eq_mul_inv_iff_mul_eq]
 
 @[to_additive (attr := simp) (dont_translate := R) single_mul_apply]
-lemma single_mul_apply (x : MonoidAlgebra R G) (r : R) (g h : G) :
-    (single g r * x) h = r * x (g⁻¹ * h) :=
+lemma single_mul_apply (x : R[G]) (r : R) (g h : G) : (single g r * x) h = r * x (g⁻¹ * h) :=
   single_mul_apply_aux <| by simp [eq_inv_mul_iff_mul_eq]
 
 @[to_additive (dont_translate := R) mul_apply_left]
-lemma mul_apply_left (x y : MonoidAlgebra R G) (g : G) :
-    (x * y) g = x.sum fun h r ↦ r * y (h⁻¹ * g) := by
+lemma mul_apply_left (x y : R[G]) (g : G) : (x * y) g = x.sum fun h r ↦ r * y (h⁻¹ * g) := by
   classical
   rw [mul_apply]
   dsimp [Finsupp.sum]
@@ -531,8 +528,7 @@ lemma mul_apply_left (x y : MonoidAlgebra R G) (g : G) :
   simp +contextual [← eq_inv_mul_iff_mul_eq]
 
 @[to_additive (dont_translate := R) mul_apply_right]
-lemma mul_apply_right (x y : MonoidAlgebra R G) (g : G) :
-    (x * y) g = y.sum fun h r ↦ x (g * h⁻¹) * r := by
+lemma mul_apply_right (x y : R[G]) (g : G) : (x * y) g = y.sum fun h r ↦ x (g * h⁻¹) * r := by
   classical
   rw [mul_apply, Finsupp.sum_comm]
   dsimp [Finsupp.sum]

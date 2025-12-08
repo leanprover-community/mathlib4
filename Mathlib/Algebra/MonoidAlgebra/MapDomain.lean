@@ -36,7 +36,7 @@ by summing the coefficients along each fiber of `f`. -/]
 abbrev mapDomain (f : M → N) (v : R[M]) : R[N] := Finsupp.mapDomain f v
 
 @[to_additive]
-lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → R[M]) :
+lemma mapDomain_sum (f : M → N) (s : S[M]) (v : M → S → R[M]) :
     mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
 @[to_additive]
@@ -91,7 +91,7 @@ end MonoidAlgebra
 /-!
 #### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
 
-We have not defined `k[G] = MonoidAlgebra k (Multiplicative G)`
+We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
 because historically this caused problems;
 since the changes that have made `nsmul` definitional, this would be possible,
 but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.

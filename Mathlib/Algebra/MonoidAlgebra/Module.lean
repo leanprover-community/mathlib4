@@ -66,7 +66,7 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 
-TODO: Change the type to `DistribMulAction Gᵈᵐᵃ (MonoidAlgebra k G)` and then it can be an instance.
+TODO: Change the type to `DistribMulAction Gᵈᵐᵃ k[G]` and then it can be an instance.
 TODO: Generalise to a group acting on another, instead of just the left multiplication action.
 -/
 def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G k[G] :=
@@ -88,8 +88,7 @@ variable [Semiring k]
 /-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
 @[to_additive (dont_translate := R) (relevant_arg := G) singleDistribMulActionHom
 /-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
-def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) :
-    k →+[R] MonoidAlgebra k G where
+def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) : k →+[R] k[G] where
   __ := singleAddHom a
   map_smul' k m := by simp
 
@@ -97,7 +96,7 @@ def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) :
 @[to_additive (dont_translate := R) (relevant_arg := N) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
-    [DistribMulAction R k] {f g : MonoidAlgebra k G →+[R] N}
+    [DistribMulAction R k] {f g : k[G] →+[R] N}
     (h : ∀ a, f.comp (singleDistribMulActionHom a) = g.comp (singleDistribMulActionHom a)) :
     f = g :=
   Finsupp.distribMulActionHom_ext' h
@@ -105,7 +104,7 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMu
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
 @[to_additive (dont_translate := R) (relevant_arg := G)
 /-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
-abbrev lsingle [Semiring R] [Module R k] (a : G) : k →ₗ[R] MonoidAlgebra k G := Finsupp.lsingle a
+abbrev lsingle [Semiring R] [Module R k] (a : G) : k →ₗ[R] k[G] := Finsupp.lsingle a
 
 @[to_additive (attr := simp)]
 lemma lsingle_apply [Semiring R] [Module R k] (a : G) (b : k) :
@@ -115,7 +114,7 @@ lemma lsingle_apply [Semiring R] [Module R k] (a : G) (b : k) :
 /-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext high)]
 lemma lhom_ext' {N : Type*} [Semiring R] [AddCommMonoid N] [Module R N] [Module R k]
-    ⦃f g : MonoidAlgebra k G →ₗ[R] N⦄
+    ⦃f g : k[G] →ₗ[R] N⦄
     (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
     f = g :=
   Finsupp.lhom_ext' H
@@ -130,7 +129,7 @@ theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r :=
   simp
 
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
-    (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
+    (φ : k[G]) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom k k[G] c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
@@ -183,7 +182,7 @@ variable {V : Type*} [AddCommMonoid V]
 variable [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
 
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
-submodule over `MonoidAlgebra k G` -/
+submodule over `k[G]` -/
 def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :
     Submodule k[G] V where
   carrier := W
@@ -210,7 +209,7 @@ section MiscTheorems
 variable [Semiring k]
 
 theorem liftNC_smul {R : Type*} [AddZeroClass G] [Semiring R] (f : k →+* R)
-    (g : Multiplicative G →* R) (c : k) (φ : MonoidAlgebra k G) :
+    (g : Multiplicative G →* R) (c : k) (φ : k[G]) :
     liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ :=
   @MonoidAlgebra.liftNC_smul k (Multiplicative G) _ _ _ _ f g c φ
 
