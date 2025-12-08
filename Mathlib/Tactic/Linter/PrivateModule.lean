@@ -45,6 +45,10 @@ declarations, the linter should still fire on `M.Bar`. Ignoring reserved names e
 See also the type `Lean.ReservedNameAction`, invocations of `registerReservedNameAction` and
 `registerReservedNamePredicate` for examples, and the module `Lean.ResolveName` for further insight.
 
+We also do not count declarations which begin with `_auto`, as these are always-public auxiliary
+declarations created to hold the syntax of autoparams. It is not clear yet whether they are
+intended to be public, but for now we avoid them. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/PrivateModule.20linter.20not.20firing/near/562418477).
+
 Note that metaprograms should not add public declarations when run in private scopes. Doing so would
 likely be a bug in the metaprogram. As such, we do not perform further checks for automatically
 generated declarations such as those in `isAutoDecl`.
@@ -80,8 +84,11 @@ def privateModule : Linter where run stx := do
       if !(← getEnv).constants.map₂.isEmpty then
         -- Exit if any declaration from the current module is public:
         for (decl, _) in (← getEnv).constants.map₂ do
-          -- Ignore both private and reserved names; see implementation notes
-          if !isPrivateName decl && !isReservedName (← getEnv) decl then return
+          -- Ignore private, reserved, and autoparam names; see implementation notes
+          if !isPrivateName decl
+              && !isReservedName (← getEnv) decl
+              && !(`_auto).isPrefixOf decl then
+            return
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
