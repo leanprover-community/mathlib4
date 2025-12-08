@@ -483,7 +483,7 @@ variable (K)
 variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 
 @[reassoc (attr := simp)]
-theorem pi_condition_of_isLimit :
+theorem pi_condition :
     Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd =
       Fan.IsLimit.desc hc K.ι ≫ I.sndPiMapOfIsLimit c hd := by
   apply Fan.IsLimit.hom_ext hd
@@ -491,7 +491,7 @@ theorem pi_condition_of_isLimit :
 
 /-- Given a multifork, we may obtain a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
 @[simps pt]
-def toPiForkOfIsLimit (K : Multifork I) :
+def toPiFork (K : Multifork I) :
     Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
   pt := K.pt
   π.app
@@ -501,23 +501,23 @@ def toPiForkOfIsLimit (K : Multifork I) :
     rintro (_ | _) (_ | _) (_ | _ | _) <;>
       dsimp <;>
       simp only [Category.id_comp, Functor.map_id, parallelPair_obj_zero, Category.comp_id,
-        pi_condition_of_isLimit, parallelPair_obj_one]
+        pi_condition, parallelPair_obj_one]
 
 @[simp]
-theorem toPiForkOfIsLimit_π_app_zero :
-    (K.toPiForkOfIsLimit hc hd).ι = Fan.IsLimit.desc hc K.ι :=
+theorem toPiFork_π_app_zero :
+    (K.toPiFork hc hd).ι = Fan.IsLimit.desc hc K.ι :=
   rfl
 
 @[simp]
-theorem toPiForkOfIsLimit_π_app_one :
-    (K.toPiForkOfIsLimit hc hd).π.app WalkingParallelPair.one =
+theorem toPiFork_π_app_one :
+    (K.toPiFork hc hd).π.app WalkingParallelPair.one =
       Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd  :=
   rfl
 
 variable {hd} in
 /-- Given a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`, we may obtain a multifork. -/
 @[simps pt]
-def ofPiForkOfIsLimit
+def ofPiFork
     (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) :
     Multifork I where
   pt := a.pt
@@ -532,14 +532,14 @@ def ofPiForkOfIsLimit
     · simp
 
 @[simp]
-theorem ofPiForkOfIsLimit_ι (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
-    (ofPiForkOfIsLimit a).ι i = a.ι ≫ c.proj _ :=
+theorem ofPiFork_ι (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
+    (ofPiFork a).ι i = a.ι ≫ c.proj _ :=
   rfl
 
 @[simp]
-theorem ofPiForkOfIsLimit_π_app_right
+theorem ofPiFork_π_app_right
     (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :
-    (ofPiForkOfIsLimit a).π.app (WalkingMulticospan.right i) =
+    (ofPiFork a).π.app (WalkingMulticospan.right i) =
       a.ι ≫ I.fstPiMapOfIsLimit c hd ≫ d.proj _ :=
   rfl
 
@@ -554,7 +554,7 @@ variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 @[simps]
 def toPiForkFunctor :
     Multifork I ⥤ Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
-  obj := Multifork.toPiForkOfIsLimit hc hd
+  obj := Multifork.toPiFork hc hd
   map {K₁ K₂} f :=
     { hom := f.hom
       w := by
@@ -563,7 +563,7 @@ def toPiForkFunctor :
           simp
         · apply Fan.IsLimit.hom_ext hd
           intro j
-          simp only [Multifork.toPiForkOfIsLimit_π_app_one, Multifork.pi_condition_of_isLimit,
+          simp only [Multifork.toPiFork_π_app_one, Multifork.pi_condition,
             Category.assoc]
           dsimp [MulticospanIndex.sndPiMapOfIsLimit, Fan.proj, Fan.IsLimit.desc]
           simp }
@@ -572,7 +572,7 @@ def toPiForkFunctor :
 @[simps]
 def ofPiForkFunctor :
     Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) ⥤ Multifork I where
-  obj := Multifork.ofPiForkOfIsLimit
+  obj := Multifork.ofPiFork
   map {K₁ K₂} f :=
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
@@ -697,7 +697,7 @@ variable (K)
 variable {c : Cofan I.left} (hc : IsColimit c) {d : Cofan I.right} (hd : IsColimit d)
 
 @[reassoc (attr := simp)]
-theorem sigma_condition_of_isColimit :
+theorem sigma_condition :
     I.fstSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π =
       I.sndSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π := by
   apply Cofan.IsColimit.hom_ext hc
@@ -705,7 +705,7 @@ theorem sigma_condition_of_isColimit :
 
 /-- Given a multicofork, we may obtain a cofork over `∐ I.left ⇉ ∐ I.right`. -/
 @[simps pt]
-noncomputable def toSigmaCoforkOfIsColimit (K : Multicofork I) :
+noncomputable def toSigmaCofork (K : Multicofork I) :
     Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
   pt := K.pt
   ι.app
@@ -714,17 +714,17 @@ noncomputable def toSigmaCoforkOfIsColimit (K : Multicofork I) :
   ι.naturality := by
     rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
       simp only [Functor.map_id, parallelPair_obj_zero, parallelPair_obj_one,
-        sigma_condition_of_isColimit, Category.id_comp, Category.comp_id]
+        sigma_condition, Category.id_comp, Category.comp_id]
 
 @[simp]
-theorem toSigmaCoforkOfIsColimit_π :
-    (K.toSigmaCoforkOfIsColimit hc hd).π = Cofan.IsColimit.desc hd K.π :=
+theorem toSigmaCofork_π :
+    (K.toSigmaCofork hc hd).π = Cofan.IsColimit.desc hd K.π :=
   rfl
 
 variable {hc} in
 /-- Given a cofork over `∐ I.left ⇉ ∐ I.right`, we may obtain a multicofork. -/
 @[simps pt]
-noncomputable def ofSigmaCoforkOfIsColimit
+noncomputable def ofSigmaCofork
     (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) :
     Multicofork I where
   pt := a.pt
@@ -741,16 +741,16 @@ noncomputable def ofSigmaCoforkOfIsColimit
         · simp }
 
 @[simp]
-theorem ofSigmaCoforkOfIsColimit_ι_app_left
+theorem ofSigmaCofork_ι_app_left
     (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
-    (ofSigmaCoforkOfIsColimit a).ι.app (WalkingMultispan.left i) =
+    (ofSigmaCofork a).ι.app (WalkingMultispan.left i) =
       c.inj _ ≫ I.fstSigmaMapOfIsColimit d hc ≫ a.π :=
   rfl
 
 @[simp]
-theorem ofSigmaCoforkOfIsColimit_π
+theorem ofSigmaCofork_π
     (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
-    (ofSigmaCoforkOfIsColimit a).π i = d.inj i ≫ a.π :=
+    (ofSigmaCofork a).π i = d.inj i ≫ a.π :=
   rfl
 
 /-- Constructor for isomorphisms between multicoforks. -/
@@ -771,7 +771,7 @@ variable {c : Cofan I.left} (hc : IsColimit c) {d : Cofan I.right} (hd : IsColim
 @[simps]
 noncomputable def toSigmaCoforkFunctor :
     Multicofork I ⥤ Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
-  obj := Multicofork.toSigmaCoforkOfIsColimit hc hd
+  obj := Multicofork.toSigmaCofork hc hd
   map {K₁ K₂} f :=
   { hom := f.hom
     w := by
@@ -785,7 +785,7 @@ noncomputable def toSigmaCoforkFunctor :
 @[simps]
 noncomputable def ofSigmaCoforkFunctor :
     Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) ⥤ Multicofork I where
-  obj := Multicofork.ofSigmaCoforkOfIsColimit
+  obj := Multicofork.ofSigmaCofork
   map {K₁ K₂} f :=
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
