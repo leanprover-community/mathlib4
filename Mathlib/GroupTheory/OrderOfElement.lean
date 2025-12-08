@@ -1223,16 +1223,15 @@ section Pi
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
 
--- TODO: make `x` explicit similar to `Prod.orderOf`?
 @[to_additive]
--- alternative set expression: `{ n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n }`
-lemma Pi.orderOf_eq : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
+lemma Pi.orderOf_eq (x : ∀ i, α i) : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
   minimalPeriod_piMap
 
 /- alternative names: `Pi.orderOf_eq_fintype`, `Pi.orderOf_eq_for_fintype`,
 `Pi.orderOf_eq_inexed_by_fintype` -/
 @[to_additive]
-lemma Pi.fintype_orderOf_eq [Fintype ι] : orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
+lemma Pi.fintype_orderOf_eq [Fintype ι] (x : ∀ i, α i) :
+    orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
   minimalPeriod_piMap_fintype
 
 -- alternative name: `Pi.orderOf_single_dvd_orderOf`
