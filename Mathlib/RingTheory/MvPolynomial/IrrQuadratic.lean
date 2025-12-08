@@ -9,6 +9,7 @@ public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 import Mathlib.Algebra.MvPolynomial.Nilpotent
+import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Irreducibility of linear and quadratic polynomials
@@ -68,9 +69,128 @@ theorem Finsupp.nontrivial_of_nontrivial (α β : Type*) [Zero β] [Nontrivial (
   obtain ⟨a, h⟩ := h
   exact nontrivial_of_ne _ _ h
 
+def RelativelyIrreducible (R : Type*) {A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (x : A) : Prop :=
+  ∀ y z : A, y * z = x → (∃ r : R, algebraMap R A r = y) ∨ (∃ r : R, algebraMap R A r = z)
+
+namespace RelativelyIrreducible
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+
+variable (R A) in
+lemma zero [IsDomain A] :
+    RelativelyIrreducible R (0 : A) := by
+  intro y z h
+  rw [mul_eq_zero] at h
+  apply h.imp
+  all_goals
+    rintro rfl
+    use 0
+    rw [map_zero]
+
+lemma of_map_of_injective {B : Type*} [CommRing B] [Algebra R B]
+    (f : A →ₐ[R] B) (hf : Function.Injective f)
+    (x : A) (hx : RelativelyIrreducible R (f x)) :
+    RelativelyIrreducible R x := by
+  rintro y z rfl
+  specialize hx (f y) (f z) (map_mul f y z).symm
+  apply hx.imp
+  all_goals
+    rintro ⟨r, hr⟩
+    use r
+    apply hf
+    simpa
+
+end RelativelyIrreducible
+
+namespace Polynomial
+
+
+variable {R : Type*} [CommRing R]
+
+/-- The degree 1 polynomial `a • X + C b` is relatively irreducible. -/
+theorem relativelyIrreducible_smul_X_add_C [IsDomain R] (a : R) (b : R) :
+    RelativelyIrreducible R (a • X + C b : Polynomial R) := by
+  intro f g h
+  have hd : (f * g).degree ≤ 1 := by
+    rw [h]; compute_degree!
+  rw [degree_mul] at hd
+  have : f.degree ≤ 0 ∨ g.degree ≤ 0 := by
+    clear h
+    contrapose! hd
+    rcases hd with ⟨hf, hg⟩
+    obtain ⟨hf0, hg0⟩ : f ≠ 0 ∧ g ≠ 0 := by
+      rw [← not_or]
+      rintro (rfl | rfl) <;> simp_all
+    rw [degree_eq_natDegree hf0, degree_eq_natDegree hg0, Nat.cast_withBot, Nat.cast_withBot] at *
+    rw [← WithBot.coe_add, ← WithBot.coe_one, WithBot.coe_lt_coe]
+    rw [WithBot.coe_pos] at hf hg
+    grind
+  apply this.imp
+  all_goals
+    intro H
+    rw [eq_C_of_degree_le_zero H]
+    simp
+
+end Polynomial
+
 namespace MvPolynomial
 
 open scoped Polynomial
+
+section
+
+variable {n : Type*} {R : Type*} [CommRing R]
+
+lemma irreducible_of_relativelyIrreducible
+    (f : MvPolynomial n R) (hf : RelativelyIrreducible R f)
+    (h0 : ¬ IsUnit f) (h : ∀ r, (∀ i, r ∣ f.coeff i) → IsUnit r) :
+    Irreducible f where
+  not_isUnit := h0
+  isUnit_or_isUnit p q hpq := by
+    apply (hf p q hpq.symm).imp
+    all_goals
+      rintro ⟨r, rfl⟩
+      apply IsUnit.map
+      apply h
+      intro i
+      rw [hpq]
+      simp [mul_comm _ (C _)]
+
+lemma relativelyIrreducible_of_irreducible [IsReduced R]
+    (f : MvPolynomial n R) (hf : Irreducible f) :
+    RelativelyIrreducible R f := by
+  intro y z hyz
+  apply (hf.isUnit_or_isUnit hyz.symm).imp
+  all_goals
+    rw [isUnit_iff_eq_C_of_isReduced]
+    rintro ⟨r, hr, rfl⟩
+    simp
+
+lemma eq_C_and_dvd_or_eq_C_and_dvd_aux [IsDomain R] (n : ℕ)
+    (c : Fin n → R) :
+    RelativelyIrreducible R (∑ i, C (c i) * X i) := by
+  induction n with
+  | zero => simpa using RelativelyIrreducible.zero R (MvPolynomial _ R)
+  | succ n ih =>
+    let e := finSuccEquiv R n
+    apply RelativelyIrreducible.of_map_of_injective e.toAlgHom e.injective
+    rw [Fin.sum_univ_succ]
+    simp [e, finSuccEquiv_X_zero, finSuccEquiv_X_succ]
+    simp only [← algebraMap_eq, AlgEquiv.commutes, Polynomial.C_eq_algebraMap,
+      IsScalarTower.algebraMap_eq R (MvPolynomial (Fin n) R) (MvPolynomial (Fin n) R)[X],
+      RingHom.comp_apply, ← map_mul, ← map_sum]
+    simp only [← Polynomial.C_eq_algebraMap, ← Polynomial.smul_eq_C_mul]
+    sorry
+
+lemma eq_C_and_dvd_or_eq_C_and_dvd
+    (p : MvPolynomial n R) (hp : p.totalDegree = 1)
+    (f g : MvPolynomial n R) (hfg : f * g = p) :
+    (∃ r : R, f = C r ∧ ∀ i, r ∣ coeff (Finsupp.single i 1) p) ∨
+    (∃ r : R, g = C r ∧ ∀ i, r ∣ coeff (Finsupp.single i 1) p) := by
+  sorry
+
+end
 
 section
 /-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
