@@ -7,6 +7,7 @@ module
 
 public import Std.Data.HashMap.Basic
 public import Mathlib.Init
+import Lean.Util.PtrSet
 
 /-!
 # Fixpoint function with memoisation

@@ -13,7 +13,7 @@ public meta import Mathlib.Tactic.Translate.ToAdditive
 
 public meta section
 
-set_option linter.privateModule false
+-- set_option linter.privateModule false
 
 attribute [to_additive_do_translate] Empty PEmpty Unit PUnit
 
