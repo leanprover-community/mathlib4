@@ -178,13 +178,6 @@ theorem bernoulli_eq_sub_sum' (n : ℕ) :
   convert bernoulli_eq_sub_sum n using 1
   simp_rw [← smul_X_eq_monomial, cast_smul_eq_nsmul]
 
-theorem bernoulli_eq_sub_sum'' (n : ℕ) :
-    (n + 1) * bernoulli n =
-      monomial n (n + 1 : ℚ) - ∑ k ∈ Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
-  convert bernoulli_eq_sub_sum n using 1
-  · rw [← n.cast_add_one, cast_smul_eq_nsmul, nsmul_eq_mul]
-  · simp
-
 /-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k ∈ range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
@@ -225,14 +218,17 @@ theorem bernoulli_comp_one_add_X (n : ℕ) :
   simp_rw [smul_add, sum_add_distrib, sub_add, sub_add_eq_sub_sub_swap, sub_sub_eq_add_sub]
   congr 1
   rw [show ∀ a b c d : ℚ[X], a - b = c + d ↔ a - c = b + d by grind]
-  rw [smul_comp, ← smul_sub, X_pow_comp, one_add_X_pow_sub_X_pow]
-  trans ∑ i ∈ range (d + 1), ((d + 2).choose (i + 1) * (i + 1)) • X ^ i
-  · simp_rw [smul_sum, smul_smul, ← add_one_mul_choose_eq (d + 1), add_assoc, one_add_one_eq_two]
-  trans ∑ i ∈ range (d + 1),
-    ((d + 2).choose i * i) • X ^ (i - 1) + (((d + 2).choose (d + 1)) * (d + 1)) • X ^ (d + 1 - 1)
-  · rw [← sum_range_succ _ (d + 1)]
-    simp [sum_range_succ']
-  · simp [choose_succ_self_right, add_assoc, mul_assoc]
+  calc ((d + 2) • X ^ (d + 1)).comp (1 + X) - (d + 2) • X ^ (d + 1)
+    _ = (d + 2) • ∑ i ∈ range (d + 1), (d + 1).choose i • X ^ i := by
+      rw [smul_comp, ← smul_sub, X_pow_comp, one_add_X_pow_sub_X_pow]
+    _ = ∑ i ∈ range (d + 1), ((d + 2).choose (i + 1) * (i + 1)) • X ^ i := by
+      simp_rw [smul_sum, smul_smul, ← add_one_mul_choose_eq (d + 1)]
+    _ = ∑ i ∈ range (d + 1), ((d + 2).choose i * i) • X ^ (i - 1) +
+          (((d + 2).choose (d + 1)) * (d + 1)) • X ^ (d + 1 - 1) := by
+      rw [← sum_range_succ _ (d + 1)]; simp [sum_range_succ']
+    _ = ∑ i ∈ range (d + 1), (d + 2).choose i • i • X ^ (i - 1) +
+          ((d + 2) * (d + 1)) • X ^ (d + 1 - 1) := by
+      simp [choose_succ_self_right, add_assoc, mul_assoc]
 
 theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
@@ -253,7 +249,7 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
     grind
   · cases (n + 1 - i).even_or_odd with
     | inl h => grind [neg_one_pow_eq_ite]
-    | inr h => rw [_root_.bernoulli, bernoulli'_odd_eq_zero] <;> grind
+    | inr h => rw [bernoulli_odd_eq_zero] <;> grind
   · grind
   · simp
 
@@ -277,8 +273,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 - x) = (-1) ^ n * (bernoulli n).eval x := by
-  have := bernoulli_comp_one_sub_X n
-  simpa using congr(Polynomial.eval x $this)
+  simpa using congr_arg (Polynomial.eval x) (bernoulli_comp_one_sub_X n)
 
 open PowerSeries
 

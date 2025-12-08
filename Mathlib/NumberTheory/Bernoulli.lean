@@ -193,16 +193,16 @@ theorem bernoulli_two : bernoulli 2 = 6⁻¹ := by
   simp [bernoulli]
 
 @[simp]
-theorem bernoulli_odd_eq_zero {s : ℕ} (s0 : s ≠ 0) : bernoulli (2 * s + 1) = 0 := by
-  rw [bernoulli, bernoulli'_odd_eq_zero]
-  all_goals simp [Nat.pos_of_ne_zero s0]
+theorem bernoulli_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli n = 0 := by
+  rw [bernoulli, bernoulli'_odd_eq_zero h_odd hlt, mul_zero]
 
 theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
-  by_cases h0 : n = 0; · simp [h0]
-  rw [bernoulli, neg_one_pow_eq_pow_mod_two]
-  rcases mod_two_eq_zero_or_one n with h | h
-  · simp [h]
-  · simp [bernoulli'_odd_eq_zero (odd_iff.mpr h) (one_lt_iff_ne_zero_and_ne_one.mpr ⟨h0, hn⟩)]
+  cases hn.lt_or_gt with
+  | inl hlt => simp [lt_one_iff.mp hlt]
+  | inr hgt =>
+    cases n.even_or_odd with
+    | inl heven => rw [bernoulli, heven.neg_one_pow, one_mul]
+    | inr hodd => rw [bernoulli'_odd_eq_zero hodd hgt, bernoulli_odd_eq_zero hodd hgt]
 
 @[simp]
 theorem sum_bernoulli (n : ℕ) :
