@@ -582,14 +582,14 @@ of functions in any `FunLike` type on which addition is defined pointwise.
 
 At the time of writing Mathlib does not have a typeclass to express the condition
 that addition on a `FunLike` type is pointwise; hence this is asserted via explicit hypotheses. -/
-theorem Finsupp.sum_apply'' [DecidableEq ι] {A F : Type*} [AddZeroClass A] [AddCommMonoid F]
-    [FunLike F γ B] (g : ι →₀ A) (k : ι → A → F) (x : γ)
-    (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
+theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [FunLike F γ B]
+    (g : ι →₀ A) (k : ι → A → F) (x : γ) (h0 : (0 : F) x = 0)
+    (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
     g.sum k x = g.sum (fun i a ↦ k i a x) := by
   unfold Finsupp.sum
   induction g.support using Finset.induction with
   | empty => simp [h0]
-  | insert i s hi ih => simp [sum_insert hi, hadd, ih]
+  | insert i s hi ih => classical simp [sum_insert hi, hadd, ih]
 
 @[deprecated "use instead `sum_finset_sum_index` (with equality reversed)" (since := "2025-11-07")]
 theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
