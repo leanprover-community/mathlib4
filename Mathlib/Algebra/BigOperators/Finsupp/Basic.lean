@@ -586,10 +586,11 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
     (g : ι →₀ A) (k : ι → A → F) (x : γ)
     (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
     g.sum k x = g.sum (fun i a ↦ k i a x) := by
+  classical
   unfold Finsupp.sum
   induction g.support using Finset.induction with
   | empty => simp [h0]
-  | insert i s hi ih => classical simp [sum_insert hi, hadd, ih]
+  | insert i s hi ih => simp [sum_insert hi, hadd, ih]
 
 @[deprecated "use instead `sum_finset_sum_index` (with equality reversed)" (since := "2025-11-07")]
 theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
