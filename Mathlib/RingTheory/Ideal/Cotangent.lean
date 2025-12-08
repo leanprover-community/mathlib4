@@ -174,6 +174,7 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
 
 -- Can't be `simp`, because `RingHom.ker f.toRingHom` in the definition of `AlgHom.kerSquareLift`
 -- is not simp NF. Will be fixed by removing `RingHomClass` in the definition of `RingHom.ker`.
+-- (#25138)
 lemma _root_.AlgHom.kerSquareLift_mk (f : A →ₐ[R] B) (x : A) : f.kerSquareLift x = f x :=
   rfl
 
