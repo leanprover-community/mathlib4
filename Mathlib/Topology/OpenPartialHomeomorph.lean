@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Partial homeomorphisms
@@ -54,6 +56,8 @@ For design notes, see `PartialEquiv.lean`.
 If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology
 
@@ -561,7 +565,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 
 /-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
-@[simps toPartialEquiv]
+@[simps! -fullyApplied apply symm_apply toPartialEquiv]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
   toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
@@ -596,6 +600,7 @@ end IsImage
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a
 `OpenPartialHomeomorph`. -/
+@[simps toPartialEquiv]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
   toPartialEquiv := e
@@ -604,11 +609,36 @@ def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.sourc
   continuousOn_toFun := hc
   continuousOn_invFun := e.image_source_eq_target ▸ ho.continuousOn_image_of_leftInvOn e.leftInvOn
 
+@[simp]
+theorem coe_ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
+    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
+    ⇑(ofContinuousOpenRestrict e hc ho hs) = e :=
+  rfl
+
+@[simp]
+theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
+    (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) :
+    ⇑(ofContinuousOpenRestrict e hc ho hs).symm = e.symm :=
+  rfl
+
 /-- A `PartialEquiv` with continuous open forward map and open source is a
 `OpenPartialHomeomorph`. -/
+@[simps! toPartialEquiv]
 def ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : OpenPartialHomeomorph X Y :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
+
+@[simp]
+theorem coe_ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
+    (ho : IsOpenMap e) (hs : IsOpen e.source) :
+    ⇑(ofContinuousOpen e hc ho hs) = e :=
+  rfl
+
+@[simp]
+theorem coe_ofContinuousOpen_symm (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
+    (ho : IsOpenMap e) (hs : IsOpen e.source) :
+    ⇑(ofContinuousOpen e hc ho hs).symm = e.symm :=
+  rfl
 
 /-- Restricting an open partial homeomorphism `e` to `e.source ∩ s` when `s` is open.
 This is sometimes hard to use because of the openness assumption, but it has the advantage that
@@ -626,11 +656,17 @@ theorem restrOpen_toPartialEquiv (s : Set X) (hs : IsOpen s) :
 theorem restrOpen_source (s : Set X) (hs : IsOpen s) : (e.restrOpen s hs).source = e.source ∩ s :=
   rfl
 
+@[simp] theorem coe_restrOpen {s : Set X} (hs : IsOpen s) : ⇑(e.restrOpen s hs) = e := rfl
+
+@[simp]
+theorem coe_restrOpen_symm {s : Set X} (hs : IsOpen s) : ⇑(e.restrOpen s hs).symm = e.symm := rfl
+
 /-- Restricting an open partial homeomorphism `e` to `e.source ∩ interior s`. We use the interior to
 make sure that the restriction is well defined whatever the set s, since open partial homeomorphisms
 are by definition defined on open sets. In applications where `s` is open, this coincides with the
 restriction of partial equivalences. -/
-@[simps! (attr := mfld_simps) -fullyApplied apply symm_apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply symm_apply,
+  simps! (attr := grind =) -isSimp source target]
 protected def restr (s : Set X) : OpenPartialHomeomorph X Y :=
   e.restrOpen (interior s) isOpen_interior
 
@@ -640,7 +676,7 @@ theorem restr_toPartialEquiv (s : Set X) :
   rfl
 
 theorem restr_source' (s : Set X) (hs : IsOpen s) : (e.restr s).source = e.source ∩ s := by
-  rw [e.restr_source, hs.interior_eq]
+  grind
 
 theorem restr_toPartialEquiv' (s : Set X) (hs : IsOpen s) :
     (e.restr s).toPartialEquiv = e.toPartialEquiv.restr s := by
@@ -655,6 +691,7 @@ theorem restr_eq_of_source_subset {e : OpenPartialHomeomorph X Y} {s : Set X} (h
 theorem restr_univ {e : OpenPartialHomeomorph X Y} : e.restr univ = e :=
   restr_eq_of_source_subset (subset_univ _)
 
+@[simp, grind =]
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
   refine OpenPartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
@@ -1159,7 +1196,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
     left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
-    right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
+    right_inv := fun b => Subtype.ext <| e.right_inv (h₂ b.2)
     continuous_toFun := (e.continuousOn.mono hs).mapsToRestrict h₁
     continuous_invFun := (e.continuousOn_symm.mono h₂).mapsToRestrict h₃ }
 

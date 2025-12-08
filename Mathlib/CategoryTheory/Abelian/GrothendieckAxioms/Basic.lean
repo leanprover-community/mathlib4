@@ -3,12 +3,14 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+public import Mathlib.Logic.Equiv.List
 /-!
 
 # Grothendieck Axioms
@@ -46,6 +48,8 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -147,7 +151,7 @@ lemma HasExactColimitsOfShape.of_codomain_equivalence (J : Type*) [Category J] {
 /--
 Transport a `HasExactLimitsOfShape` along an equivalence of the shape.
 
-Note: When `C` has finite colimits, this lemma holds with the equivalence replaced by a initial
+Note: When `C` has finite colimits, this lemma holds with the equivalence replaced by an initial
 functor, see `hasExactLimitsOfShape_of_initial` below.
 -/
 lemma HasExactLimitsOfShape.of_domain_equivalence {J J' : Type*} [Category J] [Category J']

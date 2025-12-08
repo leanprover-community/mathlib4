@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.FractionalIdeal.Norm
-import Mathlib.RingTheory.FractionalIdeal.Operations
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Norm
+public import Mathlib.RingTheory.FractionalIdeal.Operations
 
 /-!
 
@@ -21,6 +23,8 @@ Prove some results on the fractional ideals of number fields.
   field `K`, the absolute value of the determinant of the base change from `integralBasis` to
   `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 

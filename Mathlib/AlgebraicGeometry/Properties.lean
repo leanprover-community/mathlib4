@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.LocalProperties.Reduced
+module
+
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
 # Basic properties of schemes
@@ -17,6 +19,8 @@ We provide some basic properties of schemes
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
   are reduced.
 -/
+
+@[expose] public section
 
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
@@ -65,7 +69,7 @@ theorem isReduced_of_isReduced_stalk [∀ x : X, _root_.IsReduced (X.presheaf.st
   apply Presheaf.section_ext X.sheaf U s 0
   intro x hx
   change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
-  rw [RingHom.map_zero]
+  rw [map_zero]
   change X.presheaf.germ U x hx s = 0
   exact (hs.map _).eq_zero
 
@@ -148,7 +152,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
   apply TopCat.Presheaf.section_ext X.sheaf U
   intro x hx
   change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
-  rw [RingHom.map_zero]
+  rw [map_zero]
   induction U using reduce_to_affine_global generalizing hX with
   | h₁ X U H =>
     obtain ⟨V, hx, i, H⟩ := H ⟨x, hx⟩
@@ -244,7 +248,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
     replace e := congr_arg (X.presheaf.germ U x hxU) e
-    rw [RingHom.map_mul, RingHom.map_zero] at e
+    rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
     convert hx₁.mul hx₂
     exact e.symm

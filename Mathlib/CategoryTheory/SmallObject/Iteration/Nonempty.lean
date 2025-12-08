@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
-import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
-import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
+public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 
 /-!
 # Existence of the iteration of a successor structure
@@ -15,6 +17,8 @@ that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
 
 -/
+
+@[expose] public section
 
 universe u
 

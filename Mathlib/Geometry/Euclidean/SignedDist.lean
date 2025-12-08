@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Analysis.NormedSpace.Normalize
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
@@ -25,6 +27,8 @@ reference point.
 * https://en.wikipedia.org/wiki/Trilinear_coordinates
 
 -/
+
+@[expose] public section
 
 
 open EuclideanGeometry NormedSpace
@@ -278,6 +282,11 @@ orthogonal to that span is disregarded). In the case of a triangle, these distan
 trilinear coordinates; in a tetrahedron, they are quadriplanar coordinates. -/
 noncomputable def signedInfDist : P →ᴬ[ℝ] ℝ :=
   AffineSubspace.signedInfDist (affineSpan ℝ (s.points '' {i}ᶜ)) (s.points i)
+
+@[simp] lemma signedInfDist_reindex {m : ℕ} [NeZero m] (e : Fin (n + 1) ≃ Fin (m + 1))
+    (j : Fin (m + 1)) : (s.reindex e).signedInfDist j = s.signedInfDist (e.symm j) := by
+  simp_rw [signedInfDist, reindex_points, Set.image_comp, Set.image_compl_eq e.symm.bijective,
+    Set.image_singleton, Function.comp_apply]
 
 lemma signedInfDist_apply_self :
     s.signedInfDist i (s.points i) =

@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
-import Mathlib.CategoryTheory.Adjunction.Opposites
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Opposites of functors between pretriangulated categories,
@@ -19,6 +21,8 @@ equivalences `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` and `(Triangle D)ᵒᵖ �
 given by `CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -36,7 +40,7 @@ namespace Pretriangulated.Opposite
 -/
 noncomputable scoped instance commShiftFunctorOpInt : F.op.CommShift ℤ :=
   inferInstanceAs ((PullbackShift.functor
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
       (OppositeShift.functor ℤ F)).CommShift ℤ)
 
 variable {F}
@@ -44,13 +48,13 @@ variable {F}
 noncomputable scoped instance commShift_natTrans_op_int {G : C ⥤ D} [G.CommShift ℤ] (τ : F ⟶ G)
     [NatTrans.CommShift τ ℤ] : NatTrans.CommShift (NatTrans.op τ) ℤ :=
   inferInstanceAs (NatTrans.CommShift (PullbackShift.natTrans
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
       (OppositeShift.natTrans ℤ τ)) ℤ)
 
 noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
     [Adjunction.CommShift adj ℤ] : Adjunction.CommShift adj.op ℤ := by
   have eq : adj.op = PullbackShift.adjunction
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
       (OppositeShift.adjunction ℤ adj) := by
     ext
     dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
@@ -60,7 +64,7 @@ noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommS
     simp only [Category.comp_id, Category.id_comp]
   rw [eq]
   exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; cutsat))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
       (OppositeShift.adjunction ℤ adj)) ℤ)
 
 end Pretriangulated.Opposite
@@ -73,7 +77,7 @@ lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0) :
       (F.map ((shiftFunctorOpIso C n m h).hom.app X).unop).op ≫
         ((F.commShiftIso m).inv.app X.unop).op ≫
         (shiftFunctorOpIso D n m h).inv.app (op (F.obj X.unop)) := by
-  obtain rfl : m = -n := by cutsat
+  obtain rfl : m = -n := by lia
   rfl
 
 @[reassoc]
@@ -169,13 +173,8 @@ with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
 noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle C) :
     (triangleOpEquivalence D).functor.obj (op (F.mapTriangle.obj T)) ≅
       F.op.mapTriangle.obj ((triangleOpEquivalence C).functor.obj (op T)) :=
-  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simp) (by simp) (by
-      dsimp
-      simp only [map_comp, shift_map_op, map_id, comp_id, op_comp, op_unop,
-        map_opShiftFunctorEquivalence_counitIso_inv_app_unop,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
-        Quiver.Hom.op_unop, assoc, id_comp])
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+      (by simp [shift_map_op, map_opShiftFunctorEquivalence_counitIso_inv_app_unop])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
@@ -186,7 +185,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
       (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle :=
   NatIso.ofComponents
     (fun T ↦ F.mapTriangleOpCompTriangleOpEquivalenceFunctorApp T.unop)
-    (by intros; ext <;> dsimp <;> simp only [comp_id, id_comp])
+    (by intros; ext <;> dsimp <;> simp only [id_comp, comp_id])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categories

@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Homology
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # Homology of preadditive categories
@@ -14,6 +16,8 @@ In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -668,7 +672,7 @@ lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasH
 
 end Homotopy
 
-/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+/-- A homotopy equivalence between two short complexes `S₁` and `S₂` consists
 of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
 `hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
 @[ext]

@@ -3,10 +3,12 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Data.Nat.NthRoot.Defs
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Tactic.Rify
 
 /-!
 # Lemmas about `Nat.nthRoot`
@@ -18,6 +20,8 @@ In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on real numbers,
 so that we can move this file to `Mathlib/Data/Nat/NthRoot`, then to Batteries.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -83,7 +87,7 @@ theorem nthRoot.lt_pow_go_succ_aux (hb : b ≠ 0) :
       simp [field, add_comm]
     _ = ((a + b ^ n * (n * b)) / (b ^ n * (n + 1))) ^ (n + 1) := by
       congr 1
-      field_simp
+      field
     _ < _ := by
       gcongr ?_ ^ _
       convert lt_floor_add_one (R := ℝ) _ using 1

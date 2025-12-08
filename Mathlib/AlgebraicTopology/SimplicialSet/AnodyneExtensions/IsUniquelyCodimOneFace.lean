@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
 /-!
 # Simplices that are uniquely codimensional one faces
@@ -13,13 +15,15 @@ we say that `x` is uniquely a `1`-codimensional face of `y` if there
 exists a unique `i : Fin (d + 2)` such that `X.δ i y = x`. In this file,
 we extend this to a predicate `IsUniquelyCodimOneFace` involving two terms
 in the type `X.S` of simplices of `X`. This is used in the
-file `AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing` for the
+file `Mathlib/AlgebraicTopology/SimplicialSet/AnodyneExtensions/Pairing.lean` for the
 study of strong (inner) anodyne extensions.
 
 ## References
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+
+@[expose] public section
 
 universe u
 
