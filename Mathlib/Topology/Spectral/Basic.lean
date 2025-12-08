@@ -21,7 +21,7 @@ subsets form an open basis. Prime spectra of commutative semirings are spectral 
 
 ## References
 
-See the [StacksProject], tag 08YF for details.
+See [stacks-project], tag 08YF for details.
 -/
 
 @[expose] public section
