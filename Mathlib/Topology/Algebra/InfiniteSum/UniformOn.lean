@@ -6,6 +6,7 @@ Authors: Chris Birkbeck, David Loeffler
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Tactic.Bound
 
 /-!
 # Infinite sum and products that converge uniformly on a set
@@ -240,15 +241,69 @@ lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
   obtain ⟨t, ht, htr⟩ := h v hv r hr
   exact ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
 
+
+@[to_additive]
+theorem HasProdLocallyUniformlyOn_comp_equiv' {ι' : Type*}
+  (e : ι' ≃ ι) {s : Set β} :
+  TendstoLocallyUniformlyOn (fun I b ↦ ∏ i ∈ I, (f ∘ ⇑e) i b) g atTop s ↔
+    TendstoLocallyUniformlyOn (fun I b ↦ ∏ i ∈ I, f i b) g atTop s := by
+  constructor <;> intro h <;> rw [ tendstoLocallyUniformlyOn_iff_forall_tendsto ] at *
+  · intro x hx
+    convert h x hx |> Filter.Tendsto.comp <| _ using 2;
+    rotate_left;
+    · use fun y => ( Finset.map e.symm y.1, y.2 )
+    · refine Filter.Tendsto.prodMk ?_ ?_;
+      · rw [ Filter.tendsto_def ];
+        intro s_1 a
+        simp_all only [comp_apply, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset]
+        obtain ⟨w, h_1⟩ := a
+        rw [ Filter.mem_prod_iff ];
+        refine ⟨ { y : Finset ι | w.map e.toEmbedding ⊆ y }, ?_, Set.univ, ?_, ?_ ⟩ <;>
+           simp  [ Set.subset_def ];
+        · exact ⟨ Finset.map e.toEmbedding w, fun b hb => hb ⟩;
+        · intro a b hab; convert h_1 ( Finset.map e.symm.toEmbedding a ) _ using 1
+          simp_all [ Finset.subset_iff ] ;
+      · exact Filter.tendsto_snd;
+    · bound;
+  · intro x hx
+    first | first | specialize h x hx
+    simp_all only [comp_apply]
+    all_goals generalize_proofs at *
+    rw [ Filter.tendsto_def ] at *
+    intro U hU;
+    specialize h U hU;
+    rw [ Filter.mem_prod_iff ] at *
+    simp_all only [mem_atTop_sets, ge_iff_le, Finset.le_eq_subset]
+    obtain ⟨w, h⟩ := h
+    obtain ⟨left, right⟩ := h
+    obtain ⟨w_1, h⟩ := left
+    obtain ⟨w_2, h_1⟩ := right
+    obtain ⟨left, right⟩ := h_1
+    refine ⟨ ?_, ⟨ Finset.map e.symm.toEmbedding w_1, fun t ht => ?_ ⟩, w_2, left, ?_ ⟩;
+    · exact { t : Finset ι' | Finset.map e.toEmbedding t ∈ w }
+    · simp_all [ Finset.subset_iff ];
+    · intro t ht; specialize right ( Set.mk_mem_prod ( ht.1 ) ht.2 ) ; aesop;
+
+
+@[to_additive]
+theorem HasProdLocallyUniformlyOn_comp_equiv {ι' : Type*} (e : ι' ≃ ι) {f : ι → β → α}
+    {g : β → α} {s : Set β} :
+    HasProdLocallyUniformlyOn (f ∘ e) g s ↔ HasProdLocallyUniformlyOn f g s := by
+  simp_rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn]
+  apply HasProdLocallyUniformlyOn_comp_equiv' e
+
 @[to_additive]
 lemma HasProdLocallyUniformlyOn_pnat_iff {f : ℕ → β → α} {g : β → α} :
     HasProdLocallyUniformlyOn (fun n : ℕ+ ↦ f n) g s ↔ HasProdLocallyUniformlyOn f g s := by
-  simp_rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn]
+  rw [← HasProdLocallyUniformlyOn_comp_equiv (Equiv.pnatEquivNat).symm]
+  constructor <;> intro h
+  sorry
+
+
 
 
 
 
   sorry
-
 
 end LocallyUniformlyOn

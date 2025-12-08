@@ -5040,7 +5040,6 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
