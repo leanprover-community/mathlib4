@@ -210,7 +210,7 @@ theorem ofNat'_bit (b n) : ofNat' (Nat.bit b n) = cond b Num.bit1 Num.bit0 (ofNa
   Nat.binaryRec_eq _ _ (.inl rfl)
 
 @[simp]
-theorem ofNat'_one : Num.ofNat' 1 = 1 := by erw [ofNat'_bit true 0, cond, ofNat'_zero]; rfl
+theorem ofNat'_one : Num.ofNat' 1 = 1 := by simp [Num.ofNat', Num.bit1]
 
 theorem bit1_succ : ∀ n : Num, n.bit1.succ = n.succ.bit0
   | 0 => rfl

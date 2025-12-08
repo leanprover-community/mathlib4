@@ -745,7 +745,7 @@ theorem prime_C_iff : Prime (C r) ↔ Prime r :=
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
-      apply Ideal.isPrime_map_C_of_isPrime
+      infer_instance
     · intro h; apply (this (C_eq_zero.mp h))
     · assumption⟩
 
