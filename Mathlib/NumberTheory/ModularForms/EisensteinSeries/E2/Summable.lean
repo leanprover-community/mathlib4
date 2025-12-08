@@ -24,7 +24,7 @@ open ModularForm EisensteinSeries TopologicalSpace intervalIntegral
 
 open scoped Interval Real Topology BigOperators Nat ArithmeticFunction.sigma
 
-noncomputable section
+@[expose] public noncomputable section
 
 namespace EisensteinSeries
 

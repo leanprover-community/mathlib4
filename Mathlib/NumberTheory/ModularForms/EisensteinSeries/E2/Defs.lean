@@ -25,7 +25,7 @@ open UpperHalfPlane hiding I
 open ModularForm EisensteinSeries Matrix.SpecialLinearGroup Filter Complex MatrixGroups
   SummationFilter Real
 
-noncomputable section
+@[expose] public noncomputable section
 
 namespace EisensteinSeries
 
