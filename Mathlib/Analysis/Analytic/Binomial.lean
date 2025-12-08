@@ -96,6 +96,8 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*}
     rcases ha with ⟨k, rfl⟩
     simp [binomialSeries_radius_eq_top_of_nat]
 
+namespace Complex
+
 theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
@@ -137,34 +139,22 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     intro z hz
     simp only [Nat.cast_add, Nat.cast_one, B, derivWithin_of_isOpen Metric.isOpen_ball hz,
       deriv_const_mul_field']
-    rw [deriv_cpow_const (by fun_prop), deriv_const_add', deriv_id'', mul_one,
+    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add', deriv_id'', mul_one,
       show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
     · congr
       simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
     · apply Complex.mem_slitPlane_of_norm_lt_one
       simpa [B] using hz
 
+@[deprecated (since := "2025-12-08")]
+alias _root_.one_add_cpow_hasFPowerSeriesOnBall_zero := one_add_cpow_hasFPowerSeriesOnBall_zero
+
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 :=
   one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
 
-attribute [local simp← ] Complex.ofReal_choose in
-attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
-theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
-    HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by
-  have : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by aesop
-  have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) (.ofRealCLM 0) 1 :=
-    Complex.ofRealCLM.map_zero ▸ this ▸ one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
-  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
-  · ext; simp [Function.comp_def]
-  · simp
-  · intro x hx; simp_all; norm_cast
-
-theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
-    HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
-  one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-namespace Complex
+@[deprecated (since := "2025-12-08")]
+alias _root_.one_add_cpow_hasFPowerSeriesAt_zero := one_add_cpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
@@ -220,9 +210,9 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
   simpa using one_div_sub_sq_hasFPowerSeriesOnBall_zero (z := 1)
 
 /-- `∑ (ai + b) zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-theorem hasFPowerSeriesOnBall_linear_zero (a b : ℂ) :
+theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
-      (.ofScalars ℂ (a * · + b)) 0 1 := by
+      (.ofScalars ℂ fun n ↦ a * n + b) 0 1 := by
   convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
     (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
@@ -244,6 +234,28 @@ end Complex
 
 namespace Real
 
+attribute [local simp← ] Complex.ofReal_choose in
+attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
+theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
+    HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by
+  have H : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by aesop
+  have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) (.ofRealCLM 0) 1 :=
+    Complex.ofRealCLM.map_zero ▸ H ▸ Complex.one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
+  · ext; simp [Function.comp_def]
+  · simp
+  · intro x hx; simp_all; norm_cast
+
+@[deprecated (since := "2025-12-08")]
+alias _root_.one_add_rpow_hasFPowerSeriesOnBall_zero := one_add_rpow_hasFPowerSeriesOnBall_zero
+
+theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
+    HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
+  one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
+
+@[deprecated (since := "2025-12-08")]
+alias _root_.one_add_rpow_hasFPowerSeriesAt_zero := one_add_rpow_hasFPowerSeriesAt_zero
+
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
       (.ofScalars ℝ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
@@ -251,7 +263,9 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
   rw [← Complex.ofRealCLM.map_zero] at this
   convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_ using 1
   · ext n
-    simp [-FormalMultilinearSeries.apply_eq_prod_smul_coeff]
+    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+      FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp
     norm_cast
   · simp
@@ -269,7 +283,9 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r �
   convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap) using 2
   · simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv, ← Complex.ofReal_sub]
   · ext n
-    simp [Function.comp_def, -FormalMultilinearSeries.apply_eq_prod_smul_coeff]
+    simp only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
+      FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv]
   · simp [enorm_eq_nnnorm]
 
