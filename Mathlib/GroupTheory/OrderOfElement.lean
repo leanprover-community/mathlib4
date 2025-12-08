@@ -1232,19 +1232,13 @@ lemma Pi.orderOf_of_fintype [Fintype ι] (x : ∀ i, α i) :
     orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
   minimalPeriod_piMap_fintype
 
--- alternative name: `Pi.orderOf_single_dvd_orderOf`
 @[to_additive]
 theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
   minimalPeriod_single_dvd_minimalPeriod_piMap
 
 @[to_additive]
-protected theorem IsOfFinOrder.apply {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
-  hx.mono (orderOf_single_dvd_orderOf i)
-
--- alternative names: `IsOfFinOrder.fintype_pi_mk`, `IsOfFinOrder.pi_mk_fintype`
-@[to_additive]
 protected theorem IsOfFinOrder.pi [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
-  simp only [← orderOf_ne_zero_iff, Pi.fintype_orderOf_eq]
+  simp only [← orderOf_ne_zero_iff, Pi.orderOf_of_fintype]
   simp [Finset.lcm_eq_zero_iff]
 
 end Pi
