@@ -908,17 +908,14 @@ lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g 
 @[fun_prop]
 lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
 @[deprecated (since := "2025-05-23")] alias measurable_set_not_mem := measurable_set_notMem
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
   measurableSet_setOf.2 <| measurable_set_mem _
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
   measurableSet_setOf.2 <| measurable_set_notMem _
 
