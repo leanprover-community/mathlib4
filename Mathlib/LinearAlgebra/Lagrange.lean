@@ -472,14 +472,8 @@ theorem leadingCoeff_eq_sum
     case bot => rw [h] at hP; simp at hP
     case coe d => rw [h] at hP; simp [ENat.coe_inj.mp hP]; rfl
   have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
-  have s_card : s.card > 0 := by
-    by_contra! h
-    have : s.card = 0 := by omega
-    rw [this, P_degree] at hP
-    have := ENat.coe_inj.mp hP
-    dsimp at this
-    omega
-  have hP' : P.degree < s.card := by rw [P_degree, Nat.cast_lt]; omega
+  have s_card : s.card > 0 := by by_contra! h; simp_all
+  have hP' : P.degree < s.card := by grind [Nat.cast_lt]
   rw [leadingCoeff, P_natDegree]
   rw (occs := [1]) [← interpolate_poly_eq_self hvs hP']
   rw [interpolate_apply, finset_sum_coeff]
