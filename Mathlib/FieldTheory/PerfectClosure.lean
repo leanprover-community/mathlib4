@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.FieldTheory.Perfect
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 

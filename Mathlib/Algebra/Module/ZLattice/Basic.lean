@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.LinearAlgebra.Countable
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
