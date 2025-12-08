@@ -215,10 +215,9 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; simp [pow_add, mul_comm]
     · change (T R n).degree < (C 2 * X * T R (n + 1)).degree
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X,
-        degree_T R n, degree_T R (n + 1)]
-      norm_cast; omega
-  | neg n ih => simp [T_neg, ih]
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, degree_T, degree_T]
+      tauto
+  | neg n ih => simp [ih]
 
 @[simp]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
