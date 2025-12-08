@@ -201,9 +201,9 @@ lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot 
     (fun h ↦ by simpa [hasCardinalLT_iff_cardinal_mk_lt] using hJ.of_injective _ h)
 
 lemma exists_ordinal (A₀ : Subobject X) :
-    ∃ (o : Ordinal.{w}) (j : o.toType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
+    ∃ (o : Ordinal.{w}) (j : o.ToType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
-  have : OrderBot κ.ord.toType := Ordinal.toTypeOrderBot (by
+  have : OrderBot κ.ord.ToType := Ordinal.toTypeOrderBot (by
     simp only [ne_eq, Cardinal.ord_eq_zero]
     apply Cardinal.succ_ne_zero)
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
@@ -291,7 +291,7 @@ lemma exists_transfiniteCompositionOfShape :
         (_ : WellFoundedLT J),
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
-  letI : OrderBot o.toType := Ordinal.toTypeOrderBot (by
+  letI : OrderBot o.ToType := Ordinal.toTypeOrderBot (by
     simpa only [← Ordinal.toType_nonempty_iff_ne_zero] using Nonempty.intro j)
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
@@ -320,7 +320,7 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
   letI := Cardinal.toTypeOrderBot hκ'.ne_zero
   exact ⟨κ, inferInstance, inferInstance,
     { preservesColimit {A B X Y} i hi f hf := by
-        let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.toType f :=
+        let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.ToType f :=
           { toTransfiniteCompositionOfShape := hf.toTransfiniteCompositionOfShape
             map_mem j hj := by
               have := (hf.attachCells j hj).pushouts_coproducts
@@ -328,7 +328,7 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
               refine (?_ : _ ≤ monomorphisms C) _ this
               simp only [pushouts_le_iff, coproducts_le_iff]
               exact generatingMonomorphisms_le_monomorphisms G }
-        have (j j' : κ.ord.toType) (φ : j ⟶ j') : Mono (hf'.F.map φ) := hf'.mem_map φ
+        have (j j' : κ.ord.ToType) (φ : j ⟶ j') : Mono (hf'.F.map φ) := hf'.mem_map φ
         apply preservesColimit_coyoneda_obj_of_mono (Y := hf'.F) (κ := κ)
         obtain ⟨S⟩ := hi
         exact Subobject.hasCardinalLT_of_mono hκ S.arrow }⟩

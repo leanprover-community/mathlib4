@@ -63,7 +63,7 @@ theorem IsRegular.ord_pos {c : Cardinal} (H : c.IsRegular) : 0 < c.ord := by
 theorem isRegular_cof {o : Ordinal} (h : IsSuccLimit o) : IsRegular o.cof :=
   ⟨aleph0_le_cof.2 h, (cof_cof o).ge⟩
 
-/-- If `c` is a regular cardinal, then `c.ord.toType` has a least element. -/
+/-- If `c` is a regular cardinal, then `c.ord.ToType` has a least element. -/
 lemma IsRegular.ne_zero {c : Cardinal} (H : c.IsRegular) : c ≠ 0 :=
   H.pos.ne'
 
