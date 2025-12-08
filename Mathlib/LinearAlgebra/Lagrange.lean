@@ -278,14 +278,10 @@ theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
 
 theorem leadingCoeff_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (Lagrange.basis s v i).leadingCoeff = (∏ j ∈ s.erase i, ((v i) - (v j)))⁻¹ := by
-  rw [leadingCoeff, natDegree_basis hvs hi, Lagrange.basis]
-  unfold basisDivisor
-  rw [Finset.prod_mul_distrib, ← Finset.prod_inv_distrib, ←map_prod, coeff_C_mul]
-  rw [← Finset.card_erase_of_mem hi]
-  have : (∏ j ∈ s.erase i, (X - C (v j))).Monic := monic_prod_X_sub_C _ _
-  have := this.coeff_natDegree
-  rw [natDegree_finset_prod_X_sub_C_eq_card] at this
-  rw [this, mul_one]
+  have : (∏ j ∈ s.erase i, (X - C (v j))).coeff (#s - 1) = 1 := by
+    simpa [hi] using (monic_prod_X_sub_C v (s.erase i)).coeff_natDegree
+  simp_rw [leadingCoeff, natDegree_basis hvs hi, Lagrange.basis]
+  simp [basisDivisor, Finset.prod_mul_distrib, ← map_prod, this]
 
 end Basis
 
