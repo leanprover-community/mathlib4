@@ -307,14 +307,14 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     {a : F} (ha₀ : a ≠ 0) (ha₁ : v a ≠ 1) {b : F} (hb₀ : b ≠ 0) (hb₁ : v b ≠ 1) :
     (v b).log / (w b).log = (v a).log / (w a).log := by
   by_contra! h_ne
-  wlog ha : 1 < v a generalizing a b
+  wlog! ha : 1 < v a generalizing a b
   · apply this (inv_ne_zero ha₀) (by simpa) hb₀ hb₁ (by simpa)
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le (not_lt.1 ha)⟩
-  wlog hb : 1 < v b generalizing a b
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le ha⟩
+  wlog! hb : 1 < v b generalizing a b
   · apply this ha₀ ha₁ (inv_ne_zero hb₀) (by simpa) (by simpa) ha
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le (not_lt.1 hb)⟩
-  wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le hb⟩
+  wlog! h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
+  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne h_lt h_ne.symm
   have hwa := h.one_lt_iff.1 ha
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
