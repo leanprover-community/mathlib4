@@ -157,11 +157,11 @@ lemma Ideal.ResidueField.liftₐ_algebraMap (I : Ideal A) [I.IsPrime] (f : A →
   AlgHom.ext fun _ ↦ liftₐ_algebraMap _ _ _ hf₂ _
 
 @[ext high] -- higher than `RingHom.ext`.
-lemma Ideal.ResidueField.ringHom_ext
+lemma Ideal.ResidueField.ringHom_ext {I : Ideal R}
     {f g : I.ResidueField →+* S} (H : f.comp (algebraMap R _) = g.comp (algebraMap R _)) : f = g :=
   IsLocalization.ringHom_ext (R ⧸ I)⁰ (Ideal.Quotient.ringHom_ext H)
 
 @[ext high] -- higher than `AlgHom.ext`.
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext _ _ _ congr($H))
+  AlgHom.coe_ringHom_injective (ringHom_ext congr($H))
