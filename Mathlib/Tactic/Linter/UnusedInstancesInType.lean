@@ -85,8 +85,7 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}\nwhich \
   {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
 
-/- Perf note: could cache visited exprs like `collectFVars` does; could try inverting and using
-`forEachWhere`. -/
+/- Perf note: could cache visited exprs like `collectFVars` does. -/
 /-- Collects free variables that do not appear in proofs. Ignores `sorry`s (and their types). -/
 def collectFVarsOutsideOfProofs (e : Expr) : StateRefT FVarIdSet MetaM Unit :=
   Meta.forEachExpr' e fun subExpr =>
@@ -299,7 +298,7 @@ def unusedDecidableInType : Linter where
         | _ => pure () -- invalid option value, should be caught during elaboration
     unless override || getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
-    profileitM Exception "unusedInst" (← getOptions) do
+    profileitM Exception "unusedInstancesInType" (← getOptions) do
       cmd.logUnusedInstancesInTheoremsWhere
         /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
         on decidable instances without using them in the type. -/
