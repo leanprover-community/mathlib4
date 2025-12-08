@@ -186,10 +186,6 @@ theorem disjoint_ker' {p : Submodule R M} :
     Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
   simp [disjoint_ker_iff_injOn, Set.InjOn]
 
-lemma disjoint_ker_iff_injOn {p : Submodule R M} :
-    Disjoint p (ker f) ↔ Set.InjOn f p :=
-  disjoint_ker'
-
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s :=
   disjoint_ker_iff_injOn.mp hd |>.mono h
