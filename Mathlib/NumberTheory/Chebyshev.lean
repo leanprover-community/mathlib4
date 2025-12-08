@@ -268,14 +268,12 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
     gcongr <;> linarith
   all_goals apply intervalIntegrable_one_div_log_sq <;> linarith
 
-theorem sqrt_isBigO :
-    Real.sqrt =O[atTop] (fun x ↦ x / log x ^2) := by
-  apply isBigO_mul_iff_isBigO_div _|>.mp
+theorem sqrt_isLittleO :
+    Real.sqrt =o[atTop] (fun x ↦ x / log x ^2) := by
+  apply isLittleO_mul_iff_isLittleO_div _|>.mp
   · conv => arg 2; ext; rw [mul_comm]
-    apply isBigO_mul_iff_isBigO_div _|>.mpr
-    · simp_rw [div_sqrt, sqrt_eq_rpow]
-      apply IsLittleO.isBigO
-      simp_rw [← rpow_two]
+    apply isLittleO_mul_iff_isLittleO_div _|>.mpr
+    · simp_rw [div_sqrt, sqrt_eq_rpow, ← rpow_two]
       apply isLittleO_log_rpow_rpow_atTop _ (by norm_num)
     filter_upwards [eventually_gt_atTop 0] with x hx using sqrt_ne_zero'.mpr hx
   filter_upwards [eventually_gt_atTop 1] with x hx
@@ -296,7 +294,7 @@ theorem integral_one_div_log_sq_isBigO :
   · simp_rw [mul_div_assoc]
     apply isBigO_const_mul_self
   conv => arg 2; ext; rw [← mul_one_div, mul_comm]
-  apply IsBigO.const_mul_left sqrt_isBigO
+  apply IsBigO.const_mul_left sqrt_isLittleO.isBigO
 
 theorem integral_theta_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, θ t / (t * log t ^ 2)) =O[atTop] (fun x ↦ x / log x ^ 2) := by
