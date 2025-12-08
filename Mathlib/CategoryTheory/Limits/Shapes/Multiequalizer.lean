@@ -324,23 +324,51 @@ theorem multispan_map_fst (a) : I.multispan.map (WalkingMultispan.Hom.fst a) = I
 theorem multispan_map_snd (a) : I.multispan.map (WalkingMultispan.Hom.snd a) = I.snd a :=
   rfl
 
+/-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.fst` for colimiting cofans. -/
+def fstSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) :
+    c.pt ⟶ d.pt :=
+  Cofan.IsColimit.desc hc fun i ↦ I.fst i ≫ d.inj _
+
+/-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.snd` for colimiting cofans. -/
+def sndSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) :
+    c.pt ⟶ d.pt :=
+  Cofan.IsColimit.desc hc fun i ↦ I.snd i ≫ d.inj _
+
+@[reassoc (attr := simp)]
+lemma inj_fstSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) (i) :
+    c.inj _ ≫ fstSigmaMapOfIsColimit I d hc = I.fst i ≫ d.inj _ := by
+  simp [fstSigmaMapOfIsColimit]
+
+@[reassoc (attr := simp)]
+lemma inj_sndSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) (i) :
+    c.inj _ ≫ sndSigmaMapOfIsColimit I d hc = I.snd i ≫ d.inj _ := by
+  simp [sndSigmaMapOfIsColimit]
+
+/-- Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer
+over the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter for colimiting
+cofans. -/
+@[simps!]
+protected noncomputable def parallelPairDiagramOfIsColimit
+    {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) : WalkingParallelPair ⥤ C :=
+  parallelPair (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)
+
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
 /-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.fst`. -/
 noncomputable def fstSigmaMap : ∐ I.left ⟶ ∐ I.right :=
-  Sigma.desc fun b => I.fst b ≫ Sigma.ι _ (J.fst b)
+  I.fstSigmaMapOfIsColimit _ <| colimit.isColimit _
 
 /-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.snd`. -/
 noncomputable def sndSigmaMap : ∐ I.left ⟶ ∐ I.right :=
-  Sigma.desc fun b => I.snd b ≫ Sigma.ι _ (J.snd b)
+  I.sndSigmaMapOfIsColimit _ <| colimit.isColimit _
 
 @[reassoc (attr := simp)]
-theorem ι_fstSigmaMap (b) : Sigma.ι I.left b ≫ I.fstSigmaMap = I.fst b ≫ Sigma.ι I.right _ := by
-  simp [fstSigmaMap]
+theorem ι_fstSigmaMap (b) : Sigma.ι I.left b ≫ I.fstSigmaMap = I.fst b ≫ Sigma.ι I.right _ :=
+  inj_fstSigmaMapOfIsColimit ..
 
 @[reassoc (attr := simp)]
-theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ Sigma.ι I.right _ := by
-  simp [sndSigmaMap]
+theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ Sigma.ι I.right _ :=
+  inj_sndSigmaMapOfIsColimit ..
 
 /--
 Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer over
@@ -666,66 +694,72 @@ lemma IsColimit.fac (hK : IsColimit K) {T : C} (k : ∀ a, I.right a ⟶ T)
     K.π a ≫ IsColimit.desc hK k hk = k a :=
   hK.fac _ _
 
-variable (K) [HasCoproduct I.left] [HasCoproduct I.right]
+variable (K)
+variable {c : Cofan I.left} (hc : IsColimit c) {d : Cofan I.right} (hd : IsColimit d)
 
 @[reassoc (attr := simp)]
-theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
-  ext
+theorem sigma_condition_of_isColimit :
+    I.fstSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π =
+      I.sndSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π := by
+  apply Cofan.IsColimit.hom_ext hc
   simp
 
 /-- Given a multicofork, we may obtain a cofork over `∐ I.left ⇉ ∐ I.right`. -/
 @[simps pt]
-noncomputable def toSigmaCofork (K : Multicofork I) : Cofork I.fstSigmaMap I.sndSigmaMap where
+noncomputable def toSigmaCoforkOfIsColimit (K : Multicofork I) :
+    Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
   pt := K.pt
-  ι :=
-    { app := fun x =>
-        match x with
-        | WalkingParallelPair.zero => I.fstSigmaMap ≫ Sigma.desc K.π
-        | WalkingParallelPair.one => Sigma.desc K.π
-      naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
-          simp only [Functor.map_id, parallelPair_obj_zero,
-            parallelPair_obj_one, sigma_condition, Category.id_comp, Category.comp_id] }
+  ι.app x := match x with
+    | WalkingParallelPair.zero => I.fstSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π
+    | WalkingParallelPair.one => Cofan.IsColimit.desc hd K.π
+  ι.naturality := by
+    rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
+      simp only [Functor.map_id, parallelPair_obj_zero, parallelPair_obj_one,
+        sigma_condition_of_isColimit, Category.id_comp, Category.comp_id]
 
 @[simp]
-theorem toSigmaCofork_π : K.toSigmaCofork.π = Sigma.desc K.π :=
+theorem toSigmaCoforkOfIsColimit_π :
+    (K.toSigmaCoforkOfIsColimit hc hd).π = Cofan.IsColimit.desc hd K.π :=
   rfl
 
-variable (I)
-
+variable {hc} in
 /-- Given a cofork over `∐ I.left ⇉ ∐ I.right`, we may obtain a multicofork. -/
 @[simps pt]
-noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multicofork I where
-  pt := c.pt
+noncomputable def ofSigmaCoforkOfIsColimit
+    (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) :
+    Multicofork I where
+  pt := a.pt
   ι :=
     { app := fun x =>
         match x with
-        | WalkingMultispan.left a => (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π
-        | WalkingMultispan.right b => (Sigma.ι I.right b :) ≫ c.π
+        | WalkingMultispan.left _ => c.inj _ ≫ I.fstSigmaMapOfIsColimit d hc ≫ a.π
+        | WalkingMultispan.right _ => d.inj _ ≫ a.π
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
         · simp
-        · simp [c.condition]
+        · simp [a.condition]
         · simp }
 
 @[simp]
-theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
-    (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
-      (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π :=
+theorem ofSigmaCoforkOfIsColimit_ι_app_left
+    (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
+    (ofSigmaCoforkOfIsColimit a).ι.app (WalkingMultispan.left i) =
+      c.inj _ ≫ I.fstSigmaMapOfIsColimit d hc ≫ a.π :=
   rfl
 
 -- LHS simplifies; `(d)simp`-normal form is `ofSigmaCofork_ι_app_right'`
-theorem ofSigmaCofork_ι_app_right (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b :) ≫ c.π :=
+theorem ofSigmaCoforkOfIsColimit_ι_app_right
+    (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
+    (ofSigmaCoforkOfIsColimit a).ι.app (WalkingMultispan.right i) = d.inj i ≫ a.π :=
   rfl
 
 @[simp]
-theorem ofSigmaCofork_ι_app_right' (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
-    π (ofSigmaCofork I c) b = (Sigma.ι I.right b :) ≫ c.π :=
+theorem ofSigmaCoforkOfIsColimit_ι_app_right'
+    (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
+    π (ofSigmaCoforkOfIsColimit a) i = d.inj i ≫ a.π :=
   rfl
 
-variable {I} in
 /-- Constructor for isomorphisms between multicoforks. -/
 @[simps!]
 def ext {K K' : Multicofork I}
@@ -738,25 +772,27 @@ end Multicofork
 namespace MultispanIndex
 
 variable {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
-  [HasCoproduct I.left] [HasCoproduct I.right]
+variable {c : Cofan I.left} (hc : IsColimit c) {d : Cofan I.right} (hd : IsColimit d)
 
 /-- `Multicofork.toSigmaCofork` as a functor. -/
 @[simps]
-noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap I.sndSigmaMap where
-  obj := Multicofork.toSigmaCofork
+noncomputable def toSigmaCoforkFunctor :
+    Multicofork I ⥤ Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
+  obj := Multicofork.toSigmaCoforkOfIsColimit hc hd
   map {K₁ K₂} f :=
   { hom := f.hom
     w := by
       rintro (_ | _)
-      all_goals {
-        apply colimit.hom_ext
-        rintro ⟨j⟩
-        simp } }
+      · apply Cofan.IsColimit.hom_ext hc
+        simp
+      · apply Cofan.IsColimit.hom_ext hd
+        simp }
 
 /-- `Multicofork.ofSigmaCofork` as a functor. -/
 @[simps]
-noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ Multicofork I where
-  obj := Multicofork.ofSigmaCofork I
+noncomputable def ofSigmaCoforkFunctor :
+    Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) ⥤ Multicofork I where
+  obj := Multicofork.ofSigmaCoforkOfIsColimit
   map {K₁ K₂} f :=
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
@@ -767,19 +803,29 @@ It then follows from `CategoryTheory.IsColimit.ofPreservesCoconeInitial` (or `re
 it preserves and reflects colimit cocones.
 -/
 @[simps]
-noncomputable def multicoforkEquivSigmaCofork :
-    Multicofork I ≌ Cofork I.fstSigmaMap I.sndSigmaMap where
-  functor := toSigmaCoforkFunctor I
-  inverse := ofSigmaCoforkFunctor I
+noncomputable def multicoforkEquivSigmaCoforkOfIsColimit :
+    Multicofork I ≌ Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
+  functor := toSigmaCoforkFunctor I hc hd
+  inverse := ofSigmaCoforkFunctor I hc
   unitIso := NatIso.ofComponents fun K => Cocones.ext (Iso.refl _) (by
       rintro (_ | _) <;> simp)
   counitIso := NatIso.ofComponents fun K =>
     Cofork.ext (Iso.refl _)
       (by
-        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): in mathlib3 this was just `ext` and I don't know why it's not here
-        apply Limits.colimit.hom_ext
-        rintro ⟨j⟩
+        apply Cofan.IsColimit.hom_ext hd
         simp)
+
+variable [HasCoproduct I.left] [HasCoproduct I.right]
+
+/--
+The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
+It then follows from `CategoryTheory.IsColimit.ofPreservesCoconeInitial` (or `reflects`) that
+it preserves and reflects colimit cocones.
+-/
+@[simps!]
+noncomputable def multicoforkEquivSigmaCofork :
+    Multicofork I ≌ Cofork I.fstSigmaMap I.sndSigmaMap :=
+  multicoforkEquivSigmaCoforkOfIsColimit _ (colimit.isColimit _) (colimit.isColimit _)
 
 end MultispanIndex
 
@@ -945,6 +991,7 @@ def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
 theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rw [sigmaπ, ← Category.assoc, Iso.comp_inv_eq, isoCoequalizer]
   simp
+  rfl
 
 instance : Epi (sigmaπ I) := epi_comp _ _
 
