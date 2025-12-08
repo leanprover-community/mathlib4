@@ -469,8 +469,12 @@ theorem leadingCoeff_eq_sum
     P.leadingCoeff = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, ((v i) - (v j)) := by
   have P_degree : P.degree = ↑(s.card - 1) := by
     cases h : P.degree
-    case bot => rw [h] at hP; simp at hP
-    case coe d => rw [h] at hP; simp [ENat.coe_inj.mp hP]; rfl
+    case bot => simp_all
+    case coe d =>
+      rw [Nat.cast_withBot] at hP ⊢
+      suffices #s = d + 1 by grind
+      rw [h] at hP
+      simp [← WithBot.coe_inj, hP]
   have P_natDegree : P.natDegree = s.card - 1 := natDegree_eq_of_degree_eq_some P_degree
   have s_card : s.card > 0 := by by_contra! h; simp_all
   have hP' : P.degree < s.card := by grind [Nat.cast_lt]
