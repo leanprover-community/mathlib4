@@ -93,7 +93,7 @@ theorem DirectedSystem.map_map' ⦃i j k⦄ (hij hjk x) :
 namespace DirectLimit
 open DirectedSystem
 
-variable [IsDirected ι (· ≤ ·)]
+variable [IsDirectedOrder ι]
 
 /-- The setoid on the sigma type defining the direct limit. -/
 def setoid : Setoid (Σ i, F i) where
