@@ -380,15 +380,6 @@ theorem _root_.MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} 
     (e : α ≃* β).symm (e x) = x :=
   (e : α ≃* β).left_inv x
 
-@[to_additive] theorem isDedekindFiniteMonoid_iff [MulOne α] [MulOne β]
-    {F} [EquivLike F α β] [MulEquivClass F α β] [OneHomClass F α β] (f : F) :
-    IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
-  mp _ := let e := MulEquivClass.toMulEquiv f
-    let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
-    MonoidHom.isDedekindFiniteMonoid_of_injective g e.symm.injective
-  mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
-    MonoidHom.isDedekindFiniteMonoid_of_injective g (EquivLike.injective f)
-
 end symm
 
 section simps

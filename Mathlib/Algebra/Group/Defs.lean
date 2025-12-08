@@ -748,8 +748,10 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
-@[to_additive] instance (priority := low) (M) [CommMonoid M] :
-    IsDedekindFiniteMonoid M := inferInstance
+/- This is assigned default rather than low priority because it gives the most common examples
+of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
+priority performs better than low or high priority. -/
+@[to_additive] instance (M) [CommMonoid M] : IsDedekindFiniteMonoid M := inferInstance
 
 section LeftCancelMonoid
 
