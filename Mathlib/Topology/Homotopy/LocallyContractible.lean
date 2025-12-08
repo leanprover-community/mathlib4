@@ -92,7 +92,9 @@ section StronglyLocallyContractibleSpace
 neighborhoods form a neighborhood basis. Here "contractible" means contractible as a subspace.
 
 This is strictly stronger than the classical notion of locally contractible, which only requires
-null-homotopic inclusions. -/
+null-homotopic inclusions.
+This distinction is witnessed by an example from Borsuk-Mazurkiewicz [borsuk_mazurkiewicz1934];
+see also [MO88628] for discussion and the Whitehead manifold example. -/
 class StronglyLocallyContractibleSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of contractible subspace neighborhoods. -/
   contractible_basis : ∀ x : X,
