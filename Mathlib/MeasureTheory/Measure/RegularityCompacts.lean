@@ -26,7 +26,7 @@ probability.
 
 @[expose] public section
 
-open Set MeasureTheory
+open Set MeasureTheory TopologicalSpace
 
 open scoped ENNReal Uniformity
 
@@ -90,8 +90,6 @@ theorem innerRegularWRT_isCompact_closure_of_univ [TopologicalSpace α]
   refine this.of_isClosed_subset isClosed_closure ?_
   refine (closure_inter_subset_inter_closure _ _).trans_eq ?_
   rw [IsClosed.closure_eq ht]
-
-open TopologicalSpace
 
 theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
     [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
