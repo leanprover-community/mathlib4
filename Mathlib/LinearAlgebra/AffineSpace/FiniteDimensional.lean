@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
