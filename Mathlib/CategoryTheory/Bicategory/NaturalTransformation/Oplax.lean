@@ -299,7 +299,7 @@ def vcomp : OplaxTrans F H where
 /-- `CategoryStruct` on `B ⥤ᵒᵖᴸ C` where the (1-)morphisms are given by oplax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance : CategoryStruct (B ⥤ᵒᵖᴸ C) where
+scoped instance categoryStruct : CategoryStruct (B ⥤ᵒᵖᴸ C) where
   Hom := OplaxTrans
   id := OplaxTrans.id
   comp := OplaxTrans.vcomp
