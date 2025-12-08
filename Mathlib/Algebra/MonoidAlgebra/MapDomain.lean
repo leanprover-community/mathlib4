@@ -33,10 +33,10 @@ by summing the coefficients along each fiber of `f`. -/
 @[to_additive /--
 Given a function `f : M → N` between magmas, return the corresponding map `R[M] → R[N]` obtained
 by summing the coefficients along each fiber of `f`. -/]
-abbrev mapDomain (f : M → N) (v : MonoidAlgebra R M) : MonoidAlgebra R N := Finsupp.mapDomain f v
+abbrev mapDomain (f : M → N) (v : R[M]) : R[N] := Finsupp.mapDomain f v
 
 @[to_additive]
-lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → MonoidAlgebra R M) :
+lemma mapDomain_sum (f : M → N) (s : S[M]) (v : M → S → R[M]) :
     mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
 @[to_additive]
@@ -48,12 +48,12 @@ lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) 
 
 @[to_additive (dont_translate := R) (attr := simp) mapDomain_one]
 theorem mapDomain_one [One M] [One N] {F : Type*} [FunLike F M N] [OneHomClass F M N] (f : F) :
-    mapDomain f (1 : MonoidAlgebra R M) = (1 : MonoidAlgebra R N) := by
+    mapDomain f (1 : R[M]) = (1 : R[N]) := by
   simp [one_def]
 
 @[to_additive (dont_translate := R) mapDomain_mul]
 theorem mapDomain_mul [Mul M] [Mul N] {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
-    (x y : MonoidAlgebra R M) : mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
+    (x y : R[M]) : mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
   simp [mul_def, mapDomain_sum, add_mul, mul_add, sum_mapDomain_index]
 
 variable [Monoid M] [Monoid N] [Monoid O]
@@ -65,8 +65,8 @@ variable (R) in
 If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `Finsupp.mapDomain f` is a ring homomorphism between their monoid algebras. -/]
 def mapDomainRingHom {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
-    MonoidAlgebra R M →+* MonoidAlgebra R N where
-  __ : MonoidAlgebra R M →+ MonoidAlgebra R N := Finsupp.mapDomain.addMonoidHom f
+    R[M] →+* R[N] where
+  __ : R[M] →+ R[N] := Finsupp.mapDomain.addMonoidHom f
   map_one' := mapDomain_one f
   map_mul' := mapDomain_mul f
 
@@ -74,7 +74,7 @@ attribute [local ext high] ringHom_ext
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainRingHom_id :
-    mapDomainRingHom R (MonoidHom.id M) = .id (MonoidAlgebra R M) := by ext <;> simp
+    mapDomainRingHom R (MonoidHom.id M) = .id R[M] := by ext <;> simp
 
 @[to_additive (dont_translate := R) (attr := simp)]
 lemma mapDomainRingHom_comp (f : N →* O) (g : M →* N) :
@@ -91,7 +91,7 @@ end MonoidAlgebra
 /-!
 #### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
 
-We have not defined `k[G] = MonoidAlgebra k (Multiplicative G)`
+We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
 because historically this caused problems;
 since the changes that have made `nsmul` definitional, this would be possible,
 but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
