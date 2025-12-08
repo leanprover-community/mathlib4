@@ -605,7 +605,6 @@ theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
 
-@[simp]
 lemma disjoint_iff_disjoint_verts {H H' : Subgraph G} :
     Disjoint H.verts H'.verts ↔ Disjoint H H' := by
   apply Iff.intro
