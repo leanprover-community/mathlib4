@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.Enumerative.Catalan
 
 /-!
 # Catalan Power Series
+
 We introduce the Catalan generating function as a formal power series over `ℕ`:
   `catalanSeries = ∑_{n ≥ 0} catalan n * X^n`
 
@@ -23,7 +24,6 @@ We introduce the Catalan generating function as a formal power series over `ℕ`
 ## TODO
 * Find and prove the closed formula for the Catalan generating function:
   `C(X) = (1 - √(1 - 4X)) / (2X)`
-
 -/
 
 @[expose] public section
@@ -44,12 +44,12 @@ lemma catalanSeries_constantCoeff : constantCoeff catalanSeries = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   simp only [catalanSeries_coeff, catalan_zero]
 
-theorem catalanSeries_one_add_X_mul_self_sq : catalanSeries = 1 + X * catalanSeries ^ 2 := by
+theorem catalanSeries_sq_mul_X_add_one : catalanSeries ^ 2 * X + 1 = catalanSeries := by
   ext n
   cases n with
   | zero => simp
   | succ n =>
-    simp_rw [map_add, coeff_one, if_neg n.succ_ne_zero, zero_add, coeff_succ_X_mul, sq,
+    simp_rw [add_comm, map_add, coeff_one, if_neg n.succ_ne_zero, zero_add, coeff_succ_mul_X, sq,
       coeff_mul, catalanSeries_coeff, catalan_succ']
 
 end PowerSeries
