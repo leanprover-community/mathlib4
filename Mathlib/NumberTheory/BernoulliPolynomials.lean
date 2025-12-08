@@ -96,7 +96,6 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   · norm_num [h]
   · simp [h, bernoulli_eq_bernoulli'_of_ne_one h]
 
-
 theorem bernoulli_three_eval_one_quarter :
     (Polynomial.bernoulli 3).eval (1 / 4) = 3 / 64 := by
   simp_rw [Polynomial.bernoulli, Finset.sum_range_succ, Polynomial.eval_add,
@@ -162,16 +161,11 @@ nonrec theorem sum_bernoulli (n : ℕ) :
 
 /-- Another version of `Polynomial.sum_bernoulli`. -/
 theorem bernoulli_eq_sub_sum (n : ℕ) :
-    (n.succ : ℚ) • bernoulli n =
-      monomial n (n.succ : ℚ) - ∑ k ∈ Finset.range n, ((n + 1).choose k : ℚ) • bernoulli k := by
-  rw [Nat.cast_succ, ← sum_bernoulli n, sum_range_succ, add_sub_cancel_left, choose_succ_self_right,
-    Nat.cast_succ]
-
-theorem bernoulli_eq_sub_sum' (n : ℕ) :
     (n + 1) • bernoulli n =
       (n + 1) • X ^ n - ∑ k ∈ Finset.range n, ((n + 1).choose k) • bernoulli k := by
-  convert bernoulli_eq_sub_sum n using 1
-  simp_rw [← smul_X_eq_monomial, cast_smul_eq_nsmul]
+  simp_rw [← cast_smul_eq_nsmul (R := ℚ), smul_X_eq_monomial,
+    Nat.cast_succ, ← sum_bernoulli n, sum_range_succ_sub_sum, choose_succ_self_right,
+    Nat.cast_succ]
 
 /-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
@@ -203,12 +197,13 @@ theorem bernoulli_comp_one_add_X (n : ℕ) :
   | zero => simp
   | succ d =>
   rw [← smul_right_inj (show d + 2 ≠ 0 by positivity), ← smul_comp, smul_add]
-  simp only [bernoulli_eq_sub_sum', sub_comp, sum_comp, add_assoc, one_add_one_eq_two, smul_smul]
+  simp only [bernoulli_eq_sub_sum, sub_comp, sum_comp, add_assoc, one_add_one_eq_two, smul_smul]
   conv_lhs =>
-    enter [2]
-    apply_congr
+    congr
     · skip
-    · rw [smul_comp, hd _ (mem_range.1 (by assumption))]
+    · apply_congr
+      · skip
+      · rw [smul_comp, hd _ (mem_range.1 (by assumption))]
   simp_rw [smul_add, sum_add_distrib, sub_add, sub_add_eq_sub_sub_swap, sub_sub_eq_add_sub]
   congr 1
   rw [show ∀ a b c d : ℚ[X], a - b = c + d ↔ a - c = b + d by grind]
