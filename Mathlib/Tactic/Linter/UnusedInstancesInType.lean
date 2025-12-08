@@ -70,7 +70,6 @@ instance : ToMessageData Parameter where
       msg := m!"{msg} (used in type, but only in a proof)"
     return msg
 
-
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
@@ -90,8 +89,7 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
   m!"`{.ofConstName declName}` does not use the following \
   {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"} \
-  in its type\
-  {if anyAppearsInTypeProof then " outside of proofs" else ""}:\
+  in its type{if anyAppearsInTypeProof then " outside of proofs" else ""}:\
   {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}"
 
 /- Perf note: could cache visited exprs like `collectFVars` does. -/

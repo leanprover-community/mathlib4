@@ -281,13 +281,14 @@ where
     | .letE _ _ _ body _ => go body current acc
     | _ => acc
 
-/-- Detect if `e` is a forall which has an instance binder that satisfies `p` -/
+/--
+Returns `true` if `e` includes a `forallE` instance binder that satisfies `p`.
+
+Cleans up annotations before traversing nested `forallE`s, and sees through `let`s.
+-/
 partial def hasInstanceBinderOf (p : Expr → Bool) (e : Expr) : Bool :=
   match e.cleanupAnnotations with
-  | .forallE _ type body bi =>
-    (bi.isInstImplicit && p type) || hasInstanceBinderOf p body
-  /- See through `letE`, and just as in the interpretation of a bound provided to
-  `forallBoundedTelescope`, do not increment the number of binders we've counted. -/
+  | .forallE _ type body bi => (bi.isInstImplicit && p type) || hasInstanceBinderOf p body
   | .letE _ _ _ body _ => hasInstanceBinderOf p body
   | _ => false
 
