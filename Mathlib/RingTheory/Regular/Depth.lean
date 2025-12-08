@@ -301,25 +301,23 @@ section
 lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : ModuleCat.{v} R)
     (f : M ⟶ N) (mono : Mono f) :
     Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
-  apply ConcreteCategory.mono_of_injective
-  rw [← AddMonoidHom.ker_eq_bot_iff]
+  rw [AddCommGrpCat.mono_iff_injective, ← AddMonoidHom.ker_eq_bot_iff]
   apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
   simp only [AddCommGrpCat.hom_ofHom, AddMonoidHom.mem_ker, AddMonoidHom.flip_apply,
     Ext.bilinearComp_apply_apply] at hx
   rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (Ext.addEquiv₀ x ≫ f) = 0 := (AddEquiv.map_eq_zero_iff Ext.addEquiv₀.symm).mp hx
-  exact (AddEquiv.map_eq_zero_iff Ext.addEquiv₀).mp (zero_of_comp_mono f this)
+  have : (Ext.addEquiv₀ x ≫ f) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
+  exact Ext.addEquiv₀.map_eq_zero_iff.mp (zero_of_comp_mono f this)
 
 lemma CategoryTheory.Abelian.extFunctor_post_apply_zero_preserve_momoMorphism
     (L M N : ModuleCat.{v} R) (g : M ⟶ N) (mono : Epi g) :
     Mono (AddCommGrpCat.ofHom <| ((Ext.mk₀ g)).precomp L (zero_add 0)) := by
-  apply ConcreteCategory.mono_of_injective
-  rw [← AddMonoidHom.ker_eq_bot_iff]
+  rw [AddCommGrpCat.mono_iff_injective, ← AddMonoidHom.ker_eq_bot_iff]
   apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
   simp only [AddCommGrpCat.hom_ofHom, AddMonoidHom.mem_ker, Ext.bilinearComp_apply_apply] at hx
   rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (g  ≫ Ext.addEquiv₀ x) = 0 := (AddEquiv.map_eq_zero_iff Ext.addEquiv₀.symm).mp hx
-  exact (AddEquiv.map_eq_zero_iff Ext.addEquiv₀).mp (zero_of_epi_comp g this)
+  have : (g ≫ Ext.addEquiv₀ x) = 0 := Ext.addEquiv₀.symm.map_eq_zero_iff.mp hx
+  exact Ext.addEquiv₀.map_eq_zero_iff.mp (zero_of_epi_comp g this)
 
 end
 
@@ -442,9 +440,9 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext N M i)) ↔
     (∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · apply ((exist_isRegular_tfae I n M ‹_› ‹_› smul_lt).out 1 2).mpr
+    · apply ((exist_isRegular_tfae I n M smul_lt).out 1 2).mpr
       use N
-    · have rees := ((exist_isRegular_tfae I n M ‹_› ‹_› smul_lt).out 0 1).mpr h
+    · have rees := ((exist_isRegular_tfae I n M smul_lt).out 0 1).mpr h
       apply rees N
       simp [Nfin, Nntr, hsupp]
   simp [Ideal.depth, moduleDepth_eq_sup_nat]
@@ -617,10 +615,10 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
       Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i) := by
       use N
-    rcases ((exist_isRegular_tfae I n M ‹_› ‹_› smul_lt).out 2 3).mp this with ⟨rs, len, mem, reg⟩
+    rcases ((exist_isRegular_tfae I n M smul_lt).out 2 3).mp this with ⟨rs, len, mem, reg⟩
     use rs
   · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
-    have rees := ((exist_isRegular_tfae I rs.length M ‹_› ‹_› smul_lt).out 3 0).mp (by use rs)
+    have rees := ((exist_isRegular_tfae I rs.length M smul_lt).out 3 0).mp (by use rs)
     apply rees N
     simp [Nntr, Nfin, hsupp]
 
