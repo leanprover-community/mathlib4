@@ -188,15 +188,14 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | zero => simp
   | one => simp
   | add_two n ih1 ih2 =>
-    have : (2 * X * T R (n+1)).degree = ↑(n + 2) := by
-      change (C 2 * X * T R (n+1)).degree = ↑(n + 2)
-      rw [mul_assoc, degree_C_mul (NeZero.ne 2)]
-      rw [mul_comm, degree_mul_X, ih1]
-      norm_cast
+    have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
+      change (C 2 * X * T R (n + 1)).degree = ↑(n + 2)
+      rw [mul_assoc, degree_C_mul (NeZero.ne 2), mul_comm, degree_mul_X, ih1]
+      rfl
     rw [T_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; norm_cast
-    · rw [ih2, this]; norm_cast; omega
-  | neg n ih => rw [T_neg, ih]; simp
+    · rw [this]; rfl
+    · rw [ih2, this]; tauto
+  | neg n ih => simp [ih]
 
 @[simp]
 theorem natDegree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
