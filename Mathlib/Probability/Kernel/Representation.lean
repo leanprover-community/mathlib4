@@ -6,10 +6,10 @@ Authors: Gaëtan Serré, Rémy Degenne
 
 module
 
-import Mathlib.Analysis.SpecialFunctions.Sigmoid
-import Mathlib.MeasureTheory.Constructions.UnitInterval
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.Sigmoid
+public import Mathlib.MeasureTheory.Constructions.UnitInterval
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Probability.CDF
 
 /-!
 # Representation of kernels
@@ -37,6 +37,8 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   This is a consequence of `ProbabilityTheory.Kernel.embedding_representation` and the fact that
   any standard Borel space can be embedded in `ℝ`, and then composed with `unitInterval.sigmoid`.
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
 
