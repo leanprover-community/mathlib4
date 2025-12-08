@@ -39,12 +39,12 @@ theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : 
     ![a, b, c] ∼ ![a', b', c'] := by
   have hne_pi_div_two : ∠ a b c ≠ Real.pi / 2 ∨ ∠ b c a ≠ Real.pi / 2 := by
     by_contra hq
-    simp at hq
+    simp only [ne_eq, not_or, Decidable.not_not] at hq
     have := angle_lt_pi_div_two_of_angle_eq_pi_div_two hq.1 (ne₂₃_of_not_collinear h_not_col).symm
     grind
   have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by
     by_contra hq
-    simp at hq
+    simp only [ne_eq, not_or, not_not] at hq
     rw [hq.1] at h₁
     rw [hq.2.1] at h₂
     grind [angle_self_left]
@@ -98,7 +98,7 @@ theorem similar_of_side_angle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
   have h_ab : dist a b = k * dist a' b' := by grind
   have h_bc : dist b c = k * dist b' c' := by grind
   have hcos := law_cos a b c
-  rw [dist_comm b _ , dist_comm b' _] at h_bc
+  rw [dist_comm b _, dist_comm b' _] at h_bc
   rw [h_ab, h_bc] at hcos
   field_simp at hcos
   rw [h] at hcos
