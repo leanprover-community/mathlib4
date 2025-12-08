@@ -61,8 +61,6 @@ end tprodTprodHom
 
 section TprodFinTrodEquiv
 
-open Fin
-
 variable {n : Nat} {β : Fin n → Type*}
 variable {s : (k : Fin n) → (i : β k) → Type*}
 variable [∀ k, ∀ i, AddCommMonoid (s k i)] [∀ k, ∀ i, Module R (s k i)]
@@ -88,7 +86,26 @@ Trade-offs for the alternative approach:
 What's the preferred way of handling this?
 
 If #2, one could collect equivalences in a PiTensorProduct/Equiv.lean.
+
+
+### Equivalence
+
+The following equivalence is not particular to `PiTensorProduct`s. Should it go elsewhere?
+
+Logic/Equiv/Fin/Basic.lean?
+Logic/Equiv/Basic.lean? (one doesn't currently import any `Fin` files)
+
 -/
+
+/-- Split off last summand of a dependent sum over `Fin n.succ` -/
+def sigmaFinSuccEquiv {n : ℕ} {f : Fin n.succ → Type*} :
+  (Σ k : Fin n.succ, f k) ≃ (Σ k : Fin n, f k.castSucc) ⊕ f (Fin.last n) := {
+    toFun x := if h : x.1 = Fin.last n then .inr (h ▸ x.2) else
+      .inl ⟨⟨x.1, Fin.lt_last_iff_ne_last.mpr h⟩, x.2⟩
+    invFun := Sum.rec (fun y ↦ ⟨y.1.castSucc, y.2⟩) (⟨Fin.last n, ·⟩)
+    left_inv _ := by aesop
+    right_inv _ := by aesop
+  }
 
 /-- A nested `PiTensorProduct` with outer index of type `Fin n` is equivalent to
 a single `PiTensorProduct` over a sigma type. -/
@@ -126,7 +143,8 @@ theorem tprodFinTprodEquiv_tprod (f : (k : Fin n) → (i : β k) → s k i) :
     simp only [eq_symm_apply, finSumFinEquiv_apply_left,
       TensorProduct.congr_tmul, subsingletonEquivDep_apply_tprod]
     --
-    exact (congr_arg (· ⊗ₜ[R] (⨂ₜ[R] i : β (last m), f (last m) i)) (ih (fun k i ↦ f k.castSucc i)))
+    exact (congr_arg (· ⊗ₜ[R] (⨂ₜ[R] i : β (Fin.last m), f (Fin.last m) i))
+      (ih (fun k i ↦ f k.castSucc i)))
 
 @[simp]
 theorem tprodFinTprodEquiv_symm_tprod (f : (j : (Σ k, β k)) → s j.1 j.2) :
