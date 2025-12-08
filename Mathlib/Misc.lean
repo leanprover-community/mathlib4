@@ -154,7 +154,7 @@ example (a b l : ℕ) (ha : a < b ^ l) [NeZero l] :
   have := zap b l sorry (fun j : Fin l ↦ (b.digits a).getD j.val 0)
   rw [this, Finset.sum_range]
   congr!
-  
+
 
 
 
