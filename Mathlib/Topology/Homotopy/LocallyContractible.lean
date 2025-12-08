@@ -42,8 +42,8 @@ This file defines `LocallyContractibleSpace` and `StronglyLocallyContractibleSpa
 ## Notes
 
 **Terminology:** The classical definition of *locally contractible* (LC) requires that for every
-point `x` and neighborhood `U ∋ x`, there exists a neighborhood `V ∋ x` with `V ⊆ U` such that
-the inclusion `V ↪ U` is null-homotopic. The definition here is **strictly stronger**: we require
+point `x` and neighborhood `U ∋ x`, there exists a neighborhood `V ∋ x` with `V ⊆ U` such that the
+inclusion `V ↪ U` is null-homotopic. The definition here is **strictly stronger**: we require
 contractible neighborhoods to form a neighborhood basis. This is often called **strongly locally
 contractible** (SLC).
 
@@ -53,12 +53,12 @@ contractible** (SLC).
 * "Null-homotopic inclusions" (classical LC, weakest)
 
 This naming is not used uniformly: according to
-https://ncatlab.org/nlab/show/locally+contractible+space the second and third notion here could
-also be called
+https://ncatlab.org/nlab/show/locally+contractible+space
+the second and third notion here could also be called
 "locally contractible" and "semilocally contractible" respectively.
 We've enquired at
-https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility
--locally-contractible-vs-strongly-local in the hope of gettting definitive naming advice.
+https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility-locally-contractible-vs-strongly-local
+in the hope of gettting definitive naming advice.
 
 The Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934] shows that classical LC does not
 imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot shrink to an open
