@@ -563,8 +563,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_comp_left (L : F →L[𝕜
   have h := L.norm_compContinuousMultilinearMap_le (iteratedFDerivWithin 𝕜 n f s x)
   rwa [← L.iteratedFDerivWithin_comp_left hf hs hx hn] at h
 
-theorem norm_iteratedFDeriv_postcomp_clm (L : F →L[𝕜] G) {f : E → F} {x : E} {N : WithTop ℕ∞}
-    {n : ℕ} (hf : ContDiffAt 𝕜 N f x) (hn : n ≤ N) :
+theorem ContinuousLinearMap.norm_iteratedFDeriv_comp_left (L : F →L[𝕜] G) {f : E → F} {x : E}
+    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffAt 𝕜 N f x) (hn : n ≤ N) :
     ‖iteratedFDeriv 𝕜 n (L ∘ f) x‖ ≤ ‖L‖ * ‖iteratedFDeriv 𝕜 n f x‖ := by
   simp only [← iteratedFDerivWithin_univ]
   exact L.norm_iteratedFDerivWithin_comp_left hf.contDiffWithinAt uniqueDiffOn_univ (Set.mem_univ x)
