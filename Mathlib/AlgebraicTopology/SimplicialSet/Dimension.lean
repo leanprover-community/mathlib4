@@ -57,7 +57,7 @@ lemma hasDimensionLT_of_le (hn : d ≤ n := by cutsat) : HasDimensionLT X n wher
   degenerate_eq_top i hi :=
     X.degenerate_eq_top_of_hasDimensionLT d i (hn.trans hi)
 
-instance [HasDimensionLT X n] : HasDimensionLT X (n + 1) :=
+instance [HasDimensionLT X n] (k : ℕ) : HasDimensionLT X (n + k) :=
   X.hasDimensionLT_of_le n _
 
 end
@@ -123,7 +123,7 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
     HasDimensionLT (⊤ : X.Subcomplex) d ↔ X.HasDimensionLT d :=
   hasDimensionLT_iff_of_iso (Subcomplex.topIso X) _
 
-instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT ((⊥ : X.Subcomplex)) n where
+instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩
     simp at hx

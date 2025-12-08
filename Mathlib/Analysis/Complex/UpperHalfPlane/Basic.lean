@@ -87,6 +87,11 @@ lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ⟨z, hz⟩ = z := by
   rfl
 
+instance : Nontrivial ℍ := by
+  constructor
+  use ⟨Complex.I, by simp⟩, ⟨2 * Complex.I, by simp⟩
+  simp [ne_eq, UpperHalfPlane.ext_iff]
+
 @[simp]
 theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
