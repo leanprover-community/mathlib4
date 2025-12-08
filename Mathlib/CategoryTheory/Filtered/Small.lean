@@ -256,13 +256,9 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-<<<<<<< HEAD
-    · simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
-=======
     · #adaptation_note
       /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
       simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
->>>>>>> 81dcfb9ad2d
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
       rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure.eq_1]
