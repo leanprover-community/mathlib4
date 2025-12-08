@@ -95,8 +95,7 @@ theorem algebraMap_ofSubsemiring_apply (S : C) (x : S) : algebraMap S R x = x :=
   rfl
 
 /-- Algebra over a subring. This builds upon `Subring.module`. -/
-@[deprecated ofSubsemiring (since := "2025-11-23")]
-def ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
+instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A := inferInstance
 
 theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
