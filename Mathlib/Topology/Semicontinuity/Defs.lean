@@ -580,11 +580,11 @@ theorem lowerHemicontinuousWithinAt_univ_iff :
     LowerHemicontinuousWithinAt f univ x ↔ LowerHemicontinuousAt f x :=
   semicontinuousWithinAt_univ_iff
 
-theorem LowerHemicontinuousAt.LowerHemicontinuousWithinAt (s : Set α)
+theorem LowerHemicontinuousAt.lowerHemicontinuousWithinAt (s : Set α)
     (h : LowerHemicontinuousAt f x) : LowerHemicontinuousWithinAt f s x :=
   h.semicontinuousWithinAt s
 
-theorem LowerHemicontinuousOn.LowerHemicontinuousWithinAt (h : LowerHemicontinuousOn f s)
+theorem LowerHemicontinuousOn.lowerHemicontinuousWithinAt (h : LowerHemicontinuousOn f s)
     (hx : x ∈ s) : LowerHemicontinuousWithinAt f s x :=
   h.semicontinuousWithinAt hx
 
@@ -599,15 +599,15 @@ theorem lowerHemicontinuousOn_univ_iff : LowerHemicontinuousOn f univ ↔ LowerH
     LowerHemicontinuous (s.restrict f) ↔ LowerHemicontinuousOn f s :=
   semicontinuous_restrict_iff (r := (fun x t ↦ IsOpen t ∧ ((f x) ∩ t).Nonempty))
 
-theorem LowerHemicontinuous.LowerHemicontinuousAt (h : LowerHemicontinuous f) (x : α) :
+theorem LowerHemicontinuous.lowerHemicontinuousAt (h : LowerHemicontinuous f) (x : α) :
     LowerHemicontinuousAt f x :=
   h x
 
-theorem LowerHemicontinuous.LowerHemicontinuousWithinAt (h : LowerHemicontinuous f) (s : Set α)
+theorem LowerHemicontinuous.lowerHemicontinuousWithinAt (h : LowerHemicontinuous f) (s : Set α)
     (x : α) : LowerHemicontinuousWithinAt f s x :=
   (h x).semicontinuousWithinAt s
 
-theorem LowerHemicontinuous.LowerHemicontinuousOn (h : LowerHemicontinuous f) (s : Set α) :
+theorem LowerHemicontinuous.lowerHemicontinuousOn (h : LowerHemicontinuous f) (s : Set α) :
     LowerHemicontinuousOn f s :=
   h.semicontinuousOn s
 
@@ -680,11 +680,11 @@ theorem upperHemicontinuousWithinAt_univ_iff :
     UpperHemicontinuous (s.restrict f) ↔ UpperHemicontinuousOn f s :=
   semicontinuous_restrict_iff (r := (fun x t ↦ t ∈ 𝓝ˢ (f x)))
 
-theorem UpperHemicontinuousAt.UpperHemicontinuousWithinAt (s : Set α)
+theorem UpperHemicontinuousAt.upperHemicontinuousWithinAt (s : Set α)
     (h : UpperHemicontinuousAt f x) : UpperHemicontinuousWithinAt f s x :=
   h.semicontinuousWithinAt s
 
-theorem UpperHemicontinuousOn.UpperHemicontinuousWithinAt (h : UpperHemicontinuousOn f s)
+theorem UpperHemicontinuousOn.upperHemicontinuousWithinAt (h : UpperHemicontinuousOn f s)
     (hx : x ∈ s) : UpperHemicontinuousWithinAt f s x :=
   h x hx
 
@@ -695,15 +695,15 @@ theorem UpperHemicontinuousOn.mono (h : UpperHemicontinuousOn f s) (hst : t ⊆ 
 theorem upperHemicontinuousOn_univ_iff : UpperHemicontinuousOn f univ ↔ UpperHemicontinuous f :=
   semicontinuousOn_univ_iff
 
-theorem UpperHemicontinuous.UpperHemicontinuousAt (h : UpperHemicontinuous f) (x : α) :
+theorem UpperHemicontinuous.upperHemicontinuousAt (h : UpperHemicontinuous f) (x : α) :
     UpperHemicontinuousAt f x :=
   h x
 
-theorem UpperHemicontinuous.UpperHemicontinuousWithinAt (h : UpperHemicontinuous f) (s : Set α)
+theorem UpperHemicontinuous.upperHemicontinuousWithinAt (h : UpperHemicontinuous f) (s : Set α)
     (x : α) : UpperHemicontinuousWithinAt f s x :=
   (h x).semicontinuousWithinAt s
 
-theorem UpperHemicontinuous.UpperHemicontinuousOn (h : UpperHemicontinuous f) (s : Set α) :
+theorem UpperHemicontinuous.upperHemicontinuousOn (h : UpperHemicontinuous f) (s : Set α) :
     UpperHemicontinuousOn f s :=
   h.semicontinuousOn s
 
