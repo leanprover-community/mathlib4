@@ -278,52 +278,54 @@ open Equiv Pointwise
 
 open IntermediateField
 
-theorem switchinglemma {F : Type*} [Field F] (p : F[X])
-    (E₁ E₂ : Type*) [Field E₁] [Algebra F E₁] [Field E₂] [Algebra F E₂]
-    [Fact (p.map (algebraMap F E₁)).Splits] [Fact (p.map (algebraMap F E₂)).Splits] :
-    Gal.galActionHom p E₁ =
-      ((Polynomial.Gal.rootsEquivRoots p E₂).symm.trans
-        (Polynomial.Gal.rootsEquivRoots p E₁)).permCongrHom.toMonoidHom.comp
-        (Gal.galActionHom p E₂)
-       := by
-  ext
-  simp [permCongrHom, permCongrHom, Gal.galActionHom, Polynomial.Gal.smul_def]
+theorem heinglemma {F : Type*} [Field F] (p : F[X]) (E : Type*) [Field E] [Algebra F E]
+    [Fact (p.map (algebraMap F E)).Splits] :
+    Gal.galActionHom p E =
+      ((Polynomial.Gal.rootsEquivRoots p E)).permCongrHom.toMonoidHom.comp
+        (MulAction.toPermHom p.Gal (p.rootSet p.SplittingField)) := by
+  ext; simp [Gal.galActionHom, Polynomial.Gal.smul_def]
 
 attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
 
-attribute [local instance] Gal.splits_ℚ_ℂ
-
-theorem _root_.Gal.smul_def' {K : Type*} [Field K] (p : K[X]) (g : p.Gal)
-    (x : p.rootSet p.SplittingField) :
-    have : Fact (p.map (algebraMap K p.SplittingField)).Splits := sorry
-    g • x = g • x := by
-  have : SMulCommClass p.Gal K p.SplittingField := sorry
-  have := temp (R := K) (S := p.SplittingField) (G := p.Gal) (f := p)
-  rfl
-
 attribute [-instance] Gal.smul Gal.galAction -- todo: redefine in more general semiring context
+
+attribute [local instance] Gal.splits_ℚ_ℂ
 
 open NumberField
 
+-- #32574
+theorem _root_.Polynomial.Splits.of_splits_map_of_injective {R : Type*} [CommRing R] {f : R[X]}
+    {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hi : Function.Injective i)
+    (hf : Splits (f.map i)) (hi : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits f := by
+  choose j hj using hi
+  rw [splits_iff_exists_multiset]
+  refine ⟨(f.map i).roots.pmap j fun _ ↦ id, map_injective i hi ?_⟩
+  conv_lhs => rw [hf.eq_prod_roots, leadingCoeff_map_of_injective hi]
+  simp [Multiset.pmap_eq_map, hj, Multiset.map_pmap, Polynomial.map_multiset_prod]
 
 
-theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
+theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀) :
     -- condition on at most on root collision mod p :
     Function.Bijective (Gal.galActionHom (f₀.map (algebraMap ℤ ℚ)) ℂ) := by
   classical
   let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
-  have hf := hf₀.map (algebraMap ℤ ℚ)
+  have hf : Monic f := hf₀.map (algebraMap ℤ ℚ)
+  have hf' : Irreducible f := hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf₀'
   let K := f.SplittingField
-  have : Fact (f.map (algebraMap ℚ K)).Splits := ⟨SplittingField.splits f⟩
+  -- have : Fact (f.map (algebraMap ℚ K)).Splits := ⟨SplittingField.splits f⟩
   have : NumberField K := by constructor
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K
   let G := f.Gal
-  suffices Function.Surjective (Gal.galActionHom f K) by
-    use Polynomial.Gal.galActionHom_injective f ℂ
-    rw [switchinglemma f ℂ K]
-    exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
-      (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_surjective _).mpr this
+  have h_transitive := Gal.galAction_isPretransitive f ℂ hf'
+  have h_faithful : FaithfulSMul G (f.rootSet K) := by
+    -- might not actually be necessary
+    sorry
+  let e := Polynomial.Gal.rootsEquivRoots f ℂ
+  have he : Gal.galActionHom f ℂ = e.permCongrHom.toMonoidHom.comp
+      (MulAction.toPermHom G (f.rootSet K)) := by
+    ext; simp [Gal.galActionHom, Polynomial.Gal.smul_def, G, K, e]
+  -- switch immediately from `f.rootSet ℂ` to `f.rootSet R`
   have hφ : Set.MapsTo (algebraMap R K) (f₀.rootSet R) (f.rootSet K) := by
     intro x hx
     rw [hf.mem_rootSet, aeval_map_algebraMap, aeval_algebraMap_apply,
@@ -333,7 +335,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     intro g x
     ext
     rfl
-  have hφ2 : Function.Bijective φ := by
+  have hφ2 : Function.Bijective (hφ.restrict) := by
     rw [Function.Bijective, hφ.restrict_inj, hφ.restrict_surjective_iff]
     refine ⟨RingOfIntegers.coe_injective.injOn, ?_⟩
     intro x hx
@@ -343,46 +345,49 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     refine ⟨y, ?_, rfl⟩
     rw [mem_rootSet, and_iff_right hf₀.ne_zero]
     simpa using (aeval_algebraMap_apply K y f₀).symm.trans h0
-  suffices Function.Surjective (MulAction.toPermHom G (f.rootSet K)) by
-    convert this
-    ext x y
-    simp [Gal.galActionHom, Gal.smul_def]
-    sorry
+  let e' := Equiv.ofBijective hφ.restrict hφ2
+  have he' : MulAction.toPermHom G (f.rootSet K) = e'.permCongrHom.toMonoidHom.comp
+      (MulAction.toPermHom G (f₀.rootSet R)) := by
+    ext g x
+    obtain ⟨y, rfl⟩ := e'.surjective x
+    simp
+    rfl
   suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
-    let d := Equiv.ofBijective φ hφ2
-    let e := d.permCongrHom
-    have h2 : e.symm.toMonoidHom.comp (MulAction.toPermHom G (f.rootSet K)) =
-        (MulAction.toPermHom G (f₀.rootSet R)) := by
-      ext1 x
-      ext1 y
-      exact (d.eq_symm_apply.mpr (hφ1 x y)).symm
-    have h1 : MulAction.toPermHom G (f.rootSet K) =
-        e.toMonoidHom.comp (MulAction.toPermHom G (f₀.rootSet R)) := by
-      rw [← h2]
-      ext1
-      simp
-    rw [h1]
-    simpa
-  -- suffices Function.Bijective (Gal.galActionHom f K) by
-  --   rw [switchinglemma f ℂ K]
-  --   exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
-  --     (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
-  have : MulAction.IsPretransitive G (f.rootSet K) := by
-    convert Gal.galAction_isPretransitive f K
-      (hf₀.irreducible_iff_irreducible_map_fraction_map.mp hf')
-    ext
-    -- diamond...
+    use Polynomial.Gal.galActionHom_injective f ℂ
+    rw [he, he']
+    exact (e.permCongrHom.toEquiv.comp_surjective _).mpr
+      ((e'.permCongrHom.toEquiv.comp_surjective _).mpr this)
+  replace h_transitive : MulAction.IsPretransitive G (f₀.rootSet R) := by
+    refine ⟨fun x y ↦ ?_⟩
+    obtain ⟨g, hg⟩ := h_transitive.exists_smul_eq (e (e' x)) (e (e' y))
+    refine ⟨g, e'.injective (e.injective ?_)⟩
+    rw [← hg]
+    rw [MonoidHom.ext_iff] at he
+    specialize he g
+    rw [Equiv.ext_iff] at he
+    specialize he (e (e' x))
+    simp at he
+    exact he.symm
+  replace h_faithful : FaithfulSMul G (f₀.rootSet R) := by
+    -- might not actually be necessary
     sorry
-  -- need a bijection between f₀.rootSet R and
-  have : MulAction.IsPretransitive G (f₀.rootSet R) := by
-    sorry
-  have : FaithfulSMul G (f₀.rootSet R) := by
-    sorry
-  refine tada' (S := R) f₀ hf₀ ?_ G ?_ ?_
-  · sorry
-  · have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-    exact genthm₀ K G
-  · sorry
+  have h1 : (f₀.map (algebraMap ℤ R)).Splits := by
+    have h : (f.map (algebraMap ℚ K)).Splits := SplittingField.splits f
+    rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ R K, ← map_map] at h
+    refine h.of_splits_map_of_injective (algebraMap R K) RingOfIntegers.coe_injective ?_
+    intro x hx
+    rw [map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq ℤ ℚ K, ← map_map] at hx
+    obtain ⟨y, hy⟩ := hφ2.2 ⟨x, (by
+      rw [hf.mem_rootSet] -- some sort of mem_rootSet_iff_mem_roots_map lemma?
+      rwa [mem_roots_iff_aeval_eq_zero, aeval_map_algebraMap] at hx
+      exact (hf.map (algebraMap ℚ K)).ne_zero
+    )⟩
+    exact ⟨y, Subtype.ext_iff.mp hy⟩
+  have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
+  refine tada' (S := R) f₀ hf₀ h1 G (genthm₀ K G) ?_
+  sorry
+
+#check roots_map
 
 end Moore
 
