@@ -685,10 +685,6 @@ theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
   Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
 
-lemma surjOn_iff_le_map [RingHomSurjective σ₂₁] {f : M₂ →ₛₗ[σ₂₁] M} {p : Submodule R₂ M₂}
-    {q : Submodule R M} : Set.SurjOn f p q ↔ q ≤ p.map f :=
-  Iff.rfl
-
 end LinearMap
 
 /-! ### Linear equivalences -/

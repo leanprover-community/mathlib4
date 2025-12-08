@@ -132,7 +132,6 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
 
 end PreSubmersivePresentation
 
-<<<<<<< HEAD
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}
 
 /-- If `Ω[S⁄R]` has a basis of the form `{d sᵢ}` where `sᵢ : S`, there exist
