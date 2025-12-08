@@ -64,8 +64,8 @@ theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsH
     Nat.primeFactorsList n = l :=
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
   have := List.isChain_iff_pairwise.1 (@List.IsChain.tail _ _ (_ :: _) h₁)
-  (List.eq_of_perm_of_sorted
-    (Nat.primeFactorsList_unique h₃ h₂) this (Nat.primeFactorsList_sorted _)).symm
+  ((Nat.primeFactorsList_unique h₃ h₂).eq_of_pairwise'
+     this (Nat.primeFactorsList_sorted _).pairwise).symm
 
 open Lean Elab Tactic Qq
 

@@ -129,11 +129,11 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
   let goal ← getMainGoal
   let { reductionGoal, hypothesisGoal, reductionFVarIds .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
-  let .some cfg := pushConfig | return
-  reductionGoal.withContext do
-    let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
-    Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
-        (failIfUnchanged := false)
+  if let some cfg := pushConfig then
+    reductionGoal.withContext do
+      let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
+      Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
+          (failIfUnchanged := false)
 
 /-- `wlog h : P` will add an assumption `h : P` to the main goal, and add a side goal that requires
 showing that the case `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
