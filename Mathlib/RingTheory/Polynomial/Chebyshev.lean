@@ -203,7 +203,7 @@ theorem natDegree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree 
 
 @[simp]
 theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
-    (T R n).leadingCoeff = 2^(n.natAbs - 1) := by
+    (T R n).leadingCoeff = 2 ^ (n.natAbs - 1) := by
   induction n using Chebyshev.induct' with
   | zero => simp
   | one => simp
