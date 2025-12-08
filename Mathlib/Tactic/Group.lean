@@ -97,3 +97,4 @@ We register `group` with the `hint` tactic.
 -/
 
 register_hint 900 group
+register_try?_tactic (priority := 900) group

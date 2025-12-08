@@ -16,3 +16,4 @@ We register `linarith` with the `hint` tactic.
 public meta section
 
 register_hint 100 linarith
+register_try?_tactic (priority := 100) linarith

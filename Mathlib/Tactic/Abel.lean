@@ -549,3 +549,4 @@ We register `abel` with the `hint` tactic.
 -/
 
 register_hint 950 abel
+register_try?_tactic (priority := 950) abel

@@ -20,3 +20,4 @@ We register `gcongr` with the `hint` tactic.
 -/
 
 register_hint 1000 gcongr
+register_try?_tactic (priority := 1000) gcongr

@@ -248,3 +248,4 @@ We register `ring` with the `hint` tactic.
 -/
 
 register_hint 1000 ring
+register_try?_tactic (priority := 1000) ring

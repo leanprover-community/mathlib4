@@ -151,3 +151,23 @@ register_hint 200 omega
 register_hint 200 fun_prop
 
 end Hint
+
+/-!
+# Register tactics with `try?`. Tactics with larger priority run first.
+-/
+
+section Try
+
+register_try?_tactic (priority := 200) grind
+register_try?_tactic (priority := 1000) trivial
+register_try?_tactic (priority := 500) tauto
+register_try?_tactic (priority := 1000) split
+register_try?_tactic (priority := 1000) intro
+register_try?_tactic (priority := 80) aesop
+register_try?_tactic (priority := 800) simp_all?
+register_try?_tactic (priority := 600) exact?
+register_try?_tactic (priority := 1000) decide
+register_try?_tactic (priority := 200) omega
+register_try?_tactic (priority := 200) fun_prop
+
+end Try
