@@ -79,8 +79,11 @@ theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal
   norm_cast
 
 @[gcongr]
-theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
+theorem toReal_strictMono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
+
+@[deprecated toReal_strictMono (since := "2025-12-04")]
+alias toReal_strict_mono := toReal_strictMono
 
 @[gcongr]
 theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
@@ -94,15 +97,18 @@ theorem toNNReal_le_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal ≤ 
   ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_le_coe], toNNReal_mono hb⟩
 
 @[gcongr]
-theorem toNNReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNReal := by
+theorem toNNReal_strictMono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNReal := by
   simpa [← ENNReal.coe_lt_coe, hb, h.ne_top]
+
+@[deprecated toNNReal_strictMono (since := "2025-12-04")]
+alias toNNReal_strict_mono := toNNReal_strictMono
 
 @[simp]
 theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.toNNReal ↔ a < b :=
-  ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strict_mono hb⟩
+  ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strictMono hb⟩
 
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
-  @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
+  @toNNReal_coe p ▸ toNNReal_strictMono coe_ne_top h
 
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=

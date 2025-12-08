@@ -597,7 +597,7 @@ variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 variable {p p' : Submodule R M}
 
-theorem map_strict_mono_or_ker_sup_lt_ker_sup (f : F) (hab : p < p') :
+theorem map_strictMono_or_ker_sup_lt_ker_sup (f : F) (hab : p < p') :
     Submodule.map f p < Submodule.map f p' ∨ LinearMap.ker f ⊓ p < LinearMap.ker f ⊓ p' := by
   obtain (⟨h, -⟩ | ⟨-, h⟩) := Prod.mk_lt_mk.mp <| strictMono_inf_prod_sup (z := LinearMap.ker f) hab
   · simpa [inf_comm] using Or.inr h
@@ -606,11 +606,17 @@ theorem map_strict_mono_or_ker_sup_lt_ker_sup (f : F) (hab : p < p') :
 theorem _root_.LinearMap.ker_inf_lt_ker_inf_of_map_eq_of_lt {f : F}
     (hab : p < p') (q : Submodule.map f p = Submodule.map f p') :
     LinearMap.ker f ⊓ p < LinearMap.ker f ⊓ p' :=
-  map_strict_mono_or_ker_sup_lt_ker_sup f hab |>.resolve_left q.not_lt
+  map_strictMono_or_ker_sup_lt_ker_sup f hab |>.resolve_left q.not_lt
 
-theorem map_strict_mono_of_ker_inf_eq {f : F} (hab : p < p')
+theorem map_strictMono_of_ker_inf_eq {f : F} (hab : p < p')
     (q : LinearMap.ker f ⊓ p = LinearMap.ker f ⊓ p') : Submodule.map f p < Submodule.map f p' :=
-  map_strict_mono_or_ker_sup_lt_ker_sup f hab |>.resolve_right q.not_lt
+  map_strictMono_or_ker_sup_lt_ker_sup f hab |>.resolve_right q.not_lt
+
+@[deprecated map_strictMono_or_ker_sup_lt_ker_sup (since := "2025-12-04")]
+alias map_strict_mono_or_ker_sup_lt_ker_sup := map_strictMono_or_ker_sup_lt_ker_sup
+
+@[deprecated map_strictMono_of_ker_inf_eq (since := "2025-12-04")]
+alias map_strict_mono_of_ker_inf_eq := map_strictMono_of_ker_inf_eq
 
 /-- Version of `disjoint_span_singleton` that works when the scalars are not a field. -/
 lemma disjoint_span_singleton'' {s : Submodule R M} {x : M} :

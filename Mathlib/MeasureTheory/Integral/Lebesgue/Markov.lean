@@ -128,28 +128,42 @@ theorem ae_eq_of_ae_le_of_lintegral_le {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ
   simpa only [inv_top, add_zero] using
     tendsto_const_nhds.add (ENNReal.tendsto_inv_iff.2 ENNReal.tendsto_nat_nhds_top)
 
-theorem lintegral_strict_mono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
+theorem lintegral_strictMono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) (h : ∃ᵐ x ∂μ, f x ≠ g x) :
     ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ := by
   contrapose! h
   exact ae_eq_of_ae_le_of_lintegral_le h_le hfi hg h
 
-theorem lintegral_strict_mono_of_ae_le_of_ae_lt_on {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
+@[deprecated lintegral_strictMono_of_ae_le_of_frequently_ae_lt (since := "2025-12-04")]
+alias lintegral_strict_mono_of_ae_le_of_frequently_ae_lt :=
+  lintegral_strictMono_of_ae_le_of_frequently_ae_lt
+
+theorem lintegral_strictMono_of_ae_le_of_ae_lt_on {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) {s : Set α} (hμs : μ s ≠ 0)
     (h : ∀ᵐ x ∂μ, x ∈ s → f x < g x) : ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ :=
-  lintegral_strict_mono_of_ae_le_of_frequently_ae_lt hg hfi h_le <|
+  lintegral_strictMono_of_ae_le_of_frequently_ae_lt hg hfi h_le <|
     ((frequently_ae_mem_iff.2 hμs).and_eventually h).mono fun _x hx => (hx.2 hx.1).ne
 
-theorem lintegral_strict_mono {f g : α → ℝ≥0∞} (hμ : μ ≠ 0) (hg : AEMeasurable g μ)
+@[deprecated lintegral_strictMono_of_ae_le_of_ae_lt_on (since := "2025-12-04")]
+alias lintegral_strict_mono_of_ae_le_of_ae_lt_on :=
+  lintegral_strictMono_of_ae_le_of_ae_lt_on
+
+theorem lintegral_strictMono {f g : α → ℝ≥0∞} (hμ : μ ≠ 0) (hg : AEMeasurable g μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h : ∀ᵐ x ∂μ, f x < g x) : ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ := by
   rw [Ne, ← Measure.measure_univ_eq_zero] at hμ
-  refine lintegral_strict_mono_of_ae_le_of_ae_lt_on hg hfi (ae_le_of_ae_lt h) hμ ?_
+  refine lintegral_strictMono_of_ae_le_of_ae_lt_on hg hfi (ae_le_of_ae_lt h) hμ ?_
   simpa using h
 
-theorem setLIntegral_strict_mono {f g : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
+@[deprecated lintegral_strictMono (since := "2025-12-04")]
+alias lintegral_strict_mono := lintegral_strictMono
+
+theorem setLIntegral_strictMono {f g : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hs : μ s ≠ 0) (hg : Measurable g) (hfi : ∫⁻ x in s, f x ∂μ ≠ ∞)
     (h : ∀ᵐ x ∂μ, x ∈ s → f x < g x) : ∫⁻ x in s, f x ∂μ < ∫⁻ x in s, g x ∂μ :=
-  lintegral_strict_mono (by simp [hs]) hg.aemeasurable hfi ((ae_restrict_iff' hsm).mpr h)
+  lintegral_strictMono (by simp [hs]) hg.aemeasurable hfi ((ae_restrict_iff' hsm).mpr h)
+
+@[deprecated setLIntegral_strictMono (since := "2025-12-04")]
+alias setLIntegral_strict_mono := setLIntegral_strictMono
 
 theorem ae_lt_top' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
     ∀ᵐ x ∂μ, f x < ∞ := by

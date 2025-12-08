@@ -463,7 +463,7 @@ theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i �
   refine (nth_eq_sInf _ _).trans (congr_arg sInf ?_)
   refine Set.ext fun a => and_congr_right fun hpa => ?_
   refine ⟨fun h => not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
-  have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)
+  have hn : nth p (count p a) < a := h _ (count_strictMono hpa ha)
   rwa [nth_count hpa, lt_self_iff_false] at hn
 
 theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (count p n) :=

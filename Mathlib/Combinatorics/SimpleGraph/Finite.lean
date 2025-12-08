@@ -83,7 +83,10 @@ theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ 
 @[mono, gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
 
 @[mono, gcongr]
-alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
+alias ⟨_, edgeFinset_strictMono⟩ := edgeFinset_ssubset_edgeFinset
+
+@[deprecated edgeFinset_strictMono (since := "2025-12-04")]
+alias edgeFinset_strict_mono := edgeFinset_strictMono
 
 @[simp]
 theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edgeFinset]

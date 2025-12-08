@@ -446,7 +446,7 @@ protected theorem cof_eq (hf : IsFundamentalSequence a o f) : a.cof.ord = o :=
     rw [← hf.2.2]
     exact (ord_le_ord.2 (cof_blsub_le f)).trans (ord_card_le o)
 
-protected theorem strict_mono (hf : IsFundamentalSequence a o f) {i j} :
+protected theorem strictMono (hf : IsFundamentalSequence a o f) {i j} :
     ∀ hi hj, i < j → f i hi < f j hj :=
   hf.2.1
 
@@ -494,6 +494,9 @@ protected theorem lt {a o : Ordinal} {s : Π p < o, Ordinal}
   h.blsub_eq ▸ lt_blsub s p hp
 
 end IsFundamentalSequence
+
+@[deprecated IsFundamentalSequence.strictMono (since := "2025-12-04")]
+alias IsFundamentalSequence.strict_mono := IsFundamentalSequence.strictMono
 
 /-- Every ordinal has a fundamental sequence. -/
 theorem exists_fundamental_sequence (a : Ordinal.{u}) :

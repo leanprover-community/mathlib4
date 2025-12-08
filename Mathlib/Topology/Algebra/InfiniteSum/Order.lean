@@ -208,7 +208,7 @@ theorem hasProd_lt [L.NeBot] [L.LeAtTop] (h : f ≤ g) (hi : f i < g i) (hf : Ha
   simpa only [one_div, mul_inv_cancel_left] using mul_lt_mul_of_lt_of_le hi this
 
 @[to_additive (attr := mono)]
-theorem hasProd_strict_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f < g) : a₁ < a₂ :=
+theorem hasProd_strictMono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f < g) : a₁ < a₂ :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hasProd_lt hle hi hf hg
 
@@ -219,11 +219,23 @@ protected theorem Multipliable.tprod_lt_tprod [L.NeBot] [L.LeAtTop]
   hasProd_lt h hi hf.hasProd hg.hasProd
 
 @[to_additive (attr := mono)]
-protected theorem Multipliable.tprod_strict_mono [L.NeBot] [L.LeAtTop]
+protected theorem Multipliable.tprod_strictMono [L.NeBot] [L.LeAtTop]
     (hf : Multipliable f L) (hg : Multipliable g L)
     (h : f < g) : ∏'[L] n, f n < ∏'[L] n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   hf.tprod_lt_tprod hle hi hg
+
+@[deprecated hasProd_strictMono (since := "2025-12-04")]
+alias hasProd_strict_mono := hasProd_strictMono
+
+@[deprecated hasSum_strictMono (since := "2025-12-04")]
+alias hasSum_strict_mono := hasSum_strictMono
+
+@[deprecated Multipliable.tprod_strictMono (since := "2025-12-04")]
+alias Multipliable.tprod_strict_mono := Multipliable.tprod_strictMono
+
+@[deprecated Summable.tsum_strictMono (since := "2025-12-04")]
+alias Summable.tsum_strict_mono := Summable.tsum_strictMono
 
 @[to_additive Summable.tsum_pos]
 protected theorem Multipliable.one_lt_tprod [L.LeAtTop] [L.NeBot] (hsum : Multipliable g L)

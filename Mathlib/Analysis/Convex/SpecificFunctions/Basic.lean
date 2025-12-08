@@ -39,7 +39,7 @@ open Real Set NNReal
 
 /-- `Real.exp` is strictly convex on the whole real line. -/
 theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
-  apply strictConvexOn_of_slope_strict_mono_adjacent convex_univ
+  apply strictConvexOn_of_slope_strictMono_adjacent convex_univ
   rintro x y z - - hxy hyz
   trans exp y
   · have h1 : 0 < y - x := by linarith
@@ -65,7 +65,7 @@ theorem convexOn_exp : ConvexOn ℝ univ exp :=
 
 /-- `Real.log` is strictly concave on `(0, +∞)`. -/
 theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
-  apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ioi (0 : ℝ))
+  apply strictConcaveOn_of_slope_strictAnti_adjacent (convex_Ioi (0 : ℝ))
   intro x y z (hx : 0 < x) (hz : 0 < z) hxy hyz
   have hy : 0 < y := hx.trans hxy
   trans y⁻¹
@@ -110,13 +110,13 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   apply exp_strictMono
   rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← div_lt_iff₀ hp', ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    convert strictConcaveOn_log_Ioi.secant_strictMono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · gcongr
       exact mul_lt_of_one_lt_left hs' hp
   · rw [← div_lt_iff₀ hp', ← div_lt_div_iff_of_pos_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    convert strictConcaveOn_log_Ioi.secant_strictMono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · gcongr
@@ -151,13 +151,13 @@ theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   apply exp_strictMono
   rcases lt_or_gt_of_ne hs' with hs' | hs'
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_right_of_neg hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
+    convert strictConcaveOn_log_Ioi.secant_strictMono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · gcongr
       exact lt_mul_of_lt_one_left hs' hp2
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_iff_of_pos_right hs']
-    convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
+    convert strictConcaveOn_log_Ioi.secant_strictMono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · gcongr
@@ -177,7 +177,7 @@ theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
 
 /-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$. -/
 theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
-  apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
+  apply strictConvexOn_of_slope_strictMono_adjacent (convex_Ici (0 : ℝ))
   intro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
   have hy : 0 < y := hx.trans_lt hxy
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _

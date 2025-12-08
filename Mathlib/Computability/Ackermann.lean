@@ -174,7 +174,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
   (self_le_add_left n m).trans_lt <| add_lt_ack m n
 
 -- we reorder the arguments to appease the equation compiler
-private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
+private theorem ack_strictMono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
   | m, 0, _ => fun h => (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
@@ -184,15 +184,15 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
       _ ≤ m + ack (m + 1) n := by gcongr; exact add_add_one_le_ack ..
       _ < ack m (ack (m + 1) n) := add_lt_ack ..
   | m₁ + 1, m₂ + 1, 0 => fun h => by
-    simpa using ack_strict_mono_left' 1 ((add_lt_add_iff_right 1).1 h)
+    simpa using ack_strictMono_left' 1 ((add_lt_add_iff_right 1).1 h)
   | m₁ + 1, m₂ + 1, n + 1 => fun h => by
     rw [ack_succ_succ, ack_succ_succ]
     exact
-      (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
-        (ack_strictMono_right _ <| ack_strict_mono_left' n h)
+      (ack_strictMono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
+        (ack_strictMono_right _ <| ack_strictMono_left' n h)
 
 theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
-  ack_strict_mono_left' n
+  ack_strictMono_left' n
 
 theorem ack_mono_left (n : ℕ) : Monotone fun m => ack m n :=
   (ack_strictMono_left n).monotone
