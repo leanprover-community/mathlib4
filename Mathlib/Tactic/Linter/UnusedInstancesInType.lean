@@ -96,7 +96,7 @@ def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
 
 Contrast with `Lean.Expr.isSorry`, which returns treu for any application of `sorryAx` (including
 e.g. `sorryAx α true x y z`). -/
-def isSorryAx : Expr → Bool
+def _root_.Lean.Expr.isSorryAx : Expr → Bool
   | .app (.app f _ ) _ => f.isConstOf ``sorryAx
   | _ => false
 
