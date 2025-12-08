@@ -202,7 +202,7 @@ theorem bernoulli_comp_one_add_X (n : ℕ) :
   cases d with
   | zero => simp
   | succ d =>
-  rw [← smul_right_inj (show d + 2 ≠ 0 by positivity), ← smul_comp, smul_add] 
+  rw [← smul_right_inj (show d + 2 ≠ 0 by positivity), ← smul_comp, smul_add]
   simp only [bernoulli_eq_sub_sum', sub_comp, sum_comp, add_assoc, one_add_one_eq_two, smul_smul]
   conv_lhs =>
     enter [2]

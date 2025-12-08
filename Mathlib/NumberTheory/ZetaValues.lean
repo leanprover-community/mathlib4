@@ -136,7 +136,7 @@ end Calculus
 /-- Reflection principle: `B_s(1 - x) = (-1)^s B_s(x)` -/
 theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
     bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
-  simpa [bernoulliFun, Polynomial.aeval_comp] 
+  simpa [bernoulliFun, Polynomial.aeval_comp]
     using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
 
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
