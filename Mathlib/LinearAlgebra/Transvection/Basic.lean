@@ -473,7 +473,7 @@ variable {f : Module.Dual R V} {v : V} (hfv : f v = 0)
 
 It is not necessary to assume that the module is finite and free
 because `LinearMap.det` is identically 1 otherwise. -/
-theorem _root_.LinearEquiv.det_eq_one
+theorem _root_.LinearEquiv.transvection.det
     {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
     (LinearEquiv.transvection hfv).det = 1 := by
   rw [← Units.val_inj, LinearEquiv.coe_det,
@@ -484,29 +484,63 @@ theorem _root_.LinearEquiv.det_eq_one
   apply h
   rw [LinearMap.transvection.det, hfv, add_zero]
 
-/-- Transvections in the special linear group. -/
-def _root_.SpecialLinearGroup.transvection :
-    SpecialLinearGroup R V :=
-  ⟨LinearEquiv.transvection hfv, LinearEquiv.det_eq_one hfv⟩
-
-@[simp]
-theorem _root_.SpecialLinearGroup.coe_transvection :
-    (SpecialLinearGroup.transvection hfv : V ≃ₗ[R] V) = .transvection hfv :=
-  rfl
-
-variable (R V) in
-/-- The set of transvections in the special linear group -/
-abbrev _root_.SpecialLinearGroup.transvections : Set (SpecialLinearGroup R V) :=
-  { e | ∃ (f : Module.Dual R V) (v : V) (hfv : f v = 0),
-      e = SpecialLinearGroup.transvection hfv }
-
-end transvection
-
-end LinearMap
+end LinearMap.transvection
 
 end determinant
 
 namespace SpecialLinearGroup
+
+variable {f : Module.Dual R V} {v : V} (hfv : f v = 0)
+
+/-- Transvections in the special linear group. -/
+def transvection : SpecialLinearGroup R V :=
+  ⟨LinearEquiv.transvection hfv, LinearEquiv.transvection.det hfv⟩
+
+theorem transvection.apply (x : V) :
+    transvection hfv x = x + f x • v := rfl
+
+@[simp]
+theorem transvection.coe_toLinearEquiv :
+    (transvection hfv : V ≃ₗ[R] V) = .transvection hfv :=
+  rfl
+
+theorem transvection.inv (hfv' : f (-v) = 0 := by simp [hfv]) :
+    (transvection hfv)⁻¹ = transvection hfv' := by
+  rw [← Subtype.coe_inj,
+    show (transvection hfv)⁻¹ = (LinearEquiv.transvection hfv).symm from by rfl,
+    coe_toLinearEquiv, LinearEquiv.transvection.symm_eq hfv _]
+
+variable (R V) in
+/-- The set of transvections in the special linear group -/
+abbrev transvections : Set (SpecialLinearGroup R V) :=
+  { e | ∃ (f : Module.Dual R V) (v : V) (hfv : f v = 0),
+      e = SpecialLinearGroup.transvection hfv }
+
+@[simp]
+theorem mem_transvections {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
+    transvection hfv ∈ transvections R V :=
+  ⟨f, v, hfv, rfl⟩
+
+@[simp]
+theorem one_mem_transvections :
+    1 ∈ SpecialLinearGroup.transvections R V :=
+  ⟨0, 0, by simp, by aesop⟩
+
+@[simp]
+theorem inv_mem_transvections {e : SpecialLinearGroup R V} :
+    e⁻¹ ∈ SpecialLinearGroup.transvections R V ↔
+      e ∈ SpecialLinearGroup.transvections R V := by
+  suffices ∀ e ∈ SpecialLinearGroup.transvections R V,
+    e⁻¹ ∈ SpecialLinearGroup.transvections R V by
+    refine ⟨fun h ↦ ?_, this e⟩
+    rw [← inv_inv e]
+    exact this _ h
+  rintro _ ⟨f, v, hv, rfl⟩
+  simp only [Set.mem_setOf_eq, ← Subtype.coe_inj, coe_inv, transvection.coe_toLinearEquiv]
+  have : (LinearEquiv.transvection hv)⁻¹ = (LinearEquiv.transvection hv).symm := by
+    rfl
+  rw [this, LinearEquiv.transvection.symm_eq]
+  aesop
 
 section action
 

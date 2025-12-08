@@ -36,7 +36,7 @@ namespace SpecialLinearGroup
 
 section generation
 
-open Module.End Module
+open Module.End Module Submodule
 
 section
 
@@ -60,17 +60,27 @@ theorem inf_fixedSubmodule_le_fixedSubmodule_mul (e f : SpecialLinearGroup R V) 
     e.fixedSubmodule ⊓ f.fixedSubmodule ≤ (e * f).fixedSubmodule := by
   intro; aesop
 
+theorem mem_fixedSubmodule_transvection_iff {f : Module.Dual R V} {v : V} {hfv : f v = 0} {x : V} :
+    x ∈ fixedSubmodule (transvection hfv) ↔ f x • v = 0 := by
+  simp only [mem_fixedSubmodule_iff, transvection.apply, add_eq_left]
+
+theorem fixedSubmodule_transvection_le {f : Module.Dual R V} {v : V} (hfv : f v = 0) :
+    LinearMap.ker f ≤ fixedSubmodule (transvection hfv) := fun x hx ↦ by
+  simp only [LinearMap.mem_ker] at hx
+  rw [mem_fixedSubmodule_transvection_iff]
+  simp [hx]
+
 open scoped Pointwise
 
 theorem transvections_pow_mono :
-    Monotone (fun n : ℕ ↦ (transvections R V) ^ n) := by
-  apply Set.pow_right_monotone
-  refine ⟨0, 0, by simp, ?_⟩
-  rw [← Subtype.coe_inj, SpecialLinearGroup.coe_transvection,
-    ← LinearEquiv.toLinearMap_inj, LinearEquiv.transvection.coe_toLinearMap]
-  simp [LinearMap.transvection.of_right_eq_zero]
+    Monotone (fun n : ℕ ↦ (transvections R V) ^ n) :=
+  Set.pow_right_monotone one_mem_transvections
 
-noncomputable def transvectionDegree (e : SpecialLinearGroup R V) : ℕ∞ :=
+/-- The minimal number of transvections to write an element of the special linear group.
+
+It is a priori a member of `ℕ∞`, but we will prove that it is a natural number. -/
+noncomputable
+def transvectionDegree (e : SpecialLinearGroup R V) : ℕ∞ :=
   sInf (Nat.cast '' {n | e ∈ (transvections R V) ^ n })
 
 lemma transvectionDegree_eq_top_iff {e : SpecialLinearGroup R V} :
@@ -97,6 +107,21 @@ theorem transvectionDegree_le_iff {e : SpecialLinearGroup R V} {n : ℕ} :
     intro b hb
     exact hb n he
 
+theorem transvectionDegree_mul_le {e f : SpecialLinearGroup R V} :
+    transvectionDegree (e * f) ≤ transvectionDegree e + transvectionDegree f := by
+  induction he : transvectionDegree e with
+  | top => simp
+  | coe m =>
+    induction hf : transvectionDegree f with
+    | top => simp
+    | coe n =>
+      replace he := le_of_eq he
+      replace hf := le_of_eq hf
+      rw [← ENat.coe_add]
+      rw [transvectionDegree_le_iff] at he hf ⊢
+      rw [pow_add]
+      exact Set.mul_mem_mul he hf
+
 theorem transvectionDegree_le_one_iff {e : SpecialLinearGroup R V} :
     transvectionDegree e ≤ 1 ↔ e ∈ transvections R V := by
   rw [← ENat.coe_one, transvectionDegree_le_iff, pow_one]
@@ -106,13 +131,35 @@ end
 open Pointwise
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-  [Module.Finite K V]
 
-omit [Module.Finite K V] in
+theorem fixedSubmodule_transvection_eq_iff
+    {f : Module.Dual K V} {v : V} (hfv : f v = 0) :
+    fixedSubmodule (transvection hfv) = LinearMap.ker f ↔
+      f = 0 ∨ v ≠ 0 := by
+  constructor
+  · intro h
+    by_cases hf : f = 0
+    · simp [hf]
+    right
+    have : ∃ x, f x ≠ 0 := by
+      contrapose! hf
+      exact LinearMap.ext hf
+    obtain ⟨x, hx⟩ := this
+    rw [Submodule.ext_iff] at h
+    specialize h x
+    rw [mem_fixedSubmodule_transvection_iff, LinearMap.mem_ker] at h
+    aesop
+  · intro h
+    apply le_antisymm _ (fixedSubmodule_transvection_le hfv)
+    intro x hx
+    simp only [mem_fixedSubmodule_transvection_iff, smul_eq_zero] at hx
+    simp only [LinearMap.mem_ker]
+    aesop
+
 theorem map_eq_of_mem_fixingSubgroup
     (W : Submodule K V) (e : SpecialLinearGroup K V)
     (he : e ∈ fixingSubgroup _ W.carrier) :
-    Submodule.map e.val W = W := by
+    map e.val W = W := by
   ext v
   simp [mem_fixingSubgroup_iff] at he
   refine ⟨fun ⟨w, hv, hv'⟩ ↦ ?_, fun hv ↦ ?_⟩
@@ -120,14 +167,68 @@ theorem map_eq_of_mem_fixingSubgroup
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
 
+variable [Module.Finite K V]
+
+theorem finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections
+    {t : SpecialLinearGroup K V} (ht : t ∈ transvections K V) :
+    finrank K V ≤ 1 + finrank K t.fixedSubmodule := by
+  obtain ⟨f, v, hfv, rfl⟩ := ht
+  have := Submodule.finrank_mono (fixedSubmodule_transvection_le hfv)
+  rw [← Nat.add_le_add_iff_left (n := 1)] at this
+  refine le_trans ?_ this
+  rw [← (LinearMap.ker f).finrank_quotient_add_finrank,
+      f.quotKerEquivRange.finrank_eq]
+  simp only [add_le_add_iff_right]
+  rw [← Module.finrank_self K]
+  apply Submodule.finrank_le
+
+theorem finrank_fixedSubmodule_add_le (e f : SpecialLinearGroup K V) :
+    finrank K e.fixedSubmodule + finrank K f.fixedSubmodule ≤
+      finrank K ↥(e.fixedSubmodule ⊔ f.fixedSubmodule) +
+        finrank K (e * f).fixedSubmodule := by
+  have := finrank_mono (inf_fixedSubmodule_le_fixedSubmodule_mul e f)
+  rwa [← Nat.add_le_add_iff_left, finrank_sup_add_finrank_inf_eq] at this
+
+theorem le_one_add_finrank_fixedSubmodule_transvection_mul
+    (e t : SpecialLinearGroup K V) (ht : t ∈ transvections K V) :
+    finrank K e.fixedSubmodule ≤ 1 + finrank K (t * e).fixedSubmodule := by
+  have := finrank_fixedSubmodule_add_le t e
+  have := finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections ht
+  have : finrank K ↥(t.fixedSubmodule ⊔ e.fixedSubmodule) ≤ finrank K V :=
+    finrank_le _
+  linarith
+
+theorem finrank_fixedSubmodule_transvection_mul_le
+    (e t : SpecialLinearGroup K V) (ht : t ∈ transvections K V) :
+     finrank K (t * e).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
+  conv_rhs => rw [show e = t⁻¹ * (t * e) from by aesop]
+  rw [← inv_mem_transvections] at ht
+  exact le_one_add_finrank_fixedSubmodule_transvection_mul (t * e) t⁻¹ ht
+
+theorem le_one_add_finrank_fixedSubmodule_mul_transvection
+    (e t : SpecialLinearGroup K V) (ht : t ∈ transvections K V) :
+    finrank K e.fixedSubmodule ≤ 1 + finrank K (e * t).fixedSubmodule := by
+  have := finrank_fixedSubmodule_add_le e t
+  have := finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections ht
+  have : finrank K ↥(e.fixedSubmodule ⊔ t.fixedSubmodule) ≤ finrank K V :=
+    finrank_le _
+  linarith
+
+theorem finrank_fixedSubmodule_mul_transvection_le
+    (e t : SpecialLinearGroup K V) (ht : t ∈ transvections K V) :
+    finrank K (e * t).fixedSubmodule ≤ 1 + finrank K e.fixedSubmodule := by
+  conv_rhs => rw [show e = (e * t) * t⁻¹ from by aesop]
+  rw [← inv_mem_transvections] at ht
+  exact le_one_add_finrank_fixedSubmodule_mul_transvection_mul (e * t) t⁻¹ ht
+
 /-- If an element of `SpecialLinearGroup K V` fixes a submodule `W`,
 this is the element of `SpecialLinearGroup K (V ⧸ W)` deduced by quotient (as a `MonoidHom`). -/
 def mkQ (W : Submodule K V) :
     fixingSubgroup (SpecialLinearGroup K V) W.carrier →* SpecialLinearGroup K (V ⧸ W) where
   toFun := fun ⟨e, he⟩ ↦
-    { val := Submodule.Quotient.equiv W W e (map_eq_of_mem_fixingSubgroup W e he)
+    { val := Quotient.equiv W W e (map_eq_of_mem_fixingSubgroup W e he)
       property := by
-        simp only [Submodule.carrier_eq_coe, mem_fixingSubgroup_iff, SetLike.mem_coe,
+        simp only [carrier_eq_coe, mem_fixingSubgroup_iff, SetLike.mem_coe,
           smul_def] at he
         rw [← Units.val_inj, LinearEquiv.coe_det, Units.val_one]
         set f := LinearMap.restrict e (p := W) (q := W)
@@ -157,27 +258,22 @@ theorem reduce_apply (e : SpecialLinearGroup K V) (v : V) :
     e.reduce (Submodule.Quotient.mk v) = Submodule.Quotient.mk (e v) :=
   rfl
 
+theorem reduce_eq_one (e : SpecialLinearGroup K V) :
+    e.reduce = 1 ↔ ∀ v, e v - v ∈ e.fixedSubmodule := by
+  rw [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj]
+  rw [Submodule.linearMap_qext_iff, LinearMap.ext_iff]
+  apply forall_congr'
+  intro v
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, coe_one,
+    LinearEquiv.coe_toLinearMap_one, LinearMap.id_comp, Submodule.mkQ_apply, reduce_apply]
+  rw [← sub_eq_zero, ← Submodule.Quotient.mk_sub,
+    ← Submodule.mkQ_apply, ← LinearMap.mem_ker, Submodule.ker_mkQ]
+
 /-- An element of the special linear group is exceptional if
   it is a nontrivial homothety modulo the eigenspace for eigenvalue 1. -/
 abbrev IsExceptional (e : SpecialLinearGroup K V) : Prop :=
   e.reduce ≠ 1 ∧ ∃ a : K, e.reduce = a • (LinearMap.id (M := V ⧸ e.fixedSubmodule) (R := K))
 
-theorem finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections
-    {t : SpecialLinearGroup K V} (ht : t ∈ transvections K V) :
-    finrank K V ≤ 1 + finrank K t.fixedSubmodule := by
-  obtain ⟨f, v, hfv, ht⟩ := ht
-  suffices LinearMap.ker f ≤ t.fixedSubmodule by
-    replace this := Submodule.finrank_mono this
-    rw [← Nat.add_le_add_iff_left (n := 1)] at this
-    refine le_trans ?_ this
-    rw [← (LinearMap.ker f).finrank_quotient_add_finrank,
-        f.quotKerEquivRange.finrank_eq]
-    simp only [add_le_add_iff_right]
-    rw [← Module.finrank_self K]
-    apply Submodule.finrank_le
-  intro x hx
-  simp only [LinearMap.mem_ker] at hx
-  simp [ht, LinearMap.transvection.apply, hx]
 
 theorem _root_.Submodule.eq_top_iff_finrank_eq {W : Submodule K V} :
     W = ⊤ ↔ finrank K W = finrank K V := by
@@ -223,25 +319,23 @@ theorem mem_transvections_iff_finrank_le_one (e : SpecialLinearGroup K V) :
     obtain ⟨f, hfw, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hw inferInstance
     set v := (f w)⁻¹ • (e w - w)
     have hf' : e.fixedSubmodule = LinearMap.ker f := by
-      apply Submodule.eq_of_le_of_finrank_le
-      · intro x hx
-        rw [LinearMap.mem_ker, ← Submodule.mem_bot K, ← hf]
-        exact Submodule.mem_map_of_mem hx
-      · suffices finrank K (V ⧸ LinearMap.ker f) = 1 by
-          have := e.fixedSubmodule.finrank_quotient_add_finrank
-          have := (LinearMap.ker f).finrank_quotient_add_finrank
-          linarith
-        rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank]
-        rw [← f.finrank_ker_add_one_of_ne_zero, add_comm]
-        aesop
+      rw [← LinearMap.le_ker_iff_map] at hf
+      apply Submodule.eq_of_le_of_finrank_le hf
+      suffices finrank K (V ⧸ LinearMap.ker f) = 1 by
+        have := e.fixedSubmodule.finrank_quotient_add_finrank
+        have := (LinearMap.ker f).finrank_quotient_add_finrank
+        linarith
+      rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank]
+      rw [← f.finrank_ker_add_one_of_ne_zero, add_comm]
+      aesop
     have eq_top : e.fixedSubmodule ⊔ Submodule.span K {w} = ⊤ :=
       Submodule.sup_span_eq_top h hw
     suffices hfv : f v = 0 by
       use f, v, hfv
       rw [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj,
         ← sub_eq_zero, ← LinearMap.ker_eq_top, eq_top_iff, ← eq_top]
-      simp only [coe_transvection, LinearEquiv.transvection.coe_toLinearMap, sup_le_iff,
-        Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
+      simp only [transvection.coe_toLinearEquiv, LinearEquiv.transvection.coe_toLinearMap,
+        sup_le_iff, Submodule.span_singleton_le_iff_mem, LinearMap.mem_ker, LinearMap.sub_apply,
         LinearEquiv.coe_coe]
       constructor
       · intro x hx
@@ -277,17 +371,9 @@ theorem finrank_le_add_finrank_fixedSubmodule
   | succ n hind =>
     rw [pow_succ] at he
     obtain ⟨f, hf, t, ht, he⟩ := he
-    simp only at he
-    specialize hind hf
-    replace ht := finrank_le_one_add_finrank_fixedSubmodule_of_mem_transvections ht
-    have : finrank K (f.fixedSubmodule ⊓ t.fixedSubmodule : Submodule K V) ≤
-      finrank K (fixedSubmodule e) := by
-      apply Submodule.finrank_mono
-      rw [← he]
-      exact inf_fixedSubmodule_le_fixedSubmodule_mul f t
-    have := Submodule.finrank_sup_add_finrank_inf_eq f.fixedSubmodule t.fixedSubmodule
-    have := Submodule.finrank_le (f.fixedSubmodule ⊔ t.fixedSubmodule)
-    linarith
+    refine Nat.le_trans (hind hf) ?_
+    rw [← he, add_assoc, Nat.add_le_add_iff_left]
+    exact le_one_add_finrank_fixedSubmodule_mul_transvection f t ht
 
 theorem finrank_le_transvectionDegree_add (e : SpecialLinearGroup K V) :
     finrank K V ≤ transvectionDegree e + finrank K e.fixedSubmodule := by
@@ -311,7 +397,7 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
     rw [← ENat.add_le_add_iff_right (ENat.coe_ne_top _),
       ← ENat.coe_add, Submodule.finrank_quotient_add_finrank] at this
     apply le_trans this (le_refl _)
-  induction h : finrank K (V ⧸ e.fixedSubmodule) with
+  induction h : finrank K (V ⧸ e.fixedSubmodule) generalizing e with
   | zero =>
     suffices e = 1 by simp [this, transvectionDegree_one]
     ext v
@@ -325,8 +411,95 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
       rw [zero_add, Nat.cast_one, transvectionDegree_le_one_iff,
         mem_transvections_iff_finrank_le_one, h]
     | n + 1 =>
-      simp only [add_assoc, Nat.reduceAdd] at h ⊢
-      sorry
+      simp only [add_assoc, Nat.reduceAdd] at h
+      by_cases he' : e.reduce = 1
+      · -- e.reduce = 1
+        have : ∃ u : V, u ∉ e.fixedSubmodule := sorry
+        obtain ⟨u, hu⟩ := this
+        have hu' : e u - u ∈ e.fixedSubmodule := sorry
+        simp only at hu'
+        have hu'' : e u - u ≠ 0 := sorry
+        simp only at hu''
+        obtain ⟨f₀, hfu, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hu inferInstance
+        rw [← LinearMap.le_ker_iff_map] at hf
+        set f := (f₀ u)⁻¹ • f₀ with hf₀
+        replace hf : e.fixedSubmodule ≤ LinearMap.ker f := by
+          simp only [f]
+          convert hf using 1
+          ext x; simp [hfu]
+        replace hfu : f u = 1 := by
+          simp only [f]; aesop
+        set t := SpecialLinearGroup.transvection (f := f) (v := u - e u) (by
+          simp only [← LinearMap.mem_ker]
+          apply hf
+          rwa [sub_mem_comm_iff] at hu') with ht
+        have ht_fixed : e.fixedSubmodule ≤ t.fixedSubmodule := fun x hx ↦ by
+          simp only [mem_fixedSubmodule_iff, ht]
+          simp only [transvection.coe_toLinearEquiv, LinearEquiv.transvection.coe_apply,
+            LinearMap.transvection.apply, add_eq_left, smul_eq_zero]
+          exact Or.inl (hf hx)
+        set e' := t * e with he'
+        suffices transvectionDegree e' ≤ n + 1 by
+          suffices that : e = t⁻¹ * e' by
+            rw [that, add_comm (n+ 1) 1, ENat.coe_add]
+            apply le_trans transvectionDegree_mul_le
+            apply add_le_add _ this
+            rw [Nat.cast_one, transvectionDegree_le_one_iff,
+              inv_mem_transvections, ht]
+            apply mem_transvections
+          simp [he']
+        have he'_rank : finrank K (e.fixedSubmodule ⊔ Submodule.span K {u} : Submodule K V) =
+          finrank K e.fixedSubmodule + 1 := by
+          rw [← Nat.add_left_inj, Submodule.finrank_sup_add_finrank_inf_eq, add_assoc]
+          simp only [Nat.add_left_cancel_iff]
+          rw [finrank_span_singleton (by aesop)]
+          simp only [Nat.left_eq_add, finrank_eq_zero]
+          rw [eq_bot_iff]
+          intro x
+          simp only [Submodule.mem_inf, Submodule.mem_span_singleton]
+          rintro ⟨hx, ⟨a, hx'⟩⟩
+          suffices a = 0 by simp [← hx', this]
+          contrapose hu
+          suffices u = (1 / a) • x by
+            rw [this]
+            exact Submodule.smul_mem e.fixedSubmodule _ hx
+          aesop
+        have he'_fixed : e'.fixedSubmodule = e.fixedSubmodule ⊔ Submodule.span K {u} := by
+          symm
+          suffices _ by
+            apply Submodule.eq_of_le_of_finrank_le this
+            rw [he'_rank, add_comm, he']
+            apply finrank_fixedSubmodule_transvection_mul_le
+            rw [ht]
+            apply mem_transvections
+          simp only [sup_le_iff, Submodule.span_singleton_le_iff_mem]
+          constructor
+          · -- e.fixedSubmodule ≤ e'.fixedSubmodule
+            intro x hx
+            simp only [mem_fixedSubmodule_iff, he', coe_mul, LinearEquiv.mul_apply]
+            suffices t x = x by
+              simp only [mem_fixedSubmodule_iff] at hx
+              simp only [hx, this]
+            rw [← mem_fixedSubmodule_iff]
+            exact ht_fixed hx
+          · -- u ∈ e.fixedSubmodule
+            simp only [mem_fixedSubmodule_iff, he', coe_mul, LinearEquiv.mul_apply,
+              ht, transvection.apply]
+            suffices f (e u) = 1 by
+              simp [this]
+            rw [← hfu, ← sub_eq_zero, ← map_sub, ← LinearMap.mem_ker]
+            exact hf hu'
+        have he'_reduce : e'.reduce = 1 := sorry
+        apply hind
+        · simp [IsExceptional, he'_reduce]
+        · rw [← Nat.add_left_inj (n := 1), add_assoc]
+          simp only [Nat.reduceAdd]
+          rw [add_comm _ 1]
+          rw [← Nat.add_left_inj, add_assoc, Submodule.finrank_quotient_add_finrank, he'_fixed]
+          rw [he'_rank, ← h, ← add_assoc]
+          rw [Submodule.finrank_quotient_add_finrank, add_comm]
+      · -- e.reduce ≠ 1
+        sorry
 
 theorem finrank_lt_transvectionDegree_add_of_isExceptional
     (e : SpecialLinearGroup K V) (he : IsExceptional e) :
