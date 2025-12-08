@@ -272,14 +272,12 @@ theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := b
 
 @[simp]
 theorem fst_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
-    p.darts[i].fst = p.support[i]'(by grind) := by
-  rw [← p.support.getElem_dropLast <| by grind]
+    p.darts[i].fst = p.support.dropLast[i]'(by grind) := by
   grind [map_fst_darts]
 
 @[simp]
 theorem snd_darts_getElem {p : G.Walk u v} {i : ℕ} (hi : i < p.darts.length) :
-    p.darts[i].snd = p.support[i + 1]'(by grind) := by
-  rw [← p.support.getElem_tail <| by grind]
+    p.darts[i].snd = p.support.tail[i]'(by grind) := by
   grind [map_snd_darts]
 
 theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
