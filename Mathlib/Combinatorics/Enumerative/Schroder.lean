@@ -5,11 +5,15 @@ Authors: Weijie Jiang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
-public import Mathlib.Algebra.BigOperators.NatAntidiagonal
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Order.Interval.Finset.Nat
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Antidiag.Prod
+import Mathlib.Tactic.Linarith
 
 /-!
 # Schroder numbers
