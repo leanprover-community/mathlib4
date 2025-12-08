@@ -4628,8 +4628,8 @@ public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.LinearAlgebra.Matrix.Transvections.Basic
-public import Mathlib.LinearAlgebra.Matrix.Transvections.Generation
+public import Mathlib.LinearAlgebra.Matrix.Transvection.Basic
+public import Mathlib.LinearAlgebra.Matrix.Transvection.Generation
 public import Mathlib.LinearAlgebra.Matrix.Unique
 public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.Matrix.ZPow
@@ -4736,7 +4736,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.Transvection
+public import Mathlib.LinearAlgebra.Transvection.Basic
+public import Mathlib.LinearAlgebra.Transvection.Generation
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.Logic.Basic
