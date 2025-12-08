@@ -31,15 +31,11 @@ The proof proceeds in two steps:
 
 @[expose] public section
 
-universe u v
-
 namespace Algebra
 
-variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A]
+variable {R A S : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing S] [Algebra R S]
 
-variable {R A} in
-lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing {S : Type*} [CommRing S] [Algebra R S]
-    (f : S →ₐ[R] A) (hf : Function.Surjective f)
+lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing (f : S →ₐ[R] A) (hf : Function.Surjective f)
     [Module.Flat R S] [IsNoetherianRing S] [FormallySmooth R A] :
     Module.Flat R A := by
   have : Module.Flat R (AdicCompletion (RingHom.ker f) S) := .trans _ S _
@@ -47,6 +43,7 @@ lemma FormallySmooth.flat_of_algHom_of_isNoetherianRing {S : Type*} [CommRing S]
   exact .of_retract g.toLinearMap
     (AdicCompletion.kerProj hf).toLinearMap (LinearMap.ext fun x ↦ congr($hg x))
 
+variable (R A) in
 /-- If `A` is `R`-smooth and `R` is Noetherian, then `A` is `R`-flat. -/
 instance Smooth.flat_of_isNoetherianRing [IsNoetherianRing R] [Algebra.Smooth R A] :
     Module.Flat R A := by
