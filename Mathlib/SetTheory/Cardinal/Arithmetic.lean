@@ -501,6 +501,30 @@ lemma mul_nat_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun κ : Cardi
   have := nat_mul_strictMono hneq0 hlt
   simpa [mul_comm] using this
 
+@[simp]
+lemma nat_mul_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n = μ * n ↔ κ = μ :=
+  (mul_nat_strictMono hneq0).injective.eq_iff
+
+@[simp]
+lemma mul_nat_eq_iff_eq {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n = μ * n ↔ κ = μ :=
+  (mul_nat_strictMono hneq0).injective.eq_iff
+
+@[simp]
+lemma nat_mul_le_iff_le {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : n * κ ≤ n * μ ↔ κ ≤ μ :=
+  (nat_mul_strictMono hneq0).le_iff_le
+
+@[simp]
+lemma mul_nat_le_iff_le {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n ≤ μ * n ↔ κ ≤ μ :=
+  (mul_nat_strictMono hneq0).le_iff_le
+
+@[simp]
+lemma nat_mul_lt_iff_lt {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : n * κ < n * μ ↔ κ < μ :=
+  (nat_mul_strictMono hneq0).lt_iff_lt
+
+@[simp]
+lemma mul_nat_lt_iff_lt {n : ℕ} {κ μ : Cardinal} (hneq0 : n ≠ 0) : κ * n < μ * n ↔ κ < μ :=
+  (mul_nat_strictMono hneq0).lt_iff_lt
+
 end aleph
 
 /-! ### Properties about `power` -/
