@@ -140,7 +140,7 @@ theorem aeval_smul {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (f 
     aeval (g • x) f = g • (aeval x f) := by
   rw [← MulSemiringAction.toAlgHom_apply R, aeval_algHom_apply, MulSemiringAction.toAlgHom_apply]
 
-instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
+instance temp {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] (f : R[X])
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S] :
     MulAction G (f.rootSet S) where
@@ -293,9 +293,19 @@ attribute [-instance] Polynomial.Gal.galActionAux -- should be local to Polynomi
 
 attribute [local instance] Gal.splits_ℚ_ℂ
 
+theorem _root_.Gal.smul_def' {K : Type*} [Field K] (p : K[X]) (g : p.Gal)
+    (x : p.rootSet p.SplittingField) :
+    have : Fact (p.map (algebraMap K p.SplittingField)).Splits := sorry
+    g • x = g • x := by
+  have : SMulCommClass p.Gal K p.SplittingField := sorry
+  have := temp (R := K) (S := p.SplittingField) (G := p.Gal) (f := p)
+  rfl
+
 attribute [-instance] Gal.smul Gal.galAction -- todo: redefine in more general semiring context
 
 open NumberField
+
+
 
 theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     -- condition on at most on root collision mod p :
@@ -322,7 +332,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   have hφ1 : ∀ g : G, ∀ x : f₀.rootSet R, φ (g • x) = g • φ x := by
     intro g x
     ext
-    exact (rootSet.coe_smul g (φ x)).symm
+    rfl
   have hφ2 : Function.Bijective φ := by
     rw [Function.Bijective, hφ.restrict_inj, hφ.restrict_surjective_iff]
     refine ⟨RingOfIntegers.coe_injective.injOn, ?_⟩
@@ -333,20 +343,26 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     refine ⟨y, ?_, rfl⟩
     rw [mem_rootSet, and_iff_right hf₀.ne_zero]
     simpa using (aeval_algebraMap_apply K y f₀).symm.trans h0
+  suffices Function.Surjective (MulAction.toPermHom G (f.rootSet K)) by
+    convert this
+    ext x y
+    simp [Gal.galActionHom, Gal.smul_def]
+    sorry
   suffices Function.Surjective (MulAction.toPermHom G (f₀.rootSet R)) by
     let d := Equiv.ofBijective φ hφ2
     let e := d.permCongrHom
-    have h2 : e.symm.toMonoidHom.comp (Gal.galActionHom f K) = (MulAction.toPermHom G (f₀.rootSet R)) := by
+    have h2 : e.symm.toMonoidHom.comp (MulAction.toPermHom G (f.rootSet K)) =
+        (MulAction.toPermHom G (f₀.rootSet R)) := by
       ext1 x
       ext1 y
-      have : d (x • y) = x • d y := hφ1 x y
-      rw [← Equiv.eq_symm_apply] at this
+      exact (d.eq_symm_apply.mpr (hφ1 x y)).symm
+    have h1 : MulAction.toPermHom G (f.rootSet K) =
+        e.toMonoidHom.comp (MulAction.toPermHom G (f₀.rootSet R)) := by
+      rw [← h2]
+      ext1
       simp
-      convert this.symm
-      ext
-      simp [d, e]
-      sorry
-    sorry
+    rw [h1]
+    simpa
   -- suffices Function.Bijective (Gal.galActionHom f K) by
   --   rw [switchinglemma f ℂ K]
   --   exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
