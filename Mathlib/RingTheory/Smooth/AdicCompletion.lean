@@ -35,7 +35,7 @@ smoothness.
 -/
 noncomputable def liftAdicCompletionAux : (m : ℕ) → A →ₐ[R] S ⧸ (I ^ m)
   | 0 =>
-    haveI : Subsingleton (S ⧸ I ^ 0) := by simp [Ideal.Quotient.subsingleton_iff]
+    haveI : Subsingleton (S ⧸ I ^ 0) := by simp
     default
   | 1 => (Ideal.quotientEquivAlgOfEq R (show I = I ^ 1 by simp)).toAlgHom.comp f
   | m + 2 =>
@@ -59,7 +59,7 @@ lemma factorₐ_comp_liftAdicCompletionAux (m : ℕ) :
   | zero =>
     ext
     apply eq_of_zero_eq_one
-    simp [subsingleton_iff_zero_eq_one, Ideal.Quotient.subsingleton_iff]
+    simp [subsingleton_iff_zero_eq_one]
   | succ m =>
     rw [liftAdicCompletionAux, ← DoubleQuot.quotQuotEquivQuotOfLEₐ_comp_mkₐ]
     ext
