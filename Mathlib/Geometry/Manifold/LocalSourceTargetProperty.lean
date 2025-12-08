@@ -51,7 +51,7 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace M'] [ChartedSpace H' M']
+  [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞}
 
