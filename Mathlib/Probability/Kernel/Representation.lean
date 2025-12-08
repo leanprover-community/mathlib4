@@ -19,16 +19,16 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
 
 ## Statements
 
-* `ProbabilityTheory.Kernel.unitInterval_representation κ`:
+* `ProbabilityTheory.Kernel.unitInterval_representation`:
   for a Markov kernel `κ : Kernel α I`, there exists a jointly measurable function
   `f : α → I → I` such that for all `a : α`, `volume.map (f a) = κ a`.
 
-* `ProbabilityTheory.Kernel.embedding_representation hg κ`:
+* `ProbabilityTheory.Kernel.embedding_representation`:
   for a measurable embedding `g : β → I` and a Markov kernel `κ : Kernel α β`,
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
 
-* `ProbabilityTheory.Kernel.representation κ`:
+* `ProbabilityTheory.Kernel.representation`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
@@ -52,7 +52,24 @@ lemma unitInterval_representation (κ : Kernel α I) [IsMarkovKernel κ] :
       intro x y hxy
       suffices h : Icc 0 x ⊆ Icc 0 y from measureReal_mono h
       exact Icc_subset_Icc_right hxy
-    rw [sSup_eq_iUnion_rat h_monotone a]
+    have sSup_eq_iUnion_rat : {x : α × I | a < f x.1 x.2} = ⋃ (q : ℚ), ⋃ (hqI : ↑q ∈ I),
+        ⋃ (_ : a < (q : ℝ)), {e | (κ e.1).real (Icc 0 ⟨q, hqI⟩) < e.2} := by
+      ext e
+      simp only [f]
+      constructor
+      · intro (he : a < sSup {x | (κ e.1).real (Icc 0 x) < e.2})
+        simp_rw [Set.mem_iUnion]
+        rw [lt_sSup_iff] at he
+        obtain ⟨y, y_mem, (hy : a.1 < y.1)⟩ := he
+        obtain ⟨q, hqa, hqy⟩ := exists_rat_btwn hy
+        have q_in_I : (q : ℝ) ∈ I := ⟨a.2.1.trans hqa.le, hqy.le.trans y.2.2⟩
+        refine ⟨q, q_in_I, hqa, ?_⟩
+        exact lt_of_lt_of_le' y_mem (h_monotone e.1 hqy.le)
+      · intro he
+        simp_all only [lt_sSup_iff, Set.mem_iUnion]
+        obtain ⟨q, q_in_I, hqa, h⟩ := he
+        exact ⟨⟨q, q_in_I⟩, h, hqa⟩
+    rw [sSup_eq_iUnion_rat]
     refine MeasurableSet.iUnion (fun b ↦ MeasurableSet.iUnion
       (fun bI ↦ MeasurableSet.iUnion (fun _ ↦ ?_)))
     refine measurableSet_lt ?_ measurable_snd.subtype_val
