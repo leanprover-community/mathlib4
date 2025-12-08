@@ -200,9 +200,7 @@ theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     integral_inner_fourier_fourier f f
 
 theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
-    ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by
-  simp only [inner_toL2_toL2_eq]
-  exact integral_sesq_fourier_fourier f g (innerSL ℂ)
+    ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by simp
 
 @[deprecated (since := "2025-11-13")]
 alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
