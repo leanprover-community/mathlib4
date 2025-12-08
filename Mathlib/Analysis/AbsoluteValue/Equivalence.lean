@@ -344,8 +344,10 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
     rcases eq_or_ne (w b) 1 with hb₁ | hb₁; · simp [hb₁, h.eq_one_iff.2 hb₁]
     rw [← h.symm.log_div_log_eq_log_div_log ha₀ ha₁ hb₀ hb₁, div_eq_inv_mul, rpow_mul (v.nonneg _),
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
-  · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
-      aesop (add simp [h.isNontrivial_congr])⟩
+  · exact ⟨1, zero_lt_one,
+      funext fun x ↦ by
+        rcases eq_or_ne x 0 with rfl | h₀ <;>
+        aesop (add simp [h.isNontrivial_congr])⟩
 
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
     (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by

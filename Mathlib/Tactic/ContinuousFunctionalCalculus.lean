@@ -38,7 +38,7 @@ macro_rules
   | `(tactic| cfc_cont_tac) =>
     `(tactic| try (first
       | fun_prop (disch := aesop (config := {warnOnNonterminal := false})
-          (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident]))
+                             (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident]))
       | assumption))
 
 /-- A tactic used to automatically discharge goals relating to the non-unital continuous functional
