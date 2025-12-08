@@ -69,19 +69,18 @@ namespace StdSimplex
 variable {R : Type u} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
   {M : Type v}
 
-open Classical in
 /-- The point mass distribution concentrated at `x`. -/
 def single (x : M) : StdSimplex R M where
   weights := Finsupp.single x 1
   nonneg := by simp
   total := by simp
 
-open Classical in
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
   weights := Finsupp.single x s + Finsupp.single y t
   nonneg := add_nonneg (by simpa) (by simpa)
   total := by
+    classical
     rw [Finsupp.sum_add_index] <;> simp [h]
 
 /--
