@@ -835,7 +835,7 @@ theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
 
 lemma card_ssubset' {A B : Set α} (hfin : #B < ℵ₀) (hlt : A ⊂ B) : #A < #B := by
   have : #A ≤ #B := mk_subtype_mono hlt.1
-  have : Fintype A := ((lt_aleph0_iff_fintype).1 <| hfin.trans_le' this).some
+  have : Fintype A := ((lt_aleph0_iff_fintype).1 <| this.trans_lt hfin).some
   have : Fintype B := ((lt_aleph0_iff_fintype).1 hfin).some
   simpa using Finset.card_lt_card <| Set.toFinset_ssubset_toFinset.mpr hlt
 
