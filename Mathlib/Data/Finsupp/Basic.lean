@@ -397,7 +397,7 @@ theorem embDomain_eq_mapDomain (f : α ↪ β) (v : α →₀ M) : embDomain f v
   ext a
   by_cases h : a ∈ Set.range f
   · rcases h with ⟨a, rfl⟩
-    rw [mapDomain_apply f.injective, embDomain_apply]
+    rw [mapDomain_apply f.injective, embDomain_apply_self]
   · rw [mapDomain_notin_range, embDomain_notin_range] <;> assumption
 
 @[to_additive]
@@ -512,7 +512,7 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
   ext b
   by_cases hb : b ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hb
-    rw [embDomain_apply, comapDomain_apply]
+    rw [embDomain_apply_self, comapDomain_apply]
   · replace hg : g b = 0 := notMem_support_iff.mp <| mt (hg ·) hb
     rw [embDomain_notin_range _ _ _ hb, hg]
 
@@ -1097,14 +1097,14 @@ theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} 
   Finsupp.ext fun a => dif_neg a.prop
 
 /-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
-@[simps! support toFun]
+@[simps! (attr := grind =) support toFun]
 def extendDomain (f : Subtype P →₀ M) : α →₀ M := piecewise f 0
 
 theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
     extendDomain f = embDomain (.subtype _) f := by
   ext a
   by_cases h : P a
-  · refine Eq.trans ?_ (embDomain_apply (.subtype P) f (Subtype.mk a h)).symm
+  · refine Eq.trans ?_ (embDomain_apply_self (.subtype P) f (Subtype.mk a h)).symm
     simp [h]
   · rw [embDomain_notin_range, extendDomain_toFun, dif_neg h]
     simp [h]
