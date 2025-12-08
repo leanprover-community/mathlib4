@@ -24,7 +24,7 @@ combinatorial contexts.
 ## Main definitions
 
 * `largeSchroder n`: the `n`th large Schroder number, defined recursively as
-  `largeSchroder (n + 1) = largeSchroder n + 
+  `largeSchroder (n + 1) = largeSchroder n +
     ∑ i : Fin n.succ, largeSchroder i * largeSchroder (n - i)`.
 * `smallSchroder n`: the `n`th small Schroder number, defined as
   `smallSchroder n = largeSchroder n / 2` for `n ≠ 1` and `smallSchroder 1 = 1`.
