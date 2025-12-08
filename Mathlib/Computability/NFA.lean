@@ -467,37 +467,25 @@ theorem acceptsFrom_concat_inl {S1 : Set σ1} :
       ↔ (∃ s ∈ S1, s ∈ M1.accept) ∧ [] ∈ M2.accepts by simpa [nil_mem_acceptsFrom M1]
     tauto
   | cons a z ih =>
-    simp only [cons_mem_acceptsFrom, ↓stepSet_concat_inl, stepSet, acceptsFrom_union,
-      acceptsFrom_concat_inr, acceptsFrom_iUnion, Language.add_def,
-      Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
-    simp_rw [↑mem_acceptsFrom_sep]
-    constructor
-    · rintro (⟨x, hx, y, hy, rfl⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
-      · refine ⟨a :: x, ?_, ?_⟩
-        · simpa [M1.cons_mem_acceptsFrom, stepSet,
-            Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
-        · tauto
-      · refine ⟨[], ?_, a :: z, ?_⟩
-        · simp only [M1.nil_mem_acceptsFrom]
-          tauto
-        · simp only [accepts, M2.cons_mem_acceptsFrom, stepSet,
-            acceptsFrom_iUnion₂,
-            Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))]
-          tauto
-    · rintro ⟨x, hx, y, hy, heq⟩
-      cases x with
-      | nil =>
-        rw [nil_mem_acceptsFrom] at hx
-        obtain ⟨s1, hs1, haccept1⟩ := hx
-        simp only [List.nil_append] at heq; subst y
-        simp only [accepts, M2.cons_mem_acceptsFrom, stepSet,
-          acceptsFrom_iUnion₂, Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))] at hy
-        tauto
-      | cons b x =>
-        obtain ⟨rfl, rfl⟩ := heq
-        simp only [M1.cons_mem_acceptsFrom, stepSet, acceptsFrom_iUnion₂,
-          Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))] at hx
-        left; tauto
+  simp only [cons_mem_acceptsFrom, ↓stepSet_concat_inl, stepSet, acceptsFrom_union,
+    acceptsFrom_concat_inr, acceptsFrom_iUnion, Language.add_def,
+    Set.mem_union z, ih, mem_iUnion, exists_prop]
+  clear ih
+  simp_rw [↑mem_acceptsFrom_sep]
+  constructor
+  · rintro (⟨x, hx, y, hy, rfl⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
+    · exact ⟨a :: x, by simp [M1.cons_mem_acceptsFrom, stepSet, Language, *]⟩
+    refine ⟨[], ⟨s1, haccept1, hs1⟩, a :: z, ?_, rfl⟩
+    simp [accepts, M2.cons_mem_acceptsFrom, stepSet, Language]
+    tauto
+  · rintro ⟨x | ⟨b, x⟩, hx, _, hz, rfl, rfl⟩
+    · rw [nil_mem_acceptsFrom] at hx
+      obtain ⟨s1, hs1, haccept1⟩ := hx
+      simp [accepts, M2.cons_mem_acceptsFrom, stepSet, Language] at hz
+      tauto
+    · simp [M1.cons_mem_acceptsFrom, stepSet, Language] at hx
+      left
+      tauto
 
 /-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of
 `M1.concat M2` is exactly equal to `L = L1 * L2`. -/
