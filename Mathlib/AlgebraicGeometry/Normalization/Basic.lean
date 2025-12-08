@@ -408,8 +408,7 @@ instance : IsIntegralHom f.fromNormalization := by
   rw [← cancel_mono U.2.fromSpec]
   simp [IsAffineOpen.isoSpec_hom, e, Scheme.Hom.ι_fromNormalization]
 
-lemma Scheme.Hom.toNormalization_app_preimage
-    (U : Y.affineOpens) [QuasiCompact f] [QuasiSeparated f] :
+lemma Scheme.Hom.toNormalization_app_preimage (U : Y.affineOpens) :
     let := (f.app U.1).hom.toAlgebra
     f.toNormalization.app (f.fromNormalization ⁻¹ᵁ ↑U) =
       f.normalization.presheaf.map (eqToHom (by simp [Scheme.Hom.fromNormalization_preimage])).op ≫
@@ -454,14 +453,73 @@ instance [IsIntegralHom f] : IsIso f.toNormalization := by
     (R := Γ(Y, U.1)) (A := ↑Γ(X, f ⁻¹ᵁ U.1))).toCommRingCatIso.op).hom)
 
 instance [IsAffineHom f] : IsAffineHom f.toNormalization := by
-  have (i : _) : IsAffine ((Hom.normalizationOpenCover f).X i) := by
-    dsimp [Hom.normalizationOpenCover]; infer_instance
-  refine (HasAffineProperty.iff_of_openCover (P := @IsAffineHom)
-    f.normalizationOpenCover).mpr fun U ↦ ?_
-  let e := IsOpenImmersion.isoOfRangeEq (pullback.fst f.toNormalization
-    (f.normalizationOpenCover.f U)) (f ⁻¹ᵁ U.1).ι (by simp [← Hom.coe_opensRange,
-      Hom.opensRange_pullbackFst, ← f.fromNormalization_preimage, ← Scheme.Hom.comp_preimage])
-  have : IsAffine (f ⁻¹ᵁ U.1) := U.2.preimage f
-  exact isAffine_of_isAffineHom e.hom
+  apply MorphismProperty.of_postcomp (W := @IsAffineHom) (W' := @IsSeparated) _ f.fromNormalization
+  · infer_instance
+  · rw [Hom.toNormalization_fromNormalization]
+    infer_instance
+
+instance : QuasiCompact f.toNormalization := by
+  apply MorphismProperty.of_postcomp (W := @QuasiCompact)
+      (W' := @QuasiSeparated) _ f.fromNormalization
+  · infer_instance
+  · rw [Hom.toNormalization_fromNormalization]
+    infer_instance
+
+instance : QuasiSeparated f.toNormalization := by
+  suffices QuasiSeparated (Hom.toNormalization f ≫ Hom.fromNormalization f) from
+    .of_comp _ f.fromNormalization
+  rw [Hom.toNormalization_fromNormalization]
+  infer_instance
+
+lemma Scheme.IdealSheafData.le_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
+    (U : ι → X.affineOpens) (hU : ⨆ i, (U i).1 = ⊤) (H : ∀ i, I.ideal (U i) ≤ J.ideal (U i)) :
+    I ≤ J := by
+  intro V
+  have : ∀ x : V.1, ∃ (i : ι) (r : Γ(X, V.1)) (rU : Γ(X, U i)),
+      X.basicOpen r = X.basicOpen rU ∧ x.1 ∈ X.basicOpen r := by
+    intro ⟨x, hxV⟩
+    obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp (hU.ge (Set.mem_univ x))
+    exact ⟨i, exists_basicOpen_le_affine_inter V.2 (U i).2 _ ⟨hxV, hi⟩⟩
+  choose i r rU e hxr using this
+  have : Ideal.span (Set.range r) = ⊤ := by
+    rw [← V.2.self_le_iSup_basicOpen_iff]
+    exact fun x hxV ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨⟨_, _, rfl⟩, hxr ⟨x, hxV⟩⟩
+  have inst := V.2.isLocalization_basicOpen
+  refine Submodule.le_of_isLocalized_span _ this (fun i ↦ Γ(X, X.basicOpen i.1))
+    (fun i ↦ Algebra.linearMap Γ(X, V.1) Γ(X, X.basicOpen i.1)) ?_
+  rintro ⟨_, j, rfl⟩
+  dsimp
+  simp only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
+    Ideal.localized'_eq_map, RingHom.algebraMap_toAlgebra]
+  erw [I.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j)),
+    J.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j))]
+  delta algebra_section_section_basicOpen
+  rw! [e]
+  rw [← I.map_ideal (V := (U _)) (X.basicOpen_le _), ← J.map_ideal (V := (U _)) (X.basicOpen_le _)]
+  exact Ideal.map_mono (f := (X.presheaf.map (homOfLE (X.basicOpen_le (rU j))).op).hom) (H (i j))
+
+lemma Scheme.IdealSheafData.ext_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
+    (U : ι → X.affineOpens) (hU : ⨆ i, (U i).1 = ⊤) (H : ∀ i, I.ideal (U i) = J.ideal (U i)) :
+    I = J :=
+  (le_of_iSup_eq_top U hU (by aesop)).antisymm (le_of_iSup_eq_top U hU (by aesop))
+
+@[simp]
+lemma Scheme.Hom.ker_toNormalization : f.toNormalization.ker = ⊥ := by
+  refine Scheme.IdealSheafData.ext_of_iSup_eq_top
+    (fun U : Y.affineOpens ↦ ⟨f.fromNormalization ⁻¹ᵁ U.1, U.2.preimage _⟩)
+    (TopologicalSpace.IsOpenCover.comap (iSup_affineOpens_eq_top _) _) fun U ↦ ?_
+  simp only [ker_apply, IdealSheafData.ideal_bot, Pi.bot_apply]
+  rw [← RingHom.injective_iff_ker_eq_bot,
+    ← ConcreteCategory.mono_iff_injective_of_preservesPullback, ← MorphismProperty.monomorphisms]
+  simp only [toNormalization_app_preimage, Functor.rightOp_obj, Functor.comp_obj, Functor.op_obj,
+    eqToHom_op, AlgHom.toRingHom_eq_coe, MorphismProperty.cancel_left_of_respectsIso,
+    MorphismProperty.cancel_right_of_respectsIso]
+  rw [MorphismProperty.monomorphisms, @ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  exact Subtype.val_injective
+
+instance : IsDominant f.toNormalization := by
+  have := congr(($(f.ker_toNormalization).support : Set f.normalization))
+  rw [IdealSheafData.support_bot, Scheme.Hom.support_ker, TopologicalSpace.Closeds.coe_top] at this
+  exact ⟨dense_iff_closure_eq.mpr this⟩
 
 end AlgebraicGeometry

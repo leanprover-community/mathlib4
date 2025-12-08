@@ -111,7 +111,12 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization_of_isAffi
 /--
 **Zariski's main theorem** for affine morphisms.
 
-If `f : X ⟶ Y` is an affine morphism locally of finite type,
+Recall that any qcqs morphism `f : X ⟶ Y` factors through the relative normalization via
+`f.toNormalization : X ⟶ f.normalization` (a dominant morphism) and
+`f.fromNormalization : f.normalization ⟶ Y` (an integral morphism).
+
+Let `f : X ⟶ Y` be an affine morphism locally of finite type.
+
 then there exists `U : f.normalization.Opens`, such that
 1. `f.toNormalization ∣_ U` is an isomorphism
 2. `f.toNormalization ⁻¹ᵁ U` is the quasi-finite locus of `f`
