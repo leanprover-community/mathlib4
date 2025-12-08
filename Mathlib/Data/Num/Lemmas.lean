@@ -299,7 +299,9 @@ namespace PosNum
 
 @[simp]
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
-  | 1 => by erw [@Num.ofNat'_bit true 0, Num.ofNat'_zero]; rfl
+  | 1 => by
+      simp only [cast_one, Num.ofNat'_one]
+      norm_cast
   | bit0 p => by
       simpa only [Nat.bit_false, cond_false, two_mul, of_to_nat' p] using Num.ofNat'_bit false p
   | bit1 p => by
