@@ -259,15 +259,14 @@ alias splits_of_comp := Splits.of_splits_map
 @[deprecated (since := "2025-12-09")]
 alias splits_id_of_splits := Splits.of_splits_map
 
-theorem splits_comp_of_splits (i : R →+* K) (j : K →+* L) {f : R[X]} (h : Splits (f.map i)) :
-    Splits (f.map (j.comp i)) :=
-  f.map_map i j ▸ h.map j
+@[deprecated (since := "2025-12-09")]
+alias splits_comp_of_splits := Splits.map
 
 variable [Algebra R K] [Algebra R L]
 
 theorem splits_of_algHom {f : R[X]} (h : Splits (f.map (algebraMap R K))) (e : K →ₐ[R] L) :
     Splits (f.map (algebraMap R L)) := by
-  rw [← e.comp_algebraMap_of_tower R]; exact splits_comp_of_splits _ _ h
+  rw [← e.comp_algebraMap_of_tower R, ← map_map]; exact h.map _
 
 variable (L) in
 theorem splits_of_isScalarTower {f : R[X]} [Algebra K L] [IsScalarTower R K L]

@@ -139,8 +139,8 @@ theorem IsScalarTower.isAlgebraic [Algebra F K] [Algebra F L] [Algebra.IsAlgebra
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
     IsSplittingField K L p := by
   constructor
-  · rw [← f.toAlgHom.comp_algebraMap]
-    exact splits_comp_of_splits _ _ (splits F p)
+  · rw [← f.toAlgHom.comp_algebraMap, ← map_map]
+    exact (splits F p).map _
   · rw [← (AlgHom.range_eq_top f.toAlgHom).mpr f.surjective,
       (splits F p).adjoin_rootSet_eq_range, adjoin_rootSet F p]
 
