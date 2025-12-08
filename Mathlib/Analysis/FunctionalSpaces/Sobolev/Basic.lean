@@ -234,6 +234,12 @@ lemma locallyIntegrableOn_succ [IsLocallyFiniteMeasure (μ.restrict Ω)]
   -- need to translate some currying
   -- have (x) : (fun x ↦ g x (n + 1)) = (fun x ↦ (g x n.succ).curryLeft) := sorry
 
+lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ k) :
+    HasWTaylorSeriesUpTo Ω f g k' p μ where
+  zero_eq := hf.zero_eq
+  hasWeakDeriv m hm := hf.hasWeakDeriv m (lt_of_lt_of_le hm hk)
+  memLp m hm := hf.memLp m (le_trans hm hk)
+
 lemma add (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hf' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
     (hg : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g x m) Ω μ)
     (hg' : ∀ {m : ℕ}, m < k → LocallyIntegrableOn (fun x ↦ g' x m) Ω μ) :
@@ -314,7 +320,13 @@ lemma memSobolev_zero :
       sorry -- similar to the step above: hf should imply this...
   }
 
--- TODO: add proofs of monotonicity in `k` and (if `Ω` is bounded) in `p`
+/-- `MemSobolev Ω f k p μ` is monotone in `k`:
+if `f ∈ W^{k,p}(Ω)` and `k' ≤ k`, then also `f ∈ W^{k',p}(Ω)`. -/
+lemma mono_k {k' : ℕ∞} (hf : MemSobolev Ω f k p μ) (hk' : k' ≤ k) : MemSobolev Ω f k' p μ := by
+  revert hf
+  exact fun ⟨g, hg⟩ ↦ ⟨g, hg.mono hk'⟩
+
+-- TODO: add proofs of monotonicity in `μ` and (if `Ω` is bounded) in `p`
 
 end monotonicity
 
