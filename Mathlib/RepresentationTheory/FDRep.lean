@@ -42,7 +42,7 @@ and this is reflected in the documentation.
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
-* `FdRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
+* `FdRep k G ≌ FGModuleCat k[G]`.
 
 -/
 

@@ -27,7 +27,7 @@ namespace Cardinal
 lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}}
     (ho : lift.{v} o.card ≤ lift.{u} c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
-  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← toType.mk.symm.surjective.range_comp]
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← ToType.mk.symm.surjective.range_comp]
   rw [← lift_le.{u}]
   apply ((mk_iUnion_le_lift _).trans _).trans_eq (mul_eq_self (aleph0_le_lift.2 hc))
   rw [mk_toType]
@@ -52,7 +52,7 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordi
   simp_rw [← mk_toType]
   rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
   apply lift_mk_le_lift_mk_of_surjective (f := .mk ∘ (⟨·.2.toOrd,
-    (mem_Iio.mp (toType.toOrd _).2).trans_le (Ordinal.le_iSup _ _)⟩))
+    (mem_Iio.mp (ToType.toOrd _).2).trans_le (Ordinal.le_iSup _ _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
   obtain ⟨i, hi⟩ := Ordinal.lt_iSup_iff.mp hx
@@ -64,16 +64,16 @@ theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
   rwa [Cardinal.lift_id'] at this
 
 theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
-    (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i : o.toType ↦ (f i.toOrd).card := by
+    (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i : o.ToType ↦ (f i.toOrd).card := by
   apply le_of_eq_of_le (congr_arg _ _).symm (card_iSup_le_sum_card _)
-  simpa using toType.mk.symm.iSup_comp (g := fun x ↦ f x)
+  simpa using ToType.mk.symm.iSup_comp (g := fun x ↦ f x)
 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
   convert ← sum_le_lift_mk_mul_iSup _
   · exact mk_toType o
-  · exact toType.mk.symm.iSup_comp (g := fun x ↦ (f x).card)
+  · exact ToType.mk.symm.iSup_comp (g := fun x ↦ (f x).card)
 
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by

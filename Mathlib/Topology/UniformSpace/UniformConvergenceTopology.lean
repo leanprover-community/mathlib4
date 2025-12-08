@@ -684,7 +684,7 @@ protected theorem hasBasis_uniformity_of_covering_of_basis {ι ι' : Type*} [Non
 such that each `s ∈ 𝔖` is included in some `t n`
 and `V n` is an antitone basis of entourages of `β`,
 then `UniformOnFun.gen 𝔖 (t n) (V n)` is an antitone basis of entourages of `α →ᵤ[𝔖] β`. -/
-protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
     {t : ι → Set α} {V : ι → Set (β × β)}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n)
     (hb : HasAntitoneBasis (𝓤 β) V) :

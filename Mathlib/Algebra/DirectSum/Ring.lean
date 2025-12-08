@@ -293,10 +293,8 @@ theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' :
   apply congrArg _
   simp_rw [flip_apply]
   funext x
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [DFinsupp.sumAddHom_apply]
-  simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+  simp [AddMonoidHom.dfinsuppSum_apply, DFinsupp.sumAddHom_apply, DirectSum.gMulHom,
+    DirectSum.toAddMonoid]
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :

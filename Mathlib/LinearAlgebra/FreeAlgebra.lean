@@ -37,11 +37,10 @@ variable [CommSemiring R]
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
 -- @[simps]
 noncomputable def basisFreeMonoid : Basis (FreeMonoid X) R (FreeAlgebra R X) :=
-  Finsupp.basisSingleOne.map (equivMonoidAlgebraFreeMonoid (R := R) (X := X)).symm.toLinearEquiv
+  Finsupp.basisSingleOne.map equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
 
 instance : Module.Free R (FreeAlgebra R X) :=
-  have : Module.Free R (MonoidAlgebra R (FreeMonoid X)) := Module.Free.finsupp _ _ _
-  Module.Free.of_equiv (equivMonoidAlgebraFreeMonoid (R := R) (X := X)).symm.toLinearEquiv
+  .of_equiv equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
 
 end
 

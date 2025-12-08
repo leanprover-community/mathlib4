@@ -53,9 +53,8 @@ To talk about homology in low degree, the file
 
 Group homology is typically stated for `G`-modules, or equivalently modules over the group ring
 `ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
-Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
-definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
-possible scalar action diamonds.
+Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep` definition.
+We avoid using instances `Module k[G] A` so that we do not run into possible scalar action diamonds.
 
 Note that the existing definition of `Tor` in `Mathlib.CategoryTheory.Monoidal.Tor` is for monoidal
 categories, and the bifunctor we need to derive here maps to `ModuleCat k`. Hence we define

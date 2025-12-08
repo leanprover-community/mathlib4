@@ -83,7 +83,7 @@ noncomputable section
 set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
-local notation "ι" => (Module.rank F E).ord.toType
+local notation "ι" => (Module.rank F E).ord.ToType
 
 private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
@@ -248,7 +248,7 @@ theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ 
 
 section Lim
 
-variable {i : WithTop (Module.rank F E).ord.toType} -- WithTop ι doesn't work
+variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le

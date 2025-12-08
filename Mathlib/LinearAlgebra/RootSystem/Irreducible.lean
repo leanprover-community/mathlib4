@@ -30,6 +30,7 @@ open Submodule (span span_le)
 open LinearMap (ker)
 open MulAction (orbit mem_orbit_self mem_orbit_iff)
 open Module.End (invtSubmodule)
+open scoped MonoidAlgebra
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   (P : RootPairing ι R M N)
@@ -60,7 +61,7 @@ instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
   exists_pair_ne := ⟨⊥, ⊤, by rw [ne_eq, Subtype.ext_iff]; exact bot_ne_top⟩
 
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
-    IsSimpleModule (MonoidAlgebra R P.weylGroup) P.weylGroupRootRep.asModule ↔
+    IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
   rw [isSimpleModule_iff, ← P.weylGroupRootRep.mapSubmodule.isSimpleOrder_iff]
   refine ⟨fun h q hq₁ hq₂ ↦ ?_, fun h ↦ ⟨fun q ↦ ?_⟩⟩
@@ -97,7 +98,7 @@ instance [P.IsIrreducible] : P.flip.IsIrreducible where
   eq_top_of_invtSubmodule_coreflection := IsIrreducible.eq_top_of_invtSubmodule_reflection (P := P)
 
 lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
-    IsSimpleModule (MonoidAlgebra R P.weylGroup) P.weylGroupRootRep.asModule :=
+    IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule :=
   have := IsIrreducible.nontrivial P
   P.isSimpleModule_weylGroupRootRep_iff.mpr IsIrreducible.eq_top_of_invtSubmodule_reflection
 
