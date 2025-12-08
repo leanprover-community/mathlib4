@@ -133,6 +133,10 @@ where
   and instantiating all other bvars with `sorry`. The only free variables therefore arise from
   instances of concern which we want to track the usage of.
 
+  By instantiating ordinary binders with `sorry`, `collectFVarsOutsideOfProofs` can use the
+  computed field accessed by `hasFVar` (in constant time) to avoid traversing any subexpressions
+  that do not contain a free variable for an instance of concern, which helps performance.
+
   Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
   returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
   used or not. -/
