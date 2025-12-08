@@ -66,6 +66,14 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
     (s : {s : Finset I // Finset.card s = n}) : ⋀[R]^n M :=
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
+@[simp]
+lemma ιMulti_family_coe {I : Type*} [LinearOrder I] (v : I → M) :
+    ExteriorAlgebra.ιMulti_family R n v = (Submodule.subtype _) ∘ (ιMulti_family R n v) := by
+  ext s
+  unfold ιMulti_family
+  simp only [Submodule.coe_subtype, Finset.coe_orderIsoOfFin_apply, comp_apply, ιMulti_apply_coe]
+  rfl
+
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
     (s : {s : Finset I // Finset.card s = n}) :
     ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
@@ -261,6 +269,35 @@ theorem map_id :
 theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
+
+/-! Exactness properties of the exterior power functor. -/
+variable {K E F : Type*} [Field K]
+variable [AddCommGroup E] [Module K E] [AddCommGroup F] [Module K F]
+/-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
+lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
+    Function.Injective (map n f) :=
+  let ⟨g, hgf⟩ := hf
+  Function.RightInverse.injective (g := map n g)
+    (fun _ ↦ by rw [← LinearMap.comp_apply, ← map_comp, hgf, map_id, LinearMap.id_coe, id_eq])
+
+/-- If the base ring is a field, then any injective linear map induces an injective map on
+exterior powers. -/
+lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
+    Function.Injective (map n f) :=
+  map_injective (LinearMap.exists_leftInverse_of_injective f hf)
+
+/-- If a linear map is surjective, then the map it induces on exterior powers is surjective. -/
+lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
+    Function.Surjective (map n f) := by
+  rw [← LinearMap.range_eq_top]
+  conv_lhs => rw [LinearMap.range_eq_map]
+  rw [← ιMulti_span, ← ιMulti_span,
+    Submodule.map_span, ← Set.range_comp, ← LinearMap.coe_compAlternatingMap, map_comp_ιMulti,
+    AlternatingMap.coe_compLinearMap, Set.range_comp]
+  conv_rhs => rw [← Set.image_univ]
+  congr
+  rw [Set.range_eq_univ]
+  exact Surjective.comp_left hf
 
 /-! Linear equivalences in degrees 0 and 1. -/
 

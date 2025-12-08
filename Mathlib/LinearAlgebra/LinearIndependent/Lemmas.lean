@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 module
 
 public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Mathlib.LinearAlgebra.Pi
@@ -496,6 +497,20 @@ lemma LinearIndepOn.insert' {s : Set ι} {i : ι} (hs : LinearIndepOn R v s)
 lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
     (hx : ∀ r : R, r • x ∈ Submodule.span R s → r = 0) : LinearIndepOn R id (insert x s) :=
   hs.insert' <| by simpa
+
+/-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
+`dv : ι → (M →ₗ[R] R)` such that `dv i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
+`v` is linearly independent. -/
+theorem LinearIndependent.ofDualFamily (v : ι → M) (dv : ι → Module.Dual R M)
+    (h1 : ∀ (a : ι) (b : ι), a ≠ b → (dv a) (v b) = 0) (h2 : ∀ (a : ι), (dv a) (v a) = 1) :
+    LinearIndependent R v := by
+  rw [linearIndependent_iff']
+  intro s g hrel i hi
+  apply_fun (fun x => dv i x) at hrel
+  simp only [map_sum, map_smul, smul_eq_mul, _root_.map_zero] at hrel
+  rw [Finset.sum_eq_single i (fun j _ hj ↦ by rw [h1 i j (Ne.symm hj), mul_zero])
+    (fun hi' ↦ False.elim (hi' hi)), h2 i, mul_one] at hrel
+  exact hrel
 
 end Module
 
