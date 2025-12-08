@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Davood Tehrani, David Gross. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Davood Tehrani, David Gross
+Authors: Davood H.H. Tehrani, David Gross
 -/
 
 module
@@ -73,6 +73,13 @@ variable [∀ k, ∀ i, AddCommMonoid (s k i)] [∀ k, ∀ i, Module R (s k i)]
 In `tprodFinTprodEquiv`, we combine six equivalences. These requires some care
 to unpack in the first `simp` lemma below. Alternatively, one could introduce
 intermediate equivalences and prove `simp` lemmas for those.
+
+The intermediate equivalences are:
+
+`(⨂ i : Fin n, s i) ⊗ (⨂ i : Fin m, s i) ≃ₗ[R] ⨂ i : Fin (n + m), s i`
+
+`(⨂ i : Fin n, s i) ⊗ s i₀ ≃ₗ[R] ⨂ i : Fin (n + 1), s i`
+
 
 Trade-offs for the alternative approach:
 * Pro -- Slightly more transparent proof; More Truths for Mathlib
