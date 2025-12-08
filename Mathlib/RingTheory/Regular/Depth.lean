@@ -17,16 +17,25 @@ public import Mathlib.RingTheory.Support
 
 /-!
 
-# Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
+# The Rees theorem
 
-Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff
-there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
-This is the case if `Depth[I](M) = 0`.
+In this section we proved the rees theorem for depth, which build the relation between
+the vanishing of certain `Ext` typs and length of maximal regular sequence in a certain ideal.
 
-## Main statements
+# Main results
 
-* `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
-  iff there is a `M`-regular in `Module.annihilator R N`.
+* `IsSMulRegular.subsingleton_linearMap_iff` : for finitely generated `R`-module `N M`,
+  `N →ₗ[R] M = 0` iff there is a `M`-regular in `Module.annihilator R N`.
+  This is the case for `n = 0` in the Rees theorem.
+
+* `exist_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
+  finitely generated and nontrivial `R`-module `M` satisfying `IM < M`, we proved TFAE:
+  · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
+    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
+  · `∀ i < n, Ext (A⧸I) M i = 0`
+  · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
+    zerolucus of `I`, `∀ i < n, Ext N M i = 0`
+  · there exist a `M`-regular sequence of length `n` with every element in `I`
 
 -/
 
@@ -108,25 +117,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
 
 end IsSMulRegular
 
-/-!
 
-# The Rees theorem
-
-In this section we proved the rees theorem for depth, which build the relation between
-the vanishing order of `Ext` and maximal regular sequence.
-
-# Main results
-
-* `exist_isRegular_tfae` : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
-  finitely generated and nontrivial `R`-module `M` satisfying `IM < M`, we proved TFAE:
-  · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
-    zero lucus of `I`, `∀ i < n, Ext N M i = 0`
-  · `∀ i < n, Ext (A⧸I) M i = 0`
-  · there exist a `N : ModuleCat R` finitely generated and nontrivial with support equal to the
-    zerolucus of `I`, `∀ i < n, Ext N M i = 0`
-  · there exist a `M`-regular sequence of length `n` with every element in `I`
-
--/
 
 universe w v u
 
@@ -271,7 +262,7 @@ lemma ext_subsingleton_of_exist_isRegular [IsNoetherianRing R] (I : Ideal R) (n 
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /-- The Rees theorem -/
-lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ)
+lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) (n : ℕ)
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
     [∀ N : ModuleCat.{v} R, (Nontrivial N ∧ Module.Finite R N ∧
