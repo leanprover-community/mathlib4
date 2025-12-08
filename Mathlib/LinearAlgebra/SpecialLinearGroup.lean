@@ -71,6 +71,33 @@ lemma ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 section rankOne
 
 /-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
+theorem subsingleton_of_finrank_le_one [Module.Free R V] (d1 : Module.finrank R V ≤ 1) :
+    Subsingleton (SpecialLinearGroup R V) where
+  allEq u v := by
+    nontriviality V
+    nontriviality R
+    replace d1 : Module.finrank R V = 1 := by
+      apply le_antisymm d1
+      by_contra! h
+      simp only [Nat.lt_one_iff] at h
+      sorry
+    ext x
+    by_cases hx : x = 0
+    · simp [hx]
+    suffices ∀ (u : SpecialLinearGroup R V), (u : V →ₗ[R] V) = LinearMap.id by
+      simp only [LinearMap.ext_iff, LinearEquiv.coe_coe, LinearMap.id_coe, id_eq] at this
+      simp [this u, this v]
+    intro u
+    ext x
+    set c := (LinearEquiv.smul_id_of_finrank_eq_one d1).symm u with hc
+    rw [LinearEquiv.eq_symm_apply] at hc
+    suffices c = 1 by
+      simp [← hc, LinearEquiv.smul_id_of_finrank_eq_one, this]
+    have hu := u.prop
+    simpa [← Units.val_inj, LinearEquiv.coe_det, ← hc,
+      LinearEquiv.smul_id_of_finrank_eq_one, d1] using hu
+
+/-- If a free module has `Module.finrank` equal to `1`, then its special linear group is trivial. -/
 theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by

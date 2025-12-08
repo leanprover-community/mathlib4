@@ -153,6 +153,10 @@ def reduce (e : SpecialLinearGroup K V) :
     SpecialLinearGroup K (V ⧸ e.fixedSubmodule) :=
   mkQ e.fixedSubmodule ⟨e, by simp [mem_fixingSubgroup_iff]⟩
 
+theorem reduce_apply (e : SpecialLinearGroup K V) (v : V) :
+    e.reduce (Submodule.Quotient.mk v) = Submodule.Quotient.mk (e v) :=
+  rfl
+
 /-- An element of the special linear group is exceptional if
   it is a nontrivial homothety modulo the eigenspace for eigenvalue 1. -/
 abbrev IsExceptional (e : SpecialLinearGroup K V) : Prop :=
@@ -190,7 +194,6 @@ theorem _root_.Submodule.sup_span_eq_top
     suffices v ≠ 0 by simpa
     aesop
   · exact Submodule.disjoint_span_singleton_of_notMem hv
-
 
 theorem mem_transvections_iff_finrank_le_one (e : SpecialLinearGroup K V) :
     e ∈ transvections K V ↔ finrank K (V ⧸ e.fixedSubmodule) ≤ 1 := by
@@ -248,12 +251,18 @@ theorem mem_transvections_iff_finrank_le_one (e : SpecialLinearGroup K V) :
       · simp [v, LinearMap.transvection.apply]
         field_simp
         aesop
-    simp [v]
-    right
-    -- il y a encore du travail, il faut voir que e.reduce = 1
-    sorry
-
-
+    suffices e w - w ∈ LinearMap.ker f by
+      simp only [LinearMap.mem_ker, map_sub] at this
+      simp only [v, map_smul]
+      convert smul_zero _
+      simpa using this
+    rw [← hf', ← Submodule.ker_mkQ e.fixedSubmodule, LinearMap.mem_ker]
+    simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_sub]
+    simp only [← reduce_apply, sub_eq_zero]
+    suffices e.reduce = 1 by simp [this]
+    suffices Subsingleton (SpecialLinearGroup K (V ⧸ e.fixedSubmodule)) by
+      exact Subsingleton.eq_one e.reduce
+    exact subsingleton_of_finrank_le_one h
 
 theorem finrank_le_add_finrank_fixedSubmodule
     {n : ℕ} {e : SpecialLinearGroup K V} (he : e ∈ transvections K V ^ n) :
@@ -313,19 +322,11 @@ example (e : SpecialLinearGroup K V) (he : ¬ IsExceptional e) :
   | succ n hind =>
     match n with
     | 0 =>
-      simp only [zero_add, Nat.cast_one, transvectionDegree_le_one_iff, Set.mem_setOf_eq]
-      simp only [zero_add] at h
-      have h' : e.fixedSubmodule < ⊤ := by
-        by_contra! h'
-        simp only [not_lt_top_iff] at h'
-        apply Nat.zero_ne_one
-        convert h
-        rw [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank, h']
-        simp
-      obtain ⟨f, hf, hef⟩ := Submodule.exists_dual_map_eq_bot_of_lt_top h' inferInstance
-      simp only [zero_add, Nat.cast_one, ge_iff_le]
+      rw [zero_add, Nat.cast_one, transvectionDegree_le_one_iff,
+        mem_transvections_iff_finrank_le_one, h]
+    | n + 1 =>
+      simp only [add_assoc, Nat.reduceAdd] at h ⊢
       sorry
-    | n + 1 => sorry
 
 theorem finrank_lt_transvectionDegree_add_of_isExceptional
     (e : SpecialLinearGroup K V) (he : IsExceptional e) :
