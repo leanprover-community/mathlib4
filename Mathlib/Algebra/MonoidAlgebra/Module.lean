@@ -50,16 +50,16 @@ instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMu
     NoZeroSMulDivisors R (MonoidAlgebra k G) :=
   Finsupp.noZeroSMulDivisors
 
-@[to_additive (dont_translate := R) (relevant_arg := G) distribMulAction]
+@[to_additive (dont_translate := R) distribMulAction]
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=
   Finsupp.distribMulAction G k
 
-@[to_additive (dont_translate := R) (relevant_arg := G)]
+@[to_additive (dont_translate := R)]
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
   Finsupp.module G k
 
-@[to_additive (dont_translate := R) (relevant_arg := G) faithfulSMul]
+@[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R (MonoidAlgebra k G) :=
   Finsupp.faithfulSMul
@@ -85,13 +85,20 @@ It is good practice to have those, regardless of the `ext` issue.
 section ExtLemmas
 variable [Semiring k]
 
+/-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
+@[to_additive (dont_translate := R) (relevant_arg := G) singleDistribMulActionHom
+/-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
+def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) :
+    k →+[R] MonoidAlgebra k G where
+  __ := singleAddHom a
+  map_smul' k m := by simp
+
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
+@[to_additive (dont_translate := R) (relevant_arg := N) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
     [DistribMulAction R k] {f g : MonoidAlgebra k G →+[R] N}
-    (h : ∀ a : G,
-      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
+    (h : ∀ a, f.comp (singleDistribMulActionHom a) = g.comp (singleDistribMulActionHom a)) :
     f = g :=
   Finsupp.distribMulActionHom_ext' h
 
@@ -234,9 +241,8 @@ instance smulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R k[G] k[G] :=
   @MonoidAlgebra.smulCommClass_self k (Multiplicative G) R _ _ _ _
 
-instance smulCommClass_symm_self [SMulCommClass k R k] :
-    SMulCommClass k[G] R k[G] :=
-  @MonoidAlgebra.smulCommClass_symm_self k (Multiplicative G) R _ _ _ _
+instance smulCommClass_symm_self [SMulCommClass k R k] : SMulCommClass k[G] R k[G] :=
+  have := SMulCommClass.symm k R k; .symm ..
 
 end NonUnitalNonAssocAlgebra
 
