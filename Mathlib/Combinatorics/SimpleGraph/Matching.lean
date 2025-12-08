@@ -141,6 +141,22 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     simp only [Set.disjoint_left] at this
     simpa [(mem_support _).mpr ⟨w, hw.1⟩, (mem_support _).mpr ⟨y, hi'⟩] using @this v
 
+lemma IsMatching.iSup_of_isChain {ι : Type*} {f : ι → G.Subgraph}
+    (hmatch : ∀ i, (f i).IsMatching) (hchain : IsChain (· ≤ ·) (Set.range f)) :
+    (⨆ i, f i).IsMatching := by
+  rintro v ⟨V', ⟨⟨M', hun⟩, hvV'⟩⟩
+  obtain ⟨V'', ⟨⟨i, hi⟩, _⟩, hv⟩ := hun ▸ hvV'
+  have : v ∈ M'.verts := by simp_all
+  obtain ⟨w, hvw, hw⟩ := hmatch i (hi ▸ this)
+  simp only [iSup_adj]
+  refine ⟨w, ⟨i, hvw⟩, fun w' ⟨j, hvw'⟩ ↦ ?_⟩
+  by_cases hij : f i = f j
+  · grind
+  rcases hchain ⟨i, rfl⟩ ⟨j, rfl⟩ hij with h | h
+  · exact (hmatch j).eq_of_adj_left hvw' (h.2 hvw)
+  · exact (hmatch i).eq_of_adj_left (h.2 hvw') hvw
+
+
 lemma IsMatching.subgraphOfAdj (h : G.Adj v w) : (G.subgraphOfAdj h).IsMatching := by
   intro _ hv
   rw [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
@@ -612,5 +628,29 @@ lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
     {M' : Subgraph G'} (hM : M.IsPerfectMatching) (hM' : M'.IsPerfectMatching) :
     (M.spanningCoe ∆ M'.spanningCoe).IsAlternating M'.spanningCoe := by
   simpa [symmDiff_comm] using isAlternating_symmDiff_left hM' hM
+
+section maximal_matching
+open scoped Cardinal
+
+/-- A subgraph `M` is a *maximum matching* if it is a matching and no other matching
+has strictly more edges. -/
+def Subgraph.IsMaxSizeMatching (M : Subgraph G) : Prop :=
+  MaximalFor IsMatching (#·.edgeSet) M
+
+/-- A subgraph `M` is a *maximal matching* if it is a matching and it is not properly
+contained in any strictly larger matching. -/
+def Subgraph.IsMaximalMatching (M : Subgraph G) : Prop :=
+  Maximal IsMatching M
+
+lemma exists_isMaximalMatching : ∃ M : G.Subgraph, M.IsMaximalMatching := by
+  refine Exists.imp' (fun m : {M : G.Subgraph // M.IsMatching} ↦ m.val)
+    (fun ⟨M, hM⟩ hmax ↦ ⟨hM, fun M' hM' hge ↦ (by simp_all [IsMax])⟩)
+    (zorn_le fun ch hch ↦ ?_)
+  let f : ch → _ := (·.val.val)
+  refine ⟨⟨_, ?_⟩, (le_sSup (s := Set.range f) ⟨⟨·, ·⟩, rfl⟩)⟩
+  apply Subgraph.IsMatching.iSup_of_isChain (·.val.prop)
+  exact fun _ ⟨c₁, h₁⟩ _ ⟨c₂, h₂⟩ _ ↦ h₁ ▸ h₂ ▸ hch.total c₁.prop c₂.prop
+
+end maximal_matching
 
 end SimpleGraph
