@@ -374,17 +374,8 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   apply LiftSourceTargetPropertyAt.prodMap hf.property hg.property
   rintro f φ₁ ψ₁ g φ₂ ψ₂ ⟨equiv₁, hfprop⟩ ⟨equiv₂, hgprop⟩
   use (ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans (equiv₁.prodCongr equiv₂)
-  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target]
-  set C := ((ψ₁.extend J).prod (ψ₂.extend J')) ∘
-    Prod.map f g ∘ ((φ₁.extend I).prod (φ₂.extend I')).symm
-  have hC : C = Prod.map ((ψ₁.extend J) ∘ f ∘ (φ₁.extend I).symm)
-      ((ψ₂.extend J') ∘ g ∘ (φ₂.extend I').symm) := by
-    ext x <;> simp [C]
-  set Φ := (((ContinuousLinearEquiv.prodProdProdComm 𝕜 E E' F F').trans
-    (equiv₁.prodCongr equiv₂)) ∘ (·, 0))
-  have hΦ: Φ = Prod.map (equiv₁ ∘ (·, 0)) (equiv₂ ∘ (·, 0)) := by ext x <;> simp [Φ]
-  rw [hC, hΦ]
-  exact hfprop.prodMap hgprop
+  rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_iff_prod]
+  exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
 /-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
