@@ -123,8 +123,9 @@ lemma shiftFunctor_op_map (n m : ℤ) (hnm : n + m = 0) {K L : Cᵒᵖ} (φ : K 
 
 variable (C) in
 /-- The autoequivalence `Cᵒᵖ ≌ Cᵒᵖ` whose functor is `shiftFunctor Cᵒᵖ n` and whose inverse
-functor is `(shiftFunctor C n).op`. Do not unfold the definitions of the unit and counit
-isomorphisms: the compatibilities they satisfy are stated as separate lemmas. -/
+functor is `(shiftFunctor C n).op`. In most cases, it is not necessary to unfold the
+definitions of the unit and counit isomorphisms: the compatibilities they satisfy
+are stated as separate lemmas. -/
 @[simps functor inverse]
 def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ where
   functor := shiftFunctor Cᵒᵖ n
@@ -139,6 +140,39 @@ def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ where
     change (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.app (X.unop⟦-n⟧) ≫
       ((shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.app X.unop)⟦-n⟧' = 𝟙 _
     rw [shift_shiftFunctorCompIsoId_neg_add_cancel_hom_app n X.unop, Iso.inv_hom_id_app])
+
+@[reassoc]
+lemma opShiftFunctorEquivalence_unitIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
+    (opShiftFunctorEquivalence C n).unitIso.hom.app X =
+      ((shiftFunctorCompIsoId C m n (by lia)).hom.app X.unop).op ≫
+        (((shiftFunctorOpIso C n m hnm).inv.app (X)).unop⟦n⟧').op := by
+  obtain rfl : m = -n := by lia
+  rfl
+
+@[reassoc]
+lemma opShiftFunctorEquivalence_unitIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
+    (opShiftFunctorEquivalence C n).unitIso.inv.app X =
+      (((shiftFunctorOpIso C n m hnm).hom.app (X)).unop⟦n⟧').op ≫
+      ((shiftFunctorCompIsoId C m n (by lia)).inv.app X.unop).op := by
+  obtain rfl : m = -n := by lia
+  rfl
+
+@[reassoc]
+lemma opShiftFunctorEquivalence_counitIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
+    (opShiftFunctorEquivalence C n).counitIso.hom.app X =
+      (shiftFunctorOpIso C n m hnm).hom.app (Opposite.op (X.unop⟦n⟧)) ≫
+        ((shiftFunctorCompIsoId C n m hnm).inv.app X.unop).op
+        := by
+  obtain rfl : m = -n := by lia
+  rfl
+
+@[reassoc]
+lemma opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
+    (opShiftFunctorEquivalence C n).counitIso.inv.app X =
+      ((shiftFunctorCompIsoId C n m hnm).hom.app X.unop).op ≫
+        (shiftFunctorOpIso C n m hnm).inv.app (Opposite.op (X.unop⟦n⟧)) := by
+  obtain rfl : m = -n := by lia
+  rfl
 
 /-! The naturality of the unit and counit isomorphisms are restated in the following
 lemmas so as to mitigate the need for `erw`. -/
@@ -185,7 +219,7 @@ lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
   rw [shiftFunctorZero_op_hom_app, unop_comp, Quiver.Hom.unop_op, Functor.map_comp,
     shiftFunctorCompIsoId_zero_zero_inv_app, assoc]
 
-lemma opShiftFunctorEquivalence_unitIso_hom_app_eq (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
+lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
     (opShiftFunctorEquivalence C p).unitIso.hom.app X =
       (opShiftFunctorEquivalence C n).unitIso.hom.app X ≫
       (((opShiftFunctorEquivalence C m).unitIso.hom.app (X⟦n⟧)).unop⟦n⟧').op ≫
@@ -204,20 +238,25 @@ lemma opShiftFunctorEquivalence_unitIso_hom_app_eq (X : Cᵒᵖ) (m n p : ℤ) (
   rw [Category.assoc, Category.assoc]
   rfl
 
-lemma opShiftFunctorEquivalence_unitIso_inv_app_eq (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
+lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
       (((shiftFunctorAdd' Cᵒᵖ n m p (by lia)).hom.app X).unop⟦p⟧').op ≫
       ((shiftFunctorAdd' C m n p h).inv.app _).op ≫
       (((opShiftFunctorEquivalence C m).unitIso.inv.app (X⟦n⟧)).unop⟦n⟧').op ≫
       (opShiftFunctorEquivalence C n).unitIso.inv.app X := by
   rw [← cancel_mono ((opShiftFunctorEquivalence C p).unitIso.hom.app X), Iso.inv_hom_id_app,
-    opShiftFunctorEquivalence_unitIso_hom_app_eq _ _ _ _ h,
+    opShiftFunctorEquivalence_add_unitIso_hom_app_eq _ _ _ _ h,
     Category.assoc, Category.assoc, Category.assoc, Iso.inv_hom_id_app_assoc]
   apply Quiver.Hom.unop_inj
   dsimp
   simp only [Category.assoc,
     ← unop_comp, Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id,
     Functor.map_id, id_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
+
+@[deprecated (since := "2025-12-08")] alias opShiftFunctorEquivalence_unitIso_hom_app_eq :=
+  opShiftFunctorEquivalence_add_unitIso_hom_app_eq
+@[deprecated (since := "2025-12-08")] alias opShiftFunctorEquivalence_unitIso_inv_app_eq :=
+  opShiftFunctorEquivalence_add_unitIso_inv_app_eq
 
 lemma shift_unop_opShiftFunctorEquivalence_counitIso_inv_app (X : Cᵒᵖ) (n : ℤ) :
     ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop⟦n⟧' =
