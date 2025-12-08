@@ -494,7 +494,7 @@ theorem pi_condition_of_isLimit :
 def toPiForkOfIsLimit (K : Multifork I) :
     Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
   pt := K.pt
-  π.app x := match x with
+  π.app
     | WalkingParallelPair.zero => Fan.IsLimit.desc hc K.ι
     | WalkingParallelPair.one => Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd
   π.naturality := by
@@ -521,8 +521,7 @@ def ofPiForkOfIsLimit
     (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) :
     Multifork I where
   pt := a.pt
-  π.app x :=
-    match x with
+  π.app
     | WalkingMulticospan.left _ => a.ι ≫ c.proj _
     | WalkingMulticospan.right _ => a.ι ≫ I.fstPiMapOfIsLimit c hd ≫ d.proj _
   π.naturality := by
@@ -709,7 +708,7 @@ theorem sigma_condition_of_isColimit :
 noncomputable def toSigmaCoforkOfIsColimit (K : Multicofork I) :
     Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
   pt := K.pt
-  ι.app x := match x with
+  ι.app
     | WalkingParallelPair.zero => I.fstSigmaMapOfIsColimit d hc ≫ Cofan.IsColimit.desc hd K.π
     | WalkingParallelPair.one => Cofan.IsColimit.desc hd K.π
   ι.naturality := by
@@ -748,16 +747,10 @@ theorem ofSigmaCoforkOfIsColimit_ι_app_left
       c.inj _ ≫ I.fstSigmaMapOfIsColimit d hc ≫ a.π :=
   rfl
 
--- LHS simplifies; `(d)simp`-normal form is `ofSigmaCofork_ι_app_right'`
-theorem ofSigmaCoforkOfIsColimit_ι_app_right
-    (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
-    (ofSigmaCoforkOfIsColimit a).ι.app (WalkingMultispan.right i) = d.inj i ≫ a.π :=
-  rfl
-
 @[simp]
-theorem ofSigmaCoforkOfIsColimit_ι_app_right'
+theorem ofSigmaCoforkOfIsColimit_π
     (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) (i) :
-    π (ofSigmaCoforkOfIsColimit a) i = d.inj i ≫ a.π :=
+    (ofSigmaCoforkOfIsColimit a).π i = d.inj i ≫ a.π :=
   rfl
 
 /-- Constructor for isomorphisms between multicoforks. -/
