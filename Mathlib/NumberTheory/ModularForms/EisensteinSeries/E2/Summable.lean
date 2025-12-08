@@ -17,7 +17,7 @@ prove how it transforms under the slash action.
 
 open UpperHalfPlane hiding I σ
 
-open ModularForm EisensteinSeries  TopologicalSpace  intervalIntegral
+open ModularForm EisensteinSeries TopologicalSpace intervalIntegral
   Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction Set SummationFilter
 
 open scoped Interval Real Topology BigOperators Nat ArithmeticFunction.sigma
@@ -26,14 +26,15 @@ noncomputable section
 
 namespace EisensteinSeries
 
-private lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z =
-    (2 * riemannZeta 2) + (∑ m ∈ range N, -8 * π ^ 2  *
-    ∑' n : ℕ+, n  * cexp (2 * π * I  * z) ^ ((m + 1) * n : ℕ)) := by
-  rw [sum_Icc_of_even_eq_range (e2Summand_even z), Finset.sum_range_succ', smul_add]
-  nth_rw 2 [two_mul]
+variable (z : ℍ)
+
+private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z =
+    (2 * riemannZeta 2) + (∑ m ∈ range N, -8 * π ^ 2 *
+    ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) := by
+  rw [sum_Icc_of_even_eq_range (e2Summand_even z), Finset.sum_range_succ', smul_add, two_mul]
   ring_nf
   have H (a : ℕ) := EisensteinSeries.qExpansion_identity_pnat (k := 1) (by grind)
-    ⟨(a + 1) * z, by simpa [show  0 < a + (1 : ℝ) by positivity] using z.2⟩
+    ⟨(a + 1) * z, by simpa [show 0 < a + (1 : ℝ) by positivity] using z.2⟩
   simp only [coe_mk_subtype, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
     Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one, e2Summand, eisSummand,
     Nat.cast_add, Fin.isValue, Matrix.cons_val_zero, Int.cast_add, Int.cast_natCast, Int.cast_one,
@@ -48,14 +49,13 @@ private lemma G2_partial_sum_eq (z : ℍ) (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N
       Nat.cast_mul]
     apply tsum_congr (fun b ↦ ?_)
     ring_nf
-    simp only [exp_add, neg_inj, mul_eq_mul_right_iff, OfNat.ofNat_ne_zero, or_false]
-    grind
+    grind [exp_add, neg_inj, mul_eq_mul_right_iff, OfNat.ofNat_ne_zero]
 
-private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ m ∈ range N, -8 * π ^ 2 *
+private lemma aux_G2_tendsto : Tendsto (fun N ↦ ∑ m ∈ range N, -8 * π ^ 2 *
     ∑' (n : ℕ+), n * cexp (2 * π * I * z) ^ ((m + 1) * n : ℕ)) atTop
     (𝓝 (-8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))) := by
   have : -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) =
-    ∑' m : ℕ, (-8 * π ^ 2  * ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n)) := by
+    ∑' m : ℕ, (-8 * π ^ 2 * ∑' n : ℕ+, n * cexp (2 * π * I * z) ^ ((m + 1) * n)) := by
     have := tsum_prod_pow_eq_tsum_sigma 1 (norm_exp_two_pi_I_lt_one z)
     rw [tsum_pnat_eq_tsum_succ (f := fun d ↦
       ∑' (c : ℕ+), (c ^ 1 : ℂ) * cexp (2 * π * I * z) ^ (d * c : ℕ))] at this
@@ -71,19 +71,18 @@ private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ m ∈ range N, -
   simpa using (hf.hasSum).comp tendsto_finset_range
 
 /-- The sum defining `G2` is Cauchy. -/
-lemma G2_cauchySeq (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z) := by
+lemma G2_cauchySeq : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z) := by
   simp_rw [G2_partial_sum_eq]
   apply CauchySeq.const_add
   apply Tendsto.cauchySeq (x := -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using aux_G2_tendsto z
 
-lemma summable_e2Summand_symmetricIcc (z : ℍ) :
-    Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ ) := by
+lemma summable_e2Summand_symmetricIcc : Summable (fun m ↦ e2Summand m z) (symmetricIcc ℤ ) := by
   simpa only [Summable, HasSum, symmetricIcc_eq_map_Icc_nat] using
     cauchySeq_tendsto_of_complete (G2_cauchySeq z)
 
-/-Do we want this not to be private? I made it more general in case we want it elsewhere. If so we
-would also maybe want the result below -/
+/-Do we want this and the next not to be private?
+I made it more general in case we want them elsewhere. -/
 private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClass ℤ F]
     {f : ℤ → F} (hc : CauchySeq fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, f m) (hs : f.Even) :
     Tendsto f atTop (𝓝 0) := by
@@ -95,7 +94,7 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   refine ⟨N + 1, fun n hn ↦ ?_⟩
   have H2 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
   have H22 := sum_Icc_succ_eq_add_endpoints f (N := n.natAbs - 1)
-  have H3 : ((n.natAbs - 1 : ℕ)  : ℤ) = n - 1 := by
+  have H3 : ((n.natAbs - 1 : ℕ) : ℤ) = n - 1 := by
     omega
   rw [H3] at H22
   simp only [Nat.cast_natAbs, Int.cast_abs, Int.cast_eq, Int.cast_sub, Int.cast_one, sub_add_cancel,
@@ -122,26 +121,24 @@ private lemma tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [NormedRing
   rw [HasSum, symmetricIcc_eq_map_Icc_nat] at H
   exact H
 
-lemma summable_e2Summand_symmetricIco (z : ℍ) :
-    Summable (fun m : ℤ ↦ e2Summand m z) (symmetricIco ℤ) := by
+lemma summable_e2Summand_symmetricIco : Summable (fun m : ℤ ↦ e2Summand m z) (symmetricIco ℤ) := by
   apply summable_symmetricIco_of_multiplible_symmetricIcc (summable_e2Summand_symmetricIcc z)
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchySeq z) (e2Summand_even z)
   simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma G2_eq_tsum_symmetricIco (z : ℍ) : G2 z = ∑'[symmetricIco ℤ] m, e2Summand m z := by
+lemma G2_eq_tsum_symmetricIco : G2 z = ∑'[symmetricIco ℤ] m, e2Summand m z := by
   rw [G2, tsum_symmetricIcc_eq_tsum_symmetricIco (summable_e2Summand_symmetricIcc z) ?_]
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchySeq z) (e2Summand_even z)
   simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma cauchySeq_sum_Ico_e2Summand (z : ℍ) :
-    CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
+lemma cauchySeq_sum_Ico_e2Summand : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
   apply Filter.Tendsto.cauchySeq (x := G2 z)
   obtain ⟨a, ha⟩ := summable_e2Summand_symmetricIco z
   rw [G2_eq_tsum_symmetricIco z, (Summable.hasSum_iff (summable_e2Summand_symmetricIco z)).mp ha]
   simp only [symmetricIco, ← Nat.map_cast_int_atTop, Filter.map_map, HasSum, tendsto_map'_iff] at *
-  apply ha.congr (by simp)
+  exact ha.congr (by simp)
 
-lemma G2_eq_tsum_cexp (z : ℍ) : G2 z =
+lemma G2_eq_tsum_cexp : G2 z =
     (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
   apply HasSum.tsum_eq
   simp only [sub_eq_add_neg, HasSum, symmetricIcc_eq_map_Icc_nat, tendsto_map'_iff]
