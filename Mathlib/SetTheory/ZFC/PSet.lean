@@ -187,6 +187,9 @@ protected def Mem (y x : PSet.{u}) : Prop :=
 instance : Membership PSet PSet :=
   ⟨PSet.Mem⟩
 
+theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
+  Iff.rfl
+
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
 
