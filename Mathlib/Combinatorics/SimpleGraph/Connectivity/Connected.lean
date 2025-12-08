@@ -802,9 +802,6 @@ theorem mem_and_isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => adj_and_isBridge_iff_adj_and_forall_cycle_notMem) e
 
-@[deprecated (since := "2025-05-23")]
-alias isBridge_iff_mem_and_forall_cycle_not_mem := mem_and_isBridge_iff_mem_and_forall_cycle_notMem
-
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
