@@ -465,9 +465,6 @@ inductive AbelMode where
 structure AbelNF.Config extends AtomM.Recurse.Config where
   /-- The normalization style. -/
   mode := AbelMode.term
-  /-- Whether evalExpr only makes use of hypotheses that are available in the main local context. -/
-  wellBehavedDischarge := true
-
 
 /-- Function elaborating `AbelNF.Config`. -/
 declare_config_elab elabAbelNFConfig AbelNF.Config
@@ -507,7 +504,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
+  let m := AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
   transformAtLocation (m ·) "abel_nf" loc (failIfUnchanged := true) false
 
 @[tactic_alt abel]
@@ -525,7 +522,8 @@ def elabAbelNFConv : Tactic := fun stx ↦ match stx with
     if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult
-      (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) (← instantiateMVars (← Conv.getLhs)))
+      (← AtomM.recurse s cfg.toConfig (wellBehavedDischarge := true) evalExpr (cleanup cfg)
+        (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc abel]
