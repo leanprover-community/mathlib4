@@ -453,8 +453,7 @@ variable (R) in
 relations, given that the relations are equal. -/
 protected def congrₐ {c d : RingCon M} (h : c = d) :
     c.Quotient ≃ₐ[R] d.Quotient :=
-  { RingCon.congr h with
-    commutes' _ := rfl }
+  .ofCommutes (RingCon.congr h) fun _ ↦ rfl
 
 theorem congrₐ_mk {c d : RingCon M} (h : c = d) (a : M) :
     RingCon.congrₐ R h (a : c.Quotient) = (a : d.Quotient) :=
@@ -546,6 +545,7 @@ noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
     (ker (f : M →+* P)).Quotient ≃ₐ[R] f.range where
   __ := AlgHom.codRestrict (kerLiftₐ f) _ _
   __ := quotientKerEquivRangeS f.toRingHom
+  map_smul' _ _ := by simp
 
 theorem quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     quotientKerEquivRangeₐ f x = ⟨f x, AlgHom.mem_range_self f x⟩ :=
@@ -580,8 +580,7 @@ variable (R)
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
     (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
-  { quotientQuotientEquivQuotient c d h with
-    commutes' _ := by rfl }
+  .ofCommutes (quotientQuotientEquivQuotient c d h) fun _ ↦ by rfl
 
 @[simp]
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :

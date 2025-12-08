@@ -376,10 +376,10 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     P'.equivAwayAdjoinRoot.trans ((IsLocalization.algEquiv (.powers (AdjoinRoot.mk P.f (p * P.g)))
       (Localization.Away (AdjoinRoot.mk P.f (p * P.g))) _).restrictScalars R)
   let e₂ : Localization.Away (algebraMap _ S' (AdjoinRoot.mk P.f p)) ≃ₐ[R] Sₛ :=
-    { __ := IsLocalization.ringEquivOfRingEquiv _ _ _ H,
-      commutes' r := by
+    .ofCommutes (IsLocalization.ringEquivOfRingEquiv _ _ _ H)
+      fun r ↦ by
         simp [IsScalarTower.algebraMap_apply R S' (Localization.Away _),
-          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ] }
+          - AlgEquiv.symm_toRingEquiv, IsScalarTower.algebraMap_eq R S Sₛ]
   exact .of_equiv (e₁.trans e₂)
 
 /-- If `T` is an etale algebra, and a standard etale algebra surjects onto `T`, then
