@@ -5,13 +5,14 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Choose.Central
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Data.Tree.Basic
+import Mathlib.Tactic.Field
 
 /-!
 # Catalan numbers
