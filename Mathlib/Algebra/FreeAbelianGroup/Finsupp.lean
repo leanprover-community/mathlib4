@@ -115,7 +115,7 @@ theorem notMem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∉ a.support �
 
 @[simp]
 theorem support_zero : support (0 : FreeAbelianGroup X) = ∅ := by
-  simp only [support, Finsupp.support_zero, AddMonoidHom.map_zero]
+  simp only [support, Finsupp.support_zero, map_zero]
 
 @[simp]
 theorem support_of (x : X) : support (of x) = {x} := by
@@ -123,13 +123,13 @@ theorem support_of (x : X) : support (of x) = {x} := by
 
 @[simp]
 theorem support_neg (a : FreeAbelianGroup X) : support (-a) = support a := by
-  simp only [support, AddMonoidHom.map_neg, Finsupp.support_neg]
+  simp only [support, map_neg, Finsupp.support_neg]
 
 @[simp]
 theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
-  simp only [mem_support_iff, AddMonoidHom.map_zsmul]
+  simp only [mem_support_iff, map_zsmul]
   simp only [h, zsmul_int_int, false_or, Ne, mul_eq_zero]
 
 @[simp]
@@ -140,7 +140,7 @@ theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
 
 open scoped Classical in
 theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
-  simp only [support, AddMonoidHom.map_add]
+  simp only [support, map_add]
   apply Finsupp.support_add
 
 end FreeAbelianGroup

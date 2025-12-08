@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.InjSurj
@@ -74,5 +74,19 @@ protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
   { e.mulAction M with
     smul_one := by simp [one_def, smul_def, smul_one]
     smul_mul := by simp [mul_def, smul_def, smul_mul'] }
+
+variable (M) [SMul M β] in
+/-- Transfer `FaithfulSMul` across an `Equiv`.
+
+See `FaithfulSMul.of_injective` for the general statement not about transferring. -/
+@[to_additive /-- Transfer `FaithfulVAdd` across an `Equiv`
+
+See `FaithfulVAdd.of_injective` for the general statement not about transferring. -/]
+protected lemma faithfulSMul (e : α ≃ β) [FaithfulSMul M β] :
+    letI := e.smul M
+    FaithfulSMul M α :=
+  letI := e.smul M
+  { eq_of_smul_eq_smul {m₁ m₂} := by
+      simpa [← e.forall_congr_right, smul_def] using eq_of_smul_eq_smul (α := β) }
 
 end Equiv

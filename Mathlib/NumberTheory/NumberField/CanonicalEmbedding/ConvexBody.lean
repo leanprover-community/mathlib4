@@ -465,11 +465,10 @@ theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
     ENNReal.pow_lt_top ENNReal.ofNat_lt_top
 
-theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
-  classical
-  refine zero_lt_iff.mpr (mul_ne_zero ?_ ?_)
-  · exact ZSpan.measure_fundamentalDomain_ne_zero _
-  · exact ENNReal.pow_ne_zero two_ne_zero _
+theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
+  -- TODO: The `NormedAddCommGroup (mixedSpace K)` instance should not need any decidability.
+  ENNReal.mul_pos (by classical exact ZSpan.measure_fundamentalDomain_ne_zero _) <|
+    ENNReal.pow_ne_zero two_ne_zero _
 
 variable {f : InfinitePlace K → ℝ≥0} (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
