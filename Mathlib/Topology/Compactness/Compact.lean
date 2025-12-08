@@ -535,6 +535,19 @@ theorem isCompact_generateFrom [T : TopologicalSpace X]
     simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_notMem] using hQF
   exact this (F.mem_of_superset hsF hsQ)
 
+omit [TopologicalSpace X] in
+theorem isCompact_generateFrom' [T : TopologicalSpace X]
+    {S : Set (Set X)} (hTS : T = generateFrom S) {s : Set X}
+    (h : ∀ (ι : Type u) (U : ι → S), s ⊆ ⋃ i, U i → ∃ J : Set ι, J.Finite ∧ s ⊆ ⋃ i ∈ J, U i) :
+    IsCompact s := by
+  apply isCompact_generateFrom hTS
+  intro P hP hs
+  rw [Set.sUnion_eq_iUnion] at hs
+  obtain ⟨J, hJ, cover⟩ := h P (fun a ↦ ⟨a.1, hP a.2⟩) hs
+  refine ⟨(fun x ↦ x.1) '' J, ⟨by simp, Set.Finite.image _ hJ, ?_⟩⟩
+  simpa only [Set.sUnion_eq_iUnion, Set.iUnion_coe_set, Set.mem_image, Subtype.exists,
+    exists_and_right, exists_eq_right, Set.iUnion_exists] using cover
+
 namespace Filter
 
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
@@ -698,6 +711,37 @@ theorem generalized_tube_lemma (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
   rcases hp with ⟨⟨u, v⟩, ⟨⟨huo, hsu⟩, hvo, htv⟩, hn⟩
   exact ⟨u, v, huo, hvo, hsu, htv, hn⟩
 
+/-- A relative version of `IsCompact.nhdsSet_prod_eq`: if `s` and `t` are compact sets,
+then the neighborhoods filter of `s ×ˢ t` within `s' ×ˢ t'` is the product of the neighborhoods
+filters of `s` and `t` within `s'` and `t'`.
+
+For general sets, only the `≤` inequality holds, see `nhdsSetWithin_prod_le`. -/
+lemma IsCompact.nhdsSetWithin_prod_eq {s s' : Set X} {t t' : Set Y} (hs : IsCompact s)
+    (ht : IsCompact t) : 𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) = 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
+  simp [nhdsSetWithin, ← prod_inf_prod, hs.nhdsSet_prod_eq ht]
+
+open Topology Set in
+/-- A variant of `generalized_tube_lemma` in terms of `nhdsSetWithin`. -/
+lemma generalized_tube_lemma' {s s' : Set X} (hs : IsCompact s) {t t' : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : n ∈ 𝓝ˢ[s' ×ˢ t'] (s ×ˢ t)) :
+    ∃ u ∈ 𝓝ˢ[s'] s, ∃ v ∈ 𝓝ˢ[t'] t, u ×ˢ v ⊆ n := by
+  rwa [hs.nhdsSetWithin_prod_eq ht, Filter.mem_prod_iff] at hn
+
+open Topology Set in
+/-- A variant of `generalized_tube_lemma` that only replaces the set in one direction. -/
+lemma generalized_tube_lemma_left {s s' : Set X} (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : n ∈ 𝓝ˢ[s' ×ˢ t] (s ×ˢ t)) : ∃ u ∈ 𝓝ˢ[s'] s, u ×ˢ t ⊆ n := by
+  rw [hs.nhdsSetWithin_prod_eq ht, nhdsSetWithin_self, Filter.mem_prod_principal] at hn
+  exact ⟨_, hn, fun x hx ↦ hx.1 _ hx.2⟩
+
+open Topology Set in
+/-- A variant of `generalized_tube_lemma` that only replaces the set in one direction. -/
+lemma generalized_tube_lemma_right {s : Set X} (hs : IsCompact s) {t t' : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : n ∈ 𝓝ˢ[s ×ˢ t'] (s ×ˢ t)) : ∃ u ∈ 𝓝ˢ[t'] t, s ×ˢ u ⊆ n := by
+  rw [hs.nhdsSetWithin_prod_eq ht, nhdsSetWithin_self, Filter.mem_prod_iff] at hn
+  obtain ⟨s', hs', u, hu, h⟩ := hn
+  exact ⟨u, hu, (prod_mono_left hs').trans h⟩
+
 -- see Note [lower instance priority]
 instance (priority := 10) Subsingleton.compactSpace [Subsingleton X] : CompactSpace X :=
   ⟨subsingleton_univ.isCompact⟩
@@ -748,6 +792,15 @@ theorem compactSpace_generateFrom [T : TopologicalSpace X] {S : Set (Set X)}
     CompactSpace X := by
   rw [← isCompact_univ_iff]
   exact isCompact_generateFrom hTS <| by simpa
+
+omit [TopologicalSpace X] in
+theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
+    (hTS : T = generateFrom S)
+    (h : ∀ (ι : Type u) (U : ι → S),
+      ⋃ i, U i = (univ (α := X)) → ∃ J : Set ι, J.Finite ∧ ⋃ i ∈ J, U i = (univ (α := X))) :
+    CompactSpace X := by
+  rw [←isCompact_univ_iff]
+  exact isCompact_generateFrom' hTS <| by simpa
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
@@ -920,8 +973,9 @@ theorem isCompact_iff_isCompact_univ : IsCompact s ↔ IsCompact (univ : Set s) 
 theorem isCompact_iff_compactSpace : IsCompact s ↔ CompactSpace s :=
   isCompact_iff_isCompact_univ.trans isCompact_univ_iff
 
-theorem IsCompact.finite (hs : IsCompact s) (hs' : DiscreteTopology s) : s.Finite :=
-  finite_coe_iff.mp (@finite_of_compact_of_discrete _ _ (isCompact_iff_compactSpace.mp hs) hs')
+theorem IsCompact.finite (hs : IsCompact s) (hs' : IsDiscrete s) : s.Finite :=
+  finite_coe_iff.mp (@finite_of_compact_of_discrete _ _
+    (isCompact_iff_compactSpace.mp hs) hs'.to_subtype)
 
 theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite) :
     ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot :=

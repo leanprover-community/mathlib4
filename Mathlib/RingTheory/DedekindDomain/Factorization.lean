@@ -359,7 +359,7 @@ theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0
     Associates.mk_ne_zero.mpr (ideal_factor_ne_zero hI' haJ')
   have h_prod : I * I' = spanSingleton R⁰ ((algebraMap R K) (a * a'))⁻¹ * ↑(J * J') := by
     rw [haJ, haJ', mul_assoc, mul_comm (J : FractionalIdeal R⁰ K), mul_assoc, ← mul_assoc,
-      spanSingleton_mul_spanSingleton, coeIdeal_mul, RingHom.map_mul, mul_inv,
+      spanSingleton_mul_spanSingleton, coeIdeal_mul, map_mul, mul_inv,
       mul_comm (J : FractionalIdeal R⁰ K)]
   rw [count_well_defined K v hI haJ, count_well_defined K v hI' haJ',
     count_well_defined K v (mul_ne_zero hI hI') h_prod, ← Associates.mk_mul_mk,
