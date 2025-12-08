@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 module
 
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.LinearAlgebra.Dual.Basis
